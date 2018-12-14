@@ -1,0 +1,37 @@
+[optic]
+name: magenta
+ambient: 0.5, 0.5, 0.5
+diffuse: 0.8, 0.2, 0.8
+specular: 0.0, 0.0, 0.0
+alpha: 1
+exp: 1
+
+[optic]
+name: cyan
+ambient: 0.5, 0.5, 0.5
+diffuse: 0.4, 1.0, 1.0
+specular: 0.0, 0.0, 0.0
+alpha: 1
+exp: 1
+
+[shape]
+name: ellipsoid
+type: ellipsoid
+optic: magenta
+center: 0 0 0
+ax: 1 0 0
+ay: 0 1 0
+az: 0 0 1
+rx: 0.18
+ry: 0.3
+rz: 0.15
+
+[shape]
+name: ecyl
+type: ellipticcylinder
+optic: cyan
+center: 0 0.1 -0.3
+center: 0 0.1 0.3
+radius: 0.1
+radius: 0.2
+ref: 1 1 0

@@ -1,0 +1,30 @@
+[optic]
+name: cyan
+ambient: 0.4, 1.0, 1.0
+diffuse: 0.4, 1.0, 1.0
+specular: 0.0, 0.0, 0.0
+alpha: 0.8
+exp: 1
+
+[optic]
+name: magenta
+ambient: 0.8, 0.1, 0.8
+diffuse: 0.8, 0.1, 0.8
+specular: 0.0, 0.0, 0.0
+alpha: 0.9
+exp: 1
+
+[shape]
+name : cone
+type : cone
+optic: magenta
+bb: OBB
+center: ( -0.2, 0.2,-0.2 )
+vert: ( -0.2, 0.0, 0.1 )
+radius: 0.08
+
+[shape]
+name : cone2
+optic: cyan
+bb: OBB
+mirror: cone y

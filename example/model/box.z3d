@@ -1,0 +1,39 @@
+[optic]
+name: magenta
+ambient: 0.5, 0.5, 0.5
+diffuse: 0.8, 0.2, 0.8
+specular: 0.0, 0.0, 0.0
+alpha: 1
+exp: 1
+
+[optic]
+name: cyan
+ambient: 0.5, 0.5, 0.5
+diffuse: 0.4, 1.0, 1.0
+specular: 0.0, 0.0, 0.0
+alpha: 1
+exp: 1
+
+[shape]
+name: box1
+type: box
+optic: magenta
+center: 0 0 0
+ax: 1 0 0
+ay: 0 1 0
+az: 0 0 1
+depth: 0.2
+width: 0.4
+height: 0.15
+
+[shape]
+name: box2
+type: box
+optic: cyan
+center: 0 0.1 0.1
+ax: 1 1 0
+ay: -1 1 0
+az: 0 0 1
+depth: 0.1
+width: 0.3
+height: 0.3

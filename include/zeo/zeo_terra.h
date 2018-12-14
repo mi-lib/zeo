@@ -1,0 +1,123 @@
+/* Zeo - Z/Geometry and optics computation library.
+ * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
+ *
+ * zeo_terra - terrain elevation map.
+ */
+
+#ifndef __ZEO_TERRA_H__
+#define __ZEO_TERRA_H__
+
+#include <zeo/zeo_mat3d.h>
+
+__BEGIN_DECLS
+
+/* ********************************************************** */
+/*! \brief cell type of elevation map.
+ *//* ******************************************************* */
+typedef struct{
+  double z;    /*!< \brief elevation */
+  zVec3D norm; /*!< \brief normal vector */
+  double var;  /*!< \brief variance */
+  bool travs;  /*!< \brief traversability */
+  /*! \cond */
+  zVec3D _prm;  /* plane parameters */
+  zMat3D _s;    /* covariant matrix */
+  int _np;      /* number of assigned points */
+  /*! \endcond */
+} zTerraCell;
+
+#define zTerraCellZ(c,x,y) \
+  ( (c)->_prm.e[zX] * (x) + (c)->_prm.e[zY] * (y) + (c)->_prm.e[zZ] )
+
+/* ********************************************************** */
+/*! \brief elevation map.
+ *//* ******************************************************* */
+typedef struct{
+  double xmin; /*!< \brief minimum boundary in x */
+  double xmax; /*!< \brief maximum boundary in x */
+  double ymin; /*!< \brief minimum boundary in y */
+  double ymax; /*!< \brief maximum boundary in y */
+  double zmin; /*!< \brief minimum boundary in z */
+  double zmax; /*!< \brief maximum boundary in z */
+  double dx;   /*!< \brief spatial interval of grids in x */
+  double dy;   /*!< \brief spatial interval of grids in y */
+  /*! \cond */
+  int _nx;     /* number of grids in x */
+  int _ny;     /* number of grids in y */
+  /*! \endcond */
+  double travs_th_var; /*!< \brief traversability threshold of variance */
+  double travs_th_grd; /*!< \brief traversability threshold of gradient */
+  double travs_th_res; /*!< \brief traversability threshold of residual */
+  zTerraCell *grid; /*!< \brief grids */
+} zTerra;
+
+#define zTerraGridNC(terra,i,j) ( &(terra)->grid[(j)*(terra)->_nx+(i)] )
+
+#define zTerraX(terra,i)   ( (terra)->xmin + (i)*(terra)->dx )
+#define zTerraY(terra,j)   ( (terra)->ymin + (j)*(terra)->dy )
+
+#define ZTERRA_TRAVS_TH_VAR ( 1.0e-1 )
+#define ZTERRA_TRAVS_TH_GRD zDeg2Rad( 45 )
+#define ZTERRA_TRAVS_TH_RES ( 1.0e-1 )
+
+/*! \brief retrieve a grid of an elevation map. */
+__EXPORT zTerraCell *zTerraGrid(zTerra *terra, int i, int j);
+
+/*! \brief initialize an elevation map. */
+__EXPORT zTerra *zTerraInit(zTerra *terra);
+
+/*! \brief level an elevation map into flat. */
+__EXPORT zTerra *zTerraLevel(zTerra *terra);
+
+/*! \brief allocate the internal grid array of an elevation map. */
+__EXPORT zTerra *zTerraAlloc(zTerra *terra);
+
+/*! \brief set thresholds of an elevation map for traversability check. */
+#define zTerraSetTravsThreshold(terra,tv,tg,tr) do{\
+  (terra)->travs_th_var = (tv);\
+  (terra)->travs_th_grd = cos(tg);\
+  (terra)->travs_th_res = (tr);\
+} while(0)
+
+/*! \brief set the maximum horizontal boundary based on resolution and size of an elevation map. */
+#define zTerraSetMax(terra) do{\
+  (terra)->xmax = (terra)->xmin + ( (terra)->_nx - 1 ) * (terra)->dx;\
+  (terra)->ymax = (terra)->ymin + ( (terra)->_ny - 1 ) * (terra)->dy;\
+} while(0)
+
+/*! \brief set the region of an elevation map based on resolution. */
+__EXPORT void zTerraSetRegion(zTerra *terra, double xmin, double ymin, double zmin, double zmax, double dx, double dy);
+
+/*! \brief allocate the internal grid array of an elevation map based on resolution. */
+__EXPORT zTerra *zTerraAllocRegion(zTerra *terra, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, double dx, double dy);
+
+/*! \brief allocate the internal grid array of an elevation map based on size. */
+__EXPORT zTerra *zTerraAllocGrid(zTerra *terra, double xmin, double ymin, double dx, double dy, int nx, int ny, double zmin, double zmax);
+
+/*! \brief free the internal grid array of an elevation map. */
+__EXPORT void zTerraFree(zTerra *terra);
+
+/*! \brief identify an elevation map from point cloud. */
+__EXPORT zTerra *zTerraIdent(zTerra *terra, zVec3DList *pl);
+
+/*! \brief check traversability of each grid of an elevation map. */
+__EXPORT void zTerraCheckTravs(zTerra *terra);
+
+/*! \brief acquire the actual z-range of an elevation map. */
+__EXPORT void zTerraZRange(zTerra *terra, double *zmin, double *zmax);
+
+/*! \brief estimate z-value at a given horizontal place of an elevation map. */
+__EXPORT double zTerraZ(zTerra *terra, double x, double y);
+
+/*! \brief input an elevation map from a file. */
+__EXPORT zTerra *zTerraFRead(FILE *fp, zTerra *terra);
+
+/*! \brief output an elevation map to a file. */
+__EXPORT void zTerraFWrite(FILE *fp, zTerra *terra);
+
+/*! \brief output an elevation map to a file in a plot-friendly format. */
+__EXPORT void zTerraDataFWrite(FILE *fp, zTerra *terra);
+
+__END_DECLS
+
+#endif /* __ZEO_TERRA_H__ */

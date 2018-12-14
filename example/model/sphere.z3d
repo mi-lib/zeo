@@ -1,0 +1,15 @@
+[optic]
+name: yellow
+ambient: 0.8, 0.8, 0.2
+diffuse: 0.8, 0.8, 0.2
+specular: 0.0, 0.0, 0.0
+alpha: 1
+exp: 1
+
+[shape]
+name : sphere
+type : sphere
+optic: yellow
+bb: OBB
+center: ( -0.2, -0.1, 0.0 )
+radius: 0.1
