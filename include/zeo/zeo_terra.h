@@ -79,8 +79,8 @@ __EXPORT zTerra *zTerraAlloc(zTerra *terra);
   (terra)->travs_th_res = (tr);\
 } while(0)
 
-/*! \brief set the maximum horizontal boundary based on resolution and size of an elevation map. */
-#define zTerraSetMax(terra) do{\
+/*! \brief adjust the maximum horizontal boundary based on resolution and size of an elevation map. */
+#define zTerraAdjustMax(terra) do{\
   (terra)->xmax = (terra)->xmin + ( (terra)->_nx - 1 ) * (terra)->dx;\
   (terra)->ymax = (terra)->ymin + ( (terra)->_ny - 1 ) * (terra)->dy;\
 } while(0)
@@ -96,6 +96,12 @@ __EXPORT zTerra *zTerraAllocGrid(zTerra *terra, double xmin, double ymin, double
 
 /*! \brief free the internal grid array of an elevation map. */
 __EXPORT void zTerraFree(zTerra *terra);
+
+/*! \brief update an elevation map from a point. */
+__EXPORT zTerra *zTerraUpdate(zTerra *terra, zVec3D *p);
+
+/*! \brief form terrain profile of an elevation map. */
+__EXPORT zTerra *zTerraForm(zTerra *terra);
 
 /*! \brief identify an elevation map from point cloud. */
 __EXPORT zTerra *zTerraIdent(zTerra *terra, zVec3DList *pl);

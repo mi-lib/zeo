@@ -5,7 +5,7 @@ int main(int argc, char *argv[])
   zTerra terra;
   FILE *fp;
 
-  fp = fopen( "test.ztr", "r" );
+  fp = fopen( "terrain.ztr", "r" );
   zTerraFRead( fp, &terra );
   fclose( fp );
   zTerraDataFWrite( stdout, &terra );

@@ -1,3 +1,5 @@
+2018.12.19. Added _zTerraUpdate, zTerraUpdate, zTerraForm, and zTerraIdent. [zeo_terra]
+2018.12.19. Renamed zTerraSetMax to zTerraAdjustMax. [zeo_terra]
 2018.12.12. Followed renaming of CURE to ZEDA. [all]
 2018.10.30. Reimplemented zMat6DAddDRC, zMat6DSubDRC, zMat6DMulDRC and zMat6DDivDRC. [zeo_mat6d]
 2018.10.26. Added zMat3DMatch and zMat3DEqual. [zeo_mat3d]

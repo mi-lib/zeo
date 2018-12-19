@@ -146,7 +146,7 @@ void zTerraSetRegion(zTerra *terra, double xmin, double ymin, double zmin, doubl
   terra->zmax = zmax;
   terra->dx = dx;
   terra->dy = dy;
-  zTerraSetMax( terra );
+  zTerraAdjustMax( terra );
   zTerraSetTravsThreshold( terra, ZTERRA_TRAVS_TH_VAR, ZTERRA_TRAVS_TH_GRD, ZTERRA_TRAVS_TH_RES );
 }
 
@@ -197,6 +197,41 @@ zTerraCell *_zTerraGetBaseGrid(zTerra *terra, zVec3D *p, int *i, int *j)
   return zTerraGrid(terra,*i,*j);
 }
 
+/* zTerraUpdate
+ * - update an elevation map from a point.
+ */
+#define _zTerraUpdate(terra,p,g,i,j) do{\
+  if( ( g = _zTerraGetBaseGrid( terra, p, &i, &j ) ) )\
+    _zTerraCellUpdate( grid, p );\
+  if( ( g = zTerraGrid(terra,i+1,j) ) )\
+    _zTerraCellUpdate( grid, p );\
+  if( ( g = zTerraGrid(terra,i  ,j+1) ) )\
+    _zTerraCellUpdate( grid, p );\
+  if( ( g = zTerraGrid(terra,i+1,j+1) ) )\
+    _zTerraCellUpdate( grid, p );\
+} while(0)
+zTerra *zTerraUpdate(zTerra *terra, zVec3D *p)
+{
+  zTerraCell *grid;
+  int ic = 0, jc = 0;
+
+  _zTerraUpdate( terra, p, grid, ic, jc );
+  return terra;
+}
+
+/* zTerraForm
+ * - form terrain profile of an elevation map.
+ */
+zTerra *zTerraForm(zTerra *terra)
+{
+  register int i, j;
+
+  for( i=0; i<terra->_nx; i++ )
+    for( j=0; j<terra->_ny; j++ )
+      _zTerraCellForm( zTerraGridNC(terra,i,j), zTerraX(terra,i), zTerraY(terra,j) );
+  return terra;
+}
+
 /* zTerraIdent
  * - identify an elevation map from point cloud.
  */
@@ -204,22 +239,12 @@ zTerra *zTerraIdent(zTerra *terra, zVec3DList *pl)
 {
   zVec3DListCell *pc;
   zTerraCell *grid;
-  register int i, j;
   int ic = 0, jc = 0;
 
   zListForEach( pl, pc ){
-    if( ( grid = _zTerraGetBaseGrid( terra, pc->data, &ic, &jc ) ) )
-      _zTerraCellUpdate( grid, pc->data );
-    if( ( grid = zTerraGrid(terra,ic+1,jc) ) )
-      _zTerraCellUpdate( grid, pc->data );
-    if( ( grid = zTerraGrid(terra,ic  ,jc+1) ) )
-      _zTerraCellUpdate( grid, pc->data );
-    if( ( grid = zTerraGrid(terra,ic+1,jc+1) ) )
-      _zTerraCellUpdate( grid, pc->data );
+    _zTerraUpdate( terra, pc->data, grid, ic, jc );
   }
-  for( i=0; i<terra->_nx; i++ )
-    for( j=0; j<terra->_ny; j++ )
-      _zTerraCellForm( zTerraGridNC(terra,i,j), zTerraX(terra,i), zTerraY(terra,j) );
+  zTerraForm( terra );
   zTerraCheckTravs( terra );
   return terra;
 }
@@ -364,7 +389,7 @@ bool _zTerraFRead(FILE *fp, void *instance, char *buf, bool *success)
   if( strcmp( buf, "grid" ) == 0 ){
     int i, j;
     if( !terra->grid ){
-      zTerraSetMax( terra );
+      zTerraAdjustMax( terra );
       if( !zTerraAlloc( terra ) )
         return ( *success = false );
     }
