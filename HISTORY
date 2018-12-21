@@ -1,3 +1,4 @@
+2018.12.21. Debugged _zTerraFRead so as to compute internal parameters. [zeo_terra]
 2018.12.19. Added _zTerraUpdate, zTerraUpdate, zTerraForm, and zTerraIdent. [zeo_terra]
 2018.12.19. Renamed zTerraSetMax to zTerraAdjustMax. [zeo_terra]
 2018.12.12. Followed renaming of CURE to ZEDA. [all]
