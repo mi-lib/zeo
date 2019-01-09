@@ -3,16 +3,24 @@
 void assert_create(void)
 {
   zVec3D v1, v2;
+  double r, theta, phi;
 
   zVec3DCreate( &v1, 1, 2, 3 );
   zAssert( zVec3DCreate, v1.e[0] == 1 && v1.e[1] == 2 && v1.e[2] == 3 );
+  zVec3DCreate( &v1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  r = zVec3DNorm( &v1 );
+  theta = zVec3DAngle( &v1, ZVEC3DZ, NULL );
+  phi = atan2( v1.e[1], v1.e[0] );
+  zVec3DCreatePolar( &v2, r, theta, phi );
+  zAssert( zVec3DCreatePolar, zVec3DEqual( &v1, &v2 ) );
   zVec3DCopy( &v1, &v2 );
   zAssert( zVec3DCopy, v1.e[0] == v2.e[0] && v1.e[1] == v2.e[1] && v1.e[2] == v2.e[2] );
   zAssert( zVec3DMatch, zVec3DMatch( &v1, &v2 ) );
   zVec3DClear( &v1 );
   zAssert( zVec3DIsTiny, zVec3DIsTiny( &v1 ) );
+  zVec3DCreate( &v1, 1, 2, HUGE_VAL );
   zVec3DCreate( &v2, 1, 2, NAN );
-  zAssert( zVec3DIsNan, zVec3DIsNan( &v2 ) );
+  zAssert( zVec3DIsNan, zVec3DIsNan(&v1) && zVec3DIsNan(&v2) );
 }
 
 void assert_arith(void)
@@ -64,11 +72,12 @@ void assert_vecprod(void)
   zVec3DOuterProd( &v1, &v2, &v3 );
   zVec3DCopy( &v1, &v4 ); zVec3DOuterProd( &v4, &v2, &v4 );
   zVec3DCopy( &v2, &v5 ); zVec3DOuterProd( &v1, &v5, &v5 );
-  zAssert( zVec3DOuterProd, v1.e[1]*v2.e[2]-v1.e[2]*v2.e[1] == v3.e[0]
-                         && v1.e[2]*v2.e[0]-v1.e[0]*v2.e[2] == v3.e[1]
-                         && v1.e[0]*v2.e[1]-v1.e[1]*v2.e[0] == v3.e[2]
-                         && v4.e[0]==v3.e[0] && v4.e[1]==v3.e[1] && v4.e[2]==v3.e[2]
-                         && v5.e[0]==v3.e[0] && v5.e[1]==v3.e[1] && v5.e[2]==v3.e[2] );
+  zAssert( zVec3DOuterProd,
+       v1.e[1]*v2.e[2]-v1.e[2]*v2.e[1] == v3.e[0]
+    && v1.e[2]*v2.e[0]-v1.e[0]*v2.e[2] == v3.e[1]
+    && v1.e[0]*v2.e[1]-v1.e[1]*v2.e[0] == v3.e[2]
+    && v4.e[0]==v3.e[0] && v4.e[1]==v3.e[1] && v4.e[2]==v3.e[2]
+    && v5.e[0]==v3.e[0] && v5.e[1]==v3.e[1] && v5.e[2]==v3.e[2] );
   zAssert( zVec3DOuterProdNorm, zVec3DOuterProdNorm(&v1,&v2) == zVec3DNorm(&v3) );
   zVec3DCreate( &v3, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
   zAssert( zVec3DGrassmannProd, zIsTiny(zVec3DGrassmannProd(&v1,&v2,&v3)-((v1.e[1]*v2.e[2]-v1.e[2]*v2.e[1])*v3.e[0]+(v1.e[2]*v2.e[0]-v1.e[0]*v2.e[2])*v3.e[1]+(v1.e[0]*v2.e[1]-v1.e[1]*v2.e[0])*v3.e[2])) );
@@ -105,7 +114,23 @@ void assert_geometry(void)
   zAssert( zVec3DOrthoSpace, zIsTiny(zVec3DInnerProd(&v1,&v2)) && zIsTiny(zVec3DInnerProd(&v2,&v3)) && zIsTiny(zVec3DInnerProd(&v3,&v1)) );
   zVec3DRot( &v1, &v2, &v3 );
   zVec3DRevDRC( &v2 );
-  zAssert( zVec3DAngle, zIsTiny(zVec3DAngle(&v1,&v3,&v2)+zVec3DNorm(&v2)) );
+  zAssert( zVec3DRot + zVec3DAngle, zIsTiny(zVec3DAngle(&v1,&v3,&v2)+zVec3DNorm(&v2)) );
+}
+
+void assert_angvel_conv(void)
+{
+  zVec3D ea, eavel, angvel, test;
+
+  zVec3DCreate( &ea, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+  zVec3DCreate( &angvel, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+
+  zAngVelToZYXVel( &angvel, &ea, &eavel );
+  zZYXVelToAngVel( &eavel, &ea, &test );
+  zAssert( zAngVelToZYXVel + zZYXVelToAngVel, zVec3DEqual(&angvel,&test) );
+
+  zAngVelToZYZVel( &angvel, &ea, &eavel );
+  zZYZVelToAngVel( &eavel, &ea, &angvel );
+  zAssert( zAngVelToZYZVel + zZYZVelToAngVel, zVec3DEqual(&angvel,&test) );
 }
 
 int main(void)
@@ -115,5 +140,6 @@ int main(void)
   assert_arith();
   assert_vecprod();
   assert_geometry();
+  assert_angvel_conv();
   return EXIT_SUCCESS;
 }

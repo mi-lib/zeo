@@ -13,7 +13,11 @@
 __BEGIN_DECLS
 
 /*! \struct zMat6D
- * \brief 6x6 matrix, which has 4 3x3 matrices within.
+ * \brief 6x6 matrix consisting of four 3x3 matrices.
+ */
+/* The order of matrix components are:
+ * |~ m[0]  m[2] ~| = |~ e[0][0]  e[1][0] ~| = |~ ll  al ~|
+ * |_ m[1]  m[3] _|   |_ e[0][1]  e[1][1] _|   |_ la  aa _|
  */
 typedef union{
   zMat3D m[4];    /*!< \brief four 3x3 matrices */
@@ -25,21 +29,26 @@ typedef union{
 
 #if 0
 #define zMat6DElem(m,i,j)  zMat3DElem(&(m)->e[(i)/3][(j)/3], (i)%3, (j)%3 )
-#endif
 #define zMat6DMat3D(m,i,j) ( &(m)->e[(i)][(j)] )
+#endif
 
-/*! \brief create a 6x6 matrix. */
+/*! \brief create a 6x6 matrix.
+ *
+ * zMat6DCreate() creates a 6x6 matrix from four 3x3 matrices as follows.
+ *  |~ \a m1  \a m2 ~|
+ *  |_ \a m3  \a m4 _|
+ */
 #define _zMat6DCreate(m,m1,m2,m3,m4) do{\
   zMat3DCopy( m1, &(m)->c.ll );\
-  zMat3DCopy( m2, &(m)->c.la );\
-  zMat3DCopy( m3, &(m)->c.al );\
+  zMat3DCopy( m2, &(m)->c.al );\
+  zMat3DCopy( m3, &(m)->c.la );\
   zMat3DCopy( m4, &(m)->c.aa );\
 } while(0)
 __EXPORT zMat6D *zMat6DCreate(zMat6D *m, zMat3D *m1, zMat3D *m2, zMat3D *m3, zMat3D *m4);
 /*! \brief copy a 6x6 matrix to another */
 #define zMat6DCopy(s,d) zCopy( zMat6D, s, d )
 /*! \brief put a sub 3x3 matrix into a 6x6 matrix. */
-__EXPORT zMat6D *zMat6DPutMat3D(zMat6D *m6d, int i, int j, zMat3D *m3d);
+#define zMat6DPutMat3D(m6d,row,col,m3d) zMat3DCopy( m3d, &(m6d)->e[(col)][(row)] )
 /*! \brief clear a 6x6 matrix to be zero. */
 #define _zMat6DClear(m) do{\
   zMat3DClear( &m->c.ll );\
@@ -58,11 +67,9 @@ __EXPORT zMat6D *zMat6DClear(zMat6D *m);
 } while(0)
 __EXPORT zMat6D *zMat6DT(zMat6D *m, zMat6D *mout);
 
-/*! \brief abstract row vector from a 6D matrix.
- */
+/*! \brief abstract row vector from a 6D matrix. */
 zVec6D *zMat6DRow(zMat6D *m, int i, zVec6D *v);
-/*! \brief abstract column vector from a 6D matrix.
- */
+/*! \brief abstract column vector from a 6D matrix. */
 zVec6D *zMat6DCol(zMat6D *m, int i, zVec6D *v);
 
 /*! \brief add two 6x6 matrices.
@@ -139,23 +146,23 @@ __EXPORT zVec6D *zMulMat6DTVec6D(zMat6D *m, zVec6D *vin, zVec6D *vout);
 /*! \brief multiply a 6x6 matrix by another.
  * \a m = \a m1 \a m2
  */
-__EXPORT zMat6D *zMulMatMat6D(zMat6D *m1, zMat6D *m2, zMat6D *m);
+__EXPORT zMat6D *zMulMat6DMat6D(zMat6D *m1, zMat6D *m2, zMat6D *m);
 
 /*! \brief multiply a 6x6 matrix by the transpose of another from the left side.
  * \a m = \a m1^T \a m2
  */
-__EXPORT zMat6D *zMulMatTMat6D(zMat6D *m1, zMat6D *m2, zMat6D *m);
+__EXPORT zMat6D *zMulMat6DTMat6D(zMat6D *m1, zMat6D *m2, zMat6D *m);
 
 /*! \brief multiply a 6x6 matrix by the transpose of another from the right side.
  * \a m = \a m1 \a m2^T
  */
-__EXPORT zMat6D *zMulMatMatT6D(zMat6D *m1, zMat6D *m2, zMat6D *m);
+__EXPORT zMat6D *zMulMat6DMat6DT(zMat6D *m1, zMat6D *m2, zMat6D *m);
 
 /*! \brief dyadic product of two 6x1 vectors. */
 #define _zMat6DDyad(m,v1,v2) do{\
   _zMat3DDyad( &(m)->c.ll, zVec6DLin(v1), zVec6DLin(v2) );\
-  _zMat3DDyad( &(m)->c.la, zVec6DLin(v1), zVec6DAng(v2) );\
-  _zMat3DDyad( &(m)->c.al, zVec6DAng(v1), zVec6DLin(v2) );\
+  _zMat3DDyad( &(m)->c.la, zVec6DAng(v1), zVec6DLin(v2) );\
+  _zMat3DDyad( &(m)->c.al, zVec6DLin(v1), zVec6DAng(v2) );\
   _zMat3DDyad( &(m)->c.aa, zVec6DAng(v1), zVec6DAng(v2) );\
 } while(0)
 __EXPORT zMat6D *zMat6DDyad(zMat6D *m, zVec6D *v1, zVec6D *v2);

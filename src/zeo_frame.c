@@ -11,18 +11,13 @@
  * 3D frame class
  * ********************************************************** */
 
-/* OBJECT:
- * zframe3Dident
- * - the identity frame.
- */
+/* the identity frame. */
 const zFrame3D zframe3Dident = {
   { { 0, 0, 0 } },
   { { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } } }
 };
 
-/* zFrame3DCreate
- * - create 3D frame from a position vector and an attitude matrix.
- */
+/* create a 3D frame from a position vector and an attitude matrix. */
 zFrame3D *zFrame3DCreate(zFrame3D *f, zVec3D *p, zMat3D *m)
 {
   zFrame3DSetPos( f, p );
@@ -30,31 +25,25 @@ zFrame3D *zFrame3DCreate(zFrame3D *f, zVec3D *p, zMat3D *m)
   return f;
 }
 
-/* zFrame3DInv
- * - invert frame.
- */
+/* invert a 3D frame. */
 zFrame3D *zFrame3DInv(zFrame3D *f, zFrame3D *fi)
 {
   zMat3DT( zFrame3DAtt(f), zFrame3DAtt(fi) );
-  zMulMatVec3D( zFrame3DAtt(fi), zFrame3DPos(f), zFrame3DPos(fi) );
+  zMulMat3DVec3D( zFrame3DAtt(fi), zFrame3DPos(f), zFrame3DPos(fi) );
   zVec3DRevDRC( zFrame3DPos(fi) );
   return fi;
 }
 
-/* zFrame3DCascade
- * - cascade a frame to another.
- */
+/* cascade a 3D frame to another. */
 zFrame3D *zFrame3DCascade(zFrame3D *f1, zFrame3D *f2, zFrame3D *f)
 {
-  zMulMatVec3D( zFrame3DAtt(f1), zFrame3DPos(f2), zFrame3DPos(f) );
+  zMulMat3DVec3D( zFrame3DAtt(f1), zFrame3DPos(f2), zFrame3DPos(f) );
   zVec3DAddDRC( zFrame3DPos(f), zFrame3DPos(f1) );
-  zMulMatMat3D( zFrame3DAtt(f1), zFrame3DAtt(f2), zFrame3DAtt(f) );
+  zMulMat3DMat3D( zFrame3DAtt(f1), zFrame3DAtt(f2), zFrame3DAtt(f) );
   return f;
 }
 
-/* zFrame3DXfer
- * - transform a frame to that with respect to another.
- */
+/* transfer a 3D frame to that with respect to another. */
 zFrame3D *zFrame3DXfer(zFrame3D *f1, zFrame3D *f2, zFrame3D *f)
 {
   zFrame3D tmp;
@@ -63,26 +52,21 @@ zFrame3D *zFrame3DXfer(zFrame3D *f1, zFrame3D *f2, zFrame3D *f)
   return zFrame3DCascade( &tmp, f2, f );
 }
 
-/* zXfer3D
- * - transform a position vector by a frame.
- */
+/* transfer a position vector by a frame. */
 zVec3D *zXfer3D(zFrame3D *f, zVec3D *v, zVec3D *tv)
 {
-  zMulMatVec3D( zFrame3DAtt(f), v, tv );
+  zMulMat3DVec3D( zFrame3DAtt(f), v, tv );
   return zVec3DAddDRC( tv, zFrame3DPos(f) );
 }
 
-/* zXfer3DInv
- * - inversely transform a position vector by a frame.
- */
+/* inversely transfer a position vector by a frame. */
 zVec3D *zXfer3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv)
 {
   zVec3DSub( v, zFrame3DPos(f), tv );
-  return zMulMatTVec3DDRC( zFrame3DAtt(f), tv );
+  return zMulMat3DTVec3DDRC( zFrame3DAtt(f), tv );
 }
 
-/* zXfer6DLin
-   vc_lin = R^T ( v_lin + v_ang x p )
+/* vc_lin = R^T ( v_lin + v_ang x p )
    vc_ang = R^T   v_ang
  */
 zVec6D *zXfer6DLin(zFrame3D *f, zVec6D *v, zVec6D *vc)
@@ -90,23 +74,20 @@ zVec6D *zXfer6DLin(zFrame3D *f, zVec6D *v, zVec6D *vc)
   zVec6D tmp;
 
   zVec6DLinShift( v, zFrame3DPos(f), &tmp );
-  return zMulMatTVec6D( zFrame3DAtt(f), &tmp, vc );
+  return zMulMat3DTVec6D( zFrame3DAtt(f), &tmp, vc );
 }
 
-/* zXfer6DAng
-   vc_lin = R       v_lin
+/* vc_lin = R       v_lin
    vc_ang = R ( p x v_lin + v_ang )
  */
 zVec6D *zXfer6DAng(zFrame3D *f, zVec6D *v, zVec6D *vc)
 {
-  zMulMatVec6D( zFrame3DAtt(f), v, vc );
+  zMulMat3DVec6D( zFrame3DAtt(f), v, vc );
   return zVec6DAngShiftDRC( vc, zFrame3DPos(f) );
 }
 
-/* zFrame3DTwist
- * - twist a frame by a torsion vector
- *   (position offset & angle-axis rotation).
- */
+/* twist a 3D frame by a torsion vector
+ * (position offset & angle-axis rotation). */
 zFrame3D *zFrame3DTwist(zFrame3D *f1, zVec6D *t, zFrame3D *f2)
 {
   zVec3DAdd( zFrame3DPos(f1), zVec6DLin(t), zFrame3DPos(f2) );
@@ -114,9 +95,7 @@ zFrame3D *zFrame3DTwist(zFrame3D *f1, zVec6D *t, zFrame3D *f2)
   return f2;
 }
 
-/* zFrame3DError
- * - error between two frames.
- */
+/* error between two frames. */
 zVec6D *zFrame3DError(zFrame3D *f1, zFrame3D *f2, zVec6D *err)
 {
   zVec3DSub( zFrame3DPos(f1), zFrame3DPos(f2), zVec6DLin(err) );
@@ -124,9 +103,7 @@ zVec6D *zFrame3DError(zFrame3D *f1, zFrame3D *f2, zVec6D *err)
   return err;
 }
 
-/* zFrame3DFromZYX
- * - create a frame from z-y-x Eulerian angles.
- */
+/* create a 3D frame from z-y-x Eulerian angles. */
 zFrame3D *zFrame3DFromZYX(zFrame3D *f, double x, double y, double z, double azim, double elev, double tilt)
 {
   zVec3DCreate( zFrame3DPos(f), x, y, z );
@@ -134,9 +111,7 @@ zFrame3D *zFrame3DFromZYX(zFrame3D *f, double x, double y, double z, double azim
   return f;
 }
 
-/* zFrame3DFromZYZ
- * - create a frame from z-y-z Eulerian angle.
- */
+/* create a 3D frame from z-y-z Eulerian angle. */
 zFrame3D *zFrame3DFromZYZ(zFrame3D *f, double x, double y, double z, double heading, double pitch, double bank)
 {
   zVec3DCreate( zFrame3DPos(f), x, y, z );
@@ -144,9 +119,7 @@ zFrame3D *zFrame3DFromZYZ(zFrame3D *f, double x, double y, double z, double head
   return f;
 }
 
-/* zFrame3DFromAA
- * - create a frame from a position vector and an angle-axis vector.
- */
+/* create a 3D frame from a position vector and an angle-axis vector. */
 zFrame3D *zFrame3DFromAA(zFrame3D *f, double x, double y, double z, double xa, double ya, double za)
 {
   zVec3D aa;
@@ -157,9 +130,7 @@ zFrame3D *zFrame3DFromAA(zFrame3D *f, double x, double y, double z, double xa, d
   return f;
 }
 
-/* zFrame3DFromDH
- * - create a frame from Denaviet-Hartenberg parameters.
- */
+/* create a 3D frame from Denaviet-Hartenberg parameters. */
 zFrame3D *zFrame3DFromDH(zFrame3D *f, double a, double alpha, double d, double theta)
 {
   double ca, sa, ct, st;
@@ -174,19 +145,13 @@ zFrame3D *zFrame3DFromDH(zFrame3D *f, double a, double alpha, double d, double t
   return f;
 }
 
-/* zArrayToFrame3DZYX
- * - convert an array of values for position and z-y-x Eulerian
- *   angles to a frame.
- */
+/* convert an array of values for position and z-y-x Eulerian angles to a 3D frame. */
 zFrame3D *zArrayToFrame3DZYX(double *array, zFrame3D *f)
 {
   return zFrame3DFromZYX( f, array[0], array[1], array[2], array[3], array[4], array[5] );
 }
 
-/* zFrame3DToArrayZYX
- * - convert a frame to an array of values for position and
- *   z-y-x Eulerian angles.
- */
+/* convert a 3D frame to an array of values for position and z-y-x Eulerian angles. */
 double *zFrame3DToArrayZYX(zFrame3D *f, double *array)
 {
   register int i;
@@ -200,38 +165,26 @@ double *zFrame3DToArrayZYX(zFrame3D *f, double *array)
   return array;
 }
 
-/* zVec6DToFrame3DZYX
- * - convert a 6D quasi vector for position and z-y-x Eulerian
- *   angles to a frame.
- */
+/* convert a 6D quasi vector for position and z-y-x Eulerian angles to a 3D frame. */
 zFrame3D *zVec6DToFrame3DZYX(zVec6D *v, zFrame3D *f)
 {
   return zArrayToFrame3DZYX( v->e, f );
 }
 
-/* zFrame3DZYXToVec6D
- * - convert a frame to 6D quasi vector for position and z-y-x
- *   Eulerian angles.
- */
+/* convert a 3D frame to 6D quasi vector for position and z-y-x Eulerian angles. */
 zVec6D *zFrame3DToVec6DZYX(zFrame3D *f, zVec6D *v)
 {
   zFrame3DToArrayZYX( f, v->e );
   return v;
 }
 
-/* zArrayToFrame3DZYZ
- * - convert an array of values for position and z-y-z Eulerian
- *   angles to a frame.
- */
+/* convert an array of values for position and z-y-z Eulerian angles to a 3D frame. */
 zFrame3D *zArrayToFrame3DZYZ(double *array, zFrame3D *f)
 {
   return zFrame3DFromZYZ( f, array[0], array[1], array[2], array[3], array[4], array[5] );
 }
 
-/* zFrame3DToArrayZYZ
- * - convert a frame to an array of values for position and
- *   z-y-z Eulerian angles.
- */
+/* convert a 3D frame to an array of values for position and z-y-z Eulerian angles. */
 double *zFrame3DToArrayZYZ(zFrame3D *f, double *array)
 {
   register int i;
@@ -245,38 +198,26 @@ double *zFrame3DToArrayZYZ(zFrame3D *f, double *array)
   return array;
 }
 
-/* zVec6DToFrame3DZYZ
- * - convert a 6D quasi vector for position and z-y-z Eulerian
- *   angles to a frame.
- */
+/* convert a 6D quasi vector for position and z-y-z Eulerian angles to a 3D frame. */
 zFrame3D *zVec6DToFrame3DZYZ(zVec6D *v, zFrame3D *f)
 {
   return zArrayToFrame3DZYZ( v->e, f );
 }
 
-/* zFrame3DToVec6DZYZ
- * - convert a frame to a 6D quasi vector for position and
- *   z-y-z Eulerian angles.
- */
+/* convert a 3D frame to a 6D quasi vector for position and z-y-z Eulerian angles. */
 zVec6D *zFrame3DToVec6DZYZ(zFrame3D *f, zVec6D *v)
 {
   zFrame3DToArrayZYZ( f, v->e );
   return v;
 }
 
-/* zArrayToFrame3DAA
- * - convert an array of values for position and angle-axis vector
- *   to a frame.
- */
+/* convert an array of values for position and angle-axis vector to a 3D frame. */
 zFrame3D* zArrayToFrame3DAA(double *array, zFrame3D *f)
 {
   return zFrame3DFromAA( f, array[0], array[1], array[2], array[3], array[4], array[5] );
 }
 
-/* zFrame3DToArrayAA
- * - convert a frame to an array of values for position and
- *   angle-axis vector.
- */
+/* convert a 3D frame to an array of values for position and angle-axis vector. */
 double* zFrame3DToArrayAA(zFrame3D *f, double *array)
 {
   zVec3D aa;
@@ -290,27 +231,20 @@ double* zFrame3DToArrayAA(zFrame3D *f, double *array)
   return array;
 }
 
-/* zVec6DToFrame3DAA
- * - convert a 6D quasi vector for position and angle-axis to a frame.
- */
+/* convert a 6D quasi vector for position and angle-axis to a 3D frame. */
 zFrame3D* zVec6DToFrame3DAA(zVec6D *v, zFrame3D *f)
 {
   return zArrayToFrame3DAA( v->e, f );
 }
 
-/* zFrame3DToVec6DAA
- * - convert a frame to a 6D quasi vector for position and
- *   angle-axis vector.
- */
+/* convert a 3D frame to a 6D quasi vector for position and angle-axis vector. */
 zVec6D* zFrame3DToVec6DAA(zFrame3D *f, zVec6D *v)
 {
   zFrame3DToArrayAA( f, v->e );
   return v;
 }
 
-/* zFrame3DFRead
- * - input of 3D frame from file.
- */
+/* input a 3D frame from file. */
 zFrame3D *zFrame3DFRead(FILE *fp, zFrame3D *f)
 {
   register int i, j;
@@ -323,8 +257,7 @@ zFrame3D *zFrame3DFRead(FILE *fp, zFrame3D *f)
   return f;
 }
 
-/* zFrame3DDHFRead
- * - input of 3D frame as D-H parameter style from file.
+/* input a 3D frame as D-H parameter style from file.
  */
 zFrame3D *zFrame3DDHFRead(FILE *fp, zFrame3D *f)
 {
@@ -338,9 +271,7 @@ zFrame3D *zFrame3DDHFRead(FILE *fp, zFrame3D *f)
   return zFrame3DFromDH( f, val[0], val[1], val[2], val[3] );
 }
 
-/* zFrame3DFWrite
- * - output of 3D frame to file.
- */
+/* output a 3D frame to file. */
 void zFrame3DFWrite(FILE *fp, zFrame3D *f)
 {
   register int i;
@@ -357,21 +288,4 @@ void zFrame3DFWrite(FILE *fp, zFrame3D *f)
         zFrame3DPos(f)->e[i] );
     fprintf( fp, "}\n" );
   }
-}
-
-/* zFrame3DFWriteXML
- * - xml output.
- */
-void zFrame3DFWriteXML(FILE *fp, zFrame3D *f)
-{
-  register int i;
-
-  fprintf( fp, "\"" );
-  for( i=0; i<3; i++ )
-    fprintf( fp, " %.10g %.10g %.10g %.10g\n",
-      zFrame3DAtt(f)->e[0][i],
-      zFrame3DAtt(f)->e[1][i],
-      zFrame3DAtt(f)->e[2][i],
-      zFrame3DPos(f)->e[i] );
-  fprintf( fp, "\"" );
 }

@@ -20,7 +20,7 @@ int main(void)
   for( i=0; i<=N; i++ ){
     t = (double)i / N;
     zEPInterDiv( &ep1, &ep2, t, &ep );
-    zMat3DEP( &m, &ep );
+    zMat3DFromEP( &m, &ep );
     zMat3DToZYX( &m, &e );
     printf( "%f %f %f ", e1.e[zX], e2.e[zX], e.e[zX] );
     printf( "%f %f %f ", e1.e[zY], e2.e[zY], e.e[zY] );

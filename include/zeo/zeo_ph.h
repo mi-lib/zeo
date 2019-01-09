@@ -24,46 +24,39 @@ typedef struct{
   zFaceArray face;
 } zPH3D;
 
-#define zPH3DVertNum(ph)      zArrayNum(&(ph)->vert)
+#define zPH3DVertNum(ph)      zArraySize(&(ph)->vert)
 #define zPH3DVertBuf(ph)      zArrayBuf(&(ph)->vert)
 #define zPH3DVert(ph,i)       zArrayElemNC(&(ph)->vert,i)
-#define zPH3DSetVertNum(ph,n) zArraySetNum(&(ph)->vert,n)
-#define zPH3DSetVertBuf(ph,b) zArraySetBuf(&(ph)->vert,b)
+#define zPH3DSetVertNum(ph,n) ( zArraySize(&(ph)->vert) = (n) )
+#define zPH3DSetVertBuf(ph,b) ( zArrayBuf(&(ph)->vert) = (b) )
 
-#define zPH3DFaceNum(ph)      zArrayNum(&(ph)->face)
+#define zPH3DFaceNum(ph)      zArraySize(&(ph)->face)
 #define zPH3DFaceBuf(ph)      zArrayBuf(&(ph)->face)
 #define zPH3DFace(ph,i)       zArrayElemNC(&(ph)->face,i)
-#define zPH3DSetFaceNum(ph,n) zArraySetNum(&(ph)->face,n)
-#define zPH3DSetFaceBuf(ph,b) zArraySetBuf(&(ph)->face,b)
+#define zPH3DSetFaceNum(ph,n) ( zArraySize(&(ph)->face) = (n) )
+#define zPH3DSetFaceBuf(ph,b) ( zArrayBuf(&(ph)->face) = (b) )
 
 #define zPH3DFaceVert(ph,i,j) zTri3DVert(zPH3DFace(ph,i),j)
 #define zPH3DFaceNorm(ph,i)   zTri3DNorm(zPH3DFace(ph,i))
 
-/* METHOD:
- * zPH3DInit, zPH3DAlloc,
- * zPH3DClone, zPH3DMirrorClone, zPH3DDestroy
- * - initialization, copy and destruction of 3D polyhedron.
+/*! \brief initialize, copy and destroy a 3D polyhedron.
  *
- * 'zPH3DInit()' initializes a 3D polyhedron 'ph',
- * setting the array of vertices and faces in 'ph' all
- * for the null pointers.
- * #
- * 'zPH3DAlloc()' newly allocates enough memory
- * for the array of vertices (size 'vn') and triangle
- * faces (size 'fn') in a 3D polyhedron 'ph'.
- * #
- * 'zPH3DClone()' clones the original 'src' to
- * 'dest', allocating vertex/face array, and computing
- * normal vectors of triangle faces.
- * 'zPH3DMirrorClone()' clones the original 'src'
- * to 'dest' with mirroring along 'axis'.
- * #
- * 'zPH3DDestroy()' destroys the array of vertices
- * and faces of 'ph'.
- * [RETURN VALUE]
- * 'zPH3DInit()' and 'zPH3DAlloc()'
- * return a pointer to 'ph'.
- * 'zPH3DDestroy()' returns no value.
+ * zPH3DInit() initializes a 3D polyhedron \a ph by nullifying
+ * the array of vertices and faces in it.
+ *
+ * zPH3DAlloc() allocates memory for the array of vertices with
+ * the size \a vn and triangular faces with the size \a fn in
+ * \a ph.
+ *
+ * zPH3DClone() makes a clone of a 3D polyhedron \a src. The
+ * result is put into \a dest.
+ * zPH3DMirrorClone() makes a clone of \a src mirrored about
+ * the axis \a axis. The result is put into \a dest.
+ *
+ * zPH3DDestroy() destroys a 3D polyhedron \a ph.
+ * \return
+ * zPH3DInit() and zPH3DAlloc() return a pointer \a ph.
+ * zPH3DDestroy() returns no value.
  */
 __EXPORT zPH3D *zPH3DInit(zPH3D *ph);
 __EXPORT zPH3D *zPH3DAlloc(zPH3D *ph, int vn, int fn);
@@ -71,185 +64,150 @@ __EXPORT zPH3D *zPH3DClone(zPH3D *src, zPH3D *dest);
 __EXPORT zPH3D *zPH3DMirror(zPH3D *src, zPH3D *dest, zAxis axis);
 __EXPORT void zPH3DDestroy(zPH3D *ph);
 
-/* METHOD:
- * zPH3DXfer, zPH3DXferInv
- * - transformation of 3D polyhedron.
+/*! \brief transfer coordinates of a 3D polyhedron.
  *
- * 'zPH3DXfer()' transforms a 3D polyhedron
- * 'src' by a transformation frame 'f' and puts it into
- * 'dest'.
- * #
- * 'zPH3DXferInv()' transforms a 3D
- * polyhedron 'src' by the inverse transformation frame
- * of 'f' and puts it into 'dest'.
- * #
- * In these functions, not only vertices are transformed,
- * but the information of correspondency between vertices
- * and faces is also copied.
- * [NOTES]
- * The polyhedron 'dest' must have the same size of internal
- * arrays with 'src'.
- * [RETURN VALUE]
- * Each of 'zPH3DXfer()' and
- * 'zPH3DXferInv()' return a pointer
- * to 'dest'.
+ * zPH3DXfer() transfers a 3D polyhedron \a src by a transformation
+ * represented by \a f. The result is put into \a dest.
+ *
+ * zPH3DXferInv() inversely transfers \a src by a transformation
+ * represented by \a f. The result is put into \a dest.
+ *
+ * In these functions, not only vertices are transferred, but the
+ * information of correspondency between vertices and faces is also
+ * copied.
+ * \notes
+ * \a dest must have the same size of internal arrays with \a src.
+ * \return
+ * zPH3DXfer() and zPH3DXferInv() return a pointer \a dest.
  */
 __EXPORT zPH3D *zPH3DXfer(zPH3D *src, zFrame3D *f, zPH3D *dest);
 __EXPORT zPH3D *zPH3DXferInv(zPH3D *src, zFrame3D *f, zPH3D *dest);
 
-/* METHOD:
- * zPH3DContigVert
- * - the contiguous vertex on 3D polyhedron to a point.
+/*! \brief return the contiguous vertex to another on a 3D polyhedron.
  *
- * 'zPH3DClosest()' calculates the closest
- * point from a point 'p' on a 3D polyhedron 'ph' and
- * sets it into 'cp'.
- * [NOTES]
- * 'ph' is treated as a surface model, namely, only the
- * relationship between 'p' and the faces are examined.
- * [RETURN VALUE]
- * 'zPH3DClosest()' returns the distance between
- * 'p' and 'cp'.
+ * zPH3DClosest() finds the closest point from a point \a p on a 3D
+ * polyhedron \a ph and sets it into \a cp.
+ * \notes
+ * \a ph is treated as a surface model, namely, only the relationship
+ * between \a p and the faces are examined.
+ * \return
+ * zPH3DClosest() returns the distance between \a p and \a cp.
  */
 __EXPORT zVec3D *zPH3DContigVert(zPH3D *ph, zVec3D *p, double *d);
 
-/* METHOD:
- * zPH3DPointIsInside
- * - check if a point is inside of a polyhedron.
+/*! \brief check if a point is inside of a 3D polyhedron.
  *
- * 'zPH3DPointIsInside()' checks if a point 'p' is
- * inside of a 3D polyhedron 'ph'.
- * #
- * 'p' on the surface of 'ph' is judged to be
- * inside of 'ph' if the true value is given for
- * 'rim'.
- * [RETURN VALUE]
- * 'zPH3DPointIsInside()' returns the true value
- * if 'p' is inside of 'ph', or the false value
- * otherwise.
- * [NOTES]
- * 'zPH3DPointIsInside()' assumes that 'ph' is a convex.
+ * zPH3DPointIsInside() checks if a point \a p is inside of
+ * a 3D polyhedron \a ph.
+ * \a p on the surface of \a ph is judged to be inside of \a ph
+ * if the true value is given for \a rim.
+ * \return
+ * zPH3DPointIsInside() returns the true value if \a p is inside
+ * of \a ph, or the false value otherwise.
+ * \notes
+ * zPH3DPointIsInside() assumes that \a ph has a convex volume.
  */
 __EXPORT double zPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp);
 __EXPORT double zPH3DPointDist(zPH3D *ph, zVec3D *p);
 __EXPORT bool zPH3DPointIsInside(zPH3D *ph, zVec3D *v, bool rim);
 
-/* METHOD:
- * zPH3DVolume, zPH3DBarycenter,
- * zPH3DInertia, zPH3DBaryInertia
- * - volume, barycenter and inertia of 3D polyhedron.
+/*! \brief volume, barycenter and inertia of a 3D polyhedron.
  *
- * 'zPH3DVolume()' calculates a volume of
- * a polyhedron 'ph'.
- * #
- * 'zPH3DBarycenter()' calculates the barycenter
- * of 'ph' and sets it into 'c'.
- * #
- * 'zPH3DInertia()' calculates the inertia tensor
- * of 'ph' about the original point and sets it
- * into 'inertia'.
- * #
- * 'zPH3DBaryInertia()' calculates the barycenter
- * and the inertia tensor about the barycenter of
- * 'ph' simultaneously, and sets them into 'c' and
- * 'i', respectively.
- * [RETURN VALUE]
- * 'zPH3DVolume()' returns the volum calculated.
- * #
- * 'zPH3DBarycenter()' returns a pointer to 'c'.
- * #
- * 'zPH3DInertia()' returns a pointer to 'inertia'.
- * #
- * 'zPH3DBaryInertia()' returns no value.
+ * zPH3DVolume() calculates the volume of a polyhedron \a ph.
+ *
+ * zPH3DBarycenter() calculates the barycenter of \a ph. The
+ * result is put into \a c.
+ *
+ * zPH3DInertia() calculates the inertial tensor of \a ph about
+ * the original point. The result is put into \a inertia.
+ *
+ * zPH3DBaryInertia() calculates the barycenter and the inertia
+ * tensor about the barycenter of \a ph simultaneously, and puts
+ * them into \a c and \a i, respectively.
+ * \return
+ * zPH3DVolume() returns the volum calculated.
+ *
+ * zPH3DBarycenter() returns a pointer to \a c.
+ *
+ * zPH3DInertia() returns a pointer \a inertia.
+ *
+ * zPH3DBaryInertia() returns no value.
  */
 __EXPORT double zPH3DVolume(zPH3D *ph);
 __EXPORT zVec3D *zPH3DBarycenter(zPH3D *ph, zVec3D *c);
 __EXPORT zMat3D *zPH3DInertia(zPH3D *ph, zMat3D *inertia);
 __EXPORT void zPH3DBaryInertia(zPH3D *ph, zVec3D *c, zMat3D *i);
 
-/* METHOD:
- * zPH3DPrism, zPH3DPyramid
- * - create prism and pyramid by extrusion.
+/*! \brief create prism and pyramid by extrusion.
  *
- * 'zPH3DPrism()' creates a prism by extrusion and
- * store it into 'prism'.
- * The bottom face to be extruded forms as a loop
- * of vertices given by 'bottom', which is an array
- * of 'n' vectors.
- * 'shift' is a shifting vector of the bottom for
- * extrusion.
- * #
- * 'zPH3DPyramid()' creates a pyramid from the vertex
- * 'vert' and the bottom face given by 'bottom' and 'n',
- * and stores it into 'pyr'.
- * [NOTES]
- * Though it is allowed to give non-convex shapes
- * as a bottom to these functions, crossing loops
- * are not acceptable.
- * [RETURN VALUE]
- * 'zPH3DPrism()' returns a pointer 'prism'.
- * #
- * 'zPH3DPyramid()' returns a pointer 'pyr'.
+ * zPH3DPrism() creates a prism by extruding the bottom loop.
+ * The bottom face to be extruded forms a loop of \a n vertices
+ * given by \a bottom.
+ * \a shift is a shifting vector of the bottom for extrusion.
+ * The result is put into \a prism.
+ *
+ * zPH3DPyramid() creates a pyramid from the vertex \a vert and
+ * The bottom face to be extruded forms a loop of \a n vertices
+ * given by \a bottom.
+ * The result is put into \a pyr.
+ * \notes
+ * A non-convex shape is acceptable for the bottom to these
+ * functions, while crossing loops are not acceptable.
+ * \return
+ * zPH3DPrism() returns a pointer \a prism.
+ * zPH3DPyramid() returns a pointer \a pyr.
  */
 __EXPORT zPH3D *zPH3DPrism(zPH3D *prism, zVec3D bottom[], int n, zVec3D *shift);
 __EXPORT zPH3D *zPH3DPyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3D *vert);
 
-/* METHOD:
- * zPH3DTorus, zPH3DLathe
- * - create solid revolution.
+/*! \brief create solid revolution.
  *
- * 'zPH3DTorus()' creates a torus which has a cross-section
- * represented by 'loop' with 'n' vertices. The result is
- * put into 'torus'.
- * #
- * 'zPH3DLathe()' creates a solid revolution which has a
- * rim represented by 'rim' with 'n' vertices. The result
- * is put into 'lathe'. Being different from 'zPH3DTorus()',
- * 'rim' does not have to be a closed loop.
- * #
- * For both functions, the cross-section is revolved about
- * the unit axis vector 'axis' which passes the point
- * 'center'. 'div' is the number of division of rotation.
- * [RETURN VALUE]
- * 'zPH3DTorus()' returns a pointer 'torus'.
- * 'zPH3DLathe()' returns a pointer 'lathe'.
- * [NOTES]
+ * zPH3DTorus() creates a torus which has a cross-section
+ * represented by a loop of \a n vertices given by \a loop.
+ * The result is put into \a torus.
+ *
+ * zPH3DLathe() creates a solid revolution which has a rim
+ * represented by \a rim with \a n vertices. The result is
+ * put into \a lathe. It is different from zPH3DTorus() at
+ * a point that \a rim does not have to be a closed loop.
+ *
+ * For the both functions, the cross-section is revolved
+ * about the unit axis vector \a axis which passes the point
+ * \a center.
+ * \a div is the number of division of rotation.
+ * \return
+ * zPH3DTorus() returns a pointer \a torus.
+ * zPH3DLathe() returns a pointer \a lathe.
+ * \notes
  * These functions do not check the validity of the shape
- * of cross-sections. It is programmer's responsibility
- * if it allows self-crossing 'loop' and 'rim'.
+ * of cross-sections.
  */
 __EXPORT zPH3D *zPH3DTorus(zPH3D *torus, zVec3D loop[], int n, int div, zVec3D *center, zVec3D *axis);
 __EXPORT zPH3D *zPH3DLathe(zPH3D *lathe, zVec3D rim[], int n, int div, zVec3D *center, zVec3D *axis);
 
-/* METHOD:
- * zPH3DFRead, zPH3DRead, zPH3DFWrite, zPH3DWrite,
- * - input/output of 3D polyhedron.
+/*! \brief input/output of a 3D polyhedron.
  *
- * 'zPH3DFRead()' reads the information of a
- * polyhedron from the current position of the file 'fp',
- * and creates the new polyhedron 'ph'.
+ * zPH3DFRead() reads the information of a 3D polyhedron
+ * from the current position of the file \a fp, and creates
+ * a new 3D polyhedron \a ph.
  * An acceptable data file format is as follows.
- * #
  *  vert 0: <x> <y> <z>
  *   ...
  *  vert <n>: <x> <y> <z>
  *  face <v1> <v2> <v3>
  *   ...
- * #
  * Each bracketed value must be substituted for a real
- * number. 'zPH3DRead()' reads the information
- * for 'ph' simply from the standard input.
- * #
- * 'zPH3DFWrite()' writes the information of 'ph'
- * to the current position of the file 'fp' in the same
- * format with the above. 'zPH3DWrite()' writes
- * the information of 'ph' simply to the standard out.
- * [RETURN VALUE]
- * Each of 'zPH3DFRead()' and 'zPH3DRead()'
- * returns a pointer to 'ph'.
- * #
- * Neither 'zPH3DFWrite()' nor 'zPH3DWrite()'
- * returns no values.
+ * number. zPH3DRead() reads the information for \a ph
+ * from the standard input.
+ *
+ * zPH3DFWrite() writes the information of \a ph to the
+ * current position of the file \a fp in the above format.
+ * zPH3DWrite() writes the information of \a ph to the
+ * standard output.
+ * \return
+ * zPH3DFRead() and zPH3DRead() return a pointer \a ph.
+ *
+ * zPH3DFWrite() nor zPH3DWrite() return no values.
  */
 __EXPORT zPH3D *zPH3DFRead(FILE *fp, zPH3D *ph);
 #define zPH3DRead(ph)  zPH3DFRead( stdin, (ph) )

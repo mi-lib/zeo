@@ -21,14 +21,14 @@ int main(void)
     /* e1: e + de*DT & normalize */
     zAngVel2EPVel( &av, &e, &epvel );
     zEPCat( &e, 1, &epvel, &e1 );
-    zMat3DEP( &m1, &e1 );
+    zMat3DFromEP( &m1, &e1 );
     /* e2: e (x) de*DT */
     zAA2EP( &av, &epvel );
     zEPCascade( &e, &epvel, &e2 );
-    zMat3DEP( &m2, &e2 );
+    zMat3DFromEP( &m2, &e2 );
     /* a2: a (x) w*DT */
     zAACascade( &a, &av, &a2 );
-    zMat3DAA( &m3, &a2 );
+    zMat3DFromAA( &m3, &a2 );
     /* m=R(w*DT).m0 */
     zMat3DRot( &m0, &av, &m );
     /* error */

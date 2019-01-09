@@ -220,16 +220,16 @@ zVec3D *_zGJKSimplexClosest(zGJKSimplex *s, zVec3D *v)
     zVec3DSub( &s->slot[index[i]].w, &s->slot[index[0]].w, &dp[i-1] );
   for( i=0; i<n1; i++ ){
     for( j=0; j<n1; j++ )
-      zMatElem(&q,i,j) = zVec3DInnerProd(&dp[i],&dp[j]);
-    zVecElem(&c,i) = zVec3DInnerProd(&s->slot[index[0]].w,&dp[i]);
+      zMatElemNC(&q,i,j) = zVec3DInnerProd(&dp[i],&dp[j]);
+    zVecElemNC(&c,i) = zVec3DInnerProd(&s->slot[index[0]].w,&dp[i]);
   }
   zQPSolveLemke( &q, &c, &a, &b, &l, &cost );
   /* solve QP */
   zVec3DCopy( &s->slot[index[0]].w, v );
   s0 = 0;
   for( i=0; i<n1; i++ ){
-    zVec3DCatDRC( v, zVecElem(&l,i), &dp[i] );
-    s0 += ( s->slot[index[i+1]].s = zVecElem(&l,i) );
+    zVec3DCatDRC( v, zVecElemNC(&l,i), &dp[i] );
+    s0 += ( s->slot[index[i+1]].s = zVecElemNC(&l,i) );
   }
   s->slot[index[0]].s = 1.0 - s0;
   return v;

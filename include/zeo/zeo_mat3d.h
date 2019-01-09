@@ -11,11 +11,14 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* CLASS: zMat3D
- * 3x3 matrix class
- * ********************************************************** */
-
+/*! \struct zMat3D
+ * \brief 3x3 matrix for attitude / rotation representation.
+ */
+/* The order of matrix components are:
+ * |~ e[0][0]  e[1][0]  e[2][0] ~|   |~ c.xx  c.yx  c.zx ~|
+ * |  e[0][1]  e[1][1]  e[2][1]  | = |  c.xy  c.yy  c.xy  | = [ v[0]  v[1]  v[2]  | = [ b.x  b.y  b.z ]
+ * |_ e[0][2]  e[1][2]  e[2][2] _|   |_ c.xz  c.yz  c.zz _|
+ */
 typedef union{
   double e[3][3];   /*!< 3x3 matrix */
   zVec3D v[3];      /*!< 3 column vectors */
@@ -36,11 +39,11 @@ extern const zMat3D zmat3Dident;
 /*! \brief create, copy and cleanup a 3x3 matrix.
  *
  * zMat3DCreate() creates a 3x3 matrix from nine values as follows.
- *  | \a a11  \a a12  \a a13 |
- *  | \a a21  \a a22  \a a23 |
- *  | \a a31  \a a32  \a a33 |
+ *  |~ \a a11  \a a12  \a a13 ~|
+ *  |  \a a21  \a a22  \a a23  |
+ *  |_ \a a31  \a a32  \a a33 _|
  *
- * zMat3DCopy() copies a 3x3 matrix \a src to the other \a dest.
+ * zMat3DCopy() copies a 3x3 matrix \a src to \a dest.
  *
  * zMat3DClear() sets all components of a 3x3 matrix \a m for zero.
  *
@@ -63,9 +66,9 @@ __EXPORT zMat3D *zMat3DCreate(zMat3D *m,
 #define zMat3DClear(m)  zMat3DCopy( ZMAT3DZERO, m )
 #define zMat3DIdent(m)  zMat3DCopy( ZMAT3DIDENT, m )
 
-/*! \brief check if the two 3D matrices are equal.
+/*! \brief check if the two 3x3 matrices are equal.
  *
- * zMat3DMatch() and zMat3DEqual() check if the two 3D matrices
+ * zMat3DMatch() and zMat3DEqual() check if the two 3x3 matrices
  * \a m1 and \a m2 are equal. They return a boolean value.
  *
  * zMat3DMatch() strictly compares the two matrices, while
@@ -75,9 +78,9 @@ __EXPORT zMat3D *zMat3DCreate(zMat3D *m,
  * zMat3DMatch() and zMat3DEqual() return the true value if
  * \a m1 and \a m2 are equal, or false otherwise.
  */
-#define _zMat3DMatch(m1,m2) ( _zVec3DMatch(&(m1)->b.x,&(m1)->b.x) && _zVec3DMatch(&(m1)->b.y,&(m1)->b.y) && _zVec3DMatch(&(m1)->b.z,&(m1)->b.z) )
+#define _zMat3DMatch(m1,m2) ( _zVec3DMatch(&(m1)->b.x,&(m2)->b.x) && _zVec3DMatch(&(m1)->b.y,&(m2)->b.y) && _zVec3DMatch(&(m1)->b.z,&(m2)->b.z) )
 __EXPORT bool zMat3DMatch(zMat3D *m1, zMat3D *m2);
-#define _zMat3DEqual(m1,m2) ( _zVec3DEqual(&(m1)->b.x,&(m1)->b.x) && _zVec3DEqual(&(m1)->b.y,&(m1)->b.y) && _zVec3DEqual(&(m1)->b.z,&(m1)->b.z) )
+#define _zMat3DEqual(m1,m2) ( _zVec3DEqual(&(m1)->b.x,&(m2)->b.x) && _zVec3DEqual(&(m1)->b.y,&(m2)->b.y) && _zVec3DEqual(&(m1)->b.z,&(m2)->b.z) )
 __EXPORT bool zMat3DEqual(zMat3D *m1, zMat3D *m2);
 
 /*! \brief abstract row/column vectors from a 3x3 matrix.
@@ -123,7 +126,7 @@ __EXPORT zMat3D *zMat3DTDRC(zMat3D *m);
 
 /*! \brief the four rules of the arithmetics for 3x3 matrix.
  *
- * zMat3DAdd() adds two 3D matrices \a m1 and \a m2 and puts it into \a m.
+ * zMat3DAdd() adds two 3x3 matrices \a m1 and \a m2 and puts it into \a m.
  *
  * zMat3DSub() subtracts a 3x3 matrix \a m2 from the other \a m1 and puts
  * it into \a m.
@@ -220,10 +223,10 @@ __EXPORT zMat3D *zMat3DCat(zMat3D *m1, double k, zMat3D *m2, zMat3D *m);
 } while(0)
 #define zMat3DCatDRC(m1,k,m2) zMat3DCat(m1,k,m2,m1)
 
-/*! \brief dyadic product.
+/*! \brief dyadic product of two 3D vectors.
  *
- * zMat3DDyad() calculates a dyadic product of two vectors \a v1 and \a v2
- * and puts it into \a dyad. Namely,
+ * zMat3DDyad() calculates dyadic product of two 3D vectors \a v1
+ * and \a v2, and puts it into \a dyad. Namely,
  *   \a dyad = \a v1 \a v2 ^T.
  * \return
  * zMat3DDyad() returns a pointer \a dyad.
@@ -235,10 +238,10 @@ __EXPORT zMat3D *zMat3DCat(zMat3D *m1, double k, zMat3D *m2, zMat3D *m);
 } while(0)
 __EXPORT zMat3D *zMat3DDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
 
-/*! \brief add a dyadic product to a 3x3 matrix.
+/*! \brief add dyadic product of two 3D vectors to a 3x3 matrix.
  *
- * zMat3DAddDyad() addes a dyadic product of two vectors \a v1 and \a v2
- * to a 3x3 matrix \a m. Namely,
+ * zMat3DAddDyad() addes dyadic product of two 3D vectors \a v1 and
+ * \a v2 to a 3x3 matrix \a m. Namely,
  *   \a m = \a m + \a v1 \a v2 ^T.
  * \return
  * zMat3DAddDyad() returns a pointer \a m.
@@ -250,10 +253,10 @@ __EXPORT zMat3D *zMat3DDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
 } while(0)
 __EXPORT zMat3D *zMat3DAddDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
 
-/*! \brief subtract a dyadic product to a 3x3 matrix.
+/*! \brief subtract dyadic product of two 3D vectors to a 3x3 matrix.
  *
- * zMat3DSubDyad() subtracts a dyadic product of two vectors \a v1 and \a v2
- * from a 3x3 matrix \a m. Namely,
+ * zMat3DSubDyad() subtracts dyadic product of two 3D vectors \a v1
+ * and \a v2 from a 3x3 matrix \a m. Namely,
  *   \a m = \a m - \a v1 \a v2 ^T.
  * \return
  * zMat3DSubDyad() returns a pointer \a m.
@@ -265,7 +268,7 @@ __EXPORT zMat3D *zMat3DAddDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
 } while(0)
 __EXPORT zMat3D *zMat3DSubDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
 
-/*! \brief create a matrix equivalent to the outer product of a 3D vector.
+/*! \brief create a 3x3 matrix equivalent to the outer product of a 3D vector.
  *
  * zVec3DOuterProdMat3D() computes the outer-product skew-symmetric matrix
  * of a 3D vector \a v and puts it into \a m. Namely, \a m a is equivalent
@@ -287,6 +290,21 @@ __EXPORT zMat3D *zVec3DOuterProd2Mat3D(zVec3D *v, zMat3D *m);
                     (v1)->c.x*(v2)->c.y,-(v1)->c.z*(v2)->c.z-(v1)->c.x*(v2)->c.x, (v1)->c.z*(v2)->c.y,\
                     (v1)->c.x*(v2)->c.z, (v1)->c.y*(v2)->c.z,-(v1)->c.x*(v2)->c.x-(v1)->c.y*(v2)->c.y )
 __EXPORT zMat3D *zVec3DTripleProd2Mat3D(zVec3D *v1, zVec3D *v2, zMat3D *m);
+
+/*! \brief multiply cross product of a 3D vector and a 3x3 matrix.
+ *
+ * zMulVec3DOPMat3D() multiplies a 3x3 matrix \a m by the outer product of
+ * a 3D vector \a ohm and puts it into \a mv. Namely,
+ *   \a mv = \a ohm x \a m.
+ *
+ * zMulVec3DOPMat3DDRC() directly multiplies a 3x3 matrix \a m by the
+ * outer product of a 3D vector \a ohm.
+ * \return
+ * zMulVec3DOPMat3D() returns a pointer \a mv.
+ * zMulVec3DOPMat3DDRC() returns a pointer \a m.
+ */
+__EXPORT zMat3D *zMulVec3DOPMat3D(zVec3D *ohm, zMat3D *m, zMat3D *mv);
+#define zMulVec3DOPMat3DDRC(o,m) zMulVec3DOPMat3D( o, m, m )
 
 /* ********************************************************** */
 /* inverse of a 3x3 matrix
@@ -322,52 +340,52 @@ __EXPORT zMat3D *zMat3DInv(zMat3D *m, zMat3D *im);
 
 /*! \brief multiply a 3D vector and a 3x3 matrix.
  *
- * zMulMatVec3D() multiplies a 3D vector \a v by a 3x3 matrix \a m and puts
+ * zMulMat3DVec3D() multiplies a 3D vector \a v by a 3x3 matrix \a m and puts
  * it into \a mv.
  *
- * zMulMatTVec3D() multiplies a 3D vector \a v by the transpose matrix of
+ * zMulMat3DTVec3D() multiplies a 3D vector \a v by the transpose matrix of
  * a 3x3 matrix \a m and puts it into \a mv.
  *
- * zMulMatVec3DDRC() directly multiplies a 3D vector \a v by a 3x3 matrix \a m.
+ * zMulMat3DVec3DDRC() directly multiplies a 3D vector \a v by a 3x3 matrix \a m.
  *
- * zMulMatTVec3DDRC() directly multiplies a 3D vector v by the transpose
+ * zMulMat3DTVec3DDRC() directly multiplies a 3D vector v by the transpose
  * of a 3x3 matrix \a m.
  *
- * zMulInvMatVec3D() multiplies a 3D vector \a v by the inverse of a 3x3
+ * zMulInvMat3DVec3D() multiplies a 3D vector \a v by the inverse of a 3x3
  * matrix \a m and puts it into \a miv.
  * \return
  * Each function returns a pointer to the result.
  */
-#define _zMulMatVec3D(m,v,mv) do{\
+#define _zMulMat3DVec3D(m,v,mv) do{\
   double __x, __y, __z;\
   __x = (m)->c.xx*(v)->c.x + (m)->c.yx*(v)->c.y + (m)->c.zx*(v)->c.z;\
   __y = (m)->c.xy*(v)->c.x + (m)->c.yy*(v)->c.y + (m)->c.zy*(v)->c.z;\
   __z = (m)->c.xz*(v)->c.x + (m)->c.yz*(v)->c.y + (m)->c.zz*(v)->c.z;\
   _zVec3DCreate( mv, __x, __y, __z );\
 } while(0)
-__EXPORT zVec3D *zMulMatVec3D(zMat3D *m, zVec3D *v, zVec3D *mv);
-#define _zMulMatTVec3D(m,v,mv) do{\
+__EXPORT zVec3D *zMulMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *mv);
+#define _zMulMat3DTVec3D(m,v,mv) do{\
   double __x, __y, __z;\
   __x = _zVec3DInnerProd( &(m)->b.x, v );\
   __y = _zVec3DInnerProd( &(m)->b.y, v );\
   __z = _zVec3DInnerProd( &(m)->b.z, v );\
   _zVec3DCreate( mv, __x, __y, __z );\
 } while(0)
-__EXPORT zVec3D *zMulMatTVec3D(zMat3D *m, zVec3D *v, zVec3D *mv);
+__EXPORT zVec3D *zMulMat3DTVec3D(zMat3D *m, zVec3D *v, zVec3D *mv);
 
-/*! \brief directly multiply a 3D vector by a 3D matrix.
+/*! \brief directly multiply a 3D vector by a 3x3 matrix.
  */
-#define _zMulMatVec3DDRC(m,v) _zMulMatVec3D(m,v,v)
-__EXPORT zVec3D *zMulMatVec3DDRC(zMat3D *m, zVec3D *v);
+#define _zMulMat3DVec3DDRC(m,v) _zMulMat3DVec3D(m,v,v)
+__EXPORT zVec3D *zMulMat3DVec3DDRC(zMat3D *m, zVec3D *v);
 
-/*! \brief directly multiply a 3D vector by transpose of a 3D matrix.
+/*! \brief directly multiply a 3D vector by transpose of a 3x3 matrix.
  */
-#define _zMulMatTVec3DDRC(m,v) _zMulMatTVec3D(m,v,v)
-__EXPORT zVec3D *zMulMatTVec3DDRC(zMat3D *m, zVec3D *v);
+#define _zMulMat3DTVec3DDRC(m,v) _zMulMat3DTVec3D(m,v,v)
+__EXPORT zVec3D *zMulMat3DTVec3DDRC(zMat3D *m, zVec3D *v);
 
-/*! \brief multiply a 3D vector by inverse of a 3D matrix.
+/*! \brief multiply a 3D vector by inverse of a 3x3 matrix.
  */
-__EXPORT zVec3D *zMulInvMatVec3D(zMat3D *m, zVec3D *v, zVec3D *miv);
+__EXPORT zVec3D *zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *miv);
 
 /*! \brief inversely compute the concatenate ratio of a 3D vector.
  *
@@ -395,38 +413,38 @@ __EXPORT double *zVec3DCatRatio(zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v, d
 
 /*! \brief multiply 3x3 matrices.
  *
- * zMulMatMat3D() multiplies a 3x3 matrix \a m2 by the other \a m1 from
- * the leftside and puts it into \a m.
- *
- * zMulMatTMat3D() multiplies a 3x3 matrix m2 by the transpose of a 3x3 matrix
- * \a m1 from the leftside and puts it into \a m.
- *
- * zMulMatMatT3D() multiplies a 3x3 matrix \a m1 by the transpose of a 3D
- * matrix \a m2 from the rightside and puts it into \a m.
- *
- * zMulMatMat3DDRC() directly multiplies a 3x3 matrix \a m2 by the other
- * \a m1 from the leftside.
- *
- * zMulMatTMat3DDRC() directly multiplies a 3x3 matrix \a m2 by the transpose
- * of the other \a m1 from the leftside.
- *
- * zMulMatMatT3DDRC() directly multiplies a 3x3 matrix \a m1 by the transpose
- * of the other \a m2 from the rightside.
- *
- * zMulInvMatMat3D() multiplies \a m2 by the inverse of a 3x3 matrix \a m1
+ * zMulMat3DMat3D() multiplies a 3x3 matrix \a m2 by the other \a m1
  * from the leftside and puts it into \a m.
+ *
+ * zMulMat3DTMat3D() multiplies a 3x3 matrix m2 by the transpose of
+ * a 3x3 matrix \a m1 from the leftside and puts it into \a m.
+ *
+ * zMulMat3DMat3DT() multiplies a 3x3 matrix \a m1 by the transpose
+ * of a 3x3 matrix \a m2 from the rightside and puts it into \a m.
+ *
+ * zMulMat3DMat3DDRC() directly multiplies a 3x3 matrix \a m2 by the
+ * other \a m1 from the leftside.
+ *
+ * zMulMat3DTMat3DDRC() directly multiplies a 3x3 matrix \a m2 by the
+ * transpose of the other \a m1 from the leftside.
+ *
+ * zMulMat3DMat3DTDRC() directly multiplies a 3x3 matrix \a m1 by the
+ * transpose of the other \a m2 from the rightside.
+ *
+ * zMulInvMat3DMat3D() multiplies \a m2 by the inverse of a 3x3 matrix
+ * \a m1 from the leftside and puts it into \a m.
  * \return
  * Each function returns a pointer to the result.
  */
-__EXPORT zMat3D *zMulMatMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
-__EXPORT zMat3D *zMulMatTMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
-__EXPORT zMat3D *zMulMatMatT3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
+__EXPORT zMat3D *zMulMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
+__EXPORT zMat3D *zMulMat3DTMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
+__EXPORT zMat3D *zMulMat3DMat3DT(zMat3D *m1, zMat3D *m2, zMat3D *m);
 
-#define zMulMatMat3DDRC(m1,m2)  zMulMatMat3D(m1,m2,m2)
-#define zMulMatTMat3DDRC(m1,m2) zMulMatTMat3D(m1,m2,m2)
-#define zMulMatMatT3DDRC(m1,m2) zMulMatMatT3D(m1,m2,m1)
+#define zMulMat3DMat3DDRC(m1,m2)  zMulMat3DMat3D(m1,m2,m2)
+#define zMulMat3DTMat3DDRC(m1,m2) zMulMat3DTMat3D(m1,m2,m2)
+#define zMulMat3DMat3DTDRC(m1,m2) zMulMat3DMat3DT(m1,m2,m1)
 
-__EXPORT zMat3D *zMulInvMatMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
+__EXPORT zMat3D *zMulInvMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
 
 /* ********************************************************** */
 /* multiplication of a 6D spatial vector by a 3x3 matrix
@@ -434,24 +452,25 @@ __EXPORT zMat3D *zMulInvMatMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
 
 /*! \brief multiply a 6D vector by a 3x3 matrix.
  *
- * zMulMatVec6D() multiplies a 6D vector \a v by a 3x3 matrix \a m and puts
- * it into \a mv.
+ * zMulMat3DVec6D() multiplies a 6D vector \a v by a 3x3 matrix
+ * \a m and puts it into \a mv.
  *
- * zMulMatTVec6D() multiplies a 6D vector \a v by the transpose of a 3x3
- * matrix \a m and puts it into \a mv.
+ * zMulMat3DTVec6D() multiplies a 6D vector \a v by the transpose
+ * of a 3x3 matrix \a m and puts it into \a mv.
  *
- * zMulMatVec6DDRC() directly multiplies a 6D vector \a v by a 3x3 matrix \a m.
+ * zMulMat3DVec6DDRC() directly multiplies a 6D vector \a v by a
+ * 3x3 matrix \a m.
  *
- * zMulMatTVec6DDRC() directly multiplies a 6D vector \a v by the transpose
- * of a 3x3 matrix \a m.
+ * zMulMat3DTVec6DDRC() directly multiplies a 6D vector \a v by
+ * the transpose of a 3x3 matrix \a m.
  * \return
  * Each function returns the pointer to the result vector.
  */
-__EXPORT zVec6D *zMulMatVec6D(zMat3D *m, zVec6D *v, zVec6D *mv);
-__EXPORT zVec6D *zMulMatTVec6D(zMat3D *m, zVec6D *v, zVec6D *mv);
+__EXPORT zVec6D *zMulMat3DVec6D(zMat3D *m, zVec6D *v, zVec6D *mv);
+__EXPORT zVec6D *zMulMat3DTVec6D(zMat3D *m, zVec6D *v, zVec6D *mv);
 
-#define zMulMatVec6DDRC(m,v)  zMulMatVec6D(m,v,v)
-#define zMulMatTVec6DDRC(m,v) zMulMatTVec6D(m,v,v)
+#define zMulMat3DVec6DDRC(m,v)  zMulMat3DVec6D(m,v,v)
+#define zMulMat3DTVec6DDRC(m,v) zMulMat3DTVec6D(m,v,v)
 
 /* ********************************************************** */
 /* rotation
@@ -570,21 +589,6 @@ __EXPORT zMat3D *zRotMat3DInv(zMat3D *r, zMat3D *m, zMat3D *rm);
 #define zRotMat3DDRC(r,m)    zRotMat3D(r,m,m)
 #define zRotMat3DInvDRC(r,m) zRotMat3DInv(r,m,m)
 
-/*! \brief multiply cross product of a 3D vector and a 3x3 matrix.
- *
- * zMulVecOPMat3D() multiplies a 3x3 matrix \a m by the outer product of
- * a 3D vector \a ohm and puts it into \a mv. Namely,
- *   \a mv = \a ohm x \a m.
- *
- * zMulVecOPMat3DDRC() directly multiplies a 3x3 matrix \a m by the outer
- * product of a 3D vector \a ohm.
- * \return
- * zMulVecOPMat3D() returns a pointer \a mv.
- * zMulVecOPMat3DDRC() returns a pointer \a m.
- */
-__EXPORT zMat3D *zMulVecOPMat3D(zVec3D *ohm, zMat3D *m, zMat3D *mv);
-#define zMulVecOPMat3DDRC(o,m) zMulVecOPMat3D( o, m, m )
-
 /*! \brief rotate a 3D attitude matrix about an arbitrary axis.
  *
  * zMat3DRot() rotates a 3D attitude matrix \a m by an angle-axis vector
@@ -606,7 +610,8 @@ __EXPORT zVec3D *zAACascade(zVec3D *aa1, zVec3D *aa2, zVec3D *aa);
  *
  * zMat3DError() calculates the error vector, namely, the equivalent
  * angle-axis vector from a 3D attitude matrix \a m2 to the other \a m1
- * (note the order) and puts it into \a err.
+ * (notice the order) and puts it into \a err.
+ * i.e., R(\a err) \a m2 = \a m1.
  * \return
  * zMat3DError() returns a pointer \a err.
  */
@@ -632,7 +637,7 @@ __EXPORT zVec3D *zMat3DDif(zMat3D *m, zMat3D *mnew, double dt, zVec3D *omega);
 /* eigensystem
  * ********************************************************** */
 
-/*! \brief eigenvalues of a symmetric 3x3 matrix by Jacobi's method.
+/*! \brief eigensystem of a symmetric 3x3 matrix by Jacobi's method.
  *
  * zMat3DSymEig() calculates eigenvalues and eigenvectors of a symmetric
  * 3x3 matrix \a m with Jacobi's method. Each eigenvalue and eigenvector
@@ -673,11 +678,6 @@ __EXPORT zMat3D *zMat3DFRead(FILE *fp, zMat3D *m);
 #define zMat3DRead(m) zMat3DFRead( stdin, (m) )
 __EXPORT void zMat3DFWrite(FILE *fp, zMat3D *m);
 #define zMat3DWrite(m) zMat3DFWrite( stdout, (m) )
-
-/* zMat3DFWriteXML - xml output.
- * ... still testing.
- */
-__EXPORT void zMat3DFWriteXML(FILE *fp, zMat3D *m);
 
 __END_DECLS
 

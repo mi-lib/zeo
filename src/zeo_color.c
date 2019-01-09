@@ -114,14 +114,6 @@ void zRGBFWrite(FILE *fp, zRGB *rgb)
   fprintf( fp, "%.10g:%.10g:%.10g\n", rgb->r, rgb->g, rgb->b );
 }
 
-/* zRGBFWriteXML
- * - xml output.
- */
-void zRGBFWriteXML(FILE *fp, zRGB *rgb)
-{
-  fprintf( fp, "\"%.10g %.10g %.10g\"", rgb->r, rgb->g, rgb->b );
-}
-
 /* ********************************************************** */
 /* CLASS: zHSV
  * HSV class - expression of color by hue, saturation and value.

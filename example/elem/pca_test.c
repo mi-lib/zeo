@@ -8,11 +8,11 @@ void test_vert(double x, double y, double z, double a, double b, double c, doubl
   register int i;
   zMat3D ori;
 
-  zMat3DZYX( &ori, zDeg2Rad(a), zDeg2Rad(b), zDeg2Rad(c) );
+  zMat3DFromZYX( &ori, zDeg2Rad(a), zDeg2Rad(b), zDeg2Rad(c) );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &vert[i],
       zRandF(-wx,wx), zRandF(-wy,wy), zRandF(-wz,wz) );
-    zMulMatVec3DDRC( &ori, &vert[i] );
+    zMulMat3DVec3DDRC( &ori, &vert[i] );
     vert[i].e[zX] += x;
     vert[i].e[zY] += y;
     vert[i].e[zZ] += z;

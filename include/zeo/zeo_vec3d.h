@@ -11,11 +11,9 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* CLASS: zVec3D
- * 3D vector class
- * ********************************************************** */
-
+/*! \struct zVec3D
+ * \brief 3D vector.
+ */
 typedef union{
   struct{
     double x, y, z;
@@ -437,30 +435,30 @@ __EXPORT zVec3D *zVec3DDif(zVec3D *v, zVec3D *vnew, double dt, zVec3D *vel);
 
 /*! \brief convert from/to Eulerian angle differential to/from angular velocity.
  *
- * zVec3DZYXVel2AngVel() converts a set of differential values of z-y-x
+ * zZYXVelToAngVel() converts a set of differential values of z-y-x
  * Eulerian angles \a zyxvel at the attitude represented by z-y-x Eulerian
  * angles \a zyx to the equivalent angular velocity vector and puts it into
  * \a angvel.
  *
- * zVec3DZYXVel2AngVelSC() directly accepts sets of sine/cosine values for
+ * zZYXVelToAngVelSC() directly accepts sets of sine/cosine values for
  * z-y-x Eulerian angles. The set of \a sa/\a ca is for the first angle,
  * while that of \a sb/\a cb for the second.
  *
- * zVec3DAngVel2ZYXVel() and zVec3DAngVel2ZYXVelSC() are the inverse
- * conversions of zVec3DZYXVel2AngVel() and zVec3DZYXVel2AngVelSC(),
+ * zAngVelToZYXVel() and zAngVelToZYXVelSC() are the inverse
+ * conversions of zZYXVelToAngVel() and zZYXVelToAngVelSC(),
  * respectively.
  *
- * zVec3DZYZVel2AngVel() converts a set of differential values of z-y-z
+ * zZYZVelToAngVel() converts a set of differential values of z-y-z
  * Eulerian angles \a zyxvel at the attitude represented by z-y-z Eulerian
  * angles \a zyz to the equivalent angular velocity vector and puts it into
  * \a angvel.
  *
- * zVec3DZYZVel2AngVelSC() directly accepts sets of sine/cosine values for
+ * zZYZVelToAngVelSC() directly accepts sets of sine/cosine values for
  * z-y-z Eulerian angles. The set of \a sa/\a ca is for the first angle,
  * while that of \a sb/\a cb for the second.
  *
- * zVec3DAngVel2ZYZVel() and zVec3DAngVel2ZYZVelSC() are the inverse
- * conversions of zVec3DZYZVel2AngVel() and zVec3DZYZVel2AngVelSC(),
+ * zAngVelToZYZVel() and zAngVelToZYZVelSC() are the inverse
+ * conversions of zZYZVelToAngVel() and zZYZVelToAngVelSC(),
  * respectively.
  *
  * Note that the conversion from an angular velocity to the derivatives
@@ -468,29 +466,29 @@ __EXPORT zVec3D *zVec3DDif(zVec3D *v, zVec3D *vnew, double dt, zVec3D *vel);
  * representation. In the case of z-y-x Eulerian angle, points where
  * cosine of the second value is zero are singular. In the case of z-y-z
  * Eulerian angle, points where sine of the second value is zero are
- * singular. At such singular points, zVec3DAngVel2ZYXVel(),
- * zVec3DAngVel2ZYXVelSC(), zVec3DAngVel2ZYZVel() and
- * zVec3DAngVel2ZYZVelSC() do nothing.
+ * singular. At such singular points, zAngVelToZYXVel(),
+ * zAngVelToZYXVelSC(), zAngVelToZYZVel() and
+ * zAngVelToZYZVelSC() do nothing.
  * \return
- * zVec3DZYXVel2AngVel(), zVec3DZYXVel2AngVelSC(), zVec3DZYZVel2AngVel()
- * and zVec3DZYZVel2AngVelSC() return a pointer \a angvel.
+ * zZYXVelToAngVel(), zZYXVelToAngVelSC(), zZYZVelToAngVel()
+ * and zZYZVelToAngVelSC() return a pointer \a angvel.
  *
- * zVec3DAngVel2ZYXVel() and zVec3DAngVel2ZYXVelSC() return a pointer
+ * zAngVelToZYXVel() and zAngVelToZYXVelSC() return a pointer
  * \a zyxvel.
  *
- * zVec3DAngVel2ZYZVel() and zVec3DAngVel2ZYZVelSC() return a pointer
+ * zAngVelToZYZVel() and zAngVelToZYZVelSC() return a pointer
  * \a zyzvel.
  * \sa
  * zMat3DZYX, zMat3DToZYX, zMat3DZYZ, zMat3DToZYZ
  */
-__EXPORT zVec3D *zVec3DZYXVel2AngVel(zVec3D *zyxvel, zVec3D *zyx, zVec3D *angvel);
-__EXPORT zVec3D *zVec3DZYXVel2AngVelSC(zVec3D *zyxvel, double sa, double ca, double sb, double cb, zVec3D *angvel);
-__EXPORT zVec3D *zVec3DAngVel2ZYXVel(zVec3D *angvel, zVec3D *zyx, zVec3D *zyxvel);
-__EXPORT zVec3D *zVec3DAngVel2ZYXVelSC(zVec3D *angvel, double sa, double ca, double sb, double cb, zVec3D *zyxvel);
-__EXPORT zVec3D *zVec3DZYZVel2AngVel(zVec3D *zyzvel, zVec3D *zyz, zVec3D *angvel);
-__EXPORT zVec3D *zVec3DZYZVel2AngVelSC(zVec3D *zyzvel, double sa, double ca, double sb, double cb, zVec3D *angvel);
-__EXPORT zVec3D *zVec3DAngVel2ZYZVel(zVec3D *angvel, zVec3D *zyz, zVec3D *zyzvel);
-__EXPORT zVec3D *zVec3DAngVel2ZYZVelSC(zVec3D *angvel, double sa, double ca, double sb, double cb, zVec3D *zyzvel);
+__EXPORT zVec3D *zZYXVelToAngVel(zVec3D *zyxvel, zVec3D *zyx, zVec3D *angvel);
+__EXPORT zVec3D *zZYXVelToAngVelSC(zVec3D *zyxvel, double sa, double ca, double sb, double cb, zVec3D *angvel);
+__EXPORT zVec3D *zAngVelToZYXVel(zVec3D *angvel, zVec3D *zyx, zVec3D *zyxvel);
+__EXPORT zVec3D *zAngVelToZYXVelSC(zVec3D *angvel, double sa, double ca, double sb, double cb, zVec3D *zyxvel);
+__EXPORT zVec3D *zZYZVelToAngVel(zVec3D *zyzvel, zVec3D *zyz, zVec3D *angvel);
+__EXPORT zVec3D *zZYZVelToAngVelSC(zVec3D *zyzvel, double sa, double ca, double sb, double cb, zVec3D *angvel);
+__EXPORT zVec3D *zAngVelToZYZVel(zVec3D *angvel, zVec3D *zyz, zVec3D *zyzvel);
+__EXPORT zVec3D *zAngVelToZYZVelSC(zVec3D *angvel, double sa, double ca, double sb, double cb, zVec3D *zyzvel);
 
 /* ********************************************************** */
 /* I/O
@@ -535,11 +533,6 @@ __EXPORT zVec3D *zVec3DDataNLFWrite(FILE *fp, zVec3D *v);
 #define zVec3DDataNLWrite(v) zVec3DDataNLFWrite( stdout, (v) )
 __EXPORT zVec3D *zVec3DFWrite(FILE *fp, zVec3D *v);
 #define zVec3DWrite(v) zVec3DFWrite( stdout, (v) )
-
-/*! \brief XML output.
- * ... yet testing.
- */
-__EXPORT void zVec3DFWriteXML(FILE *fp, zVec3D *v);
 
 __END_DECLS
 

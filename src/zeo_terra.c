@@ -52,7 +52,7 @@ void _zTerraCellUpdate(zTerraCell *cell, zVec3D *p)
 
   e = _zTerraCellResidual( cell, p );
   zVec3DCreate( &w, p->e[zX], p->e[zY], 1 );
-  zMulMatVec3D( &cell->_s, &w, &q );
+  zMulMat3DVec3D( &cell->_s, &w, &q );
   d = 1 + zVec3DInnerProd(&w,&q); /* (>=1) */
   zVec3DDiv( &q, d, &qd );
   zVec3DCatDRC( &cell->_prm, -e, &qd );

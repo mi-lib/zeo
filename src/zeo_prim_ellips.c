@@ -67,9 +67,9 @@ zEllips3D *zEllips3DMirror(zEllips3D *src, zEllips3D *dest, zAxis axis)
 zEllips3D *zEllips3DXfer(zEllips3D *src, zFrame3D *f, zEllips3D *dest)
 {
   zXfer3D( f, zEllips3DCenter(src), zEllips3DCenter(dest) );
-  zMulMatVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zX), zEllips3DAxis(dest,zX) );
-  zMulMatVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zY), zEllips3DAxis(dest,zY) );
-  zMulMatVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zZ), zEllips3DAxis(dest,zZ) );
+  zMulMat3DVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zX), zEllips3DAxis(dest,zX) );
+  zMulMat3DVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zY), zEllips3DAxis(dest,zY) );
+  zMulMat3DVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zZ), zEllips3DAxis(dest,zZ) );
   zEllips3DSetRadiusX( dest, zEllips3DRadiusX(src) );
   zEllips3DSetRadiusY( dest, zEllips3DRadiusY(src) );
   zEllips3DSetRadiusZ( dest, zEllips3DRadiusZ(src) );
@@ -83,9 +83,9 @@ zEllips3D *zEllips3DXfer(zEllips3D *src, zFrame3D *f, zEllips3D *dest)
 zEllips3D *zEllips3DXferInv(zEllips3D *src, zFrame3D *f, zEllips3D *dest)
 {
   zXfer3DInv( f, zEllips3DCenter(src), zEllips3DCenter(dest) );
-  zMulMatTVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zX), zEllips3DAxis(dest,zX) );
-  zMulMatTVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zY), zEllips3DAxis(dest,zY) );
-  zMulMatTVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zZ), zEllips3DAxis(dest,zZ) );
+  zMulMat3DTVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zX), zEllips3DAxis(dest,zX) );
+  zMulMat3DTVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zY), zEllips3DAxis(dest,zY) );
+  zMulMat3DTVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zZ), zEllips3DAxis(dest,zZ) );
   zEllips3DSetRadiusX( dest, zEllips3DRadiusX(src) );
   zEllips3DSetRadiusY( dest, zEllips3DRadiusY(src) );
   zEllips3DSetRadiusZ( dest, zEllips3DRadiusZ(src) );
@@ -201,8 +201,7 @@ zMat3D *zEllips3DInertia(zEllips3D *ellips, zMat3D *inertia)
     yy+zz, 0, 0,
     0, zz+xx, 0,
     0, 0, xx+yy );
-  zMulMatMat3DDRC( zFrame3DAtt(&ellips->f), &i );
-  return zMulMatMatT3D( &i, zFrame3DAtt(&ellips->f), inertia );
+  return zRotMat3D( zFrame3DAtt(&ellips->f), &i, inertia );
 }
 
 /* zEllips3DToPH

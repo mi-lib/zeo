@@ -11,20 +11,10 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* CLASS: zVec2D
- * 2D vector class
- * ********************************************************** */
-
+/*! \struct zVec2D
+ * \brief 2D vector.
+ */
 typedef double zVec2D[2];
-
-/*! \brief 2D zero vector and unit base vectors. */
-extern const zVec2D zvec2Dzero;
-extern const zVec2D zvec2Dx;
-extern const zVec2D zvec2Dy;
-#define ZVEC2DZERO ( (zVec2D)zvec2Dzero )
-#define ZVEC2DX    ( (zVec2D)zvec2Dx )
-#define ZVEC2DY    ( (zVec2D)zvec2Dy )
 
 /*! \brief create, copy and cleanup a 2D vector.
  *
@@ -56,14 +46,21 @@ __EXPORT double *zVec2DCreatePolar(zVec2D v, double r, double theta);
 
 /*! \brief check if two 2D vectors are equal.
  *
+ * zVec2DMatch() checks if two 2D vectors \a v1 and \a v2 are exactly
+ * the same.
+ *
  * zVec2DEqual() checks if two 2D vectors \a v1 and \a v2 are equal.
  * \return
+ * zVec2DMatch() returns the true value if \a v1 and \a v2 are exactly
+ * the same. Otherwise, the false value is returned.
+ *
  * zVec2DEqual() returns the true value if \a v1 and \a v2 are equal.
  * Otherwise, the false value is returned.
  */
+__EXPORT bool zVec2DMatch(zVec2D v1, zVec2D v2);
 __EXPORT bool zVec2DEqual(zVec2D v1, zVec2D v2);
 
-/*! \brief check if a 2D vector is tiny.
+/*! \brief check if a 2D vector is negligibly small.
  *
  * zVec2DIsTol() checks if the absolute values of every components of
  * a 2D vector \a v are smaller than \a tol.
@@ -218,19 +215,19 @@ __EXPORT double zVec2DAngle(zVec2D v1, zVec2D v2);
 
 /*! \brief projection and rotation of a 2D vector.
  *
- * zVec2DProject() projects a 2D vector \a v onto the line directed
+ * zVec2DProj() projects a 2D vector \a v onto the line directed
  * by \a n and puts the result into \a pv. \a pv is parallel to \a n
  * and the subtraction vector from \a pv to \a v is orthogonal to \a n.
  *
  * zVec2DRot() rotates \a v with an angle \a angle. The result is put
  * into \a rv.
  * \return
- * zVec2DProject() returns a pointer \a pv.
+ * zVec2DProj() returns a pointer \a pv.
  * If \a n is the zero vector, the null pointer is returned.
  *
  * zVec2DRot() returns a pointer \a rv.
  */
-__EXPORT double *zVec2DProject(zVec2D v, zVec2D n, zVec2D pv);
+__EXPORT double *zVec2DProj(zVec2D v, zVec2D n, zVec2D pv);
 __EXPORT double *zVec2DRot(zVec2D v, double angle, zVec2D rv);
 
 /* ********************************************************** */

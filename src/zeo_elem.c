@@ -552,7 +552,7 @@ double zTri3DLinScale(zTri3D *t, zVec3D *p, double *l0, double *l1, double *l2, 
   zVec2DCreate( v, zVec3DInnerProd(&e1,&dp), zVec3DInnerProd(&e2,&dp) );
   mc = zVec3DInnerProd(&e1,&e2);
   zMat2DCreate( m, 1.0, mc, mc, 1.0 );
-  zMulInvMatVec2D( m, v, l );
+  zMulInvMat2DVec2D( m, v, l );
   switch( i0 ){
   case 0: _zTri3DLinScaleVal( l, d1, d2, l0, l1, l2 ); break;
   case 1: _zTri3DLinScaleVal( l, d1, d2, l1, l2, l0 ); break;

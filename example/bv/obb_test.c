@@ -12,10 +12,10 @@ void test_vert(double x, double y, double z, double a, double b, double c, doubl
 
   printf( "vol=(%f x %f x %f)=%f\n", 2*wx, 2*wy, 2*wz, 8*wx*wy*wz );
   zVec3DCreate( &org, x, y, z );
-  zMat3DZYX( &ori, zDeg2Rad(a), zDeg2Rad(b), zDeg2Rad(c) );
+  zMat3DFromZYX( &ori, zDeg2Rad(a), zDeg2Rad(b), zDeg2Rad(c) );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &d, zRandF(-wx,wx), zRandF(-wy,wy), zRandF(-wz,wz) );
-    zMulMatVec3DDRC( &ori, &d );
+    zMulMat3DVec3DDRC( &ori, &d );
     zVec3DAdd( &org, &d, &vert[i] );
   }
 #else

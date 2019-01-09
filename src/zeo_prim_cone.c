@@ -212,8 +212,7 @@ zMat3D *zCone3DInertia(zCone3D *cone, zMat3D *inertia)
     0, 0, 0.1*rr );
   /* rotate */
   zVec3DOrthoSpace( &att.b.z, &att.b.x, &att.b.y );
-  zMulMatMat3DDRC( &att, &i );
-  return zMulMatMatT3D( &i, &att, inertia );
+  return zRotMat3D( &att, &i, inertia );
 }
 
 /* zCone3DToPH

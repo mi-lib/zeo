@@ -12,8 +12,11 @@
 #define ZEO_ERR_ZERODIV      "cannot divid by zero value"
 #define ZEO_ERR_ZERONORM     "cannot normalize zero vector"
 #define ZEO_ERR_SINGULARMAT  "matrix is singular"
+#define ZEO_ERR_NONSO3       "matrix is not orthonormal"
 
 #define ZEO_ERR_RGB          "invalid size of RGB specification, strlen(%s)=%d"
+
+#define ZEO_ERR_INVINDEX     "invalid index specified"
 
 #define ZEO_ERR_ELEM_DEGP    "too small normal vector to define a plane"
 #define ZEO_ERR_ELEM_DEGE    "edge degenerated"

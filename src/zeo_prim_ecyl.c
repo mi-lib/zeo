@@ -90,8 +90,8 @@ zECyl3D *zECyl3DXfer(zECyl3D *src, zFrame3D *f, zECyl3D *dest)
   zXfer3D( f, zECyl3DCenter(src,1), zECyl3DCenter(dest,1) );
   zECyl3DSetRadius( dest, 0, zECyl3DRadius(src,0) );
   zECyl3DSetRadius( dest, 1, zECyl3DRadius(src,1) );
-  zMulMatVec3D( zFrame3DAtt(f), zECyl3DRadVec(src,0), zECyl3DRadVec(dest,0) );
-  zMulMatVec3D( zFrame3DAtt(f), zECyl3DRadVec(src,1), zECyl3DRadVec(dest,1) );
+  zMulMat3DVec3D( zFrame3DAtt(f), zECyl3DRadVec(src,0), zECyl3DRadVec(dest,0) );
+  zMulMat3DVec3D( zFrame3DAtt(f), zECyl3DRadVec(src,1), zECyl3DRadVec(dest,1) );
   zECyl3DSetDiv( dest, zECyl3DDiv(src) );
   return dest;
 }
@@ -105,8 +105,8 @@ zECyl3D *zECyl3DXferInv(zECyl3D *src, zFrame3D *f, zECyl3D *dest)
   zXfer3DInv( f, zECyl3DCenter(src,1), zECyl3DCenter(dest,1) );
   zECyl3DSetRadius( dest, 0, zECyl3DRadius(src,0) );
   zECyl3DSetRadius( dest, 1, zECyl3DRadius(src,1) );
-  zMulMatTVec3D( zFrame3DAtt(f), zECyl3DRadVec(src,0), zECyl3DRadVec(dest,0) );
-  zMulMatTVec3D( zFrame3DAtt(f), zECyl3DRadVec(src,1), zECyl3DRadVec(dest,1) );
+  zMulMat3DTVec3D( zFrame3DAtt(f), zECyl3DRadVec(src,0), zECyl3DRadVec(dest,0) );
+  zMulMat3DTVec3D( zFrame3DAtt(f), zECyl3DRadVec(src,1), zECyl3DRadVec(dest,1) );
   zECyl3DSetDiv( dest, zECyl3DDiv(src) );
   return dest;
 }
@@ -232,8 +232,7 @@ zMat3D *zECyl3DInertia(zECyl3D *cyl, zMat3D *inertia)
   zVec3DCopy( zECyl3DRadVec(cyl,0), &att.b.x );
   zVec3DCopy( zECyl3DRadVec(cyl,1), &att.b.y );
   zVec3DNormalizeDRC( &att.b.z );
-  zMulMatMat3DDRC( &att, &i );
-  return zMulMatMatT3D( &i, &att, inertia );
+  return zRotMat3D( &att, &i, inertia );
 }
 
 /* zECyl3DToPH

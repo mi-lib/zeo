@@ -111,12 +111,6 @@ __EXPORT zRGB *zRGBFRead(FILE *fp, zRGB *rgb);
 __EXPORT void zRGBFWrite(FILE *fp, zRGB *rgb);
 #define zRGBWrite(c) zRGBFWrite( stdout, (c) )
 
-/* METHOD:
- * zRGBFWriteXML - xml output.
- * ... yet testing.
- */
-__EXPORT void zRGBFWriteXML(FILE *fp, zRGB *rgb);
-
 /* ********************************************************** */
 /* CLASS: zHSV
  * HSV class - expression of color by hue, saturation and value.

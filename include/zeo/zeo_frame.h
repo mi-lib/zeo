@@ -281,12 +281,6 @@ __EXPORT zFrame3D *zFrame3DDHFRead(FILE *fp, zFrame3D *f);
 __EXPORT void zFrame3DFWrite(FILE *fp, zFrame3D *f);
 #define zFrame3DWrite(f) zFrame3DFWrite( stdout, (f) )
 
-/* METHOD:
- * zFrame3DFWriteXML - xml output.
- * ... still testing.
- */
-__EXPORT void zFrame3DFWriteXML(FILE *fp, zFrame3D *f);
-
 __END_DECLS
 
 #endif /* __ZEO_FRAME_H__ */

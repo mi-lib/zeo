@@ -1,3 +1,51 @@
+2019. 1.10. Renamed zEPRotVec to zEPRotVec3D. [zeo_ep]
+2019. 1.10. Debugged zMat3DToEP. [zeo_errmsg, zeo_ep]
+2019. 1. 9. Debugged zAngVelToZYXVelSC and zAngVelToZYZVelSC. [zeo_vec3d]
+2019. 1. 9. Renamed zVec3DAng/ZYX/ZYZVel2ZYX/ZYZ/AngVel to zAng/ZYX/ZYZToZYX/ZYZ/AngVel. [zeo_vec3d]
+2019. 1. 9. Abolished ZVEC2DZERO, ZVEC2DX, ZVEC2DY, ZMAT2DZERO and ZMAT2DIDENT. [zeo_vec2d, zeo_mat2d]
+2019. 1. 9. Modified specification of zMat2DDyad. [zeo_mat2d]
+2019. 1. 9. Renamed zVec2DProject to zVec2DProj. [zeo_vec2d]
+2019. 1. 9. Added zVec2DMatch and debugged zVec2DEqual. [zeo_vec2d]
+2019. 1. 9. Modified z*3DInertia to use zRotMat3D. [zeo_prim_box, zeo_prim_ellips, zeo_prim_cyl, zeo_prim_cone, zeo_prim_ecyl]
+2019. 1. 9. Renamed:
+ zMulMatVec2D to zMulMat2DVec2D
+ zMulMatTVec2D to zMulMat2DTVec2D
+ zMulInvMatVec2D to zMulInvMat2DVec2D
+ zMulMatMat2D to zMulMat2DMat2D
+ zMulMatTMat2D to zMulMat2DTMat2D
+ zMulMatMatT2D to zMulMat2DMat2DT
+ zMulInvMatMat2D to zMulInvMat2DMat2D
+ zMulMatVec3D to zMulMat3DVec3D
+ zMulMatTVec3D to zMulMat3DTVec3D
+ zMulMatVec3DDRC to zMulMat3DVec3DDRC
+ zMulMatTVec3DDRC to zMulMat3DTVec3DDRC
+ zMulInvMatVec3D to zMulInvMat3DVec3D
+ zMulMatMat3D to zMulMat3DMat3D
+ zMulMatTMat3D to zMulMat3DTMat3D
+ zMulMatMatT3D to zMulMat3DMat3DT
+ zMulMatMat3DDRC to zMulMat3DMat3DDRC
+ zMulMatTMat3DDRC to zMulMat3DTMat3DDRC
+ zMulMatMatT3DDRC to zMulMat3DMat3DTDRC
+ zMulInvMatMat3D to zMulInvMat3DMat3D
+ zMulMatVec6D to zMulMat3DVec6D
+ zMulMatTVec6D to zMulMat3DTVec6D
+ zMulMatVec6DDRC to zMulMat3DVec6DDRC
+ zMulMatTVec6DDRC to zMulMat3DTVec6DDRC
+ zMulMatVec6D to zMulMat6DVec6D
+ zMulMatTVec6D to zMulMat6DTVec6D
+ zMulMatMat6D to zMulMat6DMat6D
+ zMulMatTMat6D to zMulMat6DTMat6D
+ zMulMatMatT6D to zMulMat6DMat6DT
+ [zeo_mat2d, zeo_mat3d, zeo_mat6d, zeo_frame, zeo_elem, zeo_prim_box, zeo_prim_ellips, zeo_prim_ecyl, zeo_terra]
+2019. 1. 9. Abolished *FWriteXML. [zeo_color, zeo_optic, zeo_vec3d, zeo_vec6d, zeo_mat3d]
+2019. 1. 9. Debugged zMat3DMatch and zMat3DEqual. [zeo_mat3d]
+2019. 1. 9. Added exception handling in zMat6DRow and zMat6DCol. [zeo_errmsg, zeo_mat6d]
+2019. 1. 9. Reimplemented zMat6DPutMat3D as a macro. [zeo_mat6d]
+2019. 1. 9. Changed order of 3x3 matrices in 6x6 matrix. [zeo_mat6d]
+2019. 1. 8. Reimplemented zeo_nurbs3d. [zeo_nurbs3d]
+2019. 1. 7. Debugged zMat3DToAA thanks to Naoki Wakisaka. [zeo_mat3d]
+2019. 1. 7. Debugged circulation check in _zQHHorizon thanks to Naoki Wakisaka. [zeo_bv_qhull]
+2018.12.25. Reflected new specifications of zArrayClass. [zeo_ph, zeo_prim_sphere, zeo_mshape, zeo_col_gjk]
 2018.12.21. Debugged _zTerraFRead so as to compute internal parameters. [zeo_terra]
 2018.12.19. Added _zTerraUpdate, zTerraUpdate, zTerraForm, and zTerraIdent. [zeo_terra]
 2018.12.19. Renamed zTerraSetMax to zTerraAdjustMax. [zeo_terra]
@@ -26,7 +74,7 @@
 2018. 7. 9. Accelerated zBox3DVert. (by Naoki Wakisaka) [zeo_prim_box]
 2018. 7. 9. Accelerated _zBREPTruncBBCheck. (by Naoki Wakisaka) [zeo_brep_trunc]
 2018. 7. 9. Debugged _zGJKPD. (by Naoki Wakisaka) [zeo_col_gjk]
-2018. 7. 9. Accelerated basic arithmetics of 6D vectors. (by Naoki Wakisaka)
+2018. 7. 9. Accelerated basic arithmetics of 6D vectors. (by Naoki Wakisaka) [zeo_vec6d, zeo_mat6d]
 2016. 3.16. Renamed zFrame3DZYX, ..., zFrame3DDH to zFrame3DFromZYX, ..., zFrame3DFromDH. [zeo_frame]
 2016. 3.16. Renamed zMat3DZYX, ..., zMat3DAA to zMat3DFromZYX, ..., zMat3DFromAA. [zeo_mat3d]
 2016. 3.16. Added zEPCreate, which creates Euler parameter from four values. [zeo_ep]

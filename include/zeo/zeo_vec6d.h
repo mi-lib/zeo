@@ -11,11 +11,9 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* CLASS: zVec6D
- * spatial 6D vector class = a pair of linear/angular vectors
- * ********************************************************** */
-
+/*! \struct zVec6D
+ * \brief 6D spatial vector for linear/angular quantities
+ */
 typedef union {
   double e[6];
   zVec3D v[2];
@@ -306,12 +304,6 @@ __EXPORT zVec6D *zVec6DDataNLFWrite(FILE *fp, zVec6D *v);
 #define zVec6DDataNLWrite(v) zVec6DDataNLFWrite( stdout, (v) )
 __EXPORT zVec6D *zVec6DFWrite(FILE *fp, zVec6D *v);
 #define zVec6DWrite(v) zVec6DFWrite( stdout, (v) )
-
-/* METHOD:
- * zVec6DFWriteXML - xml output.
- * ... still testing.
- */
-__EXPORT void zVec6DFWriteXML(FILE *fp, zVec6D *v);
 
 __END_DECLS
 

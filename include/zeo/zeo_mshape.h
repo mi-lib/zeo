@@ -24,16 +24,16 @@ typedef struct{
   zOpticArray optic;
 } zMShape3D;
 
-#define zMShape3DShapeNum(s)      zArrayNum(&(s)->shape)
+#define zMShape3DShapeNum(s)      zArraySize(&(s)->shape)
 #define zMShape3DShapeBuf(s)      zArrayBuf(&(s)->shape)
-#define zMShape3DShape(s,i)       zArrayElem(&(s)->shape,i)
-#define zMShape3DSetShapeNum(s,n) zArraySetNum(&(s)->shape,n)
-#define zMShape3DSetShapeBuf(s,b) zArraySetBuf(&(s)->shape,b)
-#define zMShape3DOpticNum(s)      zArrayNum(&(s)->optic)
+#define zMShape3DShape(s,i)       zArrayElemNC(&(s)->shape,i)
+#define zMShape3DSetShapeNum(s,n) ( zArraySize(&(s)->shape) = (n) )
+#define zMShape3DSetShapeBuf(s,b) ( zArrayBuf(&(s)->shape) = (b) )
+#define zMShape3DOpticNum(s)      zArraySize(&(s)->optic)
 #define zMShape3DOpticBuf(s)      zArrayBuf(&(s)->optic)
-#define zMShape3DOptic(s,i)       zArrayElem(&(s)->optic,i)
-#define zMShape3DSetOpticNum(s,n) zArraySetNum(&(s)->optic,n)
-#define zMShape3DSetOpticBuf(s,b) zArraySetBuf(&(s)->optic,b)
+#define zMShape3DOptic(s,i)       zArrayElemNC(&(s)->optic,i)
+#define zMShape3DSetOpticNum(s,n) ( zArraySize(&(s)->optic) = (n) )
+#define zMShape3DSetOpticBuf(s,b) ( zArrayBuf(&(s)->optic) = (b) )
 
 /*! \brief initialize and destroy multiple 3D shapes.
  *

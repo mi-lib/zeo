@@ -13,9 +13,7 @@
 
 static bool _zBox3DFRead(FILE *fp, void *instance, char *buf, bool *success);
 
-/* zBox3DCreate
- * - create 3D box.
- */
+/* create a 3D box. */
 zBox3D *zBox3DCreate(zBox3D *box, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double d, double w, double h)
 {
   zBox3DSetCenter( box, c );
@@ -28,17 +26,13 @@ zBox3D *zBox3DCreate(zBox3D *box, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az,
   return box;
 }
 
-/* zBox3DInit
- * - initialize 3D box.
- */
+/* initialize a 3D box. */
 zBox3D *zBox3DInit(zBox3D *box)
 {
   return zBox3DCreateAlign( box, ZVEC3DZERO, 0, 0, 0 );
 }
 
-/* zBox3DCopy
- * - copy 3D box.
- */
+/* copy a 3D box to another. */
 zBox3D *zBox3DCopy(zBox3D *src, zBox3D *dest)
 {
   return zBox3DCreate( dest, zBox3DCenter(src),
@@ -46,9 +40,7 @@ zBox3D *zBox3DCopy(zBox3D *src, zBox3D *dest)
     zBox3DDepth(src), zBox3DWidth(src), zBox3DHeight(src) );
 }
 
-/* zBox3DMirror
- * - mirror 3D box.
- */
+/* mirror a 3D box along an axis. */
 zBox3D *zBox3DMirror(zBox3D *src, zBox3D *dest, zAxis axis)
 {
   zBox3DCopy( src, dest );
@@ -59,39 +51,33 @@ zBox3D *zBox3DMirror(zBox3D *src, zBox3D *dest, zAxis axis)
   return dest;
 }
 
-/* zBox3DXfer
- * - transfer 3D box.
- */
+/* transfer a 3D box. */
 zBox3D *zBox3DXfer(zBox3D *src, zFrame3D *f, zBox3D *dest)
 {
   zXfer3D( f, zBox3DCenter(src), zBox3DCenter(dest) );
-  zMulMatVec3D( zFrame3DAtt(f), zBox3DAxis(src,zX), zBox3DAxis(dest,zX) );
-  zMulMatVec3D( zFrame3DAtt(f), zBox3DAxis(src,zY), zBox3DAxis(dest,zY) );
-  zMulMatVec3D( zFrame3DAtt(f), zBox3DAxis(src,zZ), zBox3DAxis(dest,zZ) );
+  zMulMat3DVec3D( zFrame3DAtt(f), zBox3DAxis(src,zX), zBox3DAxis(dest,zX) );
+  zMulMat3DVec3D( zFrame3DAtt(f), zBox3DAxis(src,zY), zBox3DAxis(dest,zY) );
+  zMulMat3DVec3D( zFrame3DAtt(f), zBox3DAxis(src,zZ), zBox3DAxis(dest,zZ) );
   zBox3DSetDepth( dest, zBox3DDepth(src) );
   zBox3DSetWidth( dest, zBox3DWidth(src) );
   zBox3DSetHeight( dest, zBox3DHeight(src) );
   return dest;
 }
 
-/* zBox3DXfer
- * - inversely transfer 3D box.
- */
+/* inversely transfer a 3D box. */
 zBox3D *zBox3DXferInv(zBox3D *src, zFrame3D *f, zBox3D *dest)
 {
   zXfer3DInv( f, zBox3DCenter(src), zBox3DCenter(dest) );
-  zMulMatTVec3D( zFrame3DAtt(f), zBox3DAxis(src,zX), zBox3DAxis(dest,zX) );
-  zMulMatTVec3D( zFrame3DAtt(f), zBox3DAxis(src,zY), zBox3DAxis(dest,zY) );
-  zMulMatTVec3D( zFrame3DAtt(f), zBox3DAxis(src,zZ), zBox3DAxis(dest,zZ) );
+  zMulMat3DTVec3D( zFrame3DAtt(f), zBox3DAxis(src,zX), zBox3DAxis(dest,zX) );
+  zMulMat3DTVec3D( zFrame3DAtt(f), zBox3DAxis(src,zY), zBox3DAxis(dest,zY) );
+  zMulMat3DTVec3D( zFrame3DAtt(f), zBox3DAxis(src,zZ), zBox3DAxis(dest,zZ) );
   zBox3DSetDepth( dest, zBox3DDepth(src) );
   zBox3DSetWidth( dest, zBox3DWidth(src) );
   zBox3DSetHeight( dest, zBox3DHeight(src) );
   return dest;
 }
 
-/* zBox3DClosest
- * - the closest point from 3D point to 3D box.
- */
+/* the closest point from a 3D point to a 3D box. */
 double zBox3DClosest(zBox3D *box, zVec3D *p, zVec3D *cp)
 {
   zVec3D _p;
@@ -108,18 +94,14 @@ double zBox3DClosest(zBox3D *box, zVec3D *p, zVec3D *cp)
   return zVec3DDist( p, cp );
 }
 
-/* zBox3DPointDist
- * - distance from a point to 3D box.
- */
+/* distance from a point to a 3D box. */
 double zBox3DPointDist(zBox3D *box, zVec3D *p)
 {
   zVec3D cp;
   return zBox3DClosest( box, p, &cp );
 }
 
-/* zBox3DPointIsInside
- * - check if a point is in a box.
- */
+/* check if a point is inside of a box. */
 bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, bool rim)
 {
   register zDir d;
@@ -136,17 +118,13 @@ bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, bool rim)
   return true;
 }
 
-/* zBox3DVolume
- * - volume of 3D box.
- */
+/* volume of a 3D box. */
 double zBox3DVolume(zBox3D *box)
 {
   return zBox3DDepth(box) * zBox3DWidth(box) * zBox3DHeight(box);
 }
 
-/* zBox3DInertia
- * - inertia of 3D box.
- */
+/* inertia of a 3D box. */
 zMat3D *zBox3DInertia(zBox3D *box, zMat3D *inertia)
 {
   zMat3D i;
@@ -160,13 +138,10 @@ zMat3D *zBox3DInertia(zBox3D *box, zMat3D *inertia)
     yy+zz, 0, 0,
     0, zz+xx, 0,
     0, 0, xx+yy );
-  zMulMatMat3DDRC( zFrame3DAtt(&box->f), &i );
-  return zMulMatMatT3D( &i, zFrame3DAtt(&box->f), inertia );
+  return zRotMat3D( zFrame3DAtt(&box->f), &i, inertia );
 }
 
-/* zBox3DVert
- * - get vertex of a box.
- */
+/* get vertex of a box. */
 zVec3D *zBox3DVert(zBox3D *box, int i, zVec3D *v)
 {
   _zVec3DCreate( v,
@@ -181,9 +156,7 @@ zVec3D *zBox3DVert(zBox3D *box, int i, zVec3D *v)
   zTri3DCreate( zPH3DFace(p,i+1), zPH3DVert(p,i1), zPH3DVert(p,i3), zPH3DVert(p,i4) );\
 } while(0)
 
-/* zBox3DToPH
- * - convert box to polyhedron.
- */
+/* convert a box to a polyhedron. */
 zPH3D* zBox3DToPH(zBox3D *box, zPH3D *ph)
 {
   register int i;
@@ -200,10 +173,7 @@ zPH3D* zBox3DToPH(zBox3D *box, zPH3D *ph)
   return ph;
 }
 
-/* (static)
- * _zBox3DFRead
- * - input of 3D box.
- */
+/* input a 3D box from file. */
 bool _zBox3DFRead(FILE *fp, void *instance, char *buf, bool *success)
 {
   zVec3D a;
@@ -230,9 +200,7 @@ bool _zBox3DFRead(FILE *fp, void *instance, char *buf, bool *success)
   return true;
 }
 
-/* zBox3DFRead
- * - input of 3D box.
- */
+/* input a 3D box from file. */
 zBox3D *zBox3DFRead(FILE *fp, zBox3D *box)
 {
   zBox3DInit( box );
@@ -240,9 +208,7 @@ zBox3D *zBox3DFRead(FILE *fp, zBox3D *box)
   return box;
 }
 
-/* zBox3DFWrite
- * - output a 3D box to a file.
- */
+/* output a 3D box to file. */
 void zBox3DFWrite(FILE *fp, zBox3D *box)
 {
   fprintf( fp, "center: " );
@@ -258,9 +224,7 @@ void zBox3DFWrite(FILE *fp, zBox3D *box)
   fprintf( fp, "height: %.10g\n", zBox3DHeight( box ) );
 }
 
-/* zBox3DDataFWrite
- * - output a 3D box to a file in a format to be plotted.
- */
+/* output a 3D box to a file in a format to be plotted. */
 void zBox3DDataFWrite(FILE *fp, zBox3D *box)
 {
   zVec3D v[8];

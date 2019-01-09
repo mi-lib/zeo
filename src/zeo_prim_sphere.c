@@ -209,17 +209,17 @@ zSphere3D *zSphere3DFit(zSphere3D *s, zVec3DList *pc)
   for( i=0; i<iter; i++ ){
     j = 0;
     zListForEach( pc, p ){
-      zMatElem(c,j,0) = p->data->e[zX] - zSphere3DCenter(s)->e[zX];
-      zMatElem(c,j,1) = p->data->e[zY] - zSphere3DCenter(s)->e[zY];
-      zMatElem(c,j,2) = p->data->e[zZ] - zSphere3DCenter(s)->e[zZ];
-      zMatElem(c,j,3) = zSphere3DRadius(s);
-      zVecElem(e,j)   = zVec3DSqrDist(p->data,zSphere3DCenter(s)) - zSqr(zSphere3DRadius(s));
+      zMatElemNC(c,j,0) = p->data->e[zX] - zSphere3DCenter(s)->e[zX];
+      zMatElemNC(c,j,1) = p->data->e[zY] - zSphere3DCenter(s)->e[zY];
+      zMatElemNC(c,j,2) = p->data->e[zZ] - zSphere3DCenter(s)->e[zZ];
+      zMatElemNC(c,j,3) = zSphere3DRadius(s);
+      zVecElemNC(e,j)   = zVec3DSqrDist(p->data,zSphere3DCenter(s)) - zSqr(zSphere3DRadius(s));
       j++;
     }
     zLESolveErrorMin( c, e, NULL, d );
     if( zVecIsTiny( d ) ) goto TERMINATE;
-    zVec3DCatDRC( zSphere3DCenter(s), 0.5, (zVec3D*)&zVecElem(d,0) );
-    zSphere3DRadius(s) += 0.5*zVecElem(d,3);
+    zVec3DCatDRC( zSphere3DCenter(s), 0.5, (zVec3D*)&zVecElemNC(d,0) );
+    zSphere3DRadius(s) += 0.5*zVecElemNC(d,3);
   }
   ZITERWARN( iter );
 

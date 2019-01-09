@@ -13,7 +13,7 @@ int main(void)
   zRandInit();
   zVec3DCreate( &aa, zRandF(-1.0,1.0), zRandF(-1.0,1.0), zRandF(-1.0,1.0) );
   zAA2EP( &aa, &ep );
-  zMat3DAA( &m, &aa );
+  zMat3DFromAA( &m, &aa );
   zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
 
   t1 = clock();
@@ -21,19 +21,15 @@ int main(void)
     zVec3DRot( &v, &aa, &v1 );
   t2 = clock();
   for( i=0; i<N; i++ )
-    zEPRotVec( &ep, &v, &v2 );
+    zEPRotVec3D( &ep, &v, &v2 );
   t3 = clock();
   for( i=0; i<N; i++ )
-    zMulMatVec3D( &m, &v, &v3 );
+    zMulMat3DVec3D( &m, &v, &v3 );
   t4 = clock();
   printf( "+++ c.time +++\n" );
-  printf( "zVec3DRot:    %ld\n", t2 - t1 );
-  printf( "zEPRotVec:    %ld\n", t3 - t2 );
-  printf( "zMulMatVec3D: %ld\n", t4 - t3 );
-  printf( "+++ assertion +++\n" );
-  zVec3DWrite( &v1 );
-  zVec3DWrite( &v2 );
-  zVec3DWrite( &v3 );
+  printf( "zVec3DRot:      %ld\n", t2 - t1 );
+  printf( "zEPRotVec3D:    %ld\n", t3 - t2 );
+  printf( "zMulMat3DVec3D: %ld\n", t4 - t3 );
 
   return 0;
 }

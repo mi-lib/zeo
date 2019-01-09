@@ -195,8 +195,7 @@ zMat3D *zCyl3DInertia(zCyl3D *cyl, zMat3D *inertia)
     0, 0, rr/6 );
   /* rotate */
   zVec3DOrthoSpace( &att.b.z, &att.b.x, &att.b.y );
-  zMulMatMat3DDRC( &att, &i );
-  return zMulMatMatT3D( &i, &att, inertia );
+  return zRotMat3D( &att, &i, inertia );
 }
 
 /* zCyl3DToPH

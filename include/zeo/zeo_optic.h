@@ -112,12 +112,6 @@ __EXPORT zOpticalInfo *zOpticalInfoFRead(FILE *fp, zOpticalInfo *oi);
 __EXPORT void zOpticalInfoFWrite(FILE *fp, zOpticalInfo *oi);
 #define zOpticalInfoWrite(i) zOpticalInfoFWrite( stdout, (i) )
 
-/* METHOD:
- * zOpticalInfoFWriteXML - xml output.
- * ... yet testing.
- */
-__EXPORT void zOpticalInfoFWriteXML(FILE *fp, zOpticalInfo *oi, int indent);
-
 __END_DECLS
 
 #endif /* __ZEO_OPTIC_H__ */

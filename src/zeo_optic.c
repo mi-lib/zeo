@@ -138,17 +138,3 @@ void zOpticalInfoFWrite(FILE *fp, zOpticalInfo *oi)
   fprintf( fp, "alpha: %.10g\n", oi->alpha );
   fprintf( fp, "\n" );
 }
-
-/* zOpticalInfoFWriteXML
- * - xml output.
- */
-void zOpticalInfoFWriteXML(FILE *fp, zOpticalInfo *oi, int indent)
-{
-  zIndent( indent ); fprintf( fp, "<optic name=\"%s\"\n", zName(oi) );
-  zIndent( indent ); fprintf( fp, "       ambient=" ); zRGBFWriteXML(fp,&oi->amb); fprintf( fp, "\n" );
-  zIndent( indent ); fprintf( fp, "       diffuse=" ); zRGBFWriteXML(fp,&oi->dif); fprintf( fp, "\n" );
-  zIndent( indent ); fprintf( fp, "       specular=" ); zRGBFWriteXML(fp,&oi->spc); fprintf( fp, "\n" );
-  zIndent( indent ); fprintf( fp, "       alpha=\"%f\"\n", oi->alpha );
-  zIndent( indent ); fprintf( fp, "       esr=\"%f\"\n", oi->esr );
-  zIndent( indent ); fprintf( fp, "       shininess=\"%f\"/>\n", oi->sns );
-}

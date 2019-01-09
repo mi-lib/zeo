@@ -11,28 +11,20 @@
  * 3D vector class
  * ********************************************************** */
 
-/* OBJECT:
- * zvec3Dzero, zvec3Dx, zvec3Dy, zvec3Dz
- * - 3D zero vector and unit vectors along (x,y,z) axis.
- */
+/* 3D zero vector and unit vectors along (x,y,z) axis. */
 const zVec3D zvec3Dzero = { { 0, 0, 0 } };
 const zVec3D zvec3Dx    = { { 1, 0, 0 } };
 const zVec3D zvec3Dy    = { { 0, 1, 0 } };
 const zVec3D zvec3Dz    = { { 0, 0, 1 } };
 
-/* zVec3DCreate
- * - create a 3D vector.
- */
+/* create a 3D vector. */
 zVec3D *zVec3DCreate(zVec3D *v, double x, double y, double z)
 {
   _zVec3DCreate( v, x, y, z );
   return v;
 }
 
-/* zVec3DCreatePolar
- * - create a 3D vector by the set of value for a polar
- *   expression.
- */
+/* create a 3D vector by the set of value for a polar expression. */
 zVec3D *zVec3DCreatePolar(zVec3D *v, double r, double theta, double phi)
 {
   double rs;
@@ -42,33 +34,25 @@ zVec3D *zVec3DCreatePolar(zVec3D *v, double r, double theta, double phi)
   return v;
 }
 
-/* zVec3DMatch
- * - check if two 3D vectors match each other.
- */
+/* check if two 3D vectors match are exactly the same. */
 bool zVec3DMatch(zVec3D *v1, zVec3D *v2)
 {
   return _zVec3DMatch( v1, v2 );
 }
 
-/* zVec3DEqual
- * - check if two 3D vectors are equal.
- */
+/* check if two 3D vectors are equal. */
 bool zVec3DEqual(zVec3D *v1, zVec3D *v2)
 {
   return _zVec3DEqual( v1, v2 );
 }
 
-/* zVec3DIsTol
- * - check if a 3D vector is tiny enough.
- */
+/* check if a 3D vector is small. */
 bool zVec3DIsTol(zVec3D *v, double tol)
 {
   return _zVec3DIsTol( v, tol );
 }
 
-/* zVec3DIsNan
- * - check if a 3D vector includes NaN or Inf components.
- */
+/* check if a 3D vector includes NaN or Inf components. */
 bool zVec3DIsNan(zVec3D *v)
 {
   return zIsNan( v->c.x ) || zIsInf( v->c.x ) ||
@@ -80,45 +64,35 @@ bool zVec3DIsNan(zVec3D *v)
 /* arithmetics
  * ********************************************************** */
 
-/* zVec3DAdd
- * - add two 3D vectors.
- */
+/* add two 3D vectors. */
 zVec3D *zVec3DAdd(zVec3D *v1, zVec3D *v2, zVec3D *v)
 {
   _zVec3DAdd( v1, v2, v );
   return v;
 }
 
-/* zVec3DSub
- * - subtract a 3D vector from another.
- */
+/* subtract a 3D vector from another. */
 zVec3D *zVec3DSub(zVec3D *v1, zVec3D *v2, zVec3D *v)
 {
   _zVec3DSub( v1, v2, v );
   return v;
 }
 
-/* zVec3DRev
- * - reverse a 3D vector.
- */
+/* reverse a 3D vector. */
 zVec3D *zVec3DRev(zVec3D *v, zVec3D *rv)
 {
   _zVec3DRev( v, rv );
   return rv;
 }
 
-/* zVec3DMul
- * - multiply a 3D vector by a scalar.
- */
+/* multiply a 3D vector by a scalar. */
 zVec3D *zVec3DMul(zVec3D *v, double k, zVec3D *mv)
 {
   _zVec3DMul( v, k, mv );
   return mv;
 }
 
-/* zVec3DDiv
- * - divide a 3D vector by a scalar.
- */
+/* divide a 3D vector by a scalar. */
 zVec3D *zVec3DDiv(zVec3D *v, double k, zVec3D *dv)
 {
   if( k == 0 ){
@@ -130,63 +104,49 @@ zVec3D *zVec3DDiv(zVec3D *v, double k, zVec3D *dv)
   return dv;
 }
 
-/* zVec3DAmp
- * - amplify a 3D vector by another.
- */
+/* amplify a 3D vector by another. */
 zVec3D *zVec3DAmp(zVec3D *v, zVec3D *a, zVec3D *av)
 {
   _zVec3DAmp( v, a, av );
   return av;
 }
 
-/* zVec3DCat
- * - concatenate 3D vectors.
- */
+/* concatenate a 3D vector with another. */
 zVec3D *zVec3DCat(zVec3D *v1, double k, zVec3D *v2, zVec3D *v)
 {
   _zVec3DCat( v1, k, v2, v );
   return v;
 }
 
-/* zVec3DAddDRC
- * - directly add a 3D vector to another.
- */
+/* directly add a 3D vector to another. */
 zVec3D *zVec3DAddDRC(zVec3D *v1, zVec3D *v2)
 {
   _zVec3DAddDRC( v1, v2 );
   return v1;
 }
 
-/* zVec3DSubDRC
- * - directly subtract a 3D vector from another.
- */
+/* directly subtract a 3D vector from another. */
 zVec3D *zVec3DSubDRC(zVec3D *v1, zVec3D *v2)
 {
   _zVec3DSubDRC( v1, v2 );
   return v1;
 }
 
-/* zVec3DRevDRC
- * - directly reverse a 3D vector.
- */
+/* directly reverse a 3D vector. */
 zVec3D *zVec3DRevDRC(zVec3D *v)
 {
   _zVec3DRevDRC( v );
   return v;
 }
 
-/* zVec3DMulDRC
- * - directly multiply a 3D vector by a scalar value.
- */
+/* directly multiply a 3D vector by a scalar value. */
 zVec3D *zVec3DMulDRC(zVec3D *v, double k)
 {
   _zVec3DMulDRC( v, k );
   return v;
 }
 
-/* zVec3DDivDRC
- * - directly divide a 3D vector by a scalar value.
- */
+/* directly divide a 3D vector by a scalar value. */
 zVec3D *zVec3DDivDRC(zVec3D *v, double k)
 {
   if( k == 0 ){
@@ -198,35 +158,27 @@ zVec3D *zVec3DDivDRC(zVec3D *v, double k)
   return v;
 }
 
-/* zVec3DAmpDRC
- * - directly amplify a 3D vector by another.
- */
+/* directly amplify a 3D vector by another. */
 zVec3D *zVec3DAmpDRC(zVec3D *v1, zVec3D *v2)
 {
   _zVec3DAmpDRC( v1, v2 );
   return v1;
 }
 
-/* zVec3DCatDRC
- * -directly concatenate a 3D vector multiplied by a scalar to another.
- */
+/* directly concatenate a 3D vector with another. */
 zVec3D *zVec3DCatDRC(zVec3D *v1, double k, zVec3D *v2)
 {
   _zVec3DCatDRC( v1, k, v2 );
   return v1;
 }
 
-/* zVec3DInnerProd
- * - inner product of two 3D vectors.
- */
+/* inner product of two 3D vectors. */
 double zVec3DInnerProd(zVec3D *v1, zVec3D *v2)
 {
   return _zVec3DInnerProd( v1, v2 );
 }
 
-/* zVec3DOuterProd
- * - outer product of two 3D vectors.
- */
+/* outer product of two 3D vectors. */
 zVec3D *zVec3DOuterProd(zVec3D *v1, zVec3D *v2, zVec3D *v)
 {
   zVec3D v3; /* a temporary vector is necessary because v1 or v2 can be the same with v */
@@ -235,9 +187,7 @@ zVec3D *zVec3DOuterProd(zVec3D *v1, zVec3D *v2, zVec3D *v)
   return zVec3DCopy( &v3, v );
 }
 
-/* zVec3DOuterProdNorm
- * - norm of outer product of two 3D vectors.
- */
+/* norm of outer product of two 3D vectors. */
 double zVec3DOuterProdNorm(zVec3D *v1, zVec3D *v2)
 {
   zVec3D v;
@@ -246,9 +196,7 @@ double zVec3DOuterProdNorm(zVec3D *v1, zVec3D *v2)
   return _zVec3DNorm( &v );
 }
 
-/* zVec3DGrassmannProd
- * - scalar triple product of three 3D vectors.
- */
+/* scalar triple product of three 3D vectors. */
 double zVec3DGrassmannProd(zVec3D *v1, zVec3D *v2, zVec3D *v3)
 {
   zVec3D v;
@@ -257,34 +205,26 @@ double zVec3DGrassmannProd(zVec3D *v1, zVec3D *v2, zVec3D *v3)
   return _zVec3DInnerProd( v1, &v );
 }
 
-/* zVec3DTripleProd
- * - vector triple product of three 3D vectors.
- */
+/* vector triple product of three 3D vectors. */
 zVec3D *zVec3DTripleProd(zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v)
 {
   _zVec3DTripleProd( v1, v2, v3, v );
   return v;
 }
 
-/* zVec3DSqrNorm
- * - squared norm of a 3D vector.
- */
+/* squared norm of a 3D vector. */
 double zVec3DSqrNorm(zVec3D *v)
 {
   return _zVec3DSqrNorm( v );
 }
 
-/* zVec3DWSqrNorm
- * - squared weighted norm of a 3D vector.
- */
+/* squared weighted norm of a 3D vector. */
 double zVec3DWSqrNorm(zVec3D *v, zVec3D *w)
 {
   return _zVec3DWSqrNorm( v, w );
 }
 
-/* zVec3DSqrDist
- * - distance between two positions.
- */
+/* distance between two positions. */
 double zVec3DSqrDist(zVec3D *v1, zVec3D *v2)
 {
   zVec3D dv;
@@ -293,9 +233,7 @@ double zVec3DSqrDist(zVec3D *v1, zVec3D *v2)
   return _zVec3DSqrNorm( &dv );
 }
 
-/* zVec3DNormalizeNC
- * - normalize a 3D vector without checking vector size.
- */
+/* normalize a 3D vector without checking vector size. */
 double zVec3DNormalizeNC(zVec3D *v, zVec3D *nv)
 {
   double l, k;
@@ -305,9 +243,7 @@ double zVec3DNormalizeNC(zVec3D *v, zVec3D *nv)
   return l;
 }
 
-/* zVec3DNormalize
- * - normalize a 3D vector.
- */
+/* normalize a 3D vector. */
 double zVec3DNormalize(zVec3D *v, zVec3D *nv)
 {
   double l, k;
@@ -325,27 +261,21 @@ double zVec3DNormalize(zVec3D *v, zVec3D *nv)
 /* geometry
  * ********************************************************** */
 
-/* zVec3DInterDiv
- * - interior division of two the positions.
- */
+/* interior division of two points. */
 zVec3D *zVec3DInterDiv(zVec3D *v1, zVec3D *v2, double ratio, zVec3D *v)
 {
   _zVec3DInterDiv( v1, v2, ratio, v );
   return v;
 }
 
-/* zVec3DMid
- * - middle point of the two positions.
- */
+/* middle point of two points. */
 zVec3D *zVec3DMid(zVec3D *v1, zVec3D *v2, zVec3D *v)
 {
   _zVec3DMid( v1, v2, v );
   return v;
 }
 
-/* zVec3DAngle
- * - angle between the two vectors.
- */
+/* angle between two vectors. */
 double zVec3DAngle(zVec3D *v1, zVec3D *v2, zVec3D *n)
 {
   double c, s;
@@ -358,9 +288,7 @@ double zVec3DAngle(zVec3D *v1, zVec3D *v2, zVec3D *n)
   return atan2( s, c );
 }
 
-/* zVec3DProj
- * - projection of a vector.
- */
+/* project a 3D vector onto another. */
 zVec3D *zVec3DProj(zVec3D *v, zVec3D *n, zVec3D *pv)
 {
   double l;
@@ -374,9 +302,7 @@ zVec3D *zVec3DProj(zVec3D *v, zVec3D *n, zVec3D *pv)
   return pv;
 }
 
-/* zVec3DOrthogonalize
- * - orthogonalize a vector.
- */
+/* orthogonalize a 3D vector. */
 zVec3D *zVec3DOrthogonalize(zVec3D *v, zVec3D *n, zVec3D *ov)
 {
   double l;
@@ -390,9 +316,7 @@ zVec3D *zVec3DOrthogonalize(zVec3D *v, zVec3D *n, zVec3D *ov)
   return ov;
 }
 
-/* zVec3DOrthoSpace
- * - create the orthogonal space of a vector.
- */
+/* create the orthogonal space of a 3D vector. */
 bool zVec3DOrthoSpace(zVec3D *v, zVec3D *sv1, zVec3D *sv2)
 {
   double l;
@@ -412,9 +336,7 @@ bool zVec3DOrthoSpace(zVec3D *v, zVec3D *sv1, zVec3D *sv2)
   return true;
 }
 
-/* zVec3DRot
- * - rotate a 3D vector along an arbitrary axis.
- */
+/* rotate a 3D vector along an axis. */
 zVec3D *zVec3DRot(zVec3D *v, zVec3D *aa, zVec3D *rv)
 {
   zVec3D v0, v1, v2, n;
@@ -435,32 +357,25 @@ zVec3D *zVec3DRot(zVec3D *v, zVec3D *aa, zVec3D *rv)
 /* differential kinematics
  * ********************************************************** */
 
-/* zVec3DDif
- * - numerical differentiation of 3D vector.
- */
+/* numerical differentiation of a 3D vector. */
 zVec3D *zVec3DDif(zVec3D *v, zVec3D *vnew, double dt, zVec3D *vel)
 {
   _zVec3DSub( vnew, v, vel );
   return zVec3DDivDRC( vel, dt );
 }
 
-/* zVec3DZYXVel2AngVel
- * - convert z-y-x Eulerian angle differential to angular velocity.
- */
-zVec3D *zVec3DZYXVel2AngVel(zVec3D *zyxvel, zVec3D *zyx, zVec3D *angvel)
+/* convert z-y-x Eulerian angle differential to angular velocity. */
+zVec3D *zZYXVelToAngVel(zVec3D *zyxvel, zVec3D *zyx, zVec3D *angvel)
 {
   double sa, ca, sb, cb;
 
   _zSinCos( zyx->c.x, &sa, &ca );
   _zSinCos( zyx->c.y, &sb, &cb );
-  return zVec3DZYXVel2AngVelSC( zyxvel, sa, ca, sb, cb, angvel );
+  return zZYXVelToAngVelSC( zyxvel, sa, ca, sb, cb, angvel );
 }
 
-/* zVec3DZYXVel2AngVelSC
- * - convert z-y-x Eulerian angle differential to angular velocity,
- *   directly accepting sine/cosine sets.
- */
-zVec3D *zVec3DZYXVel2AngVelSC(zVec3D *zyxvel, double sa, double ca, double sb, double cb, zVec3D *angvel)
+/* convert z-y-x Eulerian angle differential to angular velocity from sine/cosine sets. */
+zVec3D *zZYXVelToAngVelSC(zVec3D *zyxvel, double sa, double ca, double sb, double cb, zVec3D *angvel)
 {
   _zVec3DCreate( angvel,-sa*zyxvel->c.y + ca*cb*zyxvel->c.z,
                          ca*zyxvel->c.y + sa*cb*zyxvel->c.z,
@@ -468,49 +383,42 @@ zVec3D *zVec3DZYXVel2AngVelSC(zVec3D *zyxvel, double sa, double ca, double sb, d
   return angvel;
 }
 
-/* zVec3DAngVel2ZYXVel
- * - convert angular velocity to z-y-x Eulerian angle differential.
- */
-zVec3D *zVec3DAngVel2ZYXVel(zVec3D *angvel, zVec3D *zyx, zVec3D *zyxvel)
+/* convert angular velocity to z-y-x Eulerian angle differential. */
+zVec3D *zAngVelToZYXVel(zVec3D *angvel, zVec3D *zyx, zVec3D *zyxvel)
 {
   double sa, ca, sb, cb;
 
   _zSinCos( zyx->c.x, &sa, &ca );
   _zSinCos( zyx->c.y, &sb, &cb );
-  return zVec3DAngVel2ZYXVelSC( angvel, sa, ca, sb, cb, zyxvel );
+  return zAngVelToZYXVelSC( angvel, sa, ca, sb, cb, zyxvel );
 }
 
-/* zVec3DAngVel2ZYXVelSC
- * - convert angular velocity to z-y-x Eulerian angle differential.
- *   directly accepting sine/cosine sets.
- */
-zVec3D *zVec3DAngVel2ZYXVelSC(zVec3D *angvel, double sa, double ca, double sb, double cb, zVec3D *zyxvel)
+/* convert angular velocity to z-y-x Eulerian angle differential from sine/cosine sets. */
+zVec3D *zAngVelToZYXVelSC(zVec3D *angvel, double sa, double ca, double sb, double cb, zVec3D *zyxvel)
 {
+  double w;
+
   /* at the singular point, 'zyxvel' remains the same value. */
   if( zIsTiny(cb) ) return zyxvel;
-  _zVec3DCreate( zyxvel, ca/cb*angvel->c.x+sa/cb*angvel->c.y,
-                         sb*zyxvel->c.z+angvel->c.z,
-                        -sa*angvel->c.x+ca*angvel->c.y );
+  w = ( ca*angvel->c.x + sa*angvel->c.y ) / cb;
+  _zVec3DCreate( zyxvel, w*sb + angvel->c.z,
+                        -sa*angvel->c.x + ca*angvel->c.y,
+                         w );
   return zyxvel;
 }
 
-/* zVec3DZYZVel2AngVel
- * - convert z-y-z Eulerian angle differential to angular velocity.
- */
-zVec3D *zVec3DZYZVel2AngVel(zVec3D *zyzvel, zVec3D *zyz, zVec3D *angvel)
+/* convert z-y-z Eulerian angle differential to angular velocity. */
+zVec3D *zZYZVelToAngVel(zVec3D *zyzvel, zVec3D *zyz, zVec3D *angvel)
 {
   double sa, ca, sb, cb;
 
   _zSinCos( zyz->c.x, &sa, &ca );
   _zSinCos( zyz->c.y, &sb, &cb );
-  return zVec3DZYZVel2AngVelSC( zyzvel, sa, ca, sb, cb, angvel );
+  return zZYZVelToAngVelSC( zyzvel, sa, ca, sb, cb, angvel );
 }
 
-/* zVec3DZYZVel2AngVelSC
- * - convert z-y-z Eulerian angle differential to angular velocity.
- *   directly accepting sine/cosine sets.
- */
-zVec3D *zVec3DZYZVel2AngVelSC(zVec3D *zyzvel, double sa, double ca, double sb, double cb, zVec3D *angvel)
+/* convert z-y-z Eulerian angle differential to angular velocity from sine/cosine sets. */
+zVec3D *zZYZVelToAngVelSC(zVec3D *zyzvel, double sa, double ca, double sb, double cb, zVec3D *angvel)
 {
   _zVec3DCreate( angvel,-sa*zyzvel->c.y + ca*sb*zyzvel->c.z,
                          ca*zyzvel->c.y + sa*sb*zyzvel->c.z,
@@ -518,29 +426,27 @@ zVec3D *zVec3DZYZVel2AngVelSC(zVec3D *zyzvel, double sa, double ca, double sb, d
   return angvel;
 }
 
-/* zVec3DAngVel2ZYZVel
- * - convert angular velocity to z-y-z Eulerian angle differential.
- */
-zVec3D *zVec3DAngVel2ZYZVel(zVec3D *angvel, zVec3D *zyz, zVec3D *zyzvel)
+/* convert angular velocity to z-y-z Eulerian angle differential. */
+zVec3D *zAngVelToZYZVel(zVec3D *angvel, zVec3D *zyz, zVec3D *zyzvel)
 {
   double sa, ca, sb, cb;
 
   _zSinCos( zyz->c.x, &sa, &ca );
   _zSinCos( zyz->c.y, &sb, &cb );
-  return zVec3DAngVel2ZYZVelSC( angvel, sa, ca, sb, cb, zyzvel );
+  return zAngVelToZYZVelSC( angvel, sa, ca, sb, cb, zyzvel );
 }
 
-/* zVec3DAngVel2ZYZVelSC
- * - convert angular velocity to z-y-z Eulerian angle differential.
- *   directly accepting sine/cosine sets.
- */
-zVec3D *zVec3DAngVel2ZYZVelSC(zVec3D *angvel, double sa, double ca, double sb, double cb, zVec3D *zyzvel)
+/* convert angular velocity to z-y-z Eulerian angle differential from sine/cosine sets. */
+zVec3D *zAngVelToZYZVelSC(zVec3D *angvel, double sa, double ca, double sb, double cb, zVec3D *zyzvel)
 {
+  double w;
+
   /* at the singular point, 'zyzvel' remains the same value. */
   if( zIsTiny(sb) ) return zyzvel;
-  _zVec3DCreate( zyzvel, ca/sb*angvel->c.x+sa/sb*angvel->c.y,
-                        -cb*zyzvel->c.z+angvel->c.z,
-                        -sa*angvel->c.x+ca*angvel->c.y );
+  w = ( ca*angvel->c.x + sa*angvel->c.y ) / sb;
+  _zVec3DCreate( zyzvel, angvel->c.z - w*cb,
+                        -sa*angvel->c.x + ca*angvel->c.y,
+                         w );
   return zyzvel;
 }
 
@@ -548,9 +454,7 @@ zVec3D *zVec3DAngVel2ZYZVelSC(zVec3D *angvel, double sa, double ca, double sb, d
 /* I/O
  * ********************************************************** */
 
-/* zVec3DFRead
- * - input a 3D vector from file.
- */
+/* input a 3D vector from file. */
 zVec3D *zVec3DFRead(FILE *fp, zVec3D *v)
 {
   v->c.x = zFDouble( fp );
@@ -559,9 +463,7 @@ zVec3D *zVec3DFRead(FILE *fp, zVec3D *v)
   return v;
 }
 
-/* zVec3DDataFWrite
- * - output a 3D vector to file.
- */
+/* output a 3D vector to file. */
 zVec3D *zVec3DDataFWrite(FILE *fp, zVec3D *v)
 {
   if( !v ) return NULL;
@@ -569,9 +471,7 @@ zVec3D *zVec3DDataFWrite(FILE *fp, zVec3D *v)
   return v;
 }
 
-/* zVec3DDataNLFWrite
- * - output a 3D vector to file with the new line.
- */
+/* output a 3D vector to file with the new line. */
 zVec3D *zVec3DDataNLFWrite(FILE *fp, zVec3D *v)
 {
   if( !zVec3DDataFWrite( fp, v ) ) return NULL;
@@ -579,9 +479,7 @@ zVec3D *zVec3DDataNLFWrite(FILE *fp, zVec3D *v)
   return v;
 }
 
-/* zVec3DFWrite
- * - output of 3D vector to file.
- */
+/* output of 3D vector to file. */
 zVec3D *zVec3DFWrite(FILE *fp, zVec3D *v)
 {
   fprintf( fp, "(" );
@@ -591,15 +489,4 @@ zVec3D *zVec3DFWrite(FILE *fp, zVec3D *v)
     zVec3DDataFWrite( fp, v );
   fprintf( fp, ")\n" );
   return v;
-}
-
-/* METHOD:
- * zVec3DFWriteXML - xml output.
- * ... yet testing.
- */
-void zVec3DFWriteXML(FILE *fp, zVec3D *v)
-{
-  fprintf( fp, "\"" );
-  zVec3DDataFWrite( fp, v );
-  fprintf( fp, "\"" );
 }

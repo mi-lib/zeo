@@ -9,7 +9,7 @@ void frame_create_rand(zFrame3D *f)
 
   zVec3DCreate( zFrame3DPos(f), zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
   zVec3DCreate( &aa, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
-  zMat3DAA( zFrame3DAtt(f), &aa );
+  zMat3DFromAA( zFrame3DAtt(f), &aa );
 }
 
 void veclist_create_rand(zFrame3D *f)

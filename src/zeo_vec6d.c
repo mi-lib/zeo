@@ -251,14 +251,3 @@ zVec6D *zVec6DFWrite(FILE *fp, zVec6D *v)
   zVec3DFWrite( fp, zVec6DAng(v) );
   return v;
 }
-
-/* METHOD:
- * zVec6DFWriteXML - xml output.
- * ... yet testing.
- */
-void zVec6DFWriteXML(FILE *fp, zVec6D *v)
-{
-  fprintf( fp, "\"" );
-  zVec6DDataFWrite( fp, v );
-  fprintf( fp, "\"" );
-}

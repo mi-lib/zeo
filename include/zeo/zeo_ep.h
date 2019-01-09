@@ -11,11 +11,9 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* CLASS: zEP
- * Euler parameter class
- * ********************************************************** */
-
+/*! \struct zEP
+ * \brief Euler parameter.
+ */
 typedef union{
   struct{
     double w;
@@ -72,14 +70,14 @@ __EXPORT zEP *zMat3DToEP(zMat3D *m, zEP *ep);
 
 /*! \brief rotate a 3D vector by Euler parameter.
  *
- * zEPRotVec() rotates a 3D vector \a v by Euler parameter \a ep and puts
- * it into \a rv.
+ * zEPRotVec3D() rotates a 3D vector \a v by Euler parameter \a ep
+ * and puts it into \a rv.
  * \return
- * zEPRotVec() returns a pointer \a rv.
+ * zEPRotVec3D() returns a pointer \a rv.
  * \sa
- * zMat3DEP
+ * zMat3DFromEP
  */
-__EXPORT zVec3D *zEPRotVec(zEP *ep, zVec3D *v, zVec3D *rv);
+__EXPORT zVec3D *zEPRotVec3D(zEP *ep, zVec3D *v, zVec3D *rv);
 
 /*! \brief convert rotation velocity to Euler parameter derivative.
  *
