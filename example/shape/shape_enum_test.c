@@ -14,5 +14,6 @@ int main(void)
   check( "ellipsoid" );
   check( "cylinder" );
   check( "cone" );
+  check( "nurbs" );
   return 0;
 }

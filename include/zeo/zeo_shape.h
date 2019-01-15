@@ -27,6 +27,7 @@ enum{
   ZSHAPE_CYLINDER,
   ZSHAPE_ELLIPTICCYLINDER,
   ZSHAPE_CONE,
+  ZSHAPE_NURBS,
 };
 
 /*! \brief expression for the type of 3D shape.
@@ -41,6 +42,7 @@ enum{
  *  ZSHAPE_CYLINDER -> "cylinder"
  *  ZSHAPE_ELLIPTICCYLINDER -> "ellipticcylinder"
  *  ZSHAPE_CONE     -> "cone"
+ *  ZSHAPE_NURBS    -> "nurbs"
  *
  * zShapeTypeByStr() converts a string \a str to the type of
  * 3D shape in accordance with the above correspondence.
@@ -66,6 +68,7 @@ typedef union{
   zCyl3D cl;
   zECyl3D ecl;
   zCone3D cn;
+  zNURBS3D nurbs;
 } zShapeBody;
 
 typedef struct{
@@ -86,6 +89,7 @@ typedef struct{
 #define zShape3DCyl(s)          ( &(s)->body.cl )
 #define zShape3DECyl(s)         ( &(s)->body.ecl )
 #define zShape3DCone(s)         ( &(s)->body.cn )
+#define zShape3DNURBS(s)        ( &(s)->body.nurbs )
 
 #define zShape3DVertNum(s)      zPH3DVertNum(zShape3DPH(s))
 #define zShape3DVertBuf(s)      zPH3DVertBuf(zShape3DPH(s))
@@ -116,6 +120,7 @@ __EXPORT zShape3D *zShape3DCreateEllipsAlign(zShape3D *shape, zVec3D *c, double 
 __EXPORT zShape3D *zShape3DCreateCyl(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r, int div);
 __EXPORT zShape3D *zShape3DCreateECyl(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div);
 __EXPORT zShape3D *zShape3DCreateCone(zShape3D *shape, zVec3D *c, zVec3D *v, double r, int div);
+__EXPORT zShape3D *zShape3DAllocNURBS(zShape3D *shape, int size1, int size2, int dim1, int dim2);
 
 /*! \brief destroy a 3D shape instance.
  *

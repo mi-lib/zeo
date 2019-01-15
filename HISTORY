@@ -1,3 +1,4 @@
+2019. 1.15. Extended zShape3D to abstract zNURBS3D. [zeo_shape]
 2019. 1.15. Added zeo_prim_nurbs for class abstraction. [zeo_prim, zeo_prim_nurbs]
 2019. 1.15. Added zNURBS3DToPH. [zeo_nurbs]
 2019. 1.15. Debugged zNURBS3DVec and zNURBS3DVecNorm. [zeo_nurbs]

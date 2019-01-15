@@ -13,7 +13,7 @@
  * ********************************************************** */
 
 static char *__zshapetypename[] = {
-  "none", "polyhedron", "box", "sphere", "ellipsoid", "cylinder", "ellipticcylinder", "cone",
+  "none", "polyhedron", "box", "sphere", "ellipsoid", "cylinder", "ellipticcylinder", "cone", "nurbs",
   NULL,
 };
 
@@ -22,7 +22,7 @@ static char *__zshapetypename[] = {
  */
 char *zShapeTypeExpr(zShapeType type)
 {
-  return __zshapetypename[zLimit(type,ZSHAPE_NONE,ZSHAPE_CONE)];
+  return __zshapetypename[zLimit(type,ZSHAPE_NONE,ZSHAPE_NURBS)];
 }
 
 /* zShapeTypeByStr
@@ -149,6 +149,15 @@ zShape3D *zShape3DCreateCone(zShape3D *shape, zVec3D *c, zVec3D *v, double r, in
   zShape3DType(shape) = ZSHAPE_CONE;
   zCone3DCreate( zShape3DCone(shape), c, v, r, div );
   shape->com = &zprim_cone3d_com;
+  return shape;
+}
+
+zShape3D *zShape3DAllocNURBS(zShape3D *shape, int size1, int size2, int dim1, int dim2)
+{
+  zShape3DInit( shape );
+  zShape3DType(shape) = ZSHAPE_NURBS;
+  zNURBS3DAlloc( zShape3DNURBS(shape), size1, size2, dim1, dim2 );
+  shape->com = &zprim_nurbs_com;
   return shape;
 }
 
@@ -324,6 +333,7 @@ zShape3D *zShape3DFRead(FILE *fp, zShape3D *shape, zShape3D *sarray, int ns, zOp
     &zprim_ph3d_com, &zprim_box3d_com,
     &zprim_sphere3d_com, &zprim_ellips3d_com,
     &zprim_cyl3d_com, &zprim_ecyl3d_com, &zprim_cone3d_com,
+    &zprim_nurbs_com,
   };
   _zShape3DParam prm;
   int cur;
