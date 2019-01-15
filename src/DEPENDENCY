@@ -8,6 +8,7 @@ zeo
      _ zeda
      _ zm
    + zeo_vec3d_list
+     - zeo_pointcloud
    + zeo_vec3d_tree
  + zeo_vec3d_pca
 - zeo_ep
@@ -22,12 +23,14 @@ zeo
      - zeo_mat3d
       ...
     + zeo_elem_list
+    + zeo_nurbs
   + zeo_prim_box
   + zeo_prim_sphere
   + zeo_prim_ellips
   + zeo_prim_cyl
   + zeo_prim_cone
   + zeo_prim_ph
+  + zeo_prim_nurbs
  - zeo_bv_ch2
  - zeo_bv_aabb
  - zeo_bv_obb

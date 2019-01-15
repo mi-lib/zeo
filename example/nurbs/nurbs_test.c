@@ -1,4 +1,4 @@
-#include <zeo/zeo_nurbs3d.h>
+#include <zeo/zeo_nurbs.h>
 
 zVec3D cp[] = {
   { { 1.0,-2.0, 0.0 } },
@@ -32,7 +32,6 @@ int main(void)
 {
   zNURBS3D nurbs;
   register int i, j, n1, n2;
-  const int uslice = 50, vslice = 50;
   double u, v;
   zVec3D p, n, t1, t2;
   FILE *fp;
@@ -41,6 +40,7 @@ int main(void)
   fp = fopen( "src", "w" );
   n1 = n2 = sqrt(sizeof(cp)/sizeof(zVec3D));
   zNURBS3DAlloc( &nurbs, n1, n2, 3, 3 );
+  zNURBS3DSetWeight( &nurbs, 2, 2, 2.0 );
   for( i=0; i<n1; i++ )
     for( j=0; j<n2; j++ ){
       zNURBS3DSetCP( &nurbs, i, j, &cp[i*n2+j] );
@@ -50,10 +50,11 @@ int main(void)
   fclose( fp );
 
   fp = fopen( "sfc", "w" );
-  for( i=0; i<=uslice; i++ ){
-    u = zNURBS3DKnotSlice( &nurbs, 0, i, uslice );
-    for( j=0; j<=vslice; j++ ){
-      v = zNURBS3DKnotSlice( &nurbs, 1, j, vslice );
+  zNURBS3DSetSliceNum( &nurbs, 30, 30 );
+  for( i=0; i<=nurbs.ns[0]; i++ ){
+    u = zNURBS3DKnotSlice( &nurbs, 0, i );
+    for( j=0; j<=nurbs.ns[1]; j++ ){
+      v = zNURBS3DKnotSlice( &nurbs, 1, j );
       if( zNURBS3DVec( &nurbs, u, v, &p ) ){
         zVec3DDataFWrite( fp, &p );
         fprintf( fp, "\n" );
@@ -65,8 +66,8 @@ int main(void)
 
   fp = fopen( "nrm", "w" );
  RETRY:
-  u = zRandF( zNURBS3DKnot0(&nurbs,0)+1, zNURBS3DKnotE(&nurbs,0)-1 );
-  v = zRandF( zNURBS3DKnot0(&nurbs,1)+1, zNURBS3DKnotE(&nurbs,1)-1 );
+  u = zRandF( zNURBS3DKnotS(&nurbs,0), zNURBS3DKnotE(&nurbs,0) );
+  v = zRandF( zNURBS3DKnotS(&nurbs,1), zNURBS3DKnotE(&nurbs,1) );
   if( zNURBS3DVecNorm( &nurbs, u, v, &p, &n, &t1, &t2 ) ){
     if( zVec3DIsTiny( &n ) ) goto RETRY;
     zVec3DDataFWrite( fp, &p );
@@ -84,7 +85,12 @@ int main(void)
     zVec3DAddDRC( &t2, &p );
     zVec3DDataFWrite( fp, &t2 );
   }
-  zNURBS3DDestroy( &nurbs );
   fclose( fp );
+
+  fp = fopen( "test_nurbs.tkf", "w" );
+  zNURBS3DFWrite( fp, &nurbs );
+  fclose( fp );
+
+  zNURBS3DDestroy( &nurbs );
   return 0;
 }

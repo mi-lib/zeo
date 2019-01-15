@@ -8,6 +8,7 @@
 #define __ZEO_PRIM_H__
 
 #include <zeo/zeo_ph.h>
+#include <zeo/zeo_nurbs.h>
 
 /* a default number of division required in conversion from
  * sphere, ellipsoid, cylinder and cone to polygon model.
@@ -42,5 +43,6 @@ typedef struct{
 #include <zeo/zeo_prim_ecyl.h>   /* elliptic cylinder */
 #include <zeo/zeo_prim_cone.h>   /* cone */
 #include <zeo/zeo_prim_ph.h>     /* polyhedron (for class abstraction) */
+#include <zeo/zeo_prim_nurbs.h>  /* NURBS (for class abstraction) */
 
 #endif /* __ZEO_PRIM_H__ */

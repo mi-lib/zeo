@@ -13,6 +13,7 @@
    elliptic cylinder, polyhedron)
  - multiple 3D shapes
  - point cloud
+ - NURBS curve / surface
  - trianglation of non-convex
  - bounding volume (AABB, OBB, boundin ball, convex-hull)
  - collision checking (AABB tree, GJK, Muller-Preparata)

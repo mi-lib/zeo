@@ -32,6 +32,12 @@
 #define ZEO_ERR_OPT_INV      "invalid description for optical-info"
 #define ZEO_ERR_OPT_UNNAME   "unnamed optical-info exists"
 
+#define ZEO_ERR_NURBS_INVDIM "invalid dimension specified for NURBS, or lack of control points"
+#define ZEO_ERR_NURBS_SIZMIS      "size mismatch of NURBS surfaces"
+#define ZEO_ERR_NURBS_KNOTALREADY "knot already allocated"
+#define ZEO_ERR_NURBS_CPALREADY   "control point already allocated"
+#define ZEO_ERR_NURBS_INVCP       "invalid index of control point specified"
+
 #define ZEO_ERR_PRIM_ZEROC   "zero-distance centers specified"
 
 #define ZEO_ERR_SHAPE_MANY   "too many shapes specified"

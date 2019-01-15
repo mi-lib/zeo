@@ -13,9 +13,7 @@
 
 static bool _zSphere3DFRead(FILE *fp, void *instance, char *buf, bool *success);
 
-/* zSphere3DCreate
- * - create 3D sphere.
- */
+/* create a 3D sphere. */
 zSphere3D *zSphere3DCreate(zSphere3D *sphere, zVec3D *c, double r, int div)
 {
   zSphere3DSetCenter( sphere, c );
@@ -24,26 +22,20 @@ zSphere3D *zSphere3DCreate(zSphere3D *sphere, zVec3D *c, double r, int div)
   return sphere;
 }
 
-/* zSphere3DInit
- * - initialize 3D sphere.
- */
+/* initialize a 3D sphere. */
 zSphere3D *zSphere3DInit(zSphere3D *sphere)
 {
   return zSphere3DCreate( sphere, ZVEC3DZERO, 0, 0 );
 }
 
-/* zSphere3DCopy
- * - copy 3D sphere.
- */
+/* copy a 3D sphere. */
 zSphere3D *zSphere3DCopy(zSphere3D *src, zSphere3D *dest)
 {
   return zSphere3DCreate( dest,
     zSphere3DCenter(src), zSphere3DRadius(src), zSphere3DDiv(src) );
 }
 
-/* zSphere3DMirror
- * - mirror 3D sphere.
- */
+/* mirror a 3D sphere. */
 zSphere3D *zSphere3DMirror(zSphere3D *src, zSphere3D *dest, zAxis axis)
 {
   zSphere3DCopy( src, dest );
@@ -51,9 +43,7 @@ zSphere3D *zSphere3DMirror(zSphere3D *src, zSphere3D *dest, zAxis axis)
   return dest;
 }
 
-/* zSphere3DXfer
- * - transform 3D sphere.
- */
+/* transfer a 3D sphere. */
 zSphere3D *zSphere3DXfer(zSphere3D *src, zFrame3D *f, zSphere3D *dest)
 {
   zXfer3D( f, zSphere3DCenter(src), zSphere3DCenter(dest) );
@@ -62,9 +52,7 @@ zSphere3D *zSphere3DXfer(zSphere3D *src, zFrame3D *f, zSphere3D *dest)
   return dest;
 }
 
-/* zSphere3DXferInv
- * - inversely transform 3D sphere.
- */
+/* inversely transfer a 3D sphere. */
 zSphere3D *zSphere3DXferInv(zSphere3D *src, zFrame3D *f, zSphere3D *dest)
 {
   zXfer3DInv( f, zSphere3DCenter(src), zSphere3DCenter(dest) );
@@ -73,9 +61,7 @@ zSphere3D *zSphere3DXferInv(zSphere3D *src, zFrame3D *f, zSphere3D *dest)
   return dest;
 }
 
-/* zSphere3DClosest
- * - the closest point from 3D point to 3D sphere.
- */
+/* closest point from a point to a sphere. */
 double zSphere3DClosest(zSphere3D *sphere, zVec3D *p, zVec3D *cp)
 {
   zVec3D d;
@@ -91,9 +77,7 @@ double zSphere3DClosest(zSphere3D *sphere, zVec3D *p, zVec3D *cp)
   return l - zSphere3DRadius(sphere);
 }
 
-/* zSphere3DPointDist
- * - distance between 3D sphere and a point.
- */
+/* distance between a 3D sphere and a point. */
 double zSphere3DPointDist(zSphere3D *sphere, zVec3D *p)
 {
   zVec3D d;
@@ -102,25 +86,19 @@ double zSphere3DPointDist(zSphere3D *sphere, zVec3D *p)
   return zVec3DNorm(&d) - zSphere3DRadius(sphere);
 }
 
-/* zSphere3DPointIsInside
- * - judge if a point is inside of 3D sphere.
- */
+/* judge if a point is inside of a 3D sphere. */
 bool zSphere3DPointIsInside(zSphere3D *sphere, zVec3D *p, bool rim)
 {
   return zSphere3DPointDist( sphere, p ) < ( rim ? zTOL : 0 ) ? true : false;
 }
 
-/* zSphere3DVolume
- * - volume of 3D sphere.
- */
+/* volume of a 3D sphere. */
 double zSphere3DVolume(zSphere3D *sphere)
 {
   return 4.0 * zPI * pow(zSphere3DRadius(sphere),3) / 3.0;
 }
 
-/* zSphere3DInertia
- * - inertia of 3D sphere.
- */
+/* inertia of a 3D sphere. */
 zMat3D *zSphere3DInertia(zSphere3D *sphere, zMat3D *inertia)
 {
   double vol, i;
@@ -131,9 +109,7 @@ zMat3D *zSphere3DInertia(zSphere3D *sphere, zMat3D *inertia)
   return inertia;
 }
 
-/* zSphere3DToPH
- * - convert sphere to polyhedron.
- */
+/* convert a sphere to a polyhedron. */
 zPH3D *zSphere3DToPH(zSphere3D *sphere, zPH3D *ph)
 {
   zVec3D *vert;
@@ -147,8 +123,8 @@ zPH3D *zSphere3DToPH(zSphere3D *sphere, zPH3D *ph)
     return NULL;
   vert = zPH3DVertBuf( ph );
   face = zPH3DFaceBuf( ph );
-  /* -- vertices -- */
-  /* north pole */
+
+  /* north pole vertex */
   zVec3DCopy( zSphere3DCenter(sphere), &vert[0] );
   vert[0].e[zZ] += zSphere3DRadius(sphere);
   /* general vertices */
@@ -159,11 +135,10 @@ zPH3D *zSphere3DToPH(zSphere3D *sphere, zPH3D *ph)
         zPI * i / zSphere3DDiv(sphere), theta );
       zVec3DAddDRC( &vert[n], zSphere3DCenter(sphere) );
     }
-  /* south pole */
+  /* south pole vertex */
   zVec3DCopy( zSphere3DCenter(sphere), &vert[n] );
   vert[n].e[zZ] -= zSphere3DRadius(sphere);
 
-  /* -- faces -- */
   /* arctic faces */
   for( n=0, i=1, j=zSphere3DDiv(sphere); i<=zSphere3DDiv(sphere); j=i++ )
     zTri3DCreate( &face[n++], &vert[0], &vert[i], &vert[j] );
@@ -184,9 +159,7 @@ zPH3D *zSphere3DToPH(zSphere3D *sphere, zPH3D *ph)
   return ph;
 }
 
-/* zSphere3DFit
- * - fit a sphere to point cloud.
- */
+/* fit a sphere to point cloud. */
 zSphere3D *zSphere3DFit(zSphere3D *s, zVec3DList *pc)
 {
   zMat c;
@@ -228,10 +201,7 @@ zSphere3D *zSphere3DFit(zSphere3D *s, zVec3DList *pc)
   return s;
 }
 
-/* (static)
- * _zSphere3DFRead
- * - input of 3D sphere.
- */
+/* read information of a 3D sphere from file. */
 bool _zSphere3DFRead(FILE *fp, void *instance, char *buf, bool *success)
 {
   if( strcmp( buf, "center" ) == 0 ){
@@ -243,9 +213,7 @@ bool _zSphere3DFRead(FILE *fp, void *instance, char *buf, bool *success)
   return true;
 }
 
-/* zSphere3DFRead
- * - input of 3D sphere.
- */
+/* read information of a 3D sphere from file. */
 zSphere3D *zSphere3DFRead(FILE *fp, zSphere3D *sphere)
 {
   zSphere3DInit( sphere );
@@ -253,9 +221,7 @@ zSphere3D *zSphere3DFRead(FILE *fp, zSphere3D *sphere)
   return sphere;
 }
 
-/* zSphere3DFWrite
- * - output of 3D sphere.
- */
+/* write information of a 3D sphere to file. */
 void zSphere3DFWrite(FILE *fp, zSphere3D *sphere)
 {
   fprintf( fp, "center: " );

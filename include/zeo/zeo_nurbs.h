@@ -1,12 +1,12 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_nurbs3d - NURBS surface
+ * zeo_nurbs - NURBS curve / surface
  */
-#include <zeo/zeo_vec3d.h>
+#include <zeo/zeo_ph.h>
 
-#ifndef __ZEO_NURBS3D_H__
-#define __ZEO_NURBS3D_H__
+#ifndef __ZEO_NURBS_H__
+#define __ZEO_NURBS_H__
 
 __BEGIN_DECLS
 
@@ -40,18 +40,19 @@ zArray2Class( zNURBS3DCPNet, zNURBS3DCPCell );
  *//* ******************************************************* */
 typedef struct{
   int dim[2];   /*!< \brief dimensions of a curve in two axes */
+  zVec knot[2]; /*!< \brief knot vectors */
+  int ns[2];    /*!< \brief number of slices in each axis */
   /*! \cond */
-  zVec knot[2]; /* knot vector */
   zNURBS3DCPNet cpnet; /* a net of control points */
   /*! \endcond */
 } zNURBS3D;
 
-#define zNURBS3DKnotNum(n,i)       ( zVecSizeNC((n)->knot[i])-1 )
+#define zNURBS3DKnotNum(n,i)       zVecSizeNC((n)->knot[i])
 #define zNURBS3DKnot(n,i,j)        zVecElemNC((n)->knot[i],j)
 #define zNURBS3DSetKnot(n,i,j,v)   ( zNURBS3DKnot(n,i,j) = (v) )
-#define zNURBS3DKnot0(n,i)         zNURBS3DKnot(n,i,0)
-#define zNURBS3DKnotE(n,i)         zNURBS3DKnot(n,i,zNURBS3DKnotNum(n,i)-1)
-#define zNURBS3DKnotSlice(n,i,k,s) ( ( zNURBS3DKnotE(n,i) - zNURBS3DKnot0(n,i) ) * k / s + zNURBS3DKnot0(n,i) )
+#define zNURBS3DKnotS(n,i)         zNURBS3DKnot(n,i,(n)->dim[i])
+#define zNURBS3DKnotE(n,i)         zNURBS3DKnot(n,i,zNURBS3DCPNum(n,i))
+#define zNURBS3DKnotSlice(n,i,k)   ( ( zNURBS3DKnotE(n,i) - zNURBS3DKnotS(n,i) ) * k / (n)->ns[i] + zNURBS3DKnotS(n,i) )
 
 #define zNURBS3DCPNum(n,i)         zArray2Size(&(n)->cpnet,i)
 #define zNURBS3DWeight(n,i,j)      ( zArray2ElemNC(&(n)->cpnet,i,j)->w )
@@ -62,15 +63,17 @@ typedef struct{
 #define zNURBS3D1KnotNum(n)        zNURBS3DKnotNum(n,1)
 #define zNURBS3D1Knot(n,j)         zNURBS3DKnot(n,1,j)
 #define zNURBS3D1SetKnot(n,j,v)    zNURBS3DSetKnot(n,1,j,v)
-#define zNURBS3D1Knot0(n)          zNURBS3DKnot0(n,1)
+#define zNURBS3D1KnotS(n)          zNURBS3DKnotS(n,1)
 #define zNURBS3D1KnotE(n)          zNURBS3DKnotE(n,1)
-#define zNURBS3D1KnotSlice(n,k,s)  zNURBS3DKnotSlice(n,1,k,s)
+#define zNURBS3D1KnotSlice(n,k)    zNURBS3DKnotSlice(n,1,k)
 
 #define zNURBS3D1CPNum(n)          zNURBS3DCPNum(n,1)
 #define zNURBS3D1Weight(n,j)       zNURBS3DWeight(n,0,j)
 #define zNURBS3D1SetWeight(n,j,v)  zNURBS3DSetWeight(n,0,j,v)
 #define zNURBS3D1CP(n,j)           zNURBS3DCP(n,0,j)
 #define zNURBS3D1SetCP(n,j,v)      zNURBS3DSetCP(n,0,j,v)
+
+#define ZEO_NURBS3D_DEFAULT_NS     20
 
 /*! \brief allocate a NURBS curve / surface.
  *
@@ -100,11 +103,35 @@ typedef struct{
 __EXPORT bool zNURBS3DAlloc(zNURBS3D *nurbs, int size1, int size2, int dim1, int dim2);
 #define zNURBS3D1Alloc(nurbs,size,dim) zNURBS3DAlloc( nurbs, 1, size, 0, dim )
 
-/*! \brief destroy a NURBS curve.
+/*! \brief set numbers of slices of a NURBS curve / surface. */
+#define zNURBS3DSetSliceNum(nurbs,nu,nv) do{\
+  (nurbs)->ns[0] = (nu);\
+  (nurbs)->ns[1] = (nv);\
+} while(0)
+
+/*! \brief initialize a NURBS curve / surface.
+ *
+ * zNURBS3DInit() initializes a NURBS curve / surface \a nurbs
+ * by reseting properties.
+ */
+__EXPORT zNURBS3D *zNURBS3DInit(zNURBS3D *nurbs);
+
+/*! \brief destroy a NURBS curve / surface.
  *
  * zNURBS3DDestroy() destroys a NURBS curve / surface \a nurbs.
  */
 __EXPORT void zNURBS3DDestroy(zNURBS3D *nurbs);
+
+/*! \brief copy a NURBS curve / surface. */
+__EXPORT zNURBS3D *zNURBS3DCopy(zNURBS3D *src, zNURBS3D *dest);
+/*! \brief clone a NURBS curve / surface. */
+__EXPORT zNURBS3D *zNURBS3DClone(zNURBS3D *src, zNURBS3D *dest);
+/*! \brief mirror a NURBS curve / surface about specified axis. */
+__EXPORT zNURBS3D *zNURBS3DMirror(zNURBS3D *src, zNURBS3D *dest, zAxis axis);
+/*! \brief transfer control points of a NURBS curve / surface. */
+__EXPORT zNURBS3D *zNURBS3DXfer(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest);
+/*! \brief inversely transfer control points of a NURBS curve / surface. */
+__EXPORT zNURBS3D *zNURBS3DXferInv(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest);
 
 /*! \brief normalize the knot vectors of a NURBS curve / surface.
  *
@@ -143,23 +170,37 @@ __EXPORT zVec3D *zNURBS3DVec(zNURBS3D *nurbs, double u, double v, zVec3D *p);
  */
 __EXPORT zVec3D *zNURBS3DVecNorm(zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *n, zVec3D *t1, zVec3D *t2);
 
-/*! \brief nearest neighbor of a 3D point on a NURBS surface.
+/*! \brief closest point of a 3D point on a NURBS surface.
  *
- * zNURBS3DVecNN() finds the nearest-neighbor vector on a NURBS curve
- * defined by \a nurbs from a point \a p based on Levenberg-Merquardt
- * method. The result is put into \a nn.
- * If \a u and \a v are non-null, the corresponding parameters are stored.
+ * zNURBS3DClosest() finds the closest point on a NURBS surface
+ * \a nurbs from a point \a p based on Levenberg-Merquardt method.
+ * The result is put into \a cp.
+ * If \a u and \a v are non-null, the corresponding parameters are
+ * stored.
  * \return
- * zNURBS3D1VecNN() returns the parameter corresponding to the nearest-
- * neighbor vector found by this function.
+ * zNURBS3DClosest() returns the distance between \a p and \a cp.
  */
-__EXPORT double zNURBS3DVecNN(zNURBS3D *nurbs, zVec3D *p, zVec3D *nn, double *u, double *v);
+__EXPORT double zNURBS3DClosest(zNURBS3D *nurbs, zVec3D *p, zVec3D *cp, double *u, double *v);
 
-/* for debug */
+/*! \brief convert NURBS surface to a polyhedron.
+ *
+ * zNURBS3DToPH() converts a NURBS surface to a polyhedron.
+ * The surface is divided by the number of slices in each axis
+ * into triangles.
+ * \return
+ * zNURBS3DToPH() returns a pointer \a ph if it succeeds to
+ * convert the polyhedron. If it fails to allocate memory for
+ * the polyhedron, the null pointer is returned.
+ */
+__EXPORT zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph);
 
-__EXPORT void zNURBS3DKnotFWrite(FILE *fp, zNURBS3D *nurbs);
-__EXPORT void zNURBS3DCPFWrite(FILE *fp, zNURBS3D *nurbs);
+/* I/O */
+
+/*! \brief read a 3D NURBS surface from file. */
+__EXPORT zNURBS3D *zNURBS3DFRead(FILE *fp, zNURBS3D *nurbs);
+/*! \brief write a 3D NURBS surface to file. */
+__EXPORT void zNURBS3DFWrite(FILE *fp, zNURBS3D *nurbs);
 
 __END_DECLS
 
-#endif /* __ZNURBS3D_H__ */
+#endif /* __ZEO_NURBS_H__ */
