@@ -196,7 +196,10 @@ __EXPORT zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph);
 
 /* I/O */
 
-/*! \brief write a 3D NURBS surface to file. */
+/*! \brief read information of a 3D NURBS surface from file. */
+__EXPORT zNURBS3D *zNURBS3DFRead(FILE *fp, zNURBS3D *nurbs);
+
+/*! \brief write information of a 3D NURBS surface to file. */
 __EXPORT void zNURBS3DFWrite(FILE *fp, zNURBS3D *nurbs);
 
 __END_DECLS

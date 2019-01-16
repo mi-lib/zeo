@@ -338,7 +338,7 @@ zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph)
 
 static bool _zNURBS3DFRead(FILE *fp, void *instance, char *buf, bool *success);
 
-/* read a 3D NURBS surface from file. */
+/* read information of a 3D NURBS surface from file. */
 bool _zNURBS3DFRead(FILE *fp, void *instance, char *buf, bool *success)
 {
   zNURBS3D *nurbs;
@@ -390,7 +390,7 @@ bool _zNURBS3DFRead(FILE *fp, void *instance, char *buf, bool *success)
   return true;
 }
 
-/* read a 3D NURBS surface from file. */
+/* read information of a 3D NURBS surface from file. */
 zNURBS3D *zNURBS3DFRead(FILE *fp, zNURBS3D *nurbs)
 {
   zNURBS3DInit( nurbs );
@@ -399,7 +399,7 @@ zNURBS3D *zNURBS3DFRead(FILE *fp, zNURBS3D *nurbs)
   return NULL;
 }
 
-/* write a 3D NURBS surface to file. */
+/* write information of a 3D NURBS surface to file. */
 void zNURBS3DFWrite(FILE *fp, zNURBS3D *nurbs)
 {
   register int i, j;

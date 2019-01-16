@@ -109,7 +109,6 @@ __EXPORT zMShape3D *zMShape3DToPH(zMShape3D *ms);
  * \sa
  * zOpticalInfoFRead, zShape3DFRead
  */
-#define ZMULTISHAPE3D_SUFFIX "z3d"
 __EXPORT zMShape3D *zMShape3DReadFile(zMShape3D *ms, char filename[]);
 __EXPORT zMShape3D *zMShape3DFRead(FILE *fp, zMShape3D *ms);
 __EXPORT bool zMShape3DWriteFile(zMShape3D *ms, char filename[]);

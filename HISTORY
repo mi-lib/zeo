@@ -1,3 +1,4 @@
+2019. 1.16. Abolished ZMULTISHAPE3D_SUFFIX and modified zMShape3DReadFile and zMShape3DWriteFile. [zeo_mshape]
 2019. 1.15. Extended zShape3D to abstract zNURBS3D. [zeo_shape]
 2019. 1.15. Added zeo_prim_nurbs for class abstraction. [zeo_prim, zeo_prim_nurbs]
 2019. 1.15. Added zNURBS3DToPH. [zeo_nurbs]

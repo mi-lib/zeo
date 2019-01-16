@@ -17,9 +17,7 @@ static zMShape3D *_zMShape3DShapeFAlloc(FILE *fp, zMShape3D *ms);
 static zMShape3D *_zMShape3DOpticFRead(FILE *fp, zMShape3D *ms, int i);
 static zMShape3D *_zMShape3DShapeFRead(FILE *fp, zMShape3D *ms, int i);
 
-/* zMShape3DInit
- * - initialize 3D multiple shapes.
- */
+/* initialize multiple shapes. */
 zMShape3D *zMShape3DInit(zMShape3D *ms)
 {
   zArrayInit( &ms->shape );
@@ -27,9 +25,7 @@ zMShape3D *zMShape3DInit(zMShape3D *ms)
   return ms;
 }
 
-/* zMShape3DDestroy
- * - destroy 3D multiple shapes.
- */
+/* destroy multiple shapes. */
 void zMShape3DDestroy(zMShape3D *ms)
 {
   register int i;
@@ -43,9 +39,7 @@ void zMShape3DDestroy(zMShape3D *ms)
   zArrayFree( &ms->optic );
 }
 
-/* zMShape3DClone
- * - clone 3D multiple shapes.
- */
+/* clone multiple shapes. */
 zMShape3D *zMShape3DClone(zMShape3D *org)
 {
   zMShape3D *cln;
@@ -71,9 +65,7 @@ zMShape3D *zMShape3DClone(zMShape3D *org)
   return cln;
 }
 
-/* zMShape3DContigVert
- * - contiguous vertix of multiple shapes to a point.
- */
+/* find contiguous vertex of multiple shapes to a point. */
 zVec3D *zMShape3DContigVert(zMShape3D *ms, zVec3D *p, double *d)
 {
   register int i;
@@ -94,9 +86,7 @@ zVec3D *zMShape3DContigVert(zMShape3D *ms, zVec3D *p, double *d)
   return v;
 }
 
-/* zMShape3DClosest
- * - the closest point to multiple shapes.
- */
+/* find the closest point on multiple shapes from a point. */
 double zMShape3DClosest(zMShape3D *ms, zVec3D *p, zVec3D *cp)
 {
   register int i;
@@ -112,9 +102,7 @@ double zMShape3DClosest(zMShape3D *ms, zVec3D *p, zVec3D *cp)
   return dmin;
 }
 
-/* zMShape3DPointIsInside
- * - check if a point is inside of multiple shapes.
- */
+/* check if a point is inside of multiple shapes. */
 bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, bool rim)
 {
   register int i;
@@ -125,9 +113,7 @@ bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, bool rim)
   return false;
 }
 
-/* zMShape3DToPH
- * - convert all shapes of a multishape to polyhedra.
- */
+/* convert multiple shapes to polyhedra. */
 zMShape3D *zMShape3DToPH(zMShape3D *ms)
 {
   register int i;
@@ -137,15 +123,13 @@ zMShape3D *zMShape3DToPH(zMShape3D *ms)
   return ms;
 }
 
-/* zMShape3DReadFile
- * - input of multiple 3D shapes from file refered by name.
- */
+/* read informationi of multiple shapes from file. */
 zMShape3D *zMShape3DReadFile(zMShape3D *ms, char filename[])
 {
   FILE *fp;
   zMShape3D *ret;
 
-  if( !( fp = zOpenFile( filename, ZMULTISHAPE3D_SUFFIX, "r" ) ) )
+  if( !( fp = zOpenZTKFile( filename, "r" ) ) )
     return NULL;
   ret = zMShape3DFRead( fp, ms );
   fclose( fp );
@@ -158,10 +142,7 @@ typedef struct{
   int sc;
 } _zMShape3DParam;
 
-/* (static)
- * _zMShape3DFRead
- * input of multiple 3D shapes from file.
- */
+/* read information of multiple shapes from file (internal operation). */
 bool _zMShape3DFRead(FILE *fp, void *instance, char *buf, bool *success)
 {
   _zMShape3DParam *prm;
@@ -180,9 +161,7 @@ bool _zMShape3DFRead(FILE *fp, void *instance, char *buf, bool *success)
   return true;
 }
 
-/* zMShape3DFRead
- * input of multiple 3D shapes from file.
- */
+/* read information of multiple shapes from file. */
 zMShape3D *zMShape3DFRead(FILE *fp, zMShape3D *ms)
 {
   _zMShape3DParam prm;
@@ -198,11 +177,7 @@ zMShape3D *zMShape3DFRead(FILE *fp, zMShape3D *ms)
   return NULL;
 }
 
-/* (static)
- * _zMShape3DOpticFAlloc
- * - preparation of buffer for optical information sets
- *   for multiple 3D shapes.
- */
+/* allocate memory for optical information of multiple shapes. */
 zMShape3D *_zMShape3DOpticFAlloc(FILE *fp, zMShape3D *ms)
 {
   register int i;
@@ -216,10 +191,7 @@ zMShape3D *_zMShape3DOpticFAlloc(FILE *fp, zMShape3D *ms)
   return ms;
 }
 
-/* (static)
- * _zMShape3DShapeFAlloc
- * - preparation of buffer for 3D shapes for multiple 3D shapes.
- */
+/* allocate memory for shapes of multiple shapes. */
 zMShape3D *_zMShape3DShapeFAlloc(FILE *fp, zMShape3D *ms)
 {
   register int i;
@@ -233,10 +205,7 @@ zMShape3D *_zMShape3DShapeFAlloc(FILE *fp, zMShape3D *ms)
   return ms;
 }
 
-/* (static)
- * _zMShape3DOpticFRead
- * - input of optical information for multiple 3D shapes.
- */
+/* read optical information of multiple shapes. */
 zMShape3D *_zMShape3DOpticFRead(FILE *fp, zMShape3D *ms, int i)
 {
   if( i >= zMShape3DOpticNum(ms) ){
@@ -254,10 +223,7 @@ zMShape3D *_zMShape3DOpticFRead(FILE *fp, zMShape3D *ms, int i)
   return ms;
 }
 
-/* (static)
- * _zMShape3DShapeFRead
- * - input of 3D shape for multiple 3D shapes.
- */
+/* read information of a shape of multiple shapes. */
 zMShape3D *_zMShape3DShapeFRead(FILE *fp, zMShape3D *ms, int i)
 {
   if( i >= zMShape3DShapeNum(ms) ){
@@ -277,16 +243,13 @@ zMShape3D *_zMShape3DShapeFRead(FILE *fp, zMShape3D *ms, int i)
   return ms;
 }
 
-/* zMShape3DWriteFile
- * - output of multiple 3D shape to file refered by name.
- */
+/* output information of multiple shapes to file. */
 bool zMShape3DWriteFile(zMShape3D *ms, char filename[])
 {
   char fname[BUFSIZ];
   FILE *fp;
 
-  zAddSuffix( filename, ZMULTISHAPE3D_SUFFIX, fname, BUFSIZ );
-  if( !( fp = fopen( fname, "w" ) ) ){
+  if( !( fp = zOpenZTKFile( fname, "w" ) ) ){
     ZOPENERROR( fname );
     return false;
   }
@@ -295,9 +258,7 @@ bool zMShape3DWriteFile(zMShape3D *ms, char filename[])
   return true;
 }
 
-/* zMShape3DFWrite
- * - output of multiple 3D shape to file.
- */
+/* output information of multiple shapes to file. */
 void zMShape3DFWrite(FILE *fp, zMShape3D *ms)
 {
   register int i;
