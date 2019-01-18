@@ -89,16 +89,16 @@ __EXPORT bool zVec3DMatch(zVec3D *v1, zVec3D *v2);
 #define _zVec3DEqual(v1,v2) ( zIsTiny( (v1)->c.x - (v2)->c.x ) && zIsTiny( (v1)->c.y - (v2)->c.y ) && zIsTiny( (v1)->c.z - (v2)->c.z ) )
 __EXPORT bool zVec3DEqual(zVec3D *v1, zVec3D *v2);
 
-/*! \brief check if 3D vector is tiny.
+/*! \brief check if a 3D vector is tiny.
  *
- * zVec3DIsTol() checks if the absolute values of every
+ * zVec3DIsTol() checks if the absolute values of all
  * components of 3D vector \a v are smaller than \a tol.
  *
- * zVec3DIsTiny() applies zTOL (defined in "zm_misc.h") to
+ * zVec3DIsTiny() applies zTOL (defined in zm_misc.h) to
  * the tolerance of zVec3DIsTol().
  * \return
- * zVec3DIsTol() and zVec3DIsTiny() return the true value when
- * the absolute values of every components of \a v are smaller
+ * zVec3DIsTol() and zVec3DIsTiny() return the true value if
+ * the absolute values of all components of \a v are smaller
  * than \a tol and zTOL, respectively, or the false value,
  * otherwise.
  * \notes
@@ -120,23 +120,31 @@ __EXPORT bool zVec3DIsNan(zVec3D *v);
 
 /*! \brief the four rules of the arithmetics for 3D vector.
  *
- * zVec3DAdd() adds the two 3D vectors, \a v1 and \a v2.
+ * zVec3DAdd() adds two 3D vectors, \a v1 and \a v2.
  * The result is put into \a v.
  *
- * zVec3DSub() subtracts the 3D vector \a v2 from the other
- * \a v1. The result is put into \a v.
+ * zVec3DSub() subtracts a 3D vector \a v2 from the other \a v1.
+ * The result is put into \a v.
  *
- * zVec3DRev() reverses the 3D vector \a v. The result is put
- * into \a rv.
+ * zVec3DRev() reverses a 3D vector \a v. The result is put into
+ * \a rv.
  *
- * zVec3DMul() multiplies the 3D vector \a v by value \a k.
+ * zVec3DMul() multiplies a 3D vector \a v by a scalar value \a k.
  * The result is put into \a mv.
  *
- * zVec3DDiv() divides the 3D vector \a v by \a k.
+ * zVec3DDiv() divides a 3D vector \a v by a scalar value \a k.
  * The result is put into \a dv.
  *
- * zVec3DCat() concatenates the 3D vector \a v2 to \a v1,
- * multiplied by a scalar value \a k. The result is put into \a v.
+ * zVec3DAmp() amplifies each component of a 3D vector \a v1 by
+ * the corresponding component of another \a v2.
+ * The result is put into \a v.
+ *
+ * zVec3DDem() demagnifies each component of a 3D vector \a v1 by
+ * the corresponding component of another \a v2.
+ * The result is put into \a v.
+ *
+ * zVec3DCat() concatenates a 3D vector \a v2 with \a v1 multiplied
+ * by a scalar value \a k. The result is put into \a v.
  *
  * zVec3DAddDRC() directly adds \a v2 to \a v1.
  *
@@ -148,8 +156,12 @@ __EXPORT bool zVec3DIsNan(zVec3D *v);
  *
  * zVec3DDivDRC() directly divides \a v by \a k.
  *
- * zVec3DCat() directly concatenates \a v2 multiplied \a v2
- * by \a k to \a v1.
+ * zVec3DAmpDRC() directly amplifies \a v1 by \a v2.
+ *
+ * zVec3DDemDRC() directly demagnifies \a v1 by \a v2.
+ *
+ * zVec3DCat() directly concatenates \a v2 with \a v1 multiplied
+ * by \a k.
  * \return
  * Each function returns a pointer to the resultant vector.
  *
@@ -191,7 +203,14 @@ __EXPORT zVec3D *zVec3DDiv(zVec3D *v, double k, zVec3D *dv);
   (av)->c.y = (a)->c.y * (v)->c.y;\
   (av)->c.z = (a)->c.z * (v)->c.z;\
 } while(0)
-__EXPORT zVec3D *zVec3DAmp(zVec3D *v, zVec3D *a, zVec3D *av);
+__EXPORT zVec3D *zVec3DAmp(zVec3D *v1, zVec3D *v2, zVec3D *v);
+
+#define _zVec3DDem(v,d,dv) do{\
+  (dv)->c.x = (v)->c.x / (d)->c.x;\
+  (dv)->c.y = (v)->c.y / (d)->c.y;\
+  (dv)->c.z = (v)->c.z / (d)->c.z;\
+} while(0)
+__EXPORT zVec3D *zVec3DDem(zVec3D *v1, zVec3D *v2, zVec3D *v);
 
 #define _zVec3DCat(v1,k,v2,v) do{\
   (v)->c.x = (v1)->c.x + (k) * (v2)->c.x;\
@@ -237,6 +256,13 @@ __EXPORT zVec3D *zVec3DDivDRC(zVec3D *v, double k);
   (v)->c.z *= (a)->c.z;\
 } while(0)
 __EXPORT zVec3D *zVec3DAmpDRC(zVec3D *v1, zVec3D *v2);
+/*! \brief directly demagnify a 3D vector by another. */
+#define _zVec3DDemDRC(v,d) do{\
+  (v)->c.x /= (d)->c.x;\
+  (v)->c.y /= (d)->c.y;\
+  (v)->c.z /= (d)->c.z;\
+} while(0)
+__EXPORT zVec3D *zVec3DDemDRC(zVec3D *v1, zVec3D *v2);
 /*! \brief directly concatenate a 3D vector multiplied by a scalar to another. */
 #define _zVec3DCatDRC(v1,k,v2) do{\
   (v1)->c.x += (k) * (v2)->c.x;\

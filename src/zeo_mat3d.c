@@ -37,6 +37,12 @@ bool zMat3DEqual(zMat3D *m1, zMat3D *m2)
   return _zMat3DEqual( m1, m2 );
 }
 
+/* check if a 3D matrix is tiny. */
+bool zMat3DIsTol(zMat3D *m, double tol)
+{
+  return _zMat3DIsTol( m, tol );
+}
+
 /* abstract row vector from a 3x3 matrix. */
 zVec3D *zMat3DRow(zMat3D *m, int i, zVec3D *v)
 {
@@ -161,21 +167,87 @@ zMat3D *zMulVec3DOPMat3D(zVec3D *ohm, zMat3D *m, zMat3D *mv)
 /* inverse of a 3x3 matrix
  * ********************************************************** */
 
-/* determinant of 3x3 matrix. */
+static double _zMat3DBalancingMinMaxIndex(zVec3D *v, int *imax, int *imin);
+static double _zMat3DRowBalancingScale(zMat3D *m, zVec3D *s);
+static double _zMat3DColBalancingScale(zMat3D *m, zVec3D *s);
+static zMat3D *_zMat3DInv(zMat3D *m, zMat3D *im);
+
+/* find indices of maximum and minimum components of a 3D vector. */
+double _zMat3DBalancingMinMaxIndex(zVec3D *v, int *imax, int *imin)
+{
+  if( v->e[0] > v->e[1] ){
+    *imax = 0; *imin = 1;
+  } else{
+    *imax = 1; *imin = 0;
+  }
+  if( v->e[*imax] < v->e[2] ){
+    *imax = 2;
+  } else
+  if( v->e[*imin] > v->e[2] ){
+    *imin = 2;
+  }
+  return v->e[*imax];
+}
+
+/* find a scaling vector for row-balancing of a 3x3 matrix. */
+double _zMat3DRowBalancingScale(zMat3D *m, zVec3D *s)
+{
+  zVec3D v;
+  int imax, imin;
+
+  _zVec3DCreate( &v, fabs(m->e[0][0]), fabs(m->e[1][0]), fabs(m->e[2][0]) );
+  s->e[0] = _zMat3DBalancingMinMaxIndex( &v, &imax, &imin );
+  _zVec3DCreate( &v, fabs(m->e[0][1]), fabs(m->e[1][1]), fabs(m->e[2][1]) );
+  s->e[1] = _zMat3DBalancingMinMaxIndex( &v, &imax, &imin );
+  _zVec3DCreate( &v, fabs(m->e[0][2]), fabs(m->e[1][2]), fabs(m->e[2][2]) );
+  s->e[2] = _zMat3DBalancingMinMaxIndex( &v, &imax, &imin );
+  _zMat3DBalancingMinMaxIndex( s, &imax, &imin );
+  return s->e[imin] / s->e[imax];
+}
+
+/* find a scaling vector for column-balancing of a 3x3 matrix. */
+double _zMat3DColBalancingScale(zMat3D *m, zVec3D *s)
+{
+  zVec3D v;
+  int imax, imin;
+
+  _zVec3DCreate( &v, fabs(m->e[0][0]), fabs(m->e[0][1]), fabs(m->e[0][2]) );
+  s->e[0] = _zMat3DBalancingMinMaxIndex( &v, &imax, &imin );
+  _zVec3DCreate( &v, fabs(m->e[1][0]), fabs(m->e[1][1]), fabs(m->e[1][2]) );
+  s->e[1] = _zMat3DBalancingMinMaxIndex( &v, &imax, &imin );
+  _zVec3DCreate( &v, fabs(m->e[2][0]), fabs(m->e[2][1]), fabs(m->e[2][2]) );
+  s->e[2] = _zMat3DBalancingMinMaxIndex( &v, &imax, &imin );
+  _zMat3DBalancingMinMaxIndex( s, &imax, &imin );
+  return s->e[imin] / s->e[imax];
+}
+
+/* scale a 3x3 matrix for row-balancing. */
+#define _zMat3DRowBalancing(m,s,mb) _zMat3DCreate( mb,\
+  (m)->e[0][0] / (s)->e[0], (m)->e[1][0] / (s)->e[0], (m)->e[2][0] / (s)->e[0],\
+  (m)->e[0][1] / (s)->e[1], (m)->e[1][1] / (s)->e[1], (m)->e[2][1] / (s)->e[1],\
+  (m)->e[0][2] / (s)->e[2], (m)->e[1][2] / (s)->e[2], (m)->e[2][2] / (s)->e[2] )
+
+/* scale a 3x3 matrix for column-balancing. */
+#define _zMat3DColBalancing(m,s,mb) _zMat3DCreate( mb,\
+  (m)->e[0][0] / (s)->e[0], (m)->e[1][0] / (s)->e[1], (m)->e[2][0] / (s)->e[2],\
+  (m)->e[0][1] / (s)->e[0], (m)->e[1][1] / (s)->e[1], (m)->e[2][1] / (s)->e[2],\
+  (m)->e[0][2] / (s)->e[0], (m)->e[1][2] / (s)->e[1], (m)->e[2][2] / (s)->e[2] )
+
+/* determinant of a 3x3 matrix. */
 double zMat3DDet(zMat3D *m)
 {
   return _zMat3DDet( m );
 }
 
-/* misc for real inverse of 3x3 matrix. */
+/* misc for inverse of a 3x3 matrix. */
 #define _zMat3DInvRow(m,im,i,j,k,idet) do{\
   (im)->e[(i)][(i)] = (idet) * ( (m)->e[(j)][(j)]*(m)->e[(k)][(k)] - (m)->e[(k)][(j)]*(m)->e[(j)][(k)] );\
   (im)->e[(j)][(i)] = (idet) * ( (m)->e[(k)][(i)]*(m)->e[(j)][(k)] - (m)->e[(j)][(i)]*(m)->e[(k)][(k)] );\
   (im)->e[(k)][(i)] = (idet) * ( (m)->e[(j)][(i)]*(m)->e[(k)][(j)] - (m)->e[(k)][(i)]*(m)->e[(j)][(j)] );\
 } while(0)
 
-/* inverse matrix of 3x3 matrix. */
-zMat3D *zMat3DInv(zMat3D *m, zMat3D *im)
+/* inverse matrix of a 3x3 matrix. */
+zMat3D *_zMat3DInv(zMat3D *m, zMat3D *im)
 {
   double det, idet;
 
@@ -191,12 +263,36 @@ zMat3D *zMat3DInv(zMat3D *m, zMat3D *im)
   return im;
 }
 
+/* inverse matrix of a 3x3 matrix. */
+zMat3D *zMat3DInv(zMat3D *m, zMat3D *im)
+{
+  zMat3D mb_tmp, mb;
+  zVec3D sr, sc;
+
+  if( _zMat3DRowBalancingScale( m, &sr ) < _zMat3DColBalancingScale( m, &sc ) ){
+    _zMat3DRowBalancing( m, &sr, &mb_tmp );
+    _zMat3DColBalancingScale( &mb_tmp, &sc );
+    _zMat3DColBalancing( &mb_tmp, &sc, &mb );
+    _zMat3DInv( &mb, im );
+    _zMat3DRowBalancing( im, &sc, im );
+    _zMat3DColBalancing( im, &sr, im );
+  } else{
+    _zMat3DColBalancing( m, &sc, &mb_tmp );
+    _zMat3DRowBalancingScale( &mb_tmp, &sr );
+    _zMat3DRowBalancing( &mb_tmp, &sr, &mb );
+    _zMat3DInv( &mb, im );
+    _zMat3DColBalancing( im, &sr, im );
+    _zMat3DRowBalancing( im, &sc, im );
+  }
+  return im;
+}
+
 /* ********************************************************** */
 /* multiplication of a 3D vector by a 3x3 matrix
  * ********************************************************** */
 
 static double _zMulInvMat3DVec3DRow(zMat3D *m, zVec3D *v, int i, int j, int k, double idet);
-static zVec3D *_zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *miv, double idet);
+static zVec3D *_zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *imv);
 
 /* multiply a 3D vector by a 3x3 matrix. */
 zVec3D *zMulMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *mv)
@@ -235,26 +331,44 @@ double _zMulInvMat3DVec3DRow(zMat3D *m, zVec3D *v, int i, int j, int k, double i
     + ( m->e[j][i]*m->e[k][j] - m->e[k][i]*m->e[j][j] ) * v->e[k] );
 }
 
-/* multiply a 3D vector by inverse matrix of 3x3 matrix. */
-zVec3D *_zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *miv, double idet)
-{
-  _zVec3DCreate( miv,
-    _zMulInvMat3DVec3DRow( m, v, 0, 1, 2, idet ),
-    _zMulInvMat3DVec3DRow( m, v, 1, 2, 0, idet ),
-    _zMulInvMat3DVec3DRow( m, v, 2, 0, 1, idet ) );
-  return miv;
-}
+#define _zMulInvMat3DVec3DInvDet(m,v,imv,idet) _zVec3DCreate( imv,\
+  _zMulInvMat3DVec3DRow( m, v, 0, 1, 2, idet ),\
+  _zMulInvMat3DVec3DRow( m, v, 1, 2, 0, idet ),\
+  _zMulInvMat3DVec3DRow( m, v, 2, 0, 1, idet ) )
 
 /* multiply a 3D vector by inverse of a 3x3 matrix. */
-zVec3D *zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *miv)
+zVec3D *_zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *imv)
 {
-  double det;
+  double val;
 
-  if( zIsTiny( ( det = zMat3DDet( m ) ) ) ){
+  if( zIsTiny( ( val = zMat3DDet( m ) ) ) ){
     ZRUNERROR( ZEO_ERR_SINGULARMAT );
     return NULL;
   }
-  return _zMulInvMat3DVec3D( m, v, miv, 1.0 / det );
+  val = 1.0 / val;
+  _zMulInvMat3DVec3DInvDet( m, v, imv, val );
+  return imv;
+}
+
+/* multiply a 3D vector by inverse of a 3x3 matrix. */
+zVec3D *zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *imv)
+{
+  zMat3D mb_tmp, mb;
+  zVec3D v_tmp, sr, sc;
+
+  if( _zMat3DRowBalancingScale( m, &sr ) < _zMat3DColBalancingScale( m, &sc ) ){
+    _zMat3DRowBalancing( m, &sr, &mb_tmp );
+    _zMat3DColBalancingScale( &mb_tmp, &sc );
+    _zMat3DColBalancing( &mb_tmp, &sc, &mb );
+  } else{
+    _zMat3DColBalancing( m, &sc, &mb_tmp );
+    _zMat3DRowBalancingScale( &mb_tmp, &sr );
+    _zMat3DRowBalancing( &mb_tmp, &sr, &mb );
+  }
+  _zVec3DDem( v, &sr, &v_tmp );
+  _zMulInvMat3DVec3D( &mb, &v_tmp, imv );
+  _zVec3DDem( imv, &sc, imv );
+  return imv;
 }
 
 /* concatenate ratio of vector. */
@@ -273,6 +387,8 @@ double *zVec3DCatRatio(zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v, double rat
 /* ********************************************************** */
 /* multiplication of a 3x3 matrix by another 3x3 matrix
  * ********************************************************** */
+
+static zMat3D *_zMulInvMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
 
 /* multiply two 3D matrices. */
 zMat3D *zMulMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m)
@@ -315,19 +431,40 @@ zMat3D *zMulMat3DMat3DT(zMat3D *m1, zMat3D *m2, zMat3D *m)
   return zMat3DCopy( &tmp, m );
 }
 
-/* multiply 3x3 matrix by inverse matrix of another 3x3 matrix. */
-zMat3D *zMulInvMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m)
+/* multiply 3x3 matrix by inverse of another 3x3 matrix. */
+zMat3D *_zMulInvMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m)
 {
-  double det, idet;
+  double val;
 
-  if( zIsTiny( ( det = zMat3DDet( m1 ) ) ) ){
+  if( zIsTiny( ( val = zMat3DDet( m1 ) ) ) ){
     ZRUNERROR( ZEO_ERR_SINGULARMAT );
     return NULL;
   }
-  idet = 1.0 /det;
-  _zMulInvMat3DVec3D( m1, &m2->b.x, &m->b.x, idet );
-  _zMulInvMat3DVec3D( m1, &m2->b.y, &m->b.y, idet );
-  _zMulInvMat3DVec3D( m1, &m2->b.z, &m->b.z, idet );
+  val = 1.0 / val;
+  _zMulInvMat3DVec3DInvDet( m1, &m2->b.x, &m->b.x, val );
+  _zMulInvMat3DVec3DInvDet( m1, &m2->b.y, &m->b.y, val );
+  _zMulInvMat3DVec3DInvDet( m1, &m2->b.z, &m->b.z, val );
+  return m;
+}
+
+/* multiply a 3x3 matrix by inverse of aother 3x3 matrix. */
+zMat3D *zMulInvMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m)
+{
+  zMat3D mb_tmp, mb, m2_tmp;
+  zVec3D sr, sc;
+
+  if( _zMat3DRowBalancingScale( m1, &sr ) < _zMat3DColBalancingScale( m1, &sc ) ){
+    _zMat3DRowBalancing( m1, &sr, &mb_tmp );
+    _zMat3DColBalancingScale( &mb_tmp, &sc );
+    _zMat3DColBalancing( &mb_tmp, &sc, &mb );
+  } else{
+    _zMat3DColBalancing( m1, &sc, &mb_tmp );
+    _zMat3DRowBalancingScale( &mb_tmp, &sr );
+    _zMat3DRowBalancing( &mb_tmp, &sr, &mb );
+  }
+  _zMat3DRowBalancing( m2, &sr, &m2_tmp );
+  _zMulInvMat3DMat3D( &mb, &m2_tmp, m );
+  _zMat3DRowBalancing( m, &sc, m );
   return m;
 }
 

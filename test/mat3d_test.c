@@ -199,8 +199,14 @@ void assert_mul(void)
   zMat3D m1, m2, m3, m4;
   zVec3D v1, v2, v3, w;
 
-  zMat3DCreate( &m1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  zMat3DCreate( &m2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  zMat3DCreate( &m1,
+    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
+    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
+    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  zMat3DCreate( &m2,
+    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
+    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
+    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
   zVec3DCreate( &v1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
   zMulMat3DVec3D( &m1, &v1, &v2 );
   zAssert( zMulMat3DVec3D, m1.e[0][0]*v1.e[0]+m1.e[1][0]*v1.e[1]+m1.e[2][0]*v1.e[2]==v2.e[0]
@@ -274,9 +280,52 @@ void assert_mul(void)
     && m3.e[2][0]==m4.e[2][0] && m3.e[2][1]==m4.e[2][1] && m3.e[2][2]==m4.e[2][2] );
 
   zMulInvMat3DMat3D( &m1, &m1, &m3 );
-  zAssert( zMat3DInv, zIsTiny(m3.e[0][0]-1) && zIsTiny(m3.e[1][0]) && zIsTiny(m3.e[2][0])
-                   && zIsTiny(m3.e[0][1]) && zIsTiny(m3.e[1][1]-1) && zIsTiny(m3.e[2][1])
-                   && zIsTiny(m3.e[0][2]) && zIsTiny(m3.e[1][2]) && zIsTiny(m3.e[2][2]-1) );
+  zAssert( zMulInvMat3DMat3D,
+       zIsTiny(m3.e[0][0]-1) && zIsTiny(m3.e[1][0]) && zIsTiny(m3.e[2][0])
+    && zIsTiny(m3.e[0][1]) && zIsTiny(m3.e[1][1]-1) && zIsTiny(m3.e[2][1])
+    && zIsTiny(m3.e[0][2]) && zIsTiny(m3.e[1][2]) && zIsTiny(m3.e[2][2]-1) );
+}
+
+void assert_mat_inv(void)
+{
+  register int i, testnum = 100;
+  zMat3D m, im, m2, m3, m2_test, me;
+  zVec3D v1, v2, v1_test, e;
+  double mag1 = 1.0e-6, mag2 = 1.0e-6;
+  const double tol = 1.0e-6;
+  bool result_mul_inv_vec, result_mul_inv_mat, result_mat_inv;
+
+  result_mul_inv_vec = result_mul_inv_mat = result_mat_inv = true;
+  for( i=0; i<testnum; i++ ){
+    zMat3DCreate( &m,
+      zRandF(-1,1), zRandF(-1,1)*mag2, zRandF(-1,1),
+      zRandF(-1,1)*mag1, zRandF(-1,1)*mag1*mag2, zRandF(-1,1)*mag1,
+      zRandF(-1,1), zRandF(-1,1)*mag2, zRandF(-1,1) );
+    zMat3DCreate( &m2,
+      zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
+      zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
+      zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    zVec3DCreate( &v1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+
+    zMulInvMat3DVec3D( &m, &v1, &v2 );
+    zMulMat3DVec3D( &m, &v2, &v1_test );
+    zVec3DSub( &v1, &v1_test, &e );
+    if( !zVec3DIsTol( &e, tol ) ) result_mul_inv_vec = false;
+
+    zMulInvMat3DMat3D( &m, &m2, &m3 );
+    zMulMat3DMat3D( &m, &m3, &m2_test );
+    zMat3DSub( &m2, &m2_test, &me );
+    if( !zMat3DIsTol( &me, tol ) ) result_mul_inv_mat = false;
+
+    zMat3DInv( &m, &im );
+    zMulMat3DVec3D( &im, &v1, &v2 );
+    zMulMat3DVec3D( &m, &v2, &v1_test );
+    zVec3DSub( &v1, &v1_test, &e );
+    if( !zVec3DIsTol( &e, tol ) ) result_mat_inv = false;
+  }
+  zAssert( zMulInvMat3DVec3D (severe case), result_mul_inv_vec );
+  zAssert( zMulInvMat3DMat3D (severe case), result_mul_inv_mat );
+  zAssert( zMul3DInv (severe case), result_mat_inv );
 }
 
 void assert_rot(void)
@@ -388,6 +437,7 @@ int main(void)
   assert_outerprod();
   assert_inv();
   assert_mul();
+  assert_mat_inv();
   assert_rot();
   assert_sym_eig();
   return EXIT_SUCCESS;

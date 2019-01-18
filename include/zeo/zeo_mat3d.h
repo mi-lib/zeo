@@ -83,6 +83,28 @@ __EXPORT bool zMat3DMatch(zMat3D *m1, zMat3D *m2);
 #define _zMat3DEqual(m1,m2) ( _zVec3DEqual(&(m1)->b.x,&(m2)->b.x) && _zVec3DEqual(&(m1)->b.y,&(m2)->b.y) && _zVec3DEqual(&(m1)->b.z,&(m2)->b.z) )
 __EXPORT bool zMat3DEqual(zMat3D *m1, zMat3D *m2);
 
+/*! \brief check if a 3D matrix is tiny.
+ *
+ * zMat3DIsTol() checks if the absolute values of all
+ * components of a 3x3 matrix \a m are smaller than \a tol.
+ *
+ * zMat3DIsTiny() applies zTOL (defined in zm_misc.h) to
+ * the tolerance of zMat3DIsTol().
+ * \return
+ * zMat3DIsTol() and zMat3DIsTiny() return the true value if
+ * the absolute values of all components of \a m are smaller
+ * than \a tol and zTOL, respectively, or the false value,
+ * otherwise.
+ * \notes
+ * \a tol must be positive.
+ * \sa
+ * zIsTol, zIsTiny
+ */
+#define _zMat3DIsTol(m,tol) ( _zVec3DIsTol( &(m)->b.x, tol ) && _zVec3DIsTol( &(m)->b.y, tol ) && _zVec3DIsTol( &(m)->b.z, tol ) )
+__EXPORT bool zMat3DIsTol(zMat3D *m, double tol);
+#define _zMat3DIsTiny(m) _zMat3DIsTol( m, zTOL )
+#define zMat3DIsTiny(m)  zMat3DIsTol( m, zTOL )
+
 /*! \brief abstract row/column vectors from a 3x3 matrix.
  *
  * zMat3DRow() abstracts the \a i'th row from a 3x3 matrix \a m and puts
@@ -385,7 +407,7 @@ __EXPORT zVec3D *zMulMat3DTVec3DDRC(zMat3D *m, zVec3D *v);
 
 /*! \brief multiply a 3D vector by inverse of a 3x3 matrix.
  */
-__EXPORT zVec3D *zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *miv);
+__EXPORT zVec3D *zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *imv);
 
 /*! \brief inversely compute the concatenate ratio of a 3D vector.
  *

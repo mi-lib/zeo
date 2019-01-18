@@ -12,9 +12,9 @@ void test_ph(zPH3D *a, zPH3D *b)
   zCH3D( a, v, N );
   for( i=0; i<N; i++ ){
     zVec3DCreatePolar( &v[i], zRandF(-0.2,0.2), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
-    v[i].e[zX] += 0.2;
-    v[i].e[zY] += 0.2;
-    v[i].e[zZ] += 0.2;
+    v[i].e[zX] += 0.15;
+    v[i].e[zY] += 0.15;
+    v[i].e[zZ] += 0.15;
   }
   zCH3D( b, v, N );
 }
@@ -57,7 +57,7 @@ void output(zPH3D *a, zPH3D *b, zPH3D *sa, zPH3D *sb, zPH3D *c)
   FILE *fp;
 
   /* for visualization */
-  fp = fopen( "org", "w" );
+  fp = fopen( "org.ztk", "w" );
   output_blue( fp );
   output_red( fp );
   fprintf( fp, "[shape]\n" );
@@ -72,7 +72,7 @@ void output(zPH3D *a, zPH3D *b, zPH3D *sa, zPH3D *sb, zPH3D *c)
   zPH3DFWrite( fp, b );
   fclose( fp );
 
-  fp = fopen( "cut", "w" );
+  fp = fopen( "cut.ztk", "w" );
   output_blue( fp );
   output_red( fp );
   fprintf( fp, "[shape]\n" );
@@ -87,7 +87,7 @@ void output(zPH3D *a, zPH3D *b, zPH3D *sa, zPH3D *sb, zPH3D *c)
   zPH3DFWrite( fp, sb );
   fclose( fp );
 
-  fp = fopen( "mrg", "w" );
+  fp = fopen( "mrg.ztk", "w" );
   output_yellow( fp );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: c\n" );

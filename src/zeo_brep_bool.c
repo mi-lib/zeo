@@ -6,9 +6,7 @@
 
 #include <zeo/zeo_brep.h>
 
-/* zBREPMerge
- * - merge a B-Rep to another (destructive).
- */
+/* merge a B-Rep to another (destructive). */
 zBREP *zBREPMerge(zBREP *target, zBREP *sub)
 {
   zBREPVertListCell *vp;
@@ -63,9 +61,7 @@ zBREP *zBREPMerge(zBREP *target, zBREP *sub)
   return target;
 }
 
-/* zPH3DTruncBREP
- * - truncate a polyhedron by another.
- */
+/* truncate a polyhedron by another. */
 zPH3D *zPH3DTruncBREP(zPH3D *src, zPH3D *cut, zPH3D *dest)
 {
   zBREP bs;
@@ -77,9 +73,7 @@ zPH3D *zPH3DTruncBREP(zPH3D *src, zPH3D *cut, zPH3D *dest)
   return dest;
 }
 
-/* zIntersectPH3DBREP
- * - intersection of two convex polyhedra.
- */
+/* intersection of two convex polyhedra. */
 zPH3D *zIntersectPH3DBREP(zPH3D *src1, zPH3D *src2, zPH3D *dest)
 {
   zBREP b1, b2;
@@ -94,9 +88,7 @@ zPH3D *zIntersectPH3DBREP(zPH3D *src1, zPH3D *src2, zPH3D *dest)
   return dest;
 }
 
-/* zIntersectPH3DBREPFast
- * - intersection of two convex polyhedra.
- */
+/* intersection of two convex polyhedra. */
 zPH3D *zIntersectPH3DBREPFast(zPH3D *src1, zPH3D *src2, zPH3D *dest)
 {
   zAABox3D ib;

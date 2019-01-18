@@ -105,10 +105,17 @@ zVec3D *zVec3DDiv(zVec3D *v, double k, zVec3D *dv)
 }
 
 /* amplify a 3D vector by another. */
-zVec3D *zVec3DAmp(zVec3D *v, zVec3D *a, zVec3D *av)
+zVec3D *zVec3DAmp(zVec3D *v1, zVec3D *v2, zVec3D *v)
 {
-  _zVec3DAmp( v, a, av );
-  return av;
+  _zVec3DAmp( v1, v2, v );
+  return v;
+}
+
+/* demagnify a 3D vector by another. */
+zVec3D *zVec3DDem(zVec3D *v1, zVec3D *v2, zVec3D *v)
+{
+  _zVec3DDem( v1, v2, v );
+  return v;
 }
 
 /* concatenate a 3D vector with another. */
@@ -162,6 +169,13 @@ zVec3D *zVec3DDivDRC(zVec3D *v, double k)
 zVec3D *zVec3DAmpDRC(zVec3D *v1, zVec3D *v2)
 {
   _zVec3DAmpDRC( v1, v2 );
+  return v1;
+}
+
+/* directly demagnify a 3D vector by another. */
+zVec3D *zVec3DDemDRC(zVec3D *v1, zVec3D *v2)
+{
+  _zVec3DDemDRC( v1, v2 );
   return v1;
 }
 
