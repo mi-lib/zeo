@@ -15,7 +15,7 @@ __BEGIN_DECLS
  *
  * zGJK() finds a pair of the closest points of convex hulls
  * of two sets of points \a p1 and \a p2. \a n1 and \a n2 are
- * the number of points of \a p1 and \a p2, respectively. The
+ * the numbers of points of \a p1 and \a p2, respectively. The
  * pair of points found are stored in \a c1 and \a c2.
  *
  * zGJKPL() also finds a pair of the closest points of convex

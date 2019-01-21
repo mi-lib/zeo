@@ -1,5 +1,6 @@
 #include <zeo/zeo_col.h>
 #include <zeo/zeo_bv.h>
+#include <time.h>
 
 void vec_create_rand(zVec3D p[], int n, double x, double y, double z, double r)
 {
@@ -81,22 +82,49 @@ void output(char filename[], zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c
   fclose( fp );
 }
 
-#define N 200
+#define N 1000
 
 int main(int argc, char *argv[])
 {
-  zVec3D a[N], b[N];
-  zVec3D ca, cb;
-  double x, y, z;
+  zVec3D a[N], b[N], ca, cb, pos, dir;
+  double x, y, z, depth;
+  int i, loop = 100;
+  clock_t start;
+  bool result_gjk, result_mpr;
 
   zRandInit();
-  x = argc > 1 ? atof(argv[1]) : zRandF(0.1,0.3);
-  y = argc > 2 ? atof(argv[2]) : zRandF(0.1,0.3);
-  z = argc > 3 ? atof(argv[3]) : zRandF(0.1,0.3);
+  x = zRandF( 0.1, 0.3 );
+  y = zRandF( 0.1, 0.3 );
+  z = zRandF( 0.1, 0.3 );
   vec_create_rand( a, N, 0, 0, 0, 0.2 );
   vec_create_rand( b, N, x, y, z, 0.2 );
 
-  printf( "in collision? %s\n", zBoolExpr( zGJK( a, N, b, N, &ca, &cb ) ) );
-  output( "a", a, N, b, N, &ca, &cb );
+  start = clock();
+  for( i=0; i<loop; i++ )
+    result_gjk = zGJK( a, N, b, N, &ca, &cb );
+  printf( "zGJK time = %ld\n", clock() - start );
+  printf( "GJK in collision? %s\n", zBoolExpr( result_gjk ) );
+  output( "gjk.ztk", a, N, b, N, &ca, &cb );
+  zVec3DWrite( &ca );
+  zVec3DWrite( &cb );
+
+  start = clock();
+  for( i=0; i<loop; i++ )
+    zMPR( a, N, b, N );
+  printf( "zMPR time = %ld\n", clock() - start );
+
+  start = clock();
+  for( i=0; i<loop; i++ )
+    result_mpr = zMPRDepth( a, N, b, N, &depth, &pos, &dir );
+  printf( "zMPRDepth time = %ld\n", clock() - start );
+  printf( "MPR in collision? %s\n", zBoolExpr( result_mpr ) );
+  if( depth > 0 ){
+    printf( "depth = %f\n", depth );
+    zVec3DCat( &pos, depth/2, &dir, &ca );
+    zVec3DCat( &pos,-depth/2, &dir, &cb );
+    zVec3DWrite( &ca );
+    zVec3DWrite( &cb );
+    output( "mpr.ztk", a, N, b, N, &ca, &cb );
+  }
   return 0;
 }

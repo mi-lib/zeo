@@ -170,3 +170,46 @@ zVec3D *zVec3DListNN(zVec3DList *list, zVec3D *v, double *dmin)
   *dmin = sqrt( *dmin );
   return nn;
 }
+
+/* support map of a set of points with respect to a direction vector. */
+zVec3D *zVec3DSupportMap(zVec3D p[], int n, zVec3D *v)
+{
+  register int i;
+  double d, d_max;
+  zVec3D *sp;
+
+  if( n <= 0 ){
+    ZRUNWARN( ZEO_ERR_EMPTYSET );
+    return NULL;
+  }
+  sp = &p[0];
+  d_max = zVec3DInnerProd( sp, v );
+  for( i=1; i<n; i++ )
+    if( ( d = zVec3DInnerProd( &p[i], v ) ) > d_max ){
+      sp = &p[i];
+      d_max = d;
+    }
+  return sp;
+}
+
+/* support map of a set of points with respect to a direction vector. */
+zVec3D *zVec3DListSupportMap(zVec3DList *pl, zVec3D *v)
+{
+  double d, d_max;
+  zVec3D *sp;
+  zVec3DListCell *cp;
+
+  if( zListIsEmpty(pl) ){
+    ZRUNWARN( ZEO_ERR_EMPTYSET );
+    return NULL;
+  }
+  sp = zListTail(pl)->data;
+  d_max = zVec3DInnerProd( sp, v );
+  zListForEach( pl, cp ){
+    if( ( d = zVec3DInnerProd( cp->data, v ) ) > d_max ){
+      sp = cp->data;
+      d_max = d;
+    }
+  }
+  return sp;
+}

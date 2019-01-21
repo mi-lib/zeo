@@ -1,3 +1,6 @@
+2019. 1.21. Added zMPR and zMPRDepth. [zeo_col, zeo_col_mpr]
+2019. 1.21. Abolished _zGJKSupportMapOne and _zGJKSupportMapOnePL, and modified _zGJKSupportMap and _zGJKSupportMapPL to use zVec3DSupportMap and zVec3DListSupportMap, respectively. [zeo_col_gjk]
+2019. 1.21. Added zVec3DSupportMap and zVec3DListSupportMap. [zeo_vec3d_list]
 2019. 1.18. Added zMat3DIsTol and zMat3DIsTiny. [zeo_mat3d]
 2019. 1.18. Reimplemented _zMulInvMat3DVec3D, zMulInvMat3DVec3D and zMulInvMat3DMat3D. [zeo_mat3d]
 2019. 1.18. Added _zMat3DBalancingMinMaxIndex, _zMat3DRowBalancingScale, _zMat3DColBalancingScale, _zMat3DRowBalancing, _zMat3DColBalancing and _zMat3DInv, and reimplemented zMat3DInv. [zeo_mat3d]

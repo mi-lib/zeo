@@ -180,6 +180,12 @@ __EXPORT void zVec3DAddrListDataFWrite(FILE *fp, zVec3DAddrList *list);
  */
 __EXPORT zVec3D *zVec3DListNN(zVec3DList *list, zVec3D *v, double *dmin);
 
+/*! \brief support map of a set of points with respect to a direction vector. */
+__EXPORT zVec3D *zVec3DSupportMap(zVec3D p[], int n, zVec3D *v);
+
+/*! \brief support map of a list of points with respect to a direction vector. */
+__EXPORT zVec3D *zVec3DListSupportMap(zVec3DList *pl, zVec3D *v);
+
 __END_DECLS
 
 #endif /* __ZEO_VEC3D_LIST_H__ */

@@ -48,7 +48,9 @@ void create_ph(shape_t *shape, int ns, int nv)
   zFree( v );
 }
 
-void colchk_bruteforce(shape_t *shape, int ns)
+/* GJK */
+
+void colchk_bruteforce_gjk(shape_t *shape, int ns)
 {
   int i, j;
   zVec3D ca, cb;
@@ -68,7 +70,7 @@ void colchk_bruteforce(shape_t *shape, int ns)
   fclose( fp );
 }
 
-void colchk_obb(shape_t *shape, int ns)
+void colchk_obb_gjk(shape_t *shape, int ns)
 {
   int i, j;
   zVec3D ca, cb;
@@ -90,7 +92,7 @@ void colchk_obb(shape_t *shape, int ns)
   fclose( fp );
 }
 
-void colchk_aabb(shape_t *shape, int ns)
+void colchk_aabb_gjk(shape_t *shape, int ns)
 {
   int i, j;
   zVec3D ca, cb;
@@ -117,7 +119,7 @@ void colchk_aabb(shape_t *shape, int ns)
   fclose( fp );
 }
 
-void colchk_obb_aabb(shape_t *shape, int ns)
+void colchk_obb_aabb_gjk(shape_t *shape, int ns)
 {
   int i, j;
   zVec3D ca, cb;
@@ -144,6 +146,100 @@ void colchk_obb_aabb(shape_t *shape, int ns)
   fclose( fp );
 }
 
+/* MPR */
+
+void colchk_bruteforce_mpr(shape_t *shape, int ns)
+{
+  int i, j;
+  zPH3D *ph1, *ph2;
+  FILE *fp;
+
+  fp = fopen( "vast_MPR", "w" );
+  for( i=0; i<ns; i++ ){
+    ph1 = &shape[i].ph;
+    for( j=i+1; j<ns; j++ ){
+      ph2 = &shape[j].ph;
+      if( zMPR( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2) ) ){
+        fprintf( fp, "%d-%d\n", i, j );
+      }
+    }
+  }
+  fclose( fp );
+}
+
+void colchk_obb_mpr(shape_t *shape, int ns)
+{
+  int i, j;
+  zPH3D *ph1, *ph2;
+  FILE *fp;
+
+  fp = fopen( "vast_OBB", "w" );
+  for( i=0; i<ns; i++ ){
+    ph1 = &shape[i].ph;
+    for( j=i+1; j<ns; j++ ){
+      ph2 = &shape[j].ph;
+      if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
+        if( zMPR( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2) ) ){
+          fprintf( fp, "%d-%d\n", i, j );
+        }
+      }
+    }
+  }
+  fclose( fp );
+}
+
+void colchk_aabb_mpr(shape_t *shape, int ns)
+{
+  int i, j;
+  zPH3D *ph1, *ph2;
+  FILE *fp;
+
+  for( i=0; i<ns; i++ )
+    zAABB( &shape[i].aabb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph), NULL );
+
+  fp = fopen( "vast_AABB", "w" );
+  for( i=0; i<ns; i++ ){
+    ph1 = &shape[i].ph;
+    for( j=i+1; j<ns; j++ ){
+      ph2 = &shape[j].ph;
+      if( zColChkAABox3D( &shape[i].aabb, &shape[j].aabb ) ){
+        if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
+          if( zMPR( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2) ) ){
+            fprintf( fp, "%d-%d\n", i, j );
+          }
+        }
+      }
+    }
+  }
+  fclose( fp );
+}
+
+void colchk_obb_aabb_mpr(shape_t *shape, int ns)
+{
+  int i, j;
+  zPH3D *ph1, *ph2;
+  FILE *fp;
+
+  for( i=0; i<ns; i++ )
+    zBox3DToAABox3D( &shape[i].obb, &shape[i].aabb );
+
+  fp = fopen( "vast_OBB_AABB", "w" );
+  for( i=0; i<ns; i++ ){
+    ph1 = &shape[i].ph;
+    for( j=i+1; j<ns; j++ ){
+      ph2 = &shape[j].ph;
+      if( zColChkAABox3D( &shape[i].aabb, &shape[j].aabb ) ){
+        if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
+          if( zMPR( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2) ) ){
+            fprintf( fp, "%d-%d\n", i, j );
+          }
+        }
+      }
+    }
+  }
+  fclose( fp );
+}
+
 
 #define NS 100
 #define NV 100
@@ -161,22 +257,42 @@ int main(int argc, char *argv[])
   create_ph( shape, ns, nv );
 
   t1 = clock();
-  colchk_bruteforce( shape, ns );
+  colchk_bruteforce_gjk( shape, ns );
   t2 = clock();
-  printf( "GJK:  time=%d\n", (int)(t2-t1) );
+  printf( "GJK:      time=%d\n", (int)(t2-t1) );
 
   t1 = clock();
-  colchk_obb( shape, ns );
+  colchk_obb_gjk( shape, ns );
   t2 = clock();
-  printf( "OBB:  time=%d\n", (int)(t2-t1) );
+  printf( "OBB+GJK:  time=%d\n", (int)(t2-t1) );
 
   t1 = clock();
-  colchk_aabb( shape, ns );
+  colchk_aabb_gjk( shape, ns );
   t2 = clock();
-  printf( "AABB: time=%d\n", (int)(t2-t1) );
+  printf( "AABB+GJK: time=%d\n", (int)(t2-t1) );
 
   t1 = clock();
-  colchk_obb_aabb( shape, ns );
+  colchk_obb_aabb_gjk( shape, ns );
+  t2 = clock();
+  printf( "OBB-AABB: time=%d\n", (int)(t2-t1) );
+
+  t1 = clock();
+  colchk_bruteforce_mpr( shape, ns );
+  t2 = clock();
+  printf( "MPR:      time=%d\n", (int)(t2-t1) );
+
+  t1 = clock();
+  colchk_obb_mpr( shape, ns );
+  t2 = clock();
+  printf( "OBB+MPR:  time=%d\n", (int)(t2-t1) );
+
+  t1 = clock();
+  colchk_aabb_mpr( shape, ns );
+  t2 = clock();
+  printf( "AABB+MPR: time=%d\n", (int)(t2-t1) );
+
+  t1 = clock();
+  colchk_obb_aabb_mpr( shape, ns );
   t2 = clock();
   printf( "OBB-AABB: time=%d\n", (int)(t2-t1) );
 
