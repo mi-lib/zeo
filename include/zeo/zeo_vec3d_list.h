@@ -119,6 +119,15 @@ __EXPORT zVec3DAddr *zVec3DAddrListInsert(zVec3DAddrList *list, zVec3D *v);
  */
 __EXPORT zVec3DAddrList *zVec3DAddrListFromArray(zVec3DAddrList *list, zVec3D varr[], int num);
 
+/*! \brief clone a list of vectors.
+ *
+ * zVec3DAddrListClone() clones a list of vectors \a src to \a dest.
+ * \return
+ * zVec3DAddrListClone() returns a pointer \a dest if it succeeds.
+ * Otherwise, the null pointer is returned.
+ */
+__EXPORT zVec3DAddrList *zVec3DAddrListClone(zVec3DAddrList *src, zVec3DAddrList *dest);
+
 /*! \brief destroy a list of 3D vectors.
  *
  * zVec3DAddrListDestroy() destroys a list of vectors \a list.

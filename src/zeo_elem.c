@@ -11,9 +11,7 @@
  * 3D plane class
  * ********************************************************** */
 
-/* zPlane3DCreate
- * - create plane.
- */
+/* create a plane. */
 zPlane3D* zPlane3DCreate(zPlane3D *p, zVec3D *v, zVec3D *n)
 {
   if( zVec3DIsTiny( n ) ){
@@ -25,9 +23,7 @@ zPlane3D* zPlane3DCreate(zPlane3D *p, zVec3D *v, zVec3D *n)
   return p;
 }
 
-/* zPlane3DPointDist
- * - signed distance between point and plane.
- */
+/* signed distance between a point and a plane. */
 double zPlane3DPointDist(zPlane3D *p, zVec3D *v)
 {
   zVec3D tmp;
@@ -36,9 +32,7 @@ double zPlane3DPointDist(zPlane3D *p, zVec3D *v)
   return zVec3DInnerProd( &tmp, zPlane3DNorm(p) );
 }
 
-/* zPlane3DProj
- * - projection of point to plane.
- */
+/* projection of a point to a plane. */
 double zPlane3DProj(zPlane3D *p, zVec3D *v, zVec3D *cp)
 {
   double d;
@@ -48,9 +42,7 @@ double zPlane3DProj(zPlane3D *p, zVec3D *v, zVec3D *cp)
   return d;
 }
 
-/* zPlane3DMean
- * - mean plane of set of points.
- */
+/* mean plane of a set of points. */
 zPlane3D *zPlane3DMean(zPlane3D *pl, zVec3D *pc, zVec3D v[], int n)
 {
   register int i;
@@ -75,9 +67,7 @@ zPlane3D *zPlane3DMean(zPlane3D *pl, zVec3D *pc, zVec3D v[], int n)
   return zPlane3DCreate( pl, pc, &evec[i] );
 }
 
-/* zPlane3DFWrite
- * - output of plane.
- */
+/* output information of a plane to file. */
 void zPlane3DFWrite(FILE *fp, zPlane3D *p)
 {
   fprintf( fp, "vert: " );
@@ -93,9 +83,7 @@ void zPlane3DFWrite(FILE *fp, zPlane3D *p)
 
 static bool _zEdge3DProjSet(zEdge3D *e, zVec3D *p, zVec3D *v, zVec3D *dp);
 
-/* zEdge3DInit
- * - initialize edge.
- */
+/* initialize an edge. */
 zEdge3D *zEdge3DInit(zEdge3D *e)
 {
   zEdge3DSetVert( e, 0, NULL );
@@ -104,9 +92,7 @@ zEdge3D *zEdge3DInit(zEdge3D *e)
   return e;
 }
 
-/* zEdge3DCreate
- * - create edge.
- */
+/* create an edge. */
 zEdge3D *zEdge3DCreate(zEdge3D *e, zVec3D *v1, zVec3D *v2)
 {
   zEdge3DSetVert( e, 0, v1 );
@@ -115,18 +101,13 @@ zEdge3D *zEdge3DCreate(zEdge3D *e, zVec3D *v1, zVec3D *v2)
   return e;
 }
 
-/* zEdge3DCalcVec
- * - path vector of edge.
- */
+/* path vector of an edge. */
 zVec3D *zEdge3DCalcVec(zEdge3D *e)
 {
   return zVec3DSub( zEdge3DVert(e,1), zEdge3DVert(e,0), zEdge3DVec(e) );
 }
 
-/* (static)
- * _zEdge3DProjSet
- * - a set of unit edge direction vector and displacement vector.
- */
+/* a set of unit edge direction vector and displacement vector. */
 bool _zEdge3DProjSet(zEdge3D *e, zVec3D *p, zVec3D *v, zVec3D *dp)
 {
   zVec3DSub( p, zEdge3DVert(e,0), dp );
@@ -134,9 +115,7 @@ bool _zEdge3DProjSet(zEdge3D *e, zVec3D *p, zVec3D *v, zVec3D *dp)
   return !zVec3DIsTiny( dp );
 }
 
-/* zEdge3DProj
- * - project a point to an edge.
- */
+/* project a point to an edge. */
 zVec3D *zEdge3DProj(zEdge3D *e, zVec3D *p, zVec3D *cp)
 {
   zVec3D v, dp;
@@ -146,9 +125,7 @@ zVec3D *zEdge3DProj(zEdge3D *e, zVec3D *p, zVec3D *cp)
   return zVec3DAddDRC( cp, zEdge3DVert(e,0) );
 }
 
-/* zEdge3DPointDist
- * - distance between point and edge.
- */
+/* distance between a point and an edge. */
 double zEdge3DPointDist(zEdge3D *e, zVec3D *p)
 {
   zVec3D v, dp;
@@ -157,9 +134,7 @@ double zEdge3DPointDist(zEdge3D *e, zVec3D *p)
   return zVec3DOuterProdNorm( &dp, &v );
 }
 
-/* zEdge3DPointIsOn
- * - check if a point is on the line.
- */
+/* check if a point is on the line. */
 bool zEdge3DPointIsOn(zEdge3D *e, zVec3D *p)
 {
   zVec3D v, dp;
@@ -169,11 +144,8 @@ bool zEdge3DPointIsOn(zEdge3D *e, zVec3D *p)
   return zVec3DIsTiny( zVec3DOuterProd( &dp, &v, &v ) );
 }
 
-/* zEdge3DLinScale
- * - compute a pair of linear scale factors of a point on an edge.
- *   when p is on e, p = l0*e->v0 + l1*e->v1.
- *   If p is not on e, the result is senseless.
- */
+/* compute a pair of linear scale factors of a point on an edge.
+ * when p is on e, p = l0*e->v0 + l1*e->v1. If p is not on e, the result does not make sense. */
 double zEdge3DLinScale(zEdge3D *e, zVec3D *p, double *l0, double *l1, zVec3D *cp)
 {
   zVec3D dp0, dp1, v;
@@ -210,9 +182,7 @@ double zEdge3DLinScale(zEdge3D *e, zVec3D *p, double *l0, double *l1, zVec3D *cp
   return 0;
 }
 
-/* zEdge3DClosest
- * - the closest point from point to edge.
- */
+/* the closest point from point to an edge. */
 double zEdge3DClosest(zEdge3D *e, zVec3D *p, zVec3D *cp)
 {
   zVec3D tmp;
@@ -223,9 +193,7 @@ double zEdge3DClosest(zEdge3D *e, zVec3D *p, zVec3D *cp)
   return zVec3DDist( p, cp );
 }
 
-/* zEdge3DContigVert
- * - contiguous vertix of edge to a point.
- */
+/* contiguous vertix of an edge to a point. */
 zVec3D *zEdge3DContigVert(zEdge3D *e, zVec3D *p, double *d)
 {
   double d0, d1;
@@ -241,9 +209,7 @@ zVec3D *zEdge3DContigVert(zEdge3D *e, zVec3D *p, double *d)
   }
 }
 
-/* zEdge3DFWrite
- * - output of edge to file.
- */
+/* output information of an edge to file. */
 void zEdge3DFWrite(FILE *fp, zEdge3D *e)
 {
   if( !e )
@@ -265,9 +231,7 @@ void zEdge3DFWrite(FILE *fp, zEdge3D *e)
 
 static zVec3D *_zTri3DOuterProd(zTri3D *t, zVec3D *n);
 
-/* zTri3DInit
- * - initialize triangle.
- */
+/* initialize a triangle. */
 zTri3D *zTri3DInit(zTri3D *t)
 {
   zTri3DSetVert( t, 0, NULL );
@@ -277,9 +241,7 @@ zTri3D *zTri3DInit(zTri3D *t)
   return t;
 }
 
-/* zTri3DCreate
- * - create triangle.
- */
+/* create a triangle. */
 zTri3D *zTri3DCreate(zTri3D *t, zVec3D *v1, zVec3D *v2, zVec3D *v3)
 {
   zTri3DSetVert( t, 0, v1 );
@@ -290,27 +252,20 @@ zTri3D *zTri3DCreate(zTri3D *t, zVec3D *v1, zVec3D *v2, zVec3D *v3)
   return t;
 }
 
-/* zTri3DCreateRev
- * - create triangle in the reversed order.
- */
+/* create a triangle in the reversed order. */
 zTri3D *zTri3DCreateRev(zTri3D *t, zVec3D *v1, zVec3D *v2, zVec3D *v3)
 {
   return zTri3DCreate( t, v1, v3, v2 );
 }
 
-/* zTri3DRev
- * - reverse triangle.
- */
+/* reverse a triangle. */
 zTri3D *zTri3DRev(zTri3D *src, zTri3D *dest)
 {
   return zTri3DCreate( dest,
     zTri3DVert(src,0), zTri3DVert(src,2), zTri3DVert(src,1) );
 }
 
-/* (static)
- * _zTri3DOuterProd
- * - outer product of two edges of triangle.
- */
+/* outer product of two edges of a triangle. */
 zVec3D *_zTri3DOuterProd(zTri3D *t, zVec3D *n)
 {
   zVec3D e1, e2;
@@ -320,9 +275,7 @@ zVec3D *_zTri3DOuterProd(zTri3D *t, zVec3D *n)
   return zVec3DOuterProd( &e1, &e2, n );
 }
 
-/* zTri3DArea
- * - area of triangle.
- */
+/* area of a triangle. */
 double zTri3DArea(zTri3D *t)
 {
   zVec3D norm;
@@ -331,9 +284,7 @@ double zTri3DArea(zTri3D *t)
   return 0.5 * zVec3DNorm( &norm );
 }
 
-/* zTri3DCalcNorm
- * - normal vector of triangle.
- */
+/* normal vector of a triangle. */
 zVec3D *zTri3DCalcNorm(zTri3D *t)
 {
   _zTri3DOuterProd( t, zTri3DNorm(t) );
@@ -342,9 +293,7 @@ zVec3D *zTri3DCalcNorm(zTri3D *t)
   return zTri3DNorm(t);
 }
 
-/* zTri3DBarycenter
- * - barycenter of triangle.
- */
+/* barycenter of a triangle. */
 zVec3D *zTri3DBarycenter(zTri3D *t, zVec3D *c)
 {
   zVec3DAdd( zTri3DVert(t,0), zTri3DVert(t,1), c );
@@ -352,9 +301,7 @@ zVec3D *zTri3DBarycenter(zTri3D *t, zVec3D *c)
   return zVec3DDivDRC( c, 3 );
 }
 
-/* zTri3DCircumcenter
- * - circumcenter of a triangle
- */
+/* circumcenter of a triangle */
 static double __z_tri3D_angle(zTri3D *t, int i, int j, int k){
   zVec3D e[2];
   zVec3DSub( zTri3DVert(t,j), zTri3DVert(t,i), &e[0] );
@@ -375,9 +322,7 @@ zVec3D *zTri3DCircumcenter(zTri3D *t, zVec3D *c)
   return zVec3DDivDRC( c, s[0] + s[1] + s[2] );
 }
 
-/* zTri3DIncenter
- * - incenter of a triangle
- */
+/* incenter of a triangle */
 zVec3D *zTri3DIncenter(zTri3D *t, zVec3D *c)
 {
   double s[3];
@@ -392,9 +337,7 @@ zVec3D *zTri3DIncenter(zTri3D *t, zVec3D *c)
   return zVec3DDivDRC( c, s[0] + s[1] + s[2] );
 }
 
-/* zTri3DOrthocenter
- * - orthocenter of a triangle
- */
+/* orthocenter of a triangle */
 zVec3D *zTri3DOrthocenter(zTri3D *t, zVec3D *c)
 {
   zVec3D cg, cc;
@@ -406,9 +349,7 @@ zVec3D *zTri3DOrthocenter(zTri3D *t, zVec3D *c)
   return zVec3DSub( &cg, &cc, c );
 }
 
-/* zTri3DContigVert
- * - contiguous vertix of triangle to a point.
- */
+/* contiguous vertix of a triangle to a point. */
 zVec3D *zTri3DContigVert(zTri3D *t, zVec3D *p, double *d)
 {
   double d0, d1, d2;
@@ -435,9 +376,7 @@ zVec3D *zTri3DContigVert(zTri3D *t, zVec3D *p, double *d)
   }
 }
 
-/* zTri3DPointDist
- * - signed distance from a point to a triangle.
- */
+/* signed distance from a point to a triangle. */
 double zTri3DPointDist(zTri3D *t, zVec3D *v)
 {
   zVec3D tmp[3];
@@ -451,9 +390,7 @@ double zTri3DPointDist(zTri3D *t, zVec3D *v)
   return ( d[0] + d[1] + d[2] ) / 3;
 }
 
-/* zTri3DPointIsOn
- * - check if a point is on a triangle.
- */
+/* check if a point is on a triangle. */
 bool zTri3DPointIsOn(zTri3D *t, zVec3D *v)
 {
   zVec3D tmp;
@@ -464,9 +401,7 @@ bool zTri3DPointIsOn(zTri3D *t, zVec3D *v)
   return zIsTiny( zVec3DInnerProd( &tmp, zTri3DNorm(t) ) );
 }
 
-/* zTri3DProj
- * - projection of a point to a triangle.
- */
+/* project a point to a triangle. */
 double zTri3DProj(zTri3D *t, zVec3D *v, zVec3D *cp)
 {
   double d;
@@ -476,9 +411,7 @@ double zTri3DProj(zTri3D *t, zVec3D *v, zVec3D *cp)
   return d;
 }
 
-/* zTri3DPointIsInside
- * - check if a point is inside of a triangle.
- */
+/* check if a point is inside of a triangle. */
 bool zTri3DPointIsInside(zTri3D *t, zVec3D *v, bool rim)
 {
   register int i;
@@ -501,11 +434,8 @@ bool zTri3DPointIsInside(zTri3D *t, zVec3D *v, bool rim)
   return true;
 }
 
-/* zTri3DLinScale
- * - compute a trio of linear scale factors of a point on a triangle.
- *   when p is on t, p = l0*t->v0 + l1*t->v1 + l2*t->v2.
- *   If p is not on t, the result is senseless.
- */
+/* compute a trio of linear scale factors of a point on a triangle.
+ * when p is on t, p = l0*t->v0 + l1*t->v1 + l2*t->v2. If p is not on t, the result does not make sense. */
 static void _zTri3DLinScaleVal(double l[], double d1, double d2, double *l0, double *l1, double *l2);
 static void _zTri3DLinScaleDeg2(zTri3D *t, zVec3D *p, int i1, int i2, double *l0, double *l1, double *l2, zVec3D *cp);
 static void _zTri3DLinScaleDeg1(zTri3D *t, int i, double *l0, double *l1, double *l2, zVec3D *cp);
@@ -572,9 +502,7 @@ double zTri3DLinScale(zTri3D *t, zVec3D *p, double *l0, double *l1, double *l2, 
   return zVec3DDist( p, cp );
 }
 
-/* zTri3DClosest
- * - the closest point from a point to triangle.
- */
+/* the closest point from a point to a triangle. */
 double zTri3DClosest(zTri3D *t, zVec3D *v, zVec3D *cp)
 {
   zVec3D tmp;
@@ -585,9 +513,7 @@ double zTri3DClosest(zTri3D *t, zVec3D *v, zVec3D *cp)
   return zVec3DDist( v, cp );
 }
 
-/* zTri3DConeVolume
- * - volume of cone.
- */
+/* volume of a cone. */
 double zTri3DConeVolume(zTri3D *t, zVec3D *v)
 {
   zVec3D v1, v2, v3;
@@ -598,9 +524,7 @@ double zTri3DConeVolume(zTri3D *t, zVec3D *v)
   return zVec3DGrassmannProd( &v1, &v2, &v3 ) / 6;
 }
 
-/* zTri3DConeBarycenter
- * - barycenter of cone.
- */
+/* barycenter of a cone. */
 zVec3D *zTri3DConeBarycenter(zTri3D *t, zVec3D *v, zVec3D *c)
 {
   zVec3DAdd( zTri3DVert(t,0), zTri3DVert(t,1), c );
@@ -609,9 +533,7 @@ zVec3D *zTri3DConeBarycenter(zTri3D *t, zVec3D *v, zVec3D *c)
   return zVec3DMulDRC( c, 0.25 );
 }
 
-/* zTri3DConeInertia
- * - inertia of cone.
- */
+/* inertial tensor of a cone. */
 zMat3D *zTri3DConeInertia(zTri3D *t, zMat3D *i)
 {
   register int j;
@@ -635,9 +557,7 @@ zMat3D *zTri3DConeInertia(zTri3D *t, zMat3D *i)
   return i;
 }
 
-/* zTri3DConeCircumcenter
- * - circumcenter of cone.
- */
+/* circumcenter of a cone. */
 zVec3D *zTri3DConeCircumcenter(zTri3D *t, zVec3D *c)
 {
   zVec3D v;
@@ -649,9 +569,7 @@ zVec3D *zTri3DConeCircumcenter(zTri3D *t, zVec3D *c)
   return zVec3DDivDRC( c, 2*zVec3DGrassmannProd(zTri3DVert(t,0),zTri3DVert(t,1),zTri3DVert(t,2)) );
 }
 
-/* zTri3DFWrite
- * - output of triangle to file.
- */
+/* output information of a triangle to file. */
 void zTri3DFWrite(FILE *fp, zTri3D *t)
 {
   if( !t )

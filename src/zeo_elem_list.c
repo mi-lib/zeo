@@ -52,3 +52,106 @@ void zTri3DListCopyArray(zTri3DList *list, zTri3D t[], int n)
     if( ++i >= n ) break;
   }
 }
+
+
+/* ********************************************************** */
+/* triangulation of non-convex.
+ * ********************************************************** */
+
+static zVec3D *_zLoop3DTriangulateNorm(zLoop3D *loop, zVec3D *norm);
+static bool _zLoop3DTriangulateCheck(zLoop3D *loop, zTri3D *t, zLoop3DCell *pre, zLoop3DCell *pst);
+static int _zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist);
+
+/* normal vector of non-convex for inside-outside judgement. */
+zVec3D *_zLoop3DTriangulateNorm(zLoop3D *loop, zVec3D *norm)
+{
+  double x_min;
+  zLoop3DCell *vp, *st, *pre, *pst;
+  zVec3D e1, e2;
+
+  /* find x-extreme */
+  x_min = ( st = zListTail(loop) )->data->e[zX];
+  zListForEach( loop, vp )
+    if( vp->data->e[zX] < x_min ){
+      st = vp;
+      x_min = vp->data->e[zX];
+    }
+  /* compute normal vector */
+  pre = st == zListTail(loop) ? zListHead(loop) : zListCellPrev(st);
+  pst = st == zListHead(loop) ? zListTail(loop) : zListCellNext(st);
+  zVec3DSub( pre->data, st->data, &e1 );
+  zVec3DSub( pst->data, st->data, &e2 );
+  zVec3DOuterProd( &e2, &e1, norm );
+  zVec3DNormalizeDRC( norm );
+  return norm;
+}
+
+/* check if a triangle piece is valid. */
+bool _zLoop3DTriangulateCheck(zLoop3D *loop, zTri3D *t, zLoop3DCell *pre, zLoop3DCell *pst)
+{
+  zLoop3DCell *vp;
+
+  vp = pst == zListHead(loop) ? zListTail(loop) : zListCellNext(pst);
+  while( vp != pre ){
+    if( zTri3DPointIsInside( t, vp->data, true ) )
+      return false;
+    vp = vp == zListHead(loop) ? zListTail(loop) : zListCellNext(vp);
+  }
+  return true;
+}
+
+/* triangulate a simple loop of vertices. */
+int _zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist)
+{
+  zLoop3DCell *vp, *pre, *pst;
+  zVec3D norm;
+  zTri3D t;
+
+  zListInit( tlist );
+  /* normal vector for reference */
+  _zLoop3DTriangulateNorm( loop, &norm );
+  /* incremental triangulation */
+  while( zListNum(loop) > 2 ){
+    vp = zListTail(loop);
+    pre = zListHead(loop);
+    pst = zListCellNext(vp);
+    while( pst != zListRoot(loop) ){
+      zTri3DCreate( &t, pre->data, vp->data, pst->data );
+      if( zVec3DInnerProd( zTri3DNorm(&t), &norm ) > 0 &&
+          _zLoop3DTriangulateCheck( loop, &t, pre, pst ) ) break;
+      vp = zListCellNext(vp);
+      pre = zListCellPrev(vp);
+      pst = zListCellNext(vp);
+    }
+    if( !zTri3DListInsert( tlist, &t ) ) break;
+    zListPurge( loop, vp );
+    zFree( vp );
+  }
+  return zListNum(tlist);
+}
+
+/* triangulate a simple loop of vertices. */
+int zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist)
+{
+  zLoop3D loop_copy;
+  int ret = 0;
+
+  if( zVec3DAddrListClone( loop, &loop_copy ) )
+    ret = _zLoop3DTriangulate( &loop_copy, tlist );
+  zLoop3DDestroy( &loop_copy );
+  return ret;
+}
+
+/* triangulate a non-convex loop of vertices. */
+int zTriangulate(zVec3D v[], int n, zTri3DList *tlist)
+{
+  zLoop3D loop;
+
+  if( !zLoop3DFromArray( &loop, v, n ) ){
+    ZALLOCERROR();
+    return 0;
+  }
+  _zLoop3DTriangulate( &loop, tlist );
+  zLoop3DDestroy( &loop );
+  return zListNum(tlist);
+}

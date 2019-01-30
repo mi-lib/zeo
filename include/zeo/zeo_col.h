@@ -20,75 +20,72 @@ __BEGIN_DECLS
  * points between \a e and \a p, sets them into the array
  * \a ip and returns the number of them.
  * The following three cases can happen.
- *  1. 'e' and 'p' does not intersect. In this case, 'ip'
+ *  1. \a e and \a p does not intersect. In this case, \a ip
  *     is not treated, and the function returns 0.
- *  2. 'e' and 'p' intersect at one point. In this case,
- *     the point is set into the first component of 'ip',
+ *  2. \a e and \a p intersect at one point. In this case,
+ *     the point is set into the first component of \a ip,
  *     and the function returns 1.
- *  3. 'e' is perfectly on 'p'. In this case, though infinite
+ *  3. \a e is perfectly on \a p. In this case, though infinite
  *     number of intersection points exist, the function
- *     only sets the two endpoints of 'e' into the first
- *     and second components of 'ip'.
+ *     only sets the two endpoints of \a e into the first
+ *     and second components of \a ip.
  * Consequently, the number of intersection points is at
- * most two, so that the size of 'ip' should be equal to
- * or more than two.
- * [RETURN VALUE]
- * zColChkEdgePlane3D() returns the true value if
- * 'e' and 'p' intersect with each other. Otherwise, the
- * false value is returned.
+ * most two, so that the size of \a ip has to be more than
+ * or equal to two.
+ * \return
+ * zColChkEdgePlane3D() returns the true value if \a e and
+ * \a p intersect with each other. Otherwise, the false value
+ * is returned.
  *
- * zIntersectEdgePlane3D() returns the number of
- * intersection points, which can be 0, 1, or 2.
+ * zIntersectEdgePlane3D() returns the number of intersection
+ * points, 0, 1, or 2.
  */
 __EXPORT bool zColChkEdgePlane3D(zEdge3D *e, zPlane3D *p);
 __EXPORT int zIntersectEdgePlane3D(zEdge3D *e, zPlane3D *p, zVec3D ip[]);
 
 /*! \brief collision and intersection of plane, edge and triangle.
  *
- * zColChkTriPlane3D() checks if 3D triangle 't' and
- * 3D plane 'p' intersect with each other.
+ * zColChkTriPlane3D() checks if 3D triangle \a t and 3D
+ * plane \a p intersect with each other.
  * zIntersectTriPlane3D() calculates all the intersection
- * points between 't' and 'p', sets them into the array
- * 'ip' and returns the number of them.
- * In the case that 't' is perfectly on 'p', though
+ * points between \a t and \a p, sets them into the array
+ * \a ip and returns the number of them.
+ * In the case that \a t is perfectly on \a p, though
  * infinite number of intersection points exist, the
- * function only sets the three vertices of 't' into
- * the first three components of 'ip'. Consequently,
- * the number of intersection points is at most three,
- * so that the size of 'ip' should be equal to or more
- * than three.
+ * function only sets the three vertices of \a t into the
+ * first three components of \a ip. Consequently, the number
+ * of intersection points is at most three, so that the size
+ * of \a ip has to be more than or equal to three.
  *
- * zColChkEdgeTri3D() checks if 3D edge 'e' and
- * 3D triangle 't' intersect with each other.
+ * zColChkEdgeTri3D() checks if 3D edge \a e and 3D triangle
+ * \a t intersect with each other.
  * zIntersectEdgeTri3D() calculates all the intersection
- * points between 'e' and 't' and sets them into 'ip'.
- * In the case that 'e' is included in 't', though infinite
+ * points between \a e and \a t and sets them into \a ip.
+ * In the case that \a e is included in \a t, though infinite
  * number of intersection points exist, the function only
- * sets the two endpoints of 'e' into the first and
- * second components of 'ip'. Consequently, the number
- * of intersection points is at most two, so that the
- * size of 'ip' should be equal to or more than two.
+ * sets the two endpoints of \a e into the first and second
+ * components of \a ip. Consequently, the number of
+ * intersection points is at most two, so that the size of
+ * \a ip has to be more than or equal to two.
  *
- * zColChkTri3D() checks if two 3D triangles 't1'
- * and 't2' intersect with each other.
- * zIntersectTri3D() calculates all the intersection
- * points between 't1' and 't2' and sets them into 'ip'.
- * In the case that one is included in the other (or the
- * two perfectly coincide with each other), though infinite
+ * zColChkTri3D() checks if two 3D triangles \a t1 and \a t2
+ * intersect with each other.
+ * zIntersectTri3D() calculates all the intersection points
+ * between \a t1 and \a t2 and sets them into \a ip.
+ * In the case that one is included in the other (or the two
+ * perfectly coincide with each other), though infinite
  * number of intersection points exist, the function only
  * sets the three vertices of the included into the first
- * three components of 'ip'. Consequently, the number
- * of intersection points is at most three, so that the
- * size of 'ip' should be equal to or more than three.
- * [RETURN VALUE]
- * zColChkTriPlane3D(), zColChkEdgeTri3D() and
- * zColChkTri3D() return the true value if the given two
- * intersect with each other. Otherwise, the false value
- * is returned.
+ * three components of \a ip. Consequently, the number of
+ * intersection points is at most three, so that the size of
+ * \a ip has to be more than or equal to three.
+ * \return
+ * zColChkTriPlane3D(), zColChkEdgeTri3D() and zColChkTri3D()
+ * return the true value if the given two elements intersect
+ * with each other. Otherwise, the false value is returned.
  *
  * zIntersectTriPlane3D(), zIntersectEdgeTri3D() and
- * zIntersectTri3D() return the number of intersection
- * points.
+ * zIntersectTri3D() return the number of intersection points.
  */
 __EXPORT bool zColChkTriPlane3D(zTri3D *t, zPlane3D *p);
 __EXPORT int zIntersectTriPlane3D(zTri3D *t, zPlane3D *p, zVec3D ip[]);

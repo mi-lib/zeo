@@ -11,9 +11,7 @@
  * list of 3D vectors
  * ********************************************************** */
 
-/* zVec3DListInsert
- * - insert a 3D vector to a vector list.
- */
+/* insert a 3D vector to a vector list. */
 zVec3DListCell *zVec3DListInsert(zVec3DList *list, zVec3D *v)
 {
   zVec3DListCell *cell;
@@ -32,9 +30,7 @@ zVec3DListCell *zVec3DListInsert(zVec3DList *list, zVec3D *v)
   return cell;
 }
 
-/* zVec3DListFromArray
- * - create a list of vectors from an array of 3D vectors.
- */
+/* create a list of vectors from an array of 3D vectors. */
 zVec3DList *zVec3DListFromArray(zVec3DList *list, zVec3D v[], int num)
 {
   zListInit( list );
@@ -46,6 +42,7 @@ zVec3DList *zVec3DListFromArray(zVec3DList *list, zVec3D v[], int num)
   return list;
 }
 
+/* destroy a list of 3D vectors. */
 void zVec3DListDestroy(zVec3DList *list)
 {
   zVec3DListCell *vc;
@@ -57,14 +54,10 @@ void zVec3DListDestroy(zVec3DList *list)
   }
 }
 
-/* zVec3DListQuickSort
- * - a quick sort routine for vector list class.
- */
+/* quick sort of a list of 3D vectors. */
 zListQuickSortDef( zVec3DList, zVec3DListCell )
 
-/* zVec3DListFWrite
- * - output a list of 3D vectors.
- */
+/* output a list of 3D vectors. */
 void zVec3DListFWrite(FILE *fp, zVec3DList *list)
 {
   zVec3DListCell *cp;
@@ -74,9 +67,7 @@ void zVec3DListFWrite(FILE *fp, zVec3DList *list)
     zVec3DFWrite( fp, cp->data );
 }
 
-/* zVec3DListDataFWrite
- * - output a list of 3D vectors in a plain form.
- */
+/* output a list of 3D vectors in a plain form. */
 void zVec3DListDataFWrite(FILE *fp, zVec3DList *list)
 {
   zVec3DListCell *cp;
@@ -90,9 +81,7 @@ void zVec3DListDataFWrite(FILE *fp, zVec3DList *list)
  * list of pointers to 3D vectors
  * ********************************************************** */
 
-/* zVec3DAddrListInsert
- * - insert a pointer to a 3D vector into a list of vectors.
- */
+/* insert a pointer to a 3D vector into a list of pointers to 3D vectors. */
 zVec3DAddr *zVec3DAddrListInsert(zVec3DAddrList *list, zVec3D *v)
 {
   zVec3DAddr *cell;
@@ -106,9 +95,7 @@ zVec3DAddr *zVec3DAddrListInsert(zVec3DAddrList *list, zVec3D *v)
   return cell;
 }
 
-/* zVec3DAddrListFromArray
- * - create a list of vectors from an array of 3D vectors.
- */
+/* create a list of pointers to 3D vectors from an array of 3D vectors. */
 zVec3DAddrList *zVec3DAddrListFromArray(zVec3DAddrList *list, zVec3D v[], int num)
 {
   zListInit( list );
@@ -120,14 +107,27 @@ zVec3DAddrList *zVec3DAddrListFromArray(zVec3DAddrList *list, zVec3D v[], int nu
   return list;
 }
 
-/* zVec3DAddrListQuickSort
- * - a quick sort routine for vector list class.
- */
+/* clone a list of pointers to 3D vectors. */
+zVec3DAddrList *zVec3DAddrListClone(zVec3DAddrList *src, zVec3DAddrList *dest)
+{
+  zVec3DAddr *scp, *cp;
+
+  zListInit( dest );
+  zListForEach( src, scp ){
+    if( !( cp = zAlloc( zVec3DAddr, 1 ) ) ){
+      ZALLOCERROR();
+      return NULL;
+    }
+    cp->data = scp->data;
+    zListInsertHead( dest, cp );
+  }
+  return dest;
+}
+
+/* quick sort of a list of pointers to 3D vectors. */
 zListQuickSortDef( zVec3DAddrList, zVec3DAddr )
 
-/* zVec3DAddrListFWrite
- * - output a list of pointers to 3D vectors.
- */
+/* output a list of pointers to 3D vectors to file. */
 void zVec3DAddrListFWrite(FILE *fp, zVec3DAddrList *list)
 {
   zVec3DAddr *cp;
@@ -137,8 +137,7 @@ void zVec3DAddrListFWrite(FILE *fp, zVec3DAddrList *list)
     zVec3DFWrite( fp, cp->data );
 }
 
-/* zVec3DAddrListDataFWrite
- * - output a list of pointers to 3D vectors in a plain form.
+/* output a list of pointers to 3D vectors in a plain form to file.
  */
 void zVec3DAddrListDataFWrite(FILE *fp, zVec3DAddrList *list)
 {
@@ -152,9 +151,7 @@ void zVec3DAddrListDataFWrite(FILE *fp, zVec3DAddrList *list)
 /* utilities for point clouds
  * ********************************************************** */
 
-/* zVec3DListNN
- * - a naive algorithm to find the nearest neighbor in a list of 3D vectors.
- */
+/* a naive algorithm to find the nearest neighbor in a list of 3D vectors. */
 zVec3D *zVec3DListNN(zVec3DList *list, zVec3D *v, double *dmin)
 {
   zVec3DListCell *cell;

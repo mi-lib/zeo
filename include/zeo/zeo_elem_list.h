@@ -69,6 +69,25 @@ __EXPORT void zTri3DListAlign(zTri3DList *list, zVec3D *ref);
  */
 __EXPORT void zTri3DListCopyArray(zTri3DList *list, zTri3D t[], int n);
 
+/* ********************************************************** *
+ * trianglation of non-convex.
+ * ********************************************************** */
+
+/*! \brief triangulate a simple loop of vertices. */
+__EXPORT int zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist);
+
+/*! \brief trianglate a looped series of vertices of a non-convex.
+ *
+ * zTriangulate() triangulates a looped series of vertices of a non-convex
+ * given by an array of 3D vectors \a v. Namely, it divides the non-convex
+ * into triangle pieces. \a n is the number of vertices.
+ * As the result, a triangle list \a tlist is newly created.
+ * \return
+ * zTriangulate() returns the number of the generated triangles, which
+ * is up to \a n -2.
+ */
+__EXPORT int zTriangulate(zVec3D v[], int n, zTri3DList *tlist);
+
 __END_DECLS
 
 #endif /* __ZEO_ELEM_LIST_H__ */

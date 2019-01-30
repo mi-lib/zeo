@@ -1,3 +1,7 @@
+2019. 1.30. Merged zeo_triangulate to zeo_elem_list. [zeo_elem_list, zeo_ph]
+2019. 1.30. Added _zLoop3DTriangulate and zLoop3DTriangulate. [zeo_triangulate]
+2019. 1.30. Added zVec3DAddrListClone. [zeo_vec3d_list]
+2019. 1.30. Renamed _zTriangulateNorm to _zLoop3DTriangulateNorm and _zTriangulateCheck to _zLoop3DTriangulateCheck. [zeo_triangulate]
 2019. 1.21. Added zMPR and zMPRDepth. [zeo_col, zeo_col_mpr]
 2019. 1.21. Abolished _zGJKSupportMapOne and _zGJKSupportMapOnePL, and modified _zGJKSupportMap and _zGJKSupportMapPL to use zVec3DSupportMap and zVec3DListSupportMap, respectively. [zeo_col_gjk]
 2019. 1.21. Added zVec3DSupportMap and zVec3DListSupportMap. [zeo_vec3d_list]

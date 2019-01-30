@@ -5,7 +5,6 @@
  */
 
 #include <zeo/zeo_ph.h>
-#include <zeo/zeo_triangulate.h>
 
 /* ********************************************************** */
 /* CLASS: zPH3D
