@@ -16,24 +16,24 @@ int main(void)
 
   printf( "[contiguous vertex of edge]\n" );
   do{
-    zEdge3DWrite( &edge );
+    zEdge3DPrint( &edge );
     printf( "enter three values> " );
     if( scanf( "%lf %lf %lf", &p.e[0], &p.e[1], &p.e[2] ) != 3 ) break;
     printf( "(entered point): " );
-    zVec3DWrite( &p );
+    zVec3DPrint( &p );
     printf( "contiguous point: " );
-    zVec3DWrite( zEdge3DContigVert( &edge, &p, &d ) );
+    zVec3DPrint( zEdge3DContigVert( &edge, &p, &d ) );
     printf( "( distance = %g )\n", d );
   } while( !zVec3DIsTiny( &p ) );
   printf( "[contiguous vertex of triangle]\n" );
   do{
-    zTri3DWrite( &t );
+    zTri3DPrint( &t );
     printf( "enter three values> " );
     if( scanf( "%lf %lf %lf", &p.e[0], &p.e[1], &p.e[2] ) != 3 ) break;
     printf( "(entered point): " );
-    zVec3DWrite( &p );
+    zVec3DPrint( &p );
     printf( "contiguous point: " );
-    zVec3DWrite( zTri3DContigVert( &t, &p, &d ) );
+    zVec3DPrint( zTri3DContigVert( &t, &p, &d ) );
     printf( "( distance = %g )\n", d );
   } while( !zVec3DIsTiny( &p ) );
   return 0;

@@ -225,30 +225,30 @@ __EXPORT double zMat2DError(zMat2D m1, zMat2D m2);
 /* I/O
  * ********************************************************** */
 
-/*! \brief input and output of a 2x2 matrix.
+/*! \brief scan and print a 2x2 matrix.
  *
- * zMat2DFRead() reads four values from the current position of the file
- * \a fp and creates a 2x2 matrix \a m from them.
- * zMat2DRead() reads the values from the standard input.
+ * zMat2DFScan() scans four values from the current position of
+ * a file \a fp and creates a 2x2 matrix \a m from them.
+ * zMat2DScan() scans the values from the standard input.
  *
- * zMat2DFWrite() outputs a 2x2 matrix \a m to the current position of
- * the file \a fp in the following format:
+ * zMat2DFPrint() prints a 2x2 matrix \a m to the current position
+ * of a file \a fp in the following format:
  *  {
  *    a11, a12
  *    a21, a22
  *  }
- * When the null pointer is given, it outputs the following string.
+ * When the null pointer is given, the following string is printed.
  *  (null 2x2 matrix)
- * zMat2DWrite() outputs a 2x2 matrix \a m to the standard output.
+ * zMat2DPrint() prints a 2x2 matrix \a m to the standard output.
  * \return
- * zMat2DFRead() and zMat2DRead() return a pointer \a m.
+ * zMat2DFScan() and zMat2DScan() return a pointer \a m.
  *
- * zMat2DFWrite() and zMat2DWrite() return no value.
+ * zMat2DFPrint() and zMat2DPrint() return no value.
  */
-__EXPORT double *zMat2DFRead(FILE *fp, zMat2D m);
-#define zMat2DRead(m) zMat2DFRead( stdin, (m) )
-__EXPORT void zMat2DFWrite(FILE *fp, zMat2D m);
-#define zMat2DWrite(m) zMat2DFWrite( stdout, (m) )
+__EXPORT double *zMat2DFScan(FILE *fp, zMat2D m);
+#define zMat2DScan(m) zMat2DFScan( stdin, (m) )
+__EXPORT void zMat2DFPrint(FILE *fp, zMat2D m);
+#define zMat2DPrint(m) zMat2DFPrint( stdout, (m) )
 
 __END_DECLS
 

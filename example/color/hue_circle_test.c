@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
   for( i=0; i<DIV; i++ ){
     hsv.hue = 360*(double)i/DIV;
     zHSV2RGB( &hsv, &rgb );
-    zRGBWrite( &rgb );
+    zRGBPrint( &rgb );
   }
   return 0;
 }

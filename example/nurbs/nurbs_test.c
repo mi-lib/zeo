@@ -44,7 +44,7 @@ int main(void)
   for( i=0; i<n1; i++ )
     for( j=0; j<n2; j++ ){
       zNURBS3DSetCP( &nurbs, i, j, &cp[i*n2+j] );
-      zVec3DDataFWrite( fp, zNURBS3DCP(&nurbs,i,j) );
+      zVec3DDataFPrint( fp, zNURBS3DCP(&nurbs,i,j) );
       fprintf( fp, "\n" );
     }
   fclose( fp );
@@ -56,7 +56,7 @@ int main(void)
     for( j=0; j<=nurbs.ns[1]; j++ ){
       v = zNURBS3DKnotSlice( &nurbs, 1, j );
       if( zNURBS3DVec( &nurbs, u, v, &p ) ){
-        zVec3DDataFWrite( fp, &p );
+        zVec3DDataFPrint( fp, &p );
         fprintf( fp, "\n" );
       }
     }
@@ -70,25 +70,25 @@ int main(void)
   v = zRandF( zNURBS3DKnotS(&nurbs,1), zNURBS3DKnotE(&nurbs,1) );
   if( zNURBS3DVecNorm( &nurbs, u, v, &p, &n, &t1, &t2 ) ){
     if( zVec3DIsTiny( &n ) ) goto RETRY;
-    zVec3DDataFWrite( fp, &p );
+    zVec3DDataFPrint( fp, &p );
     fprintf( fp, "\n" );
     zVec3DAddDRC( &n, &p );
-    zVec3DDataFWrite( fp, &n );
+    zVec3DDataFPrint( fp, &n );
     fprintf( fp, "\n\n\n" );
-    zVec3DDataFWrite( fp, &p );
+    zVec3DDataFPrint( fp, &p );
     fprintf( fp, "\n" );
     zVec3DAddDRC( &t1, &p );
-    zVec3DDataFWrite( fp, &t1 );
+    zVec3DDataFPrint( fp, &t1 );
     fprintf( fp, "\n\n\n" );
-    zVec3DDataFWrite( fp, &p );
+    zVec3DDataFPrint( fp, &p );
     fprintf( fp, "\n" );
     zVec3DAddDRC( &t2, &p );
-    zVec3DDataFWrite( fp, &t2 );
+    zVec3DDataFPrint( fp, &t2 );
   }
   fclose( fp );
 
   fp = fopen( "test_nurbs.tkf", "w" );
-  zNURBS3DFWrite( fp, &nurbs );
+  zNURBS3DFPrint( fp, &nurbs );
   fclose( fp );
 
   zNURBS3DDestroy( &nurbs );

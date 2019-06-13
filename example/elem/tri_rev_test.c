@@ -11,12 +11,12 @@ int main(void)
 
   zTri3DCreate( &t1, &p[0], &p[1], &p[2] );
   printf( "original triangle\n" );
-  zTri3DWrite( &t1 );
+  zTri3DPrint( &t1 );
   zTri3DRev( &t1, &t2 );
   printf( "reversed triangle\n" );
-  zTri3DWrite( &t2 );
+  zTri3DPrint( &t2 );
   zTri3DRevDRC( &t1 );
   printf( "reversed triangle (destructive)\n" );
-  zTri3DWrite( &t1 );
+  zTri3DPrint( &t1 );
   return 0;
 }

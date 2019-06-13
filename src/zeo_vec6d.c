@@ -8,14 +8,10 @@
 
 /* ********************************************************** */
 /* CLASS: zVec6D
- * 6D quasi vector class - union of linear/angular vector
+ * 6D spatial vector class - set of linear/angular vectors
  * ********************************************************** */
 
-/* OBJECT:
- * zvec6Dzero, zvec6Dlinx, zvec6Dliny, zvec6Dlinz
- * zvec6Dangx, zvec6Dangy, zvec6Dangz
- * - 6D zero vector and unit vectors along (x,y,z) axis.
- */
+/* 6D zero vector and unit vectors along (x,y,z) axes. */
 const zVec6D zvec6Dzero = { { 0, 0, 0, 0, 0, 0 } };
 const zVec6D zvec6Dlinx = { { 1, 0, 0, 0, 0, 0 } };
 const zVec6D zvec6Dliny = { { 0, 1, 0, 0, 0, 0 } };
@@ -24,43 +20,33 @@ const zVec6D zvec6Dangx = { { 0, 0, 0, 1, 0, 0 } };
 const zVec6D zvec6Dangy = { { 0, 0, 0, 0, 1, 0 } };
 const zVec6D zvec6Dangz = { { 0, 0, 0, 0, 0, 1 } };
 
-/* zVec6DCreate
- * - create 6D vector.
- */
+/* create a 6D vector. */
 zVec6D *zVec6DCreate(zVec6D *v, double x, double y, double z, double xa, double ya, double za)
 {
   _zVec6DCreate( v, x, y, z, xa, ya, za );
   return v;
 }
 
-/* zVec6DFromVec3D
- * - convert from a set of two 3D vectors to 6D vector.
- */
+/* convert a set of two 3D vectors to a 6D vector. */
 zVec6D *zVec6DFromVec3D(zVec6D *v, zVec3D *vl, zVec3D *va)
 {
   _zVec6DFromVec3D( v, vl, va );
   return v;
 }
 
-/* zVec6DMatch
- * - check if the two 6D vectors match each other.
- */
+/* check if two 6D vectors match each other. */
 bool zVec6DMatch(zVec6D *v1, zVec6D *v2)
 {
   return _zVec6DMatch( v1, v2 );
 }
 
-/* zVec6DEqual
- * - check if the two 6D vectors are equal.
- */
+/* check if two 6D vectors are equal. */
 bool zVec6DEqual(zVec6D *v1, zVec6D *v2)
 {
   return _zVec6DEqual( v1, v2 );
 }
 
-/* zVec6DIsTol
- * - check if the 6D vector is tiny enough.
- */
+/* check if a 6D vector is tiny. */
 bool zVec6DIsTol(zVec6D *v, double tol)
 {
   return _zVec6DIsTol( v, tol );
@@ -70,45 +56,35 @@ bool zVec6DIsTol(zVec6D *v, double tol)
 /* arithmetics
  * ********************************************************** */
 
-/* zVec6DAdd
- * - add two 6D vectors.
- */
+/* add two 6D vectors. */
 zVec6D *zVec6DAdd(zVec6D *v1, zVec6D *v2, zVec6D *v)
 {
   _zVec6DAdd( v1, v2, v );
   return v;
 }
 
-/* zVec6DSub
- * - subtract a 6D vector from another.
- */
+/* subtract a 6D vector from another. */
 zVec6D *zVec6DSub(zVec6D *v1, zVec6D *v2, zVec6D *v)
 {
   _zVec6DSub( v1, v2, v );
   return v;
 }
 
-/* zVec6DRev
- * - reverse 6D vector.
- */
+/* reverse a 6D vector. */
 zVec6D *zVec6DRev(zVec6D *v, zVec6D *rv)
 {
   _zVec6DRev( v, rv );
   return rv;
 }
 
-/* zVec6DMul
- * - multiply 6D vector by a scalar value.
- */
+/* multiply a 6D vector by a scalar value. */
 zVec6D *zVec6DMul(zVec6D *v, double k, zVec6D *mv)
 {
   _zVec6DMul( v, k, mv );
   return mv;
 }
 
-/* zVec6DDiv
- * - divide 6D vector by a scalar value.
- */
+/* divide a 6D vector by a scalar value. */
 zVec6D *zVec6DDiv(zVec6D *v, double k, zVec6D *dv)
 {
   if( k == 0 ){
@@ -121,26 +97,20 @@ zVec6D *zVec6DDiv(zVec6D *v, double k, zVec6D *dv)
   return dv;
 }
 
-/* zVec6DCat
- * - concatenate 6D vector.
- */
+/* concatenate a 6D vector with another multiplied by a scalar value. */
 zVec6D *zVec6DCat(zVec6D *v1, double k, zVec6D *v2, zVec6D *v)
 {
   _zVec6DCat( v1, k, v2, v );
   return v;
 }
 
-/* zVec6DInnerProd
- * - inner product of two 6D vectors.
- */
+/* inner product of two 6D vectors. */
 double zVec6DInnerProd(zVec6D *v1, zVec6D *v2)
 {
   return _zVec6DInnerProd( v1, v2 );
 }
 
-/* zVec6DLinShift
- * - shift velocity type of 6D vector.
- */
+/* shift a velocity-type 6D vector. */
 zVec6D *zVec6DLinShift(zVec6D *src, zVec3D *pos, zVec6D *dest)
 {
   zVec3D v;
@@ -151,9 +121,7 @@ zVec6D *zVec6DLinShift(zVec6D *src, zVec3D *pos, zVec6D *dest)
   return dest;
 }
 
-/* zVec6DLinShiftDRC
- * - shift velocity type 6D vector directly.
- */
+/* shift a velocity-type 6D vector directly. */
 zVec6D *zVec6DLinShiftDRC(zVec6D *vec, zVec3D *pos)
 {
   zVec3D v;
@@ -163,9 +131,7 @@ zVec6D *zVec6DLinShiftDRC(zVec6D *vec, zVec3D *pos)
   return vec;
 }
 
-/* zVec6DAngShift
- * - shift force type of 6D vector.
- */
+/* shift a force-type 6D vector. */
 zVec6D *zVec6DAngShift(zVec6D *src, zVec3D *pos, zVec6D *dest)
 {
   zVec3D n;
@@ -176,9 +142,7 @@ zVec6D *zVec6DAngShift(zVec6D *src, zVec3D *pos, zVec6D *dest)
   return dest;
 }
 
-/* zVec6DAngShiftDRC
- * - shift force type of 6D vector directly.
- */
+/* shift a force-type 6D vector directly. */
 zVec6D *zVec6DAngShiftDRC(zVec6D *vec, zVec3D *pos)
 {
   zVec3D n;
@@ -192,9 +156,7 @@ zVec6D *zVec6DAngShiftDRC(zVec6D *vec, zVec3D *pos)
 /* differential kinematics
  * ********************************************************** */
 
-/* zVec6DDif
- * - numerical differentiation of 6D vector.
- */
+/* numerical differentiation of a 6D vector. */
 zVec6D *zVec6DDif(zVec6D *v, zVec6D *vnew, double dt, zVec6D *vel)
 {
   _zVec6DSub( vnew, v, vel );
@@ -205,10 +167,8 @@ zVec6D *zVec6DDif(zVec6D *v, zVec6D *vnew, double dt, zVec6D *vel)
 /* I/O
  * ********************************************************** */
 
-/* zVec6DFRead
- * - input of 6D vector from file.
- */
-zVec6D *zVec6DFRead(FILE *fp, zVec6D *v)
+/* scan a 6D vector from a file. */
+zVec6D *zVec6DFScan(FILE *fp, zVec6D *v)
 {
   register int i;
 
@@ -217,10 +177,8 @@ zVec6D *zVec6DFRead(FILE *fp, zVec6D *v)
   return v;
 }
 
-/* zVec6DDataFWrite
- * - output of 6D vector data to file.
- */
-zVec6D *zVec6DDataFWrite(FILE *fp, zVec6D *v)
+/* print a 6D vector data out to a file. */
+zVec6D *zVec6DDataFPrint(FILE *fp, zVec6D *v)
 {
   if( !v ) return NULL;
   fprintf( fp, " %.10g %.10g %.10g %.10g %.10g %.10g",
@@ -228,26 +186,22 @@ zVec6D *zVec6DDataFWrite(FILE *fp, zVec6D *v)
   return v;
 }
 
-/* zVec6DDataNLFWrite
- * - output of 6D vector data with the new line to file.
- */
-zVec6D *zVec6DDataNLFWrite(FILE *fp, zVec6D *v)
+/* print a 6D vector data with the new line out to a file. */
+zVec6D *zVec6DDataNLFPrint(FILE *fp, zVec6D *v)
 {
-  if( !zVec6DDataFWrite( fp, v ) ) return NULL;
+  if( !zVec6DDataFPrint( fp, v ) ) return NULL;
   fprintf( fp, "\n" );
   return v;
 }
 
-/* zVec6DFWrite
- * - output of 6D vector to file.
- */
-zVec6D *zVec6DFWrite(FILE *fp, zVec6D *v)
+/* print a 6D vector out to a file. */
+zVec6D *zVec6DFPrint(FILE *fp, zVec6D *v)
 {
   if( !v ){
     fprintf( fp, "(null 6D vector)\n" );
     return NULL;
   }
-  zVec3DFWrite( fp, zVec6DLin(v) );
-  zVec3DFWrite( fp, zVec6DAng(v) );
+  zVec3DFPrint( fp, zVec6DLin(v) );
+  zVec3DFPrint( fp, zVec6DAng(v) );
   return v;
 }

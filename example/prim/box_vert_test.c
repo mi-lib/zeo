@@ -8,11 +8,11 @@ int main(void)
 
   zVec3DCreate( &v, 0.25, 0.15, 0.05 );
   zBox3DCreateAlign( &box, &v, 5.0, 1.0, 3.0 );
-  zBox3DWrite( &box );
+  zBox3DPrint( &box );
   for( i=0; i<8; i++ ){
     zBox3DVert( &box, i, &v );
     printf( "vert #%d: ", i );
-    zVec3DWrite( &v );
+    zVec3DPrint( &v );
   }
   return 0;
 }

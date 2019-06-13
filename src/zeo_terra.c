@@ -16,9 +16,7 @@ static void _zTerraCellUpdate(zTerraCell *cell, zVec3D *p);
 static void _zTerraCellForm(zTerraCell *cell, double x, double y);
 
 /* (static)
- * _zTerraCellInit
- * - initialize a terrain cell before identification.
- */
+ * initialize a terrain cell before identification. */
 zTerraCell *_zTerraCellInit(zTerraCell *cell)
 {
   cell->z = 0;
@@ -32,19 +30,15 @@ zTerraCell *_zTerraCellInit(zTerraCell *cell)
 }
 
 /* (static)
- * _zTerraCellResidual
- * - compute the residual of the height of a point from the estimate elevation.
- */
+ * compute the residual of the height of a point from the estimate elevation. */
 double _zTerraCellResidual(zTerraCell *cell, zVec3D *p)
 {
   return zTerraCellZ( cell, p->e[zX], p->e[zY] ) - p->e[zZ];
 }
 
 /* (static)
- * _zTerraCellUpdate
- * - update the parameters of a terrain cell in identification process
- *   based on recursive least square minimization.
- */
+ * update the parameters of a terrain cell in identification process
+ * based on recursive least square minimization. */
 void _zTerraCellUpdate(zTerraCell *cell, zVec3D *p)
 {
   double e, d;
@@ -62,9 +56,7 @@ void _zTerraCellUpdate(zTerraCell *cell, zVec3D *p)
 }
 
 /* (static)
- * _zTerraCellForm
- * - form a terrain cell based on estimated parameters.
- */
+ * form a terrain cell based on estimated parameters. */
 void _zTerraCellForm(zTerraCell *cell, double x, double y)
 {
   cell->z = zTerraCellZ( cell, x, y );
@@ -80,20 +72,16 @@ static zTerraCell *_zTerraGetBaseGrid(zTerra *terra, zVec3D *p, int *i, int *j);
 static bool _zTerraCheckGridTravsRes(zTerra *terra, int i, int j, zVec3D *p);
 static bool _zTerraCheckGridTravs(zTerra *terra, int i, int j);
 static void _zTerraZGrid(zTerra *terra, double x, double y, int i, int j, double *z, double *d);
-static bool _zTerraFRead(FILE *fp, void *instance, char *buf, bool *success);
+static bool _zTerraFScan(FILE *fp, void *instance, char *buf, bool *success);
 
-/* zTerraGrid
- * - retrieve a grid of an elevation map.
- */
+/* retrieve a grid of an elevation map. */
 zTerraCell *zTerraGrid(zTerra *terra, int i, int j)
 {
   return i < 0 || i >= terra->_nx || j < 0 || j >= terra->_ny ?
     NULL : zTerraGridNC(terra,i,j);
 }
 
-/* zTerraInit
- * - initialize an elevation map.
- */
+/* initialize an elevation map. */
 zTerra *zTerraInit(zTerra *terra)
 {
   terra->xmin = terra->xmax = 0;
@@ -106,9 +94,7 @@ zTerra *zTerraInit(zTerra *terra)
   return terra;
 }
 
-/* zTerraLevel
- * - level an elevation map into flat.
- */
+/* level an elevation map into flat. */
 zTerra *zTerraLevel(zTerra *terra)
 {
   register int i, j;
@@ -119,9 +105,7 @@ zTerra *zTerraLevel(zTerra *terra)
   return terra;
 }
 
-/* zTerraAlloc
- * - allocate the internal grid array of an elevation map.
- */
+/* allocate the internal grid array of an elevation map. */
 zTerra *zTerraAlloc(zTerra *terra)
 {
   if( terra->_nx == 0 || terra->_ny == 0 ){
@@ -135,9 +119,7 @@ zTerra *zTerraAlloc(zTerra *terra)
   return zTerraLevel( terra );
 }
 
-/* zTerraSetRegion
- * - set the region of an elevation map based on resolution.
- */
+/* set the region of an elevation map based on resolution. */
 void zTerraSetRegion(zTerra *terra, double xmin, double ymin, double zmin, double zmax, double dx, double dy)
 {
   terra->xmin = xmin;
@@ -150,9 +132,7 @@ void zTerraSetRegion(zTerra *terra, double xmin, double ymin, double zmin, doubl
   zTerraSetTravsThreshold( terra, ZTERRA_TRAVS_TH_VAR, ZTERRA_TRAVS_TH_GRD, ZTERRA_TRAVS_TH_RES );
 }
 
-/* zTerraAllocRegion
- * - allocate the internal grid array of an elevation map based on resolution.
- */
+/* allocate the internal grid array of an elevation map based on resolution. */
 zTerra *zTerraAllocRegion(zTerra *terra, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, double dx, double dy)
 {
   if( dx < zTOL || dy < zTOL ){
@@ -165,9 +145,7 @@ zTerra *zTerraAllocRegion(zTerra *terra, double xmin, double xmax, double ymin, 
   return zTerraAlloc( terra );
 }
 
-/* zTerraAllocGrid
- * - allocate the internal grid array of an elevation map based on size.
- */
+/* allocate the internal grid array of an elevation map based on size. */
 zTerra *zTerraAllocGrid(zTerra *terra, double xmin, double ymin, double dx, double dy, int nx, int ny, double zmin, double zmax)
 {
   terra->_nx = nx;
@@ -176,9 +154,7 @@ zTerra *zTerraAllocGrid(zTerra *terra, double xmin, double ymin, double dx, doub
   return zTerraAlloc( terra );
 }
 
-/* zTerraFree
- * - free the internal grid array of an elevation map.
- */
+/* free the internal grid array of an elevation map. */
 void zTerraFree(zTerra *terra)
 {
   free( terra->grid );
@@ -186,9 +162,7 @@ void zTerraFree(zTerra *terra)
 }
 
 /* (static)
- * _zTerraGetBaseGrid
- * - get the base grid a square with which contains a given point.
- */
+ * get the base grid a square with which contains a given point. */
 zTerraCell *_zTerraGetBaseGrid(zTerra *terra, zVec3D *p, int *i, int *j)
 {
   if( p->e[zZ] < terra->zmin || p->e[zZ] > terra->zmax ) return NULL;
@@ -197,9 +171,7 @@ zTerraCell *_zTerraGetBaseGrid(zTerra *terra, zVec3D *p, int *i, int *j)
   return zTerraGrid(terra,*i,*j);
 }
 
-/* zTerraUpdate
- * - update an elevation map from a point.
- */
+/* update an elevation map from a point. */
 #define _zTerraUpdate(terra,p,g,i,j) do{\
   if( ( g = _zTerraGetBaseGrid( terra, p, &i, &j ) ) )\
     _zTerraCellUpdate( grid, p );\
@@ -219,9 +191,7 @@ zTerra *zTerraUpdate(zTerra *terra, zVec3D *p)
   return terra;
 }
 
-/* zTerraForm
- * - form terrain profile of an elevation map.
- */
+/* form terrain profile of an elevation map. */
 zTerra *zTerraForm(zTerra *terra)
 {
   register int i, j;
@@ -232,9 +202,7 @@ zTerra *zTerraForm(zTerra *terra)
   return terra;
 }
 
-/* zTerraIdent
- * - identify an elevation map from point cloud.
- */
+/* identify an elevation map from point cloud. */
 zTerra *zTerraIdent(zTerra *terra, zVec3DList *pl)
 {
   zVec3DListCell *pc;
@@ -250,9 +218,7 @@ zTerra *zTerraIdent(zTerra *terra, zVec3DList *pl)
 }
 
 /* (static)
- * _zTerraCheckGridTravsRes
- * - check traversability of a grid of an elevation map based on estimate residual.
- */
+ * check traversability of a grid of an elevation map based on estimate residual. */
 bool _zTerraCheckGridTravsRes(zTerra *terra, int i, int j, zVec3D *p)
 {
   zTerraCell *cs;
@@ -263,9 +229,7 @@ bool _zTerraCheckGridTravsRes(zTerra *terra, int i, int j, zVec3D *p)
 }
 
 /* (static)
- * _zTerraCheckGridTravs
- * - check traversability of a grid of an elevation map.
- */
+ * check traversability of a grid of an elevation map. */
 bool _zTerraCheckGridTravs(zTerra *terra, int i, int j)
 {
   zTerraCell *grid;
@@ -286,9 +250,7 @@ bool _zTerraCheckGridTravs(zTerra *terra, int i, int j)
   return true;
 }
 
-/* zTerraCheckTravs
- * - check traversability of each grid of an elevation map.
- */
+/* check traversability of each grid of an elevation map. */
 void zTerraCheckTravs(zTerra *terra)
 {
   register int i, j;
@@ -298,9 +260,7 @@ void zTerraCheckTravs(zTerra *terra)
       zTerraGridNC(terra,i,j)->travs = _zTerraCheckGridTravs( terra, i, j );
 }
 
-/* zTerraZRange
- * - acquire the actual z-range of an elevation map.
- */
+/* acquire the actual z-range of an elevation map. */
 void zTerraZRange(zTerra *terra, double *zmin, double *zmax)
 {
   register int i, j;
@@ -317,9 +277,7 @@ void zTerraZRange(zTerra *terra, double *zmin, double *zmax)
 }
 
 /* (static)
- * _zTerraZGrid
- * - compute contribution of a grid for height estimation on an elevation map.
- */
+ * compute contribution of a grid for height estimation on an elevation map. */
 void _zTerraZGrid(zTerra *terra, double x, double y, int i, int j, double *z, double *d)
 {
   zTerraCell *grid;
@@ -329,9 +287,7 @@ void _zTerraZGrid(zTerra *terra, double x, double y, int i, int j, double *z, do
   *d = ( zSqr( x - zTerraX(terra,i) ) + zSqr( y - zTerraY(terra,j) ) ) * grid->var;
 }
 
-/* zTerraZ
- * - estimate z-value at a given horizontal place of an elevation map.
- */
+/* estimate z-value at a given horizontal place of an elevation map. */
 double zTerraZ(zTerra *terra, double x, double y)
 {
   double z[4], d[4], w[4];
@@ -355,10 +311,8 @@ double zTerraZ(zTerra *terra, double x, double y)
 }
 
 /* (static)
- * _zTerraFRead
- * - input an elevation map from a file.
- */
-bool _zTerraFRead(FILE *fp, void *instance, char *buf, bool *success)
+ * scan an elevation map from a file (internal function). */
+bool _zTerraFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
   zTerra *terra;
   zTerraCell *grid;
@@ -410,21 +364,17 @@ bool _zTerraFRead(FILE *fp, void *instance, char *buf, bool *success)
   return true;
 }
 
-/* zTerraFRead
- * - input an elevation map from a file.
- */
-zTerra *zTerraFRead(FILE *fp, zTerra *terra)
+/* scan an elevation map from a file. */
+zTerra *zTerraFScan(FILE *fp, zTerra *terra)
 {
   zTerraInit( terra );
-  if( zFieldFRead( fp, _zTerraFRead, terra ) ) return terra;
+  if( zFieldFScan( fp, _zTerraFScan, terra ) ) return terra;
   zTerraFree( terra );
   return NULL;
 }
 
-/* zTerraFWrite
- * - output an elevation map to a file.
- */
-void zTerraFWrite(FILE *fp, zTerra *terra)
+/* print an elevation map out to a file. */
+void zTerraFPrint(FILE *fp, zTerra *terra)
 {
   register int i, j;
   zTerraCell *grid;
@@ -443,10 +393,8 @@ void zTerraFWrite(FILE *fp, zTerra *terra)
     }
 }
 
-/* zTerraDataFWrite
- * - output an elevation map to a file in a plot-friendly format.
- */
-void zTerraDataFWrite(FILE *fp, zTerra *terra)
+/* print an elevation map out to a file in a plot-friendly format. */
+void zTerraDataFPrint(FILE *fp, zTerra *terra)
 {
   register int i, j;
   zTerraCell *grid;

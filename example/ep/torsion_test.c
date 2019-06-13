@@ -4,8 +4,8 @@ zVec3D *torsion1(zMat3D *r1, zMat3D *r2, zDir d, zVec3D *t)
 {
   double angle;
 
-  zVec3DOuterProd( zMat3DVec(r1,d), zMat3DVec(r2,d), t );
-  return zIsTiny( ( angle = zVec3DAngle( zMat3DVec(r1,d), zMat3DVec(r2,d), t ) ) ) ?
+  zVec3DOuterProd( &r1->v[d], &r2->v[d], t );
+  return zIsTiny( ( angle = zVec3DAngle( &r1->v[d], &r2->v[d], t ) ) ) ?
     zVec3DClear(t) : zVec3DMulDRC( t, angle/zVec3DNorm(t) );
 }
 
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
   zVec3DNormalizeDRC( &t );
   zVec3DMulDRC( &t, zRandF(0,zPI) );
 
-  zMat3DZYX( &r1, zRandF(-zPI,zPI), 0.5*zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+  zMat3DFromZYX( &r1, zRandF(-zPI,zPI), 0.5*zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
   zMat3DRot( &r1, &t, &r2 );
 
   /* torsion 1 */
@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
   zMat3DRot( &rm, &t2, &r );
 
   zMat3DError( &r, &r1, &err );
-  zVec3DWrite( &err );
-  zVec3DWrite( &t );
-  zVec3DWrite( zVec3DSubDRC(&err,&t) );
+  zVec3DPrint( &err );
+  zVec3DPrint( &t );
+  zVec3DPrint( zVec3DSubDRC(&err,&t) );
   return 0;
 }

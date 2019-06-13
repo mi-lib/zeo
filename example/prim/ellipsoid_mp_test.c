@@ -16,14 +16,14 @@ int main(void)
   printf( "volume = %f\n", zEllips3DVolume( &el ) );
   zEllips3DInertia( &el, &i );
   printf( "inertia:\n" );
-  zMat3DWrite( &i );
+  zMat3DPrint( &i );
 
   printf( "+++ polyhedron approximation\n" );
   zEllips3DToPH( &el, &ph );
   printf( "volume = %f\n", zPH3DVolume( &ph ) );
   zPH3DBaryInertia( &ph, &center, &i );
   printf( "inertia:\n" );
-  zMat3DWrite( &i );
+  zMat3DPrint( &i );
 
   return 0;
 }

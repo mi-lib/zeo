@@ -1,6 +1,6 @@
 #include <zeo/zeo.h>
 
-#define MODEL "../model/cube.zph"
+#define MODEL "../model/cube.ztk"
 
 int main(void)
 {
@@ -12,11 +12,11 @@ int main(void)
     ZOPENERROR( MODEL );
     return 1;
   }
-  fgets( buf, BUFSIZ, fp ); /* skip */
-  fgets( buf, BUFSIZ, fp ); /* skip */
-  zPH3DFRead( fp, &ph );
+  if( !fgets( buf, BUFSIZ, fp ) ) exit( 1 ); /* skip */
+  if( !fgets( buf, BUFSIZ, fp ) ) exit( 1 ); /* skip */
+  zPH3DFScan( fp, &ph );
   fclose( fp );
 
-  zPH3DWrite( &ph );
+  zPH3DPrint( &ph );
   return 0;
 }

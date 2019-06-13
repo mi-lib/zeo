@@ -36,7 +36,7 @@ void output(zPH3D *ph, char name[])
   fprintf( fp, "name: prism\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: white\n" );
-  zPH3DFWrite( fp, ph );
+  zPH3DFPrint( fp, ph );
   fclose( fp );
 }
 
@@ -48,11 +48,11 @@ void brep_output(zBREP *brep)
   /* for gnuplot */
   fp = fopen( "brep", "w" );
   zListForEach( &brep->flist, cp ){
-    zVec3DDataNLFWrite( fp, &cp->data.v[0]->data.p );
-    zVec3DDataNLFWrite( fp, &cp->data.v[1]->data.p );
+    zVec3DDataNLFPrint( fp, &cp->data.v[0]->data.p );
+    zVec3DDataNLFPrint( fp, &cp->data.v[1]->data.p );
     fprintf( fp, "\n" );
-    zVec3DDataNLFWrite( fp, &cp->data.v[2]->data.p );
-    zVec3DDataNLFWrite( fp, &cp->data.v[2]->data.p );
+    zVec3DDataNLFPrint( fp, &cp->data.v[2]->data.p );
+    zVec3DDataNLFPrint( fp, &cp->data.v[2]->data.p );
     fprintf( fp, "\n\n" );
   }
   fclose( fp );

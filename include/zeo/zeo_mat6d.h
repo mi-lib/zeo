@@ -27,6 +27,7 @@ typedef union{
   } c;            /*!< \brief 2x2 block matrices */
 } zMat6D;
 
+/* to be outdated. */
 #if 0
 #define zMat6DElem(m,i,j)  zMat3DElem(&(m)->e[(i)/3][(j)/3], (i)%3, (j)%3 )
 #define zMat6DMat3D(m,i,j) ( &(m)->e[(i)][(j)] )
@@ -167,9 +168,9 @@ __EXPORT zMat6D *zMulMat6DMat6DT(zMat6D *m1, zMat6D *m2, zMat6D *m);
 } while(0)
 __EXPORT zMat6D *zMat6DDyad(zMat6D *m, zVec6D *v1, zVec6D *v2);
 
-/*! \brief output a 6x6 matrix to the current position of a file. */
-__EXPORT void zMat6DFWrite(FILE *fp, zMat6D *m);
-#define zMat6DWrite(m) zMat6DFWrite( stdout, (m) )
+/*! \brief print a 6x6 matrix out to a file. */
+__EXPORT void zMat6DFPrint(FILE *fp, zMat6D *m);
+#define zMat6DPrint(m) zMat6DFPrint( stdout, (m) )
 
 __END_DECLS
 

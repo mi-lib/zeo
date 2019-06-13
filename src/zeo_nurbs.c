@@ -336,10 +336,10 @@ zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph)
   return ph;
 }
 
-static bool _zNURBS3DFRead(FILE *fp, void *instance, char *buf, bool *success);
+static bool _zNURBS3DFScan(FILE *fp, void *instance, char *buf, bool *success);
 
-/* read information of a 3D NURBS surface from file. */
-bool _zNURBS3DFRead(FILE *fp, void *instance, char *buf, bool *success)
+/* scan information of a 3D NURBS surface from a file. */
+bool _zNURBS3DFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
   zNURBS3D *nurbs;
   int size1, size2;
@@ -354,13 +354,13 @@ bool _zNURBS3DFRead(FILE *fp, void *instance, char *buf, bool *success)
       ZRUNWARN( ZEO_ERR_NURBS_KNOTALREADY );
       zVecFree( nurbs->knot[0] );
     }
-    if( !( nurbs->knot[0] = zVecFRead( fp ) ) ) return false;
+    if( !( nurbs->knot[0] = zVecFScan( fp ) ) ) return false;
   } else if( strcmp( buf, "vknot" ) == 0 ){
     if( nurbs->knot[1] ){
       ZRUNWARN( ZEO_ERR_NURBS_KNOTALREADY );
       zVecFree( nurbs->knot[1] );
     }
-    if( !( nurbs->knot[1] = zVecFRead( fp ) ) ) return false;
+    if( !( nurbs->knot[1] = zVecFScan( fp ) ) ) return false;
   } else if( strcmp( buf, "slice" ) == 0 ){
     nurbs->ns[0] = zFInt( fp );
     nurbs->ns[1] = zFInt( fp );
@@ -384,40 +384,40 @@ bool _zNURBS3DFRead(FILE *fp, void *instance, char *buf, bool *success)
       return false;
     }
     zNURBS3DSetWeight( nurbs, i, j, zFDouble(fp) );
-    zVec3DFRead( fp, zNURBS3DCP(nurbs,i,j) );
+    zVec3DFScan( fp, zNURBS3DCP(nurbs,i,j) );
   } else
     return false;
   return true;
 }
 
-/* read information of a 3D NURBS surface from file. */
-zNURBS3D *zNURBS3DFRead(FILE *fp, zNURBS3D *nurbs)
+/* scan information of a 3D NURBS surface from a file. */
+zNURBS3D *zNURBS3DFScan(FILE *fp, zNURBS3D *nurbs)
 {
   zNURBS3DInit( nurbs );
-  if( zFieldFRead( fp, _zNURBS3DFRead, nurbs ) ) return nurbs;
+  if( zFieldFScan( fp, _zNURBS3DFScan, nurbs ) ) return nurbs;
   zNURBS3DDestroy( nurbs );
   return NULL;
 }
 
-/* write information of a 3D NURBS surface to file. */
-void zNURBS3DFWrite(FILE *fp, zNURBS3D *nurbs)
+/* print information of a 3D NURBS surface out to a file. */
+void zNURBS3DFPrint(FILE *fp, zNURBS3D *nurbs)
 {
   register int i, j;
 
   fprintf( fp, "dim: %d %d\n", nurbs->dim[0], nurbs->dim[1] );
   if( zVecSizeNC(nurbs->knot[0]) > 0 ){
     fprintf( fp, "uknot: " );
-    zVecFWrite( fp, nurbs->knot[0] );
+    zVecFPrint( fp, nurbs->knot[0] );
   }
   if( zVecSizeNC(nurbs->knot[1]) > 0 ){
     fprintf( fp, "vknot: " );
-    zVecFWrite( fp, nurbs->knot[1] );
+    zVecFPrint( fp, nurbs->knot[1] );
   }
   fprintf( fp, "slice: %d %d\n", nurbs->ns[0], nurbs->ns[1] );
   fprintf( fp, "size: %d %d\n", zNURBS3DCPNum(nurbs,0), zNURBS3DCPNum(nurbs,1) );
   for( i=0; i<zNURBS3DCPNum(nurbs,0); i++ )
     for( j=0; j<zNURBS3DCPNum(nurbs,1); j++ ){
       fprintf( fp, "cp: %d %d %.12g ", i, j, zNURBS3DWeight(nurbs,i,j) );
-      zVec3DFWrite( fp, zNURBS3DCP(nurbs,i,j) );
+      zVec3DFPrint( fp, zNURBS3DCP(nurbs,i,j) );
     }
 }

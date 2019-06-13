@@ -112,34 +112,36 @@ __EXPORT zMat3D *zCyl3DInertia(zCyl3D *cyl, zMat3D *inertia);
  */
 __EXPORT zPH3D *zCyl3DToPH(zCyl3D *cyl, zPH3D *ph);
 
-/*! \brief input/output of a 3D cylinder.
+/*! \brief scan and print a 3D cylinder.
  *
- * zCyl3DFRead() reads the information of a 3D cylinder from the current
- * position of the file \a fp, and creates the new cylinder \a cyl.
+ * zCyl3DFScan() scans information of a 3D cylinder from the current
+ * position of a file \a fp, and creates the new cylinder \a cyl.
  * An acceptable data file format is as follows.
  *
- *  center: x1 y1 z1
- *  center: x2 y2 z2
- *  radius: r
- *  div: div
+ *  center: <x1> <y1> <z1>
+ *  center: <x2> <y2> <z2>
+ *  radius: <r>
+ *  div: <div>
  *
- * If more than two keywords \a center exist in the field, zCyl3DFRead()
- * ignores them.
- * zCyl3DRead() reads the information for \a cyl from the standard input.
+ * The bracketed parts must be replaced by real numbers.
  * The field div is skippable.
  *
- * zCyl3DFWrite() writes the information of \a cyl to the current
- * position of the file \a fp in the same format with the above.
- * zCyl3DWrite() writes the information of \a cyl to the standard output.
- * \return
- * zCyl3DFRead() and zCyl3DRead() return a pointer \a cyl.
+ * If more than two keywords \a center exist in the field, zCyl3DFScan()
+ * ignores them.
+ * zCyl3DScan() scans information for \a cyl from the standard input.
  *
- * Neither zCyl3DFWrite() nor zCyl3DWrite() returns any values.
+ * zCyl3DFPrint() prints information of \a cyl out to the current
+ * position of a file \a fp in the same format with the above.
+ * zCyl3DPrint() prints information of \a cyl out to the standard output.
+ * \return
+ * zCyl3DFScan() and zCyl3DScan() return a pointer \a cyl.
+ *
+ * Neither zCyl3DFPrint() nor zCyl3DPrint() returns any values.
  */
-__EXPORT zCyl3D *zCyl3DFRead(FILE *fp, zCyl3D *cyl);
-#define zCyl3DRead(c) zCyl3DFRead( stdin, (c) )
-__EXPORT void zCyl3DFWrite(FILE *fp, zCyl3D *cyl);
-#define zCyl3DWrite(c) zCyl3DFWrite( stdout, (c) )
+__EXPORT zCyl3D *zCyl3DFScan(FILE *fp, zCyl3D *cyl);
+#define zCyl3DScan(c) zCyl3DFScan( stdin, (c) )
+__EXPORT void zCyl3DFPrint(FILE *fp, zCyl3D *cyl);
+#define zCyl3DPrint(c) zCyl3DFPrint( stdout, (c) )
 
 /* methods for abstraction */
 extern zPrimCom zprim_cyl3d_com;

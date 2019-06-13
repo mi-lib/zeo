@@ -10,8 +10,8 @@ void gen_box(zBox3D *box)
   w = zRandF(-0.5,0.5);
   h = zRandF(-0.5,0.5);
   zVec3DCreate( &c, zRandF(-0.5,0.5), zRandF(-0.5,0.5), zRandF(-0.5,0.5) );
-  zMat3DZYX( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
-  zBox3DCreate( box, &c, zMat3DVec(&r,0), zMat3DVec(&r,1), zMat3DVec(&r,2), d, w, h );
+  zMat3DFromZYX( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+  zBox3DCreate( box, &c, &r.v[0], &r.v[1], &r.v[2], d, w, h );
 }
 
 int main(int argc, char *argv[])
@@ -25,10 +25,10 @@ int main(int argc, char *argv[])
   zBox3DToAABox3D( &box, &aabox );
 
   fp = fopen( "b", "w" );
-  zBox3DDataNLFWrite( fp, &box );
+  zBox3DDataFPrint( fp, &box );
   fclose( fp );
   fp = fopen( "a", "w" );
-  zAABox3DDataNLFWrite( fp, &aabox );
+  zAABox3DDataFPrint( fp, &aabox );
   fclose( fp );
   return 0;
 }

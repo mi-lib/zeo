@@ -10,7 +10,7 @@ void test(zMShape3D *ms, int n)
   for( i=0; i<n; i++ ){
     zVec3DCreate( &p, zRandF(-0.4,0.4), zRandF(-0.4,0.4), zRandF(-0.4,0.4) );
     if( zMShape3DPointIsInside( ms, &p, true ) )
-      zVec3DDataNLFWrite( fp, &p );
+      zVec3DDataNLFPrint( fp, &p );
   }
   fclose( fp );
 }
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
   zMShape3D ms;
 
   zRandInit();
-  zMShape3DReadFile( &ms, "../model/scc.z3d" );
+  zMShape3DScanFile( &ms, "../model/scc.z3d" );
   test( &ms, argc > 1 ? atoi(argv[1]) : N );
   zMShape3DDestroy( &ms );
   return 0;

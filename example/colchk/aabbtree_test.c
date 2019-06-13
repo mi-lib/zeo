@@ -12,7 +12,7 @@ void _colchk_aabox(FILE *fp, zAABoxTree3D *tree, zAABox3D *box)
   eprintf( "check!\n" );
   if( zColChkAABox3D( &tree->box, box ) ){
     if( _zAABoxTree3DIsLeaf( tree ) ){
-      zAABox3DDataNLFWrite( fp, &tree->box );
+      zAABox3DDataFPrint( fp, &tree->box );
     } else{
       _colchk_aabox( fp, tree->bp[0], box );
       _colchk_aabox( fp, tree->bp[1], box );
@@ -25,7 +25,7 @@ void colchk_aabox(zAABoxTree3D *tree, zAABox3D *box)
   FILE *fp;
 
   fp = fopen( "b", "w" );
-  zAABox3DDataNLFWrite( fp, box );
+  zAABox3DDataFPrint( fp, box );
   fclose( fp );
 
   fp = fopen( "c", "w" );
@@ -42,7 +42,7 @@ void output(zAABoxTree3D *tree, int layer)
     return output( tree->bp[0], 1 );
   sprintf( filename, "%d", layer );
   fp = fopen( filename, "a" );
-  zAABox3DDataNLFWrite( fp, &tree->box );
+  zAABox3DDataFPrint( fp, &tree->box );
   fclose( fp );
   if( tree->bp[0] )
     output( tree->bp[0], layer+1 );
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     gen_aabox( &box );
     zAABoxTree3DAdd( &tree, &box );
   }
-  zAABoxTree3DFWrite( stdout, &tree );
+  zAABoxTree3DFPrint( stdout, &tree );
   output( &tree, 0 );
 
   gen_aabox( &box );

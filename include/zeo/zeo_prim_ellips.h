@@ -132,10 +132,10 @@ __EXPORT zMat3D *zEllips3DInertia(zEllips3D *ellips, zMat3D *inertia);
 /* default longitudinal & latitudinal division number are the same. */
 __EXPORT zPH3D *zEllips3DToPH(zEllips3D *ellips, zPH3D *ph);
 
-/*! \brief input/output of a 3D ellipsoid.
+/*! \brief scan and print a 3D ellipsoid.
  *
- * zEllips3DFRead() reads information of a 3D ellipsoid from
- * the current position of the file \a fp, and creates a new
+ * zEllips3DFScan() scans information of a 3D ellipsoid from
+ * the current position of a file \a fp, and creates a new
  * ellipsoid \a ellips.
  * An acceptable data file format is as follows.
  *
@@ -148,24 +148,26 @@ __EXPORT zPH3D *zEllips3DToPH(zEllips3D *ellips, zPH3D *ph);
  *  rz: <r>
  *  div: <div>
  *
- * Each bracketed value are to be substituted for a real number.
- * zEllips3DRead() reads the information for \a ellips from the
- * standard input.
+ * The bracketed parts must be replaced by real numbers.
  * The field div is skippable.
  *
- * zEllips3DFWrite() writes information of \a ellips to the current
- * position of the file \a fp in the same format with the above.
- * zEllips3DWrite() writes information of \a ellips to the standard
- * output.
- * \return
- * zEllips3DFRead() and zEllips3DRead() return a pointer \a ellips.
+ * zEllips3DScan() scans information for \a ellips from the
+ * standard input.
  *
- * Neither zEllips3DFWrite() nor zEllips3DWrite() returns any values.
+ * zEllips3DFPrint() prints information of \a ellips out to the
+ * current position of a file \a fp in the same format with the
+ * above.
+ * zEllips3DPrint() prints information of \a ellips out to the
+ * standard output.
+ * \return
+ * zEllips3DFScan() and zEllips3DScan() return a pointer \a ellips.
+ *
+ * Neither zEllips3DFPrint() nor zEllips3DPrint() return any values.
  */
-__EXPORT zEllips3D *zEllips3DFRead(FILE *fp, zEllips3D *ellips);
-#define zEllips3DRead(e) zEllips3DFRead( stdin, (e) )
-__EXPORT void zEllips3DFWrite(FILE *fp, zEllips3D *ellips);
-#define zEllips3DWrite(e) zEllips3DFWrite( stdout, (e) )
+__EXPORT zEllips3D *zEllips3DFScan(FILE *fp, zEllips3D *ellips);
+#define zEllips3DScan(e) zEllips3DFScan( stdin, (e) )
+__EXPORT void zEllips3DFPrint(FILE *fp, zEllips3D *ellips);
+#define zEllips3DPrint(e) zEllips3DFPrint( stdout, (e) )
 
 /* methods for abstraction */
 extern zPrimCom zprim_ellips3d_com;

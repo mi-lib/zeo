@@ -60,18 +60,18 @@ void test_point(void)
   zRandInit();
   for( i=0; i<N; i++ ){
     zVec3DCreate( &p[i], zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
-    zVec3DDataNLFWrite( fp, &p[i] );
+    zVec3DDataNLFPrint( fp, &p[i] );
   }
   fclose( fp );
 }
 
 void output_face(FILE *fp, zVec3D *v[], int i1, int i2, int i3)
 {
-  zVec3DDataNLFWrite( fp, v[i1] );
-  zVec3DDataNLFWrite( fp, v[i2] );
+  zVec3DDataNLFPrint( fp, v[i1] );
+  zVec3DDataNLFPrint( fp, v[i2] );
   fprintf( fp, "\n" );
-  zVec3DDataNLFWrite( fp, v[i3] );
-  zVec3DDataNLFWrite( fp, v[i3] );
+  zVec3DDataNLFPrint( fp, v[i3] );
+  zVec3DDataNLFPrint( fp, v[i3] );
   fprintf( fp, "\n\n" );
 }
 

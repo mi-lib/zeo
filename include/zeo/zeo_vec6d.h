@@ -12,7 +12,7 @@
 __BEGIN_DECLS
 
 /*! \struct zVec6D
- * \brief 6D spatial vector for linear/angular quantities
+ * \brief 6D spatial vector for linear/angular quantities.
  */
 typedef union {
   double e[6];
@@ -271,39 +271,39 @@ __EXPORT zVec6D *zVec6DDif(zVec6D *v, zVec6D *vnew, double dt, zVec6D *vel);
 /* I/O
  * ********************************************************** */
 
-/*! \brief input and output of a 6D vector.
+/*! \brief scan and print a 6D vector.
  *
- * zVec6DFRead() reads six values from the current position of a file
- * \a fp and creates a 6D vector \a v from them.
- * zVec6DRead() reads six values from the standard input.
+ * zVec6DFScan() scans six values from the current position of
+ * a file \a fp and creates a 6D vector \a v from them.
+ * zVec6DScan() scans six values from the standard input.
  *
- * zVec6DFWrite() outputs a 6D vector \a v to the current position of
- * a file \a fp in the following format:
- *  ( x, y, z, xa, ya, za )
- * When the null pointer is given, it outputs the following string.
- *  (null 6D vector)
- * zVec6DWrite() outputs \a v to the standard output.
- *
- * zVec6DDataFWrite() outputs a 6D vector \a v to the current position
+ * zVec6DFPrint() prints a 6D vector \a v out to the current position
  * of a file \a fp in the following format:
- *  x y z xa ya za
- * When the null pointer is given, it outputs nothing.
- * zVec6DDataWrite() outputs \a v to the standard output in the same
- * format with zVec6DDataFWrite().
- * \return
- * zVec6DFRead() and zVec6DRead() return a pointer \a v.
+ *  ( x, y, z, xa, ya, za )
+ * When the null pointer is given, the following string is printed.
+ *  (null 6D vector)
+ * zVec6DPrint() prints \a v out to the standard output.
  *
- * zVec6DFWrite(), zVec6DWrite(), zVec6DDataFWrite() and zVec6DDataWrite()
+ * zVec6DDataFPrint() prints a 6D vector \a v out to the current
+ * position of a file \a fp in the following format:
+ *  x y z xa ya za
+ * When the null pointer is given, nothing is printed.
+ * zVec6DDataPrint() prints \a v out to the standard output in
+ * the same format with zVec6DDataFPrint().
+ * \return
+ * zVec6DFScan() and zVec6DScan() return a pointer \a v.
+ *
+ * zVec6DFPrint(), zVec6DPrint(), zVec6DDataFPrint() and zVec6DDataPrint()
  * return no value.
  */
-__EXPORT zVec6D *zVec6DFRead(FILE *fp, zVec6D *v);
-#define zVec6DRead(v) zVec6DFRead( stdin, (v) )
-__EXPORT zVec6D *zVec6DDataFWrite(FILE *fp, zVec6D *v);
-#define zVec6DDataWrite(v) zVec6DDataFWrite( stdout, (v) )
-__EXPORT zVec6D *zVec6DDataNLFWrite(FILE *fp, zVec6D *v);
-#define zVec6DDataNLWrite(v) zVec6DDataNLFWrite( stdout, (v) )
-__EXPORT zVec6D *zVec6DFWrite(FILE *fp, zVec6D *v);
-#define zVec6DWrite(v) zVec6DFWrite( stdout, (v) )
+__EXPORT zVec6D *zVec6DFScan(FILE *fp, zVec6D *v);
+#define zVec6DScan(v) zVec6DFScan( stdin, (v) )
+__EXPORT zVec6D *zVec6DDataFPrint(FILE *fp, zVec6D *v);
+#define zVec6DDataPrint(v) zVec6DDataFPrint( stdout, (v) )
+__EXPORT zVec6D *zVec6DDataNLFPrint(FILE *fp, zVec6D *v);
+#define zVec6DDataNLPrint(v) zVec6DDataNLFPrint( stdout, (v) )
+__EXPORT zVec6D *zVec6DFPrint(FILE *fp, zVec6D *v);
+#define zVec6DPrint(v) zVec6DFPrint( stdout, (v) )
 
 __END_DECLS
 

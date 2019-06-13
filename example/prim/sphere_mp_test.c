@@ -12,13 +12,13 @@ int main(void)
   printf( "volume = %f\n", zSphere3DVolume( &sphere ) );
   zSphere3DInertia( &sphere, &i );
   printf( "inertia:\n" );
-  zMat3DWrite( &i );
+  zMat3DPrint( &i );
 
   printf( "+++ polyhedron approximation\n" );
   zSphere3DToPH( &sphere, &ph );
   printf( "volume = %f\n", zPH3DVolume( &ph ) );
   zPH3DBaryInertia( &ph, &center, &i );
   printf( "inertia:\n" );
-  zMat3DWrite( &i );
+  zMat3DPrint( &i );
   return 0;
 }

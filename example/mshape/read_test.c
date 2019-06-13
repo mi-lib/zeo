@@ -10,8 +10,8 @@ int main(void)
 {
   zMShape3D m;
 
-  zMShape3DReadFile( &m, MODEL );
-  zMShape3DWrite( &m );
+  zMShape3DScanFile( &m, MODEL );
+  zMShape3DPrint( &m );
   zMShape3DDestroy( &m );
   return 0;
 }

@@ -21,12 +21,12 @@ void output_vert(double x, double y, double z)
 
   fp = fopen( "a", "w" );
   for( i=0; i<N; i++ )
-    zVec3DDataNLFWrite( fp, &vert[i] );
+    zVec3DDataNLFPrint( fp, &vert[i] );
   fclose( fp );
 
   fp = fopen( "b", "w" );
   zVec3DBarycenter( vert, N, &c );
-  zVec3DDataNLFWrite( fp, &c );
+  zVec3DDataNLFPrint( fp, &c );
   fclose( fp );
 
   fp = fopen( "c", "w" );

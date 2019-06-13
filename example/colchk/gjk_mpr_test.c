@@ -47,20 +47,20 @@ void output(char filename[], zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c
   fprintf( fp, "name: p1\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: yellow\n" );
-  fprintf( fp, "center: " ); zVec3DDataNLFWrite( fp, c1 );
+  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, c1 );
   fprintf( fp, "radius: 0.01\n" );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: p2\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: yellow\n" );
-  fprintf( fp, "center: " ); zVec3DDataNLFWrite( fp, c2 );
+  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, c2 );
   fprintf( fp, "radius: 0.01\n" );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: rod\n" );
   fprintf( fp, "type: cylinder\n" );
   fprintf( fp, "optic: yellow\n" );
-  fprintf( fp, "center: " ); zVec3DDataNLFWrite( fp, c1 );
-  fprintf( fp, "center: " ); zVec3DDataNLFWrite( fp, c2 );
+  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, c1 );
+  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, c2 );
   fprintf( fp, "radius: 0.005\n" );
   /* convex set 1 */
   zCH3D( &ch, p1, n1 );
@@ -68,7 +68,7 @@ void output(char filename[], zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c
   fprintf( fp, "name: ch1\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
-  zPH3DFWrite( fp, &ch );
+  zPH3DFPrint( fp, &ch );
   zPH3DDestroy( &ch );
   /* convex set 2 */
   zCH3D( &ch, p2, n2 );
@@ -76,7 +76,7 @@ void output(char filename[], zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c
   fprintf( fp, "name: ch2\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
-  zPH3DFWrite( fp, &ch );
+  zPH3DFPrint( fp, &ch );
   zPH3DDestroy( &ch );
 
   fclose( fp );
@@ -105,8 +105,8 @@ int main(int argc, char *argv[])
   printf( "zGJK time = %ld\n", clock() - start );
   printf( "GJK in collision? %s\n", zBoolExpr( result_gjk ) );
   output( "gjk.ztk", a, N, b, N, &ca, &cb );
-  zVec3DWrite( &ca );
-  zVec3DWrite( &cb );
+  zVec3DPrint( &ca );
+  zVec3DPrint( &cb );
 
   start = clock();
   for( i=0; i<loop; i++ )
@@ -122,8 +122,8 @@ int main(int argc, char *argv[])
     printf( "depth = %f\n", depth );
     zVec3DCat( &pos, depth/2, &dir, &ca );
     zVec3DCat( &pos,-depth/2, &dir, &cb );
-    zVec3DWrite( &ca );
-    zVec3DWrite( &cb );
+    zVec3DPrint( &ca );
+    zVec3DPrint( &cb );
     output( "mpr.ztk", a, N, b, N, &ca, &cb );
   }
   return 0;

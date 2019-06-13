@@ -15,17 +15,17 @@ int main(void)
   zEdge3DClosest( &e, &p, &cp );
 
   fp = fopen( "e", "w" );
-  zVec3DDataNLFWrite( fp, zEdge3DVert(&e,0) );
-  zVec3DDataNLFWrite( fp, zEdge3DVert(&e,1) );
+  zVec3DDataNLFPrint( fp, zEdge3DVert(&e,0) );
+  zVec3DDataNLFPrint( fp, zEdge3DVert(&e,1) );
   fclose( fp );
 
   fp = fopen( "s", "w" );
-  zVec3DDataNLFWrite( fp, &p );
+  zVec3DDataNLFPrint( fp, &p );
   fclose( fp );
 
   fp = fopen( "r", "w" );
-  zVec3DDataNLFWrite( fp, &p );
-  zVec3DDataNLFWrite( fp, &cp );
+  zVec3DDataNLFPrint( fp, &p );
+  zVec3DDataNLFPrint( fp, &cp );
   fclose( fp );
   return 0;
 }

@@ -65,7 +65,7 @@ void output(zPH3D *ch)
   printf( "name: ch\n" );
   printf( "type: polyhedron\n" );
   printf( "optic: cyan\n" );
-  zPH3DWrite( ch );
+  zPH3DPrint( ch );
 }
 
 int main(int argc, char *argv[])
@@ -77,8 +77,8 @@ int main(int argc, char *argv[])
 
   if( argc < 2 ) usage( argv[0] );
   sfx = zGetSuffix( argv[1] );
-  if( sfx && strcmp( sfx, "z3d" ) == 0 ){
-    if( !zMShape3DReadFile( &ms, argv[1] ) ) return 1;
+  if( sfx && strcmp( sfx, ZEDA_ZTK_SUFFIX ) == 0 ){
+    if( !zMShape3DScanFile( &ms, argv[1] ) ) return 1;
     mshape2vlist( &ms, &vl );
   } else{
     zMShape3DInit( &ms );

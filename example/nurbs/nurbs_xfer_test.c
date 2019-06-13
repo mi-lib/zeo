@@ -1,6 +1,6 @@
 #include <zeo/zeo_nurbs.h>
 
-void nurbs_fwrite(FILE *fp, zNURBS3D *nurbs)
+void nurbs_fprint(FILE *fp, zNURBS3D *nurbs)
 {
   register int i, j;
   double u, v;
@@ -11,7 +11,7 @@ void nurbs_fwrite(FILE *fp, zNURBS3D *nurbs)
     for( j=0; j<=nurbs->ns[1]; j++ ){
       v = zNURBS3DKnotSlice( nurbs, 1, j );
       if( zNURBS3DVec( nurbs, u, v, &p ) ){
-        zVec3DDataFWrite( fp, &p );
+        zVec3DDataFPrint( fp, &p );
         fprintf( fp, "\n" );
       }
     }
@@ -30,32 +30,32 @@ int main(void)
     eprintf( "run nurbs_test first.\n" );
     return 1;
   }
-  zNURBS3DFRead( fp, &src );
+  zNURBS3DFScan( fp, &src );
   fclose( fp );
   zNURBS3DClone( &src, &dest );
 
   fp = fopen( "src", "w" );
-  nurbs_fwrite( fp, &src );
+  nurbs_fprint( fp, &src );
   fclose( fp );
 
   fp = fopen( "dst", "w" );
-  nurbs_fwrite( fp, &dest );
+  nurbs_fprint( fp, &dest );
   fclose( fp );
 
   zNURBS3DMirror( &src, &dest, zX );
   fp = fopen( "mrr", "w" );
-  nurbs_fwrite( fp, &dest );
+  nurbs_fprint( fp, &dest );
   fclose( fp );
 
   zFrame3DFromZYX( &f, 1, 1, 1, zDeg2Rad(45), zDeg2Rad(10), zDeg2Rad(5) );
   zNURBS3DXfer( &src, &f, &dest );
   fp = fopen( "xfr", "w" );
-  nurbs_fwrite( fp, &dest );
+  nurbs_fprint( fp, &dest );
   fclose( fp );
 
   zNURBS3DXferInv( &src, &f, &dest );
   fp = fopen( "xfi", "w" );
-  nurbs_fwrite( fp, &dest );
+  nurbs_fprint( fp, &dest );
   fclose( fp );
 
   zNURBS3DDestroy( &src );

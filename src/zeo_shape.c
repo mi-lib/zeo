@@ -17,17 +17,13 @@ static char *__zshapetypename[] = {
   NULL,
 };
 
-/* zShapeTypeExpr
- * - expression for the type of 3D shape.
- */
+/* expression for the type of 3D shapes. */
 char *zShapeTypeExpr(zShapeType type)
 {
   return __zshapetypename[zLimit(type,ZSHAPE_NONE,ZSHAPE_NURBS)];
 }
 
-/* zShapeTypeByStr
- * - convert string to the type of 3D shape.
- */
+/* convert a string to a type of 3D shapes. */
 zShapeType zShapeTypeByStr(char str[])
 {
   char **jp;
@@ -43,9 +39,7 @@ zShapeType zShapeTypeByStr(char str[])
  * 3D unit shape class
  * ********************************************************** */
 
-/* zShape3DInit
- * - initialize a 3D shape.
- */
+/* initialize a 3D shape. */
 zShape3D *zShape3DInit(zShape3D *shape)
 {
   zNameSetPtr( shape, NULL );
@@ -56,9 +50,7 @@ zShape3D *zShape3DInit(zShape3D *shape)
   return shape;
 }
 
-/* zShape3DCreateBox
- * - create 3D shape as a box.
- */
+/* create a 3D shape as a box. */
 zShape3D *zShape3DCreateBox(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double d, double w, double h)
 {
   zShape3DInit( shape );
@@ -68,9 +60,7 @@ zShape3D *zShape3DCreateBox(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, 
   return shape;
 }
 
-/* zShape3DCreateBoxAlign
- * - create 3D shape as an axis-aligned box.
- */
+/* create a 3D shape as an axis-aligned box. */
 zShape3D *zShape3DCreateBoxAlign(zShape3D *shape, zVec3D *c, double d, double w, double h)
 {
   zShape3DInit( shape );
@@ -80,9 +70,7 @@ zShape3D *zShape3DCreateBoxAlign(zShape3D *shape, zVec3D *c, double d, double w,
   return shape;
 }
 
-/* zShape3DCreateSphere
- * - create 3D shape as a sphere.
- */
+/* create a 3D shape as a sphere. */
 zShape3D *zShape3DCreateSphere(zShape3D *shape, zVec3D *c, double r, int div)
 {
   zShape3DInit( shape );
@@ -92,9 +80,7 @@ zShape3D *zShape3DCreateSphere(zShape3D *shape, zVec3D *c, double r, int div)
   return shape;
 }
 
-/* zShape3DCreateEllips
- * - create 3D shape as an ellipsoid.
- */
+/* create a 3D shape as an ellipsoid. */
 zShape3D *zShape3DCreateEllips(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double rx, double ry, double rz, int div)
 {
   zShape3DInit( shape );
@@ -104,9 +90,7 @@ zShape3D *zShape3DCreateEllips(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *a
   return shape;
 }
 
-/* zShape3DCreateEllipsAlign
- * - create 3D shape as an axis-aligned ellipsoid.
- */
+/* create a 3D shape as an axis-aligned ellipsoid. */
 zShape3D *zShape3DCreateEllipsAlign(zShape3D *shape, zVec3D *c, double rx, double ry, double rz, int div)
 {
   zShape3DInit( shape );
@@ -116,9 +100,7 @@ zShape3D *zShape3DCreateEllipsAlign(zShape3D *shape, zVec3D *c, double rx, doubl
   return shape;
 }
 
-/* zShape3DCreateCyl
- * - create 3D shape as a cylinder.
- */
+/* create a 3D shape as a cylinder. */
 zShape3D *zShape3DCreateCyl(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r, int div)
 {
   zShape3DInit( shape );
@@ -128,9 +110,7 @@ zShape3D *zShape3DCreateCyl(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r, i
   return shape;
 }
 
-/* zShape3DCreateECyl
- * - create 3D shape as an elliptic cylinder.
- */
+/* create a 3D shape as an elliptic cylinder. */
 zShape3D *zShape3DCreateECyl(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div)
 {
   zShape3DInit( shape );
@@ -140,9 +120,7 @@ zShape3D *zShape3DCreateECyl(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r1,
   return shape;
 }
 
-/* zShape3DCreateCone
- * - create 3D shape as a cone.
- */
+/* create a 3D shape as a cone. */
 zShape3D *zShape3DCreateCone(zShape3D *shape, zVec3D *c, zVec3D *v, double r, int div)
 {
   zShape3DInit( shape );
@@ -152,6 +130,7 @@ zShape3D *zShape3DCreateCone(zShape3D *shape, zVec3D *c, zVec3D *v, double r, in
   return shape;
 }
 
+/* allocate memory for NURBS stored in a 3D shape. */
 zShape3D *zShape3DAllocNURBS(zShape3D *shape, int size1, int size2, int dim1, int dim2)
 {
   zShape3DInit( shape );
@@ -161,9 +140,7 @@ zShape3D *zShape3DAllocNURBS(zShape3D *shape, int size1, int size2, int dim1, in
   return shape;
 }
 
-/* zShape3DDestroy
- * - destroy a 3D shape.
- */
+/* destroy a 3D shape. */
 void zShape3DDestroy(zShape3D *shape)
 {
   if( !shape ) return;
@@ -172,9 +149,7 @@ void zShape3DDestroy(zShape3D *shape)
   zShape3DSetOptic( shape, NULL );
 }
 
-/* zShape3DClone
- * - clone a 3D shape.
- */
+/* clone a 3D shape. */
 zShape3D *zShape3DClone(zShape3D *org, zShape3D *cln, zOpticalInfo *oi)
 {
   if( !zNameSet( cln, zName(org) ) ){
@@ -191,9 +166,7 @@ zShape3D *zShape3DClone(zShape3D *org, zShape3D *cln, zOpticalInfo *oi)
   return cln;
 }
 
-/* zShape3DMirror
- * - mirror 3D shape.
- */
+/* mirror a 3D shape. */
 zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis)
 {
   zShape3DType(dest) = zShape3DType(src);
@@ -206,9 +179,7 @@ zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis)
   return dest;
 }
 
-/* zShape3DXfer
- * - transfer coordinates of a 3D shape.
- */
+/* transform coordinates of a 3D shape. */
 zShape3D *zShape3DXfer(zShape3D *src, zFrame3D *f, zShape3D *dest)
 {
   src->com->_xfer( &src->body, f, &dest->body );
@@ -216,9 +187,7 @@ zShape3D *zShape3DXfer(zShape3D *src, zFrame3D *f, zShape3D *dest)
   return dest;
 }
 
-/* zShape3DXferInv
- * - inversely transfer coordinates of a 3D shape.
- */
+/* inversely transform coordinates of a 3D shape. */
 zShape3D *zShape3DXferInv(zShape3D *src, zFrame3D *f, zShape3D *dest)
 {
   src->com->_xferinv( &src->body, f, &dest->body );
@@ -226,33 +195,25 @@ zShape3D *zShape3DXferInv(zShape3D *src, zFrame3D *f, zShape3D *dest)
   return dest;
 }
 
-/* zShape3DClosest
- * - closest point to 3D shape.
- */
+/* closest point to a 3D shape. */
 double zShape3DClosest(zShape3D *shape, zVec3D *p, zVec3D *cp)
 {
   return shape->com->_closest( &shape->body, p, cp );
 }
 
-/* zShape3DPointDist
- * - distance from a point to 3D shape.
- */
+/* distance from a point to a 3D shape. */
 double zShape3DPointDist(zShape3D *shape, zVec3D *p)
 {
   return shape->com->_pointdist( &shape->body, p );
 }
 
-/* zShape3DPointIsInside
- * - check if a point is inside of a 3D shape.
- */
+/* check if a point is inside of a 3D shape. */
 bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, bool rim)
 {
   return shape->com->_pointisinside( &shape->body, p, rim );
 }
 
-/* zShape3DToPH
- * - convert a shape to a polyhedron internally.
- */
+/* convert a shape to a polyhedron. */
 zShape3D *zShape3DToPH(zShape3D *shape)
 {
   zShapeBody tmp;
@@ -279,13 +240,11 @@ typedef struct{
   bool referred;
 } _zShape3DParam;
 
-static bool _zShape3DFRead(FILE *fp, void *instance, char *buf, bool *success);
+static bool _zShape3DFScan(FILE *fp, void *instance, char *buf, bool *success);
 
 /* (static)
- * _zShape3DFRead
- * - input of 3D shape.
- */
-bool _zShape3DFRead(FILE *fp, void *instance, char *buf, bool *success)
+ * scan a 3D shape (internal function). */
+bool _zShape3DFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
   _zShape3DParam *prm;
   zShape3D *ref = NULL;
@@ -323,10 +282,8 @@ bool _zShape3DFRead(FILE *fp, void *instance, char *buf, bool *success)
   return true;
 }
 
-/* zShape3DFRead
- * - input of 3D shape.
- */
-zShape3D *zShape3DFRead(FILE *fp, zShape3D *shape, zShape3D *sarray, int ns, zOpticalInfo *oarray, int no)
+/* scan a 3D shape from a file. */
+zShape3D *zShape3DFScan(FILE *fp, zShape3D *shape, zShape3D *sarray, int ns, zOpticalInfo *oarray, int no)
 {
   zPrimCom *com[] = {
     &zprim_none_com,
@@ -348,7 +305,7 @@ zShape3D *zShape3DFRead(FILE *fp, zShape3D *shape, zShape3D *sarray, int ns, zOp
   prm.referred = false;
   zShape3DInit( shape );
   cur = ftell( fp );
-  if( !zFieldFRead( fp, _zShape3DFRead, &prm ) ) goto ERROR;
+  if( !zFieldFScan( fp, _zShape3DFScan, &prm ) ) goto ERROR;
   if( prm.referred ) return shape;
   if( !zNamePtr( shape ) ){
     ZRUNERROR( ZEO_ERR_SHAPE_UNNAME );
@@ -356,7 +313,7 @@ zShape3D *zShape3DFRead(FILE *fp, zShape3D *shape, zShape3D *sarray, int ns, zOp
   }
   fseek( fp, cur, SEEK_SET );
   shape->com = com[zShape3DType(shape)];
-  if( !shape->com->_fread( fp, &shape->body ) ) goto ERROR;
+  if( !shape->com->_fscan( fp, &shape->body ) ) goto ERROR;
   /* bounding box */
   switch( prm.bb_type ){
   case ZSHAPE_BB_AABB:
@@ -376,16 +333,14 @@ zShape3D *zShape3DFRead(FILE *fp, zShape3D *shape, zShape3D *sarray, int ns, zOp
   return NULL;
 }
 
-/* zShape3DFWrite
- * - output of 3D shape.
- */
-void zShape3DFWrite(FILE *fp, zShape3D *shape)
+/* print a 3D shape to a file. */
+void zShape3DFPrint(FILE *fp, zShape3D *shape)
 {
   if( !shape ) return;
   fprintf( fp, "type : %s\n", zShapeTypeExpr(zShape3DType(shape)) );
   fprintf( fp, "name : %s\n", zName(shape) );
   if( zShape3DOptic(shape) )
     fprintf( fp, "optic: %s\n", zName( zShape3DOptic(shape) ) );
-  shape->com->_fwrite( fp, &shape->body );
+  shape->com->_fprint( fp, &shape->body );
   fprintf( fp, "\n" );
 }

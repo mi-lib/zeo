@@ -7,7 +7,7 @@ void vec_create_rand(FILE *fp, zVec3D *v, int n, double x, double y, double z, d
   zRandInit();
   for( i=0; i<n; i++ ){
     zVec3DCreate( &v[i], x+zRandF(-100,100), y+zRandF(-100,100), z+zRandF(-10,10) );
-    zVec3DDataNLFWrite( fp, &v[i] );
+    zVec3DDataNLFPrint( fp, &v[i] );
   }
 }
 
@@ -18,7 +18,7 @@ void verify(FILE *fp, zVec3D v[], int n, zPlane3D *pl)
 
   for( i=0; i<n; i++ ){
     zPlane3DProj( pl, &v[i], &p );
-    zVec3DDataNLFWrite( fp, &p );
+    zVec3DDataNLFPrint( fp, &p );
   }
 }
 

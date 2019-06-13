@@ -11,11 +11,9 @@
  * 3D cylinder class
  * ********************************************************** */
 
-static bool _zCyl3DFRead(FILE *fp, void *instance, char *buf, bool *success);
+static bool _zCyl3DFScan(FILE *fp, void *instance, char *buf, bool *success);
 
-/* zCyl3DCreate
- * - create 3D cylinder.
- */
+/* create a 3D cylinder. */
 zCyl3D *zCyl3DCreate(zCyl3D *cyl, zVec3D *c1, zVec3D *c2, double r, int div)
 {
   zCyl3DSetCenter( cyl, 0, c1 );
@@ -25,17 +23,13 @@ zCyl3D *zCyl3DCreate(zCyl3D *cyl, zVec3D *c1, zVec3D *c2, double r, int div)
   return cyl;
 }
 
-/* zCyl3DInit
- * - initialize 3D cylinder.
- */
+/* initialize a 3D cylinder. */
 zCyl3D *zCyl3DInit(zCyl3D *cyl)
 {
   return zCyl3DCreate( cyl, ZVEC3DZERO, ZVEC3DZERO, 0, 0 );
 }
 
-/* zCyl3DCopy
- * - copy 3D cylinder.
- */
+/* copy a 3D cylinder to another. */
 zCyl3D *zCyl3DCopy(zCyl3D *src, zCyl3D *dest)
 {
   return zCyl3DCreate( dest,
@@ -43,9 +37,7 @@ zCyl3D *zCyl3DCopy(zCyl3D *src, zCyl3D *dest)
     zCyl3DRadius(src), zCyl3DDiv(src) );
 }
 
-/* zCyl3DMirror
- * - mirror 3D cylinder.
- */
+/* mirror a 3D cylinder. */
 zCyl3D *zCyl3DMirror(zCyl3D *src, zCyl3D *dest, zAxis axis)
 {
   zCyl3DCopy( src, dest );
@@ -54,9 +46,7 @@ zCyl3D *zCyl3DMirror(zCyl3D *src, zCyl3D *dest, zAxis axis)
   return dest;
 }
 
-/* zCyl3DXfer
- * - transform 3D cylinder.
- */
+/* transform coordinates of a 3D cylinder. */
 zCyl3D *zCyl3DXfer(zCyl3D *src, zFrame3D *f, zCyl3D *dest)
 {
   zXfer3D( f, zCyl3DCenter(src,0), zCyl3DCenter(dest,0) );
@@ -66,9 +56,7 @@ zCyl3D *zCyl3DXfer(zCyl3D *src, zFrame3D *f, zCyl3D *dest)
   return dest;
 }
 
-/* zCyl3DXferInv
- * - inversely transform 3D cylinder.
- */
+/* inversely transform coordinates of a 3D cylinder. */
 zCyl3D *zCyl3DXferInv(zCyl3D *src, zFrame3D *f, zCyl3D *dest)
 {
   zXfer3DInv( f, zCyl3DCenter(src,0), zCyl3DCenter(dest,0) );
@@ -88,9 +76,7 @@ void _zCyl3DClosestPrep(zCyl3D *cyl, zVec3D *p, zVec3D *axis, zVec3D *v, double 
   *d = zVec3DInnerProd( axis, v ) ;
 }
 
-/* zCyl3DClosest
- * - the closest point to 3D cylinder.
- */
+/* the closest point to a 3D cylinder. */
 double zCyl3DClosest(zCyl3D *cyl, zVec3D *p, zVec3D *cp)
 {
   zVec3D axis, v, *c, cr;
@@ -121,9 +107,7 @@ double zCyl3DClosest(zCyl3D *cyl, zVec3D *p, zVec3D *cp)
   return sqrt( zSqr( r - zCyl3DRadius(cyl) ) + zSqr(d) );
 }
 
-/* zCyl3DPointDist
- * - distance from a point to 3D cylinder.
- */
+/* distance from a point to a 3D cylinder. */
 double zCyl3DPointDist(zCyl3D *cyl, zVec3D *p)
 {
   zVec3D axis, v;
@@ -137,9 +121,7 @@ double zCyl3DPointDist(zCyl3D *cyl, zVec3D *p)
     -d : sqrt( zSqr( r - zCyl3DRadius(cyl) ) + zSqr(d) );
 }
 
-/* zCyl3DPointIsInside
- * - check if a point is inside of a cylinder.
- */
+/* check if a point is inside of a cylinder. */
 bool zCyl3DPointIsInside(zCyl3D *cyl, zVec3D *p, bool rim)
 {
   zVec3D axis, v;
@@ -150,9 +132,7 @@ bool zCyl3DPointIsInside(zCyl3D *cyl, zVec3D *p, bool rim)
   return d >= ( rim ? -zTOL : 0 ) && d <= ( rim ? l+zTOL : l ) ? true : false;
 }
 
-/* zCyl3DHeight
- * - height of 3D cylinder.
- */
+/* height of a 3D cylinder. */
 double zCyl3DHeight(zCyl3D *cyl)
 {
   zVec3D axis;
@@ -160,25 +140,19 @@ double zCyl3DHeight(zCyl3D *cyl)
   return zVec3DNorm( zCyl3DAxis( cyl, &axis ) );
 }
 
-/* zCyl3DVolume
- * - volume of 3D cylinder.
- */
+/* volume of a 3D cylinder. */
 double zCyl3DVolume(zCyl3D *cyl)
 {
   return zPI * zSqr(zCyl3DRadius(cyl)) * zCyl3DHeight(cyl);
 }
 
-/* zCyl3DBarycenter
- * - barycenter of 3D cylinder.
- */
+/* barycenter of a 3D cylinder. */
 zVec3D *zCyl3DBarycenter(zCyl3D *cyl, zVec3D *c)
 {
   return zVec3DMid( zCyl3DCenter(cyl,0), zCyl3DCenter(cyl,1), c );
 }
 
-/* zCyl3DInertia
- * - inertia tensor of 3D cylinder.
- */
+/* inertia tensor of a 3D cylinder. */
 zMat3D *zCyl3DInertia(zCyl3D *cyl, zMat3D *inertia)
 {
   double vol, rr, hh;
@@ -198,9 +172,7 @@ zMat3D *zCyl3DInertia(zCyl3D *cyl, zMat3D *inertia)
   return zRotMat3D( &att, &i, inertia );
 }
 
-/* zCyl3DToPH
- * - convert cylinder to polyhedron.
- */
+/* convert a cylinder to a polyhedron. */
 zPH3D *zCyl3DToPH(zCyl3D *cyl, zPH3D *ph)
 {
   zVec3D *vert, d, s, r, aa;
@@ -259,10 +231,8 @@ typedef struct{
 } _zCyl3DParam;
 
 /* (static)
- * _zCyl3DFRead
- * - input of 3D cylinder.
- */
-bool _zCyl3DFRead(FILE *fp, void *instance, char *buf, bool *success)
+ * scan a 3D cylinder (internal function). */
+bool _zCyl3DFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
   _zCyl3DParam *prm;
 
@@ -271,7 +241,7 @@ bool _zCyl3DFRead(FILE *fp, void *instance, char *buf, bool *success)
     if( prm->ic > 1 )
       ZRUNWARN( ZEO_ERR_CENTER_MANY );
     else
-      zVec3DFRead( fp, &prm->c[prm->ic++] );
+      zVec3DFScan( fp, &prm->c[prm->ic++] );
   } else if( strcmp( buf, "radius" ) == 0 ){
     prm->r = zFDouble( fp );
   } else if( strcmp( buf, "div" ) == 0 ){
@@ -281,10 +251,8 @@ bool _zCyl3DFRead(FILE *fp, void *instance, char *buf, bool *success)
   return true;
 }
 
-/* zCyl3DFRead
- * - input of 3D cylinder.
- */
-zCyl3D *zCyl3DFRead(FILE *fp, zCyl3D *cyl)
+/* scan a 3D cylinder from a file. */
+zCyl3D *zCyl3DFScan(FILE *fp, zCyl3D *cyl)
 {
   _zCyl3DParam prm;
 
@@ -294,19 +262,17 @@ zCyl3D *zCyl3DFRead(FILE *fp, zCyl3D *cyl)
   prm.ic = 0;
   prm.r = 0;
   prm.div = 0;
-  zFieldFRead( fp, _zCyl3DFRead, &prm );
+  zFieldFScan( fp, _zCyl3DFScan, &prm );
   return zCyl3DCreate( cyl, &prm.c[0], &prm.c[1], prm.r, prm.div );
 }
 
-/* zCyl3DFWrite
- * - output of 3D cylinder.
- */
-void zCyl3DFWrite(FILE *fp, zCyl3D *cyl)
+/* print a 3D cylinder to a file. */
+void zCyl3DFPrint(FILE *fp, zCyl3D *cyl)
 {
   fprintf( fp, "center: " );
-  zVec3DFWrite( fp, zCyl3DCenter(cyl,0) );
+  zVec3DFPrint( fp, zCyl3DCenter(cyl,0) );
   fprintf( fp, "center: " );
-  zVec3DFWrite( fp, zCyl3DCenter(cyl,1) );
+  zVec3DFPrint( fp, zCyl3DCenter(cyl,1) );
   fprintf( fp, "radius: %.10g\n", zCyl3DRadius(cyl) );
   fprintf( fp, "div: %d\n", zCyl3DDiv(cyl) );
 }
@@ -341,10 +307,10 @@ static void _zPrim3DBaryInertiaCyl(void *prim, zVec3D *c, zMat3D *i){
   zCyl3DInertia( prim, i ); }
 static zPH3D *_zPrim3DToPHCyl(void *prim, zPH3D *ph){
   return zCyl3DToPH( prim, ph ); }
-static void *_zPrim3DFReadCyl(FILE *fp, void *prim){
-  return zCyl3DFRead( fp, prim ); }
-static void _zPrim3DFWriteCyl(FILE *fp, void *prim){
-  return zCyl3DFWrite( fp, prim ); }
+static void *_zPrim3DFScanCyl(FILE *fp, void *prim){
+  return zCyl3DFScan( fp, prim ); }
+static void _zPrim3DFPrintCyl(FILE *fp, void *prim){
+  return zCyl3DFPrint( fp, prim ); }
 
 zPrimCom zprim_cyl3d_com = {
   _zPrim3DInitCyl,
@@ -361,6 +327,6 @@ zPrimCom zprim_cyl3d_com = {
   _zPrim3DInertiaCyl,
   _zPrim3DBaryInertiaCyl,
   _zPrim3DToPHCyl,
-  _zPrim3DFReadCyl,
-  _zPrim3DFWriteCyl,
+  _zPrim3DFScanCyl,
+  _zPrim3DFPrintCyl,
 };

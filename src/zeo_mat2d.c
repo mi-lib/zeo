@@ -215,8 +215,8 @@ double zMat2DError(zMat2D m1, zMat2D m2)
 /* I/O
  * ********************************************************** */
 
-/* input a 2x2 matrix from file. */
-double *zMat2DFRead(FILE *fp, zMat2D m)
+/* scan a 2x2 matrix from a file. */
+double *zMat2DFScan(FILE *fp, zMat2D m)
 {
   register int i;
 
@@ -225,8 +225,8 @@ double *zMat2DFRead(FILE *fp, zMat2D m)
   return m;
 }
 
-/* output a 2x2 matrix to file. */
-void zMat2DFWrite(FILE *fp, zMat2D m)
+/* print a 2x2 matrix to a file. */
+void zMat2DFPrint(FILE *fp, zMat2D m)
 {
   if( !m )
     fprintf( fp, "(null 2x2 matrix)\n" );

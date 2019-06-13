@@ -22,7 +22,7 @@ int main(void)
   fp1 = fopen( "b", "w" );
   for( i=0; i<8; i++ ){
     zBox3DVert( &box, i, &p );
-    zVec3DDataNLFWrite( fp1, &p );
+    zVec3DDataNLFPrint( fp1, &p );
   }
   fclose( fp1 );
 
@@ -30,9 +30,9 @@ int main(void)
   fp2 = fopen( "i", "w" );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &p, zRandF(-1.5,1.5), zRandF(-1.5,1.5), zRandF(-1.5,1.5) );
-    zVec3DDataNLFWrite( fp1, &p );
+    zVec3DDataNLFPrint( fp1, &p );
     if( zBox3DPointIsInside( &box, &p, true ) )
-      zVec3DDataNLFWrite( fp2, &p );
+      zVec3DDataNLFPrint( fp2, &p );
   }
   fclose( fp1 );
   fclose( fp2 );

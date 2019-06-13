@@ -139,11 +139,11 @@ __EXPORT zVec3D *zBox3DVert(zBox3D *box, int i, zVec3D *v);
  */
 __EXPORT zPH3D *zBox3DToPH(zBox3D *box, zPH3D *ph);
 
-/*! \brief input/output of a box.
+/*! \brief scan and print a box.
  *
- * zBox3DFRead() reads the information of a box from the current
- * position of the file associated with \a fp, and creates a new
- * box instance \a box. An acceptable data file format is as follows.
+ * zBox3DFScan() scans information of a box from the current
+ * position of a file \a fp, and creates a new box instance
+ * \a box. An acceptable data file format is as follows.
  *
  *  center: <x> <y> <z>
  *  ax: <x> <y> <z>
@@ -154,25 +154,25 @@ __EXPORT zPH3D *zBox3DToPH(zBox3D *box, zPH3D *ph);
  *  height: <h>
  *
  * Each bracketed value must be substituted for a real number.
- * zBox3DRead() reads the information for \a box from the standard
+ * zBox3DScan() scans information for \a box from the standard
  * input.
  *
- * zBox3DFWrite() writes the information of \a box to the current
- * position of the file associated with \a fp in the same format
- * with the above. zBox3DWrite() writes the information of \a box
- * to the standard out.
+ * zBox3DFPrint() prints information of \a box out to the current
+ * position of a file \a fp in the same format with the above.
+ * zBox3DPrint() prints information of \a box out to the standard
+ * out.
  * \return
- * zBox3DFRead() and zBox3DRead() return a pointer \a box.
+ * zBox3DFScan() and zBox3DScan() return a pointer \a box.
  *
- * Neither zBox3DFWrite() nor zBox3DWrite() returns any values.
+ * Neither zBox3DFPrint() nor zBox3DPrint() returns any values.
  */
-__EXPORT zBox3D *zBox3DFRead(FILE *fp, zBox3D *box);
-#define zBox3DRead(b) zBox3DFRead( stdin, b )
-__EXPORT void zBox3DFWrite(FILE *fp, zBox3D *box);
-#define zBox3DWrite(b) zBox3DFWrite( stdout, b )
+__EXPORT zBox3D *zBox3DFScan(FILE *fp, zBox3D *box);
+#define zBox3DScan(b) zBox3DFScan( stdin, b )
+__EXPORT void zBox3DFPrint(FILE *fp, zBox3D *box);
+#define zBox3DPrint(b) zBox3DFPrint( stdout, b )
 
-/*! \brief output a box to a file in a format to be plotted. */
-__EXPORT void zBox3DDataFWrite(FILE *fp, zBox3D *box);
+/*! \brief print a box out to a file in a format to be plotted. */
+__EXPORT void zBox3DDataFPrint(FILE *fp, zBox3D *box);
 
 /* methods for abstraction */
 extern zPrimCom zprim_box3d_com;

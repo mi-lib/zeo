@@ -1,3 +1,4 @@
+2019. 6.13. Renamed *Read and *Write to *Scan and *Print, respectively. [zeo_color, zeo_optic, zeo_vec2d, zeo_mat2d, zeo_vec3d, zeo_mat3d, zeo_vec3d_list, zeo_vec6d, zeo_mat6d, zeo_frame, zeo_ep, zeo_elem, zeo_ph, zeo_prim, zeo_prim_box, zeo_prim_sphere, zeo_prim_cyl, zeo_prim_cone, zeo_prim_ellips, zeo_prim_ecyl, zeo_shape, zeo_mshape, zeo_shape_list, zeo_bv_aabb, zeo_col_aabbtree, zeo_nurbs, zeo_terra]
 2019. 1.30. Merged zeo_triangulate to zeo_elem_list. [zeo_elem_list, zeo_ph]
 2019. 1.30. Added _zLoop3DTriangulate and zLoop3DTriangulate. [zeo_triangulate]
 2019. 1.30. Added zVec3DAddrListClone. [zeo_vec3d_list]

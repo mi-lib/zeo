@@ -13,7 +13,7 @@ void veclist_create_rand(zVec3DList *pl)
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v, zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
     zVec3DListInsert( pl, &v );
-    zVec3DDataNLFWrite( fp, &v );
+    zVec3DDataNLFPrint( fp, &v );
   }
   fclose( fp );
 }
@@ -31,28 +31,28 @@ void verify(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vp)
   zAABox3DToBox3D( bb, &box );
   zListForEach( pl, pc ){
     if( ( ret = zBox3DPointIsInside(&box,pc->data,true) ) == false ){
-      zVec3DDataNLFWrite( stderr, pc->data );
+      zVec3DDataNLFPrint( stderr, pc->data );
       eprintf( "D=%.15g\n", zBox3DPointDist(&box,pc->data) );
     }
   }
   /* points on the walls */
   fp = fopen( "bd", "w" );
   for( i=0; i<6; i++ )
-    zVec3DDataNLFWrite( fp, vp[i]->data );
+    zVec3DDataNLFPrint( fp, vp[i]->data );
   fclose( fp );
   /* AABB */
   fp = fopen( "aabb", "w" );
   for( i=0; i<4; i++ )
-    zVec3DDataNLFWrite( fp, zBox3DVert(&box,i,&vert) );
-  zVec3DDataNLFWrite( fp, zBox3DVert(&box,0,&vert) );
+    zVec3DDataNLFPrint( fp, zBox3DVert(&box,i,&vert) );
+  zVec3DDataNLFPrint( fp, zBox3DVert(&box,0,&vert) );
   fprintf( fp, "\n" );
   for( i=4; i<8; i++ )
-    zVec3DDataNLFWrite( fp, zBox3DVert(&box,i,&vert) );
-  zVec3DDataNLFWrite( fp, zBox3DVert(&box,4,&vert) );
+    zVec3DDataNLFPrint( fp, zBox3DVert(&box,i,&vert) );
+  zVec3DDataNLFPrint( fp, zBox3DVert(&box,4,&vert) );
   fprintf( fp, "\n" );
   for( i=0; i<4; i++ ){
-    zVec3DDataNLFWrite( fp, zBox3DVert(&box,i,&vert) );
-    zVec3DDataNLFWrite( fp, zBox3DVert(&box,i+4,&vert) );
+    zVec3DDataNLFPrint( fp, zBox3DVert(&box,i,&vert) );
+    zVec3DDataNLFPrint( fp, zBox3DVert(&box,i+4,&vert) );
     fprintf( fp, "\n" );
   }
   fclose( fp );

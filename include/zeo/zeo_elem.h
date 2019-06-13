@@ -73,21 +73,21 @@ __EXPORT double zPlane3DProj(zPlane3D *p, zVec3D *v, zVec3D *cp);
  */
 __EXPORT zPlane3D *zPlane3DMean(zPlane3D *pl, zVec3D *pc, zVec3D v[], int n);
 
-/*! \brief output a 3D plane.
+/*! \brief print a 3D plane.
  *
- * zPlane3DFWrite() outputs the information of a 3D plane \a p to the
- * current position of the file \a fp in the following format:
+ * zPlane3DFPrint() prints information of a 3D plane \a p out
+ * to the current position of the file \a fp in the following format:
  *
  * vert: { x y z } <- the passing point
  * norm: { x y z } <- the normal vector
  *
- * zPlane3DWrite() writes the information of the plane \a p to the
- * standard out.
+ * zPlane3DPrint() prints information of the plane \a p out to
+ * the standard out.
  * \return
- * Neither zPlane3DFWrite() nor zPlane3DWrite() return any values.
+ * Neither zPlane3DFPrint() nor zPlane3DPrint() return any values.
  */
-__EXPORT void zPlane3DFWrite(FILE *fp, zPlane3D *p);
-#define zPlane3DWrite(p) zPlane3DFWrite( stdout, (p) )
+__EXPORT void zPlane3DFPrint(FILE *fp, zPlane3D *p);
+#define zPlane3DPrint(p) zPlane3DFPrint( stdout, (p) )
 
 /* ********************************************************** */
 /*! \brief 3D edge class.
@@ -159,24 +159,24 @@ __EXPORT double zEdge3DClosest(zEdge3D *e, zVec3D *p, zVec3D *cp);
  */
 __EXPORT zVec3D *zEdge3DContigVert(zEdge3D *e, zVec3D *p, double *d);
 
-/*! \brief output a 3D edge.
+/*! \brief print a 3D edge.
  *
- * zEdge3DFWrite() writes the coordinates of the endpoints to the current
- * position of the file \a fp, according to the following format.
+ * zEdge3DFPrint() prints coordinates of the endpoints of a 3D
+ * edge to the current position of a file \a fp in the following format.
  *
  *  vert 0: x0 y0 z0
  *  vert 1: x1 y1 z1
  *  vec: vx vy vz
  *
- * where vert 0 is the first endpoint, vert 1 is the
- * second and vec is for the path vector.
- * zEdge3DVertWrite() writes the same information of \a e to the standard
- * output.
+ * where vert 0 is the first endpoint, vert 1 is the second and
+ * vec is for the path vector.
+ * zEdge3DVertPrint() prints the same information of \a e to the
+ * standard output.
  * \return
- * zEdge3DFWrite() and zEdge3DWrite() return no values.
+ * zEdge3DFPrint() and zEdge3DPrint() return no values.
  */
-__EXPORT void zEdge3DFWrite(FILE *fp, zEdge3D *e);
-#define zEdge3DWrite(e) zEdge3DFWrite( stdout, (e) )
+__EXPORT void zEdge3DFPrint(FILE *fp, zEdge3D *e);
+#define zEdge3DPrint(e) zEdge3DFPrint( stdout, (e) )
 
 /* ********************************************************** */
 /*! \brief 3D triangle class.
@@ -342,11 +342,10 @@ __EXPORT zMat3D *zTri3DConeInertia(zTri3D *t, zMat3D *i);
 __EXPORT zVec3D *zTri3DConeBarycenter(zTri3D *t, zVec3D *v, zVec3D *c);
 __EXPORT zVec3D *zTri3DConeCircumcenter(zTri3D *t, zVec3D *c);
 
-/*! \brief output a 3D triangle.
+/*! \brief print a 3D triangle.
  *
- * zTri3DFWrite() writes the coordinates of each vertex of a triangle
- * \a t to the current position of the file \a fp, according to the
- * following format.
+ * zTri3DFPrint() prints coordinates of the vertices of a 3D triangle
+ * \a t to the current position of a file \a fp in the following format.
  *
  *  vert 0: x0 y0 z0
  *  vert 1: x1 y1 z1
@@ -355,13 +354,14 @@ __EXPORT zVec3D *zTri3DConeCircumcenter(zTri3D *t, zVec3D *c);
  *
  * where vert 0 is the first vertex, vert 1 is the second, vert 2 is
  * the third and norm is for the normal vector.
- * zTri3DWrite() writes the same information of \a t to the standard output.
+ * zTri3DPrint() prints the same information of \a t out to the
+ * standard output.
  * \return
- * None of zTri3DFWrite(), zTri3DWrite(), zTri3DVertFWrite() and
- * zTri3DVertWrite() returns any values.
+ * None of zTri3DFPrint(), zTri3DPrint(), zTri3DVertFPrint() and
+ * zTri3DVertPrint() returns any values.
  */
-__EXPORT void zTri3DFWrite(FILE *fp, zTri3D *t);
-#define zTri3DWrite(t) zTri3DFWrite( stdout, (t) )
+__EXPORT void zTri3DFPrint(FILE *fp, zTri3D *t);
+#define zTri3DPrint(t) zTri3DFPrint( stdout, (t) )
 
 __END_DECLS
 

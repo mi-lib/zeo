@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
     zVec3DListInsert( &list, &v );
     zVecTree3DAdd( &tree, &v );
-    zVec3DDataNLFWrite( fp, &v );
+    zVec3DDataNLFPrint( fp, &v );
   }
   fclose( fp );
 
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 
   fp = fopen( "tst", "w" );
   node = zVecTree3DPart( &tree, &v );
-  zVec3DDataNLFWrite( fp, &v );
+  zVec3DDataNLFPrint( fp, &v );
   fprintf( fp, "\n" );
   output_node( fp, node );
   fclose( fp );
@@ -84,21 +84,21 @@ int main(int argc, char *argv[])
   gettimeofday( &tv1, NULL );
   dmin1 = zVecTree3DNN( &tree, &v, &node );
   gettimeofday( &tv2, NULL );
-  eprintf( "kd-tree: %g - ", dmin1 ); zVec3DFWrite( stderr, &node->v );
+  eprintf( "kd-tree: %g - ", dmin1 ); zVec3DFPrint( stderr, &node->v );
   printf( "%d %d ", n, deltatime(&tv1,&tv2) );
   fp = fopen( "nn", "w" );
-  zVec3DDataNLFWrite( fp, &v );
-  zVec3DDataNLFWrite( fp, &node->v );
+  zVec3DDataNLFPrint( fp, &v );
+  zVec3DDataNLFPrint( fp, &node->v );
   fclose( fp );
   /* for comparison */
   gettimeofday( &tv1, NULL );
   nn = zVec3DListNN( &list, &v, &dmin2 );
   gettimeofday( &tv2, NULL );
-  eprintf( "naive  : %g - ", dmin2 ); zVec3DFWrite( stderr, nn );
+  eprintf( "naive  : %g - ", dmin2 ); zVec3DFPrint( stderr, nn );
   printf( "%d\n", deltatime(&tv1,&tv2) );
   fp = fopen( "nnn", "w" );
-  zVec3DDataNLFWrite( fp, &v );
-  zVec3DDataNLFWrite( fp, nn );
+  zVec3DDataNLFPrint( fp, &v );
+  zVec3DDataNLFPrint( fp, nn );
   fclose( fp );
 
   if( !zIsTiny( dmin1-dmin2 ) )

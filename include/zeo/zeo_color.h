@@ -89,27 +89,26 @@ __EXPORT zRGB *zRGBDec(zRGB *rgb, char *str);
 
 /*! \brief input/output of a set of RGB parameters.
  *
- * zRGBFRead() reads a sequence of 3 values as the information
- * of RGB from the current position of the file \a fp, and copies
- * them to \a rgb.
+ * zRGBFScan() scans three values for RGB from the current
+ * position of a file \a fp, and copies them to \a rgb.
  *
- * zRGBFRead() reads information of RGB from the standard input
- * and copies them to \a rgb.
+ * zRGBFScan() scans three values for RGB from the standard
+ * input and copies them to \a rgb.
  *
- * zRGBFWrite() writes a set of RGB parameters \a rgb to the
- * current position of the file \a fp.
+ * zRGBFPrint() prints a set of RGB parameters \a rgb out
+ * to the current position of a file \a fp.
  *
- * zRGBWrite() writes a set of RGB parameters \a rgb to the
- * standard out.
+ * zRGBPrint() prints a set of RGB parameters \a rgb out to
+ * the standard out.
  * \return
- * zRGBFRead() and zRGBRead() return a pointer \a rgb.
+ * zRGBFScan() and zRGBScan() return a pointer \a rgb.
  *
- * zRGBFWrite() and zRGBWrite() return no value.
+ * zRGBFPrint() and zRGBPrint() return no value.
  */
-__EXPORT zRGB *zRGBFRead(FILE *fp, zRGB *rgb);
-#define zRGBRead(c)  zRGBFRead( stdin, (c) )
-__EXPORT void zRGBFWrite(FILE *fp, zRGB *rgb);
-#define zRGBWrite(c) zRGBFWrite( stdout, (c) )
+__EXPORT zRGB *zRGBFScan(FILE *fp, zRGB *rgb);
+#define zRGBScan(c)  zRGBFScan( stdin, (c) )
+__EXPORT void zRGBFPrint(FILE *fp, zRGB *rgb);
+#define zRGBPrint(c) zRGBFPrint( stdout, (c) )
 
 /* ********************************************************** */
 /* CLASS: zHSV
@@ -124,8 +123,8 @@ typedef struct{
 
 __EXPORT zHSV *zRGB2HSV(zRGB *rgb, zHSV *hsv);
 __EXPORT zRGB *zHSV2RGB(zHSV *hsv, zRGB *rgb);
-__EXPORT void zHSVFWrite(FILE *fp, zHSV *hsv);
-#define zHSVWrite(hsv) zHSVFWrite( stdout, hsv )
+__EXPORT void zHSVFPrint(FILE *fp, zHSV *hsv);
+#define zHSVPrint(hsv) zHSVFPrint( stdout, hsv )
 
 __END_DECLS
 

@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     t = zNURBS3D1KnotSlice( &nurbs, i );
     if( zNURBS3D1Vec( &nurbs, t, &p ) ){
       printf( "%f ",t );
-      zVec3DDataWrite( &p );
+      zVec3DDataPrint( &p );
       zEndl();
     }
   }

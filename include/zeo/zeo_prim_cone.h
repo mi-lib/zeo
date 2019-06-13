@@ -108,40 +108,36 @@ __EXPORT zMat3D *zCone3DInertia(zCone3D *cone, zMat3D *inertia);
  */
 __EXPORT zPH3D *zCone3DToPH(zCone3D *cone, zPH3D *ph);
 
-/* METHOD:
- * zCone3DFRead, zCone3DRead, zCone3DFWrite, zCone3DWrite,
- * - input/output of 3D cone.
+/*! \brief scan and print a 3D cone.
  *
- * 'zCone3DFRead()' reads the information of a 3D cone
- * from the current position of the file 'fp', and creates
- * the new cone 'cone'.
- * An acceptable data file format is as follows.
- * #
+ * zCone3DFScan() scans information of a 3D cone from the
+ * current position of a file 'fp', and creates the new cone
+ * \a cone. An acceptable data file format is as follows.
+ *
  *  center: <x> <y> <z>
  *  vert: <x> <y> <z>
  *  radius: <r>
  *  div: <div>
- * #
- * Each bracketed value must be substituted for a real number.
- * 'zCone3DRead()' reads the information for 'cone'
- * simply from the standard input.
+ *
+ * The bracketed parts must be replaced by real numbers.
  * The field div is skippable.
- * #
- * 'zCone3DFWrite()' writes the information of 'cone'
- * to the current position of the file 'fp' in the same format
- * with the above. 'zCone3DWrite()' writes the information
- * of 'cone' simply to the standard out.
- * [RETURN VALUE]
- * Each of 'zCone3DFRead()' and 'zCone3DRead()' returns
- * a pointer 'cone'.
- * #
- * Neither 'zCone3DFWrite()' nor 'zCone3DWrite()' returns
- * any values.
+ *
+ * zCone3DScan() scans information for \a cone from the
+ * standard input.
+ *
+ * zCone3DFPrint() prints information of \a cone out to the
+ * current position of a file \a fp in the same format with
+ * the above. zCone3DPrint() prints information of \a cone
+ * out to the standard out.
+ *
+ * zCone3DFScan() and zCone3DScan() return a pointer \a cone.
+ *
+ * Neither zCone3DFPrint() nor zCone3DPrint() return any values.
  */
-__EXPORT zCone3D *zCone3DFRead(FILE *fp, zCone3D *cone);
-#define zCone3DRead(c) zCone3DFRead( stdin, (c) )
-__EXPORT void zCone3DFWrite(FILE *fp, zCone3D *cone);
-#define zCone3DWrite(c) zCone3DFWrite( stdout, (c) )
+__EXPORT zCone3D *zCone3DFScan(FILE *fp, zCone3D *cone);
+#define zCone3DScan(c) zCone3DFScan( stdin, (c) )
+__EXPORT void zCone3DFPrint(FILE *fp, zCone3D *cone);
+#define zCone3DPrint(c) zCone3DFPrint( stdout, (c) )
 
 /* methods for abstraction */
 extern zPrimCom zprim_cone3d_com;

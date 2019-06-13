@@ -468,8 +468,8 @@ zVec3D *zAngVelToZYZVelSC(zVec3D *angvel, double sa, double ca, double sb, doubl
 /* I/O
  * ********************************************************** */
 
-/* input a 3D vector from file. */
-zVec3D *zVec3DFRead(FILE *fp, zVec3D *v)
+/* scan a 3D vector from a file. */
+zVec3D *zVec3DFScan(FILE *fp, zVec3D *v)
 {
   v->c.x = zFDouble( fp );
   v->c.y = zFDouble( fp );
@@ -477,30 +477,30 @@ zVec3D *zVec3DFRead(FILE *fp, zVec3D *v)
   return v;
 }
 
-/* output a 3D vector to file. */
-zVec3D *zVec3DDataFWrite(FILE *fp, zVec3D *v)
+/* print a 3D vector out to a file. */
+zVec3D *zVec3DDataFPrint(FILE *fp, zVec3D *v)
 {
   if( !v ) return NULL;
   fprintf( fp, " %.10g %.10g %.10g", v->c.x, v->c.y, v->c.z );
   return v;
 }
 
-/* output a 3D vector to file with the new line. */
-zVec3D *zVec3DDataNLFWrite(FILE *fp, zVec3D *v)
+/* print a 3D vector out to a file with the new line. */
+zVec3D *zVec3DDataNLFPrint(FILE *fp, zVec3D *v)
 {
-  if( !zVec3DDataFWrite( fp, v ) ) return NULL;
+  if( !zVec3DDataFPrint( fp, v ) ) return NULL;
   fprintf( fp, "\n" );
   return v;
 }
 
-/* output of 3D vector to file. */
-zVec3D *zVec3DFWrite(FILE *fp, zVec3D *v)
+/* print a 3D vector out to a file. */
+zVec3D *zVec3DFPrint(FILE *fp, zVec3D *v)
 {
   fprintf( fp, "(" );
   if( !v )
     fprintf( fp, "null 3D vector" );
   else
-    zVec3DDataFWrite( fp, v );
+    zVec3DDataFPrint( fp, v );
   fprintf( fp, ")\n" );
   return v;
 }

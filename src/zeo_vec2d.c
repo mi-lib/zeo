@@ -176,31 +176,31 @@ double *zVec2DRot(zVec2D v, double angle, zVec2D rv)
 /* I/O
  * ********************************************************** */
 
-/* input a 2D vector from file. */
-double *zVec2DFRead(FILE *fp, zVec2D v)
+/* scan a 2D vector from a file. */
+double *zVec2DFScan(FILE *fp, zVec2D v)
 {
   v[zX] = zFDouble( fp );
   v[zY] = zFDouble( fp );
   return v;
 }
 
-/* output a 2D vector data to file. */
-void zVec2DDataFWrite(FILE *fp, zVec2D v)
+/* print a 2D vector data to a file. */
+void zVec2DDataFPrint(FILE *fp, zVec2D v)
 {
   if( !v ) return;
   fprintf( fp, " %.10g %.10g", v[zX], v[zY] );
 }
 
-/* output a 2D vector data with the new line to file. */
-void zVec2DDataNLFWrite(FILE *fp, zVec2D v)
+/* print a 2D vector data with the new line to a file. */
+void zVec2DDataNLFPrint(FILE *fp, zVec2D v)
 {
   if( !v ) return;
-  zVec2DDataFWrite( fp, v );
+  zVec2DDataFPrint( fp, v );
   fprintf( fp, "\n" );
 }
 
-/* output a 2D vector to file. */
-void zVec2DFWrite(FILE *fp, zVec2D v)
+/* print a 2D vector to a file. */
+void zVec2DFPrint(FILE *fp, zVec2D v)
 {
   fprintf( fp, "(" );
   if( !v )

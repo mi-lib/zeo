@@ -11,12 +11,12 @@ int main(void)
     eprintf( "run nurbs_test first.\n" );
     return 1;
   }
-  zNURBS3DFRead( fp, &nurbs );
+  zNURBS3DFScan( fp, &nurbs );
   fclose( fp );
   zNURBS3DToPH( &nurbs, &ph );
 
   fp = fopen( "ph", "w" );
-  zPH3DFWrite( fp, &ph );
+  zPH3DFPrint( fp, &ph );
   fclose( fp );
 
   zNURBS3DDestroy( &nurbs );

@@ -244,8 +244,8 @@ zVec6D* zFrame3DToVec6DAA(zFrame3D *f, zVec6D *v)
   return v;
 }
 
-/* input a 3D frame from file. */
-zFrame3D *zFrame3DFRead(FILE *fp, zFrame3D *f)
+/* scan a 3D frame from a file. */
+zFrame3D *zFrame3DFScan(FILE *fp, zFrame3D *f)
 {
   register int i, j;
 
@@ -257,9 +257,8 @@ zFrame3D *zFrame3DFRead(FILE *fp, zFrame3D *f)
   return f;
 }
 
-/* input a 3D frame as D-H parameter style from file.
- */
-zFrame3D *zFrame3DDHFRead(FILE *fp, zFrame3D *f)
+/* scan D-H parameters for a frame from a file. */
+zFrame3D *zFrame3DDHFScan(FILE *fp, zFrame3D *f)
 {
   register int i;
   double val[4];
@@ -271,8 +270,8 @@ zFrame3D *zFrame3DDHFRead(FILE *fp, zFrame3D *f)
   return zFrame3DFromDH( f, val[0], val[1], val[2], val[3] );
 }
 
-/* output a 3D frame to file. */
-void zFrame3DFWrite(FILE *fp, zFrame3D *f)
+/* print a 3D frame out to a file. */
+void zFrame3DFPrint(FILE *fp, zFrame3D *f)
 {
   register int i;
 

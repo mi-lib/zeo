@@ -32,8 +32,8 @@ typedef struct{
   zMat3D *(*_inertia)(void*,zMat3D*);
   void (*_baryinertia)(void*,zVec3D*,zMat3D*);
   zPH3D *(*_toph)(void*,zPH3D*);
-  void *(*_fread)(FILE*,void*);
-  void (*_fwrite)(FILE*,void*);
+  void *(*_fscan)(FILE*,void*);
+  void (*_fprint)(FILE*,void*);
 } zPrimCom;
 
 #include <zeo/zeo_prim_box.h>    /* box */

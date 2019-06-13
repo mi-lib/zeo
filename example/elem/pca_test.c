@@ -28,7 +28,7 @@ void output_vert(void)
 
   fp = fopen( "a", "w" );
   for( i=0; i<N; i++ )
-    zVec3DDataNLFWrite( fp, &vert[i] );
+    zVec3DDataNLFPrint( fp, &vert[i] );
   fclose( fp );
 
   zVec3DPCA( vert, N, d );
@@ -36,21 +36,21 @@ void output_vert(void)
   zPlane3DCreate( &pl, ZVEC3DZERO, &d[0] );
   for( i=0; i<N; i++ ){
     zPlane3DProj( &pl, &vert[i], &v );
-    zVec3DDataNLFWrite( fp, &v );
+    zVec3DDataNLFPrint( fp, &v );
   }
   fclose( fp );
   fp = fopen( "c", "w" );
   zPlane3DCreate( &pl, ZVEC3DZERO, &d[1] );
   for( i=0; i<N; i++ ){
     zPlane3DProj( &pl, &vert[i], &v );
-    zVec3DDataNLFWrite( fp, &v );
+    zVec3DDataNLFPrint( fp, &v );
   }
   fclose( fp );
   fp = fopen( "d", "w" );
   zPlane3DCreate( &pl, ZVEC3DZERO, &d[2] );
   for( i=0; i<N; i++ ){
     zPlane3DProj( &pl, &vert[i], &v );
-    zVec3DDataNLFWrite( fp, &v );
+    zVec3DDataNLFPrint( fp, &v );
   }
   fclose( fp );
 
@@ -59,21 +59,21 @@ void output_vert(void)
   zPlane3DCreate( &pl, &c, &d[0] );
   for( i=0; i<N; i++ ){
     zPlane3DProj( &pl, &vert[i], &v );
-    zVec3DDataNLFWrite( fp, &v );
+    zVec3DDataNLFPrint( fp, &v );
   }
   fclose( fp );
   fp = fopen( "f", "w" );
   zPlane3DCreate( &pl, &c, &d[1] );
   for( i=0; i<N; i++ ){
     zPlane3DProj( &pl, &vert[i], &v );
-    zVec3DDataNLFWrite( fp, &v );
+    zVec3DDataNLFPrint( fp, &v );
   }
   fclose( fp );
   fp = fopen( "g", "w" );
   zPlane3DCreate( &pl, &c, &d[2] );
   for( i=0; i<N; i++ ){
     zPlane3DProj( &pl, &vert[i], &v );
-    zVec3DDataNLFWrite( fp, &v );
+    zVec3DDataNLFPrint( fp, &v );
   }
   fclose( fp );
 }

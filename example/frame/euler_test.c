@@ -3,8 +3,8 @@
 void output_vec6d(zVec6D *v, const char *title, const char *lin, const char *ang)
 {
   printf( "[%s]\n", title );
-  printf( "%s: ", lin ); zVec3DWrite( zVec6DLin(v) );
-  printf( "%s: ", ang ); zVec3DWrite( zVec6DAng(v) );
+  printf( "%s: ", lin ); zVec3DPrint( zVec6DLin(v) );
+  printf( "%s: ", ang ); zVec3DPrint( zVec6DAng(v) );
 }
 
 void zyx_test(void)
@@ -19,12 +19,12 @@ void zyx_test(void)
   output_vec6d( &v, "original values", "x-y-z", "azimuth-elevation-tilt" );
   zVec6DToFrame3DZYX( &v, &f );
   printf( "[frame]\n" );
-  zFrame3DWrite( &f );
-  zFrame3DZYXToVec6D( &f, &v );
+  zFrame3DPrint( &f );
+  zFrame3DToVec6DZYX( &f, &v );
   output_vec6d( &v, "recovered values", "x-y-z", "azimuth-elevation-tilt" );
   zVec6DToFrame3DZYX( &v, &f );
   printf( "(assert)\n" );
-  zFrame3DWrite( &f );
+  zFrame3DPrint( &f );
 }
 
 void zyz_test(void)
@@ -39,12 +39,12 @@ void zyz_test(void)
   output_vec6d( &v, "original values", "z-y-z", "heading-pitch-bank" );
   zVec6DToFrame3DZYZ( &v, &f );
   printf( "[frame]\n" );
-  zFrame3DWrite( &f );
-  zFrame3DZYZToVec6D( &f, &v );
+  zFrame3DPrint( &f );
+  zFrame3DToVec6DZYZ( &f, &v );
   output_vec6d( &v, "recovered values", "z-y-z", "heading-pitch-bank" );
   zVec6DToFrame3DZYZ( &v, &f );
   printf( "(assert)\n" );
-  zFrame3DWrite( &f );
+  zFrame3DPrint( &f );
 }
 
 int main(void)

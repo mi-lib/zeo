@@ -222,8 +222,8 @@ zMat6D *zMat6DDyad(zMat6D *m, zVec6D *v1, zVec6D *v2)
   return m;
 }
 
-/* output a 6x6 matrix to the current position of a file. */
-void zMat6DFWrite(FILE *fp, zMat6D *m)
+/* print a 6x6 matrix out to a file. */
+void zMat6DFPrint(FILE *fp, zMat6D *m)
 {
   if( !m )
     fprintf( fp, "(null 6x6 matrix)\n" );

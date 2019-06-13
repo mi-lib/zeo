@@ -6,9 +6,9 @@ int main(void)
 {
   zMShape3D src, *dest;
 
-  zMShape3DReadFile( &src, MODEL );
+  zMShape3DScanFile( &src, MODEL );
   dest = zMShape3DClone( &src );
-  zMShape3DWrite( dest );
+  zMShape3DPrint( dest );
   zMShape3DDestroy( &src );
   zMShape3DDestroy( dest );
   return 0;

@@ -9,7 +9,7 @@ void veclist_create_rand(void)
 
   for( i=0; i<N; i++ ){
     zVec3DCreatePolar( &v[i], zRandF(-5,5), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
-    zVec3DDataNLWrite( &v[i] );
+    zVec3DDataNLPrint( &v[i] );
   }
 }
 
@@ -19,7 +19,7 @@ void verify(zSphere3D *bb, int n, zVec3D *vp[])
   double r1, r;
   int count;
 
-  zSphere3DFWrite( stderr, bb );
+  zSphere3DFPrint( stderr, bb );
   eprintf( "++verify+++\n" );
   r = zSphere3DRadius(bb);
   for( count=0, i=0; i<N; i++ ){

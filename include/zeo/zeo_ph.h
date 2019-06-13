@@ -185,34 +185,34 @@ __EXPORT zPH3D *zPH3DPyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3D *vert);
 __EXPORT zPH3D *zPH3DTorus(zPH3D *torus, zVec3D loop[], int n, int div, zVec3D *center, zVec3D *axis);
 __EXPORT zPH3D *zPH3DLathe(zPH3D *lathe, zVec3D rim[], int n, int div, zVec3D *center, zVec3D *axis);
 
-/*! \brief input/output of a 3D polyhedron.
+/*! \brief scan and print a 3D polyhedron.
  *
- * zPH3DFRead() reads the information of a 3D polyhedron
- * from the current position of the file \a fp, and creates
- * a new 3D polyhedron \a ph.
+ * zPH3DFScan() scans information of a 3D polyhedron from
+ * the current position of a file \a fp, and creates a new
+ * 3D polyhedron \a ph.
  * An acceptable data file format is as follows.
  *  vert 0: <x> <y> <z>
  *   ...
  *  vert <n>: <x> <y> <z>
  *  face <v1> <v2> <v3>
  *   ...
- * Each bracketed value must be substituted for a real
- * number. zPH3DRead() reads the information for \a ph
- * from the standard input.
+ * Each bracketed value must be substituted for a real number.
+ * zPH3DScan() scans information for \a ph from the standard
+ * input.
  *
- * zPH3DFWrite() writes the information of \a ph to the
- * current position of the file \a fp in the above format.
- * zPH3DWrite() writes the information of \a ph to the
+ * zPH3DFPrint() prints information of \a ph out to the
+ * current position of a file \a fp in the above format.
+ * zPH3DPrint() prints information of \a ph out to the
  * standard output.
  * \return
- * zPH3DFRead() and zPH3DRead() return a pointer \a ph.
+ * zPH3DFScan() and zPH3DScan() return a pointer \a ph.
  *
- * zPH3DFWrite() nor zPH3DWrite() return no values.
+ * zPH3DFPrint() nor zPH3DPrint() return no values.
  */
-__EXPORT zPH3D *zPH3DFRead(FILE *fp, zPH3D *ph);
-#define zPH3DRead(ph)  zPH3DFRead( stdin, (ph) )
-__EXPORT void zPH3DFWrite(FILE *fp, zPH3D *ph);
-#define zPH3DWrite(ph) zPH3DFWrite( stdout, (ph) )
+__EXPORT zPH3D *zPH3DFScan(FILE *fp, zPH3D *ph);
+#define zPH3DScan(ph)  zPH3DFScan( stdin, (ph) )
+__EXPORT void zPH3DFPrint(FILE *fp, zPH3D *ph);
+#define zPH3DPrint(ph) zPH3DFPrint( stdout, (ph) )
 
 __END_DECLS
 

@@ -15,16 +15,16 @@ int main(void)
   zVec3DCreate( &zyxvel, zRandF(-V,V), zRandF(-V,V), zRandF(-V,V) );
   for( i=0; i<=STEP; i++ ){
     /* z-y-x Eulerian angle velocity -> angular velocity */
-    zVec3DZYXVel2AngVel( &zyxvel, &zyx, &angvel );
+    zZYXVelToAngVel( &zyxvel, &zyx, &angvel );
     /* z-y-x Eulerian angle -> matrix */
     zVec3DAddDRC( &zyx, &zyxvel );
-    zMat3DZYX( &m1, zyx.e[zX], zyx.e[zY], zyx.e[zZ] );
+    zMat3DFromZYX( &m1, zyx.e[zX], zyx.e[zY], zyx.e[zZ] );
     /* angular velocity vector -> matrix */
     zMat3DCopy( &m2, &tmp );
     zMat3DRot( &tmp, &angvel, &m2 );
     /* error */
     zMat3DError( &m1, &m2, &err );
-    zVec3DDataNLWrite( &err );
+    zVec3DDataNLPrint( &err );
   }
   return 0;
 }

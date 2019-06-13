@@ -54,10 +54,10 @@ __EXPORT zMat3D *zECyl3DInertia(zECyl3D *cyl, zMat3D *inertia);
 
 __EXPORT zPH3D *zECyl3DToPH(zECyl3D *cyl, zPH3D *ph);
 
-__EXPORT zECyl3D *zECyl3DFRead(FILE *fp, zECyl3D *cyl);
-#define zECyl3DRead(c) zECyl3DFRead( stdin, (c) )
-__EXPORT void zECyl3DFWrite(FILE *fp, zECyl3D *cyl);
-#define zECyl3DWrite(c) zECyl3DFWrite( stdout, (c) )
+__EXPORT zECyl3D *zECyl3DFScan(FILE *fp, zECyl3D *cyl);
+#define zECyl3DScan(c) zECyl3DFScan( stdin, (c) )
+__EXPORT void zECyl3DFPrint(FILE *fp, zECyl3D *cyl);
+#define zECyl3DPrint(c) zECyl3DFPrint( stdout, (c) )
 
 /* methods for abstraction */
 extern zPrimCom zprim_ecyl3d_com;

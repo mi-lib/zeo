@@ -15,7 +15,7 @@ __BEGIN_DECLS
 /*! \brief read point cloud from PCD file.
  *
  * zVec3DListPCDFRead() reads a point cloud from a stream of PCD file.
- * zVec3DListReadPCDFile() reads a point cloud from PCD file.
+ * zVec3DListReadPCDFile() reads a point cloud from a PCD file.
  * \return
  * zVec3DListPCDFRead() and zVec3DListReadPCDFile() return the true value
  * if they succeed to read a PCD file. In the case it fails to read the

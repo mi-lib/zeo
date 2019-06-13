@@ -42,7 +42,7 @@ void output_pc_sphere(zSphere3D *s, zVec3DList *pc)
     fprintf( fp, "name: point%02d\n", i++ );
     fprintf( fp, "type: sphere\n" );
     fprintf( fp, "optic: white\n" );
-    fprintf( fp, "center: " ); zVec3DDataNLFWrite( fp, c->data );
+    fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, c->data );
     fprintf( fp, "radius: 0.01\n\n" );
     fprintf( fp, "div: 4\n\n" );
   }
@@ -50,7 +50,7 @@ void output_pc_sphere(zSphere3D *s, zVec3DList *pc)
   fprintf( fp, "name: sphere\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: orange\n" );
-  zSphere3DFWrite( fp, s );
+  zSphere3DFPrint( fp, s );
   fprintf( fp, "div: 8\n\n" );
 
   fclose( fp );
@@ -70,11 +70,11 @@ int main(int argc, char *argv[])
   zVec3DCreate( &c, 0.05, 0.06, 0.07 );
   zSphere3DCreate( &sorg, &c, 0.15, 0 );
   eprintf( "<original sphere>\n" );
-  zSphere3DFWrite( stderr, &sorg );
+  zSphere3DFPrint( stderr, &sorg );
   generate_pc_sphere( &sorg, &pc, n );
   zSphere3DFit( &sout, &pc );
   eprintf( "<estimated sphere>\n" );
-  zSphere3DFWrite( stderr, &sout );
+  zSphere3DFPrint( stderr, &sout );
   output_pc_sphere( &sout, &pc );
   printf( "%d %g %g\n", n, zVec3DDist(zSphere3DCenter(&sorg),zSphere3DCenter(&sout))/zSphere3DRadius(&sorg), fabs(zSphere3DRadius(&sorg)-zSphere3DRadius(&sout))/zSphere3DRadius(&sorg) );
   zVec3DListDestroy( &pc );

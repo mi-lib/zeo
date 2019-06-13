@@ -27,7 +27,7 @@ void output_src(zVec3D p1[], int n1, zVec3D p2[], int n2)
   fprintf( fp, "name: ch1\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
-  zPH3DFWrite( fp, &ch );
+  zPH3DFPrint( fp, &ch );
   zPH3DDestroy( &ch );
   /* convex set 2 */
   zCH3D( &ch, p2, n2 );
@@ -35,7 +35,7 @@ void output_src(zVec3D p1[], int n1, zVec3D p2[], int n2)
   fprintf( fp, "name: ch2\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
-  zPH3DFWrite( fp, &ch );
+  zPH3DFPrint( fp, &ch );
   zPH3DDestroy( &ch );
 
   fclose( fp );
@@ -66,7 +66,7 @@ void output_ms(zPH3D *ph)
   fprintf( fp, "name: minkowski_sub\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: white\n" );
-  zPH3DFWrite( fp, ph );
+  zPH3DFPrint( fp, ph );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: origin\n" );
   fprintf( fp, "type: sphere\n" );

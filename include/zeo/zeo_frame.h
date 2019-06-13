@@ -235,9 +235,9 @@ __EXPORT double *zFrame3DToArrayAA(zFrame3D *f, double *array);
 __EXPORT zFrame3D *zVec6DToFrame3DAA(zVec6D *v, zFrame3D *f);
 __EXPORT zVec6D *zFrame3DToVec6DAA(zFrame3D *f, zVec6D *v);
 
-/*! \brief input/output a 3D frame.
+/*! \brief scan and print a 3D frame.
  *
- * zFrame3DFRead() reads 12 values from the current position of
+ * zFrame3DFScan() scans 12 values from the current position of
  * a file \a fp and creates a 3D frame from them. The meaning of
  * the sequencial value is for
  *  a11, a12, a13, x,
@@ -248,38 +248,38 @@ __EXPORT zVec6D *zFrame3DToVec6DAA(zFrame3D *f, zVec6D *v);
  * means a base of the frame, while the right 3x1 values are for
  * the position of the original point { x, y, z }. The result is
  * put into \a f.
- * zFrame3DRead() reads 12 values from the standard input and
+ * zFrame3DScan() scans 12 values from the standard input and
  * creates a 3D frame \a f from them.
  *
- * zFrame3DDHFRead() reads 4 values from the current position
+ * zFrame3DDHFScan() scans 4 values from the current position
  * of a file \a fp and creates a 3D frame \a f from them. The
  * values mean DH parameters ( a, alpha, d, theta ).
  * The unit of both \a alpha and \a theta is degree.
- * zFrame3DDHRead() reads 4 values from the standard input and
+ * zFrame3DDHScan() scans 4 values from the standard input and
  * creates a 3D frame \a f from them.
  *
- * zFrame3DFWrite() writes a 3D frame \a f to the current position
- * of a file \a fp in the following style.
+ * zFrame3DFPrint() prints a 3D frame \a f out to the current
+ * position of a file \a fp in the following style.
  *  {
  *   a11, a12, a13, x,
  *   a21, a22, a23, y
  *   a31, a32, a33, z
  *  }
- * When the null pointer is given, it writes the following string.
+ * When the null pointer is given, it prints the following string.
  *  (null 3D frame)
- * zFrame3DWrite() writes a 3D frame \a f to the standard output.
+ * zFrame3DPrint() prints a 3D frame \a f out to the standard output.
  * \return
- * zFrame3DFRead(), zFrame3DRead(), zFrame3DDHFRead() and
- * zFrame3DDHRead() return a pointer \a f.
+ * zFrame3DFScan(), zFrame3DScan(), zFrame3DDHFScan() and
+ * zFrame3DDHScan() return a pointer \a f.
  *
- * zFrame3DFWrite() and zFrame3DWrite() return no value.
+ * zFrame3DFPrint() and zFrame3DPrint() return no value.
  */
-__EXPORT zFrame3D *zFrame3DFRead(FILE *fp, zFrame3D *f);
-#define zFrame3DRead(f) zFrame3DFRead( stdin, (f) )
-__EXPORT zFrame3D *zFrame3DDHFRead(FILE *fp, zFrame3D *f);
-#define zFrame3DDHRead(f) zFrame3DDHFRead( stdin, (f) )
-__EXPORT void zFrame3DFWrite(FILE *fp, zFrame3D *f);
-#define zFrame3DWrite(f) zFrame3DFWrite( stdout, (f) )
+__EXPORT zFrame3D *zFrame3DFScan(FILE *fp, zFrame3D *f);
+#define zFrame3DScan(f) zFrame3DFScan( stdin, (f) )
+__EXPORT zFrame3D *zFrame3DDHFScan(FILE *fp, zFrame3D *f);
+#define zFrame3DDHScan(f) zFrame3DDHFScan( stdin, (f) )
+__EXPORT void zFrame3DFPrint(FILE *fp, zFrame3D *f);
+#define zFrame3DPrint(f) zFrame3DFPrint( stdout, (f) )
 
 __END_DECLS
 

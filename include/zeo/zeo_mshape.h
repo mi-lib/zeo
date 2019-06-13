@@ -71,14 +71,13 @@ __EXPORT bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, bool rim);
 
 __EXPORT zMShape3D *zMShape3DToPH(zMShape3D *ms);
 
-/*! \brief input/output of multiple 3D shapes.
+/*! \brief scan and print multiple 3D shapes.
  *
- * zMShape3DReadFile() reads the file \a filename and
- * creates new multiple 3D shapes \a ms. The suffix can be
- * omitted; the \a filename.z3d file is examined in that
- * case.
+ * zMShape3DScanFile() scans a file \a filename and creates
+ * new multiple 3D shapes \a ms. The suffix can be omitted;
+ * the \a filename.ztk file is examined in that case.
  *
- * zMShape3DFRead() reads the information from the current
+ * zMShape3DFScan() scans information from the current
  * position of the file \a fp.
  *
  * An acceptable data file for these two functions should
@@ -87,33 +86,33 @@ __EXPORT zMShape3D *zMShape3DToPH(zMShape3D *ms);
  * and [shape].
  * The denotation of optical information and 3D shape
  * follows each format.
- * See also zOpticalInfoFRead() and zShape3DFRead().
+ * See also zOpticalInfoFScan() and zShape3DFScan().
  *
- * zMShape3DWriteFile() writes the information of multiple
- * 3D shapes \a ms to the file \a filename. In this function,
- * one can also omit the suffix as zMShape3DReadFile().
+ * zMShape3DPrintFile() prints information of multiple 3D
+ * shapes \a ms to a file \a filename. The suffix can be
+ * omitted as well as zMShape3DScanFile().
  *
- * zMShape3DFWrite() writes the information of \a ms to the
- * current position of the file \a fp in the same format with
- * zMShape3DWriteFile().
+ * zMShape3DFPrint() prints the information of \a ms out to
+ * the current position of a file \a fp in the same format with
+ * zMShape3DPrintFile().
  *
- * zShape3DWrite() writes the information of \a ms simply to
- * the standard output.
+ * zShape3DPrint() prints information of \a ms out to the
+ * standard output.
  * \return
- * Each of zMShape3DReadFile() and zMShape3DFRead() returns
- * a pointer to \a ms if it succeeds to build new multiple
- * 3D shapes. Otherwise, the null pointer is returned.
+ * zMShape3DScanFile() and zMShape3DFScan() return a pointer
+ * \a ms if succeeding to build new multiple 3D shapes.
+ * Otherwise, the null pointer is returned.
  *
- * zMShape3DWriteFile(), zMShape3DFWrite() and zMShape3DWrite()
+ * zMShape3DPrintFile(), zMShape3DFPrint() and zMShape3DPrint()
  * return no values.
  * \sa
- * zOpticalInfoFRead, zShape3DFRead
+ * zOpticalInfoFScan, zShape3DFScan
  */
-__EXPORT zMShape3D *zMShape3DReadFile(zMShape3D *ms, char filename[]);
-__EXPORT zMShape3D *zMShape3DFRead(FILE *fp, zMShape3D *ms);
-__EXPORT bool zMShape3DWriteFile(zMShape3D *ms, char filename[]);
-__EXPORT void zMShape3DFWrite(FILE *fp, zMShape3D *ms);
-#define zMShape3DWrite(s) zMShape3DFWrite( stdout, (s) )
+__EXPORT zMShape3D *zMShape3DScanFile(zMShape3D *ms, char filename[]);
+__EXPORT zMShape3D *zMShape3DFScan(FILE *fp, zMShape3D *ms);
+__EXPORT bool zMShape3DPrintFile(zMShape3D *ms, char filename[]);
+__EXPORT void zMShape3DFPrint(FILE *fp, zMShape3D *ms);
+#define zMShape3DPrint(s) zMShape3DFPrint( stdout, (s) )
 
 __END_DECLS
 

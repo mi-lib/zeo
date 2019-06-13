@@ -860,8 +860,8 @@ void zMat3DSymEig(zMat3D *m, double eval[], zVec3D evec[])
 /* I/O
  * ********************************************************** */
 
-/* input a 3x3 matrix from file. */
-zMat3D *zMat3DFRead(FILE *fp, zMat3D *m)
+/* scan a 3x3 matrix from a file. */
+zMat3D *zMat3DFScan(FILE *fp, zMat3D *m)
 {
   register int i, j;
 
@@ -871,8 +871,8 @@ zMat3D *zMat3DFRead(FILE *fp, zMat3D *m)
   return m;
 }
 
-/* output a 3x3 matrix to file. */
-void zMat3DFWrite(FILE *fp, zMat3D *m)
+/* print a 3x3 matrix to a file. */
+void zMat3DFPrint(FILE *fp, zMat3D *m)
 {
   if( !m )
     fprintf( fp, "(null 3x3 matrix)\n" );

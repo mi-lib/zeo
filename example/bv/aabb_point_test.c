@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
       for( k=0; k<DIV; k++ ){
         zVec3DCreate( &p, j+(double)k/DIV, 0, (double)i );
         printf( "%s ", zAABox3DPointIsInside(&box,&p,false) ? ">in " : ">out" );
-        zVec3DWrite( &p );
+        zVec3DPrint( &p );
       }
     }
   }

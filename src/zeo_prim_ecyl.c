@@ -11,11 +11,9 @@
  * 3D elliptic cylinder class
  * ********************************************************** */
 
-static bool _zECyl3DFRead(FILE *fp, void *instance, char *buf, bool *success);
+static bool _zECyl3DFScan(FILE *fp, void *instance, char *buf, bool *success);
 
-/* zECyl3DCreate
- * - create 3D elliptic cylinder.
- */
+/* create a 3D elliptic cylinder. */
 zECyl3D *zECyl3DCreate(zECyl3D *cyl, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div)
 {
   zVec3D axis;
@@ -37,9 +35,7 @@ zECyl3D *zECyl3DCreate(zECyl3D *cyl, zVec3D *c1, zVec3D *c2, double r1, double r
   return cyl;
 }
 
-/* zECyl3DInit
- * - initialize 3D elliptic cylinder.
- */
+/* initialize a 3D elliptic cylinder. */
 zECyl3D *zECyl3DInit(zECyl3D *cyl)
 {
   zVec3DClear( zECyl3DCenter(cyl,0) );
@@ -52,9 +48,7 @@ zECyl3D *zECyl3DInit(zECyl3D *cyl)
   return cyl;
 }
 
-/* zECyl3DCopy
- * - copy 3D elliptic cylinder.
- */
+/* copy a 3D elliptic cylinder to another. */
 zECyl3D *zECyl3DCopy(zECyl3D *src, zECyl3D *dest)
 {
   zVec3DCopy( zECyl3DCenter(src,0), zECyl3DCenter(dest,0) );
@@ -67,9 +61,7 @@ zECyl3D *zECyl3DCopy(zECyl3D *src, zECyl3D *dest)
   return dest;
 }
 
-/* zECyl3DMirror
- * - mirror 3D elliptic cylinder.
- */
+/* mirror a 3D elliptic cylinder. */
 zECyl3D *zECyl3DMirror(zECyl3D *src, zECyl3D *dest, zAxis axis)
 {
   zECyl3DCopy( src, dest );
@@ -81,9 +73,7 @@ zECyl3D *zECyl3DMirror(zECyl3D *src, zECyl3D *dest, zAxis axis)
   return dest;
 }
 
-/* zECyl3DXfer
- * - transform 3D elliptic cylinder.
- */
+/* transform coordinates of a 3D elliptic cylinder. */
 zECyl3D *zECyl3DXfer(zECyl3D *src, zFrame3D *f, zECyl3D *dest)
 {
   zXfer3D( f, zECyl3DCenter(src,0), zECyl3DCenter(dest,0) );
@@ -96,9 +86,7 @@ zECyl3D *zECyl3DXfer(zECyl3D *src, zFrame3D *f, zECyl3D *dest)
   return dest;
 }
 
-/* zECyl3DXferInv
- * - inversely transform 3D elliptic cylinder.
- */
+/* inversely transform coordinates of a 3D elliptic cylinder. */
 zECyl3D *zECyl3DXferInv(zECyl3D *src, zFrame3D *f, zECyl3D *dest)
 {
   zXfer3DInv( f, zECyl3DCenter(src,0), zECyl3DCenter(dest,0) );
@@ -111,9 +99,7 @@ zECyl3D *zECyl3DXferInv(zECyl3D *src, zFrame3D *f, zECyl3D *dest)
   return dest;
 }
 
-/* zECyl3DClosest
- * - the closest point to 3D elliptic cylinder.
- */
+/* the closest point to a 3D elliptic cylinder. */
 double zECyl3DClosest(zECyl3D *cyl, zVec3D *p, zVec3D *cp)
 {
   zVec3D v, axis, vr;
@@ -166,9 +152,7 @@ double zECyl3DClosest(zECyl3D *cyl, zVec3D *p, zVec3D *cp)
   return zVec3DDist( cp, p );
 }
 
-/* zECyl3DPointDist
- * - distance from a point to 3D elliptic cylinder.
- */
+/* distance from a point to a 3D elliptic cylinder. */
 double zECyl3DPointDist(zECyl3D *cyl, zVec3D *p)
 {
   zVec3D cp;
@@ -176,17 +160,13 @@ double zECyl3DPointDist(zECyl3D *cyl, zVec3D *p)
   return zECyl3DClosest( cyl, p, &cp );
 }
 
-/* zECyl3DPointIsInside
- * - check if a point is inside of an elliptic cylinder.
- */
+/* check if a point is inside of an elliptic cylinder. */
 bool zECyl3DPointIsInside(zECyl3D *cyl, zVec3D *p, bool rim)
 {
   return zECyl3DPointDist( cyl, p ) < ( rim ? zTOL : 0 ) ? true : false;
 }
 
-/* zECyl3DHeight
- * - height of 3D elliptic cylinder.
- */
+/* height of a 3D elliptic cylinder. */
 double zECyl3DHeight(zECyl3D *cyl)
 {
   zVec3D axis;
@@ -194,25 +174,19 @@ double zECyl3DHeight(zECyl3D *cyl)
   return zVec3DNorm( zECyl3DAxis( cyl, &axis ) );
 }
 
-/* zECyl3DVolume
- * - volume of 3D elliptic cylinder.
- */
+/* volume of a 3D elliptic cylinder. */
 double zECyl3DVolume(zECyl3D *cyl)
 {
   return zPI * zECyl3DRadius(cyl,0) * zECyl3DRadius(cyl,1) * zECyl3DHeight(cyl);
 }
 
-/* zECyl3DBarycenter
- * - barycenter of 3D elliptic cylinder.
- */
+/* barycenter of a 3D elliptic cylinder. */
 zVec3D *zECyl3DBarycenter(zECyl3D *cyl, zVec3D *c)
 {
   return zVec3DMid( zECyl3DCenter(cyl,0), zECyl3DCenter(cyl,1), c );
 }
 
-/* zECyl3DInertia
- * - inertia tensor of 3D elliptic cylinder.
- */
+/* inertia tensor of a 3D elliptic cylinder. */
 zMat3D *zECyl3DInertia(zECyl3D *cyl, zMat3D *inertia)
 {
   double vol, aa, bb, hh;
@@ -235,9 +209,7 @@ zMat3D *zECyl3DInertia(zECyl3D *cyl, zMat3D *inertia)
   return zRotMat3D( &att, &i, inertia );
 }
 
-/* zECyl3DToPH
- * - convert elliptic cylinder to polyhedron.
- */
+/* convert an elliptic cylinder to a polyhedron. */
 zPH3D *zECyl3DToPH(zECyl3D *cyl, zPH3D *ph)
 {
   zVec3D *vert, d, r;
@@ -292,10 +264,8 @@ typedef struct{
 } _zECylParam;
 
 /* (static)
- * _zECyl3DFRead
- * - input of 3D elliptic cylinder.
- */
-bool _zECyl3DFRead(FILE *fp, void *instance, char *buf, bool *success)
+ * scan a 3D elliptic cylinder (internal function). */
+bool _zECyl3DFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
   _zECylParam *prm;
 
@@ -304,14 +274,14 @@ bool _zECyl3DFRead(FILE *fp, void *instance, char *buf, bool *success)
     if( prm->ic > 1 )
       ZRUNWARN( ZEO_ERR_CENTER_MANY );
     else
-      zVec3DFRead( fp, &prm->c[prm->ic++] );
+      zVec3DFScan( fp, &prm->c[prm->ic++] );
   } else if( !strcmp( buf, "radius" ) ){
     if( prm->ir > 1 )
       ZRUNWARN( ZEO_ERR_RADIUS_MANY );
     else
       prm->r[prm->ir++] = zFDouble( fp );
   } else if( !strcmp( buf, "ref" ) ){
-    zVec3DFRead( fp, &prm->ref );
+    zVec3DFScan( fp, &prm->ref );
   } else if( !strcmp( buf, "div" ) ){
     prm->div = zFInt( fp );
   } else
@@ -319,10 +289,8 @@ bool _zECyl3DFRead(FILE *fp, void *instance, char *buf, bool *success)
   return true;
 }
 
-/* zECyl3DFRead
- * - input of 3D elliptic cylinder.
- */
-zECyl3D *zECyl3DFRead(FILE *fp, zECyl3D *cyl)
+/* scan a 3D elliptic cylinder from a file. */
+zECyl3D *zECyl3DFScan(FILE *fp, zECyl3D *cyl)
 {
   _zECylParam prm;
 
@@ -332,23 +300,21 @@ zECyl3D *zECyl3DFRead(FILE *fp, zECyl3D *cyl)
   zVec3DClear( &prm.ref );
   prm.r[0] = prm.r[1] = 0;
   prm.ic = prm.ir = prm.div = 0;
-  zFieldFRead( fp, _zECyl3DFRead, &prm );
+  zFieldFScan( fp, _zECyl3DFScan, &prm );
   return zECyl3DCreate( cyl, &prm.c[0], &prm.c[1], prm.r[0], prm.r[1], &prm.ref, prm.div );
 }
 
-/* zECyl3DFWrite
- * - output of 3D elliptic cylinder.
- */
-void zECyl3DFWrite(FILE *fp, zECyl3D *cyl)
+/* print a 3D elliptic cylinder out to a file. */
+void zECyl3DFPrint(FILE *fp, zECyl3D *cyl)
 {
   fprintf( fp, "center: " );
-  zVec3DFWrite( fp, zECyl3DCenter(cyl,0) );
+  zVec3DFPrint( fp, zECyl3DCenter(cyl,0) );
   fprintf( fp, "center: " );
-  zVec3DFWrite( fp, zECyl3DCenter(cyl,1) );
+  zVec3DFPrint( fp, zECyl3DCenter(cyl,1) );
   fprintf( fp, "radius: %.10g\n", zECyl3DRadius(cyl,0) );
   fprintf( fp, "radius: %.10g\n", zECyl3DRadius(cyl,1) );
   fprintf( fp, "ref: " );
-  zVec3DFWrite( fp, zECyl3DRadVec(cyl,0) );
+  zVec3DFPrint( fp, zECyl3DRadVec(cyl,0) );
   fprintf( fp, "div: %d\n", zECyl3DDiv(cyl) );
 }
 
@@ -382,10 +348,10 @@ static void _zPrim3DBaryInertiaECyl(void *prim, zVec3D *c, zMat3D *i){
   zECyl3DInertia( prim, i ); }
 static zPH3D *_zPrim3DToPHECyl(void *prim, zPH3D *ph){
   return zECyl3DToPH( prim, ph ); }
-static void *_zPrim3DFReadECyl(FILE *fp, void *prim){
-  return zECyl3DFRead( fp, prim ); }
-static void _zPrim3DFWriteECyl(FILE *fp, void *prim){
-  return zECyl3DFWrite( fp, prim ); }
+static void *_zPrim3DFScanECyl(FILE *fp, void *prim){
+  return zECyl3DFScan( fp, prim ); }
+static void _zPrim3DFPrintECyl(FILE *fp, void *prim){
+  return zECyl3DFPrint( fp, prim ); }
 
 zPrimCom zprim_ecyl3d_com = {
   _zPrim3DInitECyl,
@@ -402,6 +368,6 @@ zPrimCom zprim_ecyl3d_com = {
   _zPrim3DInertiaECyl,
   _zPrim3DBaryInertiaECyl,
   _zPrim3DToPHECyl,
-  _zPrim3DFReadECyl,
-  _zPrim3DFWriteECyl,
+  _zPrim3DFScanECyl,
+  _zPrim3DFPrintECyl,
 };

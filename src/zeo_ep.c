@@ -267,9 +267,9 @@ zMat3D *zMat3DInterDiv(zMat3D *m1, zMat3D *m2, double t, zMat3D *m)
   return zMat3DFromEP( m, &ep );
 }
 
-/* output Euler parameter to file. */
-void zEPFWrite(FILE *fp, zEP *ep)
+/* print Euler parameter out to a file. */
+void zEPFPrint(FILE *fp, zEP *ep)
 {
   fprintf( fp, "%f ", ep->ex.w );
-  zVec3DFWrite( fp, &ep->ex.v );
+  zVec3DFPrint( fp, &ep->ex.v );
 }

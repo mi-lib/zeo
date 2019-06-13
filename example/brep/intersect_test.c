@@ -64,12 +64,12 @@ void output(zPH3D *a, zPH3D *b, zPH3D *sa, zPH3D *sb, zPH3D *c)
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
-  zPH3DFWrite( fp, a );
+  zPH3DFPrint( fp, a );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
-  zPH3DFWrite( fp, b );
+  zPH3DFPrint( fp, b );
   fclose( fp );
 
   fp = fopen( "cut.ztk", "w" );
@@ -79,12 +79,12 @@ void output(zPH3D *a, zPH3D *b, zPH3D *sa, zPH3D *sb, zPH3D *c)
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
-  zPH3DFWrite( fp, sa );
+  zPH3DFPrint( fp, sa );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
-  zPH3DFWrite( fp, sb );
+  zPH3DFPrint( fp, sb );
   fclose( fp );
 
   fp = fopen( "mrg.ztk", "w" );
@@ -93,7 +93,7 @@ void output(zPH3D *a, zPH3D *b, zPH3D *sa, zPH3D *sb, zPH3D *c)
   fprintf( fp, "name: c\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: yellow\n" );
-  zPH3DFWrite( fp, c );
+  zPH3DFPrint( fp, c );
   fclose( fp );
 }
 

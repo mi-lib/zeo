@@ -115,14 +115,14 @@ __EXPORT void zTerraZRange(zTerra *terra, double *zmin, double *zmax);
 /*! \brief estimate z-value at a given horizontal place of an elevation map. */
 __EXPORT double zTerraZ(zTerra *terra, double x, double y);
 
-/*! \brief input an elevation map from a file. */
-__EXPORT zTerra *zTerraFRead(FILE *fp, zTerra *terra);
+/*! \brief scan an elevation map from a file. */
+__EXPORT zTerra *zTerraFScan(FILE *fp, zTerra *terra);
 
-/*! \brief output an elevation map to a file. */
-__EXPORT void zTerraFWrite(FILE *fp, zTerra *terra);
+/*! \brief print an elevation map out to a file. */
+__EXPORT void zTerraFPrint(FILE *fp, zTerra *terra);
 
-/*! \brief output an elevation map to a file in a plot-friendly format. */
-__EXPORT void zTerraDataFWrite(FILE *fp, zTerra *terra);
+/*! \brief print an elevation map out to a file in a plot-friendly format. */
+__EXPORT void zTerraDataFPrint(FILE *fp, zTerra *terra);
 
 __END_DECLS
 

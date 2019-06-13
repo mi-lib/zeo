@@ -53,7 +53,7 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: red\n" );
   zAABox3DToBox3D( b, &box );
-  zBox3DFWrite( fp, &box );
+  zBox3DFPrint( fp, &box );
 
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: plane\n" );
@@ -67,10 +67,10 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
   zVec3DCatDRC( &v[2],-1.0, &sv2 );
   zVec3DCat( zPlane3DVert(p),-1.0, &sv1, &v[3] );
   zVec3DCatDRC( &v[3], 1.0, &sv2 );
-  fprintf( fp, "vert 0: " ); zVec3DDataNLFWrite( fp, &v[0] );
-  fprintf( fp, "vert 1: " ); zVec3DDataNLFWrite( fp, &v[1] );
-  fprintf( fp, "vert 2: " ); zVec3DDataNLFWrite( fp, &v[2] );
-  fprintf( fp, "vert 3: " ); zVec3DDataNLFWrite( fp, &v[3] );
+  fprintf( fp, "vert 0: " ); zVec3DDataNLFPrint( fp, &v[0] );
+  fprintf( fp, "vert 1: " ); zVec3DDataNLFPrint( fp, &v[1] );
+  fprintf( fp, "vert 2: " ); zVec3DDataNLFPrint( fp, &v[2] );
+  fprintf( fp, "vert 3: " ); zVec3DDataNLFPrint( fp, &v[3] );
   fprintf( fp, "face 0 1 2\n" );
   fprintf( fp, "face 0 2 3\n" );
 
@@ -80,7 +80,7 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
     fprintf( fp, "type: sphere\n" );
     fprintf( fp, "optic: blue\n" );
     fprintf( fp, "center: " );
-    zVec3DDataNLFWrite( fp, &ip[i] );
+    zVec3DDataNLFPrint( fp, &ip[i] );
     fprintf( fp, "radius: 0.01\n" );
   }
   fclose( fp );

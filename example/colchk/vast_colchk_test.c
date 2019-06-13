@@ -14,13 +14,13 @@ void output_ph(FILE *fp, zPH3D *ph, int i)
   sprintf( name, "color%d", i );
   zOpticalInfoCreateSimple( &oi, zRandF(0.3,1), zRandF(0.3,1),zRandF(0.3,1), name );
   fprintf( fp, "[optic]\n" );
-  zOpticalInfoFWrite( fp, &oi );
+  zOpticalInfoFPrint( fp, &oi );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: shape%d\n", i );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "BB: AABB\n" );
   fprintf( fp, "optic: color%d\n", i );
-  zPH3DFWrite( fp, ph );
+  zPH3DFPrint( fp, ph );
   zOpticalInfoDestroy( &oi );
 }
 

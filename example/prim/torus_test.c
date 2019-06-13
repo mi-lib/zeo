@@ -15,7 +15,7 @@ void output(zPH3D *ph)
   printf( "name: prism\n" );
   printf( "type: polyhedron\n" );
   printf( "optic: white\n" );
-  zPH3DWrite( ph );
+  zPH3DPrint( ph );
 }
 
 #define DIV 100

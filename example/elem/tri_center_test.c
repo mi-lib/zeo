@@ -21,26 +21,26 @@ int main(void)
   zEdge3DCreate( &e[2], &v[0], &v[1] );
 
   printf( "<triangle>\n" );
-  zVec3DWrite( &v[0] );
-  zVec3DWrite( &v[1] );
-  zVec3DWrite( &v[2] );
+  zVec3DPrint( &v[0] );
+  zVec3DPrint( &v[1] );
+  zVec3DPrint( &v[2] );
 
   /* circumcenter */
   zTri3DCircumcenter( &t, &c );
   printf( "<circumcenter>\n" );
-  zVec3DWrite( &c );
+  zVec3DPrint( &c );
   printf( "%f=%f=%f\n", zVec3DDist(&v[0],&c), zVec3DDist(&v[1],&c), zVec3DDist(&v[2],&c) );
 
   /* incenter */
   zTri3DIncenter( &t, &c );
   printf( "<incenter>\n" );
-  zVec3DWrite( &c );
+  zVec3DPrint( &c );
   printf( "%f=%f=%f\n", zEdge3DPointDist(&e[0],&c), zEdge3DPointDist(&e[1],&c), zEdge3DPointDist(&e[2],&c) );
 
   /* orthocenter */
   zTri3DOrthocenter( &t, &c );
   printf( "<orthocenter>\n" );
-  zVec3DWrite( &c );
+  zVec3DPrint( &c );
   zVec3DSub( &v[0], &c, &h );
   printf( "%f\n", zVec3DInnerProd( &h, zEdge3DVec(&e[0]) ) );
   zVec3DSub( &v[1], &c, &h );

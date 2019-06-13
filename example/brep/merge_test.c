@@ -8,7 +8,7 @@ void test_ph(zPH3D *a)
   FILE *fp;
 
   fp = fopen( "../model/octahedron.zph", "rt" );
-  zPH3DFRead( fp, a );
+  zPH3DFScan( fp, a );
   fclose( fp );
 }
 
@@ -36,12 +36,12 @@ void output(zPH3D *a, zPH3D *b, zPH3D *c)
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
-  zPH3DFWrite( fp, a );
+  zPH3DFPrint( fp, a );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
-  zPH3DFWrite( fp, b );
+  zPH3DFPrint( fp, b );
   fclose( fp );
 
   fp = fopen( "mrg.z3d", "w" );
@@ -56,7 +56,7 @@ void output(zPH3D *a, zPH3D *b, zPH3D *c)
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
-  zPH3DFWrite( fp, c );
+  zPH3DFPrint( fp, c );
   fclose( fp );
 }
 
@@ -70,14 +70,14 @@ int main(int argc, char *argv[])
   /* original octahedra */
   test_ph( &oct );
 
-  zVec3DCopy( Z_UNITZVEC3D, &n );
-  zPlane3DCreate( &pl, Z_ZEROVEC3D, &n );
+  zVec3DCopy( ZVEC3DZ, &n );
+  zPlane3DCreate( &pl, ZVEC3DZERO, &n );
   zPH3D2BREP( &oct, &ba );
   zBREPTrunc( &ba, &pl );
   zBREP2PH3D( &ba, &a );
 
   zVec3DRevDRC( &n );
-  zPlane3DCreate( &pl, Z_ZEROVEC3D, &n );
+  zPlane3DCreate( &pl, ZVEC3DZERO, &n );
   zPH3D2BREP( &oct, &bb );
   zBREPTrunc( &bb, &pl );
   zBREP2PH3D( &bb, &b );

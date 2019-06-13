@@ -16,23 +16,23 @@ int main(void)
 
   zListInit( &tlist );
   zTri3DCreate( &t, &v[0], &v[1], &v[2] );
-  zTri3DListInsert( &tlist, &t, true );
+  zTri3DListInsert( &tlist, &t );
   zTri3DCreate( &t, &v[2], &v[3], &v[1] );
-  zTri3DListInsert( &tlist, &t, true );
+  zTri3DListInsert( &tlist, &t );
   zTri3DCreate( &t, &v[2], &v[3], &v[5] );
-  zTri3DListInsert( &tlist, &t, true );
+  zTri3DListInsert( &tlist, &t );
   zTri3DCreate( &t, &v[2], &v[4], &v[5] );
-  zTri3DListInsert( &tlist, &t, true );
+  zTri3DListInsert( &tlist, &t );
 
   printf( ">>normal vectors\n" );
   zListForEach( &tlist, tp )
-    zTri3DWrite( tp->data );
+    zTri3DPrint( &tp->data );
 
-  zTri3DListAlign( &tlist, Z_UNITZVEC3D );
+  zTri3DListAlign( &tlist, ZVEC3DZ );
   printf( ">>normal vectors (after aligned)\n" );
   zListForEach( &tlist, tp )
-    zTri3DWrite( tp->data );
+    zTri3DPrint( &tp->data );
 
-  zTri3DListDestroy( &tlist, true );
+  zTri3DListDestroy( &tlist );
   return 0;
 }

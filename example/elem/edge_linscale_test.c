@@ -4,12 +4,12 @@ void assertion(zEdge3D *e, zVec3D *cp, double l0, double l1, double dist)
 {
   zVec3D p;
 
-  printf( "cp: " ); zVec3DWrite( cp );
+  printf( "cp: " ); zVec3DPrint( cp );
   printf( "(l0:l1)=(%g:%g), ||p-cp|| = %g\n", l0, l1, dist );
   zVec3DMul( zEdge3DVert(e,0), l0, &p );
   zVec3DCatDRC( &p, l1, zEdge3DVert(e,1) );
   printf( "+assertion+\n" );
-  printf( "cp: " ); zVec3DWrite( &p );
+  printf( "cp: " ); zVec3DPrint( &p );
 }
 
 int main(void)
@@ -27,9 +27,9 @@ int main(void)
 /*
   zVec3DCreate( &p, 2+0.1*zTOL, 0, 0 );
 */
-  printf( "v0: " ); zVec3DWrite( &v0 );
-  printf( "v1: " ); zVec3DWrite( &v1 );
-  printf( "p : " ); zVec3DWrite( &p  );
+  printf( "v0: " ); zVec3DPrint( &v0 );
+  printf( "v1: " ); zVec3DPrint( &v1 );
+  printf( "p : " ); zVec3DPrint( &p  );
   r = zEdge3DLinScale( &e, &p, &l0, &l1, &cp );
   assertion( &e, &cp, l0, l1, r );
   return 0;

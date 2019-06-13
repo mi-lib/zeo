@@ -675,31 +675,31 @@ __EXPORT void zMat3DSymEig(zMat3D *m, double eval[], zVec3D evec[]);
 /* I/O
  * ********************************************************** */
 
-/*! \brief input and output of a 3x3 matrix.
+/*! \brief scan and print a 3x3 matrix.
  *
- * zMat3DFRead() reads nine values from the current position of a file
+ * zMat3DFScan() scans nine values from the current position of a file
  * \a fp and creates a 3x3 matrix \a m from them.
- * zMat3DRead() reads nine values from the standard input.
+ * zMat3DScan() scans nine values from the standard input.
  *
- * zMat3DFWrite() outputs a 3x3 matrix \a m to the current position of
+ * zMat3DFPrint() prints a 3x3 matrix \a m out to the current position of
  * a file \a fp in the following format.
  *  {
  *   a11, a12, a13
  *   a21, a22, a23
  *   a31, a32, a33
  *  }
- * When the null pointer is given, it outputs the following string.
+ * When the null pointer is given, the following string is printed.
  *  (null 3x3 matrix)
- * zMat3DWrite() outputs a 3x3 matrix \a m to the standard output.
+ * zMat3DPrint() prints a 3x3 matrix \a m out to the standard output.
  * \return
- * zMat3DFRead() and zMat3DRead() return a pointer \a m.
+ * zMat3DFScan() and zMat3DScan() return a pointer \a m.
  *
- * zMat3DFWrite() and zMat3DWrite() return no value.
+ * zMat3DFPrint() and zMat3DPrint() return no value.
  */
-__EXPORT zMat3D *zMat3DFRead(FILE *fp, zMat3D *m);
-#define zMat3DRead(m) zMat3DFRead( stdin, (m) )
-__EXPORT void zMat3DFWrite(FILE *fp, zMat3D *m);
-#define zMat3DWrite(m) zMat3DFWrite( stdout, (m) )
+__EXPORT zMat3D *zMat3DFScan(FILE *fp, zMat3D *m);
+#define zMat3DScan(m) zMat3DFScan( stdin, (m) )
+__EXPORT void zMat3DFPrint(FILE *fp, zMat3D *m);
+#define zMat3DPrint(m) zMat3DFPrint( stdout, (m) )
 
 __END_DECLS
 

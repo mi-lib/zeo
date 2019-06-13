@@ -168,11 +168,11 @@ __EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
 
 #define ZSHAPE_TAG "shape"
 
-/*! \brief input and output of a 3D shape.
+/*! \brief scan and print a 3D shape.
  *
- * zShape3DFRead() reads the information of a 3D shape from
- * the current position of the file \a fp and creates the new
- * shape \a shape. An acceptable data file format is as follows.
+ * zShape3DFScan() scans information of a 3D shape from the
+ * current position of a file \a fp and creates a new shape
+ * \a shape. An acceptable data file format is as follows.
  *
  *  name : <name>
  *  optic : <optical info>
@@ -181,10 +181,10 @@ __EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
  *
  * Since all types of shapes are internally stored as polyhedra,
  * the data description is followed by that of polyhedron.
- * Each bracketed must be substituted for a string.
- * <name> is the identifier of the shape. one can define
+ * The bracketed parts must be replaced by real numbers.
+ * <name> is the identifier of the shape. One can define
  * arbitrary name which does not involve any white spaces
- * or tab charactors within.
+ * or tab charactors.
  *
  * The shapes defined in advance might be referred by
  * others by mirror key. The candidates should be pointed
@@ -193,25 +193,24 @@ __EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
  * The candidates of optical information set has to be
  * prepared in \a oarray. \a no is the size of \a oarray.
  *
- * zShape3DRead() reads the information of a shape from
- * the standard input.
+ * zShape3DScan() scans information of a shape from the
+ * standard input.
  *
- * zShape3DFWrite() writes the information of \a shape to
- * the current position of the file \a fp in the same format
+ * zShape3DFPrint() prints information of \a shape out to
+ * the current position of a file \a fp in the same format
  * with the above.
  *
- * zShape3DRead() writes the information of \a shape to
- * the standard input.
+ * zShape3DPrint() prints information of \a shape out to
+ * the standard output.
  * \return
- * zShape3DFRead() and zShape3DRead() return a pointer to
- * \a shape.
- * zShape3DFWrite() and zShape3DWrite() return no value.
+ * zShape3DFScan() and zShape3DScan() return a pointer \a shape.
+ * zShape3DFPrint() and zShape3DPrint() return no value.
  */
-__EXPORT zShape3D *zShape3DFRead(FILE *fp, zShape3D *shape, zShape3D *sarray, int ns, zOpticalInfo *oarray, int no);
-#define zShape3DRead(s,sa,ns,oa,no) \
-  zShape3DFRead( stdin, (s), (sa), (ns), (oa), (no) )
-__EXPORT void zShape3DFWrite(FILE *fp, zShape3D *shape);
-#define zShape3DWrite(s) zShape3DFWrite( stdout, (s) )
+__EXPORT zShape3D *zShape3DFScan(FILE *fp, zShape3D *shape, zShape3D *sarray, int ns, zOpticalInfo *oarray, int no);
+#define zShape3DScan(s,sa,ns,oa,no) \
+  zShape3DFScan( stdin, (s), (sa), (ns), (oa), (no) )
+__EXPORT void zShape3DFPrint(FILE *fp, zShape3D *shape);
+#define zShape3DPrint(s) zShape3DFPrint( stdout, (s) )
 
 __END_DECLS
 

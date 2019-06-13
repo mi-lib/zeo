@@ -129,37 +129,37 @@ __EXPORT zPH3D *zSphere3DToPH(zSphere3D *sphere, zPH3D *ph);
  */
 __EXPORT zSphere3D *zSphere3DFit(zSphere3D *s, zVec3DList *pc);
 
-/*! \brief input/output a 3D sphere.
+/*! \brief scan and print a 3D sphere.
  *
- * zSphere3DFRead() reads the information of a 3D sphere from the
- * current position of the file \a fp and creates the new sphere
+ * zSphere3DFScan() scans information of a 3D sphere from the
+ * current position of a file \a fp and creates the new sphere
  * \a sphere. An acceptable data file format is as follows.
  *
  *  center: <x> <y> <z>
  *  radius: <r>
  *  div: <div>
  *
- * Each bracketed value must be substituted for a real number.
+ * The bracketed parts must be replaced by real numbers.
  * The field div is skippable.
  *
- * zSphere3DRead() reads the information for \a sphere from the
+ * zSphere3DScan() scans information for \a sphere from the
  * standard input.
  *
- * zSphere3DFWrite() writes the information of \a sphere to the
- * current position of the file \a fp in the same format with the
+ * zSphere3DFPrint() prints information of \a sphere out to the
+ * current position of a file \a fp in the same format with the
  * above.
  *
- * zSphere3DWrite() writes the information of \a sphere to the
+ * zSphere3DPrint() prints information of \a sphere out to the
  * standard output.
  * \return
- * zSphere3DFRead() and zSphere3DRead() return a pointer \a sphere.
+ * zSphere3DFScan() and zSphere3DScan() return a pointer \a sphere.
  *
- * Neither zSphere3DFWrite() nor zSphere3DWrite() returns any values.
+ * Neither zSphere3DFPrint() nor zSphere3DPrint() return any values.
  */
-__EXPORT zSphere3D *zSphere3DFRead(FILE *fp, zSphere3D *sphere);
-#define zSphere3DRead(s) zSphere3DFRead( stdin, (s) )
-__EXPORT void zSphere3DFWrite(FILE *fp, zSphere3D *sphere);
-#define zSphere3DWrite(s) zSphere3DFWrite( stdout, (s) )
+__EXPORT zSphere3D *zSphere3DFScan(FILE *fp, zSphere3D *sphere);
+#define zSphere3DScan(s) zSphere3DFScan( stdin, (s) )
+__EXPORT void zSphere3DFPrint(FILE *fp, zSphere3D *sphere);
+#define zSphere3DPrint(s) zSphere3DFPrint( stdout, (s) )
 
 /* methods for abstraction */
 extern zPrimCom zprim_sphere3d_com;

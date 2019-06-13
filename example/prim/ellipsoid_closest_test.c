@@ -28,14 +28,14 @@ void output_prox(FILE *fp, zVec3D *p, zVec3D *cp)
   fprintf( fp, "name: point\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: blue\n" );
-  fprintf( fp, "center: " ); zVec3DDataNLFWrite( fp, p );
+  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, p );
   fprintf( fp, "radius: 0.02\n\n" );
 
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: closestpoint\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: red\n" );
-  fprintf( fp, "center: " ); zVec3DDataNLFWrite( fp, cp );
+  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, cp );
   fprintf( fp, "radius: 0.02\n\n" );
 
   if( zIsTiny( zVec3DDist( p, cp ) ) ) return;
@@ -43,15 +43,17 @@ void output_prox(FILE *fp, zVec3D *p, zVec3D *cp)
   fprintf( fp, "name: tether\n" );
   fprintf( fp, "type: cylinder\n" );
   fprintf( fp, "optic: gray\n" );
-  fprintf( fp, "center: " ); zVec3DDataNLFWrite( fp, p );
-  fprintf( fp, "center: " ); zVec3DDataNLFWrite( fp, cp );
+  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, p );
+  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, cp );
   fprintf( fp, "radius: 0.005\n\n" );
 }
 
 void output(zEllips3D *el, zVec3D *p, zVec3D *cp)
 {
   FILE *fp;
+#if 0
   zPH3D ph;
+#endif
 
   fp = fopen( "ellipsoid.z3d", "w" );
   output_prox( fp, p, cp );
@@ -62,12 +64,12 @@ void output(zEllips3D *el, zVec3D *p, zVec3D *cp)
   zEllips3DToPH( el, &ph );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: gray\n" );
-  zPH3DFWrite( fp, &ph );
+  zPH3DFPrint( fp, &ph );
   zPH3DDestroy( &ph );
 #else
   fprintf( fp, "type: ellipsoid\n" );
   fprintf( fp, "optic: gray\n" );
-  zEllips3DFWrite( fp, el );
+  zEllips3DFPrint( fp, el );
 #endif
 
   fclose( fp );

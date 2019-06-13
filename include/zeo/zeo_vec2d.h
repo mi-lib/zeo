@@ -236,37 +236,37 @@ __EXPORT double *zVec2DRot(zVec2D v, double angle, zVec2D rv);
 
 /*! \brief input and output of a 2D vector.
  *
- * zVec2DFRead() reads two values from the current position of the file
- * \a fp and creates a 2D vector \a v from them.
- * zVec2DRead() reads two values from the standard input.
+ * zVec2DFScan() scans two values from the current position of
+ * a file \a fp and creates a 2D vector \a v from them.
+ * zVec2DScan() scans two values from the standard input.
  *
- * zVec2DFWrite() outputs a 2D vector \a v to the current position of
- * the file \a fp in the following style.
+ * zVec2DFPrint() prints a 2D vector \a v out to the current position
+ * of a file \a fp in the following style.
  *  ( x, y )
- * When the null pointer is given, it outputs the following string.
+ * When the null pointer is given, the following string is printed.
  *  (null 2D vector)
- * zVec2DWrite() outputs \a v to the standard output.
+ * zVec2DPrint() prints \a v out to the standard output.
  *
- * zVec2DDataFWrite() outputs a 2D vector \a v to the current position
- * of the file \a fp in the following style.
+ * zVec2DDataFPrint() prints a 2D vector \a v out to the current
+ * position of a file \a fp in the following style.
  *  x y
- * When the null pointer is given, it outputs nothing.
- * zVec2DDataWrite() outputs \a v to the standard output in the same
- * style with zVec2DDataFWrite().
+ * When the null pointer is given, nothing is printed.
+ * zVec2DDataPrint() prints \a v out to the standard output in the
+ * same style with zVec2DDataFPrint().
  * \return
- * zVec2DFRead() and zVec2DRead() return a pointer \a v.
+ * zVec2DFScan() and zVec2DScan() return a pointer \a v.
  *
- * zVec2DFWrite(), zVec2DWrite(), zVec2DDataFWrite() and zVec2DDataWrite()
+ * zVec2DFPrint(), zVec2DPrint(), zVec2DDataFPrint() and zVec2DDataPrint()
  * return no value.
  */
-__EXPORT double *zVec2DFRead(FILE *fp, zVec2D v);
-#define zVec2DRead(v) zVec2DFRead( stdin, (v) )
-__EXPORT void zVec2DDataFWrite(FILE *fp, zVec2D v);
-#define zVec2DDataWrite(v) zVec2DDataFWrite( stdout, (v) )
-__EXPORT void zVec2DDataNLFWrite(FILE *fp, zVec2D v);
-#define zVec2DDataNLWrite(v) zVec2DDataNLFWrite( stdout, (v) )
-__EXPORT void zVec2DFWrite(FILE *fp, zVec2D v);
-#define zVec2DWrite(v) zVec2DFWrite( stdout, (v) )
+__EXPORT double *zVec2DFScan(FILE *fp, zVec2D v);
+#define zVec2DScan(v) zVec2DFScan( stdin, (v) )
+__EXPORT void zVec2DDataFPrint(FILE *fp, zVec2D v);
+#define zVec2DDataPrint(v) zVec2DDataFPrint( stdout, (v) )
+__EXPORT void zVec2DDataNLFPrint(FILE *fp, zVec2D v);
+#define zVec2DDataNLPrint(v) zVec2DDataNLFPrint( stdout, (v) )
+__EXPORT void zVec2DFPrint(FILE *fp, zVec2D v);
+#define zVec2DPrint(v) zVec2DFPrint( stdout, (v) )
 
 __END_DECLS
 

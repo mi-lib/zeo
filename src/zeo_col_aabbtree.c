@@ -11,20 +11,16 @@ static zAABoxTree3D *_zAABoxTree3DNodeCreate(zAABox3D *box);
 static void _zAABoxTree3DSetBranch(zAABoxTree3D *node, zAABoxTree3D *b1, zAABoxTree3D *b2);
 
 static bool _zAABoxTree3DAdd(zAABoxTree3D *tree, zAABoxTree3D *parent, int bidx, zAABox3D *box);
-static void _zAABoxTree3DFWrite(FILE *fp, zAABoxTree3D *tree, int indent);
+static void _zAABoxTree3DFPrint(FILE *fp, zAABoxTree3D *tree, int indent);
 
-/* zAABoxTree3DInit
- * - initialize an AABB tree.
- */
+/* initialize an AABB tree. */
 void zAABoxTree3DInit(zAABoxTree3D *node)
 {
   zAABox3DInit( &node->box );
   node->bp[0] = node->bp[1] = NULL;
 }
 
-/* zAABoxTree3DDestroy
- * - destroy an AABB tree.
- */
+/* destroy an AABB tree. */
 void zAABoxTree3DDestroy(zAABoxTree3D *tree)
 {
   if( tree->bp[0] ){
@@ -38,18 +34,14 @@ void zAABoxTree3DDestroy(zAABoxTree3D *tree)
 }
 
 /* (static)
- * _zAABoxTree3DIsLeaf
- * - check if the given node of an AABB tree is a leaf.
- */
+ * check if the given node of an AABB tree is a leaf. */
 bool _zAABoxTree3DIsLeaf(zAABoxTree3D *node)
 {
   return node->bp[0] == NULL && node->bp[1] == NULL ? true : false;
 }
 
 /* (static)
- * _zAABoxTree3DNodeCreate
- * - create a node of an AABB tree from a given axis-aligned box.
- */
+ * create a node of an AABB tree from a given axis-aligned box. */
 zAABoxTree3D *_zAABoxTree3DNodeCreate(zAABox3D *box)
 {
   zAABoxTree3D *node;
@@ -64,9 +56,7 @@ zAABoxTree3D *_zAABoxTree3DNodeCreate(zAABox3D *box)
 }
 
 /* (static)
- * _zAABoxTree3DSetBranch
- * - set branches of a node of an AABB tree for given two nodes.
- */
+ * set branches of a node of an AABB tree for given two nodes. */
 void _zAABoxTree3DSetBranch(zAABoxTree3D *node, zAABoxTree3D *b1, zAABoxTree3D *b2)
 {
   node->bp[0] = b1;
@@ -75,9 +65,7 @@ void _zAABoxTree3DSetBranch(zAABoxTree3D *node, zAABoxTree3D *b1, zAABoxTree3D *
 }
 
 /* (static)
- * _zAABoxTree3DAdd
- * - add an axis-aligned box to an AABB tree (internal operation).
- */
+ * add an axis-aligned box to an AABB tree (internal operation). */
 bool _zAABoxTree3DAdd(zAABoxTree3D *tree, zAABoxTree3D *parent, int bidx, zAABox3D *box)
 {
   zAABoxTree3D *node;
@@ -114,40 +102,34 @@ bool _zAABoxTree3DAdd(zAABoxTree3D *tree, zAABoxTree3D *parent, int bidx, zAABox
   return true;
 }
 
-/* zAABoxTree3DAdd
- * - add an axis-aligned box to an AABB tree.
- */
+/* add an axis-aligned box to an AABB tree. */
 bool zAABoxTree3DAdd(zAABoxTree3D *tree, zAABox3D *box)
 {
   return _zAABoxTree3DAdd( tree->bp[0], tree, 0, box );
 }
 
 /* (static)
- * _zAABoxTree3DFWrite
- * - output an AABB tree to a file (internal operation).
- */
-void _zAABoxTree3DFWrite(FILE *fp, zAABoxTree3D *tree, int indent)
+ * print an AABB tree out to a file (internal operation). */
+void _zAABoxTree3DFPrint(FILE *fp, zAABoxTree3D *tree, int indent)
 {
   zIndentF( fp, indent );
-  fprintf( fp, "min: " ); zVec3DFWrite( fp, &tree->box.pmin );
+  fprintf( fp, "min: " ); zVec3DFPrint( fp, &tree->box.pmin );
   zIndentF( fp, indent );
-  fprintf( fp, "max: " ); zVec3DFWrite( fp, &tree->box.pmax );
+  fprintf( fp, "max: " ); zVec3DFPrint( fp, &tree->box.pmax );
   if( tree->bp[0] ){
     zIndentF( fp, indent+2 );
     fprintf( fp, "[branch0]\n" );
-    _zAABoxTree3DFWrite( fp, tree->bp[0], indent+2 );
+    _zAABoxTree3DFPrint( fp, tree->bp[0], indent+2 );
   }
   if( tree->bp[1] ){
     zIndentF( fp, indent+2 );
     fprintf( fp, "[branch1]\n" );
-    _zAABoxTree3DFWrite( fp, tree->bp[1], indent+2 );
+    _zAABoxTree3DFPrint( fp, tree->bp[1], indent+2 );
   }
 }
 
-/* zAABoxTree3DFWrite
- * - output an AABB tree to a file.
- */
-void zAABoxTree3DFWrite(FILE *fp, zAABoxTree3D *tree)
+/* print an AABB tree out to a file. */
+void zAABoxTree3DFPrint(FILE *fp, zAABoxTree3D *tree)
 {
-  _zAABoxTree3DFWrite( fp, tree, 0 );
+  _zAABoxTree3DFPrint( fp, tree, 0 );
 }

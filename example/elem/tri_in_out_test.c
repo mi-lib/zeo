@@ -16,7 +16,7 @@ int main(void)
 #endif
   zTri3DCreate( &t, &v[0], &v[1], &v[2] );
   printf( "<polygon>\n" );
-  zTri3DWrite( &t );
+  zTri3DPrint( &t );
 
 #if 1
   zVec3DCreate( &p, -2, 0, 0 );
@@ -25,7 +25,7 @@ int main(void)
 #endif
 
   printf( "\n+++ the nearest point detection test (polygon) +++\n" );
-  printf( "point -> " ); zVec3DWrite( &p );
+  printf( "point -> " ); zVec3DPrint( &p );
   printf( " (%s when accepting the rim)\n", zTri3DPointIsInside(&t,&p,true) ? "inside" : "outside" );
   printf( " (%s when unaccepting the rim)\n", zTri3DPointIsInside(&t,&p,false) ? "inside" : "outside" );
   return 0;

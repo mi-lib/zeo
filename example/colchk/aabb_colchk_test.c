@@ -27,12 +27,12 @@ void box_output(zAABox3D *b1, zAABox3D *b2)
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: blue\n" );
-  zBox3DFWrite( fp, &box1 );
+  zBox3DFPrint( fp, &box1 );
   fprintf( fp, "\n[shape]\n" );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: red\n" );
-  zBox3DFWrite( fp, &box2 );
+  zBox3DFPrint( fp, &box2 );
   fclose( fp );
 }
 

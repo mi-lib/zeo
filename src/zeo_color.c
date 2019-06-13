@@ -18,9 +18,7 @@ static zRGB *_zRGBHex(zRGB *rgb, char *hex);
 /* RGB sets for black and white */
 const zRGB zrgbblack = { 0.0, 0.0, 0.0 }, zrgbwhite = { 1.0, 1.0, 1.0 };
 
-/* zRGBSet
- * - set RGB parameters.
- */
+/* set RGB parameters. */
 zRGB *zRGBSet(zRGB *rgb, float red, float green, float blue)
 {
   rgb->r = zLimit( red,   0, 1 );
@@ -29,17 +27,13 @@ zRGB *zRGBSet(zRGB *rgb, float red, float green, float blue)
   return rgb;
 }
 
-/* zRGBMul
- * - multiply a set of RGB parameters by another.
- */
+/* multiply a set of RGB parameters by another. */
 zRGB *zRGBMul(zRGB *rgb1, zRGB *rgb2, zRGB *rgb)
 {
   return zRGBSet( rgb, rgb1->r*rgb2->r, rgb1->g*rgb2->g, rgb1->b*rgb2->b );
 }
 
-/* zRGBBlend
- * - blend a pair of RGB parameters at a given ratio.
- */
+/* blend a pair of RGB parameters at a given ratio. */
 zRGB *zRGBBlend(zRGB *rgb1, zRGB *rgb2, double ratio, zRGB *rgb)
 {
   double rn;
@@ -52,9 +46,7 @@ zRGB *zRGBBlend(zRGB *rgb1, zRGB *rgb2, double ratio, zRGB *rgb)
 }
 
 /* (static)
- * _zRGBRatio
- * - decode a string of sequential floating-point values to RGB.
- */
+ * decode a string of sequential floating-point values to RGB. */
 zRGB *_zRGBRatio(zRGB *rgb, char *ratio)
 {
   float r, g, b;
@@ -64,9 +56,7 @@ zRGB *_zRGBRatio(zRGB *rgb, char *ratio)
 }
 
 /* (static)
- * _zRGBHex
- * - decode a hexadecimal string to RGB.
- */
+ * decode a hexadecimal string to RGB. */
 zRGB *_zRGBHex(zRGB *rgb, char *hex)
 {
   int len, i;
@@ -85,18 +75,14 @@ zRGB *_zRGBHex(zRGB *rgb, char *hex)
   return zRGBSet( rgb, (float)r/d, (float)g/d, (float)b/d );
 }
 
-/* zRGBDec
- * - decode a string to RGB.
- */
+/* decode a string to RGB. */
 zRGB *zRGBDec(zRGB *rgb, char *str)
 {
   return str[0] == '#' ? _zRGBHex( rgb, str+1 ) : _zRGBRatio( rgb, str );
 }
 
-/* zRGBFRead
- * - input RGB parameter set.
- */
-zRGB *zRGBFRead(FILE *fp, zRGB *rgb)
+/* scan a set of RGB parameters from a file. */
+zRGB *zRGBFScan(FILE *fp, zRGB *rgb)
 {
   float r, g, b;
 
@@ -106,10 +92,8 @@ zRGB *zRGBFRead(FILE *fp, zRGB *rgb)
   return zRGBSet( rgb, r, g, b );
 }
 
-/* zRGBFWrite
- * - output RGB parameter set.
- */
-void zRGBFWrite(FILE *fp, zRGB *rgb)
+/* print a set of RGB parameters out to a file. */
+void zRGBFPrint(FILE *fp, zRGB *rgb)
 {
   fprintf( fp, "%.10g:%.10g:%.10g\n", rgb->r, rgb->g, rgb->b );
 }
@@ -119,9 +103,7 @@ void zRGBFWrite(FILE *fp, zRGB *rgb)
  * HSV class - expression of color by hue, saturation and value.
  * ********************************************************** */
 
-/* zRGB2HSV
- * - convert RGB to HSV.
- */
+/* convert RGB to HSV. */
 zHSV *zRGB2HSV(zRGB *rgb, zHSV *hsv)
 {
   float max, min, d, phase, phase0;
@@ -161,9 +143,7 @@ zHSV *zRGB2HSV(zRGB *rgb, zHSV *hsv)
   return hsv;
 }
 
-/* zHSV2RGB
- * - convert HSV to RGB.
- */
+/* convert HSV to RGB. */
 zRGB *zHSV2RGB(zHSV *hsv, zRGB *rgb)
 {
   float h, f, p, q, t;
@@ -187,10 +167,8 @@ zRGB *zHSV2RGB(zHSV *hsv, zRGB *rgb)
   return rgb;
 }
 
-/* zHSVFWrite
- * - output HSV parameter set.
- */
-void zHSVFWrite(FILE *fp, zHSV *hsv)
+/* print a set of HSV parameters out to a file. */
+void zHSVFPrint(FILE *fp, zHSV *hsv)
 {
   fprintf( fp, "%.10g:%.10g:%.10g\n", hsv->hue, hsv->sat, hsv->val );
 }

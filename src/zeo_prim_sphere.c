@@ -11,7 +11,7 @@
  * 3D sphere class
  * ********************************************************** */
 
-static bool _zSphere3DFRead(FILE *fp, void *instance, char *buf, bool *success);
+static bool _zSphere3DFScan(FILE *fp, void *instance, char *buf, bool *success);
 
 /* create a 3D sphere. */
 zSphere3D *zSphere3DCreate(zSphere3D *sphere, zVec3D *c, double r, int div)
@@ -201,11 +201,11 @@ zSphere3D *zSphere3DFit(zSphere3D *s, zVec3DList *pc)
   return s;
 }
 
-/* read information of a 3D sphere from file. */
-bool _zSphere3DFRead(FILE *fp, void *instance, char *buf, bool *success)
+/* scan information of a 3D sphere from a file. */
+bool _zSphere3DFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
   if( strcmp( buf, "center" ) == 0 ){
-    zVec3DFRead( fp, zSphere3DCenter( (zSphere3D *)instance ) );
+    zVec3DFScan( fp, zSphere3DCenter( (zSphere3D *)instance ) );
   } else if( strcmp( buf, "radius" ) == 0 ){
     zSphere3DSetRadius( (zSphere3D *)instance, zFDouble( fp ) );
   } else
@@ -213,19 +213,19 @@ bool _zSphere3DFRead(FILE *fp, void *instance, char *buf, bool *success)
   return true;
 }
 
-/* read information of a 3D sphere from file. */
-zSphere3D *zSphere3DFRead(FILE *fp, zSphere3D *sphere)
+/* scan information of a 3D sphere from a file. */
+zSphere3D *zSphere3DFScan(FILE *fp, zSphere3D *sphere)
 {
   zSphere3DInit( sphere );
-  zFieldFRead( fp, _zSphere3DFRead, sphere );
+  zFieldFScan( fp, _zSphere3DFScan, sphere );
   return sphere;
 }
 
-/* write information of a 3D sphere to file. */
-void zSphere3DFWrite(FILE *fp, zSphere3D *sphere)
+/* print information of a 3D sphere to a file. */
+void zSphere3DFPrint(FILE *fp, zSphere3D *sphere)
 {
   fprintf( fp, "center: " );
-  zVec3DFWrite( fp, zSphere3DCenter( sphere ) );
+  zVec3DFPrint( fp, zSphere3DCenter( sphere ) );
   fprintf( fp, "radius: %.10g\n", zSphere3DRadius( sphere ) );
 }
 
@@ -259,10 +259,10 @@ static void _zPrim3DBaryInertiaSphere(void *prim, zVec3D *c, zMat3D *i){
   zSphere3DInertia( prim, i ); }
 static zPH3D *_zPrim3DToPHSphere(void *prim, zPH3D *ph){
   return zSphere3DToPH( prim, ph ); }
-static void *_zPrim3DFReadSphere(FILE *fp, void *prim){
-  return zSphere3DFRead( fp, prim ); }
-static void _zPrim3DFWriteSphere(FILE *fp, void *prim){
-  return zSphere3DFWrite( fp, prim ); }
+static void *_zPrim3DFScanSphere(FILE *fp, void *prim){
+  return zSphere3DFScan( fp, prim ); }
+static void _zPrim3DFPrintSphere(FILE *fp, void *prim){
+  return zSphere3DFPrint( fp, prim ); }
 
 zPrimCom zprim_sphere3d_com = {
   _zPrim3DInitSphere,
@@ -279,6 +279,6 @@ zPrimCom zprim_sphere3d_com = {
   _zPrim3DInertiaSphere,
   _zPrim3DBaryInertiaSphere,
   _zPrim3DToPHSphere,
-  _zPrim3DFReadSphere,
-  _zPrim3DFWriteSphere,
+  _zPrim3DFScanSphere,
+  _zPrim3DFPrintSphere,
 };

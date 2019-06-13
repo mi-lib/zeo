@@ -27,23 +27,21 @@ zListClass( zShapeList, zShapeListCell, zShape3D* );
   zShapeListCellSetShape( c, NULL );\
 } while(0)
 
-/* METHOD:
- * zShapeListPush, zShapeListPop, zShapeListDestroy
- * - push and pop of shape list.
+/*! \brief push and pop a shape from a list.
  *
- * 'zShapeListPush()' pushes a new shape 'shape' to the
- * shape list 'l'.
- * #
- * 'zShapeListPop()' pops the last shape of 'l'.
- * #
- * 'zShapeListDestroy()' destroys 'l', freeing all cells.
- * [NOTES]
- * When 'l' includes statically-allocated cells,
- * 'zShapeListDestroy()' causes segmentation fault.
- * [RETURN VALUE]
- * 'zShapeListPush()' returns a pointer to the cell pushed.
- * 'zShapeListPop()' returns a pointer to the shape poped.
- * 'zShapeListDestroy()' returns no value.
+ * zShapeListPush() pushes a new shape \a shape to a list of
+ * shapes \a l.
+ *
+ * zShapeListPop() pops the last shape of \a l.
+ *
+ * zShapeListDestroy() destroys a shape list \a l.
+ * \notes
+ * When \a l includes statically-allocated cells,
+ * zShapeListDestroy() violates the memory segmentation.
+ * \return
+ * zShapeListPush() returns a pointer to the pushed cell.
+ * zShapeListPop() returns a pointer to the poped shape.
+ * zShapeListDestroy() returns no value.
  */
 __EXPORT zShapeListCell *zShapeListPush(zShapeList *l, zShape3D *shape);
 __EXPORT zShape3D *zShapeListPop(zShapeList *l);
@@ -54,25 +52,22 @@ __EXPORT zShape3D *zShapeListPop(zShapeList *l);
 __EXPORT zVec3D *zShapeListContigVert(zShapeList *l, zVec3D *p, double *d);
 __EXPORT double zShapeListClosest(zShapeList *l, zVec3D *p, zVec3D *cp);
 
-/* METHOD:
- * zShapeListCellFWrite, zShapeListCellWrite,
- * zShapeListFWrite, zShapeListWrite,
- * - output of shape list.
+/*! \brief print out a shape list.
  *
- * 'zShapeListCellFWrite()' writes out the properties
- * of the shape list cell 'cell' to the current position
- * in the file 'fp'. The format is according to that of zShape3D.
- * #
- * 'zShapeListCellWrite()' writes out the properties of
- * 'cell' simply to the standard output.
- * [RETURN VALUE]
- * Neither 'zShapeListCellFWrite()' nor 'zShapeListCellWrite()'
- * returns any values.
+ * zShapeListCellFPrint() prints out properties of a cell of a
+ * shape list \a cell to the current position of a file \a fp.
+ * The format conforms to that of zShape3D.
+ *
+ * zShapeListCellPrint() prints out properties of \a cell to
+ * the standard output.
+ * \return
+ * Neither zShapeListCellFPrint() nor zShapeListCellPrint()
+ * return any values.
  */
-__EXPORT void zShapeListCellFWrite(FILE *fp, zShapeListCell *cell);
-#define zShapeListCellWrite(c) zShapeListCellFWrite( stdout, (c) )
-__EXPORT void zShapeListFWrite(FILE *fp, zShapeList *list);
-#define zShapeListWrite(l) zShapeListFWrite( stdout, (l) )
+__EXPORT void zShapeListCellFPrint(FILE *fp, zShapeListCell *cell);
+#define zShapeListCellPrint(c) zShapeListCellFPrint( stdout, (c) )
+__EXPORT void zShapeListFPrint(FILE *fp, zShapeList *list);
+#define zShapeListPrint(l) zShapeListFPrint( stdout, (l) )
 
 __END_DECLS
 

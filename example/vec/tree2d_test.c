@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), 0 );
     zVec3DListInsert( &list, &v );
     zVecTree3DAdd( &tree, &v );
-    zVec3DDataNLFWrite( fp, &v );
+    zVec3DDataNLFPrint( fp, &v );
   }
   fclose( fp );
 
@@ -50,23 +50,23 @@ int main(int argc, char *argv[])
   zVec3DCreate( &v, zRandF(-5,5), zRandF(-5,5), 0 );
   fp = fopen( "tst", "w" );
   node = zVecTree3DPart( &tree, &v );
-  zVec3DDataNLFWrite( fp, &v );
+  zVec3DDataNLFPrint( fp, &v );
   fprintf( fp, "\n" );
   output_node( fp, node );
   fclose( fp );
 
   zVecTree3DNN( &tree, &v, &node );
-  printf( "kd-tree: " ); zVec3DWrite( &node->v );
+  printf( "kd-tree: " ); zVec3DPrint( &node->v );
   fp = fopen( "nn", "w" );
-  zVec3DDataNLFWrite( fp, &v );
-  zVec3DDataNLFWrite( fp, &node->v );
+  zVec3DDataNLFPrint( fp, &v );
+  zVec3DDataNLFPrint( fp, &node->v );
   fclose( fp );
   /* for comparison */
   nn = zVec3DListNN( &list, &v, &dmin );
-  printf( "naive  : " ); zVec3DWrite( nn );
+  printf( "naive  : " ); zVec3DPrint( nn );
   fp = fopen( "nnn", "w" );
-  zVec3DDataNLFWrite( fp, &v );
-  zVec3DDataNLFWrite( fp, nn );
+  zVec3DDataNLFPrint( fp, &v );
+  zVec3DDataNLFPrint( fp, nn );
   fclose( fp );
 
   zVec3DListDestroy( &list );

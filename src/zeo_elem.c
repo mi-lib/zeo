@@ -67,13 +67,13 @@ zPlane3D *zPlane3DMean(zPlane3D *pl, zVec3D *pc, zVec3D v[], int n)
   return zPlane3DCreate( pl, pc, &evec[i] );
 }
 
-/* output information of a plane to file. */
-void zPlane3DFWrite(FILE *fp, zPlane3D *p)
+/* print information of a plane to a file. */
+void zPlane3DFPrint(FILE *fp, zPlane3D *p)
 {
   fprintf( fp, "vert: " );
-  zVec3DFWrite( fp, zPlane3DVert(p) );
+  zVec3DFPrint( fp, zPlane3DVert(p) );
   fprintf( fp, "norm: " );
-  zVec3DFWrite( fp, zPlane3DNorm(p) );
+  zVec3DFPrint( fp, zPlane3DNorm(p) );
 }
 
 /* ********************************************************** */
@@ -209,18 +209,18 @@ zVec3D *zEdge3DContigVert(zEdge3D *e, zVec3D *p, double *d)
   }
 }
 
-/* output information of an edge to file. */
-void zEdge3DFWrite(FILE *fp, zEdge3D *e)
+/* print information of an edge to a file. */
+void zEdge3DFPrint(FILE *fp, zEdge3D *e)
 {
   if( !e )
     fprintf( fp, "(null edge)\n" );
   else{
     fprintf( fp, "vert 0: " );
-    zVec3DFWrite( fp, zEdge3DVert(e,0) );
+    zVec3DFPrint( fp, zEdge3DVert(e,0) );
     fprintf( fp, "vert 1: " );
-    zVec3DFWrite( fp, zEdge3DVert(e,1) );
+    zVec3DFPrint( fp, zEdge3DVert(e,1) );
     fprintf( fp, "vec: " );
-    zVec3DFWrite( fp, zEdge3DVec(e) );
+    zVec3DFPrint( fp, zEdge3DVec(e) );
   }
 }
 
@@ -569,19 +569,19 @@ zVec3D *zTri3DConeCircumcenter(zTri3D *t, zVec3D *c)
   return zVec3DDivDRC( c, 2*zVec3DGrassmannProd(zTri3DVert(t,0),zTri3DVert(t,1),zTri3DVert(t,2)) );
 }
 
-/* output information of a triangle to file. */
-void zTri3DFWrite(FILE *fp, zTri3D *t)
+/* print information of a triangle to a file. */
+void zTri3DFPrint(FILE *fp, zTri3D *t)
 {
   if( !t )
     fprintf( fp, "(null triangle)\n" );
   else{
     fprintf( fp, "vert 0: " );
-    zVec3DFWrite( fp, zTri3DVert(t,0) );
+    zVec3DFPrint( fp, zTri3DVert(t,0) );
     fprintf( fp, "vert 1: " );
-    zVec3DFWrite( fp, zTri3DVert(t,1) );
+    zVec3DFPrint( fp, zTri3DVert(t,1) );
     fprintf( fp, "vert 2: " );
-    zVec3DFWrite( fp, zTri3DVert(t,2) );
+    zVec3DFPrint( fp, zTri3DVert(t,2) );
     fprintf( fp, "norm: " );
-    zVec3DFWrite( fp, zTri3DNorm(t) );
+    zVec3DFPrint( fp, zTri3DNorm(t) );
   }
 }

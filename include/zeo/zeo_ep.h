@@ -176,17 +176,17 @@ __EXPORT zEP *zEPInterDiv(zEP *ep1, zEP *ep2, double t, zEP *ep);
  */
 __EXPORT zMat3D *zMat3DInterDiv(zMat3D *m1, zMat3D *m2, double t, zMat3D *m);
 
-/*! \brief output Euler parameter.
+/*! \brief print Euler parameter.
  *
- * zEPFWrite() outputs Euler parameter to the current position of a file
- * \a fp in the following format.
+ * zEPFPrint() prints Euler parameter to the current position of
+ * a file \a fp in the following format.
  *  e0 { e1, e2, e3 }
- * zEPWrite() outputs Euler parameter \a ep to the standard output.
+ * zEPPrint() prints Euler parameter \a ep out to the standard output.
  * \return
- * zEPFWrite() and zEPWrite() return no value.
+ * zEPFPrint() and zEPPrint() return no value.
  */
-__EXPORT void zEPFWrite(FILE *fp, zEP *ep);
-#define zEPWrite(e) zEPFWrite( stdout, e )
+__EXPORT void zEPFPrint(FILE *fp, zEP *ep);
+#define zEPPrint(e) zEPFPrint( stdout, e )
 
 __END_DECLS
 

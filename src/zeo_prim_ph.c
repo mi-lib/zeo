@@ -36,10 +36,10 @@ static void _zPrim3DBaryInertiaPH(void *prim, zVec3D *c, zMat3D *i){
   zPH3DBaryInertia( prim, c, i ); }
 static zPH3D *_zPrim3DToPHPH(void *prim, zPH3D *ph){
   return zPH3DClone( prim, ph ); }
-static void *_zPrim3DFReadPH(FILE *fp, void *prim){
-  return zPH3DFRead( fp, prim ); }
-static void _zPrim3DFWritePH(FILE *fp, void *prim){
-  return zPH3DFWrite( fp, prim ); }
+static void *_zPrim3DFScanPH(FILE *fp, void *prim){
+  return zPH3DFScan( fp, prim ); }
+static void _zPrim3DFPrintPH(FILE *fp, void *prim){
+  return zPH3DFPrint( fp, prim ); }
 
 zPrimCom zprim_ph3d_com = {
   _zPrim3DInitPH,
@@ -56,8 +56,8 @@ zPrimCom zprim_ph3d_com = {
   _zPrim3DInertiaPH,
   _zPrim3DBaryInertiaPH,
   _zPrim3DToPHPH,
-  _zPrim3DFReadPH,
-  _zPrim3DFWritePH,
+  _zPrim3DFScanPH,
+  _zPrim3DFPrintPH,
 };
 
 /* dummy methods for abstraction */
@@ -76,8 +76,8 @@ static zVec3D *_zPrim3DBarycenterNone(void *prim, zVec3D *c){ return NULL; }
 static zMat3D *_zPrim3DInertiaNone(void *prim, zMat3D *i){ return NULL; }
 static void _zPrim3DBaryInertiaNone(void *prim, zVec3D *c, zMat3D *i){}
 static zPH3D *_zPrim3DToPHNone(void *prim, zPH3D *ph){ return NULL; }
-static void *_zPrim3DFReadNone(FILE *fp, void *prim){ return NULL; }
-static void _zPrim3DFWriteNone(FILE *fp, void *prim){}
+static void *_zPrim3DFScanNone(FILE *fp, void *prim){ return NULL; }
+static void _zPrim3DFPrintNone(FILE *fp, void *prim){}
 
 zPrimCom zprim_none_com = {
   _zPrim3DInitNone,
@@ -94,6 +94,6 @@ zPrimCom zprim_none_com = {
   _zPrim3DInertiaNone,
   _zPrim3DBaryInertiaNone,
   _zPrim3DToPHNone,
-  _zPrim3DFReadNone,
-  _zPrim3DFWriteNone,
+  _zPrim3DFScanNone,
+  _zPrim3DFPrintNone,
 };

@@ -15,14 +15,14 @@ int main(void)
   zShape3DInit( zMShape3DShape(&m,0) );
   zNameSet( zMShape3DShape(&m,0), "box" );
   zShape3DSetOptic( zMShape3DShape(&m,0), zMShape3DOptic(&m,0) );
-  zBox3DCreateAlign( &box, Z_ZEROVEC3D, 0.1, 0.6, 0.4 );
+  zBox3DCreateAlign( &box, ZVEC3DZERO, 0.1, 0.6, 0.4 );
   zMShape3DShape(&m,0)->type = ZSHAPE_PH;
   zMShape3DShape(&m,0)->com = &zprim_ph3d_com;
   zBox3DToPH( &box, zShape3DPH(zMShape3DShape(&m,0)) );
   zAABB( &aabb, zShape3DVertBuf(zMShape3DShape(&m,0)), zShape3DVertNum(zMShape3DShape(&m,0)), NULL );
   zAABox3DToBox3D( &aabb, zShape3DBB(zMShape3DShape(&m,0)) );
 
-  zMShape3DWrite( &m );
+  zMShape3DPrint( &m );
   zMShape3DDestroy( &m );
   return 0;
 }

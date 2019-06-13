@@ -4,13 +4,13 @@ void assertion(zTri3D *t, zVec3D *cp, double l0, double l1, double l2, double di
 {
   zVec3D p;
 
-  printf( "cp: " ); zVec3DWrite( cp );
+  printf( "cp: " ); zVec3DPrint( cp );
   printf( "(l0:l1:l2)=(%g:%g:%g), ||p-cp|| = %g\n", l0, l1, l2, dist );
   zVec3DMul( zTri3DVert(t,0), l0, &p );
   zVec3DCatDRC( &p, l1, zTri3DVert(t,1) );
   zVec3DCatDRC( &p, l2, zTri3DVert(t,2) );
   printf( "+assertion+\n" );
-  zVec3DWrite( &p );
+  zVec3DPrint( &p );
 }
 
 int main(void)
@@ -35,10 +35,10 @@ int main(void)
   zVec3DCreate( &p,-0.1,-0.1, 0 );
   zVec3DCreate( &p, 0.1,-0.1, 0 );
 */
-  printf( "v0: " ); zVec3DWrite( &v0 );
-  printf( "v1: " ); zVec3DWrite( &v1 );
-  printf( "v2: " ); zVec3DWrite( &v2 );
-  printf( "p : " ); zVec3DWrite( &p  );
+  printf( "v0: " ); zVec3DPrint( &v0 );
+  printf( "v1: " ); zVec3DPrint( &v1 );
+  printf( "v2: " ); zVec3DPrint( &v2 );
+  printf( "p : " ); zVec3DPrint( &p  );
 
   r = zTri3DLinScale( &t, &p, &l0, &l1, &l2, &cp );
   assertion( &t, &cp, l0, l1, l2, r );

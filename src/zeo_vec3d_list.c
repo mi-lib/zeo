@@ -57,23 +57,23 @@ void zVec3DListDestroy(zVec3DList *list)
 /* quick sort of a list of 3D vectors. */
 zListQuickSortDef( zVec3DList, zVec3DListCell )
 
-/* output a list of 3D vectors. */
-void zVec3DListFWrite(FILE *fp, zVec3DList *list)
+/* print a list of 3D vectors to a file. */
+void zVec3DListFPrint(FILE *fp, zVec3DList *list)
 {
   zVec3DListCell *cp;
 
   fprintf( fp, "%d\n", zListNum(list) );
   zListForEach( list, cp )
-    zVec3DFWrite( fp, cp->data );
+    zVec3DFPrint( fp, cp->data );
 }
 
-/* output a list of 3D vectors in a plain form. */
-void zVec3DListDataFWrite(FILE *fp, zVec3DList *list)
+/* print a list of 3D vectors in a plain form to a file. */
+void zVec3DListDataFPrint(FILE *fp, zVec3DList *list)
 {
   zVec3DListCell *cp;
 
   zListForEach( list, cp )
-    zVec3DDataNLFWrite( fp, cp->data );
+    zVec3DDataNLFPrint( fp, cp->data );
 }
 
 /* ********************************************************** */
@@ -127,24 +127,23 @@ zVec3DAddrList *zVec3DAddrListClone(zVec3DAddrList *src, zVec3DAddrList *dest)
 /* quick sort of a list of pointers to 3D vectors. */
 zListQuickSortDef( zVec3DAddrList, zVec3DAddr )
 
-/* output a list of pointers to 3D vectors to file. */
-void zVec3DAddrListFWrite(FILE *fp, zVec3DAddrList *list)
+/* print a list of pointers to 3D vectors to a file. */
+void zVec3DAddrListFPrint(FILE *fp, zVec3DAddrList *list)
 {
   zVec3DAddr *cp;
 
   fprintf( fp, "%d\n", zListNum(list) );
   zListForEach( list, cp )
-    zVec3DFWrite( fp, cp->data );
+    zVec3DFPrint( fp, cp->data );
 }
 
-/* output a list of pointers to 3D vectors in a plain form to file.
- */
-void zVec3DAddrListDataFWrite(FILE *fp, zVec3DAddrList *list)
+/* print a list of pointers to 3D vectors in a plain form to a file. */
+void zVec3DAddrListDataFPrint(FILE *fp, zVec3DAddrList *list)
 {
   zVec3DAddr *cp;
 
   zListForEach( list, cp )
-    zVec3DDataNLFWrite( fp, cp->data );
+    zVec3DDataNLFPrint( fp, cp->data );
 }
 
 /* ********************************************************** */

@@ -74,10 +74,10 @@ __EXPORT zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, d
 /* tag to identify optical info. */
 #define ZOPTIC_TAG "optic"
 
-/*! \brief input/output of a set of optical parameters.
+/*! \brief scan and print optical parameters.
  *
- * zOpticalInfoFRead() reads a set of optical parameters from the current
- * position of a file \a fp and copies it to \a oi.
+ * zOpticalInfoFScan() scans a set of optical parameters from the
+ * current position of a file \a fp and copies it to \a oi.
  * An acceptable data file format is as follows.
  *
  *  name     <string> <- the name of optical parameter set
@@ -94,23 +94,23 @@ __EXPORT zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, d
  *  alpha <value>
  *    ^ alpha value
  *
- * zOpticalInfoRead() reads a set of optical parameters from the standard
- * input and copies them to \a oi.
+ * zOpticalInfoScan() scans a set of optical parameters from the
+ * standard input and copies them to \a oi.
  *
- * zOpticalInfoFWrite() writes a set of optical parameters given by \a oi
- * to the current position of a file \a fp.
+ * zOpticalInfoFPrint() prints a set of optical parameters given by \a oi
+ * out to the current position of a file \a fp.
  *
- * zOpticalInfoWrite() writes a set of optical parameters given by \a oi
- * to the standard output.
+ * zOpticalInfoPrint() prints a set of optical parameters given by \a oi
+ * out to the standard output.
  * \return
- * zOpticalInfoFRead() and zOpticalInfoRead() return a pointer \a oi.
+ * zOpticalInfoFScan() and zOpticalInfoScan() return a pointer \a oi.
  *
- * zOpticalInfoFWrite() and zOpticalInfoWrite() return no value.
+ * zOpticalInfoFPrint() and zOpticalInfoPrint() return no value.
  */
-__EXPORT zOpticalInfo *zOpticalInfoFRead(FILE *fp, zOpticalInfo *oi);
-#define zOpticalInfoRead(i) zOpticalInfoFRead( stdin, (i) )
-__EXPORT void zOpticalInfoFWrite(FILE *fp, zOpticalInfo *oi);
-#define zOpticalInfoWrite(i) zOpticalInfoFWrite( stdout, (i) )
+__EXPORT zOpticalInfo *zOpticalInfoFScan(FILE *fp, zOpticalInfo *oi);
+#define zOpticalInfoScan(i) zOpticalInfoFScan( stdin, (i) )
+__EXPORT void zOpticalInfoFPrint(FILE *fp, zOpticalInfo *oi);
+#define zOpticalInfoPrint(i) zOpticalInfoFPrint( stdout, (i) )
 
 __END_DECLS
 

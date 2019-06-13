@@ -37,8 +37,8 @@ __EXPORT bool zAABox3DPointIsInside(zAABox3D *box, zVec3D *p, bool rim);
 /*! \brief compute volume of an axis-aligned box. */
 __EXPORT double zAABox3DVolume(zAABox3D *box);
 
-/*! \brief output an axis-aligned box to a file. */
-__EXPORT void zAABox3DDataFWrite(FILE *fp, zAABox3D *box);
+/*! \brief print an axis-aligned box out to a file. */
+__EXPORT void zAABox3DDataFPrint(FILE *fp, zAABox3D *box);
 
 /*! \brief convert an axis-aligned box to a general box. */
 __EXPORT zBox3D *zAABox3DToBox3D(zAABox3D *aab, zBox3D *box);

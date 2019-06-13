@@ -11,11 +11,9 @@
  * class for the optical characteristic parameter set
  * ********************************************************** */
 
-static bool _zOpticalInfoFRead(FILE *fp, void *instance, char *buf, bool *success);
+static bool _zOpticalInfoFScan(FILE *fp, void *instance, char *buf, bool *success);
 
-/* zOpticalInfoCreate
- * - create a set of optical parameters.
- */
+/* create a set of optical parameters. */
 zOpticalInfo *zOpticalInfoCreate(zOpticalInfo *oi, float ar, float ag, float ab, float dr, float dg, float db, float sr, float sg, float sb, double esr, double sns, double alpha, char *name)
 {
   zNameSet( oi, name );
@@ -28,9 +26,7 @@ zOpticalInfo *zOpticalInfoCreate(zOpticalInfo *oi, float ar, float ag, float ab,
   return oi;
 }
 
-/* zOpticalInfoCopy
- * - copy a set of optical parameters.
- */
+/* copy a set of optical parameters. */
 zOpticalInfo *zOpticalInfoCopy(zOpticalInfo *src, zOpticalInfo *dest)
 {
   zOpticalInfoSetAmb( dest, &src->amb );
@@ -42,18 +38,14 @@ zOpticalInfo *zOpticalInfoCopy(zOpticalInfo *src, zOpticalInfo *dest)
   return dest;
 }
 
-/* zOpticalInfoClone
- * - clone a set of optical parameters.
- */
+/* clone a set of optical parameters. */
 zOpticalInfo *zOpticalInfoClone(zOpticalInfo *src, zOpticalInfo *dest)
 {
   return zNameSet( dest, zName(src) ) ?
     zOpticalInfoCopy( src, dest ) : NULL;
 }
 
-/* zOpticalInfoMul
- * - multiply a set of optical parameters to another.
- */
+/* multiply a set of optical parameters to another. */
 zOpticalInfo *zOpticalInfoMul(zOpticalInfo *oi1, zOpticalInfo *oi2, zOpticalInfo *oi)
 {
   zRGBMul( &oi1->amb, &oi2->amb, &oi->amb );
@@ -65,9 +57,7 @@ zOpticalInfo *zOpticalInfoMul(zOpticalInfo *oi1, zOpticalInfo *oi2, zOpticalInfo
   return oi;
 }
 
-/* zOpticalInfoBlend
- * - blend a pair of sets of optical parameters at a given ratio.
- */
+/* blend a pair of sets of optical parameters at a given ratio. */
 zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, double ratio, zOpticalInfo *oi, char *name)
 {
   double rn;
@@ -85,19 +75,17 @@ zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, double rat
 }
 
 /* (static)
- * _zOpticalInfoFRead
- * - read information of the optical parameter set from a stream.
- */
-bool _zOpticalInfoFRead(FILE *fp, void *instance, char *buf, bool *success)
+ * scan information of the optical parameter set from a stream. */
+bool _zOpticalInfoFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
   if( strcmp( buf, "name" ) == 0 )
     zNameSet( (zOpticalInfo *)instance, zFToken( fp, buf, BUFSIZ ) );
   else if( strcmp( buf, "ambient" ) == 0 )
-    zRGBFRead( fp, &((zOpticalInfo *)instance)->amb );
+    zRGBFScan( fp, &((zOpticalInfo *)instance)->amb );
   else if( strcmp( buf, "diffuse" ) == 0 )
-    zRGBFRead( fp, &((zOpticalInfo *)instance)->dif );
+    zRGBFScan( fp, &((zOpticalInfo *)instance)->dif );
   else if( strcmp( buf, "specular" ) == 0 )
-    zRGBFRead( fp, &((zOpticalInfo *)instance)->spc );
+    zRGBFScan( fp, &((zOpticalInfo *)instance)->spc );
   else if( strcmp( buf, "esr" ) == 0 )
     ((zOpticalInfo *)instance)->esr = zFDouble( fp );
   else if( strcmp( buf, "shininess" ) == 0 )
@@ -109,30 +97,26 @@ bool _zOpticalInfoFRead(FILE *fp, void *instance, char *buf, bool *success)
   return true;
 }
 
-/* zOpticalInfoFRead
- * - read information of the optical parameter set from a stream.
- */
-zOpticalInfo *zOpticalInfoFRead(FILE *fp, zOpticalInfo *oi)
+/* scan information of the optical parameter set from a file. */
+zOpticalInfo *zOpticalInfoFScan(FILE *fp, zOpticalInfo *oi)
 {
   zOpticalInfoInit( oi );
-  zFieldFRead( fp, _zOpticalInfoFRead, oi );
+  zFieldFScan( fp, _zOpticalInfoFScan, oi );
   if( zNamePtr( oi ) ) return oi;
   ZRUNERROR( ZEO_ERR_OPT_UNNAME );
   return NULL;
 }
 
-/* zOpticalInfoFWrite
- * - output of the information of the optical parameter set.
- */
-void zOpticalInfoFWrite(FILE *fp, zOpticalInfo *oi)
+/* print information of the optical parameter set out to a file. */
+void zOpticalInfoFPrint(FILE *fp, zOpticalInfo *oi)
 {
   fprintf( fp, "name: %s\n", zName(oi) );
   fprintf( fp, "ambient: " );
-  zRGBFWrite( fp, &oi->amb );
+  zRGBFPrint( fp, &oi->amb );
   fprintf( fp, "diffuse: " );
-  zRGBFWrite( fp, &oi->dif );
+  zRGBFPrint( fp, &oi->dif );
   fprintf( fp, "specular: " );
-  zRGBFWrite( fp, &oi->spc );
+  zRGBFPrint( fp, &oi->spc );
   fprintf( fp, "esr: %.10g\n", oi->esr );
   fprintf( fp, "shininess: %.10g\n", oi->sns );
   fprintf( fp, "alpha: %.10g\n", oi->alpha );

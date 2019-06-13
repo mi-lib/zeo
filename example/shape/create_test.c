@@ -3,7 +3,7 @@
 void shape_output(zShape3D *s)
 {
   printf( "[shape]\n" );
-  zShape3DWrite( s );
+  zShape3DPrint( s );
   zShape3DDestroy( s );
 }
 
@@ -17,7 +17,7 @@ int main(void)
   zShape3DInit( &s );
 
   /* box */
-  zShape3DCreateBoxAlign( &s, Z_ZEROVEC3D, 0.1, 0.1, 0.1 );
+  zShape3DCreateBoxAlign( &s, ZVEC3DZERO, 0.1, 0.1, 0.1 );
   shape_output( &s );
   /* sphere */
   zShape3DCreateSphere( &s, &center, 0.1, 0 );

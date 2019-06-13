@@ -15,38 +15,38 @@ int main(void)
   zTri3DCreate( &t, &v[1], &v[2], &v[3] );
 
   printf( "<point>\n" );
-  zVec3DWrite( &v[3] );
+  zVec3DPrint( &v[3] );
   printf( "<edge>\n" );
-  zEdge3DWrite( &e );
+  zEdge3DPrint( &e );
   printf( "<triangle>\n" );
-  zTri3DWrite( &t );
+  zTri3DPrint( &t );
 
   printf( "\n+++ intersection test +++\n" );
   printf( "case1:\n(edge)\n" );
-  zEdge3DWrite( &e );
+  zEdge3DPrint( &e );
   printf( "(triangle)\n" );
-  zTri3DWrite( &t );
+  zTri3DPrint( &t );
   printf( "result = %s\n",
     zBoolExpr( zIntersectEdgeTri3D( &e, &t, &proj ) ) );
-  zVec3DWrite( &proj );
+  zVec3DPrint( &proj );
 
   zEdge3DCreate( &e, &v[4], &v[3] );
   printf( "case2:\n(edge)\n" );
-  zEdge3DWrite( &e );
+  zEdge3DPrint( &e );
   printf( "(triangle)\n" );
-  zTri3DWrite( &t );
+  zTri3DPrint( &t );
   printf( "result = %s\n",
     zBoolExpr( zIntersectEdgeTri3D( &e, &t, &proj ) ) );
-  zVec3DWrite( &proj );
+  zVec3DPrint( &proj );
 
   zEdge3DCreate( &e, &v[4], &point );
   printf( "case3:\n(edge)\n" );
-  zEdge3DWrite( &e );
+  zEdge3DPrint( &e );
   printf( "(triangle)\n" );
-  zTri3DWrite( &t );
+  zTri3DPrint( &t );
   printf( "result = %s\n",
     zBoolExpr( zIntersectEdgeTri3D( &e, &t, &proj ) ) );
-  zVec3DWrite( &proj );
+  zVec3DPrint( &proj );
 
   return 0;
 }

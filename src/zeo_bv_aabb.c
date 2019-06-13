@@ -10,9 +10,7 @@
 /* zAABox3D - axis-aligned box
  * ********************************************************** */
 
-/* zAABox3DInit
- * - initialize an axis-aligned box
- */
+/* initialize an axis-aligned box */
 zAABox3D *zAABox3DInit(zAABox3D *box)
 {
   zVec3DClear( &box->pmin );
@@ -20,9 +18,7 @@ zAABox3D *zAABox3DInit(zAABox3D *box)
   return box;
 }
 
-/* zAABox3DCreate
- * - create an axis-aligned box
- */
+/* create an axis-aligned box */
 zAABox3D *zAABox3DCreate(zAABox3D *box, double x1, double y1, double z1, double x2, double y2, double z2)
 {
   zVec3DCreate( &box->pmin, zMin(x1,x2), zMin(y1,y2), zMin(z1,z2) );
@@ -30,9 +26,7 @@ zAABox3D *zAABox3DCreate(zAABox3D *box, double x1, double y1, double z1, double 
   return box;
 }
 
-/* zAABox3DCopy
- * - copy an axis-aligned box.
- */
+/* copy an axis-aligned box to another. */
 zAABox3D *zAABox3DCopy(zAABox3D *src, zAABox3D *dst)
 {
   zVec3DCopy( &src->pmin, &dst->pmin );
@@ -40,9 +34,7 @@ zAABox3D *zAABox3DCopy(zAABox3D *src, zAABox3D *dst)
   return dst;
 }
 
-/* zAABox3DMerge
- * - merge two axis-aligned boxes.
- */
+/* merge two axis-aligned boxes. */
 zAABox3D *zAABox3DMerge(zAABox3D *dst, zAABox3D *src1, zAABox3D *src2)
 {
   return zAABox3DCreate( dst,
@@ -54,9 +46,7 @@ zAABox3D *zAABox3DMerge(zAABox3D *dst, zAABox3D *src1, zAABox3D *src2)
     zMax( src1->pmax.e[zZ], src2->pmax.e[zZ] ) );
 }
 
-/* zAABox3DPointIsInside
- * - check if a point is inside of an axis-aligned box.
- */
+/* check if a point is inside of an axis-aligned box. */
 bool zAABox3DPointIsInside(zAABox3D *box, zVec3D *p, bool rim)
 {
   double eps;
@@ -71,9 +61,7 @@ bool zAABox3DPointIsInside(zAABox3D *box, zVec3D *p, bool rim)
     true : false;
 }
 
-/* zAABox3DVolume
- * - compute volume of an axis-aligned box.
- */
+/* compute volume of an axis-aligned box. */
 double zAABox3DVolume(zAABox3D *box)
 {
   return fabs( ( box->pmax.e[zX] - box->pmin.e[zX] )
@@ -81,9 +69,7 @@ double zAABox3DVolume(zAABox3D *box)
              * ( box->pmax.e[zZ] - box->pmin.e[zZ] ) );
 }
 
-/* zAABox3DToBox3D
- * - convert an axis-aligned box to a general box.
- */
+/* convert an axis-aligned box to a general box. */
 zBox3D *zAABox3DToBox3D(zAABox3D *aab, zBox3D *box)
 {
   zVec3DMid( &aab->pmax, &aab->pmin, zBox3DCenter(box) );
@@ -94,9 +80,7 @@ zBox3D *zAABox3DToBox3D(zAABox3D *aab, zBox3D *box)
   return box;
 }
 
-/* zBox3DToAABox3D
- * - compute an axis-aligned box of a 3D box.
- */
+/* compute an axis-aligned box of a 3D box. */
 zAABox3D *zBox3DToAABox3D(zBox3D *box, zAABox3D *aabox)
 {
   zVec3D v[8];
@@ -107,10 +91,8 @@ zAABox3D *zBox3DToAABox3D(zBox3D *box, zAABox3D *aabox)
   return zAABB( aabox, v, 8, NULL );
 }
 
-/* zAABox3DDataFWrite
- * - output an axis-aligned box to a file in a format to be plotted.
- */
-void zAABox3DDataFWrite(FILE *fp, zAABox3D *box)
+/* print an axis-aligned box out to a file in a format to be plotted. */
+void zAABox3DDataFPrint(FILE *fp, zAABox3D *box)
 {
   double x0, y0, z0, x1, y1, z1;
 
@@ -149,9 +131,7 @@ void zAABox3DDataFWrite(FILE *fp, zAABox3D *box)
 static int _zAABBTest(zAABox3D *bb, zVec3D *p, zDir u);
 
 /* (static)
- * _zAABBTest
- * - enlarge bounding box if a point is out of the current box.
- */
+ * enlarge bounding box if a point is out of the current box. */
 int _zAABBTest(zAABox3D *bb, zVec3D *p, zDir u)
 {
   if( p->e[u] > bb->pmax.e[u] ){
@@ -171,10 +151,7 @@ static void _zAABBIncElem(zAABox3D *bb, zVec3D *p, zDir u, zVec3D **vp);
 static zAABox3D *_zAABBInc(zAABox3D *bb, zVec3D *p, zVec3D **vp);
 
 /* (static)
- * _zAABBIncElem
- * - enlarge bounding box along each axis if the point
- *   is outside of the box.
- */
+ * enlarge bounding box along each axis if the point is outside of the box. */
 void _zAABBIncElem(zAABox3D *bb, zVec3D *p, zDir u, zVec3D **vp)
 {
   int s;
@@ -184,9 +161,7 @@ void _zAABBIncElem(zAABox3D *bb, zVec3D *p, zDir u, zVec3D **vp)
 }
 
 /* (static)
- * _zAABBInc
- * - enlarge bounding box if the point is outside of the box.
- */
+ * enlarge bounding box if the point is outside of the box. */
 zAABox3D *_zAABBInc(zAABox3D *bb, zVec3D *p, zVec3D **vp)
 {
   _zAABBIncElem( bb, p, zX, vp );
@@ -195,9 +170,7 @@ zAABox3D *_zAABBInc(zAABox3D *bb, zVec3D *p, zVec3D **vp)
   return bb;
 }
 
-/* zAABB
- * - bounding box of points.
- */
+/* bounding box of points. */
 zAABox3D *zAABB(zAABox3D *bb, zVec3D p[], int num, zVec3D **vp)
 {
   register int i;
@@ -213,9 +186,7 @@ zAABox3D *zAABB(zAABox3D *bb, zVec3D p[], int num, zVec3D **vp)
   return bb;
 }
 
-/* zAABBXfer
- * - bounding box of points with a transfer matrix.
- */
+/* bounding box of points with a transfer matrix. */
 zAABox3D *zAABBXfer(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f)
 {
   register int i;
@@ -240,10 +211,7 @@ static void _zAABBPLIncElem(zAABox3D *bb, zVec3DListCell *p, zDir u, zVec3DListC
 static zAABox3D *_zAABBPLInc(zAABox3D *bb, zVec3DListCell *p, zVec3DListCell **vp);
 
 /* (static)
- * _zAABBPLIncElem
- * - enlarge bounding box along each axis if the point
- *   is outside of the box.
- */
+ * enlarge bounding box along each axis if the point is outside of the box. */
 void _zAABBPLIncElem(zAABox3D *bb, zVec3DListCell *p, zDir u, zVec3DListCell **vp)
 {
   int s;
@@ -253,9 +221,7 @@ void _zAABBPLIncElem(zAABox3D *bb, zVec3DListCell *p, zDir u, zVec3DListCell **v
 }
 
 /* (static)
- * _zAABBPLInc
- * - enlarge bounding box if the point is outside of the box.
- */
+ * enlarge bounding box if the point is outside of the box. */
 zAABox3D *_zAABBPLInc(zAABox3D *bb, zVec3DListCell *p, zVec3DListCell **vp)
 {
   _zAABBPLIncElem( bb, p, zX, vp );
@@ -264,9 +230,7 @@ zAABox3D *_zAABBPLInc(zAABox3D *bb, zVec3DListCell *p, zVec3DListCell **vp)
   return bb;
 }
 
-/* zAABBPL
- * - bounding box of a list of points.
- */
+/* bounding box of a list of points. */
 zAABox3D *zAABBPL(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vp)
 {
   zVec3DListCell *pc;
@@ -283,9 +247,7 @@ zAABox3D *zAABBPL(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vp)
   return bb;
 }
 
-/* zAABBXferPL
- * - bounding box of a list of points with a transfer matrix.
- */
+/* bounding box of a list of points with a transfer matrix. */
 zAABox3D *zAABBXferPL(zAABox3D *bb, zVec3DList *pl, zFrame3D *f)
 {
   zVec3D px;

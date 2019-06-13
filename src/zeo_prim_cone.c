@@ -11,11 +11,9 @@
  * 3D cone class
  * ********************************************************** */
 
-static bool _zCone3DFRead(FILE *fp, void *instance, char *buf, bool *success);
+static bool _zCone3DFScan(FILE *fp, void *instance, char *buf, bool *success);
 
-/* zCone3DCreate
- * - create 3D cone.
- */
+/* create a 3D cone. */
 zCone3D *zCone3DCreate(zCone3D *cone, zVec3D *c, zVec3D *v, double r, int div)
 {
   zCone3DSetCenter( cone, c );
@@ -25,26 +23,20 @@ zCone3D *zCone3DCreate(zCone3D *cone, zVec3D *c, zVec3D *v, double r, int div)
   return cone;
 }
 
-/* zCone3DInit
- * - initialize 3D cone.
- */
+/* initialize a 3D cone. */
 zCone3D *zCone3DInit(zCone3D *cone)
 {
   return zCone3DCreate( cone, ZVEC3DZERO, ZVEC3DZERO, 0, 0 );
 }
 
-/* zCone3DCopy
- * - copy 3D cone.
- */
+/* copy a 3D cone to another. */
 zCone3D *zCone3DCopy(zCone3D *src, zCone3D *dest)
 {
   return zCone3DCreate( dest,
     zCone3DCenter(src), zCone3DVert(src), zCone3DRadius(src), zCone3DDiv(src) );
 }
 
-/* zCone3DMirror
- * - mirror 3D cone.
- */
+/* mirror a 3D cone. */
 zCone3D *zCone3DMirror(zCone3D *src, zCone3D *dest, zAxis axis)
 {
   zCone3DCopy( src, dest );
@@ -53,9 +45,7 @@ zCone3D *zCone3DMirror(zCone3D *src, zCone3D *dest, zAxis axis)
   return dest;
 }
 
-/* zCone3DXfer
- * - transform 3D cone.
- */
+/* transform coordinates of a 3D cone. */
 zCone3D *zCone3DXfer(zCone3D *src, zFrame3D *f, zCone3D *dest)
 {
   zXfer3D( f, zCone3DCenter(src), zCone3DCenter(dest) );
@@ -65,9 +55,7 @@ zCone3D *zCone3DXfer(zCone3D *src, zFrame3D *f, zCone3D *dest)
   return dest;
 }
 
-/* zCone3DXferInv
- * - inversely transform 3D cone.
- */
+/* inversely transform coordinates of a 3D cone. */
 zCone3D *zCone3DXferInv(zCone3D *src, zFrame3D *f, zCone3D *dest)
 {
   zXfer3DInv( f, zCone3DCenter(src), zCone3DCenter(dest) );
@@ -77,9 +65,7 @@ zCone3D *zCone3DXferInv(zCone3D *src, zFrame3D *f, zCone3D *dest)
   return dest;
 }
 
-/* zCone3DClosest
- * - the closest point to 3D cone.
- */
+/* the closest point to a 3D cone. */
 double zCone3DClosest(zCone3D *cone, zVec3D *p, zVec3D *cp)
 {
   zVec3D axis, v, s, g;
@@ -118,9 +104,7 @@ double zCone3DClosest(zCone3D *cone, zVec3D *p, zVec3D *cp)
   return sqrt( d*d + zSqr(r-zCone3DRadius(cone)) );
 }
 
-/* zCone3DPointDist
- * - distance from a point to 3D cone.
- */
+/* distance from a point to a 3D cone. */
 double zCone3DPointDist(zCone3D *cone, zVec3D *p)
 {
   zVec3D axis, v, s, g;
@@ -150,9 +134,7 @@ double zCone3DPointDist(zCone3D *cone, zVec3D *p)
   return sqrt( d*d + zSqr(r-zCone3DRadius(cone)) );
 }
 
-/* zCone3DPointIsInside
- * - check if a point is inside of a cone.
- */
+/* check if a point is inside of a cone. */
 bool zCone3DPointIsInside(zCone3D *cone, zVec3D *p, bool rim)
 {
   zVec3D axis, v;
@@ -167,9 +149,7 @@ bool zCone3DPointIsInside(zCone3D *cone, zVec3D *p, bool rim)
   return -d <= l + ( rim ? zTOL : 0 ) ? true : false;
 }
 
-/* zCone3DHeight
- * - height of 3D cone.
- */
+/* height of a 3D cone. */
 double zCone3DHeight(zCone3D *cone)
 {
   zVec3D axis;
@@ -177,25 +157,19 @@ double zCone3DHeight(zCone3D *cone)
   return zVec3DNorm( zCone3DAxis( cone, &axis ) );
 }
 
-/* zCone3DVolume
- * - volume of 3D cone.
- */
+/* volume of a 3D cone. */
 double zCone3DVolume(zCone3D *cone)
 {
   return zPI * zSqr(zCone3DRadius(cone)) * zCone3DHeight(cone) / 3;
 }
 
-/* zCone3DBarycenter
- * - barycenter of 3D cone.
- */
+/* barycenter of a 3D cone. */
 zVec3D *zCone3DBarycenter(zCone3D *cone, zVec3D *c)
 {
   return zVec3DInterDiv( zCone3DCenter(cone), zCone3DVert(cone), 0.25, c );
 }
 
-/* zCone3DInertia
- * - inertia tensor of 3D cone.
- */
+/* inertia tensor of a 3D cone. */
 zMat3D *zCone3DInertia(zCone3D *cone, zMat3D *inertia)
 {
   double vol, rr, hh;
@@ -215,9 +189,7 @@ zMat3D *zCone3DInertia(zCone3D *cone, zMat3D *inertia)
   return zRotMat3D( &att, &i, inertia );
 }
 
-/* zCone3DToPH
- * - convert cone to polyhedron.
- */
+/* convert a cone to a polyhedron. */
 zPH3D *zCone3DToPH(zCone3D *cone, zPH3D *ph)
 {
   zVec3D *vert, d, s, r, aa;
@@ -262,15 +234,13 @@ zPH3D *zCone3DToPH(zCone3D *cone, zPH3D *ph)
 }
 
 /* (static)
- * _zCone3DFRead
- * - input of 3D cone.
- */
-bool _zCone3DFRead(FILE *fp, void *instance, char *buf, bool *success)
+ * scan a 3D cone (internal function). */
+bool _zCone3DFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
   if( strcmp( buf, "center" ) == 0 ){
-    zVec3DFRead( fp, zCone3DCenter( (zCone3D *)instance ) );
+    zVec3DFScan( fp, zCone3DCenter( (zCone3D *)instance ) );
   } else if( strcmp( buf, "vert" ) == 0 ){
-    zVec3DFRead( fp, zCone3DVert( (zCone3D *)instance ) );
+    zVec3DFScan( fp, zCone3DVert( (zCone3D *)instance ) );
   } else if( strcmp( buf, "radius" ) == 0 ){
     zCone3DSetRadius( (zCone3D *)instance, zFDouble( fp ) );
   } else if( strcmp( buf, "div" ) == 0 ){
@@ -280,25 +250,21 @@ bool _zCone3DFRead(FILE *fp, void *instance, char *buf, bool *success)
   return true;
 }
 
-/* zCone3DFRead
- * - input of 3D cone.
- */
-zCone3D *zCone3DFRead(FILE *fp, zCone3D *cone)
+/* scan a 3D cone from a file. */
+zCone3D *zCone3DFScan(FILE *fp, zCone3D *cone)
 {
   zCone3DInit( cone );
-  zFieldFRead( fp, _zCone3DFRead, cone );
+  zFieldFScan( fp, _zCone3DFScan, cone );
   return cone;
 }
 
-/* zCone3DFWrite
- * - output of 3D cone.
- */
-void zCone3DFWrite(FILE *fp, zCone3D *cone)
+/* print a 3D cone to a file. */
+void zCone3DFPrint(FILE *fp, zCone3D *cone)
 {
   fprintf( fp, "center: " );
-  zVec3DFWrite( fp, zCone3DCenter(cone) );
+  zVec3DFPrint( fp, zCone3DCenter(cone) );
   fprintf( fp, "vert: " );
-  zVec3DFWrite( fp, zCone3DVert(cone) );
+  zVec3DFPrint( fp, zCone3DVert(cone) );
   fprintf( fp, "radius: %.10g\n", zCone3DRadius(cone) );
   fprintf( fp, "div: %d\n", zCone3DDiv(cone) );
 }
@@ -333,10 +299,10 @@ static void _zPrim3DBaryInertiaCone(void *prim, zVec3D *c, zMat3D *i){
   zCone3DInertia( prim, i ); }
 static zPH3D *_zPrim3DToPHCone(void *prim, zPH3D *ph){
   return zCone3DToPH( prim, ph ); }
-static void *_zPrim3DFReadCone(FILE *fp, void *prim){
-  return zCone3DFRead( fp, prim ); }
-static void _zPrim3DFWriteCone(FILE *fp, void *prim){
-  return zCone3DFWrite( fp, prim ); }
+static void *_zPrim3DFScanCone(FILE *fp, void *prim){
+  return zCone3DFScan( fp, prim ); }
+static void _zPrim3DFPrintCone(FILE *fp, void *prim){
+  return zCone3DFPrint( fp, prim ); }
 
 zPrimCom zprim_cone3d_com = {
   _zPrim3DInitCone,
@@ -353,6 +319,6 @@ zPrimCom zprim_cone3d_com = {
   _zPrim3DInertiaCone,
   _zPrim3DBaryInertiaCone,
   _zPrim3DToPHCone,
-  _zPrim3DFReadCone,
-  _zPrim3DFWriteCone,
+  _zPrim3DFScanCone,
+  _zPrim3DFPrintCone,
 };

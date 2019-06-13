@@ -13,8 +13,8 @@ int main(void)
   zRandInit();
   zVec3DCreate( &a1, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
   zVec3DCreate( &a2, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
-  printf( "<AA1> " ); zVec3DWrite( &a1 );
-  printf( "<AA2> " ); zVec3DWrite( &a2 );
+  printf( "<AA1> " ); zVec3DPrint( &a1 );
+  printf( "<AA2> " ); zVec3DPrint( &a2 );
 
   zMat3DFromAA( &m1, &a1 );
   zAA2EP( &a1, &e1 );

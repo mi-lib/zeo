@@ -31,7 +31,7 @@ void terra_gen_sample(zVec3DList *pl)
     zVec3DListInsert( pl, p );
   }
   fp = fopen( "terrain_sample.dat", "w" );
-  zVec3DListDataFWrite( fp, pl );
+  zVec3DListDataFPrint( fp, pl );
   fclose( fp );
 }
 
@@ -62,7 +62,7 @@ void terra_output(zTerra *terra, double scale)
   register int i, j;
 
   fp = fopen( "terrain.ztr", "w" );
-  zTerraFWrite( fp, terra );
+  zTerraFPrint( fp, terra );
   fclose( fp );
 
   fp = fopen( "terrain.dat", "w" );

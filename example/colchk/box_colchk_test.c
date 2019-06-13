@@ -7,7 +7,7 @@ void box_create(zBox3D *box)
 {
   zBox3DInit( box );
   zVec3DCreate( zBox3DCenter(box), zRandF(-S,S), zRandF(-S,S), zRandF(-S,S) );
-  zMat3DZYX( zFrame3DAtt(&box->f), zRandF(-zPI,zPI),zRandF(-zPI_2,zPI_2),zRandF(-zPI,zPI) );
+  zMat3DFromZYX( zFrame3DAtt(&box->f), zRandF(-zPI,zPI),zRandF(-zPI_2,zPI_2),zRandF(-zPI,zPI) );
   zBox3DSetWidth( box, zRandF(0.5*W,W) );
   zBox3DSetHeight( box, zRandF(0.5*W,W) );
   zBox3DSetDepth( box, zRandF(0.5*W,W) );
@@ -37,12 +37,12 @@ void box_output(zBox3D *b1, zBox3D *b2)
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: blue\n" );
-  zBox3DFWrite( fp, b1 );
+  zBox3DFPrint( fp, b1 );
   fprintf( fp, "\n[shape]\n" );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: red\n" );
-  zBox3DFWrite( fp, b2 );
+  zBox3DFPrint( fp, b2 );
   fclose( fp );
 }
 

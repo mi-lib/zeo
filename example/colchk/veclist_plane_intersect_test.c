@@ -35,7 +35,7 @@ int main(void)
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), 0 );
     zVec3DListInsert( &vlist, &v );
-    zVec3DDataNLFWrite( fp, &v );
+    zVec3DDataNLFPrint( fp, &v );
   }
   fclose( fp );
 
@@ -45,20 +45,20 @@ int main(void)
   n = intersect_vlist_plane( &vlist, &pl, ip );
   fp = fopen( "ip", "w" );
   for( i=0; i<n; i++ )
-    zVec3DDataNLFWrite( fp, &ip[i] );
+    zVec3DDataNLFPrint( fp, &ip[i] );
   fclose( fp );
 
   zCH2DPL( &ch, &vlist );
   fp = fopen( "ch", "w" );
   zListForEach( &ch, vp )
-    zVec3DDataNLFWrite( fp, vp->data );
-  zVec3DDataNLFWrite( fp, zListTail(&ch)->data );
+    zVec3DDataNLFPrint( fp, vp->data );
+  zVec3DDataNLFPrint( fp, zListTail(&ch)->data );
   fclose( fp );
 
   n = intersect_vlist_plane( &ch, &pl, ip );
   fp = fopen( "ipch", "w" );
   for( i=0; i<n; i++ )
-    zVec3DDataNLFWrite( fp, &ip[i] );
+    zVec3DDataNLFPrint( fp, &ip[i] );
   fclose( fp );
 
   zLoop3DDestroy( &ch );

@@ -15,7 +15,7 @@ void output(zPH3D *ph)
   printf( "name: pyramid\n" );
   printf( "type: polyhedron\n" );
   printf( "optic: white\n" );
-  zPH3DWrite( ph );
+  zPH3DPrint( ph );
 }
 
 int main(void)

@@ -520,45 +520,45 @@ __EXPORT zVec3D *zAngVelToZYZVelSC(zVec3D *angvel, double sa, double ca, double 
 /* I/O
  * ********************************************************** */
 
-/*! \brief input and output a 3D vector.
+/*! \brief scan and print a 3D vector.
  *
- * zVec3DFRead() reads three values from the current position of a file
- * \a fp and creates a 3D vector \a v from them.
- * zVec3DRead() reads three values from the standard input.
+ * zVec3DFScan() scans three values from the current position of
+ * a file \a fp and creates a 3D vector \a v from them.
+ * zVec3DScan() scans three values from the standard input.
  *
- * zVec3DFWrite() outputs a 3D vector \a v to the current position of
- * the file \a fp in the following format:
+ * zVec3DFPrint() prints a 3D vector \a v out to the current
+ * position of a file \a fp in the following format:
  *  ( x, y, z )
- * When the null pointer is given, the following string is output.
+ * When the null pointer is given, the following string is printed.
  *  (null 3D vector)
- * zVec3DWrite() outputs \a v to the standard output.
+ * zVec3DPrint() prints \a v out to the standard output.
  *
- * zVec3DDataFWrite() outputs a 3D vector \a v to the current position
- * of the file \a fp in the following format:
+ * zVec3DDataFPrint() prints a 3D vector \a v out to the current
+ * position of a file \a fp in the following format:
  *  x y z
- * When the null pointer is given, it outputs nothing.
- * zVec3DDataWrite() outputs \a v to the standard output in the same
- * format with zVec3DDataFWrite().
+ * When the null pointer is given, nothing is printed.
+ * zVec3DDataPrint() prints \a v out to the standard output in
+ * the same format with zVec3DDataFPrint().
  *
- * zVec3DDataNLFWrite() outputs a 3D vector \a v to the current position
- * of the file \a fp in the same format with zVec3DDataFWrite() and
- * terminates it by the new line.
- * zVec3DDataNLWrite() outputs \a v to the standard output in the same
- * format with zVec3DDataNLFWrite().
+ * zVec3DDataNLFPrint() prints a 3D vector \a v out to the current
+ * position of a file \a fp in the same format with zVec3DDataFPrint()
+ * and terminates it by the new line.
+ * zVec3DDataNLPrint() prints \a v out to the standard output in
+ * the same format with zVec3DDataNLFPrint().
  * \return
- * zVec3DFRead() and zVec3DRead() return a pointer to \a v.
+ * zVec3DFScan() and zVec3DScan() return a pointer to \a v.
  *
- * zVec3DFWrite(), zVec3DWrite(), zVec3DDataFWrite(), zVec3DDataWrite(),
- * zVec3DDataNLFWrite() and zVec3DDataNLWrite() return a pointer \a v.
+ * zVec3DFPrint(), zVec3DPrint(), zVec3DDataFPrint(), zVec3DDataPrint(),
+ * zVec3DDataNLFPrint() and zVec3DDataNLPrint() return a pointer \a v.
  */
-__EXPORT zVec3D *zVec3DFRead(FILE *fp, zVec3D *v);
-#define zVec3DRead(v) zVec3DFRead( stdin, (v) )
-__EXPORT zVec3D *zVec3DDataFWrite(FILE *fp, zVec3D *v);
-#define zVec3DDataWrite(v) zVec3DDataFWrite( stdout, (v) )
-__EXPORT zVec3D *zVec3DDataNLFWrite(FILE *fp, zVec3D *v);
-#define zVec3DDataNLWrite(v) zVec3DDataNLFWrite( stdout, (v) )
-__EXPORT zVec3D *zVec3DFWrite(FILE *fp, zVec3D *v);
-#define zVec3DWrite(v) zVec3DFWrite( stdout, (v) )
+__EXPORT zVec3D *zVec3DFScan(FILE *fp, zVec3D *v);
+#define zVec3DScan(v) zVec3DFScan( stdin, (v) )
+__EXPORT zVec3D *zVec3DDataFPrint(FILE *fp, zVec3D *v);
+#define zVec3DDataPrint(v) zVec3DDataFPrint( stdout, (v) )
+__EXPORT zVec3D *zVec3DDataNLFPrint(FILE *fp, zVec3D *v);
+#define zVec3DDataNLPrint(v) zVec3DDataNLFPrint( stdout, (v) )
+__EXPORT zVec3D *zVec3DFPrint(FILE *fp, zVec3D *v);
+#define zVec3DPrint(v) zVec3DFPrint( stdout, (v) )
 
 __END_DECLS
 

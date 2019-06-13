@@ -43,21 +43,21 @@ void output(zAABox3D *b1, zAABox3D *b2, zAABox3D *b)
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: yellow\n" );
   zAABox3DToBox3D( b, &box );
-  zBox3DFWrite( fp, &box );
+  zBox3DFPrint( fp, &box );
 
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: blue\n" );
   zAABox3DToBox3D( b1, &box );
-  zBox3DFWrite( fp, &box );
+  zBox3DFPrint( fp, &box );
 
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: red\n" );
   zAABox3DToBox3D( b2, &box );
-  zBox3DFWrite( fp, &box );
+  zBox3DFPrint( fp, &box );
 
   fclose( fp );
 }

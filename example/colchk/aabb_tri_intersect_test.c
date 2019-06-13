@@ -46,9 +46,9 @@ void output(zTri3D *t, zAABox3D *b, zVec3D ip[], int n)
   fprintf( fp, "name: plane\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: yellow\n" );
-  fprintf( fp, "vert 0: " ); zVec3DDataNLFWrite( fp, zTri3DVert(t,0) );
-  fprintf( fp, "vert 1: " ); zVec3DDataNLFWrite( fp, zTri3DVert(t,1) );
-  fprintf( fp, "vert 2: " ); zVec3DDataNLFWrite( fp, zTri3DVert(t,2) );
+  fprintf( fp, "vert 0: " ); zVec3DDataNLFPrint( fp, zTri3DVert(t,0) );
+  fprintf( fp, "vert 1: " ); zVec3DDataNLFPrint( fp, zTri3DVert(t,1) );
+  fprintf( fp, "vert 2: " ); zVec3DDataNLFPrint( fp, zTri3DVert(t,2) );
   fprintf( fp, "face 0 1 2\n" );
 
   fprintf( fp, "[shape]\n" );
@@ -56,7 +56,7 @@ void output(zTri3D *t, zAABox3D *b, zVec3D ip[], int n)
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: red\n" );
   zAABox3DToBox3D( b, &box );
-  zBox3DFWrite( fp, &box );
+  zBox3DFPrint( fp, &box );
 
   for( i=0; i<n; i++ ){
     fprintf( fp, "[shape]\n" );
@@ -64,7 +64,7 @@ void output(zTri3D *t, zAABox3D *b, zVec3D ip[], int n)
     fprintf( fp, "type: sphere\n" );
     fprintf( fp, "optic: blue\n" );
     fprintf( fp, "center: " );
-    zVec3DDataNLFWrite( fp, &ip[i] );
+    zVec3DDataNLFPrint( fp, &ip[i] );
     fprintf( fp, "radius: 0.01\n" );
   }
 

@@ -11,11 +11,9 @@
  * 3D ellipsoid class
  * ********************************************************** */
 
-static bool _zEllips3DFRead(FILE *fp, void *instance, char *buf, bool *success);
+static bool _zEllips3DFScan(FILE *fp, void *instance, char *buf, bool *success);
 
-/* zEllips3DCreate
- * - create 3D ellipsoid.
- */
+/* create a 3D ellipsoid. */
 zEllips3D *zEllips3DCreate(zEllips3D *ellips, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double rx, double ry, double rz, int div)
 {
   zEllips3DSetCenter( ellips, c );
@@ -29,17 +27,13 @@ zEllips3D *zEllips3DCreate(zEllips3D *ellips, zVec3D *c, zVec3D *ax, zVec3D *ay,
   return ellips;
 }
 
-/* zEllips3DInit
- * - initialize 3D ellipsoid.
- */
+/* initialize a 3D ellipsoid. */
 zEllips3D *zEllips3DInit(zEllips3D *ellips)
 {
   return zEllips3DCreateAlign( ellips, ZVEC3DZERO, 0, 0, 0, 0 );
 }
 
-/* zEllips3DCopy
- * - copy 3D ellipsoid.
- */
+/* copy a 3D ellipsoid to another. */
 zEllips3D *zEllips3DCopy(zEllips3D *src, zEllips3D *dest)
 {
   return zEllips3DCreate( dest, zEllips3DCenter(src),
@@ -48,9 +42,7 @@ zEllips3D *zEllips3DCopy(zEllips3D *src, zEllips3D *dest)
     zEllips3DDiv(src) );
 }
 
-/* zEllips3DMirror
- * - mirror 3D ellipsoid.
- */
+/* mirror a 3D ellipsoid. */
 zEllips3D *zEllips3DMirror(zEllips3D *src, zEllips3D *dest, zAxis axis)
 {
   zEllips3DCopy( src, dest );
@@ -61,9 +53,7 @@ zEllips3D *zEllips3DMirror(zEllips3D *src, zEllips3D *dest, zAxis axis)
   return dest;
 }
 
-/* zEllips3DXfer
- * - transfer 3D ellipsoid.
- */
+/* transform coordinates of a 3D ellipsoid. */
 zEllips3D *zEllips3DXfer(zEllips3D *src, zFrame3D *f, zEllips3D *dest)
 {
   zXfer3D( f, zEllips3DCenter(src), zEllips3DCenter(dest) );
@@ -77,9 +67,7 @@ zEllips3D *zEllips3DXfer(zEllips3D *src, zFrame3D *f, zEllips3D *dest)
   return dest;
 }
 
-/* zEllips3DXfer
- * - inversely transfer 3D ellipsoid.
- */
+/* inversely transform coordinates of a 3D ellipsoid. */
 zEllips3D *zEllips3DXferInv(zEllips3D *src, zFrame3D *f, zEllips3D *dest)
 {
   zXfer3DInv( f, zEllips3DCenter(src), zEllips3DCenter(dest) );
@@ -94,9 +82,7 @@ zEllips3D *zEllips3DXferInv(zEllips3D *src, zFrame3D *f, zEllips3D *dest)
 }
 
 /* (static)
- * _zEllips3DClosest
- * - the closest point from 3D point to an aligned 3D ellipsoid.
- */
+ * the closest point from a 3D point to an aligned 3D ellipsoid. */
 zVec3D *_zEllips3DClosest(double rx, double ry, double rz, zVec3D *v, zVec3D *cp)
 {
   double a, b, c, p, q, r, p2, q2, r2, pqr, l;
@@ -134,9 +120,7 @@ zVec3D *_zEllips3DClosest(double rx, double ry, double rz, zVec3D *v, zVec3D *cp
   return cp;
 }
 
-/* zEllips3DClosest
- * - the closest point from 3D point to 3D ellipsoid.
- */
+/* the closest point from a 3D point to a 3D ellipsoid. */
 double zEllips3DClosest(zEllips3D *ellips, zVec3D *p, zVec3D *cp)
 {
   zVec3D pi;
@@ -152,18 +136,14 @@ double zEllips3DClosest(zEllips3D *ellips, zVec3D *p, zVec3D *cp)
   return zVec3DDist( p, cp );
 }
 
-/* zEllips3DPointDist
- * - distance from a point to to 3D ellipsoid.
- */
+/* distance from a point to a 3D ellipsoid. */
 double zEllips3DPointDist(zEllips3D *ellips, zVec3D *p)
 {
   zVec3D cp;
   return zEllips3DClosest( ellips, p, &cp );
 }
 
-/* zEllips3DPointIsInside
- * - check if a point is in a ellipsoid.
- */
+/* check if a point is in an ellipsoid. */
 bool zEllips3DPointIsInside(zEllips3D *ellips, zVec3D *p, bool rim)
 {
   zVec3D _p;
@@ -177,17 +157,13 @@ bool zEllips3DPointIsInside(zEllips3D *ellips, zVec3D *p, bool rim)
   return l < 1.0 ? true : false;
 }
 
-/* zEllips3DVolume
- * - volume of 3D ellipsoid.
- */
+/* volume of a 3D ellipsoid. */
 double zEllips3DVolume(zEllips3D *ellips)
 {
   return 4.0*zPI*zEllips3DRadiusX(ellips)*zEllips3DRadiusY(ellips)*zEllips3DRadiusZ(ellips)/3.0;
 }
 
-/* zEllips3DInertia
- * - inertia of 3D ellipsoid.
- */
+/* inertia of a 3D ellipsoid. */
 zMat3D *zEllips3DInertia(zEllips3D *ellips, zMat3D *inertia)
 {
   zMat3D i;
@@ -204,9 +180,7 @@ zMat3D *zEllips3DInertia(zEllips3D *ellips, zMat3D *inertia)
   return zRotMat3D( zFrame3DAtt(&ellips->f), &i, inertia );
 }
 
-/* zEllips3DToPH
- * - convert ellipsoid to polyhedron.
- */
+/* convert an ellipsoid to a polyhedron. */
 zPH3D* zEllips3DToPH(zEllips3D *ellips, zPH3D *ph)
 {
   zVec3D *vert, tmp;
@@ -260,23 +234,22 @@ zPH3D* zEllips3DToPH(zEllips3D *ellips, zPH3D *ph)
 }
 
 /* (static)
- * _zEllips3DFRead
- * - input of 3D ellipsoid.
+ * scan a 3D ellipsoid (internal function).
  */
-bool _zEllips3DFRead(FILE *fp, void *instance, char *buf, bool *success)
+bool _zEllips3DFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
   zVec3D a;
 
   if( strcmp( buf, "center" ) == 0 ){
-    zVec3DFRead( fp, zEllips3DCenter( (zEllips3D *)instance ) );
+    zVec3DFScan( fp, zEllips3DCenter( (zEllips3D *)instance ) );
   } else if( strcmp( buf, "ax" ) == 0 ){
-    zVec3DFRead( fp, &a );
+    zVec3DFScan( fp, &a );
     zVec3DNormalize( &a, zEllips3DAxis( (zEllips3D *)instance, zX ) );
   } else if( strcmp( buf, "ay" ) == 0 ){
-    zVec3DFRead( fp, &a );
+    zVec3DFScan( fp, &a );
     zVec3DNormalize( &a, zEllips3DAxis( (zEllips3D *)instance, zY ) );
   } else if( strcmp( buf, "az" ) == 0 ){
-    zVec3DFRead( fp, &a );
+    zVec3DFScan( fp, &a );
     zVec3DNormalize( &a, zEllips3DAxis( (zEllips3D *)instance, zZ ) );
   } else if( strcmp( buf, "rx" ) == 0 ){
     zEllips3DSetRadiusX( (zEllips3D *)instance, zFDouble( fp ) );
@@ -291,29 +264,25 @@ bool _zEllips3DFRead(FILE *fp, void *instance, char *buf, bool *success)
   return true;
 }
 
-/* zEllips3DFRead
- * - input of 3D ellipsoid.
- */
-zEllips3D *zEllips3DFRead(FILE *fp, zEllips3D *ellips)
+/* scan a 3D ellipsoid from a file. */
+zEllips3D *zEllips3DFScan(FILE *fp, zEllips3D *ellips)
 {
   zEllips3DInit( ellips );
-  zFieldFRead( fp, _zEllips3DFRead, ellips );
+  zFieldFScan( fp, _zEllips3DFScan, ellips );
   return ellips;
 }
 
-/* zEllips3DFWrite
- * - output of 3D ellipsoid.
- */
-void zEllips3DFWrite(FILE *fp, zEllips3D *ellips)
+/* print a 3D ellipsoid to a file. */
+void zEllips3DFPrint(FILE *fp, zEllips3D *ellips)
 {
   fprintf( fp, "center: " );
-  zVec3DFWrite( fp, zEllips3DCenter( ellips ) );
+  zVec3DFPrint( fp, zEllips3DCenter( ellips ) );
   fprintf( fp, "ax: " );
-  zVec3DFWrite( fp, zEllips3DAxis( ellips, zX ) );
+  zVec3DFPrint( fp, zEllips3DAxis( ellips, zX ) );
   fprintf( fp, "ay: " );
-  zVec3DFWrite( fp, zEllips3DAxis( ellips, zY ) );
+  zVec3DFPrint( fp, zEllips3DAxis( ellips, zY ) );
   fprintf( fp, "az: " );
-  zVec3DFWrite( fp, zEllips3DAxis( ellips, zZ ) );
+  zVec3DFPrint( fp, zEllips3DAxis( ellips, zZ ) );
   fprintf( fp, "rx: %.10g\n", zEllips3DRadiusX( ellips ) );
   fprintf( fp, "ry: %.10g\n", zEllips3DRadiusY( ellips ) );
   fprintf( fp, "rz: %.10g\n", zEllips3DRadiusZ( ellips ) );
@@ -350,10 +319,10 @@ static void _zPrim3DBaryInertiaEllips(void *prim, zVec3D *c, zMat3D *i){
   zEllips3DInertia( prim, i ); }
 static zPH3D *_zPrim3DToPHEllips(void *prim, zPH3D *ph){
   return zEllips3DToPH( prim, ph ); }
-static void *_zPrim3DFReadEllips(FILE *fp, void *prim){
-  return zEllips3DFRead( fp, prim ); }
-static void _zPrim3DFWriteEllips(FILE *fp, void *prim){
-  return zEllips3DFWrite( fp, prim ); }
+static void *_zPrim3DFScanEllips(FILE *fp, void *prim){
+  return zEllips3DFScan( fp, prim ); }
+static void _zPrim3DFPrintEllips(FILE *fp, void *prim){
+  return zEllips3DFPrint( fp, prim ); }
 
 zPrimCom zprim_ellips3d_com = {
   _zPrim3DInitEllips,
@@ -370,6 +339,6 @@ zPrimCom zprim_ellips3d_com = {
   _zPrim3DInertiaEllips,
   _zPrim3DBaryInertiaEllips,
   _zPrim3DToPHEllips,
-  _zPrim3DFReadEllips,
-  _zPrim3DFWriteEllips,
+  _zPrim3DFScanEllips,
+  _zPrim3DFPrintEllips,
 };

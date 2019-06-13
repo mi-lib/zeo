@@ -11,7 +11,7 @@
  * 3D box class
  * ********************************************************** */
 
-static bool _zBox3DFRead(FILE *fp, void *instance, char *buf, bool *success);
+static bool _zBox3DFScan(FILE *fp, void *instance, char *buf, bool *success);
 
 /* create a 3D box. */
 zBox3D *zBox3DCreate(zBox3D *box, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double d, double w, double h)
@@ -51,7 +51,7 @@ zBox3D *zBox3DMirror(zBox3D *src, zBox3D *dest, zAxis axis)
   return dest;
 }
 
-/* transfer a 3D box. */
+/* transform coordinates of a 3D box. */
 zBox3D *zBox3DXfer(zBox3D *src, zFrame3D *f, zBox3D *dest)
 {
   zXfer3D( f, zBox3DCenter(src), zBox3DCenter(dest) );
@@ -64,7 +64,7 @@ zBox3D *zBox3DXfer(zBox3D *src, zFrame3D *f, zBox3D *dest)
   return dest;
 }
 
-/* inversely transfer a 3D box. */
+/* inversely transform coordinates of a 3D box. */
 zBox3D *zBox3DXferInv(zBox3D *src, zFrame3D *f, zBox3D *dest)
 {
   zXfer3DInv( f, zBox3DCenter(src), zBox3DCenter(dest) );
@@ -173,21 +173,21 @@ zPH3D* zBox3DToPH(zBox3D *box, zPH3D *ph)
   return ph;
 }
 
-/* input a 3D box from file. */
-bool _zBox3DFRead(FILE *fp, void *instance, char *buf, bool *success)
+/* scan a 3D box from a file. */
+bool _zBox3DFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
   zVec3D a;
 
   if( strcmp( buf, "center" ) == 0 )
-    zVec3DFRead( fp, zBox3DCenter( (zBox3D *)instance ) );
+    zVec3DFScan( fp, zBox3DCenter( (zBox3D *)instance ) );
   else if( strcmp( buf, "ax" ) == 0 ){
-    zVec3DFRead( fp, &a );
+    zVec3DFScan( fp, &a );
     zVec3DNormalize( &a, zBox3DAxis( (zBox3D *)instance, zX ) );
   } else if( strcmp( buf, "ay" ) == 0 ){
-    zVec3DFRead( fp, &a );
+    zVec3DFScan( fp, &a );
     zVec3DNormalize( &a, zBox3DAxis( (zBox3D *)instance, zY ) );
   } else if( strcmp( buf, "az" ) == 0 ){
-    zVec3DFRead( fp, &a );
+    zVec3DFScan( fp, &a );
     zVec3DNormalize( &a, zBox3DAxis( (zBox3D *)instance, zZ ) );
   } else if( strcmp( buf, "depth" ) == 0 )
     zBox3DSetDepth( (zBox3D *)instance, zFDouble( fp ) );
@@ -200,57 +200,57 @@ bool _zBox3DFRead(FILE *fp, void *instance, char *buf, bool *success)
   return true;
 }
 
-/* input a 3D box from file. */
-zBox3D *zBox3DFRead(FILE *fp, zBox3D *box)
+/* scan a 3D box from a file. */
+zBox3D *zBox3DFScan(FILE *fp, zBox3D *box)
 {
   zBox3DInit( box );
-  zFieldFRead( fp, _zBox3DFRead, box );
+  zFieldFScan( fp, _zBox3DFScan, box );
   return box;
 }
 
-/* output a 3D box to file. */
-void zBox3DFWrite(FILE *fp, zBox3D *box)
+/* print a 3D box out to a file. */
+void zBox3DFPrint(FILE *fp, zBox3D *box)
 {
   fprintf( fp, "center: " );
-  zVec3DFWrite( fp, zBox3DCenter( box ) );
+  zVec3DFPrint( fp, zBox3DCenter( box ) );
   fprintf( fp, "ax: " );
-  zVec3DFWrite( fp, zBox3DAxis( box, zX ) );
+  zVec3DFPrint( fp, zBox3DAxis( box, zX ) );
   fprintf( fp, "ay: " );
-  zVec3DFWrite( fp, zBox3DAxis( box, zY ) );
+  zVec3DFPrint( fp, zBox3DAxis( box, zY ) );
   fprintf( fp, "az: " );
-  zVec3DFWrite( fp, zBox3DAxis( box, zZ ) );
+  zVec3DFPrint( fp, zBox3DAxis( box, zZ ) );
   fprintf( fp, "depth: %.10g\n", zBox3DDepth( box ) );
   fprintf( fp, "width: %.10g\n", zBox3DWidth( box ) );
   fprintf( fp, "height: %.10g\n", zBox3DHeight( box ) );
 }
 
-/* output a 3D box to a file in a format to be plotted. */
-void zBox3DDataFWrite(FILE *fp, zBox3D *box)
+/* print a 3D box out to a file in a format to be plotted. */
+void zBox3DDataFPrint(FILE *fp, zBox3D *box)
 {
   zVec3D v[8];
   register int i;
 
   for( i=0; i<8; i++ )
     zBox3DVert( box, i, &v[i] );
-  zVec3DDataNLFWrite( fp, &v[0] );
-  zVec3DDataNLFWrite( fp, &v[1] );
-  zVec3DDataNLFWrite( fp, &v[2] );
-  zVec3DDataNLFWrite( fp, &v[3] );
-  zVec3DDataNLFWrite( fp, &v[0] );
-  zVec3DDataNLFWrite( fp, &v[4] );
-  zVec3DDataNLFWrite( fp, &v[5] );
-  zVec3DDataNLFWrite( fp, &v[6] );
-  zVec3DDataNLFWrite( fp, &v[7] );
-  zVec3DDataNLFWrite( fp, &v[4] );
+  zVec3DDataNLFPrint( fp, &v[0] );
+  zVec3DDataNLFPrint( fp, &v[1] );
+  zVec3DDataNLFPrint( fp, &v[2] );
+  zVec3DDataNLFPrint( fp, &v[3] );
+  zVec3DDataNLFPrint( fp, &v[0] );
+  zVec3DDataNLFPrint( fp, &v[4] );
+  zVec3DDataNLFPrint( fp, &v[5] );
+  zVec3DDataNLFPrint( fp, &v[6] );
+  zVec3DDataNLFPrint( fp, &v[7] );
+  zVec3DDataNLFPrint( fp, &v[4] );
   fprintf( fp, "\n" );
-  zVec3DDataNLFWrite( fp, &v[1] );
-  zVec3DDataNLFWrite( fp, &v[5] );
+  zVec3DDataNLFPrint( fp, &v[1] );
+  zVec3DDataNLFPrint( fp, &v[5] );
   fprintf( fp, "\n" );
-  zVec3DDataNLFWrite( fp, &v[2] );
-  zVec3DDataNLFWrite( fp, &v[6] );
+  zVec3DDataNLFPrint( fp, &v[2] );
+  zVec3DDataNLFPrint( fp, &v[6] );
   fprintf( fp, "\n" );
-  zVec3DDataNLFWrite( fp, &v[3] );
-  zVec3DDataNLFWrite( fp, &v[7] );
+  zVec3DDataNLFPrint( fp, &v[3] );
+  zVec3DDataNLFPrint( fp, &v[7] );
   fprintf( fp, "\n\n" );
 }
 
@@ -284,10 +284,10 @@ static void _zPrim3DBaryInertiaBox(void *prim, zVec3D *c, zMat3D *i){
   zBox3DInertia( prim, i ); }
 static zPH3D *_zPrim3DToPHBox(void *prim, zPH3D *ph){
   return zBox3DToPH( prim, ph ); }
-static void *_zPrim3DFReadBox(FILE *fp, void *prim){
-  return zBox3DFRead( fp, prim ); }
-static void _zPrim3DFWriteBox(FILE *fp, void *prim){
-  return zBox3DFWrite( fp, prim ); }
+static void *_zPrim3DFScanBox(FILE *fp, void *prim){
+  return zBox3DFScan( fp, prim ); }
+static void _zPrim3DFPrintBox(FILE *fp, void *prim){
+  return zBox3DFPrint( fp, prim ); }
 
 zPrimCom zprim_box3d_com = {
   _zPrim3DInitBox,
@@ -304,6 +304,6 @@ zPrimCom zprim_box3d_com = {
   _zPrim3DInertiaBox,
   _zPrim3DBaryInertiaBox,
   _zPrim3DToPHBox,
-  _zPrim3DFReadBox,
-  _zPrim3DFWriteBox,
+  _zPrim3DFScanBox,
+  _zPrim3DFPrintBox,
 };

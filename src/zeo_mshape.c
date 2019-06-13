@@ -11,11 +11,11 @@
  * multiple 3D shape class
  * ********************************************************** */
 
-static bool _zMShape3DFRead(FILE *fp, void *instance, char *buf, bool *success);
+static bool _zMShape3DFScan(FILE *fp, void *instance, char *buf, bool *success);
 static zMShape3D *_zMShape3DOpticFAlloc(FILE *fp, zMShape3D *ms);
 static zMShape3D *_zMShape3DShapeFAlloc(FILE *fp, zMShape3D *ms);
-static zMShape3D *_zMShape3DOpticFRead(FILE *fp, zMShape3D *ms, int i);
-static zMShape3D *_zMShape3DShapeFRead(FILE *fp, zMShape3D *ms, int i);
+static zMShape3D *_zMShape3DOpticFScan(FILE *fp, zMShape3D *ms, int i);
+static zMShape3D *_zMShape3DShapeFScan(FILE *fp, zMShape3D *ms, int i);
 
 /* initialize multiple shapes. */
 zMShape3D *zMShape3DInit(zMShape3D *ms)
@@ -123,15 +123,15 @@ zMShape3D *zMShape3DToPH(zMShape3D *ms)
   return ms;
 }
 
-/* read informationi of multiple shapes from file. */
-zMShape3D *zMShape3DReadFile(zMShape3D *ms, char filename[])
+/* scan informationi of multiple shapes from a file. */
+zMShape3D *zMShape3DScanFile(zMShape3D *ms, char filename[])
 {
   FILE *fp;
   zMShape3D *ret;
 
   if( !( fp = zOpenZTKFile( filename, "r" ) ) )
     return NULL;
-  ret = zMShape3DFRead( fp, ms );
+  ret = zMShape3DFScan( fp, ms );
   fclose( fp );
   return ret;
 }
@@ -142,27 +142,27 @@ typedef struct{
   int sc;
 } _zMShape3DParam;
 
-/* read information of multiple shapes from file (internal operation). */
-bool _zMShape3DFRead(FILE *fp, void *instance, char *buf, bool *success)
+/* scan information of multiple shapes from a file (internal operation). */
+bool _zMShape3DFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
   _zMShape3DParam *prm;
 
   prm = instance;
   if( strcmp( buf, ZOPTIC_TAG ) == 0 ){
     if( prm->oc >= zMShape3DOpticNum(prm->ms) ) return false;
-    if( !_zMShape3DOpticFRead( fp, prm->ms, prm->oc++ ) )
+    if( !_zMShape3DOpticFScan( fp, prm->ms, prm->oc++ ) )
       return ( *success = false );
   } else if( strcmp( buf, ZSHAPE_TAG ) == 0 ){
     if( prm->sc >= zMShape3DShapeNum(prm->ms) ) return false;
-    if( !_zMShape3DShapeFRead( fp, prm->ms, prm->sc++ ) )
+    if( !_zMShape3DShapeFScan( fp, prm->ms, prm->sc++ ) )
       return ( *success = false );
   } else
     return false;
   return true;
 }
 
-/* read information of multiple shapes from file. */
-zMShape3D *zMShape3DFRead(FILE *fp, zMShape3D *ms)
+/* scan information of multiple shapes from a file. */
+zMShape3D *zMShape3DFScan(FILE *fp, zMShape3D *ms)
 {
   _zMShape3DParam prm;
 
@@ -171,7 +171,7 @@ zMShape3D *zMShape3DFRead(FILE *fp, zMShape3D *ms)
     prm.ms = ms;
     prm.sc = 0;
     prm.oc = 0;
-    if( zTagFRead( fp, _zMShape3DFRead, &prm ) ) return ms;
+    if( zTagFScan( fp, _zMShape3DFScan, &prm ) ) return ms;
   }
   zMShape3DDestroy( ms );
   return NULL;
@@ -205,14 +205,14 @@ zMShape3D *_zMShape3DShapeFAlloc(FILE *fp, zMShape3D *ms)
   return ms;
 }
 
-/* read optical information of multiple shapes. */
-zMShape3D *_zMShape3DOpticFRead(FILE *fp, zMShape3D *ms, int i)
+/* scan optical information of multiple shapes. */
+zMShape3D *_zMShape3DOpticFScan(FILE *fp, zMShape3D *ms, int i)
 {
   if( i >= zMShape3DOpticNum(ms) ){
     ZRUNERROR( ZEO_ERR_OPT_MANY );
     return NULL;
   }
-  if( !zOpticalInfoFRead( fp, zMShape3DOptic(ms,i) ) ){
+  if( !zOpticalInfoFScan( fp, zMShape3DOptic(ms,i) ) ){
     ZRUNERROR( ZEO_ERR_OPT_INV );
     return NULL;
   }
@@ -223,14 +223,14 @@ zMShape3D *_zMShape3DOpticFRead(FILE *fp, zMShape3D *ms, int i)
   return ms;
 }
 
-/* read information of a shape of multiple shapes. */
-zMShape3D *_zMShape3DShapeFRead(FILE *fp, zMShape3D *ms, int i)
+/* scan information of a shape of multiple shapes. */
+zMShape3D *_zMShape3DShapeFScan(FILE *fp, zMShape3D *ms, int i)
 {
   if( i >= zMShape3DShapeNum(ms) ){
     ZRUNERROR( ZEO_ERR_SHAPE_MANY );
     return NULL;
   }
-  if( !zShape3DFRead( fp, zMShape3DShape(ms,i),
+  if( !zShape3DFScan( fp, zMShape3DShape(ms,i),
     zMShape3DShapeBuf(ms), zMShape3DShapeNum(ms),
     zMShape3DOpticBuf(ms), zMShape3DOpticNum(ms) ) ){
     ZRUNERROR( ZEO_ERR_SHAPE_INV );
@@ -243,8 +243,8 @@ zMShape3D *_zMShape3DShapeFRead(FILE *fp, zMShape3D *ms, int i)
   return ms;
 }
 
-/* output information of multiple shapes to file. */
-bool zMShape3DWriteFile(zMShape3D *ms, char filename[])
+/* print information of multiple shapes out to a file. */
+bool zMShape3DPrintFile(zMShape3D *ms, char filename[])
 {
   char fname[BUFSIZ];
   FILE *fp;
@@ -253,22 +253,22 @@ bool zMShape3DWriteFile(zMShape3D *ms, char filename[])
     ZOPENERROR( fname );
     return false;
   }
-  zMShape3DFWrite( fp, ms );
+  zMShape3DFPrint( fp, ms );
   fclose( fp );
   return true;
 }
 
-/* output information of multiple shapes to file. */
-void zMShape3DFWrite(FILE *fp, zMShape3D *ms)
+/* print information of multiple shapes out to a file. */
+void zMShape3DFPrint(FILE *fp, zMShape3D *ms)
 {
   register int i;
 
   for( i=0; i<zMShape3DOpticNum(ms); i++ ){
     fprintf( fp, "[%s]\n", ZOPTIC_TAG );
-    zOpticalInfoFWrite( fp, zMShape3DOptic( ms, i ) );
+    zOpticalInfoFPrint( fp, zMShape3DOptic( ms, i ) );
   }
   for( i=0; i<zMShape3DShapeNum(ms); i++ ){
     fprintf( fp, "[%s]\n", ZSHAPE_TAG );
-    zShape3DFWrite( fp, zMShape3DShape( ms, i ) );
+    zShape3DFPrint( fp, zMShape3DShape( ms, i ) );
   }
 }

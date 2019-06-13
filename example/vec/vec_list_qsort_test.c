@@ -35,9 +35,9 @@ int main(void)
   zVec3DList vl;
 
   test_vert( &vl );
-  zVec3DListWrite( &vl );
+  zVec3DListPrint( &vl );
   zVec3DListQuickSort( &vl, cmp, NULL );
-  zVec3DListWrite( &vl );
+  zVec3DListPrint( &vl );
   zVec3DListDestroy( &vl );
   return 0;
 }

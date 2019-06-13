@@ -28,8 +28,8 @@ __EXPORT void zAABoxTree3DDestroy(zAABoxTree3D *tree);
 /*! \brief add an axis-aligned box to an AABB tree. */
 __EXPORT bool zAABoxTree3DAdd(zAABoxTree3D *tree, zAABox3D *box);
 
-/*! \brief output an AABB tree to a file. */
-__EXPORT void zAABoxTree3DFWrite(FILE *fp, zAABoxTree3D *tree);
+/*! \brief print an AABB tree out to a file. */
+__EXPORT void zAABoxTree3DFPrint(FILE *fp, zAABoxTree3D *tree);
 
 __END_DECLS
 

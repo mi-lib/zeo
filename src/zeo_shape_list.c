@@ -11,9 +11,7 @@
  * shape list class
  * ********************************************************** */
 
-/* zShapeListPush
- * - push of shape list.
- */
+/* push a shape to a list. */
 zShapeListCell *zShapeListPush(zShapeList *l, zShape3D *shape)
 {
   zShapeListCell *cp;
@@ -24,9 +22,7 @@ zShapeListCell *zShapeListPush(zShapeList *l, zShape3D *shape)
   return cp;
 }
 
-/* zShapeListPop
- * - pop of shape list.
- */
+/* pop a shape from a list. */
 zShape3D *zShapeListPop(zShapeList *l)
 {
   zShapeListCell *cp;
@@ -39,9 +35,7 @@ zShape3D *zShapeListPop(zShapeList *l)
   return shape;
 }
 
-/* zShapeListContigVert
- * - contiguous vertix of shape list to a point.
- */
+/* contiguous vertix of shapes in a list to a point. */
 zVec3D *zShapeListContigVert(zShapeList *l, zVec3D *p, double *d)
 {
   zShapeListCell *cp;
@@ -63,9 +57,7 @@ zVec3D *zShapeListContigVert(zShapeList *l, zVec3D *p, double *d)
   return v;
 }
 
-/* zShapeListClosest
- * - the closest point to shape list.
- */
+/* the closest point to a shape in a list. */
 double zShapeListClosest(zShapeList *l, zVec3D *p, zVec3D *cp)
 {
   zShapeListCell *c;
@@ -82,22 +74,18 @@ double zShapeListClosest(zShapeList *l, zVec3D *p, zVec3D *cp)
   return dmin;
 }
 
-/* zShapeListCellFWrite
- * - output of shape list cell.
- */
-void zShapeListCellFWrite(FILE *fp, zShapeListCell *cell)
+/* print a cell of a shape list out to a file. */
+void zShapeListCellFPrint(FILE *fp, zShapeListCell *cell)
 {
   if( !cell || !zShapeListCellShape(cell) ) return;
-  zShape3DFWrite( fp, zShapeListCellShape(cell) );
+  zShape3DFPrint( fp, zShapeListCellShape(cell) );
 }
 
-/* zShapeListFWrite
- * - output of shape list.
- */
-void zShapeListFWrite(FILE *fp, zShapeList *list)
+/* print a list of shapes. */
+void zShapeListFPrint(FILE *fp, zShapeList *list)
 {
   zShapeListCell *cp;
 
   zListForEach( list, cp )
-    zShapeListCellFWrite( fp, cp );
+    zShapeListCellFPrint( fp, cp );
 }

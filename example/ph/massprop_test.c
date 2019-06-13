@@ -1,6 +1,6 @@
 #include <zeo/zeo.h>
 
-#define MODEL "../model/cube.zph"
+#define MODEL "../model/cube.ztk"
 
 int main(void)
 {
@@ -14,19 +14,19 @@ int main(void)
     ZOPENERROR( MODEL );
     return 1;
   }
-  fgets( buf, BUFSIZ, fp ); /* skip */
-  fgets( buf, BUFSIZ, fp ); /* skip */
-  zPH3DFRead( fp, &ph );
+  if( !fgets( buf, BUFSIZ, fp ) ) exit( 1 ); /* skip */
+  if( !fgets( buf, BUFSIZ, fp ) ) exit( 1 ); /* skip */
+  zPH3DFScan( fp, &ph );
   fclose( fp );
 
-  zPH3DWrite( &ph );
+  zPH3DPrint( &ph );
   printf( "volume = %f\n", zPH3DVolume( &ph ) );
   zPH3DBarycenter( &ph, &p );
-  printf( "barycenter: " ); zVec3DWrite( &p );
+  printf( "barycenter: " ); zVec3DPrint( &p );
   zPH3DInertia( &ph, &i );
-  printf( "inertia: " ); zMat3DWrite( &i );
+  printf( "inertia: " ); zMat3DPrint( &i );
   zPH3DBaryInertia( &ph, &p, &i );
-  printf( "barycenter: " ); zVec3DWrite( &p );
-  printf( "inertia about barycenter: " ); zMat3DWrite( &i );
+  printf( "barycenter: " ); zVec3DPrint( &p );
+  printf( "inertia about barycenter: " ); zMat3DPrint( &i );
   return 0;
 }

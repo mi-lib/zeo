@@ -61,34 +61,35 @@ __EXPORT void zVec3DListDestroy(zVec3DList *list);
  */
 __EXPORT zVec3DList *zVec3DListQuickSort(zVec3DList *list, int (*cmp)(void*,void*,void*), void *priv);
 
-/*! \brief output a list of 3D vectors.
+/*! \brief print a list of 3D vectors.
  *
- * zVec3DListFWrite() writes a list of 3D vectors \a list to the
- * current position of a file \a fp in the following style.
+ * zVec3DListFPrint() prints a list of 3D vectors \a list out
+ * to the current position of a file \a fp in the following style.
  * n
  *  ( x1, y1, z1 )
  *   ...
  *  ( xn, yn, zn )
- * zVec3DDataWrite() outputs \a list to the standard output.
+ * zVec3DDataPrint() prints \a list out to the standard output.
  * \return
- * zVec3DListFWrite() and zVec3DListWrite() return no value.
+ * zVec3DListFPrint() and zVec3DListPrint() return no value.
  */
-__EXPORT void zVec3DListFWrite(FILE *fp, zVec3DList *list);
-#define zVec3DListWrite(l) zVec3DListFWrite( stdout, (l) )
+__EXPORT void zVec3DListFPrint(FILE *fp, zVec3DList *list);
+#define zVec3DListPrint(l) zVec3DListFPrint( stdout, (l) )
 
-/*! \brief output a list of 3D vectors in a plain form.
+/*! \brief print a list of 3D vectors in a plain form.
  *
- * zVec3DListDataFWrite() writes a list of 3D vectors \a list to the
- * current position of the file \a fp in the following style.
+ * zVec3DListDataFPrint() prints a list of 3D vectors \a list
+ * out to the current position of the file \a fp in the following
+ * style.
  *  x1, y1, z1
  *   ...
  *  xn, yn, zn
- * zVec3DListDataWrite() outputs \a list to the standard output.
+ * zVec3DListDataPrint() prints \a list out to the standard output.
  * \return
- * zVec3DListDataFWrite() and zVec3DListDataWrite() return no value.
+ * zVec3DListDataFPrint() and zVec3DListDataPrint() return no value.
  */
-__EXPORT void zVec3DListDataFWrite(FILE *fp, zVec3DList *list);
-#define zVec3DListDataWrite(l) zVec3DListDataFWrite( stdout, (l) )
+__EXPORT void zVec3DListDataFPrint(FILE *fp, zVec3DList *list);
+#define zVec3DListDataPrint(l) zVec3DListDataFPrint( stdout, (l) )
 
 /* ********************************************************** */
 /* CLASS: zVec3DAddrList
@@ -151,35 +152,36 @@ __EXPORT zVec3DAddrList *zVec3DAddrListClone(zVec3DAddrList *src, zVec3DAddrList
  */
 __EXPORT zVec3DAddrList *zVec3DAddrListQuickSort(zVec3DAddrList *list, int (*cmp)(void*,void*,void*), void *priv);
 
-/*! \brief output a list of pointers to 3D vectors.
+/*! \brief print a list of pointers to 3D vectors.
  *
- * zVec3DAddrListFWrite() writes a list of pointers to 3D vectors \a list
- * to the current position of a file \a fp in the following style.
+ * zVec3DAddrListFPrint() prints a list of pointers to 3D vectors
+ * \a list to the current position of a file \a fp in the following
+ * style.
  * n
  *  ( x1, y1, z1 )
  *   ...
  *  ( xn, yn, zn )
- * zVec3DAddrListWrite() outputs \a list to the standard output.
+ * zVec3DAddrListPrint() prints \a list out to the standard output.
  * \return
- * zVec3DAddrListFWrite() and zVec3DAddrListWrite() return no value.
+ * zVec3DAddrListFPrint() and zVec3DAddrListPrint() return no value.
  */
-__EXPORT void zVec3DAddrListFWrite(FILE *fp, zVec3DAddrList *list);
-#define zVec3DAddrListWrite(l) zVec3DAddrListFWrite( stdout, (l) )
+__EXPORT void zVec3DAddrListFPrint(FILE *fp, zVec3DAddrList *list);
+#define zVec3DAddrListPrint(l) zVec3DAddrListFPrint( stdout, (l) )
 
-/*! \brief output a list of pointers to 3D vectors in a plain form.
+/*! \brief print a list of pointers to 3D vectors in a plain form.
  *
- * zVec3DAddrListDataFWrite() writes a list of pointers to 3D vectors
- * \a list to the current position of the file \a fp in the following
+ * zVec3DAddrListDataFPrint() prints a list of pointers to 3D vectors
+ * \a list out to the current position of a file \a fp in the following
  * style.
  *  x1, y1, z1
  *   ...
  *  xn, yn, zn
- * zVec3DAddrListDataWrite() outputs \a list to the standard output.
+ * zVec3DAddrListDataPrint() prints \a list out to the standard output.
  * \return
- * zVec3DAddrListDataFWrite() and zVec3DAddrListDataWrite() return no value.
+ * zVec3DAddrListDataFPrint() and zVec3DAddrListDataPrint() return no value.
  */
-__EXPORT void zVec3DAddrListDataFWrite(FILE *fp, zVec3DAddrList *list);
-#define zVec3DAddrListDataWrite(l) zVec3DAddrListDataFWrite( stdout, (l) )
+__EXPORT void zVec3DAddrListDataFPrint(FILE *fp, zVec3DAddrList *list);
+#define zVec3DAddrListDataPrint(l) zVec3DAddrListDataFPrint( stdout, (l) )
 
 /* ********************************************************** */
 /* point cloud utilities

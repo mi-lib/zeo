@@ -14,7 +14,7 @@ void vec_create_rand(zVec3DList *pl)
   for( i=0; i<N; i++ ){
     zVec3DCreatePolar( &v, zRandF(-0.5,0.5), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
     v.e[0] += 3;
-    zVec3DDataNLFWrite( fp, &v );
+    zVec3DDataNLFPrint( fp, &v );
     zVec3DListInsert( pl, &v );
   }
   fclose( fp );
@@ -28,17 +28,17 @@ void output(zPH3D *ph)
   eprintf( "%d vertices, %d faces.\n", zPH3DVertNum(ph), zPH3DFaceNum(ph) );
   fp = fopen( "ch", "w" );
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
-    zVec3DDataNLFWrite( fp, zPH3DFaceVert(ph,i,0) );
-    zVec3DDataNLFWrite( fp, zPH3DFaceVert(ph,i,1) );
+    zVec3DDataNLFPrint( fp, zPH3DFaceVert(ph,i,0) );
+    zVec3DDataNLFPrint( fp, zPH3DFaceVert(ph,i,1) );
     fprintf( fp, "\n" );
-    zVec3DDataNLFWrite( fp, zPH3DFaceVert(ph,i,2) );
-    zVec3DDataNLFWrite( fp, zPH3DFaceVert(ph,i,2) );
+    zVec3DDataNLFPrint( fp, zPH3DFaceVert(ph,i,2) );
+    zVec3DDataNLFPrint( fp, zPH3DFaceVert(ph,i,2) );
     fprintf( fp, "\n\n" );
   }
   fclose( fp );
   fp = fopen( "chv", "w" );
   for( i=0; i<zPH3DVertNum(ph); i++ )
-    zVec3DDataNLFWrite( fp, zPH3DVert(ph,i) );
+    zVec3DDataNLFPrint( fp, zPH3DVert(ph,i) );
   fclose( fp );
 
   /* for visualization */
@@ -54,7 +54,7 @@ void output(zPH3D *ph)
   printf( "name: ch\n" );
   printf( "type: polyhedron\n" );
   printf( "optic: white\n" );
-  zPH3DWrite( ph );
+  zPH3DPrint( ph );
 }
 
 int main(void)
