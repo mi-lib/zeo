@@ -63,10 +63,10 @@ static zPH3D *_zQH2PH3D(zQH *qh, zPH3D *ph);
 #ifdef DEBUG
 static void _zQHFacetInfo(zQHFacet *f);
 static void _zQHFacetListInfo(zQHFacetList *fl);
-static void _zQHPointListWrite(zQHPointList *pl, char filename[]);
-static void _zQHFacetListWrite(zQHFacetList *fl, char filename[]);
-static void _zQHWrite(zQH *qh);
-static void _zQHWrite2(zQH *qh);
+static void _zQHPointListPrint(zQHPointList *pl, char filename[]);
+static void _zQHFacetListPrint(zQHFacetList *fl, char filename[]);
+static void _zQHPrint(zQH *qh);
+static void _zQHPrint2(zQH *qh);
 #endif /* DEBUG */
 
 /* facet/point operation */
@@ -668,13 +668,13 @@ zPH3D *zCH3D(zPH3D *ch, zVec3D p[], int num)
 void _zQHFacetInfo(zQHFacet *f)
 {
   printf( ">> facet:%p\n", f );
-  printf( "[vert#0] " ); zVec3DWrite( f->p[0]->v );
-  printf( "[vert#1] " ); zVec3DWrite( f->p[1]->v );
-  printf( "[vert#2] " ); zVec3DWrite( f->p[2]->v );
+  printf( "[vert#0] " ); zVec3DPrint( f->p[0]->v );
+  printf( "[vert#1] " ); zVec3DPrint( f->p[1]->v );
+  printf( "[vert#2] " ); zVec3DPrint( f->p[2]->v );
   printf( "[contig#0] %p %g %s\n", f->c[0], zVec3DInnerProd(&f->n,&f->c[0]->n)-1, f->merge[0] ? " :merged" : "" );
   printf( "[contig#1] %p %g %s\n", f->c[1], zVec3DInnerProd(&f->n,&f->c[1]->n)-1, f->merge[1] ? " :merged" : "" );
   printf( "[contig#2] %p %g %s\n", f->c[2], zVec3DInnerProd(&f->n,&f->c[2]->n)-1, f->merge[2] ? " :merged" : "" );
-  printf( "normal vector: " ); zVec3DWrite( &f->n );
+  printf( "normal vector: " ); zVec3DPrint( &f->n );
 }
 
 void _zQHFacetListInfo(zQHFacetList *fl)
@@ -685,50 +685,50 @@ void _zQHFacetListInfo(zQHFacetList *fl)
     _zQHFacetInfo( &fc->data );
 }
 
-void _zQHPointListWrite(zQHPointList *pl, char filename[])
+void _zQHPointListPrint(zQHPointList *pl, char filename[])
 {
   zQHPointListCell *pc;
   FILE *fp;
 
   fp = fopen( filename, "w" );
   zListForEach( pl, pc )
-    zVec3DDataNLFWrite( fp, pc->data.v );
+    zVec3DDataNLFPrint( fp, pc->data.v );
   fclose( fp );
 }
 
-void _zQHFacetListWrite(zQHFacetList *fl, char filename[])
+void _zQHFacetListPrint(zQHFacetList *fl, char filename[])
 {
   zQHFacetListCell *fc;
   FILE *fp;
 
   fp = fopen( filename, "w" );
   zListForEach( fl, fc ){
-    zVec3DDataNLFWrite( fp, fc->data.p[1]->v );
-    zVec3DDataNLFWrite( fp, fc->data.p[2]->v );
+    zVec3DDataNLFPrint( fp, fc->data.p[1]->v );
+    zVec3DDataNLFPrint( fp, fc->data.p[2]->v );
     fprintf( fp, "\n" );
-    zVec3DDataNLFWrite( fp, fc->data.p[0]->v );
-    zVec3DDataNLFWrite( fp, fc->data.p[0]->v );
+    zVec3DDataNLFPrint( fp, fc->data.p[0]->v );
+    zVec3DDataNLFPrint( fp, fc->data.p[0]->v );
     fprintf( fp, "\n\n" );
   }
   fclose(fp);
 }
 
-void _zQHWrite(zQH *qh)
+void _zQHPrint(zQH *qh)
 {
   zQHFacetListCell *fc;
   zQHPointListCell *pc;
   FILE *fp;
 
-  _zQHFacetListWrite( &qh->fl, "ch" );
-  _zQHPointListWrite( &qh->vl, "chv" );
+  _zQHFacetListPrint( &qh->fl, "ch" );
+  _zQHPointListPrint( &qh->vl, "chv" );
   fp = fopen( "op", "w" );
   zListForEach( &qh->fl, fc )
     zListForEach( &fc->data.op, pc )
-      zVec3DDataNLFWrite( fp, pc->data.v );
+      zVec3DDataNLFPrint( fp, pc->data.v );
   fclose( fp );
 }
 
-void _zQHWrite2(zQH *qh)
+void _zQHPrint2(zQH *qh)
 {
   zQHFacetListCell *fc;
   zQHPointListCell *pc;
@@ -736,13 +736,13 @@ void _zQHWrite2(zQH *qh)
   int i=0;
   char filename[BUFSIZ];
 
-  _zQHFacetListWrite( &qh->fl, "ch" );
-  _zQHPointListWrite( &qh->vl, "chv" );
+  _zQHFacetListPrint( &qh->fl, "ch" );
+  _zQHPointListPrint( &qh->vl, "chv" );
   zListForEach( &qh->fl, fc ){
     sprintf( filename, "op%03d", i );
     fp = fopen( filename, "w" );
     zListForEach( &fc->data.op, pc )
-      zVec3DDataNLFWrite( fp, pc->data.v );
+      zVec3DDataNLFPrint( fp, pc->data.v );
     fclose( fp );
     i++;
   }

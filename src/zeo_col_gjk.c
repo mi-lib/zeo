@@ -22,16 +22,16 @@ typedef struct{
 
 static void _zGJKSlotInit(zGJKSlot *slot);
 #ifdef DEBUG
-static void _zGJKSlotVertFWrite(FILE *fp, zGJKSlot *slot);
-static void _zGJKSlotWrite(zGJKSlot *slot);
+static void _zGJKSlotVertFPrint(FILE *fp, zGJKSlot *slot);
+static void _zGJKSlotPrint(zGJKSlot *slot);
 #endif
 
 static void _zGJKSimplexInit(zGJKSimplex *s);
 #ifdef DEBUG
-static void _zGJKSimplexYWrite(zGJKSimplex *s);
-static void _zGJKSimplexWWrite(zGJKSimplex *s);
-static void _zGJKSimplexYVertFWrite(FILE *fp, zGJKSimplex *s);
-static void _zGJKSimplexWVertFWrite(FILE *fp, zGJKSimplex *s);
+static void _zGJKSimplexYPrint(zGJKSimplex *s);
+static void _zGJKSimplexWPrint(zGJKSimplex *s);
+static void _zGJKSimplexYVertFPrint(FILE *fp, zGJKSimplex *s);
+static void _zGJKSimplexWVertFPrint(FILE *fp, zGJKSimplex *s);
 #endif
 
 static bool _zGJKSimplexCheckSlot(zGJKSimplex *s, zGJKSlot *slot);
@@ -54,22 +54,21 @@ void _zGJKSlotInit(zGJKSlot *slot)
 
 #ifdef DEBUG
 /* (static)
- * _zGJKSlotWrite
- * - output slot information.
+ * print out slot information.
  */
-void _zGJKSlotWrite(zGJKSlot *slot)
+void _zGJKSlotPrint(zGJKSlot *slot)
 {
-  printf( " w: " ); zVec3DWrite( &slot->w );
-  printf( " p1: " ); zVec3DWrite( slot->p1 );
-  printf( " p2: " ); zVec3DWrite( slot->p2 );
+  printf( " w: " ); zVec3DPrint( &slot->w );
+  printf( " p1: " ); zVec3DPrint( slot->p1 );
+  printf( " p2: " ); zVec3DPrint( slot->p2 );
   printf( " s = %g\n", slot->s );
 }
 
-/* output vertices of a slot. */
-void _zGJKSlotVertFWrite(FILE *fp, zGJKSlot *slot)
+/* print out vertices of a slot. */
+void _zGJKSlotVertFPrint(FILE *fp, zGJKSlot *slot)
 {
-  zVec3DDataFWrite( fp, slot->p1 );
-  zVec3DDataFWrite( fp, slot->p2 );
+  zVec3DDataFPrint( fp, slot->p1 );
+  zVec3DDataFPrint( fp, slot->p2 );
 }
 #endif
 
@@ -84,8 +83,8 @@ void _zGJKSimplexInit(zGJKSimplex *s)
 }
 
 #ifdef DEBUG
-/* output GJK simplex set Y (non-minimum simplex) */
-void _zGJKSimplexYWrite(zGJKSimplex *s)
+/* print out GJK simplex set Y (non-minimum simplex) */
+void _zGJKSimplexYPrint(zGJKSimplex *s)
 {
   register int i;
 
@@ -93,12 +92,12 @@ void _zGJKSimplexYWrite(zGJKSimplex *s)
   for( i=0; i<4; i++ )
     if( s->slot[i].sw_y ){
       printf( "<slot %d>\n", i );
-      _zGJKSlotWrite( &s->slot[i] );
+      _zGJKSlotPrint( &s->slot[i] );
     }
 }
 
-/* output GJK simplex set W (minimum simplex) */
-void _zGJKSimplexWWrite(zGJKSimplex *s)
+/* print out GJK simplex set W (minimum simplex) */
+void _zGJKSimplexWPrint(zGJKSimplex *s)
 {
   register int i;
 
@@ -106,28 +105,28 @@ void _zGJKSimplexWWrite(zGJKSimplex *s)
   for( i=0; i<4; i++ )
     if( s->slot[i].sw_w ){
       printf( "<slot %d>\n", i );
-      _zGJKSlotWrite( &s->slot[i] );
+      _zGJKSlotPrint( &s->slot[i] );
     }
 }
 
-/* output vertices of GJK simplex set Y (non-minimum simplex) */
-void _zGJKSimplexYVertFWrite(FILE *fp, zGJKSimplex *s)
+/* print out vertices of GJK simplex set Y (non-minimum simplex) */
+void _zGJKSimplexYVertFPrint(FILE *fp, zGJKSimplex *s)
 {
   register int i;
 
   for( i=0; i<4; i++ )
     if( s->slot[i].sw_y )
-      _zGJKSlotVertFWrite( fp, &s->slot[i] );
+      _zGJKSlotVertFPrint( fp, &s->slot[i] );
 }
 
-/* output vertices GJK simplex set W (minimum simplex) */
-void _zGJKSimplexWVertFWrite(FILE *fp, zGJKSimplex *s)
+/* prion out vertices GJK simplex set W (minimum simplex) */
+void _zGJKSimplexWVertFPrint(FILE *fp, zGJKSimplex *s)
 {
   register int i;
 
   for( i=0; i<4; i++ )
     if( s->slot[i].sw_w )
-      _zGJKSlotVertFWrite( fp, &s->slot[i] );
+      _zGJKSlotVertFPrint( fp, &s->slot[i] );
 }
 #endif
 
