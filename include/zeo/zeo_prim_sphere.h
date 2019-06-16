@@ -52,18 +52,18 @@ __EXPORT zSphere3D *zSphere3DInit(zSphere3D *sphere);
 __EXPORT zSphere3D *zSphere3DCopy(zSphere3D *src, zSphere3D *dest);
 __EXPORT zSphere3D *zSphere3DMirror(zSphere3D *src, zSphere3D *dest, zAxis axis);
 
-/*! \brief transfers a 3D sphere.
+/*! \brief transform coordinates of a 3D sphere.
  *
- * zSphere3DXfer() transforms a 3D sphere \a src by a transformation
- * frame \a f and puts it into \a dest.
+ * zSphere3DXform() transforms coordinates of a 3D sphere \a src by
+ * a frame \a f and puts it into \a dest.
  *
- * zSphere3DXferInv() transforms \a src by the inverse transformation
- * frame of \a f and puts it into \a dest.
+ * zSphere3DXformInv() transforms \a src by the inverse of a frame
+ * \a f and puts it into \a dest.
  * \return
- * zSphere3DXfer() and zSphere3DXferInv() return the pointer \a dest.
+ * zSphere3DXform() and zSphere3DXformInv() return the pointer \a dest.
  */
-__EXPORT zSphere3D *zSphere3DXfer(zSphere3D *src, zFrame3D *f, zSphere3D *dest);
-__EXPORT zSphere3D *zSphere3DXferInv(zSphere3D *src, zFrame3D *f, zSphere3D *dest);
+__EXPORT zSphere3D *zSphere3DXform(zSphere3D *src, zFrame3D *f, zSphere3D *dest);
+__EXPORT zSphere3D *zSphere3DXformInv(zSphere3D *src, zFrame3D *f, zSphere3D *dest);
 
 /*! \brief distance from a 3D point to a 3D sphere.
  *

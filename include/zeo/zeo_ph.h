@@ -64,24 +64,25 @@ __EXPORT zPH3D *zPH3DClone(zPH3D *src, zPH3D *dest);
 __EXPORT zPH3D *zPH3DMirror(zPH3D *src, zPH3D *dest, zAxis axis);
 __EXPORT void zPH3DDestroy(zPH3D *ph);
 
-/*! \brief transfer coordinates of a 3D polyhedron.
+/*! \brief transform coordinates of a 3D polyhedron.
  *
- * zPH3DXfer() transfers a 3D polyhedron \a src by a transformation
- * represented by \a f. The result is put into \a dest.
+ * zPH3DXform() transforms coordinates of vertices that form
+ * a 3D polyhedron \a src by a frame \a f. The result is put
+ * into \a dest.
  *
- * zPH3DXferInv() inversely transfers \a src by a transformation
- * represented by \a f. The result is put into \a dest.
+ * zPH3DXformInv() transforms \a src by the inversely of a
+ * frame \a f. The result is put into \a dest.
  *
- * In these functions, not only vertices are transferred, but the
- * information of correspondency between vertices and faces is also
- * copied.
+ * In these functions, not only vertices are transformed, but
+ * the information of correspondency between vertices and faces
+ * is also copied.
  * \notes
  * \a dest must have the same size of internal arrays with \a src.
  * \return
- * zPH3DXfer() and zPH3DXferInv() return a pointer \a dest.
+ * zPH3DXform() and zPH3DXformInv() return a pointer \a dest.
  */
-__EXPORT zPH3D *zPH3DXfer(zPH3D *src, zFrame3D *f, zPH3D *dest);
-__EXPORT zPH3D *zPH3DXferInv(zPH3D *src, zFrame3D *f, zPH3D *dest);
+__EXPORT zPH3D *zPH3DXform(zPH3D *src, zFrame3D *f, zPH3D *dest);
+__EXPORT zPH3D *zPH3DXformInv(zPH3D *src, zFrame3D *f, zPH3D *dest);
 
 /*! \brief return the contiguous vertex to another on a 3D polyhedron.
  *

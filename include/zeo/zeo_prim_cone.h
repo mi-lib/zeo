@@ -54,16 +54,16 @@ __EXPORT zCone3D *zCone3DMirror(zCone3D *src, zCone3D *dest, zAxis axis);
 
 /*! \brief transformation of a 3D cone.
  *
- * zCone3DXfer() transforms a 3D cone \a src by a transformation frame \a f,
- * and puts it into \a dest.
+ * zCone3DXform() transforms a 3D cone \a src by a frame \a f, and
+ * puts it into \a dest.
  *
- * zCone3DXferInv() transforms \a src by the inverse transformation frame of
+ * zCone3DXformInv() transforms \a src by the inverse of a frame
  * \a f and puts it into \a dest.
  * \return
- * Each of zCone3DXfer() and zCone3DXferInv() returns a pointer \a dest.
+ * zCone3DXform() and zCone3DXformInv() return a pointer \a dest.
  */
-__EXPORT zCone3D *zCone3DXfer(zCone3D *src, zFrame3D *f, zCone3D *dest);
-__EXPORT zCone3D *zCone3DXferInv(zCone3D *src, zFrame3D *f, zCone3D *dest);
+__EXPORT zCone3D *zCone3DXform(zCone3D *src, zFrame3D *f, zCone3D *dest);
+__EXPORT zCone3D *zCone3DXformInv(zCone3D *src, zFrame3D *f, zCone3D *dest);
 
 /*! \brief check if a point is inside of a cone.
  *

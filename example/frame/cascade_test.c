@@ -13,7 +13,7 @@ int main(void)
 
   zFrame3DCascade( &f1, &f2, &f3 );
   printf( "f3 = f1 f2:\n" ); zFrame3DPrint( &f3 );
-  zFrame3DXfer( &f1, &f3, &f13 );
+  zFrame3DXform( &f1, &f3, &f13 );
   printf( "f13= f3 f1^-1:\n" ); zFrame3DPrint( &f13 );
   zFrame3DCascade( &f1, &f13, &f );
 

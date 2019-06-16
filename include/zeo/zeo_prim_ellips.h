@@ -63,18 +63,18 @@ __EXPORT zEllips3D *zEllips3DInit(zEllips3D *ellips);
 __EXPORT zEllips3D *zEllips3DCopy(zEllips3D *src, zEllips3D *dest);
 __EXPORT zEllips3D *zEllips3DMirror(zEllips3D *src, zEllips3D *dest, zAxis axis);
 
-/*! \brief transfer a 3D ellipsoid.
+/*! \brief transform coordinates of a 3D ellipsoid.
  *
- * zEllips3DXfer() transforms a 3D ellipsoid \a src by
- * a transformation frame \a f, and puts it into \a dest.
+ * zEllips3DXform() transforms a 3D ellipsoid \a src by a frame \a f,
+ * and puts it into \a dest.
  *
- * zEllips3DXferInv() transforms \a src by the inverse transformation
- * frame \a f and puts it into \a dest.
+ * zEllips3DXformInv() transforms \a src by the inverse of a frame
+ * \a f and puts it into \a dest.
  * \return
- * zEllips3DXfer() and zEllips3DXferInv() return a pointer \a dest.
+ * zEllips3DXform() and zEllips3DXformInv() return a pointer \a dest.
  */
-__EXPORT zEllips3D *zEllips3DXfer(zEllips3D *src, zFrame3D *f, zEllips3D *dest);
-__EXPORT zEllips3D *zEllips3DXferInv(zEllips3D *src, zFrame3D *f, zEllips3D *dest);
+__EXPORT zEllips3D *zEllips3DXform(zEllips3D *src, zFrame3D *f, zEllips3D *dest);
+__EXPORT zEllips3D *zEllips3DXformInv(zEllips3D *src, zFrame3D *f, zEllips3D *dest);
 
 /*! \brief distance from a 3D point to a 3D ellipsoid.
  *

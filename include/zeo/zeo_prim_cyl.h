@@ -53,16 +53,16 @@ __EXPORT zCyl3D *zCyl3DMirror(zCyl3D *src, zCyl3D *dest, zAxis axis);
 
 /*! \brief transfer a 3D cylinder.
  *
- * zCyl3DXfer() transforms a 3D cylinder \a src by a transformation frame
- * \a f and puts it into \a dest.
+ * zCyl3DXform() transforms a 3D cylinder \a src by a frame \a f and
+ * puts it into \a dest.
  *
- * zCyl3DXferInv() transforms \a src by the inverse transformation frame
- * of \a f and puts it into \a dest.
+ * zCyl3DXformInv() transforms \a src by the inverse of a frame \a f
+ * and puts it into \a dest.
  * \return
- * zCyl3DXfer() and zCyl3DXferInv() return a pointer \a dest.
+ * zCyl3DXform() and zCyl3DXformInv() return a pointer \a dest.
  */
-__EXPORT zCyl3D *zCyl3DXfer(zCyl3D *src, zFrame3D *f, zCyl3D *dest);
-__EXPORT zCyl3D *zCyl3DXferInv(zCyl3D *src, zFrame3D *f, zCyl3D *dest);
+__EXPORT zCyl3D *zCyl3DXform(zCyl3D *src, zFrame3D *f, zCyl3D *dest);
+__EXPORT zCyl3D *zCyl3DXformInv(zCyl3D *src, zFrame3D *f, zCyl3D *dest);
 
 /*! \brief check if a point is inside of a 3D cylinder.
  *

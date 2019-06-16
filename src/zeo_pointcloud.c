@@ -429,7 +429,7 @@ bool _zPCDDataASCIIFRead(FILE *fp, _zPCD *pcd, zVec3DList *pc)
         pcd->field[i].read_ascii( &pcd->field[i], tkn, &v );
     }
     if( !zVec3DIsNan( &v ) ){
-      zXfer3D( &pcd->viewpoint, &v, &tf );
+      zXform3D( &pcd->viewpoint, &v, &tf );
       zVec3DListInsert( pc, &tf );
     }
   }
@@ -448,7 +448,7 @@ bool _zPCDDataBINFRead(FILE *fp, _zPCD *pcd, zVec3DList *pc)
         pcd->field[i].read_bin( &pcd->field[i], fp, &v );
     }
     if( !zVec3DIsNan( &v ) ){
-      zXfer3D( &pcd->viewpoint, &v, &tf );
+      zXform3D( &pcd->viewpoint, &v, &tf );
       zVec3DListInsert( pc, &tf );
     }
   }

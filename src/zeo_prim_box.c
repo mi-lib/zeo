@@ -52,9 +52,9 @@ zBox3D *zBox3DMirror(zBox3D *src, zBox3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D box. */
-zBox3D *zBox3DXfer(zBox3D *src, zFrame3D *f, zBox3D *dest)
+zBox3D *zBox3DXform(zBox3D *src, zFrame3D *f, zBox3D *dest)
 {
-  zXfer3D( f, zBox3DCenter(src), zBox3DCenter(dest) );
+  zXform3D( f, zBox3DCenter(src), zBox3DCenter(dest) );
   zMulMat3DVec3D( zFrame3DAtt(f), zBox3DAxis(src,zX), zBox3DAxis(dest,zX) );
   zMulMat3DVec3D( zFrame3DAtt(f), zBox3DAxis(src,zY), zBox3DAxis(dest,zY) );
   zMulMat3DVec3D( zFrame3DAtt(f), zBox3DAxis(src,zZ), zBox3DAxis(dest,zZ) );
@@ -65,9 +65,9 @@ zBox3D *zBox3DXfer(zBox3D *src, zFrame3D *f, zBox3D *dest)
 }
 
 /* inversely transform coordinates of a 3D box. */
-zBox3D *zBox3DXferInv(zBox3D *src, zFrame3D *f, zBox3D *dest)
+zBox3D *zBox3DXformInv(zBox3D *src, zFrame3D *f, zBox3D *dest)
 {
-  zXfer3DInv( f, zBox3DCenter(src), zBox3DCenter(dest) );
+  zXform3DInv( f, zBox3DCenter(src), zBox3DCenter(dest) );
   zMulMat3DTVec3D( zFrame3DAtt(f), zBox3DAxis(src,zX), zBox3DAxis(dest,zX) );
   zMulMat3DTVec3D( zFrame3DAtt(f), zBox3DAxis(src,zY), zBox3DAxis(dest,zY) );
   zMulMat3DTVec3D( zFrame3DAtt(f), zBox3DAxis(src,zZ), zBox3DAxis(dest,zZ) );
@@ -84,13 +84,13 @@ double zBox3DClosest(zBox3D *box, zVec3D *p, zVec3D *cp)
   double min, max;
   register zDir d;
 
-  zXfer3DInv( &box->f, p, &_p );
+  zXform3DInv( &box->f, p, &_p );
   for( d=zX; d<=zZ; d++ ){
     min =-0.5 * zBox3DDia(box,d);
     max = 0.5 * zBox3DDia(box,d);
     cp->e[d] = zLimit( _p.e[d], min, max );
   }
-  zXfer3DDRC( &box->f, cp );
+  zXform3DDRC( &box->f, cp );
   return zVec3DDist( p, cp );
 }
 
@@ -108,7 +108,7 @@ bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, bool rim)
   zVec3D err;
   double l;
 
-  zXfer3DInv( &box->f, p, &err );
+  zXform3DInv( &box->f, p, &err );
   for( d=zX; d<=zZ; d++ ){
     l = 0.5 * zBox3DDia(box,d);
     if( rim ) l += zTOL;
@@ -148,7 +148,7 @@ zVec3D *zBox3DVert(zBox3D *box, int i, zVec3D *v)
     ( (i&0x1)^(i>>1&0x1) ) ? -0.5*zBox3DDepth(box) : 0.5*zBox3DDepth(box),
     (  i&0x2             ) ? -0.5*zBox3DWidth(box) : 0.5*zBox3DWidth(box),
     (  i&0x4             ) ? -0.5*zBox3DHeight(box): 0.5*zBox3DHeight(box) );
-  return zXfer3DDRC( &box->f, v );
+  return zXform3DDRC( &box->f, v );
 }
 
 #define __zBox3DToPH_tri(p,i,i1,i2,i3,i4) do{\
@@ -263,10 +263,10 @@ static void *_zPrim3DCloneBox(void *src, void *dest){
 static void *_zPrim3DMirrorBox(void *src, void *dest, zAxis axis){
   return zBox3DMirror( src, dest, axis ); }
 static void _zPrim3DDestroyBox(void *prim){}
-static void *_zPrim3DXferBox(void *src, zFrame3D *f, void *dest){
-  return zBox3DXfer( src, f, dest ); }
-static void *_zPrim3DXferInvBox(void *src, zFrame3D *f, void *dest){
-  return zBox3DXferInv( src, f, dest ); }
+static void *_zPrim3DXformBox(void *src, zFrame3D *f, void *dest){
+  return zBox3DXform( src, f, dest ); }
+static void *_zPrim3DXformInvBox(void *src, zFrame3D *f, void *dest){
+  return zBox3DXformInv( src, f, dest ); }
 static double _zPrim3DClosestBox(void *prim, zVec3D *p, zVec3D *cp){
   return zBox3DClosest( prim, p, cp ); }
 static double _zPrim3DPointDistBox(void *prim, zVec3D *p){
@@ -294,8 +294,8 @@ zPrimCom zprim_box3d_com = {
   _zPrim3DCloneBox,
   _zPrim3DMirrorBox,
   _zPrim3DDestroyBox,
-  _zPrim3DXferBox,
-  _zPrim3DXferInvBox,
+  _zPrim3DXformBox,
+  _zPrim3DXformInvBox,
   _zPrim3DClosestBox,
   _zPrim3DPointDistBox,
   _zPrim3DPointIsInsideBox,

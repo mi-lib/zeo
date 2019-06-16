@@ -47,20 +47,20 @@ zCyl3D *zCyl3DMirror(zCyl3D *src, zCyl3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D cylinder. */
-zCyl3D *zCyl3DXfer(zCyl3D *src, zFrame3D *f, zCyl3D *dest)
+zCyl3D *zCyl3DXform(zCyl3D *src, zFrame3D *f, zCyl3D *dest)
 {
-  zXfer3D( f, zCyl3DCenter(src,0), zCyl3DCenter(dest,0) );
-  zXfer3D( f, zCyl3DCenter(src,1), zCyl3DCenter(dest,1) );
+  zXform3D( f, zCyl3DCenter(src,0), zCyl3DCenter(dest,0) );
+  zXform3D( f, zCyl3DCenter(src,1), zCyl3DCenter(dest,1) );
   zCyl3DSetRadius( dest, zCyl3DRadius(src) );
   zCyl3DSetDiv( dest, zCyl3DDiv(src) );
   return dest;
 }
 
 /* inversely transform coordinates of a 3D cylinder. */
-zCyl3D *zCyl3DXferInv(zCyl3D *src, zFrame3D *f, zCyl3D *dest)
+zCyl3D *zCyl3DXformInv(zCyl3D *src, zFrame3D *f, zCyl3D *dest)
 {
-  zXfer3DInv( f, zCyl3DCenter(src,0), zCyl3DCenter(dest,0) );
-  zXfer3DInv( f, zCyl3DCenter(src,1), zCyl3DCenter(dest,1) );
+  zXform3DInv( f, zCyl3DCenter(src,0), zCyl3DCenter(dest,0) );
+  zXform3DInv( f, zCyl3DCenter(src,1), zCyl3DCenter(dest,1) );
   zCyl3DSetRadius( dest, zCyl3DRadius(src) );
   zCyl3DSetDiv( dest, zCyl3DDiv(src) );
   return dest;
@@ -286,10 +286,10 @@ static void *_zPrim3DCloneCyl(void *src, void *dest){
 static void *_zPrim3DMirrorCyl(void *src, void *dest, zAxis axis){
   return zCyl3DMirror( src, dest, axis ); }
 static void _zPrim3DDestroyCyl(void *prim){}
-static void *_zPrim3DXferCyl(void *src, zFrame3D *f, void *dest){
-  return zCyl3DXfer( src, f, dest ); }
-static void *_zPrim3DXferInvCyl(void *src, zFrame3D *f, void *dest){
-  return zCyl3DXferInv( src, f, dest ); }
+static void *_zPrim3DXformCyl(void *src, zFrame3D *f, void *dest){
+  return zCyl3DXform( src, f, dest ); }
+static void *_zPrim3DXformInvCyl(void *src, zFrame3D *f, void *dest){
+  return zCyl3DXformInv( src, f, dest ); }
 static double _zPrim3DClosestCyl(void *prim, zVec3D *p, zVec3D *cp){
   return zCyl3DClosest( prim, p, cp ); }
 static double _zPrim3DPointDistCyl(void *prim, zVec3D *p){
@@ -317,8 +317,8 @@ zPrimCom zprim_cyl3d_com = {
   _zPrim3DCloneCyl,
   _zPrim3DMirrorCyl,
   _zPrim3DDestroyCyl,
-  _zPrim3DXferCyl,
-  _zPrim3DXferInvCyl,
+  _zPrim3DXformCyl,
+  _zPrim3DXformInvCyl,
   _zPrim3DClosestCyl,
   _zPrim3DPointDistCyl,
   _zPrim3DPointIsInsideCyl,

@@ -128,10 +128,10 @@ __EXPORT zNURBS3D *zNURBS3DCopy(zNURBS3D *src, zNURBS3D *dest);
 __EXPORT zNURBS3D *zNURBS3DClone(zNURBS3D *src, zNURBS3D *dest);
 /*! \brief mirror a NURBS curve / surface about specified axis. */
 __EXPORT zNURBS3D *zNURBS3DMirror(zNURBS3D *src, zNURBS3D *dest, zAxis axis);
-/*! \brief transfer control points of a NURBS curve / surface. */
-__EXPORT zNURBS3D *zNURBS3DXfer(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest);
-/*! \brief inversely transfer control points of a NURBS curve / surface. */
-__EXPORT zNURBS3D *zNURBS3DXferInv(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest);
+/*! \brief transform control points of a NURBS curve / surface. */
+__EXPORT zNURBS3D *zNURBS3DXform(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest);
+/*! \brief inversely transform control points of a NURBS curve / surface. */
+__EXPORT zNURBS3D *zNURBS3DXformInv(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest);
 
 /*! \brief normalize the knot vectors of a NURBS curve / surface.
  *

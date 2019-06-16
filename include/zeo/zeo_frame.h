@@ -61,8 +61,8 @@ __EXPORT zFrame3D *zFrame3DCreate(zFrame3D *f, zVec3D *p, zMat3D *m);
  * named S1 to another frame S0, and \a f2 for that from a
  * frame S2 to S1, \a f is the transformation from S2 to S0.
  *
- * zFrame3DXfer() calculates the transformation frame from the
- * frame \a f1 to the other \a f2. The result is put into \a f.
+ * zFrame3DXform() calculates the transformation frame from
+ * a frame \a f1 to another \a f2. The result is put into \a f.
  * Suppose \a f1 is the transformation from a frame named S1
  * to another frame S0, and \a f2 is that from a frame S2 to
  * S0, \a f is the transformation from S2 to S1, namely, the
@@ -78,41 +78,41 @@ __EXPORT zFrame3D *zFrame3DCreate(zFrame3D *f, zVec3D *p, zMat3D *m);
  */
 __EXPORT zFrame3D *zFrame3DInv(zFrame3D *f, zFrame3D *fi);
 __EXPORT zFrame3D *zFrame3DCascade(zFrame3D *f1, zFrame3D *f2, zFrame3D *f);
-__EXPORT zFrame3D *zFrame3DXfer(zFrame3D *f1, zFrame3D *f2, zFrame3D *f);
+__EXPORT zFrame3D *zFrame3DXform(zFrame3D *f1, zFrame3D *f2, zFrame3D *f);
 
-/*! \brief transform a 3D vector.
+/*! \brief transform coordinates of a 3D vector.
  *
- * zXfer3D() transforms a 3D vector \a v by a frame \a f. The
+ * zXform3D() transforms a 3D vector \a v by a frame \a f. The
  * result is put into \a tv. Suppose \a f is for the
  * transformation from a frame S1 to S0, \a tv points where \a v
  * points in S1 with respect to S0.
  *
- * On the same assumption for \a f, zXfer3DInv() transforms a
- * 3D vector \a v in S0 to what is with respect to S1 by the
+ * On the same assumption for \a f, zXform3DInv() transforms
+ * a 3D vector \a v in S0 to that with respect to S1 by the
  * inverse frame of \a f. The result is put into \a tv.
  *
- * zXfer3DDRC() directly transforms the 3D vector \a v by a
+ * zXform3DDRC() directly transforms the 3D vector \a v by a
  * frame \a f.
  *
- * zXfer3DInvDRC() directly transforms a 3D vector \a v by the
+ * zXform3DInvDRC() directly transforms a 3D vector \a v by the
  * inverse of \a f.
  * \return
- * zXfer3D(), zXfer3DInv(), zXfer3DDRC() and zXfer3DInvDRC()
+ * zXform3D(), zXform3DInv(), zXform3DDRC() and zXform3DInvDRC()
  * return a pointer to the result.
  * \notes
- * zXfer3DInv() expects that the attitude matrix of \a f is an
+ * zXform3DInv() expects that the attitude matrix of \a f is an
  * orthonormal matrix.
  */
-__EXPORT zVec3D *zXfer3D(zFrame3D *f, zVec3D *v, zVec3D *tv);
-__EXPORT zVec3D *zXfer3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv);
+__EXPORT zVec3D *zXform3D(zFrame3D *f, zVec3D *v, zVec3D *tv);
+__EXPORT zVec3D *zXform3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv);
 
-#define zXfer3DDRC(f,v)    zXfer3D(f,v,v)
-#define zXfer3DInvDRC(f,v) zXfer3DInv(f,v,v)
+#define zXform3DDRC(f,v)    zXform3D(f,v,v)
+#define zXform3DInvDRC(f,v) zXform3DInv(f,v,v)
 
-/*! \brief transfer a 6D vector
+/*! \brief transform a 6D vector.
  */
-__EXPORT zVec6D *zXfer6DLin(zFrame3D *f, zVec6D *v, zVec6D *vc);
-__EXPORT zVec6D *zXfer6DAng(zFrame3D *f, zVec6D *v, zVec6D *vc);
+__EXPORT zVec6D *zXform6DLin(zFrame3D *f, zVec6D *v, zVec6D *vc);
+__EXPORT zVec6D *zXform6DAng(zFrame3D *f, zVec6D *v, zVec6D *vc);
 
 /*! \brief twist a frame by a torsion vector
  *   (position offset & angle-axis rotation).

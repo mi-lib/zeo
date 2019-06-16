@@ -113,27 +113,27 @@ zNURBS3D *zNURBS3DMirror(zNURBS3D *src, zNURBS3D *dest, zAxis axis)
   return dest;
 }
 
-/* transfer control points of a NURBS curve / surface. */
-zNURBS3D *zNURBS3DXfer(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest)
+/* transform control points of a NURBS curve / surface. */
+zNURBS3D *zNURBS3DXform(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest)
 {
   register int i, j;
 
   if( !zNURBS3DCopy( src, dest ) ) return NULL;
   for( i=0; i<zNURBS3DCPNum(dest,0); i++ )
     for( j=0; j<zNURBS3DCPNum(dest,1); j++ )
-      zXfer3D( f, zNURBS3DCP(src,i,j), zNURBS3DCP(dest,i,j) );
+      zXform3D( f, zNURBS3DCP(src,i,j), zNURBS3DCP(dest,i,j) );
   return dest;
 }
 
-/* inversely transfer control points of a NURBS curve / surface. */
-zNURBS3D *zNURBS3DXferInv(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest)
+/* inversely transform control points of a NURBS curve / surface. */
+zNURBS3D *zNURBS3DXformInv(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest)
 {
   register int i, j;
 
   if( !zNURBS3DCopy( src, dest ) ) return NULL;
   for( i=0; i<zNURBS3DCPNum(dest,0); i++ )
     for( j=0; j<zNURBS3DCPNum(dest,1); j++ )
-      zXfer3DInv( f, zNURBS3DCP(src,i,j), zNURBS3DCP(dest,i,j) );
+      zXform3DInv( f, zNURBS3DCP(src,i,j), zNURBS3DCP(dest,i,j) );
   return dest;
 }
 

@@ -22,8 +22,8 @@ typedef struct{
   void *(*_clone)(void*,void*);
   void *(*_mirror)(void*,void*,zAxis);
   void (*_destroy)(void*);
-  void *(*_xfer)(void*,zFrame3D*,void*);
-  void *(*_xferinv)(void*,zFrame3D*,void*);
+  void *(*_xform)(void*,zFrame3D*,void*);
+  void *(*_xforminv)(void*,zFrame3D*,void*);
   double (*_closest)(void*,zVec3D*,zVec3D*);
   double (*_pointdist)(void*,zVec3D*);
   bool (*_pointisinside)(void*,zVec3D*,bool);

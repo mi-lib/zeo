@@ -21,7 +21,7 @@ void veclist_create_rand(zFrame3D *f)
   fp = fopen( "src", "w" );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v[i], zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
-    zXfer3D( f, &v[i], &vert );
+    zXform3D( f, &v[i], &vert );
     zVec3DDataNLFPrint( fp, &vert );
   }
   fclose( fp );
@@ -38,7 +38,7 @@ void verify(zAABox3D *bb, zFrame3D *f)
   eprintf( "++verify+++\n" );
   zAABox3DToBox3D( bb, &box );
   for( i=0; i<N; i++ ){
-    zXfer3D( f, &v[i], &vert );
+    zXform3D( f, &v[i], &vert );
     if( ( ret = zBox3DPointIsInside(&box,&vert,true) ) == false ){
       zVec3DDataNLFPrint( stderr, &vert );
       eprintf( "D=%.15g\n", zBox3DPointDist(&box,&vert) );
@@ -70,7 +70,7 @@ int main(void)
   zRandInit();
   frame_create_rand( &f );
   veclist_create_rand( &f );
-  zAABBXfer( &bb, v, N, &f );
+  zAABBXform( &bb, v, N, &f );
   verify( &bb, &f );
   return 0;
 }

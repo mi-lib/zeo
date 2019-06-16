@@ -16,10 +16,10 @@ static void *_zPrim3DMirrorPH(void *src, void *dest, zAxis axis){
   return zPH3DMirror( src, dest, axis ); }
 static void _zPrim3DDestroyPH(void *prim){
   zPH3DDestroy( prim ); }
-static void *_zPrim3DXferPH(void *src, zFrame3D *f, void *dest){
-  return zPH3DXfer( src, f, dest ); }
-static void *_zPrim3DXferInvPH(void *src, zFrame3D *f, void *dest){
-  return zPH3DXferInv( src, f, dest ); }
+static void *_zPrim3DXformPH(void *src, zFrame3D *f, void *dest){
+  return zPH3DXform( src, f, dest ); }
+static void *_zPrim3DXformInvPH(void *src, zFrame3D *f, void *dest){
+  return zPH3DXformInv( src, f, dest ); }
 static double _zPrim3DClosestPH(void *prim, zVec3D *p, zVec3D *cp){
   return zPH3DClosest( prim, p, cp ); }
 static double _zPrim3DPointDistPH(void *prim, zVec3D *p){
@@ -46,8 +46,8 @@ zPrimCom zprim_ph3d_com = {
   _zPrim3DClonePH,
   _zPrim3DMirrorPH,
   _zPrim3DDestroyPH,
-  _zPrim3DXferPH,
-  _zPrim3DXferInvPH,
+  _zPrim3DXformPH,
+  _zPrim3DXformInvPH,
   _zPrim3DClosestPH,
   _zPrim3DPointDistPH,
   _zPrim3DPointIsInsidePH,
@@ -66,8 +66,8 @@ static void *_zPrim3DInitNone(void* prim){ return NULL; }
 static void *_zPrim3DCloneNone(void *src, void *dest){ return NULL; }
 static void *_zPrim3DMirrorNone(void *src, void *dest, zAxis axis){ return NULL; }
 static void _zPrim3DDestroyNone(void *prim){}
-static void *_zPrim3DXferNone(void *src, zFrame3D *f, void *dest){ return NULL; }
-static void *_zPrim3DXferInvNone(void *src, zFrame3D *f, void *dest){ return NULL; }
+static void *_zPrim3DXformNone(void *src, zFrame3D *f, void *dest){ return NULL; }
+static void *_zPrim3DXformInvNone(void *src, zFrame3D *f, void *dest){ return NULL; }
 static double _zPrim3DClosestNone(void *prim, zVec3D *p, zVec3D *cp){ return HUGE_VAL; }
 static double _zPrim3DPointDistNone(void *prim, zVec3D *p){ return HUGE_VAL; }
 static bool _zPrim3DPointIsInsideNone(void *prim, zVec3D *p, bool rim){ return false; }
@@ -84,8 +84,8 @@ zPrimCom zprim_none_com = {
   _zPrim3DCloneNone,
   _zPrim3DMirrorNone,
   _zPrim3DDestroyNone,
-  _zPrim3DXferNone,
-  _zPrim3DXferInvNone,
+  _zPrim3DXformNone,
+  _zPrim3DXformInvNone,
   _zPrim3DClosestNone,
   _zPrim3DPointDistNone,
   _zPrim3DPointIsInsideNone,

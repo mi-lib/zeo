@@ -52,9 +52,9 @@ __EXPORT zAABox3D *zBox3DToAABox3D(zBox3D *box, zAABox3D *aabox);
 
 /*! \brief axis-aligned bounding box of points.
  *
- * zAABB() computes axis-aligned bounding box of a set of points
- * \a p. \a num is the number of points. The result is put into
- * \a bb.
+ * zAABB() computes the axis-aligned bounding box of a set of
+ * points \a p. \a num is the number of the points. The result
+ * is put into \a bb.
  *
  * The pointers to the extreme points (i.e. points on the faces
  * of \a bb) will be stored into the array pointed by \a vp,
@@ -68,13 +68,25 @@ __EXPORT zAABox3D *zBox3DToAABox3D(zBox3D *box, zAABox3D *aabox);
  *  y _|_____|/
  *        5
  *
- * zAABBPL() also computes axis-aligned bounding box of a set of
- * points, which is given by a list of pointers to points \a pl.
+ * zAABBPL() also computes the axis-aligned bounding box of a
+ * set of points given by a list of pointers to the points \a pl.
  * This function stores the pointers to the cell of extreme
  * points into the array pointed by \a vc, unless \a vc is the
  * null pointer. The correspondency follows the above, too.
+ *
+ * zAABBXform() computes the axis-aligned bouding box of a set
+ * of points. \a p is an array of the points in a frame \a f.
+ * Namely, the actual positions of the points are obtained by
+ * transforming \a p by \a f. \a num is the number of the points.
+ * The result is put into \a bb.
+ *
+ * zAABBXformPL() also computes the axis-aligned bounding box
+ * of a set of points given by a list of vectors \a pl in a
+ * frame \a f. The result is put into \a bb. This function does
+ * not store addresses of the extreme points.
  * \return
- * zAABB() returns a pointer \a bb.
+ * zAABB(), zAABBPL(), zAABBXform() and zAABBXFormPL()  return
+ * a pointer \a bb.
  * \notes
  * Arrays pointed by \a vp and \a vc must have more than six
  * elements, when they point non-null addresses.
@@ -83,9 +95,9 @@ __EXPORT zAABox3D *zBox3DToAABox3D(zBox3D *box, zAABox3D *aabox);
  * the same points.
  */
 __EXPORT zAABox3D *zAABB(zAABox3D *bb, zVec3D p[], int num, zVec3D **vp);
-__EXPORT zAABox3D *zAABBXfer(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f);
 __EXPORT zAABox3D *zAABBPL(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vc);
-__EXPORT zAABox3D *zAABBXferPL(zAABox3D *bb, zVec3DList *pl, zFrame3D *f);
+__EXPORT zAABox3D *zAABBXform(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f);
+__EXPORT zAABox3D *zAABBXformPL(zAABox3D *bb, zVec3DList *pl, zFrame3D *f);
 
 __END_DECLS
 

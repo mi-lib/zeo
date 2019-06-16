@@ -132,18 +132,18 @@ __EXPORT void zShape3DDestroy(zShape3D *shape);
 __EXPORT zShape3D *zShape3DClone(zShape3D *org, zShape3D *cln, zOpticalInfo *oi);
 __EXPORT zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis);
 
-/*! \brief transformation of 3D shape.
+/*! \brief transform coordinates of a 3D shape.
  *
- * zShape3DXfer() transforms a 3D shape \a src by a transformation
- * frame \a f and puts it into \a dest.
+ * zShape3DXform() transforms coordinates of a 3D shape \a src
+ * by a frame \a f and puts it into \a dest.
  *
- * zShape3DXferInv() transforms \a src by the inverse transformation
- * frame of \a f and puts it into \a dest.
+ * zShape3DXformInv() transforms \a src by the inverse of a frame
+ * \a f and puts it into \a dest.
  * \return
- * zShape3DXfer() and zShape3DXferInv() return a pointer to \a dest.
+ * zShape3DXform() and zShape3DXformInv() return a pointer to \a dest.
  */
-__EXPORT zShape3D *zShape3DXfer(zShape3D *src, zFrame3D *f, zShape3D *dest);
-__EXPORT zShape3D *zShape3DXferInv(zShape3D *src, zFrame3D *f, zShape3D *dest);
+__EXPORT zShape3D *zShape3DXform(zShape3D *src, zFrame3D *f, zShape3D *dest);
+__EXPORT zShape3D *zShape3DXformInv(zShape3D *src, zFrame3D *f, zShape3D *dest);
 
 #define zShape3DContigVert(s,p,d) zPH3DContigVert( zShape3DPH(s), p, d )
 

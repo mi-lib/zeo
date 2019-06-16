@@ -43,19 +43,19 @@ zSphere3D *zSphere3DMirror(zSphere3D *src, zSphere3D *dest, zAxis axis)
   return dest;
 }
 
-/* transfer a 3D sphere. */
-zSphere3D *zSphere3DXfer(zSphere3D *src, zFrame3D *f, zSphere3D *dest)
+/* transform coordinates of a 3D sphere. */
+zSphere3D *zSphere3DXform(zSphere3D *src, zFrame3D *f, zSphere3D *dest)
 {
-  zXfer3D( f, zSphere3DCenter(src), zSphere3DCenter(dest) );
+  zXform3D( f, zSphere3DCenter(src), zSphere3DCenter(dest) );
   zSphere3DSetRadius( dest, zSphere3DRadius(src) );
   zSphere3DSetDiv( dest, zSphere3DDiv(src) );
   return dest;
 }
 
-/* inversely transfer a 3D sphere. */
-zSphere3D *zSphere3DXferInv(zSphere3D *src, zFrame3D *f, zSphere3D *dest)
+/* inversely transform coordinates of a 3D sphere. */
+zSphere3D *zSphere3DXformInv(zSphere3D *src, zFrame3D *f, zSphere3D *dest)
 {
-  zXfer3DInv( f, zSphere3DCenter(src), zSphere3DCenter(dest) );
+  zXform3DInv( f, zSphere3DCenter(src), zSphere3DCenter(dest) );
   zSphere3DSetRadius( dest, zSphere3DRadius(src) );
   zSphere3DSetDiv( dest, zSphere3DDiv(src) );
   return dest;
@@ -238,10 +238,10 @@ static void *_zPrim3DCloneSphere(void *src, void *dest){
 static void *_zPrim3DMirrorSphere(void *src, void *dest, zAxis axis){
   return zSphere3DMirror( src, dest, axis ); }
 static void _zPrim3DDestroySphere(void *prim){}
-static void *_zPrim3DXferSphere(void *src, zFrame3D *f, void *dest){
-  return zSphere3DXfer( src, f, dest ); }
-static void *_zPrim3DXferInvSphere(void *src, zFrame3D *f, void *dest){
-  return zSphere3DXferInv( src, f, dest ); }
+static void *_zPrim3DXformSphere(void *src, zFrame3D *f, void *dest){
+  return zSphere3DXform( src, f, dest ); }
+static void *_zPrim3DXformInvSphere(void *src, zFrame3D *f, void *dest){
+  return zSphere3DXformInv( src, f, dest ); }
 static double _zPrim3DClosestSphere(void *prim, zVec3D *p, zVec3D *cp){
   return zSphere3DClosest( prim, p, cp ); }
 static double _zPrim3DPointDistSphere(void *prim, zVec3D *p){
@@ -269,8 +269,8 @@ zPrimCom zprim_sphere3d_com = {
   _zPrim3DCloneSphere,
   _zPrim3DMirrorSphere,
   _zPrim3DDestroySphere,
-  _zPrim3DXferSphere,
-  _zPrim3DXferInvSphere,
+  _zPrim3DXformSphere,
+  _zPrim3DXformInvSphere,
   _zPrim3DClosestSphere,
   _zPrim3DPointDistSphere,
   _zPrim3DPointIsInsideSphere,

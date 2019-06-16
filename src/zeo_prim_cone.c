@@ -46,20 +46,20 @@ zCone3D *zCone3DMirror(zCone3D *src, zCone3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D cone. */
-zCone3D *zCone3DXfer(zCone3D *src, zFrame3D *f, zCone3D *dest)
+zCone3D *zCone3DXform(zCone3D *src, zFrame3D *f, zCone3D *dest)
 {
-  zXfer3D( f, zCone3DCenter(src), zCone3DCenter(dest) );
-  zXfer3D( f, zCone3DVert(src), zCone3DVert(dest) );
+  zXform3D( f, zCone3DCenter(src), zCone3DCenter(dest) );
+  zXform3D( f, zCone3DVert(src), zCone3DVert(dest) );
   zCone3DSetRadius( dest, zCone3DRadius(src) );
   zCone3DSetDiv( dest, zCone3DDiv(src) );
   return dest;
 }
 
 /* inversely transform coordinates of a 3D cone. */
-zCone3D *zCone3DXferInv(zCone3D *src, zFrame3D *f, zCone3D *dest)
+zCone3D *zCone3DXformInv(zCone3D *src, zFrame3D *f, zCone3D *dest)
 {
-  zXfer3DInv( f, zCone3DCenter(src), zCone3DCenter(dest) );
-  zXfer3DInv( f, zCone3DVert(src), zCone3DVert(dest) );
+  zXform3DInv( f, zCone3DCenter(src), zCone3DCenter(dest) );
+  zXform3DInv( f, zCone3DVert(src), zCone3DVert(dest) );
   zCone3DSetRadius( dest, zCone3DRadius(src) );
   zCone3DSetDiv( dest, zCone3DDiv(src) );
   return dest;
@@ -278,10 +278,10 @@ static void *_zPrim3DCloneCone(void *src, void *dest){
 static void *_zPrim3DMirrorCone(void *src, void *dest, zAxis axis){
   return zCone3DMirror( src, dest, axis ); }
 static void _zPrim3DDestroyCone(void *prim){}
-static void *_zPrim3DXferCone(void *src, zFrame3D *f, void *dest){
-  return zCone3DXfer( src, f, dest ); }
-static void *_zPrim3DXferInvCone(void *src, zFrame3D *f, void *dest){
-  return zCone3DXferInv( src, f, dest ); }
+static void *_zPrim3DXformCone(void *src, zFrame3D *f, void *dest){
+  return zCone3DXform( src, f, dest ); }
+static void *_zPrim3DXformInvCone(void *src, zFrame3D *f, void *dest){
+  return zCone3DXformInv( src, f, dest ); }
 static double _zPrim3DClosestCone(void *prim, zVec3D *p, zVec3D *cp){
   return zCone3DClosest( prim, p, cp ); }
 static double _zPrim3DPointDistCone(void *prim, zVec3D *p){
@@ -309,8 +309,8 @@ zPrimCom zprim_cone3d_com = {
   _zPrim3DCloneCone,
   _zPrim3DMirrorCone,
   _zPrim3DDestroyCone,
-  _zPrim3DXferCone,
-  _zPrim3DXferInvCone,
+  _zPrim3DXformCone,
+  _zPrim3DXformInvCone,
   _zPrim3DClosestCone,
   _zPrim3DPointDistCone,
   _zPrim3DPointIsInsideCone,

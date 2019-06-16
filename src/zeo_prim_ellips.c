@@ -54,9 +54,9 @@ zEllips3D *zEllips3DMirror(zEllips3D *src, zEllips3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D ellipsoid. */
-zEllips3D *zEllips3DXfer(zEllips3D *src, zFrame3D *f, zEllips3D *dest)
+zEllips3D *zEllips3DXform(zEllips3D *src, zFrame3D *f, zEllips3D *dest)
 {
-  zXfer3D( f, zEllips3DCenter(src), zEllips3DCenter(dest) );
+  zXform3D( f, zEllips3DCenter(src), zEllips3DCenter(dest) );
   zMulMat3DVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zX), zEllips3DAxis(dest,zX) );
   zMulMat3DVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zY), zEllips3DAxis(dest,zY) );
   zMulMat3DVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zZ), zEllips3DAxis(dest,zZ) );
@@ -68,9 +68,9 @@ zEllips3D *zEllips3DXfer(zEllips3D *src, zFrame3D *f, zEllips3D *dest)
 }
 
 /* inversely transform coordinates of a 3D ellipsoid. */
-zEllips3D *zEllips3DXferInv(zEllips3D *src, zFrame3D *f, zEllips3D *dest)
+zEllips3D *zEllips3DXformInv(zEllips3D *src, zFrame3D *f, zEllips3D *dest)
 {
-  zXfer3DInv( f, zEllips3DCenter(src), zEllips3DCenter(dest) );
+  zXform3DInv( f, zEllips3DCenter(src), zEllips3DCenter(dest) );
   zMulMat3DTVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zX), zEllips3DAxis(dest,zX) );
   zMulMat3DTVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zY), zEllips3DAxis(dest,zY) );
   zMulMat3DTVec3D( zFrame3DAtt(f), zEllips3DAxis(src,zZ), zEllips3DAxis(dest,zZ) );
@@ -129,9 +129,9 @@ double zEllips3DClosest(zEllips3D *ellips, zVec3D *p, zVec3D *cp)
     zVec3DCopy( p, cp );
     return 0;
   }
-  zXfer3DInv( &ellips->f, p, &pi );
+  zXform3DInv( &ellips->f, p, &pi );
   _zEllips3DClosest( zEllips3DRadiusX(ellips), zEllips3DRadiusY(ellips), zEllips3DRadiusZ(ellips), &pi, cp );
-  zXfer3DDRC( &ellips->f, cp );
+  zXform3DDRC( &ellips->f, cp );
   /* distance */
   return zVec3DDist( p, cp );
 }
@@ -149,7 +149,7 @@ bool zEllips3DPointIsInside(zEllips3D *ellips, zVec3D *p, bool rim)
   zVec3D _p;
   double l;
 
-  zXfer3DInv( &ellips->f, p, &_p );
+  zXform3DInv( &ellips->f, p, &_p );
   l = zSqr(_p.e[zX]/zEllips3DRadiusX(ellips))
     + zSqr(_p.e[zY]/zEllips3DRadiusY(ellips))
     + zSqr(_p.e[zZ]/zEllips3DRadiusZ(ellips));
@@ -197,7 +197,7 @@ zPH3D* zEllips3DToPH(zEllips3D *ellips, zPH3D *ph)
   /* -- vertices -- */
   /* north pole */
   zVec3DMul( ZVEC3DZ, zEllips3DRadiusZ(ellips), &tmp );
-  zXfer3D( &ellips->f, &tmp, &vert[0] );
+  zXform3D( &ellips->f, &tmp, &vert[0] );
   /* general vertices */
   for( n=1, i=1; i<zEllips3DDiv(ellips); i++ )
     for( j=0; j<zEllips3DDiv(ellips); j++, n++ ){
@@ -206,11 +206,11 @@ zPH3D* zEllips3DToPH(zEllips3D *ellips, zPH3D *ph)
       tmp.e[zX] *= zEllips3DRadiusX(ellips);
       tmp.e[zY] *= zEllips3DRadiusY(ellips);
       tmp.e[zZ] *= zEllips3DRadiusZ(ellips);
-      zXfer3D( &ellips->f, &tmp, &vert[n] );
+      zXform3D( &ellips->f, &tmp, &vert[n] );
     }
   /* south pole */
   zVec3DMul( ZVEC3DZ, -zEllips3DRadiusZ(ellips), &tmp );
-  zXfer3D( &ellips->f, &tmp, &vert[n] );
+  zXform3D( &ellips->f, &tmp, &vert[n] );
 
   /* -- faces -- */
   /* arctic faces */
@@ -298,10 +298,10 @@ static void *_zPrim3DCloneEllips(void *src, void *dest){
 static void *_zPrim3DMirrorEllips(void *src, void *dest, zAxis axis){
   return zEllips3DMirror( src, dest, axis ); }
 static void _zPrim3DDestroyEllips(void *prim){}
-static void *_zPrim3DXferEllips(void *src, zFrame3D *f, void *dest){
-  return zEllips3DXfer( src, f, dest ); }
-static void *_zPrim3DXferInvEllips(void *src, zFrame3D *f, void *dest){
-  return zEllips3DXferInv( src, f, dest ); }
+static void *_zPrim3DXformEllips(void *src, zFrame3D *f, void *dest){
+  return zEllips3DXform( src, f, dest ); }
+static void *_zPrim3DXformInvEllips(void *src, zFrame3D *f, void *dest){
+  return zEllips3DXformInv( src, f, dest ); }
 static double _zPrim3DClosestEllips(void *prim, zVec3D *p, zVec3D *cp){
   return zEllips3DClosest( prim, p, cp ); }
 static double _zPrim3DPointDistEllips(void *prim, zVec3D *p){
@@ -329,8 +329,8 @@ zPrimCom zprim_ellips3d_com = {
   _zPrim3DCloneEllips,
   _zPrim3DMirrorEllips,
   _zPrim3DDestroyEllips,
-  _zPrim3DXferEllips,
-  _zPrim3DXferInvEllips,
+  _zPrim3DXformEllips,
+  _zPrim3DXformInvEllips,
   _zPrim3DClosestEllips,
   _zPrim3DPointDistEllips,
   _zPrim3DPointIsInsideEllips,

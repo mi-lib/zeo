@@ -38,8 +38,8 @@ __EXPORT zECyl3D *zECyl3DInit(zECyl3D *cyl);
 __EXPORT zECyl3D *zECyl3DCopy(zECyl3D *src, zECyl3D *dest);
 __EXPORT zECyl3D *zECyl3DMirror(zECyl3D *src, zECyl3D *dest, zAxis axis);
 
-__EXPORT zECyl3D *zECyl3DXfer(zECyl3D *src, zFrame3D *f, zECyl3D *dest);
-__EXPORT zECyl3D *zECyl3DXferInv(zECyl3D *src, zFrame3D *f, zECyl3D *dest);
+__EXPORT zECyl3D *zECyl3DXform(zECyl3D *src, zFrame3D *f, zECyl3D *dest);
+__EXPORT zECyl3D *zECyl3DXformInv(zECyl3D *src, zFrame3D *f, zECyl3D *dest);
 
 __EXPORT double zECyl3DClosest(zECyl3D *cyl, zVec3D *p, zVec3D *cp);
 __EXPORT double zECyl3DPointDist(zECyl3D *cyl, zVec3D *p);

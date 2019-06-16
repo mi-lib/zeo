@@ -58,18 +58,18 @@ __EXPORT zBox3D *zBox3DInit(zBox3D *box);
 __EXPORT zBox3D *zBox3DCopy(zBox3D *src, zBox3D *dest);
 __EXPORT zBox3D *zBox3DMirror(zBox3D *src, zBox3D *dest, zAxis axis);
 
-/*! \brief transfer coordinates of a 3D box.
+/*! \brief transform coordinates of a 3D box.
  *
- * zBox3DXfer() transfers a box \a src by a transformation frame
+ * zBox3DXform() transforms coordinates of a box \a src by a frame
  * \a f and puts it into \a dest.
  *
- * zBox3DXferInv() inversely transfers \a src by a transformation
- * frame \a f and puts it into \a dest.
+ * zBox3DXformInv() transforms \a src by the inverse of a frame
+ * \a f and puts it into \a dest.
  * \return
- * zBox3DXfer() and zBox3DXferInv() return a pointer \a dest.
+ * zBox3DXform() and zBox3DXformInv() return a pointer \a dest.
  */
-__EXPORT zBox3D *zBox3DXfer(zBox3D *src, zFrame3D *f, zBox3D *dest);
-__EXPORT zBox3D *zBox3DXferInv(zBox3D *src, zFrame3D *f, zBox3D *dest);
+__EXPORT zBox3D *zBox3DXform(zBox3D *src, zFrame3D *f, zBox3D *dest);
+__EXPORT zBox3D *zBox3DXformInv(zBox3D *src, zFrame3D *f, zBox3D *dest);
 
 /*! \brief distance from a 3D point to a box.
  *

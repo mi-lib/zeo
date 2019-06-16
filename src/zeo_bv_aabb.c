@@ -186,8 +186,8 @@ zAABox3D *zAABB(zAABox3D *bb, zVec3D p[], int num, zVec3D **vp)
   return bb;
 }
 
-/* bounding box of points with a transfer matrix. */
-zAABox3D *zAABBXfer(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f)
+/* bounding box of points in a specified frame. */
+zAABox3D *zAABBXform(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f)
 {
   register int i;
   zVec3D px;
@@ -195,11 +195,11 @@ zAABox3D *zAABBXfer(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f)
   zAABox3DInit( bb );
   if( num <= 0 ) return NULL;
 
-  zXfer3D( f, &p[0], &px );
+  zXform3D( f, &p[0], &px );
   zVec3DCopy( &px, &bb->pmin );
   zVec3DCopy( &px, &bb->pmax );
   for( i=1; i<num; i++ ){
-    zXfer3D( f, &p[i], &px );
+    zXform3D( f, &p[i], &px );
     _zAABBInc( bb, &px, NULL );
   }
   return bb;
@@ -247,8 +247,8 @@ zAABox3D *zAABBPL(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vp)
   return bb;
 }
 
-/* bounding box of a list of points with a transfer matrix. */
-zAABox3D *zAABBXferPL(zAABox3D *bb, zVec3DList *pl, zFrame3D *f)
+/* bounding box of a list of points in a specified frame. */
+zAABox3D *zAABBXformPL(zAABox3D *bb, zVec3DList *pl, zFrame3D *f)
 {
   zVec3D px;
   zVec3DListCell *pc;
@@ -257,11 +257,11 @@ zAABox3D *zAABBXferPL(zAABox3D *bb, zVec3DList *pl, zFrame3D *f)
   if( zListIsEmpty(pl) ) return NULL;
 
   pc = zListTail( pl );
-  zXfer3D( f, pc->data, &px );
+  zXform3D( f, pc->data, &px );
   memcpy( &bb->pmin, pc->data, sizeof(zVec3D) );
   memcpy( &bb->pmax, pc->data, sizeof(zVec3D) );
   zListForEach( pl, pc ){
-    zXfer3D( f, pc->data, &px );
+    zXform3D( f, pc->data, &px );
     _zAABBInc( bb, &px, NULL );
   }
   return bb;

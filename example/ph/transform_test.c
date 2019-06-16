@@ -27,7 +27,7 @@ int main(void)
   scan_ph( &src );
   zPH3DClone( &src, &dest );
 
-  zPH3DXfer( &src, &frame, &dest );
+  zPH3DXform( &src, &frame, &dest );
   zPH3DPrint( &src );
   zPH3DPrint( &dest );
 

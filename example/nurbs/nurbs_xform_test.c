@@ -48,12 +48,12 @@ int main(void)
   fclose( fp );
 
   zFrame3DFromZYX( &f, 1, 1, 1, zDeg2Rad(45), zDeg2Rad(10), zDeg2Rad(5) );
-  zNURBS3DXfer( &src, &f, &dest );
+  zNURBS3DXform( &src, &f, &dest );
   fp = fopen( "xfr", "w" );
   nurbs_fprint( fp, &dest );
   fclose( fp );
 
-  zNURBS3DXferInv( &src, &f, &dest );
+  zNURBS3DXformInv( &src, &f, &dest );
   fp = fopen( "xfi", "w" );
   nurbs_fprint( fp, &dest );
   fclose( fp );

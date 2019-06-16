@@ -20,39 +20,39 @@ bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, zVec3D *p1, zVec3D *p2)
 
 /* Muller-Preparata's algorithm */
 
-static zVec3D *_zTri3DDualXfer(zTri3D *t, zVec3D *p, zVec3D *dx);
-static zVec3D *_zTri3DDualXfer_a(zTri3D *t, zVec3D *c, zVec3D *dx);
-static zVec3D *_zTri3DDualXfer_b(zTri3D *t, zVec3D *dx);
+static zVec3D *_zTri3DDualXform(zTri3D *t, zVec3D *p, zVec3D *dx);
+static zVec3D *_zTri3DDualXform_a(zTri3D *t, zVec3D *c, zVec3D *dx);
+static zVec3D *_zTri3DDualXform_b(zTri3D *t, zVec3D *dx);
 static zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib);
 
 /* (static)
- * _zTri3DDualXfer
+ * _zTri3DDualXform
  * - dual transfer from/to point to/from plane.
  */
-zVec3D *_zTri3DDualXfer(zTri3D *t, zVec3D *p, zVec3D *dx)
+zVec3D *_zTri3DDualXform(zTri3D *t, zVec3D *p, zVec3D *dx)
 {
   return zVec3DDiv( zTri3DNorm(t), zVec3DInnerProd(zTri3DNorm(t),p), dx );
 }
 
 /* (static)
- * _zTri3DDualXfer_a
+ * _zTri3DDualXform_a
  * - dual transfer from/to point to/from plane shifting origin.
  */
-zVec3D *_zTri3DDualXfer_a(zTri3D *t, zVec3D *c, zVec3D *dx)
+zVec3D *_zTri3DDualXform_a(zTri3D *t, zVec3D *c, zVec3D *dx)
 {
   zVec3D p;
 
   zVec3DSub( zTri3DVert(t,0), c, &p );
-  return _zTri3DDualXfer( t, &p, dx );
+  return _zTri3DDualXform( t, &p, dx );
 }
 
 /* (static)
- * _zTri3DDualXfer_b
+ * _zTri3DDualXform_b
  * - simple dual transfer from/to point to/from plane.
  */
-zVec3D *_zTri3DDualXfer_b(zTri3D *t, zVec3D *dx)
+zVec3D *_zTri3DDualXform_b(zTri3D *t, zVec3D *dx)
 {
-  return _zTri3DDualXfer( t, zTri3DVert(t,0), dx );
+  return _zTri3DDualXform( t, zTri3DVert(t,0), dx );
 }
 
 /* (static)
@@ -112,15 +112,15 @@ zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib)
   if( ib ){
     for( i=0; i<zPH3DFaceNum(ph1); i++ )
       if( zColChkTriAABox3D( ( tri = zPH3DFace(ph1,i) ), ib ) )
-        if(!_zTri3DDualXfer_a( tri, &p1, &v[n++] )) return NULL;
+        if(!_zTri3DDualXform_a( tri, &p1, &v[n++] )) return NULL;
     for( i=0; i<zPH3DFaceNum(ph2); i++ )
       if( zColChkTriAABox3D( ( tri = zPH3DFace(ph2,i) ), ib ) )
-        if(!_zTri3DDualXfer_a( tri, &p1, &v[n++] )) return NULL;
+        if(!_zTri3DDualXform_a( tri, &p1, &v[n++] )) return NULL;
   } else{
     for( i=0; i<zPH3DFaceNum(ph1); i++ )
-      if(!_zTri3DDualXfer_a( zPH3DFace(ph1,i), &p1, &v[n++] )) return NULL;
+      if(!_zTri3DDualXform_a( zPH3DFace(ph1,i), &p1, &v[n++] )) return NULL;
     for( i=0; i<zPH3DFaceNum(ph2); i++ )
-      if(!_zTri3DDualXfer_a( zPH3DFace(ph2,i), &p1, &v[n++] )) return NULL;
+      if(!_zTri3DDualXform_a( zPH3DFace(ph2,i), &p1, &v[n++] )) return NULL;
   }
   /* convex hull in dual space */
   if( !zCH3D( &ch, v, n ) ){
@@ -134,7 +134,7 @@ zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib)
     goto TERMINATE;
   }
   for( i=0; i<zPH3DFaceNum(&ch); i++ ){
-    if(!_zTri3DDualXfer_b( zPH3DFace(&ch,i), &v[i] )) return NULL;
+    if(!_zTri3DDualXform_b( zPH3DFace(&ch,i), &v[i] )) return NULL;
     zVec3DAddDRC( &v[i], &p1 );
   }
   if( !zCH3D( phcol, v, zPH3DFaceNum(&ch) ) ) phcol = NULL;

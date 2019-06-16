@@ -16,10 +16,10 @@ static void *_zPrim3DMirrorNURBS(void *src, void *dest, zAxis axis){
   return zNURBS3DMirror( src, dest, axis ); }
 static void _zPrim3DDestroyNURBS(void *prim){
   zNURBS3DDestroy( prim ); }
-static void *_zPrim3DXferNURBS(void *src, zFrame3D *f, void *dest){
-  return zNURBS3DXfer( src, f, dest ); }
-static void *_zPrim3DXferInvNURBS(void *src, zFrame3D *f, void *dest){
-  return zNURBS3DXferInv( src, f, dest ); }
+static void *_zPrim3DXformNURBS(void *src, zFrame3D *f, void *dest){
+  return zNURBS3DXform( src, f, dest ); }
+static void *_zPrim3DXformInvNURBS(void *src, zFrame3D *f, void *dest){
+  return zNURBS3DXformInv( src, f, dest ); }
 static double _zPrim3DClosestNURBS(void *prim, zVec3D *p, zVec3D *cp){
   return zNURBS3DClosest( prim, p, cp, NULL, NULL ); }
 static double _zPrim3DPointDistNURBS(void *prim, zVec3D *p){
@@ -48,8 +48,8 @@ zPrimCom zprim_nurbs_com = {
   _zPrim3DCloneNURBS,
   _zPrim3DMirrorNURBS,
   _zPrim3DDestroyNURBS,
-  _zPrim3DXferNURBS,
-  _zPrim3DXferInvNURBS,
+  _zPrim3DXformNURBS,
+  _zPrim3DXformInvNURBS,
   _zPrim3DClosestNURBS,
   _zPrim3DPointDistNURBS,
   _zPrim3DPointIsInsideNURBS,

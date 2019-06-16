@@ -11,9 +11,9 @@ int main(void)
 
   printf( "v1: " ); zVec3DPrint( &v1 );
   printf( "f:\n" ); zFrame3DPrint( &f );
-  zXfer3D( &f, &v1, &v2 );
+  zXform3D( &f, &v1, &v2 );
   printf( "v2=f v1: " ); zVec3DPrint( &v2 );
-  zXfer3DInv( &f, &v2, &v );
+  zXform3DInv( &f, &v2, &v );
   printf( "v=f^-1 v2: " ); zVec3DPrint( &v );
 
   printf( "(assert):\n" );

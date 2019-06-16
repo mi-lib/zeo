@@ -43,8 +43,8 @@ zFrame3D *zFrame3DCascade(zFrame3D *f1, zFrame3D *f2, zFrame3D *f)
   return f;
 }
 
-/* transfer a 3D frame to that with respect to another. */
-zFrame3D *zFrame3DXfer(zFrame3D *f1, zFrame3D *f2, zFrame3D *f)
+/* transform a 3D frame to that with respect to another. */
+zFrame3D *zFrame3DXform(zFrame3D *f1, zFrame3D *f2, zFrame3D *f)
 {
   zFrame3D tmp;
 
@@ -52,15 +52,15 @@ zFrame3D *zFrame3DXfer(zFrame3D *f1, zFrame3D *f2, zFrame3D *f)
   return zFrame3DCascade( &tmp, f2, f );
 }
 
-/* transfer a position vector by a frame. */
-zVec3D *zXfer3D(zFrame3D *f, zVec3D *v, zVec3D *tv)
+/* transform a position vector by a frame. */
+zVec3D *zXform3D(zFrame3D *f, zVec3D *v, zVec3D *tv)
 {
   zMulMat3DVec3D( zFrame3DAtt(f), v, tv );
   return zVec3DAddDRC( tv, zFrame3DPos(f) );
 }
 
-/* inversely transfer a position vector by a frame. */
-zVec3D *zXfer3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv)
+/* inversely transform a position vector by a frame. */
+zVec3D *zXform3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv)
 {
   zVec3DSub( v, zFrame3DPos(f), tv );
   return zMulMat3DTVec3DDRC( zFrame3DAtt(f), tv );
@@ -69,7 +69,7 @@ zVec3D *zXfer3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv)
 /* vc_lin = R^T ( v_lin + v_ang x p )
    vc_ang = R^T   v_ang
  */
-zVec6D *zXfer6DLin(zFrame3D *f, zVec6D *v, zVec6D *vc)
+zVec6D *zXform6DLin(zFrame3D *f, zVec6D *v, zVec6D *vc)
 {
   zVec6D tmp;
 
@@ -80,7 +80,7 @@ zVec6D *zXfer6DLin(zFrame3D *f, zVec6D *v, zVec6D *vc)
 /* vc_lin = R       v_lin
    vc_ang = R ( p x v_lin + v_ang )
  */
-zVec6D *zXfer6DAng(zFrame3D *f, zVec6D *v, zVec6D *vc)
+zVec6D *zXform6DAng(zFrame3D *f, zVec6D *v, zVec6D *vc)
 {
   zMulMat3DVec6D( zFrame3DAtt(f), v, vc );
   return zVec6DAngShiftDRC( vc, zFrame3DPos(f) );

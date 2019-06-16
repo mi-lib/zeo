@@ -180,18 +180,18 @@ zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D shape. */
-zShape3D *zShape3DXfer(zShape3D *src, zFrame3D *f, zShape3D *dest)
+zShape3D *zShape3DXform(zShape3D *src, zFrame3D *f, zShape3D *dest)
 {
-  src->com->_xfer( &src->body, f, &dest->body );
-  zBox3DXfer( zShape3DBB(src), f, zShape3DBB(dest) );
+  src->com->_xform( &src->body, f, &dest->body );
+  zBox3DXform( zShape3DBB(src), f, zShape3DBB(dest) );
   return dest;
 }
 
 /* inversely transform coordinates of a 3D shape. */
-zShape3D *zShape3DXferInv(zShape3D *src, zFrame3D *f, zShape3D *dest)
+zShape3D *zShape3DXformInv(zShape3D *src, zFrame3D *f, zShape3D *dest)
 {
-  src->com->_xferinv( &src->body, f, &dest->body );
-  zBox3DXferInv( zShape3DBB(src), f, zShape3DBB(dest) );
+  src->com->_xforminv( &src->body, f, &dest->body );
+  zBox3DXformInv( zShape3DBB(src), f, zShape3DBB(dest) );
   return dest;
 }
 
