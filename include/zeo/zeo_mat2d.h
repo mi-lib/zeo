@@ -16,7 +16,7 @@ __BEGIN_DECLS
  */
 typedef double zMat2D[4];
 
-/*! \brief create, copy and cleanup a 2x2 matrix.
+/*! \brief create, copy and zero a 2x2 matrix.
  *
  * zMat2DCreate() creates a 2-by-2 matrix from \a a11, \a a12, \a a13 and
  * \a a14 as follows.
@@ -25,16 +25,16 @@ typedef double zMat2D[4];
  *
  * zMat2DCopy() copies a 2x2 matrix \a src to \a dest.
  *
- * zMat2DClear() sets all components of a 2x2 matrix \a m for zero.
+ * zMat2DZero() sets all components of a 2x2 matrix \a m for zeros.
  *
  * zMat2DIdent() makes a 2x2 matrix \a m the identity matrix.
  * \return
- * zMat2DCreate(), zMat2DCopy(), zMat2DClear() and zMat2DIdent() return
+ * zMat2DCreate(), zMat2DCopy(), zMat2DZero() and zMat2DIdent() return
  * a pointer \a m.
  */
 __EXPORT double *zMat2DCreate(zMat2D m, double a11, double a12, double a21, double a22);
 __EXPORT double *zMat2DCopy(zMat2D src, zMat2D dest);
-#define zMat2DClear(m) zMat2DCreate( (m), 0, 0, 0, 0 )
+#define zMat2DZero(m)  zMat2DCreate( (m), 0, 0, 0, 0 )
 #define zMat2DIdent(m) zMat2DCreate( (m), 1, 0, 0, 1 )
 
 /*! \brief transpose a 2x2 matrix.

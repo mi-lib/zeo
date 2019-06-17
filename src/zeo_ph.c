@@ -187,7 +187,7 @@ zVec3D *zPH3DBarycenter(zPH3D *ph, zVec3D *c)
   zVec3D bc;
   double v, vol;
 
-  zVec3DClear( c );
+  zVec3DZero( c );
   for( vol=0, i=0; i<zPH3DFaceNum(ph); i++ ){
     v = zTri3DConeVolume( zPH3DFace(ph,i), ZVEC3DZERO );
     vol += v;
@@ -205,7 +205,7 @@ zMat3D *zPH3DInertia(zPH3D *ph, zMat3D *inertia)
   register int j;
   zMat3D i;
 
-  zMat3DClear( inertia );
+  zMat3DZero( inertia );
   for( j=0; j<zPH3DFaceNum(ph); j++ ){
     zTri3DConeInertia( zPH3DFace(ph,j), &i );
     _zMat3DAddDRC( inertia, &i );

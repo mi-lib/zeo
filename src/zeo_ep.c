@@ -28,7 +28,7 @@ zEP *zEPCreateAA(zEP *ep, double theta, zVec3D *axis)
 
   if( zVec3DIsTiny( axis ) ){
     ep->ex.w = 1.0;
-    zVec3DClear( &ep->ex.v );
+    zVec3DZero( &ep->ex.v );
   } else{
     zSinCos( 0.5*theta, &sh, &ch );
     ep->ex.w = ch;
@@ -50,7 +50,7 @@ zVec3D *zEP2AA(zEP *ep, zVec3D *aa)
 
   sh = zVec3DNorm( &ep->ex.v );
   theta = 2 * atan2( sh, ep->ex.w );
-  return zIsTiny(sh) ? zVec3DClear(aa) : zVec3DMul( &ep->ex.v, theta/sh, aa );
+  return zIsTiny(sh) ? zVec3DZero(aa) : zVec3DMul( &ep->ex.v, theta/sh, aa );
 }
 
 /* convert angle-axis vector to Euler parameter. */

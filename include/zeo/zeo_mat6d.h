@@ -50,14 +50,14 @@ __EXPORT zMat6D *zMat6DCreate(zMat6D *m, zMat3D *m1, zMat3D *m2, zMat3D *m3, zMa
 #define zMat6DCopy(s,d) zCopy( zMat6D, s, d )
 /*! \brief put a sub 3x3 matrix into a 6x6 matrix. */
 #define zMat6DPutMat3D(m6d,row,col,m3d) zMat3DCopy( m3d, &(m6d)->e[(col)][(row)] )
-/*! \brief clear a 6x6 matrix to be zero. */
-#define _zMat6DClear(m) do{\
-  zMat3DClear( &m->c.ll );\
-  zMat3DClear( &m->c.la );\
-  zMat3DClear( &m->c.al );\
-  zMat3DClear( &m->c.aa );\
+/*! \brief zero a 6x6 matrix. */
+#define _zMat6DZero(m) do{\
+  zMat3DZero( &m->c.ll );\
+  zMat3DZero( &m->c.la );\
+  zMat3DZero( &m->c.al );\
+  zMat3DZero( &m->c.aa );\
 } while(0)
-__EXPORT zMat6D *zMat6DClear(zMat6D *m);
+__EXPORT zMat6D *zMat6DZero(zMat6D *m);
 
 /*! \brief transpose of a 6x6 matrix. */
 #define _zMat6DT(m,tm) do{\

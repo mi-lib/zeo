@@ -6,7 +6,7 @@ zVec3D *torsion1(zMat3D *r1, zMat3D *r2, zDir d, zVec3D *t)
 
   zVec3DOuterProd( &r1->v[d], &r2->v[d], t );
   return zIsTiny( ( angle = zVec3DAngle( &r1->v[d], &r2->v[d], t ) ) ) ?
-    zVec3DClear(t) : zVec3DMulDRC( t, angle/zVec3DNorm(t) );
+    zVec3DZero(t) : zVec3DMulDRC( t, angle/zVec3DNorm(t) );
 }
 
 zVec3D *torsion2(zMat3D *r1, zMat3D *r2, zVec3D *t)

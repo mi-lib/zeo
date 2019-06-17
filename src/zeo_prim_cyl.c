@@ -257,8 +257,8 @@ zCyl3D *zCyl3DFScan(FILE *fp, zCyl3D *cyl)
   _zCyl3DParam prm;
 
   zCyl3DInit( cyl );
-  zVec3DClear( &prm.c[0] );
-  zVec3DClear( &prm.c[1] );
+  zVec3DZero( &prm.c[0] );
+  zVec3DZero( &prm.c[1] );
   prm.ic = 0;
   prm.r = 0;
   prm.div = 0;

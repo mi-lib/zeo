@@ -47,7 +47,7 @@ static bool _zGJKCheck(zGJKSimplex *s);
 void _zGJKSlotInit(zGJKSlot *slot)
 {
   slot->sw_w = slot->sw_y = false;
-  zVec3DClear( &slot->w );
+  zVec3DZero( &slot->w );
   slot->p1 = slot->p2 = NULL;
   slot->s = 0;
 }
@@ -249,8 +249,8 @@ void _zGJKPair(zGJKSimplex *s, zVec3D *c1, zVec3D *c2)
 {
   register int i;
 
-  zVec3DClear( c1 );
-  zVec3DClear( c2 );
+  zVec3DZero( c1 );
+  zVec3DZero( c2 );
   for( i=0; i<4; i++ )
     if( s->slot[i].sw_w ){
       zVec3DCatDRC( c1, s->slot[i].s, s->slot[i].p1 );
@@ -373,7 +373,7 @@ bool _zGJKPD(zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c1, zVec3D *c2, z
   double l[3];
 
   if( !_zGJKPDInit( p1, n1, p2, n2, s, &slist, &vlist ) ) return false;
-  zVec3DClear( &v_temp );
+  zVec3DZero( &v_temp );
   while( 1 ){
     zCH3DPL( &ph, &vlist );
     _zGJKPH3DClosest( &ph, ZVEC3DZERO, &v, &id );
@@ -388,8 +388,8 @@ bool _zGJKPD(zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c1, zVec3D *c2, z
     zPH3DDestroy( &ph );
   }
  BREAK:
-  zVec3DClear( c1 );
-  zVec3DClear( c2 );
+  zVec3DZero( c1 );
+  zVec3DZero( c2 );
   j = 0;
   zTri3DLinScale( zPH3DFace(&ph,id), &v, &l[0], &l[1], &l[2], &v_temp );
   zListForEach( &slist, sc ){

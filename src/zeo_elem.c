@@ -50,8 +50,8 @@ zPlane3D *zPlane3DMean(zPlane3D *pl, zVec3D *pc, zVec3D v[], int n)
   zVec3D p, evec[3];
   zMat3D m;
 
-  zVec3DClear( &p );
-  zMat3DClear( &m );
+  zVec3DZero( &p );
+  zMat3DZero( &m );
   for( i=0; i<n; i++ ){
     zVec3DAddDRC( &p, &v[i] );
     zMat3DAddDyad( &m, &v[i], &v[i] );
@@ -315,7 +315,7 @@ zVec3D *zTri3DCircumcenter(zTri3D *t, zVec3D *c)
   s[0] = __z_tri3D_angle( t, 0, 1, 2 );
   s[1] = __z_tri3D_angle( t, 1, 2, 0 );
   s[2] = __z_tri3D_angle( t, 2, 0, 1 );
-  zVec3DClear( c );
+  zVec3DZero( c );
   zVec3DCatDRC( c, s[0], zTri3DVert(t,0) );
   zVec3DCatDRC( c, s[1], zTri3DVert(t,1) );
   zVec3DCatDRC( c, s[2], zTri3DVert(t,2) );
@@ -330,7 +330,7 @@ zVec3D *zTri3DIncenter(zTri3D *t, zVec3D *c)
   s[0] = zVec3DDist( zTri3DVert(t,1), zTri3DVert(t,2) );
   s[1] = zVec3DDist( zTri3DVert(t,2), zTri3DVert(t,0) );
   s[2] = zVec3DDist( zTri3DVert(t,0), zTri3DVert(t,1) );
-  zVec3DClear( c );
+  zVec3DZero( c );
   zVec3DCatDRC( c, s[0], zTri3DVert(t,0) );
   zVec3DCatDRC( c, s[1], zTri3DVert(t,1) );
   zVec3DCatDRC( c, s[2], zTri3DVert(t,2) );
@@ -540,7 +540,7 @@ zMat3D *zTri3DConeInertia(zTri3D *t, zMat3D *i)
   zMat3D m;
   zVec3D *v1, *v2;
 
-  zMat3DClear( i );
+  zMat3DZero( i );
   for( j=0; j<3; j++ ){
     v1 = zTri3DVert(t,j);
     v2 = zTri3DVertNext(t,j);
@@ -562,7 +562,7 @@ zVec3D *zTri3DConeCircumcenter(zTri3D *t, zVec3D *c)
 {
   zVec3D v;
 
-  zVec3DClear( c );
+  zVec3DZero( c );
   zVec3DCatDRC( c, zVec3DSqrNorm(zTri3DVert(t,0)), zVec3DOuterProd(zTri3DVert(t,1),zTri3DVert(t,2),&v) );
   zVec3DCatDRC( c, zVec3DSqrNorm(zTri3DVert(t,1)), zVec3DOuterProd(zTri3DVert(t,2),zTri3DVert(t,0),&v) );
   zVec3DCatDRC( c, zVec3DSqrNorm(zTri3DVert(t,2)), zVec3DOuterProd(zTri3DVert(t,0),zTri3DVert(t,1),&v) );

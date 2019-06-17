@@ -50,7 +50,7 @@ bool zNURBS3DAlloc(zNURBS3D *nurbs, int size1, int size2, int dim1, int dim2)
   for( i=0; i<size1; i++ )
     for( j=0; j<size2; j++ ){
       zNURBS3DSetWeight( nurbs, i, j, 1.0 );
-      zVec3DClear( zNURBS3DCP(nurbs,i,j) );
+      zVec3DZero( zNURBS3DCP(nurbs,i,j) );
     }
   zNURBS3DSetSliceNum( nurbs, ZEO_NURBS3D_DEFAULT_NS, ZEO_NURBS3D_DEFAULT_NS );
   return true;
@@ -195,10 +195,10 @@ zVec3D *zNURBS3DVec(zNURBS3D *nurbs, double u, double v, zVec3D *p)
 
   su = _zNURBS3DSeg( nurbs, 0, u );
   sv = _zNURBS3DSeg( nurbs, 1, v );
-  zVec3DClear( p );
+  zVec3DZero( p );
   for( den=0, i=su-nurbs->dim[0]; i<=su; i++ ){
     bu = _zNURBS3DBasis(nurbs,0,u,i,nurbs->dim[0],su);
-    zVec3DClear( &tmp );
+    zVec3DZero( &tmp );
     for( dv=0, j=sv-nurbs->dim[1]; j<=sv; j++ ){
       dv += bv = zNURBS3DWeight(nurbs,i,j) * _zNURBS3DBasis(nurbs,1,v,j,nurbs->dim[1],sv);
       zVec3DCatDRC( &tmp, bv, zNURBS3DCP(nurbs,i,j) );
@@ -232,14 +232,14 @@ zVec3D *zNURBS3DVecNorm(zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *
   tv = t2 ? t2 : &tv_tmp;
   su = _zNURBS3DSeg( nurbs, 0, u );
   sv = _zNURBS3DSeg( nurbs, 1, v );
-  zVec3DClear( p );
-  zVec3DClear( tu );
-  zVec3DClear( tv );
+  zVec3DZero( p );
+  zVec3DZero( tu );
+  zVec3DZero( tv );
   for( den=dubv=budv=0, i=su-nurbs->dim[0]; i<=su; i++ ){
     bu = _zNURBS3DBasis(nurbs,0,u,i,nurbs->dim[0],su);
     dbu = _zNURBS3DBasisDiff(nurbs,0,u,i,nurbs->dim[0],su);
-    zVec3DClear( &pv_tmp );
-    zVec3DClear( &dpv_tmp );
+    zVec3DZero( &pv_tmp );
+    zVec3DZero( &dpv_tmp );
     for( dv=ddv=0, j=sv-nurbs->dim[1]; j<=sv; j++ ){
       dv += bv = zNURBS3DWeight(nurbs,i,j) * _zNURBS3DBasis(nurbs,1,v,j,nurbs->dim[1],sv);
       ddv += dbv = zNURBS3DWeight(nurbs,i,j) * _zNURBS3DBasisDiff(nurbs,1,v,j,nurbs->dim[1],sv);
@@ -260,7 +260,7 @@ zVec3D *zNURBS3DVecNorm(zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *
   if( n ){
     zVec3DOuterProd( tu, tv, n );
     if( zVec3DIsTiny( n ) )
-      zVec3DClear( n );
+      zVec3DZero( n );
     else
       zVec3DNormalizeDRC( n );
   }

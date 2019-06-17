@@ -63,14 +63,14 @@ __EXPORT zVec3D *zVec3DCreatePolar(zVec3D *v, double r, double theta, double phi
  */
 #define zVec3DCopy(s,d) zCopy( zVec3D, s, d )
 
-/*! \brief clear a 3D vector to zero.
+/*! \brief zero a 3D vector.
  *
- * zVec3DClear() sets all components of \a v for zero.
+ * zVec3DZero() sets all components of \a v for zeros.
  * \return
- * zVec3DClear() returns a pointer \a v.
+ * zVec3DZero() returns a pointer \a v.
  */
-#define _zVec3DClear(v) _zVec3DCreate( v, 0, 0, 0 )
-#define zVec3DClear(v)  zVec3DCreate( v, 0, 0, 0 )
+#define _zVec3DZero(v) _zVec3DCreate( v, 0, 0, 0 )
+#define zVec3DZero(v)  zVec3DCreate( v, 0, 0, 0 )
 
 /*! \brief check if the two 3D vectors are equal.
  *

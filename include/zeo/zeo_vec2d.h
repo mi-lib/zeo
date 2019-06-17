@@ -16,22 +16,22 @@ __BEGIN_DECLS
  */
 typedef double zVec2D[2];
 
-/*! \brief create, copy and cleanup a 2D vector.
+/*! \brief create, copy and zero a 2D vector.
  *
  * zVec2DCreate() creates a 2D vector \a v which consists of
  * \a x and \a y.
  *
  * zVec2DCopy() copies a 2D vector \a src to another \a dest.
  *
- * zVec2DClear() sets all the components of a 2D vector \a v for 0.
+ * zVec2DZero() sets all components of a 2D vector \a v for zeros.
  * \return
- * zVec2DCreate() and zVec2DClear() return a pointer \a v.
+ * zVec2DCreate() and zVec2DZero() return a pointer \a v.
  *
  * zVec2DCopy() returns a pointer \a dest.
  */
 __EXPORT double *zVec2DCreate(zVec2D v, double a1, double a2);
 __EXPORT double *zVec2DCopy(zVec2D src, zVec2D dest);
-#define zVec2DClear(v) zVec2DCreate( v, 0, 0 )
+#define zVec2DZero(v) zVec2DCreate( v, 0, 0 )
 
 /*! \brief create a 2D vector by the set of value for a polar expression.
  *

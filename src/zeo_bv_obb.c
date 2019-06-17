@@ -11,9 +11,7 @@ static double _zOBB3DRect(zLoop3D *edge, zVec3D *c, zVec3D *d1, zVec3D *d2, doub
 static bool _zOBB3DMaxDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl);
 
 /* (static)
- * _zOBB3DMinDir
- * - minimum axis direction of oriented bounding box.
- */
+ * minimum axis direction of oriented bounding box. */
 void _zOBB3DMinDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
 {
   zTri3D *bot;
@@ -36,9 +34,7 @@ void _zOBB3DMinDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
 }
 
 /* (static)
- * _zOBB3DRect
- * - minimum bounding rectangle of a planar convex hull.
- */
+ * minimum bounding rectangle of a planar convex hull. */
 double _zOBB3DRect(zLoop3D *edge, zVec3D *c, zVec3D *d1, zVec3D *d2, double *l1, double *l2)
 {
   double min1, min2, max1, max2, d;
@@ -60,10 +56,7 @@ double _zOBB3DRect(zLoop3D *edge, zVec3D *c, zVec3D *d1, zVec3D *d2, double *l1,
 }
 
 /* (static)
- * _zOBB3DMaxDir
- * - maximum (and the second maximum) axis direction of
- *   oriented bounding box.
- */
+ * maximum (and the second maximum) axis direction of oriented bounding box. */
 bool _zOBB3DMaxDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
 {
   zLoop3D rim;
@@ -83,7 +76,7 @@ bool _zOBB3DMaxDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
   vp1 = zListTail(&rim);
   vp2 = zListHead(&rim);
   zBox3DDepth(obb) = zBox3DWidth(obb) = area_min = HUGE_VAL;
-  zVec3DClear( &dc );
+  zVec3DZero( &dc );
   for( ; vp1!=zListRoot(&rim); vp1=zListCellNext(vp1), vp2=zListCellPrev(vp1) ){
     zVec3DSub( vp2->data, vp1->data, &e1 );
     zVec3DOuterProd( zBox3DAxis(obb,zZ), &e1, &e2 );
@@ -105,9 +98,7 @@ bool _zOBB3DMaxDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
   return true;
 }
 
-/* zOBB
- * - oriented bounding box.
- */
+/* oriented bounding box. */
 zBox3D *zOBB(zBox3D *obb, zVec3D p[], int n)
 {
   zPH3D ch;
@@ -120,9 +111,7 @@ zBox3D *zOBB(zBox3D *obb, zVec3D p[], int n)
   return obb;
 }
 
-/* zOBBPL
- * - oriented bounding box of a list of points.
- */
+/* oriented bounding box of a list of points. */
 zBox3D *zOBBPL(zBox3D *obb, zVec3DList *pl)
 {
   zPH3D ch;

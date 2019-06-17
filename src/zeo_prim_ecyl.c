@@ -38,12 +38,12 @@ zECyl3D *zECyl3DCreate(zECyl3D *cyl, zVec3D *c1, zVec3D *c2, double r1, double r
 /* initialize a 3D elliptic cylinder. */
 zECyl3D *zECyl3DInit(zECyl3D *cyl)
 {
-  zVec3DClear( zECyl3DCenter(cyl,0) );
-  zVec3DClear( zECyl3DCenter(cyl,1) );
+  zVec3DZero( zECyl3DCenter(cyl,0) );
+  zVec3DZero( zECyl3DCenter(cyl,1) );
   zECyl3DSetRadius( cyl, 0, 0 );
   zECyl3DSetRadius( cyl, 1, 0 );
-  zVec3DClear( zECyl3DRadVec(cyl,0) );
-  zVec3DClear( zECyl3DRadVec(cyl,1) );
+  zVec3DZero( zECyl3DRadVec(cyl,0) );
+  zVec3DZero( zECyl3DRadVec(cyl,1) );
   zECyl3DSetDiv( cyl, ZEO_PRIM_DEFAULT_DIV );
   return cyl;
 }
@@ -295,9 +295,9 @@ zECyl3D *zECyl3DFScan(FILE *fp, zECyl3D *cyl)
   _zECylParam prm;
 
   zECyl3DInit( cyl );
-  zVec3DClear( &prm.c[0] );
-  zVec3DClear( &prm.c[1] );
-  zVec3DClear( &prm.ref );
+  zVec3DZero( &prm.c[0] );
+  zVec3DZero( &prm.c[1] );
+  zVec3DZero( &prm.ref );
   prm.r[0] = prm.r[1] = 0;
   prm.ic = prm.ir = prm.div = 0;
   zFieldFScan( fp, _zECyl3DFScan, &prm );

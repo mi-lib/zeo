@@ -45,11 +45,11 @@ extern const zMat3D zmat3Dident;
  *
  * zMat3DCopy() copies a 3x3 matrix \a src to \a dest.
  *
- * zMat3DClear() sets all components of a 3x3 matrix \a m for zero.
+ * zMat3DZero() sets all components of a 3x3 matrix \a m for zeros.
  *
  * zMat3DIdent() makes a 3x3 matrix \a m the identity matrix.
  * \return
- * zMat3DCreate(), zMat3DClear() and zMat3DIdent() return a pointer \a m.
+ * zMat3DCreate(), zMat3DZero() and zMat3DIdent() return a pointer \a m.
  *
  * zMat3DCopy() returns a pointer \a m.
  */
@@ -63,7 +63,7 @@ __EXPORT zMat3D *zMat3DCreate(zMat3D *m,
   double a21, double a22, double a23,
   double a31, double a32, double a33);
 #define zMat3DCopy(s,d) zCopy( zMat3D, s, d )
-#define zMat3DClear(m)  zMat3DCopy( ZMAT3DZERO, m )
+#define zMat3DZero(m)   zMat3DCopy( ZMAT3DZERO, m )
 #define zMat3DIdent(m)  zMat3DCopy( ZMAT3DIDENT, m )
 
 /*! \brief check if the two 3x3 matrices are equal.

@@ -10,7 +10,7 @@ int main(void)
   register int i;
 
   zRandInit();
-  zVec3DClear( &zyx );
+  zVec3DZero( &zyx );
   zMat3DIdent( &m2 );
   zVec3DCreate( &zyxvel, zRandF(-V,V), zRandF(-V,V), zRandF(-V,V) );
   for( i=0; i<=STEP; i++ ){

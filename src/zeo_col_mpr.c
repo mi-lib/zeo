@@ -49,10 +49,10 @@ zVec3D *_zMPROrigin(zMPRSlot *center, zVec3D p1[], int n1, zVec3D p2[], int n2)
 {
   register int i;
 
-  for( zVec3DClear( &center->v1 ), i=0; i<n1; i++ )
+  for( zVec3DZero( &center->v1 ), i=0; i<n1; i++ )
     zVec3DAddDRC( &center->v1, &p1[i] );
   zVec3DDivDRC( &center->v1, n1 );
-  for( zVec3DClear( &center->v2 ), i=0; i<n2; i++ )
+  for( zVec3DZero( &center->v2 ), i=0; i<n2; i++ )
     zVec3DAddDRC( &center->v2, &p2[i] );
   zVec3DDivDRC( &center->v2, n2 );
   _zVec3DSub( &center->v1, &center->v2, &center->v );
@@ -204,8 +204,8 @@ void _zMPRDepthPair(zMPRSimplex* portal, zVec3D *pos)
     b[3] = zVec3DGrassmannProd( &dir, &portal->slot[1].v, &portal->slot[2].v );
     sum = b[1] + b[2] + b[3];
   }
-  _zVec3DClear( &p1 );
-  _zVec3DClear( &p2 );
+  _zVec3DZero( &p1 );
+  _zVec3DZero( &p2 );
   for( i=0; i<4; i++ ){
     zVec3DCatDRC( &p1, b[i], &portal->slot[i].v1 );
     zVec3DCatDRC( &p2, b[i], &portal->slot[i].v2 );
@@ -330,7 +330,7 @@ bool zMPRDepth(zVec3D p1[], int n1, zVec3D p2[], int n2, double *depth, zVec3D *
   switch( _zMPRFindPortal( &portal, p1, n1, p2, n2 ) ){
   case Z_MPR_PORTAL_AT_POINT: /* contact at a point. */
     *depth = 0;
-    _zVec3DClear( dir );
+    _zVec3DZero( dir );
     zVec3DMid( &portal.slot[1].v1, &portal.slot[1].v2, pos );
     break;
   case Z_MPR_PORTAL_ON_SEG: /* contact on a segment */

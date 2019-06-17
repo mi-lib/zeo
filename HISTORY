@@ -1,3 +1,4 @@
+2019. 6.17. Renamed *Clear to *Zero. [zeo_vec2d, zeo_mat2d, zeo_vec3d, zeo_mat3d, zeo_vec6d, zeo_mat6d, zeo_vec3d_pca, zeo_ep, zeo_pointcloud, zeo_elem, zeo_ph, zeo_nurbs, zeo_prim_cyl, zeo_prim_ecyl, zeo_bv_aabb, zeo_bv_obb, zeo_col_gjk, zeo_col_mpr]
 2019. 6.14. Renamed *Xfer to *Xform. [zeo_frame, zeo_ph, zeo_nurbs, zeo_prim, zeo_prim_box, zeo_prim_sphere, zeo_prim_cyl, zeo_prim_cone, zeo_prim_ellips, zeo_prim_ecyl, zeo_prim_ph, zeo_prim_nurbs, zeo_shape, zeo_pointcloud, zeo_bv_aabb]
 2019. 6.14. Renamed _*Write to _*Print. [zeo_bv_qhull, zeo_col_gjk]
 2019. 6.13. Renamed *Read and *Write to *Scan and *Print, respectively. [zeo_color, zeo_optic, zeo_vec2d, zeo_mat2d, zeo_vec3d, zeo_mat3d, zeo_vec3d_list, zeo_vec6d, zeo_mat6d, zeo_frame, zeo_ep, zeo_elem, zeo_ph, zeo_prim, zeo_prim_box, zeo_prim_sphere, zeo_prim_cyl, zeo_prim_cone, zeo_prim_ellips, zeo_prim_ecyl, zeo_shape, zeo_mshape, zeo_shape_list, zeo_bv_aabb, zeo_col_aabbtree, zeo_nurbs, zeo_terra]

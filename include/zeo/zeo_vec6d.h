@@ -77,14 +77,14 @@ __EXPORT zVec6D *zVec6DFromVec3D(zVec6D *v, zVec3D *vl, zVec3D *va);
  */
 #define zVec6DCopy(s,d) zCopy( zVec6D, s, d )
 
-/*! \brief clear a 6D vector.
+/*! \brief zero a 6D vector.
  *
- * zVec6DClear() sets all components of a 6D vector \a v for zero.
+ * zVec6DZero() sets all components of a 6D vector \a v for zeros.
  * \return
- * zVec6DClear() returns a pointer \a v.
+ * zVec6DZero() returns a pointer \a v.
  */
-#define _zVec6DClear(v)  _zVec6DCreate( v, 0, 0, 0, 0, 0, 0 )
-#define zVec6DClear(v)   zVec6DCreate( v, 0, 0, 0, 0, 0, 0 )
+#define _zVec6DZero(v) _zVec6DCreate( v, 0, 0, 0, 0, 0, 0 )
+#define zVec6DZero(v)  zVec6DCreate( v, 0, 0, 0, 0, 0, 0 )
 
 /*! \brief check if the two 6D vectors are equal.
  *

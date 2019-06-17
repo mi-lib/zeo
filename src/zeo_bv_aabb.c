@@ -13,8 +13,8 @@
 /* initialize an axis-aligned box */
 zAABox3D *zAABox3DInit(zAABox3D *box)
 {
-  zVec3DClear( &box->pmin );
-  zVec3DClear( &box->pmax );
+  zVec3DZero( &box->pmin );
+  zVec3DZero( &box->pmax );
   return box;
 }
 

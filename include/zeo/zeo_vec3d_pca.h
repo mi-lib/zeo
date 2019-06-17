@@ -15,7 +15,7 @@ __BEGIN_DECLS
 /* utilities
  * ********************************************************** */
 
-/*! \brief barycenter of and PCA against vector cloud.
+/*! \brief barycenter of and PCA to vector cloud.
  *
  * zVec3DBarycenterPL() and zVec3DBarycenter() computes the
  * barycenter of a set of vectors. For zVec3DBarycenterPL(),

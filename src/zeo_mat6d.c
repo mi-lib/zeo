@@ -14,10 +14,10 @@ zMat6D *zMat6DCreate(zMat6D *m, zMat3D *m1, zMat3D *m2, zMat3D *m3, zMat3D *m4)
   return m;
 }
 
-/* clear a 6x6 matrix to be zero. */
-zMat6D *zMat6DClear(zMat6D *m)
+/* zero a 6x6 matrix. */
+zMat6D *zMat6DZero(zMat6D *m)
 {
-  _zMat6DClear( m );
+  _zMat6DZero( m );
   return m;
 }
 

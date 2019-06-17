@@ -23,7 +23,7 @@ zTerraCell *_zTerraCellInit(zTerraCell *cell)
   zVec3DCopy( ZVEC3DZ, &cell->norm );
   cell->var = 1;
   cell->travs = false;
-  zVec3DClear( &cell->_prm );
+  zVec3DZero( &cell->_prm );
   zMat3DIdent( &cell->_s );
   cell->_np = 0;
   return cell;
