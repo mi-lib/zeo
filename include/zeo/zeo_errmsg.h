@@ -32,6 +32,8 @@
 #define ZEO_ERR_OPT_INV      "invalid description for optical-info"
 #define ZEO_ERR_OPT_UNNAME   "unnamed optical-info exists"
 
+#define ZEO_ERR_STL_INCOMPLETE "incomplete STL file"
+
 #define ZEO_ERR_NURBS_INVDIM "invalid dimension specified for NURBS, or lack of control points"
 #define ZEO_ERR_NURBS_SIZMIS      "size mismatch of NURBS surfaces"
 #define ZEO_ERR_NURBS_KNOTALREADY "knot already allocated"
@@ -60,5 +62,12 @@
 #define ZEO_ERR_TERRA_OORAN  "grid out of range"
 
 #define ZEO_ERR_FATAL        "fatal error! - please report to the author"
+
+#define ZEO_WARN_STL_MIS_LOOP "missing the initiator of outer loop"
+#define ZEO_WARN_STL_TOOMANYVERT  "too many vertices in an outer loop"
+#define ZEO_WARN_STL_TOOFEWVERT   "too few vertices in an outer loop"
+#define ZEO_WARN_STL_WRONGNORMAL  "inconsistent normal vector, ignored"
+
+#define ZEO_WARN_STL_MISSINGDATA  "missing data in STL"
 
 #endif /* __ZEO_ERRMSG_H__ */

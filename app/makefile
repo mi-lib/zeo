@@ -19,7 +19,7 @@ INSTALL=install -m 755
 
 CONFIGGEN=zeda-config-gen
 CONFIG=zeo-config
-TARGET=$(CONFIG) zeo_qhull zeo_gjk
+TARGET=$(CONFIG) zeo_qhull zeo_gjk zeo_stlconv
 # zeo_terra
 
 #####################################################################

@@ -458,7 +458,7 @@ zPH3D *zPH3DFScan(FILE *fp, zPH3D *ph)
   return NULL;
 }
 
-/* print  3D polyhedron to a file. */
+/* print a 3D polyhedron to a file. */
 void zPH3DFPrint(FILE *fp, zPH3D *ph)
 {
   register int i;
@@ -476,4 +476,277 @@ void zPH3DFPrint(FILE *fp, zPH3D *ph)
       (int)( zPH3DFaceVert(ph,i,2)-zPH3DVertBuf(ph) ) );
   }
   fprintf( fp, "\n" );
+}
+
+/* STL format */
+
+/* while it is not a problem to find/register vertices during scanning STL,
+ * faces should be allocated for the last process since the array of vertices
+ * might be reallocated. */
+typedef struct{
+  int i1, i2, i3; /* indices of three vertices of a face */
+} _zIndex3;
+zListClass( _zIndex3List, _zIndex3ListCell, _zIndex3 );
+
+static int _zPH3DRegVert(zPH3D *ph, zVec3D *v);
+static zPH3D *_zPH3DRegFace(zPH3D *ph, _zIndex3List *face_list);
+static zPH3D *_zPH3DPushFace(zPH3D *ph, zVec3D v[], zVec3D *normal, _zIndex3List *face_list);
+
+static bool _zPH3DFScanSTLloop(FILE *fp, char buf[], zVec3D v[]);
+static zPH3D *_zPH3DFScanSTLfacet(FILE *fp, char buf[], zPH3D *ph, _zIndex3List *face_list);
+static zPH3D *_zPH3DFScanSTLsolid(FILE *fp, zPH3D *ph, char name[], size_t namesize);
+
+static zVec3D *_zPH3DFReadSTLvec(FILE *fp, zVec3D *v);
+static void _zPH3DFWriteSTLvec(FILE *fp, zVec3D *v);
+
+/* find or register a vertex of a 3D polyhedron under construction. */
+int _zPH3DRegVert(zPH3D *ph, zVec3D *v)
+{
+  register int i;
+
+  if( zPH3DVertNum(ph) == 0 ){ /* if empty, newly allocate the array of vertices. */
+    zArrayAlloc( &ph->vert, zVec3D, 1 );
+    if( zPH3DVertBuf(ph) ){
+      zVec3DCopy( v, zPH3DVert(ph,0) );
+      return 0;
+    }
+  } else{
+    for( i=0; i<zPH3DVertNum(ph); i++ )
+      if( zVec3DEqual( zPH3DVert(ph,i), v ) ) return i; /* found already registered vertex */
+    /* if not found, the vertex is added to the array. */
+    zArrayAdd( &ph->vert, zVec3D, v );
+    if( zPH3DVertNum(ph) > i ) return zPH3DVertNum(ph) - 1;
+  }
+  return -1;
+}
+
+/* register faces of a 3D polyhedron under construction. */
+zPH3D *_zPH3DRegFace(zPH3D *ph, _zIndex3List *face_list)
+{
+  _zIndex3ListCell *cell;
+  register int i = 0;
+
+  if( zListNum(face_list) <= 0 ) return NULL;
+  zArrayAlloc( &ph->face, zTri3D, zListNum(face_list) );
+  if( zPH3DFaceNum(ph) < zListNum(face_list) )
+    return NULL;
+  zListForEach( face_list, cell ){
+    zTri3DCreate( zPH3DFace(ph,i), zPH3DVert(ph,cell->data.i1), zPH3DVert(ph,cell->data.i2), zPH3DVert(ph,cell->data.i3) );
+    i++;
+  }
+  return ph;
+}
+
+/* memorize a face of a 3D polyhedron under construction. */
+zPH3D *_zPH3DPushFace(zPH3D *ph, zVec3D v[], zVec3D *normal, _zIndex3List *face_list)
+{
+  _zIndex3ListCell *cell;
+  zTri3D face;
+
+  if( !( cell = zAlloc( _zIndex3ListCell, 1 ) ) ){
+    ZALLOCERROR();
+    return NULL;
+  }
+  if( ( cell->data.i1 = _zPH3DRegVert( ph, &v[0] ) ) < 0 ||
+      ( cell->data.i2 = _zPH3DRegVert( ph, &v[1] ) ) < 0 ||
+      ( cell->data.i3 = _zPH3DRegVert( ph, &v[2] ) ) < 0 ) return NULL;
+  zTri3DCreate( &face, &v[0], &v[1], &v[2] );
+  if( !zVec3DEqual( zTri3DNorm(&face), normal ) ){
+    ZRUNWARN( ZEO_WARN_STL_WRONGNORMAL );
+  }
+  zListInsertHead( face_list, cell );
+  return ph;
+}
+
+/* scan an outer loop of a face of a 3D polyhedron from ASCII STL format */
+bool _zPH3DFScanSTLloop(FILE *fp, char buf[], zVec3D v[])
+{
+  int i = 0;
+
+  if( !zFToken( fp, buf, BUFSIZ ) ){
+    ZRUNERROR( ZEO_ERR_STL_INCOMPLETE );
+    return false;
+  }
+  if( strcmp( buf, "loop" ) != 0 ){
+    ZRUNWARN( ZEO_WARN_STL_MIS_LOOP );
+    return false;
+  }
+  while( !feof( fp ) ){
+    if( !zFToken( fp, buf, BUFSIZ ) ){
+      ZRUNERROR( ZEO_ERR_STL_INCOMPLETE );
+      return false;
+    }
+    if( strcmp( buf, "vertex" ) == 0 ){
+      if( i > 2 ){
+        ZRUNWARN( ZEO_WARN_STL_TOOMANYVERT );
+        continue;
+      }
+      zVec3DFScan( fp, &v[i++] );
+    } else
+    if( strcmp( buf, "endloop" ) == 0 ){
+      if( i < 3 ){
+        ZRUNWARN( ZEO_WARN_STL_TOOFEWVERT );
+        break;
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
+/* scan a facet of a 3D polyhedron from ASCII STL format */
+zPH3D *_zPH3DFScanSTLfacet(FILE *fp, char buf[], zPH3D *ph, _zIndex3List *face_list)
+{
+  zVec3D normal, v[3];
+
+  while( !feof( fp ) ){
+    if( !zFToken( fp, buf, BUFSIZ ) ){
+      ZRUNERROR( ZEO_ERR_STL_INCOMPLETE );
+      break;
+    }
+    if( strcmp( buf, "normal" ) == 0 ){
+      zVec3DFScan( fp, &normal );
+    } else
+    if( strcmp( buf, "outer" ) == 0 ){
+      _zPH3DFScanSTLloop( fp, buf, v );
+    } else
+    if( strcmp( buf, "endfacet" ) == 0 ){
+      if( !_zPH3DPushFace( ph, v, &normal, face_list ) ) break;
+      return ph;
+    }
+  }
+  return NULL;
+}
+
+/* scan a solid object of a 3D polyhedron from ASCII STL format */
+zPH3D *_zPH3DFScanSTLsolid(FILE *fp, zPH3D *ph, char name[], size_t namesize)
+{
+  char buf[BUFSIZ];
+  _zIndex3List face_list;
+
+  zListInit( &face_list );
+  if( !zFToken( fp, name, namesize ) ) return NULL; /* no name */
+  while( !feof( fp ) ){
+    if( !zFToken( fp, buf, BUFSIZ ) ){
+      ZRUNERROR( ZEO_ERR_STL_INCOMPLETE );
+      break;
+    }
+    if( strcmp( buf, "endsolid" ) == 0 ){
+      ph = _zPH3DRegFace( ph, &face_list );
+      zListDestroy( _zIndex3ListCell, &face_list );
+      return ph;
+    } else
+    if( strcmp( buf, "facet" ) != 0 ) continue; /* skip as a comment */
+    if( !_zPH3DFScanSTLfacet( fp, buf, ph, &face_list ) ) break; /* read a facet */
+  }
+  return NULL;
+}
+
+/* scan a 3D polyhedron from ASCII STL format */
+zPH3D *zPH3DFScanSTL(FILE *fp, zPH3D *ph, char name[], size_t namesize)
+{
+  char buf[BUFSIZ];
+
+  zPH3DInit( ph );
+  while( !feof( fp ) ){
+    if( !zFToken( fp, buf, BUFSIZ ) ) break; /* early EOF */
+    if( strcmp( buf, "solid" ) != 0 ) continue; /* skip as a comment */
+    return _zPH3DFScanSTLsolid( fp, ph, name, namesize ); /* succeed to scan */
+  }
+  return NULL; /* fail to scan */
+}
+
+/* print a 3D polyhedron to ASCII STL format */
+void zPH3DFPrintSTL(FILE *fp, zPH3D *ph, char name[])
+{
+  register int i;
+
+  fprintf( fp, "solid %s\n", name );
+  for( i=0; i<zPH3DFaceNum(ph); i++ ){
+    fprintf( fp, "\tfacet normal\t" );
+    zVec3DDataFPrint( fp, zTri3DNorm(zPH3DFace(ph,i)) );
+    fprintf( fp, "\n\t\touter loop" );
+    fprintf( fp, "\n\t\t\tvertex\t" );
+    zVec3DDataFPrint( fp, zTri3DVert(zPH3DFace(ph,i),0) );
+    fprintf( fp, "\n\t\t\tvertex\t" );
+    zVec3DDataFPrint( fp, zTri3DVert(zPH3DFace(ph,i),1) );
+    fprintf( fp, "\n\t\t\tvertex\t" );
+    zVec3DDataFPrint( fp, zTri3DVert(zPH3DFace(ph,i),2) );
+    fprintf( fp, "\n\t\tendloop\n\tendfacet\n" );
+  }
+  fprintf( fp, "endsolid\n" );
+}
+
+/* read a 3D vector from binary STL format */
+zVec3D *_zPH3DFReadSTLvec(FILE *fp, zVec3D *v)
+{
+  float val1, val2, val3;
+
+  if( fread( &val1, sizeof(float), 1, fp ) < 1 );
+  if( fread( &val2, sizeof(float), 1, fp ) < 1 );
+  if( fread( &val3, sizeof(float), 1, fp ) < 1 );
+  return zVec3DCreate( v, val1, val2, val3 );
+}
+
+/* write a 3D vector to binary STL format */
+void _zPH3DFWriteSTLvec(FILE *fp, zVec3D *v)
+{
+  float val1, val2, val3;
+
+  val1 = v->e[0];
+  val2 = v->e[1];
+  val3 = v->e[2];
+  if( fwrite( &val1, sizeof(float), 1, fp ) < 1 ) ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
+  if( fwrite( &val2, sizeof(float), 1, fp ) < 1 ) ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
+  if( fwrite( &val3, sizeof(float), 1, fp ) < 1 ) ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
+}
+
+#define ZEO_STL_HEADSIZ 80
+
+/* read a 3D polyhedron from binary STL format */
+zPH3D *zPH3DFReadSTL(FILE *fp, zPH3D *ph, char name[])
+{
+  uint32_t nf; /* number of facets */
+  uint16_t dummy;
+  zVec3D normal, v[3];
+  _zIndex3List face_list;
+  register int i;
+
+  zListInit( &face_list );
+  zPH3DInit( ph );
+  if( fread( name, sizeof(char), ZEO_STL_HEADSIZ, fp ) < ZEO_STL_HEADSIZ )
+    ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
+  if( fread( &nf, sizeof(uint32_t), 1, fp ) < 1 ) ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
+  if( nf <= 0 ) return NULL;
+  for( i=0; i<nf; i++ ){
+    _zPH3DFReadSTLvec( fp, &normal );
+    _zPH3DFReadSTLvec( fp, &v[0] );
+    _zPH3DFReadSTLvec( fp, &v[1] );
+    _zPH3DFReadSTLvec( fp, &v[2] );
+    if( fread( &dummy, sizeof(uint16_t), 1, fp ) < 1 )
+      ZRUNWARN( ZEO_WARN_STL_MISSINGDATA ); /* two empty bytes */
+    if( _zPH3DPushFace( ph, v, &normal, &face_list ) < 0 ) break;
+  }
+  ph = _zPH3DRegFace( ph, &face_list );
+  zListDestroy( _zIndex3ListCell, &face_list );
+  return ph;
+}
+
+/* read a 3D polyhedron from binary STL format */
+void zPH3DFWriteSTL(FILE *fp, zPH3D *ph, char name[])
+{
+  uint32_t nf;
+  uint16_t dummy = 0;
+  register int i;
+
+  if( fwrite( name, sizeof(char), ZEO_STL_HEADSIZ, fp ) < ZEO_STL_HEADSIZ );
+  nf = zPH3DFaceNum(ph);
+  if( fwrite( &nf, sizeof(uint32_t), 1, fp ) < 1 );
+  for( i=0; i<nf; i++ ){
+    _zPH3DFWriteSTLvec( fp, zTri3DNorm(zPH3DFace(ph,i)) );
+    _zPH3DFWriteSTLvec( fp, zTri3DVert(zPH3DFace(ph,i),0) );
+    _zPH3DFWriteSTLvec( fp, zTri3DVert(zPH3DFace(ph,i),1) );
+    _zPH3DFWriteSTLvec( fp, zTri3DVert(zPH3DFace(ph,i),2) );
+    if( fwrite( &dummy, sizeof(uint16_t), 1, fp ) < 1 ); /* two empty bytes */
+  }
 }

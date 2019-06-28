@@ -178,11 +178,11 @@ zVec3D *_zGJKSimplexClosest(zGJKSimplex *s, zVec3D *v)
     if( s->slot[i].sw_y ) index[n++] = i;
   /* setup & solve QP */
   n1 = n - 1;
-  zMatBuf(&q) = _q; zMatSetSize(&q,n1,n1);
-  zVecBuf(&c) = _c; zVecSetSize(&c,n1);
-  zMatBuf(&a) = _a; zMatSetSize(&a,1,n1);
-  zVecBuf(&b) = _b; zVecSetSize(&b,1);
-  zVecBuf(&l) = _l; zVecSetSize(&l,n1);
+  zMatBufNC(&q) = _q; zMatSetSizeNC(&q,n1,n1);
+  zVecBufNC(&c) = _c; zVecSetSizeNC(&c,n1);
+  zMatBufNC(&a) = _a; zMatSetSizeNC(&a,1,n1);
+  zVecBufNC(&b) = _b; zVecSetSizeNC(&b,1);
+  zVecBufNC(&l) = _l; zVecSetSizeNC(&l,n1);
   for( i=1; i<n; i++ )
     zVec3DSub( &s->slot[index[i]].w, &s->slot[index[0]].w, &dp[i-1] );
   for( i=0; i<n1; i++ ){
