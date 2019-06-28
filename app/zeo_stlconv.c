@@ -26,7 +26,7 @@ void stlconv_usage(char *arg)
 
 bool stlconv_cmdarg(int argc, char *argv[])
 {
-  zStrList arglist;
+  zStrAddrList arglist;
   char *srcfile, *dstfile;
 
   if( argc <= 1 ) stlconv_usage( argv[0] );
@@ -50,7 +50,7 @@ bool stlconv_cmdarg(int argc, char *argv[])
     eprintf( "output file not specified.\n" );
     exit( EXIT_FAILURE );
   }
-  zStrListDestroy( &arglist, false );
+  zStrAddrListDestroy( &arglist );
   return true;
 }
 

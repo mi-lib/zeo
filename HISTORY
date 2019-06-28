@@ -1,3 +1,4 @@
+2019. 6.28. Reflected new specifications of zStrList and zStrAddrList. [app]
 2019. 6.28. Added zeo_stlconv. [app]
 2019. 6.28. Added zPH3DFScanSTL, zPH3DFPrintSTL, zPH3DFReadSTL and zPH3DFWriteSTL. [zeo_errmsg, zeo_ph]
 2019. 6.28. Debugged _zGJKSimplexClosest. [zeo_col_gjk]
