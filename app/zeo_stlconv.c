@@ -70,24 +70,12 @@ bool stlconv_read(zShape3D *shape)
     zShape3DInit( shape );
     zShape3DType(shape) = ZSHAPE_PH;
     shape->com = &zprim_ph3d_com;
-    if( fread( buf, sizeof(char), 6, fin ) < 6 ){
-      eprintf( "unreadable STL file.\n" );
+    eprintf( "read STL file.\n" );
+    if( !( ret = zPH3DFReadSTL( fin, zShape3DPH(shape), buf, BUFSIZ ) ? true : false ) )
+      eprintf( "read failure.\n" );
+    else if( !zNameSet( shape, buf ) ){
+      ZALLOCERROR();
       ret = false;
-    } else{
-      rewind( fin );
-      if( strncmp( buf, "solid ", 6 ) == 0 ){
-        eprintf( "read ASCII STL file.\n" );
-        ret = zPH3DFScanSTL( fin, zShape3DPH(shape), buf, BUFSIZ ) ? true : false;
-      } else{
-        eprintf( "read binary STL file.\n" );
-        ret = zPH3DFReadSTL( fin, zShape3DPH(shape), buf ) ? true : false;
-      }
-      if( !ret )
-        eprintf( "read failure.\n" );
-      else if( !zNameSet( shape, buf ) ){
-        ZALLOCERROR();
-        ret = false;
-      }
     }
   } else
   if( strcmp( suffix, "ztk" ) == 0 ){
@@ -117,10 +105,10 @@ bool stlconv_write(zShape3D *shape)
   if( strcmp( suffix, "stl" ) == 0 ){
     if( option[STLCONV_BINARY].flag ){
       eprintf( "write binary STL file.\n" );
-      zPH3DFWriteSTL( fout, zShape3DPH(shape), zName(shape) );
+      zPH3DFWriteSTL_Bin( fout, zShape3DPH(shape), zName(shape) );
     } else{
       eprintf( "write ASCII STL file.\n" );
-      zPH3DFPrintSTL( fout, zShape3DPH(shape), zName(shape) );
+      zPH3DFWriteSTL_ASCII( fout, zShape3DPH(shape), zName(shape) );
     }
   } else
   if( strcmp( suffix, "ztk" ) == 0 ){

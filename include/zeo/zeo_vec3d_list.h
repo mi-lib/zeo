@@ -18,6 +18,16 @@ __BEGIN_DECLS
 
 zListClass( zVec3DList, zVec3DListCell, zVec3D* );
 
+/*! \brief find an identical 3D vector in a list.
+ *
+ * zVec3DListFind() finds a 3D vector in a list \a list that is
+ * identical with the given vector \a v.
+ * \return
+ * zVec3DListFind() returns a pointer to the 3D vector in \a list,
+ * if found. Otherwise, it returns the null pointer.
+ */
+__EXPORT zVec3DListCell *zVec3DListFind(zVec3DList *list, zVec3D *v);
+
 /*! \brief insert a 3D vector to a vector list.
  *
  * zVec3DListInsert() inserts a 3D vector \a v at the head of a list of
@@ -26,6 +36,16 @@ zListClass( zVec3DList, zVec3DListCell, zVec3D* );
  * zVec3DListInsert() returns a pointer to the newly inserted cell.
  */
 __EXPORT zVec3DListCell *zVec3DListInsert(zVec3DList *list, zVec3D *v);
+
+/*! \brief register a 3D vector to a list.
+ *
+ * zVec3DListReg() register a 3D vector \a v to a list \a list.
+ * \return
+ * If \a v is already registered in \a list, it returns a pointer
+ * to the list cell. Otherwise, it allocates a new cell for \a v,
+ * adds it to \a list, and returns the pointer to it.
+ */
+__EXPORT zVec3DListCell *zVec3DListReg(zVec3DList *list, zVec3D *v);
 
 /*! \brief create a list of vectors from an array of 3D vectors.
  *

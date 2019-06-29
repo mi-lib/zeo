@@ -1,3 +1,6 @@
+2019. 6.30. Added zPH3DFReadSTL, which automatically detects if the input STL file is in ASCII or binary format. [zeo_ph, app]
+2019. 6.30. Renamed zPH3DFScanSTL, zPH3DFPrintSTL, zPH3DFReadSTL and zPH3DFWrite to zPH3DFReadSTL_ASCII, zPH3DFWriteSTL_ASCII, zPH3DFReadSTL_Bin and zPH3DFWriteSTL_Bin, respectively, and reimplemented them. [zeo_ph]
+2019. 6.29. Added zVec3DListFind and zVec3DListReg. [zeo_vec3d_list]
 2019. 6.28. Reflected new specifications of zStrList and zStrAddrList. [app]
 2019. 6.28. Added zeo_stlconv. [app]
 2019. 6.28. Added zPH3DFScanSTL, zPH3DFPrintSTL, zPH3DFReadSTL and zPH3DFWriteSTL. [zeo_errmsg, zeo_ph]

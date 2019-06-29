@@ -11,6 +11,16 @@
  * list of 3D vectors
  * ********************************************************** */
 
+/* find an identical 3D vector in a list. */
+zVec3DListCell *zVec3DListFind(zVec3DList *list, zVec3D *v)
+{
+  zVec3DListCell *cp;
+
+  zListForEach( list, cp )
+    if( zVec3DEqual( cp->data, v ) ) return cp;
+  return NULL;
+}
+
 /* insert a 3D vector to a vector list. */
 zVec3DListCell *zVec3DListInsert(zVec3DList *list, zVec3D *v)
 {
@@ -28,6 +38,16 @@ zVec3DListCell *zVec3DListInsert(zVec3DList *list, zVec3D *v)
   zVec3DCopy( v, cell->data );
   zListInsertHead( list, cell );
   return cell;
+}
+
+/* register a 3D vector to a list. */
+zVec3DListCell *zVec3DListReg(zVec3DList *list, zVec3D *v)
+{
+  zVec3DListCell *cp;
+
+  if( !( cp = zVec3DListFind( list, v ) ) )
+    return zVec3DListInsert( list, v );
+  return cp;
 }
 
 /* create a list of vectors from an array of 3D vectors. */
