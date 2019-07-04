@@ -16,21 +16,11 @@ static bool _zECyl3DFScan(FILE *fp, void *instance, char *buf, bool *success);
 /* create a 3D elliptic cylinder. */
 zECyl3D *zECyl3DCreate(zECyl3D *cyl, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div)
 {
-  zVec3D axis;
-
   zECyl3DSetCenter( cyl, 0, c1 );
   zECyl3DSetCenter( cyl, 1, c2 );
   zECyl3DSetRadius( cyl, 0, r1 );
   zECyl3DSetRadius( cyl, 1, r2 );
-  zECyl3DAxis( cyl, &axis );
-  if( ref && !zVec3DIsTiny(ref) ){
-    zVec3DOrthogonalize( ref, &axis, zECyl3DRadVec(cyl,0) );
-    zVec3DNormalizeDRC( zECyl3DRadVec(cyl,0) );
-    zVec3DOuterProd( &axis, zECyl3DRadVec(cyl,0), zECyl3DRadVec(cyl,1) );
-    zVec3DNormalizeDRC( zECyl3DRadVec(cyl,1) );
-  } else{
-    zVec3DOrthoSpace( &axis, zECyl3DRadVec(cyl,0), zECyl3DRadVec(cyl,1) );
-  }
+  zECyl3DDefAxis( cyl, ref );
   zECyl3DSetDiv( cyl, div == 0 ? ZEO_PRIM_DEFAULT_DIV : div );
   return cyl;
 }
@@ -71,6 +61,22 @@ zECyl3D *zECyl3DMirror(zECyl3D *src, zECyl3D *dest, zAxis axis)
   zECyl3DRadVec(dest,1)->e[axis] *= -1;
   zVec3DRevDRC( zECyl3DRadVec(dest,1) );
   return dest;
+}
+
+/* define orthonormal axes of the bottom face of a 3D elliptic cylinder. */
+void zECyl3DDefAxis(zECyl3D *cyl, zVec3D *ref)
+{
+  zVec3D axis;
+
+  zECyl3DAxis( cyl, &axis );
+  if( ref && !zVec3DIsTiny(ref) ){
+    zVec3DOrthogonalize( ref, &axis, zECyl3DRadVec(cyl,0) );
+    zVec3DNormalizeDRC( zECyl3DRadVec(cyl,0) );
+    zVec3DOuterProd( &axis, zECyl3DRadVec(cyl,0), zECyl3DRadVec(cyl,1) );
+    zVec3DNormalizeDRC( zECyl3DRadVec(cyl,1) );
+  } else{
+    zVec3DOrthoSpace( &axis, zECyl3DRadVec(cyl,0), zECyl3DRadVec(cyl,1) );
+  }
 }
 
 /* transform coordinates of a 3D elliptic cylinder. */

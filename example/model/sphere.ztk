@@ -4,7 +4,7 @@ ambient: 0.8, 0.8, 0.2
 diffuse: 0.8, 0.8, 0.2
 specular: 0.0, 0.0, 0.0
 alpha: 1
-exp: 1
+esr: 1
 
 [shape]
 name : sphere

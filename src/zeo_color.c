@@ -95,7 +95,7 @@ zRGB *zRGBFScan(FILE *fp, zRGB *rgb)
 /* print a set of RGB parameters out to a file. */
 void zRGBFPrint(FILE *fp, zRGB *rgb)
 {
-  fprintf( fp, "%.10g:%.10g:%.10g\n", rgb->r, rgb->g, rgb->b );
+  fprintf( fp, "%.7g:%.7g:%.7g\n", rgb->r, rgb->g, rgb->b );
 }
 
 /* ********************************************************** */
@@ -170,5 +170,5 @@ zRGB *zHSV2RGB(zHSV *hsv, zRGB *rgb)
 /* print a set of HSV parameters out to a file. */
 void zHSVFPrint(FILE *fp, zHSV *hsv)
 {
-  fprintf( fp, "%.10g:%.10g:%.10g\n", hsv->hue, hsv->sat, hsv->val );
+  fprintf( fp, "%.7g:%.7g:%.7g\n", hsv->hue, hsv->sat, hsv->val );
 }

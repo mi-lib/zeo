@@ -33,33 +33,53 @@ typedef struct{
 #define zECyl3DSetRadVec(c,i,v) zVec3DCopy( v, zECyl3DRadVec(c,i) )
 #define zECyl3DSetDiv(c,d)      ( zECyl3DDiv(c) = (d) )
 
+/*! \brief create a 3D elliptic cylinder. */
 __EXPORT zECyl3D *zECyl3DCreate(zECyl3D *cyl, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div);
+/*! \brief initialize a 3D elliptic cylinder. */
 __EXPORT zECyl3D *zECyl3DInit(zECyl3D *cyl);
+/*! \brief copy a 3D elliptic cylinder to another. */
 __EXPORT zECyl3D *zECyl3DCopy(zECyl3D *src, zECyl3D *dest);
+/*! \brief mirror a 3D elliptic cylinder. */
 __EXPORT zECyl3D *zECyl3DMirror(zECyl3D *src, zECyl3D *dest, zAxis axis);
 
+/*! \brief define orthonormal axes of the bottom face of a 3D elliptic cylinder. */
+__EXPORT void zECyl3DDefAxis(zECyl3D *cyl, zVec3D *ref);
+
+/*! \brief transform coordinates of a 3D elliptic cylinder. */
 __EXPORT zECyl3D *zECyl3DXform(zECyl3D *src, zFrame3D *f, zECyl3D *dest);
+/*! \brief inversely transform coordinates of a 3D elliptic cylinder. */
 __EXPORT zECyl3D *zECyl3DXformInv(zECyl3D *src, zFrame3D *f, zECyl3D *dest);
 
+/*! \brief the closest point to a 3D elliptic cylinder. */
 __EXPORT double zECyl3DClosest(zECyl3D *cyl, zVec3D *p, zVec3D *cp);
+/*! \brief distance from a point to a 3D elliptic cylinder. */
 __EXPORT double zECyl3DPointDist(zECyl3D *cyl, zVec3D *p);
+/*! \brief check if a point is inside of an elliptic cylinder. */
 __EXPORT bool zECyl3DPointIsInside(zECyl3D *cyl, zVec3D *p, bool rim);
 
 #define zECyl3DAxis(c,a) \
   zVec3DSub( zECyl3DCenter(c,1), zECyl3DCenter(c,0), a )
+/*! \brief height of a 3D elliptic cylinder. */
 __EXPORT double zECyl3DHeight(zECyl3D *cyl);
+/*! \brief volume of a 3D elliptic cylinder. */
 __EXPORT double zECyl3DVolume(zECyl3D *cyl);
+/*! \brief barycenter of a 3D elliptic cylinder. */
 __EXPORT zVec3D *zECyl3DBarycenter(zECyl3D *cyl, zVec3D *c);
+/*! \brief inertia tensor of a 3D elliptic cylinder. */
 __EXPORT zMat3D *zECyl3DInertia(zECyl3D *cyl, zMat3D *inertia);
 
+/*! \brief convert an elliptic cylinder to a polyhedron. */
 __EXPORT zPH3D *zECyl3DToPH(zECyl3D *cyl, zPH3D *ph);
 
+/*! \brief scan a 3D elliptic cylinder from a file. */
 __EXPORT zECyl3D *zECyl3DFScan(FILE *fp, zECyl3D *cyl);
 #define zECyl3DScan(c) zECyl3DFScan( stdin, (c) )
+
+/*! \brief print a 3D elliptic cylinder out to a file. */
 __EXPORT void zECyl3DFPrint(FILE *fp, zECyl3D *cyl);
 #define zECyl3DPrint(c) zECyl3DFPrint( stdout, (c) )
 
-/* methods for abstraction */
+/*! \brief methods for abstraction */
 extern zPrimCom zprim_ecyl3d_com;
 
 __END_DECLS

@@ -4,7 +4,7 @@ ambient: 0.4, 1.0, 1.0
 diffuse: 0.4, 1.0, 1.0
 specular: 0.0, 0.0, 0.0
 alpha: 0.8
-exp: 1
+esr: 1
 
 [shape]
 name : cylinder

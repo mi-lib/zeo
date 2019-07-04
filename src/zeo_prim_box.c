@@ -211,17 +211,13 @@ zBox3D *zBox3DFScan(FILE *fp, zBox3D *box)
 /* print a 3D box out to a file. */
 void zBox3DFPrint(FILE *fp, zBox3D *box)
 {
-  fprintf( fp, "center: " );
-  zVec3DFPrint( fp, zBox3DCenter( box ) );
-  fprintf( fp, "ax: " );
-  zVec3DFPrint( fp, zBox3DAxis( box, zX ) );
-  fprintf( fp, "ay: " );
-  zVec3DFPrint( fp, zBox3DAxis( box, zY ) );
-  fprintf( fp, "az: " );
-  zVec3DFPrint( fp, zBox3DAxis( box, zZ ) );
-  fprintf( fp, "depth: %.10g\n", zBox3DDepth( box ) );
-  fprintf( fp, "width: %.10g\n", zBox3DWidth( box ) );
-  fprintf( fp, "height: %.10g\n", zBox3DHeight( box ) );
+  fprintf( fp, "center: " ); zVec3DFPrint( fp, zBox3DCenter(box) );
+  fprintf( fp, "ax: " ); zVec3DFPrint( fp, zBox3DAxis(box,zX) );
+  fprintf( fp, "ay: " ); zVec3DFPrint( fp, zBox3DAxis(box,zY) );
+  fprintf( fp, "az: " ); zVec3DFPrint( fp, zBox3DAxis(box,zZ) );
+  fprintf( fp, "depth: %.10g\n", zBox3DDepth(box) );
+  fprintf( fp, "width: %.10g\n", zBox3DWidth(box) );
+  fprintf( fp, "height: %.10g\n", zBox3DHeight(box) );
 }
 
 /* print a 3D box out to a file in a format to be plotted. */

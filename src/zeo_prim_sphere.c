@@ -225,8 +225,9 @@ zSphere3D *zSphere3DFScan(FILE *fp, zSphere3D *sphere)
 void zSphere3DFPrint(FILE *fp, zSphere3D *sphere)
 {
   fprintf( fp, "center: " );
-  zVec3DFPrint( fp, zSphere3DCenter( sphere ) );
-  fprintf( fp, "radius: %.10g\n", zSphere3DRadius( sphere ) );
+  zVec3DFPrint( fp, zSphere3DCenter(sphere) );
+  fprintf( fp, "radius: %.10g\n", zSphere3DRadius(sphere) );
+  fprintf( fp, "div: %d\n", zSphere3DDiv(sphere) );
 }
 
 /* methods for abstraction */
