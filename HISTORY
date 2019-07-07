@@ -1,3 +1,5 @@
+2019. 7. 7. Renamed ZOPTIC_TAG and ZSHAPE_TAG to ZTK_TAG_OPTIC and ZTK_TAG_SHAPE. [zeo_optic, zeo_shape, zeo_mshape]
+2019. 7. 6. Reflected renaming of zIndentF to zFIndent. [zeo_col_aabbtree]
 2019. 7. 5. Added zECyl3DDefAxis. [zeo_prim_ecyl]
 2019. 7. 4. Modified zRGBFPrint and zHSVFPrint. [zeo_color]
 2019. 7. 3. Modified zSphere3DFPrint. [zeo_prim_sphere]

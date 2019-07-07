@@ -2,33 +2,31 @@
 #include <zeo/zeo_bv_aabb.h>
 #include <zeo/zeo_bv_obb.h>
 
+#define ZTK_WARN_TOOMANY_TAGS "too many tag %s specified, skipped."
+#define ZTK_WARN_TOOMANY_KEYS "too many key %s specified, skipped."
+
 #define ZEO_ERR_PH_INVALID_VERT_ID "%d: invalid identifier of a vertex specified."
 
 #define ZEO_WARN_PH_EMPTY "empty set of vertices assigned for a polyhedron."
 #define ZEO_WARN_PH_VERT_UNMATCH "%d: unmatched identifier of a vertex"
-
-#define ZEO_WARN_PRIM_TOOMANY_CENTER "too many centers, skipped."
-#define ZEO_WARN_PRIM_TOOMANY_RADIUS "too many radii, skipped."
-#define ZEO_WARN_PRIM_TOOMANY_VERT   "too many vertices, skipped."
-#define ZEO_WARN_PRIM_TOOMANY_AXIS   "too many axes, skipped."
 
 #define ZEO_WARN_SHAPE_BB_INVALID "bounding-box not generated because it is only for polyhedra."
 
 #define ZEO_WARN_MSHAPE_EMPTY "empty shapes assigned."
 #define ZEO_WARN_UNKNOWN_BB_TYPE "%s: unknown type of bounding-box"
 
-/*! \struct ZTKProp
+/*! \struct ZTKPrp
  *
  * \brief properties of a class described by a set of key string, encoding function and print-out function.
  */
 typedef struct{
   char *key;
   int num;
-  void (* _encode)(void *, void *, ZTK *);
+  void *(* _encode)(void *, int, void *, ZTK *);
   void (* _fprintf)(FILE *, int, void *);
-} ZTKProp;
+} ZTKKeyPrp;
 
-bool ZTKDefListRegProp(ZTKDefList *list, char *tag, ZTKProp prp[], int num)
+bool ZTKDefListRegKeyPrp(ZTKDefList *list, char *tag, ZTKKeyPrp prp[], int num)
 {
   register int i;
 
@@ -37,24 +35,37 @@ bool ZTKDefListRegProp(ZTKDefList *list, char *tag, ZTKProp prp[], int num)
   return true;
 }
 
-#define ZTKDefRegProp(ztk,tag,prp) ZTKDefListRegProp( &(ztk)->deflist, tag, prp, sizeof(prp)/sizeof(ZTKProp) )
+#define ZTKDefRegKeyPrp(ztk,tag,prp) ZTKDefListRegKeyPrp( &(ztk)->deflist, tag, prp, sizeof(prp)/sizeof(ZTKKeyPrp) )
 
-void *_ZTKEncode(void *obj, void *arg, ZTK *ztk, ZTKProp prp[], int num)
+void *_ZTKKeyEncode(void *obj, void *arg, ZTK *ztk, ZTKKeyPrp prp[], int num)
 {
   register int i;
+  int *count;
 
   if( !ZTKKeyRewind( ztk ) ) return NULL;
+  if( !( count = zAlloc( int, num ) ) ){
+    ZALLOCERROR();
+    return NULL;
+  }
   do{
     for( i=0; i<num; i++ )
       if( ZTKKeyCmp( ztk, prp[i].key ) && prp[i]._encode ){
-        prp[i]._encode( obj, arg, ztk );
+        if( prp[i].num > 0 && count[i] >= prp[i].num ){
+          ZRUNWARN( ZTK_WARN_TOOMANY_KEYS, prp[i].key );
+        } else
+        if( !prp[i]._encode( obj, count[i]++, arg, ztk ) ){
+          obj = NULL;
+          goto TERMINATE;
+        }
         break;
       }
   } while( ZTKKeyNext(ztk) );
+ TERMINATE:
+  free( count );
   return obj;
 }
 
-void _ZTKPropFPrint(FILE *fp, void *obj, ZTKProp prp[], int num)
+void _ZTKKeyPrpFPrint(FILE *fp, void *obj, ZTKKeyPrp prp[], int num)
 {
   register int i, j;
 
@@ -65,11 +76,56 @@ void _ZTKPropFPrint(FILE *fp, void *obj, ZTKProp prp[], int num)
         prp[i]._fprintf( fp, j, obj );
       }
     }
-  fprintf( fp, "\n" );
 }
 
-#define ZTKEncode(obj,arg,ztk,prp) _ZTKEncode( obj, arg, ztk, prp, sizeof(prp)/sizeof(ZTKProp) )
-#define ZTKPropFPrint(fp,obj,prp) _ZTKPropFPrint( fp, obj, prp, sizeof(prp)/sizeof(ZTKProp) )
+#define ZTKKeyEncode(obj,arg,ztk,prp) _ZTKKeyEncode( obj, arg, ztk, prp, sizeof(prp)/sizeof(ZTKKeyPrp) )
+#define ZTKKeyPrpFPrint(fp,obj,prp) _ZTKKeyPrpFPrint( fp, obj, prp, sizeof(prp)/sizeof(ZTKKeyPrp) )
+
+
+void *_ZTKTagEncode(void *obj, void *arg, ZTK *ztk, ZTKKeyPrp prp[], int num)
+{
+  register int i;
+  int *count;
+
+  if( !ZTKTagRewind( ztk ) ) return NULL;
+  if( !( count = zAlloc( int, num ) ) ){
+    ZALLOCERROR();
+    return NULL;
+  }
+  for( i=0; i<num; i++ ){
+    ZTKTagRewind( ztk );
+    if( prp[i]._encode ) do{
+      if( ZTKTagCmp( ztk, prp[i].key ) ){
+        if( prp[i].num > 0 && count[i] >= prp[i].num ){
+          ZRUNWARN( ZTK_WARN_TOOMANY_TAGS, prp[i].key );
+        } else
+        if( !prp[i]._encode( obj, count[i]++, arg, ztk ) ){
+          obj = NULL;
+          goto TERMINATE;
+        }
+      }
+    } while( ZTKTagNext(ztk) );
+  }
+ TERMINATE:
+  free( count );
+  return obj;
+}
+
+void _ZTKTagPrpFPrint(FILE *fp, void *obj, ZTKKeyPrp prp[], int num)
+{
+  register int i, j;
+
+  for( i=0; i<num; i++ )
+    if( prp[i]._fprintf ){
+      for( j=0; j<prp[i].num; j++ ){
+        fprintf( fp, "[%s]\n", prp[i].key );
+        prp[i]._fprintf( fp, j, obj );
+      }
+    }
+}
+
+#define ZTKTagEncode(obj,arg,ztk,prp) _ZTKTagEncode( obj, arg, ztk, prp, sizeof(prp)/sizeof(ZTKKeyPrp) )
+#define ZTKTagPrpFPrint(fp,obj,prp) _ZTKTagPrpFPrint( fp, obj, prp, sizeof(prp)/sizeof(ZTKKeyPrp) )
 
 
 
@@ -82,30 +138,44 @@ zRGB *zRGBFromZTK(zRGB *rgb, ZTK *ztk)
   return rgb;
 }
 
-void _zOpticalInfoNameFromZTK(void *obj, void *arg, ZTK *ztk){
-  zNameSet( (zOpticalInfo *)obj, ZTKVal(ztk) ); }
-void _zOpticalInfoAmbFromZTK(void *obj, void *arg, ZTK *ztk){
-  zRGBFromZTK( &((zOpticalInfo*)obj)->amb, ztk ); }
-void _zOpticalInfoDifFromZTK(void *obj, void *arg, ZTK *ztk){
-  zRGBFromZTK( &((zOpticalInfo*)obj)->dif, ztk ); }
-void _zOpticalInfoSpcFromZTK(void *obj, void *arg, ZTK *ztk){
-  zRGBFromZTK( &((zOpticalInfo*)obj)->spc, ztk ); }
-void _zOpticalInfoEsrFromZTK(void *obj, void *arg, ZTK *ztk){
-  ((zOpticalInfo*)obj)->esr = ZTKDouble(ztk); }
-void _zOpticalInfoSnsFromZTK(void *obj, void *arg, ZTK *ztk){
-  ((zOpticalInfo*)obj)->sns = ZTKDouble(ztk); }
-void _zOpticalInfoAlphaFromZTK(void *obj, void *arg, ZTK *ztk){
-  ((zOpticalInfo*)obj)->alpha = ZTKDouble(ztk); }
+void *_zOpticalInfoNameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zNameSet( (zOpticalInfo *)obj, ZTKVal(ztk) );
+  return zNamePtr((zOpticalInfo *)obj) ? obj : NULL; }
+void *_zOpticalInfoAmbFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zRGBFromZTK( &((zOpticalInfo*)obj)->amb, ztk );
+  return obj; }
+void *_zOpticalInfoDifFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zRGBFromZTK( &((zOpticalInfo*)obj)->dif, ztk );
+  return obj; }
+void *_zOpticalInfoSpcFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zRGBFromZTK( &((zOpticalInfo*)obj)->spc, ztk );
+  return obj; }
+void *_zOpticalInfoEsrFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((zOpticalInfo*)obj)->esr = ZTKDouble(ztk);
+  return obj; }
+void *_zOpticalInfoSnsFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((zOpticalInfo*)obj)->sns = ZTKDouble(ztk);
+  return obj; }
+void *_zOpticalInfoAlphaFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((zOpticalInfo*)obj)->alpha = ZTKDouble(ztk);
+  return obj; }
 
-void _zOpticalInfoNameFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%s\n", zName((zOpticalInfo*)obj) ); }
-void _zOpticalInfoAmbFPrint(FILE *fp, int i, void *obj){ zRGBFPrint( fp, &((zOpticalInfo*)obj)->amb ); }
-void _zOpticalInfoDifFPrint(FILE *fp, int i, void *obj){ zRGBFPrint( fp, &((zOpticalInfo*)obj)->dif ); }
-void _zOpticalInfoSpcFPrint(FILE *fp, int i, void *obj){ zRGBFPrint( fp, &((zOpticalInfo*)obj)->spc ); }
-void _zOpticalInfoEsrFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->esr ); }
-void _zOpticalInfoSnsFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->sns ); }
-void _zOpticalInfoAlphaFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->alpha ); }
+void _zOpticalInfoNameFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%s\n", zName((zOpticalInfo*)obj) ); }
+void _zOpticalInfoAmbFPrint(FILE *fp, int i, void *obj){
+  zRGBFPrint( fp, &((zOpticalInfo*)obj)->amb ); }
+void _zOpticalInfoDifFPrint(FILE *fp, int i, void *obj){
+  zRGBFPrint( fp, &((zOpticalInfo*)obj)->dif ); }
+void _zOpticalInfoSpcFPrint(FILE *fp, int i, void *obj){
+  zRGBFPrint( fp, &((zOpticalInfo*)obj)->spc ); }
+void _zOpticalInfoEsrFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->esr ); }
+void _zOpticalInfoSnsFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->sns ); }
+void _zOpticalInfoAlphaFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->alpha ); }
 
-static ZTKProp __ztk_prp_optic[] = {
+static ZTKKeyPrp __ztk_prp_optic[] = {
   { "name", 1, _zOpticalInfoNameFromZTK, _zOpticalInfoNameFPrint },
   { "ambient", 1, _zOpticalInfoAmbFromZTK, _zOpticalInfoAmbFPrint },
   { "diffuse", 1, _zOpticalInfoDifFromZTK, _zOpticalInfoDifFPrint },
@@ -117,19 +187,22 @@ static ZTKProp __ztk_prp_optic[] = {
 
 bool zOpticalInfoRegZTK(ZTK *ztk)
 {
-  return ZTKDefRegProp( ztk, "optic", __ztk_prp_optic );
+  return ZTKDefRegKeyPrp( ztk, ZTK_TAG_OPTIC, __ztk_prp_optic );
 }
 
 zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk)
 {
   zOpticalInfoInit( oi );
-  return ZTKEncode( oi, NULL, ztk, __ztk_prp_optic );
+  return ZTKKeyEncode( oi, NULL, ztk, __ztk_prp_optic );
 }
 
 void _zOpticalInfoFPrint(FILE *fp, zOpticalInfo *oi)
 {
-  ZTKPropFPrint( fp, oi, __ztk_prp_optic );
+  ZTKKeyPrpFPrint( fp, oi, __ztk_prp_optic );
+  fprintf( fp, "\n" );
 }
+
+
 
 
 
@@ -152,23 +225,43 @@ zVec3D *zBox3DAxisFromZTK(zBox3D *box, int i0, int i1, int i2, ZTK *ztk)
   return zBox3DAxis(box,i0);
 }
 
-void _zBox3DCenterFromZTK(void *obj, void *arg, ZTK *ztk){ zVec3DFromZTK( zBox3DCenter((zBox3D*)obj), ztk ); }
-void _zBox3DAxisXFromZTK(void *obj, void *arg, ZTK *ztk){ zBox3DAxisFromZTK( (zBox3D*)obj, 0, 1, 2, ztk ); }
-void _zBox3DAxisYFromZTK(void *obj, void *arg, ZTK *ztk){ zBox3DAxisFromZTK( (zBox3D*)obj, 1, 2, 0, ztk ); }
-void _zBox3DAxisZFromZTK(void *obj, void *arg, ZTK *ztk){ zBox3DAxisFromZTK( (zBox3D*)obj, 2, 0, 1, ztk ); }
-void _zBox3DDepthFromZTK(void *obj, void *arg, ZTK *ztk){ zBox3DDepth((zBox3D*)obj) = ZTKDouble(ztk); }
-void _zBox3DWidthFromZTK(void *obj, void *arg, ZTK *ztk){ zBox3DWidth((zBox3D*)obj) = ZTKDouble(ztk); }
-void _zBox3DHeightFromZTK(void *obj, void *arg, ZTK *ztk){ zBox3DHeight((zBox3D*)obj) = ZTKDouble(ztk); }
+void *_zBox3DCenterFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  return zVec3DFromZTK( zBox3DCenter((zBox3D*)obj), ztk ) ? obj : NULL; }
+void *_zBox3DAxisXFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zBox3DAxisFromZTK( (zBox3D*)obj, 0, 1, 2, ztk );
+  return obj; }
+void *_zBox3DAxisYFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zBox3DAxisFromZTK( (zBox3D*)obj, 1, 2, 0, ztk );
+  return obj; }
+void *_zBox3DAxisZFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zBox3DAxisFromZTK( (zBox3D*)obj, 2, 0, 1, ztk );
+  return obj; }
+void *_zBox3DDepthFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zBox3DDepth((zBox3D*)obj) = ZTKDouble(ztk);
+  return obj; }
+void *_zBox3DWidthFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zBox3DWidth((zBox3D*)obj) = ZTKDouble(ztk);
+  return obj; }
+void *_zBox3DHeightFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zBox3DHeight((zBox3D*)obj) = ZTKDouble(ztk);
+  return obj; }
 
-void _zBox3DCenterFPrint(FILE *fp, int i, void *obj){ zVec3DFPrint( fp, zBox3DCenter((zBox3D*)obj) ); }
-void _zBox3DAxisXFPrint(FILE *fp, int i, void *obj){ zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zX) ); }
-void _zBox3DAxisYFPrint(FILE *fp, int i, void *obj){ zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zY) ); }
-void _zBox3DAxisZFPrint(FILE *fp, int i, void *obj){ zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zZ) ); }
-void _zBox3DDepthFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%.10g\n", zBox3DDepth((zBox3D*)obj) ); }
-void _zBox3DWidthFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%.10g\n", zBox3DWidth((zBox3D*)obj) ); }
-void _zBox3DHeightFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%.10g\n", zBox3DHeight((zBox3D*)obj) ); }
+void _zBox3DCenterFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zBox3DCenter((zBox3D*)obj) ); }
+void _zBox3DAxisXFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zX) ); }
+void _zBox3DAxisYFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zY) ); }
+void _zBox3DAxisZFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zZ) ); }
+void _zBox3DDepthFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zBox3DDepth((zBox3D*)obj) ); }
+void _zBox3DWidthFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zBox3DWidth((zBox3D*)obj) ); }
+void _zBox3DHeightFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zBox3DHeight((zBox3D*)obj) ); }
 
-static ZTKProp __ztk_prp_prim_box[] = {
+static ZTKKeyPrp __ztk_prp_prim_box[] = {
   { "center", 1, _zBox3DCenterFromZTK, _zBox3DCenterFPrint },
   { "ax", 1, _zBox3DAxisXFromZTK, _zBox3DAxisXFPrint },
   { "ay", 1, _zBox3DAxisYFromZTK, _zBox3DAxisYFPrint },
@@ -178,20 +271,16 @@ static ZTKProp __ztk_prp_prim_box[] = {
   { "height", 1, _zBox3DHeightFromZTK, _zBox3DHeightFPrint },
 };
 
-bool zBox3DRegZTK(ZTK *ztk)
-{
-  return ZTKDefRegProp( ztk, "shape", __ztk_prp_prim_box );
-}
-
 zBox3D *zBox3DFromZTK(zBox3D *box, ZTK *ztk)
 {
   zBox3DInit( box );
-  return ZTKEncode( box, NULL, ztk, __ztk_prp_prim_box );
+  return ZTKKeyEncode( box, NULL, ztk, __ztk_prp_prim_box );
 }
 
 void _zBox3DFPrint(FILE *fp, zBox3D *box)
 {
-  ZTKPropFPrint( fp, box, __ztk_prp_prim_box );
+  ZTKKeyPrpFPrint( fp, box, __ztk_prp_prim_box );
+  fprintf( fp, "\n" );
 }
 
 
@@ -202,141 +291,126 @@ int zPrimDivFromZTK(ZTK *ztk)
   return ( val = ZTKInt(ztk) ) > 0 ? val : ZEO_PRIM_DEFAULT_DIV;
 }
 
-void _zSphere3DCenterFromZTK(void *obj, void *arg, ZTK *ztk){
-  if( ((int*)arg)[0]++ > 0 )
-    ZRUNWARN( ZEO_WARN_PRIM_TOOMANY_CENTER );
-  else
-    zVec3DFromZTK( zSphere3DCenter((zSphere3D*)obj), ztk );
+void *_zSphere3DCenterFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zVec3DFromZTK( zSphere3DCenter((zSphere3D*)obj), ztk );
+  return obj;
 }
-void _zSphere3DRadiusFromZTK(void *obj, void *arg, ZTK *ztk){
-  if( ((int*)arg)[1]++ > 0 )
-    ZRUNWARN( ZEO_WARN_PRIM_TOOMANY_RADIUS );
-  else
-    zSphere3DRadius((zSphere3D*)obj) = ZTKDouble(ztk);
+void *_zSphere3DRadiusFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zSphere3DRadius((zSphere3D*)obj) = ZTKDouble(ztk);
+  return obj;
 }
-void _zSphere3DDivFromZTK(void *obj, void *arg, ZTK *ztk){
-  zSphere3DDiv((zSphere3D*)obj) = zPrimDivFromZTK(ztk); }
+void *_zSphere3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zSphere3DDiv((zSphere3D*)obj) = zPrimDivFromZTK(ztk);
+  return obj; }
 
-void _zSphere3DCenterFPrint(FILE *fp, int i, void *obj){ zVec3DFPrint( fp, zSphere3DCenter((zSphere3D*)obj) ); }
-void _zSphere3DRadiusFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%.10g\n", zSphere3DRadius((zSphere3D*)obj) ); }
-void _zSphere3DDivFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%d\n", zSphere3DDiv((zSphere3D*)obj) ); }
+void _zSphere3DCenterFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zSphere3DCenter((zSphere3D*)obj) ); }
+void _zSphere3DRadiusFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zSphere3DRadius((zSphere3D*)obj) ); }
+void _zSphere3DDivFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d\n", zSphere3DDiv((zSphere3D*)obj) ); }
 
-static ZTKProp __ztk_prp_prim_sphere[] = {
+static ZTKKeyPrp __ztk_prp_prim_sphere[] = {
   { "center", 1, _zSphere3DCenterFromZTK, _zSphere3DCenterFPrint },
   { "radius", 1, _zSphere3DRadiusFromZTK, _zSphere3DRadiusFPrint },
   { "div", 1, _zSphere3DDivFromZTK, _zSphere3DDivFPrint },
 };
 
-bool zSphere3DRegZTK(ZTK *ztk)
-{
-  return ZTKDefRegProp( ztk, "shape", __ztk_prp_prim_sphere );
-}
-
 zSphere3D *zSphere3DFromZTK(zSphere3D *sphere, ZTK *ztk)
 {
-  int n[] = { 0, 0 };
   zSphere3DInit( sphere );
-  return ZTKEncode( sphere, n, ztk, __ztk_prp_prim_sphere );
+  return ZTKKeyEncode( sphere, NULL, ztk, __ztk_prp_prim_sphere );
 }
 
 void _zSphere3DFPrint(FILE *fp, zSphere3D *sphere)
 {
-  ZTKPropFPrint( fp, sphere, __ztk_prp_prim_sphere );
+  ZTKKeyPrpFPrint( fp, sphere, __ztk_prp_prim_sphere );
+  fprintf( fp, "\n" );
 }
 
 
 
-void _zCyl3DCenterFromZTK(void *obj, void *arg, ZTK *ztk){
-  if( ((int*)arg)[0] > 1 )
-    ZRUNWARN( ZEO_WARN_PRIM_TOOMANY_CENTER );
-  else
-    zVec3DFromZTK( zCyl3DCenter((zCyl3D*)obj,((int*)arg)[0]++), ztk );
+void *_zCyl3DCenterFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zVec3DFromZTK( zCyl3DCenter((zCyl3D*)obj,i), ztk );
+  return obj;
 }
-void _zCyl3DRadiusFromZTK(void *obj, void *arg, ZTK *ztk){
-  if( ((int*)arg)[1]++ > 0 )
-    ZRUNWARN( ZEO_WARN_PRIM_TOOMANY_RADIUS );
-  else
-    zCyl3DRadius((zCyl3D*)obj) = ZTKDouble(ztk);
+void *_zCyl3DRadiusFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zCyl3DRadius((zCyl3D*)obj) = ZTKDouble(ztk);
+  return obj;
 }
-void _zCyl3DDivFromZTK(void *obj, void *arg, ZTK *ztk){ zCyl3DDiv((zCyl3D*)obj) = zPrimDivFromZTK(ztk); }
+void *_zCyl3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zCyl3DDiv((zCyl3D*)obj) = zPrimDivFromZTK(ztk);
+  return obj; }
 
-void _zCyl3DCenterFPrint(FILE *fp, int i, void *obj){ zVec3DFPrint( fp, zCyl3DCenter((zCyl3D*)obj,i) ); }
-void _zCyl3DRadiusFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%.10g\n", zCyl3DRadius((zCyl3D*)obj) ); }
-void _zCyl3DDivFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%d\n", zCyl3DDiv((zCyl3D*)obj) ); }
+void _zCyl3DCenterFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zCyl3DCenter((zCyl3D*)obj,i) ); }
+void _zCyl3DRadiusFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zCyl3DRadius((zCyl3D*)obj) ); }
+void _zCyl3DDivFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d\n", zCyl3DDiv((zCyl3D*)obj) ); }
 
-static ZTKProp __ztk_prp_prim_cyl[] = {
+static ZTKKeyPrp __ztk_prp_prim_cyl[] = {
   { "center", 2, _zCyl3DCenterFromZTK, _zCyl3DCenterFPrint },
   { "radius", 1, _zCyl3DRadiusFromZTK, _zCyl3DRadiusFPrint },
   { "div", 1, _zCyl3DDivFromZTK, _zCyl3DDivFPrint },
 };
 
-bool zCyl3DRegZTK(ZTK *ztk)
-{
-  return ZTKDefRegProp( ztk, "shape", __ztk_prp_prim_cyl );
-}
-
 zCyl3D *zCyl3DFromZTK(zCyl3D *cyl, ZTK *ztk)
 {
-  int n[] = { 0, 0 };
   zCyl3DInit( cyl );
-  return ZTKEncode( cyl, n, ztk, __ztk_prp_prim_cyl );
+  return ZTKKeyEncode( cyl, NULL, ztk, __ztk_prp_prim_cyl );
 }
 
 void _zCyl3DFPrint(FILE *fp, zCyl3D *cyl)
 {
-  ZTKPropFPrint( fp, cyl, __ztk_prp_prim_cyl );
+  ZTKKeyPrpFPrint( fp, cyl, __ztk_prp_prim_cyl );
+  fprintf( fp, "\n" );
 }
 
 
 
 
-void _zCone3DCenterFromZTK(void *obj, void *arg, ZTK *ztk){
-  if( ((int*)arg)[0]++ > 1 )
-    ZRUNWARN( ZEO_WARN_PRIM_TOOMANY_CENTER );
-  else
-    zVec3DFromZTK( zCone3DCenter((zCone3D*)obj), ztk );
+void *_zCone3DCenterFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zVec3DFromZTK( zCone3DCenter((zCone3D*)obj), ztk );
+  return obj;
 }
-void _zCone3DVertFromZTK(void *obj, void *arg, ZTK *ztk){
-  if( ((int*)arg)[1]++ > 1 )
-    ZRUNWARN( ZEO_WARN_PRIM_TOOMANY_VERT );
-  else
-    zVec3DFromZTK( zCone3DVert((zCone3D*)obj), ztk );
+void *_zCone3DVertFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zVec3DFromZTK( zCone3DVert((zCone3D*)obj), ztk );
+  return obj;
 }
-void _zCone3DRadiusFromZTK(void *obj, void *arg, ZTK *ztk){
-  if( ((int*)arg)[2]++ > 0 )
-    ZRUNWARN( ZEO_WARN_PRIM_TOOMANY_RADIUS );
-  else
-    zCone3DRadius((zCone3D*)obj) = ZTKDouble(ztk);
+void *_zCone3DRadiusFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zCone3DRadius((zCone3D*)obj) = ZTKDouble(ztk);
+  return obj;
 }
-void _zCone3DDivFromZTK(void *obj, void *arg, ZTK *ztk){ zCone3DDiv((zCone3D*)obj) = zPrimDivFromZTK(ztk); }
+void *_zCone3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zCone3DDiv((zCone3D*)obj) = zPrimDivFromZTK(ztk);
+  return obj; }
 
-void _zCone3DCenterFPrint(FILE *fp, int i, void *obj){ zVec3DFPrint( fp, zCone3DCenter((zCone3D*)obj) ); }
-void _zCone3DVertFPrint(FILE *fp, int i, void *obj){ zVec3DFPrint( fp, zCone3DVert((zCone3D*)obj) ); }
-void _zCone3DRadiusFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%.10g\n", zCone3DRadius((zCone3D*)obj) ); }
-void _zCone3DDivFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%d\n", zCone3DDiv((zCone3D*)obj) ); }
+void _zCone3DCenterFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zCone3DCenter((zCone3D*)obj) ); }
+void _zCone3DVertFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zCone3DVert((zCone3D*)obj) ); }
+void _zCone3DRadiusFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zCone3DRadius((zCone3D*)obj) ); }
+void _zCone3DDivFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d\n", zCone3DDiv((zCone3D*)obj) ); }
 
-static ZTKProp __ztk_prp_prim_cone[] = {
+static ZTKKeyPrp __ztk_prp_prim_cone[] = {
   { "center", 1, _zCone3DCenterFromZTK, _zCone3DCenterFPrint },
   { "vert", 1, _zCone3DVertFromZTK, _zCone3DVertFPrint },
   { "radius", 1, _zCone3DRadiusFromZTK, _zCone3DRadiusFPrint },
   { "div", 1, _zCone3DDivFromZTK, _zCone3DDivFPrint },
 };
 
-bool zCone3DRegZTK(ZTK *ztk)
-{
-  return ZTKDefRegProp( ztk, "shape", __ztk_prp_prim_cone );
-}
-
 zCone3D *zCone3DFromZTK(zCone3D *cone, ZTK *ztk)
 {
-  int n[] = { 0, 0, 0 };
   zCone3DInit( cone );
-  return ZTKEncode( cone, n, ztk, __ztk_prp_prim_cone );
+  return ZTKKeyEncode( cone, NULL, ztk, __ztk_prp_prim_cone );
 }
 
 void _zCone3DFPrint(FILE *fp, zCone3D *cone)
 {
-  ZTKPropFPrint( fp, cone, __ztk_prp_prim_cone );
+  ZTKKeyPrpFPrint( fp, cone, __ztk_prp_prim_cone );
 }
 
 
@@ -352,25 +426,49 @@ zVec3D *zEllips3DAxisFromZTK(zEllips3D *ellips, int i0, int i1, int i2, ZTK *ztk
   return zEllips3DAxis(ellips,i0);
 }
 
-void _zEllips3DCenterFromZTK(void *obj, void *arg, ZTK *ztk){ zVec3DFromZTK( zEllips3DCenter((zEllips3D*)obj), ztk ); }
-void _zEllips3DAxisXFromZTK(void *obj, void *arg, ZTK *ztk){ zEllips3DAxisFromZTK( (zEllips3D*)obj, 0, 1, 2, ztk ); }
-void _zEllips3DAxisYFromZTK(void *obj, void *arg, ZTK *ztk){ zEllips3DAxisFromZTK( (zEllips3D*)obj, 1, 2, 0, ztk ); }
-void _zEllips3DAxisZFromZTK(void *obj, void *arg, ZTK *ztk){ zEllips3DAxisFromZTK( (zEllips3D*)obj, 2, 0, 1, ztk ); }
-void _zEllips3DRadiusXFromZTK(void *obj, void *arg, ZTK *ztk){ zEllips3DRadiusX((zEllips3D*)obj) = ZTKDouble(ztk); }
-void _zEllips3DRadiusYFromZTK(void *obj, void *arg, ZTK *ztk){ zEllips3DRadiusY((zEllips3D*)obj) = ZTKDouble(ztk); }
-void _zEllips3DRadiusZFromZTK(void *obj, void *arg, ZTK *ztk){ zEllips3DRadiusZ((zEllips3D*)obj) = ZTKDouble(ztk); }
-void _zEllips3DDivFromZTK(void *obj, void *arg, ZTK *ztk){ zEllips3DDiv((zEllips3D*)obj) = zPrimDivFromZTK(ztk); }
+void *_zEllips3DCenterFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zVec3DFromZTK( zEllips3DCenter((zEllips3D*)obj), ztk );
+  return obj; }
+void *_zEllips3DAxisXFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zEllips3DAxisFromZTK( (zEllips3D*)obj, 0, 1, 2, ztk );
+  return obj; }
+void *_zEllips3DAxisYFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zEllips3DAxisFromZTK( (zEllips3D*)obj, 1, 2, 0, ztk );
+  return obj; }
+void *_zEllips3DAxisZFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zEllips3DAxisFromZTK( (zEllips3D*)obj, 2, 0, 1, ztk );
+  return obj; }
+void *_zEllips3DRadiusXFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zEllips3DRadiusX((zEllips3D*)obj) = ZTKDouble(ztk);
+  return obj; }
+void *_zEllips3DRadiusYFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zEllips3DRadiusY((zEllips3D*)obj) = ZTKDouble(ztk);
+  return obj; }
+void *_zEllips3DRadiusZFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zEllips3DRadiusZ((zEllips3D*)obj) = ZTKDouble(ztk);
+  return obj; }
+void *_zEllips3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zEllips3DDiv((zEllips3D*)obj) = zPrimDivFromZTK(ztk);
+  return obj; }
 
-void _zEllips3DCenterFPrint(FILE *fp, int i, void *obj){ zVec3DFPrint( fp, zEllips3DCenter((zEllips3D*)obj) ); }
-void _zEllips3DAxisXFPrint(FILE *fp, int i, void *obj){ zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zX) ); }
-void _zEllips3DAxisYFPrint(FILE *fp, int i, void *obj){ zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zY) ); }
-void _zEllips3DAxisZFPrint(FILE *fp, int i, void *obj){ zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zZ) ); }
-void _zEllips3DRadiusXFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%.10g\n", zEllips3DRadiusX((zEllips3D*)obj) ); }
-void _zEllips3DRadiusYFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%.10g\n", zEllips3DRadiusY((zEllips3D*)obj) ); }
-void _zEllips3DRadiusZFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%.10g\n", zEllips3DRadiusZ((zEllips3D*)obj) ); }
-void _zEllips3DDivFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%d\n", zEllips3DDiv((zEllips3D*)obj) ); }
+void _zEllips3DCenterFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zEllips3DCenter((zEllips3D*)obj) ); }
+void _zEllips3DAxisXFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zX) ); }
+void _zEllips3DAxisYFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zY) ); }
+void _zEllips3DAxisZFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zZ) ); }
+void _zEllips3DRadiusXFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zEllips3DRadiusX((zEllips3D*)obj) ); }
+void _zEllips3DRadiusYFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zEllips3DRadiusY((zEllips3D*)obj) ); }
+void _zEllips3DRadiusZFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zEllips3DRadiusZ((zEllips3D*)obj) ); }
+void _zEllips3DDivFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d\n", zEllips3DDiv((zEllips3D*)obj) ); }
 
-static ZTKProp __ztk_prp_prim_ellips[] = {
+static ZTKKeyPrp __ztk_prp_prim_ellips[] = {
   { "center", 1, _zEllips3DCenterFromZTK, _zEllips3DCenterFPrint },
   { "ax", 1, _zEllips3DAxisXFromZTK, _zEllips3DAxisXFPrint },
   { "ay", 1, _zEllips3DAxisYFromZTK, _zEllips3DAxisYFPrint },
@@ -381,227 +479,308 @@ static ZTKProp __ztk_prp_prim_ellips[] = {
   { "div", 1, _zEllips3DDivFromZTK, _zEllips3DDivFPrint },
 };
 
-bool zEllips3DRegZTK(ZTK *ztk)
-{
-  return ZTKDefRegProp( ztk, "shape", __ztk_prp_prim_ellips );
-}
-
 zEllips3D *zEllips3DFromZTK(zEllips3D *ellips, ZTK *ztk)
 {
   zEllips3DInit( ellips );
-  return ZTKEncode( ellips, NULL, ztk, __ztk_prp_prim_ellips );
+  return ZTKKeyEncode( ellips, NULL, ztk, __ztk_prp_prim_ellips );
 }
 
 void _zEllips3DFPrint(FILE *fp, zEllips3D *ellips)
 {
-  ZTKPropFPrint( fp, ellips, __ztk_prp_prim_ellips );
+  ZTKKeyPrpFPrint( fp, ellips, __ztk_prp_prim_ellips );
+  fprintf( fp, "\n" );
 }
 
 
 
 
 
-void _zECyl3DCenterFromZTK(void *obj, void *arg, ZTK *ztk){
-  if( ((int*)arg)[0] > 1 )
-    ZRUNWARN( ZEO_WARN_PRIM_TOOMANY_CENTER );
-  else
-    zVec3DFromZTK( zECyl3DCenter((zECyl3D*)obj,((int*)arg)[0]++), ztk ); }
-void _zECyl3DRadiusFromZTK(void *obj, void *arg, ZTK *ztk){
-  if( ((int*)arg)[1] > 1 )
-    ZRUNWARN( ZEO_WARN_PRIM_TOOMANY_RADIUS );
-  else
-    zECyl3DRadius((zECyl3D*)obj,((int*)arg)[1]++) = ZTKDouble(ztk); }
-void _zECyl3DRefFromZTK(void *obj, void *arg, ZTK *ztk){
+void *_zECyl3DCenterFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zVec3DFromZTK( zECyl3DCenter((zECyl3D*)obj,i), ztk );
+  return obj; }
+void *_zECyl3DRadiusFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zECyl3DRadius((zECyl3D*)obj,i) = ZTKDouble(ztk);
+  return obj; }
+void *_zECyl3DRefFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zVec3D ref;
-  if( ((int*)arg)[2] > 1 ){
-    ZRUNWARN( ZEO_WARN_PRIM_TOOMANY_AXIS );
-    return;
-  }
   zVec3DFromZTK( &ref, ztk );
   zECyl3DDefAxis( (zECyl3D*)obj, &ref );
+  return obj;
 }
-void _zECyl3DDivFromZTK(void *obj, void *arg, ZTK *ztk){ zECyl3DDiv((zECyl3D*)obj) = zPrimDivFromZTK(ztk); }
+void *_zECyl3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zECyl3DDiv((zECyl3D*)obj) = zPrimDivFromZTK(ztk);
+  return obj; }
 
-void _zECyl3DCenterFPrint(FILE *fp, int i, void *obj){ zVec3DFPrint( fp, zECyl3DCenter((zECyl3D*)obj,i) ); }
-void _zECyl3DRadiusFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%.10g\n", zECyl3DRadius((zECyl3D*)obj,i) ); }
-void _zECyl3DRefFPrint(FILE *fp, int i, void *obj){ zVec3DFPrint( fp, zECyl3DRadVec((zECyl3D*)obj,0) ); }
-void _zECyl3DDivFPrint(FILE *fp, int i, void *obj){ fprintf( fp, "%d\n", zECyl3DDiv((zECyl3D*)obj) ); }
+void _zECyl3DCenterFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zECyl3DCenter((zECyl3D*)obj,i) ); }
+void _zECyl3DRadiusFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zECyl3DRadius((zECyl3D*)obj,i) ); }
+void _zECyl3DRefFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zECyl3DRadVec((zECyl3D*)obj,0) ); }
+void _zECyl3DDivFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d\n", zECyl3DDiv((zECyl3D*)obj) ); }
 
-static ZTKProp __ztk_prp_prim_ecyl[] = {
+static ZTKKeyPrp __ztk_prp_prim_ecyl[] = {
   { "center", 2, _zECyl3DCenterFromZTK, _zECyl3DCenterFPrint },
   { "radius", 2, _zECyl3DRadiusFromZTK, _zECyl3DRadiusFPrint },
   { "ref", 1, _zECyl3DRefFromZTK, _zECyl3DRefFPrint },
   { "div", 1, _zECyl3DDivFromZTK, _zECyl3DDivFPrint },
 };
 
-bool zECyl3DRegZTK(ZTK *ztk)
-{
-  return ZTKDefRegProp( ztk, "shape", __ztk_prp_prim_ecyl );
-}
-
 zECyl3D *zECyl3DFromZTK(zECyl3D *ecyl, ZTK *ztk)
 {
-  int n[] = { 0, 0, 0 };
   zECyl3DInit( ecyl );
-  return ZTKEncode( ecyl, n, ztk, __ztk_prp_prim_ecyl );
+  return ZTKKeyEncode( ecyl, NULL, ztk, __ztk_prp_prim_ecyl );
 }
 
 void _zECyl3DFPrint(FILE *fp, zECyl3D *ecyl)
 {
-  ZTKPropFPrint( fp, ecyl, __ztk_prp_prim_ecyl );
+  ZTKKeyPrpFPrint( fp, ecyl, __ztk_prp_prim_ecyl );
+  fprintf( fp, "\n" );
 }
 
 
 
 
-zVec3D *zPH3DVertFromZTK(zPH3D *ph, int i, ZTK *ztk)
+void *_zPH3DVertFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 {
   int vi;
 
   if( ( vi = ZTKInt(ztk) ) != i )
     ZRUNWARN( ZEO_WARN_PH_VERT_UNMATCH, vi );
-  return zVec3DFromZTK( zPH3DVert(ph,i), ztk );
+  zVec3DFromZTK( zPH3DVert((zPH3D*)obj,i), ztk );
+  return obj;
 }
 
-zTri3D *zPH3DFaceFromZTK(zPH3D *ph, int i, ZTK *ztk)
+void *_zPH3DFaceFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 {
   int i0, i1, i2;
 
-  if( ( i0 = ZTKInt(ztk) ) >= zPH3DVertNum(ph) ){
+  if( ( i0 = ZTKInt(ztk) ) >= zPH3DVertNum((zPH3D*)obj) ){
     ZRUNERROR( ZEO_ERR_PH_INVALID_VERT_ID, i0 );
     return NULL;
   }
-  if( ( i1 = ZTKInt(ztk) ) >= zPH3DVertNum(ph) ){
+  if( ( i1 = ZTKInt(ztk) ) >= zPH3DVertNum((zPH3D*)obj) ){
     ZRUNERROR( ZEO_ERR_PH_INVALID_VERT_ID, i1 );
     return NULL;
   }
-  if( ( i2 = ZTKInt(ztk) ) >= zPH3DVertNum(ph) ){
+  if( ( i2 = ZTKInt(ztk) ) >= zPH3DVertNum((zPH3D*)obj) ){
     ZRUNERROR( ZEO_ERR_PH_INVALID_VERT_ID, i2 );
     return NULL;
   }
-  return zTri3DCreate( zPH3DFace(ph,i), zPH3DVert(ph,i0), zPH3DVert(ph,i1), zPH3DVert(ph,i2) );
+  zTri3DCreate( zPH3DFace((zPH3D*)obj,i),
+    zPH3DVert((zPH3D*)obj,i0), zPH3DVert((zPH3D*)obj,i1), zPH3DVert((zPH3D*)obj,i2) );
+  return obj;
 }
+
+static ZTKKeyPrp __ztk_prp_ph[] = {
+  { "vert", -1, _zPH3DVertFromZTK, NULL },
+  { "face", -1, _zPH3DFaceFromZTK, NULL },
+};
 
 zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk)
 {
   int num_vert, num_face;
-  int i, j;
 
   zPH3DInit( ph );
   if( !ZTKKeyRewind( ztk ) ) return NULL;
-  num_vert = ZTKCountKey( ztk, "vert" );
+  if( ( num_vert = ZTKCountKey( ztk, "vert" ) ) == 0 ){
+    ZRUNWARN( ZEO_WARN_PH_EMPTY );
+    return NULL;
+  }
   num_face = ZTKCountKey( ztk, "face" );
   zArrayAlloc( &ph->vert, zVec3D, num_vert );
   zArrayAlloc( &ph->face, zTri3D, num_face );
   if( zPH3DVertNum(ph) != num_vert ||
       zPH3DFaceNum(ph) != num_face ) return NULL;
-  if( zPH3DVertNum(ph) == 0 ){
-    ZRUNWARN( ZEO_WARN_PH_EMPTY );
-    return NULL;
-  }
   /* vertices & faces */
-  i = j = 0;
-  if( ZTKKeyRewind( ztk ) ) do{
-    if( ZTKKeyCmp( ztk, "vert" ) )
-      zPH3DVertFromZTK( ph, i++, ztk );
-    else
-    if( ZTKKeyCmp( ztk, "face" ) )
-      zPH3DFaceFromZTK( ph, j++, ztk );
-  } while( ZTKKeyNext(ztk) );
-  return ph;
+  return ZTKKeyEncode( ph, NULL, ztk, __ztk_prp_ph );
 }
 
-zVec zNURBS3DKnotFromZTK(ZTK *ztk)
+
+
+
+
+zVec zNURBS3DKnotFromZTK(zNURBS3D *nurbs, int id, ZTK *ztk)
 {
   register int i;
-  zVec knot;
 
   if( !ZTKValRewind(ztk) ) return NULL;
-  if( !( knot = zVecAlloc( ZTKInt(ztk) ) ) ) return NULL;
-  for( i=0; i<zVecSizeNC(knot); i++ )
-    zVecElemNC(knot,i) = ZTKDouble(ztk);
-  return knot;
+  if( nurbs->knot[id] ){
+    ZRUNWARN( ZEO_ERR_NURBS_KNOTALREADY );
+    zVecFree( nurbs->knot[id] );
+  }
+  if( !( nurbs->knot[id] = zVecAlloc( ZTKInt(ztk) ) ) ) return NULL;
+  for( i=0; i<zNURBS3DKnotNum(nurbs,id); i++ )
+    zNURBS3DKnot(nurbs,id,i) = ZTKDouble(ztk);
+  return nurbs->knot[id];
 }
+
+void *_zNURBS3DDimFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((zNURBS3D*)obj)->dim[0] = ZTKInt( ztk );
+  ((zNURBS3D*)obj)->dim[1] = ZTKInt( ztk );
+  return obj;
+}
+void *_zNURBS3DUKnotFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zNURBS3DKnotFromZTK( obj, 0, ztk );
+  return obj;
+}
+void *_zNURBS3DVKnotFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zNURBS3DKnotFromZTK( obj, 1, ztk );
+  return obj;
+}
+void *_zNURBS3DSliceFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((zNURBS3D*)obj)->ns[0] = ZTKInt( ztk );
+  ((zNURBS3D*)obj)->ns[1] = ZTKInt( ztk );
+  return obj;
+}
+void *_zNURBS3DSizeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  int size1, size2;
+  if( zNURBS3DCPNum((zNURBS3D*)obj,0) > 0 || zNURBS3DCPNum((zNURBS3D*)obj,1) > 0 ){
+    ZRUNWARN( ZEO_ERR_NURBS_CPALREADY );
+    zArray2Free( &((zNURBS3D*)obj)->cpnet );
+  }
+  size1 = ZTKInt( ztk );
+  size2 = ZTKInt( ztk );
+  zArray2Alloc( &((zNURBS3D*)obj)->cpnet, zNURBS3DCPCell, size1, size2 );
+  if( zArray2RowSize(&((zNURBS3D*)obj)->cpnet) != size1 ||
+      zArray2ColSize(&((zNURBS3D*)obj)->cpnet) != size2 ) return NULL;
+  return obj;
+}
+void *_zNURBS3DCPFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  int j, k;
+  j = ZTKInt( ztk );
+  k = ZTKInt( ztk );
+  if( !zArray2PosIsValid( &((zNURBS3D*)obj)->cpnet, j, k ) ){
+    ZRUNERROR( ZEO_ERR_NURBS_INVCP );
+    return NULL;
+  }
+  zNURBS3DSetWeight( ((zNURBS3D*)obj), j, k, ZTKDouble(ztk) );
+  zVec3DFromZTK( zNURBS3DCP(((zNURBS3D*)obj),j,k), ztk );
+  return obj;
+}
+
+void _zNURBS3DDimFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d %d\n", ((zNURBS3D*)obj)->dim[0], ((zNURBS3D*)obj)->dim[1] );
+}
+void _zNURBS3DUKnotFPrint(FILE *fp, int i, void *obj){
+  if( zVecSizeNC(((zNURBS3D*)obj)->knot[0]) > 0 ) zVecFPrint( fp, ((zNURBS3D*)obj)->knot[0] );
+}
+void _zNURBS3DVKnotFPrint(FILE *fp, int i, void *obj){
+  if( zVecSizeNC(((zNURBS3D*)obj)->knot[1]) > 0 ) zVecFPrint( fp, ((zNURBS3D*)obj)->knot[1] );
+}
+void _zNURBS3DSliceFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d %d\n", ((zNURBS3D*)obj)->ns[0], ((zNURBS3D*)obj)->ns[1] );
+}
+void _zNURBS3DSizeFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d %d\n", zNURBS3DCPNum((zNURBS3D*)obj,0), zNURBS3DCPNum((zNURBS3D*)obj,1) );
+}
+
+static ZTKKeyPrp __ztk_prp_nurbs[] = {
+  { "dim", 1, _zNURBS3DDimFromZTK, _zNURBS3DDimFPrint },
+  { "uknot", 1, _zNURBS3DUKnotFromZTK, _zNURBS3DUKnotFPrint },
+  { "vknot", 1, _zNURBS3DVKnotFromZTK, _zNURBS3DVKnotFPrint },
+  { "size", 1, _zNURBS3DSizeFromZTK, _zNURBS3DSizeFPrint },
+  { "cp", -1, _zNURBS3DCPFromZTK, NULL },
+  { "slice", 1, _zNURBS3DSliceFromZTK, _zNURBS3DSliceFPrint },
+};
 
 zNURBS3D *zNURBS3DFromZTK(zNURBS3D *nurbs, ZTK *ztk)
 {
-  int size1, size2;
-  int i, j;
-
   zNURBS3DInit( nurbs );
-  if( !ZTKKeyRewind( ztk ) ) return NULL;
-  do{
-    if( ZTKKeyCmp( ztk, "dim" ) ){
-      nurbs->dim[0] = ZTKInt( ztk );
-      nurbs->dim[1] = ZTKInt( ztk );
-    } else
-    if( ZTKKeyCmp( ztk, "uknot" ) ){
-      if( nurbs->knot[0] ){
-        ZRUNWARN( ZEO_ERR_NURBS_KNOTALREADY );
-        zVecFree( nurbs->knot[0] );
-      }
-      if( !( nurbs->knot[0] = zNURBS3DKnotFromZTK( ztk ) ) ) return NULL;
-    } else
-    if( ZTKKeyCmp( ztk, "vknot" ) ){
-      if( nurbs->knot[1] ){
-        ZRUNWARN( ZEO_ERR_NURBS_KNOTALREADY );
-        zVecFree( nurbs->knot[1] );
-      }
-      if( !( nurbs->knot[1] = zNURBS3DKnotFromZTK( ztk ) ) ) return NULL;
-    } else
-    if( ZTKKeyCmp( ztk, "slice" ) ){
-      nurbs->ns[0] = ZTKInt( ztk );
-      nurbs->ns[1] = ZTKInt( ztk );
-    } else
-    if( ZTKKeyCmp( ztk, "size" ) ){
-      if( zNURBS3DCPNum(nurbs,0) > 0 || zNURBS3DCPNum(nurbs,1) > 0 ){
-        ZRUNWARN( ZEO_ERR_NURBS_CPALREADY );
-        zArray2Free( &nurbs->cpnet );
-      }
-      size1 = ZTKInt( ztk );
-      size2 = ZTKInt( ztk );
-      zArray2Alloc( &nurbs->cpnet, zNURBS3DCPCell, size1, size2 );
-      if( zArray2RowSize(&nurbs->cpnet) != size1 ||
-          zArray2ColSize(&nurbs->cpnet) != size2 ) return NULL;
-    } else
-    if( ZTKKeyCmp( ztk, "cp" ) ){
-      i = ZTKInt( ztk );
-      j = ZTKInt( ztk );
-      if( !zArray2PosIsValid( &nurbs->cpnet, i, j ) ){
-        ZRUNERROR( ZEO_ERR_NURBS_INVCP );
-        return NULL;
-      }
-      zNURBS3DSetWeight( nurbs, i, j, ZTKDouble(ztk) );
-      zVec3DFromZTK( zNURBS3DCP(nurbs,i,j), ztk );
+  return ZTKKeyEncode( nurbs, NULL, ztk, __ztk_prp_nurbs );
+}
+
+void _zNURBS3DFPrint(FILE *fp, zNURBS3D *nurbs)
+{
+  register int i, j;
+
+  ZTKKeyPrpFPrint( fp, nurbs, __ztk_prp_nurbs );
+  for( i=0; i<zNURBS3DCPNum(nurbs,0); i++ )
+    for( j=0; j<zNURBS3DCPNum(nurbs,1); j++ ){
+      fprintf( fp, "cp: %d %d %.12g ", i, j, zNURBS3DWeight(nurbs,i,j) );
+      zVec3DFPrint( fp, zNURBS3DCP(nurbs,i,j) );
     }
-  } while( ZTKKeyNext(ztk) );
-  return nurbs;
 }
 
 
 
 
+typedef enum{ ZSHAPE_BB_NONE=0, ZSHAPE_BB_AABB, ZSHAPE_BB_OBB } zShape3DBBType;
+
+typedef struct{
+  zShape3D *sarray;
+  int ns;
+  zOpticalInfo *oarray;
+  int no;
+  zShape3DBBType bbtype;
+  bool mirrored;
+} _zShape3DRefProp;
+
+void *_zShape3DNameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zNameSet( (zShape3D*)obj, ZTKVal(ztk) );
+  return zNamePtr((zShape3D*)obj) ? obj : NULL;
+}
+void *_zShape3DTypeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zShape3DType((zShape3D*)obj) = zShapeTypeByStr( ZTKVal(ztk) );
+  return obj;
+}
+void *_zShape3DOpticFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zNameFind( ((_zShape3DRefProp*)arg)->oarray, ((_zShape3DRefProp*)arg)->no, ZTKVal(ztk), zShape3DOptic((zShape3D*)obj) );
+  return zShape3DOptic((zShape3D*)obj) ? obj : NULL;
+}
+void *_zShape3DBBTypeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  if( ZTKValCmp( ztk, "AABB" ) ) ((_zShape3DRefProp*)arg)->bbtype = ZSHAPE_BB_AABB;
+  else
+  if( ZTKValCmp( ztk, "OBB" ) ) ((_zShape3DRefProp*)arg)->bbtype = ZSHAPE_BB_OBB;
+  else{
+    ZRUNWARN( ZEO_WARN_UNKNOWN_BB_TYPE, ZTKVal(ztk) );
+    ((_zShape3DRefProp*)arg)->bbtype = ZSHAPE_BB_NONE;
+  }
+  return obj;
+}
+void *_zShape3DMirrorFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zShape3D *ref;
+  zNameFind( ((_zShape3DRefProp*)arg)->sarray, ((_zShape3DRefProp*)arg)->ns, ZTKVal(ztk), ref );
+  if( ref ){
+    if( !ZTKValNext(ztk) ) return NULL;
+    if( !zShape3DMirror( ref, (zShape3D*)obj, zAxisByStr(ZTKVal(ztk)) ) ) return NULL;
+    ((_zShape3DRefProp*)arg)->mirrored = true;
+    return obj;
+  }
+  ZRUNWARN( ZEO_ERR_SHAPE_UNDEF, ZTKVal(ztk) );
+  return obj;
+}
+
+void _zShape3DNameFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%s\n", zName((zShape3D*)obj) );
+}
+void _zShape3DTypeFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%s\n", zShapeTypeExpr(zShape3DType((zShape3D*)obj)) );
+}
+void _zShape3DOpticFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%s\n", zName(zShape3DOptic((zShape3D*)obj)) );
+}
+
+static ZTKKeyPrp __ztk_prp_shape[] = {
+  { "name", 1, _zShape3DNameFromZTK, _zShape3DNameFPrint },
+  { "type", 1, _zShape3DTypeFromZTK, _zShape3DTypeFPrint },
+  { "optic", 1, _zShape3DOpticFromZTK, _zShape3DOpticFPrint },
+  { "bb", 1, _zShape3DBBTypeFromZTK, NULL },
+  { "mirror", 1, _zShape3DMirrorFromZTK, NULL },
+};
 
 bool zShape3DRegZTK(ZTK *ztk)
 {
-  char *key[] = { /* for any shape */
-    "name", "type", "optic", "bb", "mirror",
-  };
-  char *key_ph[] = {
-    "vert", "face",
-  };
-  char *key_nurbs[] = {
-    "dim", "uknot", "vknot", "slice", "size", "cp",
-  };
-  return ZTKDefReg( ztk, "shape", key ) &&
-         zBox3DRegZTK( ztk ) &&
-         zSphere3DRegZTK( ztk ) &&
-         zCyl3DRegZTK( ztk ) &&
-         zCone3DRegZTK( ztk ) &&
-         zEllips3DRegZTK( ztk ) &&
-         zECyl3DRegZTK( ztk ) &&
-         ZTKDefReg( ztk, "shape", key_ph ) &&
-         ZTKDefReg( ztk, "shape", key_nurbs ) ? true : false;
+  return ZTKDefRegKeyPrp( ztk, ZTK_TAG_SHAPE, __ztk_prp_shape ) &&
+         ZTKDefRegKeyPrp( ztk, ZTK_TAG_SHAPE, __ztk_prp_prim_box ) &&
+         ZTKDefRegKeyPrp( ztk, ZTK_TAG_SHAPE, __ztk_prp_prim_sphere ) &&
+         ZTKDefRegKeyPrp( ztk, ZTK_TAG_SHAPE, __ztk_prp_prim_cyl ) &&
+         ZTKDefRegKeyPrp( ztk, ZTK_TAG_SHAPE, __ztk_prp_prim_cone ) &&
+         ZTKDefRegKeyPrp( ztk, ZTK_TAG_SHAPE, __ztk_prp_prim_ellips ) &&
+         ZTKDefRegKeyPrp( ztk, ZTK_TAG_SHAPE, __ztk_prp_prim_ecyl ) &&
+         ZTKDefRegKeyPrp( ztk, ZTK_TAG_SHAPE, __ztk_prp_ph ) &&
+         ZTKDefRegKeyPrp( ztk, ZTK_TAG_SHAPE, __ztk_prp_nurbs ) ? true : false;
 }
 
 zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3D *sarray, int ns, zOpticalInfo *oarray, int no, ZTK *ztk)
@@ -613,28 +792,18 @@ zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3D *sarray, int ns, zOpticalInf
     &zprim_cyl3d_com, &zprim_ecyl3d_com, &zprim_cone3d_com,
     &zprim_nurbs_com,
   };
-  zShape3D *ref;
+  _zShape3DRefProp prp;
 
   zShape3DInit( shape );
   /* type, name, associated optical info and mirroring */
-  if( !ZTKKeyRewind( ztk ) ) return NULL;
-  do{
-    if( ZTKKeyCmp( ztk, "name" ) ) zNameSet( shape, ZTKVal(ztk) );
-    else
-    if( ZTKKeyCmp( ztk, "type" ) ) zShape3DType(shape) = zShapeTypeByStr( ZTKVal(ztk) );
-    else
-    if( ZTKKeyCmp( ztk, "optic" ) ) zNameFind( oarray, no, ZTKVal(ztk), zShape3DOptic(shape) );
-    else
-    if( ZTKKeyCmp( ztk, "mirror" ) ){
-      zNameFind( sarray, ns, ZTKVal(ztk), ref );
-      if( !ref ){
-        ZRUNWARN( ZEO_ERR_SHAPE_UNDEF, ZTKVal(ztk) );
-      } else{
-        return ZTKValNext(ztk) && zShape3DMirror( ref, shape, zAxisByStr(ZTKVal(ztk)) ) ?
-          shape : NULL;
-      }
-    }
-  } while( ZTKKeyNext(ztk) );
+  prp.sarray = sarray;
+  prp.ns = ns;
+  prp.oarray = oarray;
+  prp.no = no;
+  prp.bbtype = ZSHAPE_BB_NONE;
+  prp.mirrored = false;
+  if( !ZTKKeyEncode( shape, &prp, ztk, __ztk_prp_shape ) ) return NULL;
+  if( prp.mirrored ) return shape;
   /* type-specific decoding */
   shape->com = com[zShape3DType(shape)];
 
@@ -666,56 +835,69 @@ zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3D *sarray, int ns, zOpticalInf
   default: ;
   }
   /* bounding box */
-  if( ZTKKeyRewind( ztk ) ) do{
-    if( ZTKKeyCmp( ztk, "bb" ) ){
-      if( zShape3DType(shape) != ZSHAPE_PH ){
-        ZRUNWARN( ZEO_WARN_SHAPE_BB_INVALID );
-        break;
-      }
-      if( ZTKValCmp( ztk, "AABB" ) ){
+  if( prp.bbtype != ZSHAPE_BB_NONE ){
+    if( zShape3DType(shape) != ZSHAPE_PH ){
+      ZRUNWARN( ZEO_WARN_SHAPE_BB_INVALID );
+    } else{
+      if( prp.bbtype == ZSHAPE_BB_AABB ){
         zAABox3D aabb;
         zAABB( &aabb, zShape3DVertBuf(shape), zShape3DVertNum(shape), NULL );
         zAABox3DToBox3D( &aabb, zShape3DBB(shape) );
-      } else
-      if( ZTKValCmp( ztk, "OBB" ) ){
+      } else{ /* ZSHAPE_BB_OBB */
         zOBB( zShape3DBB(shape), zShape3DVertBuf(shape), zShape3DVertNum(shape) );
-      } else
-        ZRUNWARN( ZEO_WARN_UNKNOWN_BB_TYPE, ZTKVal(ztk) );
+      }
     }
-  } while( ZTKKeyNext(ztk) );
+  }
   return shape;
 }
 
+void _zShape3DFPrint(FILE *fp, zShape3D *shape)
+{
+  if( !shape ) return;
+  ZTKKeyPrpFPrint( fp, shape, __ztk_prp_shape );
+  shape->com->_fprint( fp, &shape->body );
+  fprintf( fp, "\n" );
+}
+
+
+
+void *_zMShape3DOpticFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  return zOpticalInfoFromZTK( zMShape3DOptic((zMShape3D*)obj,i), ztk ) ? obj : NULL;
+}
+void *_zMShape3DShapeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  return zShape3DFromZTK( zMShape3DShape((zMShape3D*)obj,i),
+    zMShape3DShapeBuf((zMShape3D*)obj), zMShape3DShapeNum((zMShape3D*)obj),
+    zMShape3DOpticBuf((zMShape3D*)obj), zMShape3DOpticNum((zMShape3D*)obj), ztk ) ? obj : NULL;
+}
+
+void _zMShape3DOpticFPrint(FILE *fp, int i, void *obj){
+  _zOpticalInfoFPrint( fp, zMShape3DOptic((zMShape3D*)obj,i) );
+}
+void _zMShape3DShapeFPrint(FILE *fp, int i, void *obj){
+  _zShape3DFPrint( fp, zMShape3DShape((zMShape3D*)obj,i) );
+}
+
+static ZTKKeyPrp __ztk_prp_mshape[] = {
+  { "optic", -1, _zMShape3DOpticFromZTK, _zMShape3DOpticFPrint },
+  { "shape", -1, _zMShape3DShapeFromZTK, _zMShape3DShapeFPrint },
+};
+
 zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk)
 {
-  int num_shape, num_optic;
-  int i;
+  int num_optic, num_shape;
 
   zMShape3DInit( ms );
-  num_shape = ZTKCountTag( ztk, "shape" );
-  num_optic = ZTKCountTag( ztk, "optic" );
-  zArrayAlloc( &ms->shape, zShape3D, num_shape );
+  num_optic = ZTKCountTag( ztk, ZTK_TAG_OPTIC );
+  num_shape = ZTKCountTag( ztk, ZTK_TAG_SHAPE );
   zArrayAlloc( &ms->optic, zOpticalInfo, num_optic );
-  if( zMShape3DShapeNum(ms) != num_shape ||
-      zMShape3DOpticNum(ms) != num_optic ) return NULL;
+  zArrayAlloc( &ms->shape, zShape3D, num_shape );
+  if( zMShape3DOpticNum(ms) != num_optic ||
+      zMShape3DShapeNum(ms) != num_shape ) return NULL;
   if( zMShape3DShapeNum(ms) == 0 ){
     ZRUNWARN( ZEO_WARN_MSHAPE_EMPTY );
     return NULL;
   }
-  /* complete optical info */
-  i = 0;
-  if( ZTKTagRewind( ztk ) ) do{
-    if( ZTKTagCmp( ztk, "optic" ) )
-      zOpticalInfoFromZTK( zMShape3DOptic(ms,i++), ztk );
-  } while( ZTKTagNext(ztk) );
-  /* complete shapes */
-  i = 0;
-  if( ZTKTagRewind( ztk ) ) do{
-    if( ZTKTagCmp( ztk, "shape" ) )
-      zShape3DFromZTK( zMShape3DShape(ms,i++),
-        zMShape3DShapeBuf(ms), zMShape3DShapeNum(ms),
-        zMShape3DOpticBuf(ms), zMShape3DOpticNum(ms), ztk );
-  } while( ZTKTagNext(ztk) );
+  ZTKTagEncode( ms, NULL, ztk, __ztk_prp_mshape );
   return ms;
 }
 
@@ -731,35 +913,28 @@ zMShape3D *zMShape3DParseZTK(zMShape3D *ms, char filename[])
   return ms;
 }
 
+void _zMShape3DFPrint(FILE *fp, zMShape3D *ms)
+{
+  register int i;
+
+  for( i=0; i<zMShape3DOpticNum(ms); i++ ){
+    fprintf( fp, "[%s]\n", ZTK_TAG_OPTIC );
+    _zOpticalInfoFPrint( fp, zMShape3DOptic(ms,i) );
+  }
+  for( i=0; i<zMShape3DShapeNum(ms); i++ ){
+    fprintf( fp, "[%s]\n", ZTK_TAG_SHAPE );
+    _zShape3DFPrint( fp, zMShape3DShape(ms,i) );
+  }
+}
+
+
 int main(int argc, char *argv[])
 {
   zMShape3D ms;
 
   if( argc <= 1 ) return 1;
-  if( zMShape3DParseZTK( &ms, argv[1] ) ){
-    zMShape3DPrint( &ms );
-    int i;
-    for( i=0; i<zMShape3DOpticNum(&ms); i++ )
-      _zOpticalInfoFPrint( stdout, zMShape3DOptic(&ms,i) );
-    for( i=0; i<zMShape3DShapeNum(&ms); i++ ){
-      switch( zShape3DType(zMShape3DShape(&ms,i)) ){
-      case ZSHAPE_BOX:
-        _zBox3DFPrint( stdout, zShape3DBox(zMShape3DShape(&ms,i)) ); break;
-      case ZSHAPE_SPHERE:
-        _zSphere3DFPrint( stdout, zShape3DSphere(zMShape3DShape(&ms,i)) ); break;
-      case ZSHAPE_CYLINDER:
-        _zCyl3DFPrint( stdout, zShape3DCyl(zMShape3DShape(&ms,i)) ); break;
-      case ZSHAPE_CONE:
-        _zCone3DFPrint( stdout, zShape3DCone(zMShape3DShape(&ms,i)) ); break;
-      case ZSHAPE_ELLIPS:
-        _zEllips3DFPrint( stdout, zShape3DEllips(zMShape3DShape(&ms,i)) ); break;
-      case ZSHAPE_ELLIPTICCYLINDER:
-        _zECyl3DFPrint( stdout, zShape3DECyl(zMShape3DShape(&ms,i)) ); break;
-      default: ;
-      }
-    }
-  }
-
+  if( zMShape3DParseZTK( &ms, argv[1] ) )
+    _zMShape3DFPrint( stdout, &ms );
   zMShape3DDestroy( &ms );
   return 0;
 }

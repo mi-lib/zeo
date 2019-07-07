@@ -112,17 +112,17 @@ bool zAABoxTree3DAdd(zAABoxTree3D *tree, zAABox3D *box)
  * print an AABB tree out to a file (internal operation). */
 void _zAABoxTree3DFPrint(FILE *fp, zAABoxTree3D *tree, int indent)
 {
-  zIndentF( fp, indent );
+  zFIndent( fp, indent );
   fprintf( fp, "min: " ); zVec3DFPrint( fp, &tree->box.pmin );
-  zIndentF( fp, indent );
+  zFIndent( fp, indent );
   fprintf( fp, "max: " ); zVec3DFPrint( fp, &tree->box.pmax );
   if( tree->bp[0] ){
-    zIndentF( fp, indent+2 );
+    zFIndent( fp, indent+2 );
     fprintf( fp, "[branch0]\n" );
     _zAABoxTree3DFPrint( fp, tree->bp[0], indent+2 );
   }
   if( tree->bp[1] ){
-    zIndentF( fp, indent+2 );
+    zFIndent( fp, indent+2 );
     fprintf( fp, "[branch1]\n" );
     _zAABoxTree3DFPrint( fp, tree->bp[1], indent+2 );
   }

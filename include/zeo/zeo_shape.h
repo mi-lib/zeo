@@ -166,7 +166,7 @@ __EXPORT bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, bool rim);
 
 __EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
 
-#define ZSHAPE_TAG "shape"
+#define ZTK_TAG_SHAPE "shape"
 
 /*! \brief scan and print a 3D shape.
  *

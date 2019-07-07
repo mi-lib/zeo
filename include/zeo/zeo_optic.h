@@ -72,7 +72,7 @@ __EXPORT zOpticalInfo *zOpticalInfoMul(zOpticalInfo *oi1, zOpticalInfo *oi2, zOp
 __EXPORT zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, double ratio, zOpticalInfo *oi, char *name);
 
 /* tag to identify optical info. */
-#define ZOPTIC_TAG "optic"
+#define ZTK_TAG_OPTIC "optic"
 
 /*! \brief scan and print optical parameters.
  *

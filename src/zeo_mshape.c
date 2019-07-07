@@ -148,11 +148,11 @@ bool _zMShape3DFScan(FILE *fp, void *instance, char *buf, bool *success)
   _zMShape3DParam *prm;
 
   prm = instance;
-  if( strcmp( buf, ZOPTIC_TAG ) == 0 ){
+  if( strcmp( buf, ZTK_TAG_OPTIC ) == 0 ){
     if( prm->oc >= zMShape3DOpticNum(prm->ms) ) return false;
     if( !_zMShape3DOpticFScan( fp, prm->ms, prm->oc++ ) )
       return ( *success = false );
-  } else if( strcmp( buf, ZSHAPE_TAG ) == 0 ){
+  } else if( strcmp( buf, ZTK_TAG_SHAPE ) == 0 ){
     if( prm->sc >= zMShape3DShapeNum(prm->ms) ) return false;
     if( !_zMShape3DShapeFScan( fp, prm->ms, prm->sc++ ) )
       return ( *success = false );
@@ -183,7 +183,7 @@ zMShape3D *_zMShape3DOpticFAlloc(FILE *fp, zMShape3D *ms)
   register int i;
   int n;
 
-  n = zFCountTag( fp, ZOPTIC_TAG );
+  n = zFCountTag( fp, ZTK_TAG_OPTIC );
   zArrayAlloc( &ms->optic, zOpticalInfo, n );
   if( n > 0 && !zMShape3DOpticBuf(ms) ) return NULL;
   for( i=0; i<n; i++ )
@@ -197,7 +197,7 @@ zMShape3D *_zMShape3DShapeFAlloc(FILE *fp, zMShape3D *ms)
   register int i;
   int n;
 
-  n = zFCountTag( fp, ZSHAPE_TAG );
+  n = zFCountTag( fp, ZTK_TAG_SHAPE );
   zArrayAlloc( &ms->shape, zShape3D, n );
   if( n > 0 && !zMShape3DShapeBuf(ms) ) return NULL;
   for( i=0; i<n; i++ )
@@ -264,11 +264,11 @@ void zMShape3DFPrint(FILE *fp, zMShape3D *ms)
   register int i;
 
   for( i=0; i<zMShape3DOpticNum(ms); i++ ){
-    fprintf( fp, "[%s]\n", ZOPTIC_TAG );
+    fprintf( fp, "[%s]\n", ZTK_TAG_OPTIC );
     zOpticalInfoFPrint( fp, zMShape3DOptic( ms, i ) );
   }
   for( i=0; i<zMShape3DShapeNum(ms); i++ ){
-    fprintf( fp, "[%s]\n", ZSHAPE_TAG );
+    fprintf( fp, "[%s]\n", ZTK_TAG_SHAPE );
     zShape3DFPrint( fp, zMShape3DShape( ms, i ) );
   }
 }
