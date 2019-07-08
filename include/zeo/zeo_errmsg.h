@@ -9,6 +9,8 @@
 
 /* NOTE: never include this header file in user programs. */
 
+/* error messages */
+
 #define ZEO_ERR_ZERODIV      "cannot divid by zero value"
 #define ZEO_ERR_ZERONORM     "cannot normalize zero vector"
 #define ZEO_ERR_SINGULARMAT  "matrix is singular"
@@ -25,6 +27,8 @@
 #define ZEO_ERR_NOFACE       "polyhedron has no face"
 #define ZEO_ERR_CENTER_MANY  "too many center points"
 #define ZEO_ERR_RADIUS_MANY  "too many radii"
+
+#define ZEO_ERR_PH_INVALID_VERT_ID "%d: invalid identifier of a vertex specified."
 
 #define ZEO_ERR_LONGNAME     "too long name, truncated to %s"
 
@@ -63,11 +67,21 @@
 
 #define ZEO_ERR_FATAL        "fatal error! - please report to the author"
 
-#define ZEO_WARN_STL_MIS_LOOP "missing the initiator of outer loop"
+/* warning messages */
+
+#define ZEO_WARN_PH_EMPTY         "empty set of vertices assigned for a polyhedron."
+#define ZEO_WARN_PH_VERT_UNMATCH  "%d: unmatched identifier of a vertex"
+
+#define ZEO_WARN_STL_MIS_LOOP     "missing the initiator of outer loop"
 #define ZEO_WARN_STL_TOOMANYVERT  "too many vertices in an outer loop"
 #define ZEO_WARN_STL_TOOFEWVERT   "too few vertices in an outer loop"
 #define ZEO_WARN_STL_WRONGNORMAL  "inconsistent normal vector, ignored"
 
 #define ZEO_WARN_STL_MISSINGDATA  "missing data in STL"
+
+#define ZEO_WARN_SHAPE_BB_INVALID "bounding-box not generated because it is only for polyhedra."
+
+#define ZEO_WARN_MSHAPE_EMPTY     "empty shapes assigned."
+#define ZEO_WARN_UNKNOWN_BB_TYPE  "%s: unknown type of bounding-box"
 
 #endif /* __ZEO_ERRMSG_H__ */

@@ -15,6 +15,9 @@
  */
 #define ZEO_PRIM_DEFAULT_DIV 32
 
+/*! \brief read the number of division for smooth primitives from a ZTK format processor. */
+__EXPORT int zPrim3DDivFromZTK(ZTK *ztk);
+
 /*! \brief collection of commands for primitives.
  */
 typedef struct{
@@ -32,9 +35,13 @@ typedef struct{
   zMat3D *(*_inertia)(void*,zMat3D*);
   void (*_baryinertia)(void*,zVec3D*,zMat3D*);
   zPH3D *(*_toph)(void*,zPH3D*);
+  void *(*_parseZTK)(void*,ZTK*);
   void *(*_fscan)(FILE*,void*);
   void (*_fprint)(FILE*,void*);
 } zPrimCom;
+
+/* methods for abstraction */
+extern zPrimCom zprim_none_com;
 
 #include <zeo/zeo_prim_box.h>    /* box */
 #include <zeo/zeo_prim_sphere.h> /* sphere */

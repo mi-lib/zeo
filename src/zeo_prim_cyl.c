@@ -223,6 +223,46 @@ zPH3D *zCyl3DToPH(zCyl3D *cyl, zPH3D *ph)
   return ph;
 }
 
+/* parse ZTK format */
+
+static void *_zCyl3DCenterFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zVec3DFromZTK( zCyl3DCenter((zCyl3D*)obj,i), ztk );
+  return obj;
+}
+static void *_zCyl3DRadiusFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zCyl3DRadius((zCyl3D*)obj) = ZTKDouble(ztk);
+  return obj;
+}
+static void *_zCyl3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zCyl3DDiv((zCyl3D*)obj) = zPrim3DDivFromZTK(ztk);
+  return obj; }
+
+static void _zCyl3DCenterFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zCyl3DCenter((zCyl3D*)obj,i) ); }
+static void _zCyl3DRadiusFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zCyl3DRadius((zCyl3D*)obj) ); }
+static void _zCyl3DDivFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d\n", zCyl3DDiv((zCyl3D*)obj) ); }
+
+static ZTKPrp __ztk_prp_prim_cyl[] = {
+  { "center", 2, _zCyl3DCenterFromZTK, _zCyl3DCenterFPrint },
+  { "radius", 1, _zCyl3DRadiusFromZTK, _zCyl3DRadiusFPrint },
+  { "div", 1, _zCyl3DDivFromZTK, _zCyl3DDivFPrint },
+};
+
+/* register a definition of tag-and-keys for a 3D cylinder to a ZTK format processor. */
+bool zCyl3DDefRegZTK(ZTK *ztk, char *tag)
+{
+  return ZTKDefRegPrp( ztk, tag, __ztk_prp_prim_cyl );
+}
+
+/* read a 3D cylinder from a ZTK format processor. */
+zCyl3D *zCyl3DFromZTK(zCyl3D *cyl, ZTK *ztk)
+{
+  zCyl3DInit( cyl );
+  return ZTKEncodeKey( cyl, NULL, ztk, __ztk_prp_prim_cyl );
+}
+
 typedef struct{
   zVec3D c[2];
   int ic;
@@ -266,15 +306,10 @@ zCyl3D *zCyl3DFScan(FILE *fp, zCyl3D *cyl)
   return zCyl3DCreate( cyl, &prm.c[0], &prm.c[1], prm.r, prm.div );
 }
 
-/* print a 3D cylinder to a file. */
+/* print out a 3D cylinder to a file. */
 void zCyl3DFPrint(FILE *fp, zCyl3D *cyl)
 {
-  fprintf( fp, "center: " );
-  zVec3DFPrint( fp, zCyl3DCenter(cyl,0) );
-  fprintf( fp, "center: " );
-  zVec3DFPrint( fp, zCyl3DCenter(cyl,1) );
-  fprintf( fp, "radius: %.10g\n", zCyl3DRadius(cyl) );
-  fprintf( fp, "div: %d\n", zCyl3DDiv(cyl) );
+  ZTKPrpKeyFPrint( fp, cyl, __ztk_prp_prim_cyl );
 }
 
 /* methods for abstraction */
@@ -307,6 +342,8 @@ static void _zPrim3DBaryInertiaCyl(void *prim, zVec3D *c, zMat3D *i){
   zCyl3DInertia( prim, i ); }
 static zPH3D *_zPrim3DToPHCyl(void *prim, zPH3D *ph){
   return zCyl3DToPH( prim, ph ); }
+static void *_zPrim3DParseZTKCyl(void *prim, ZTK *ztk){
+  return zCyl3DFromZTK( prim, ztk ); }
 static void *_zPrim3DFScanCyl(FILE *fp, void *prim){
   return zCyl3DFScan( fp, prim ); }
 static void _zPrim3DFPrintCyl(FILE *fp, void *prim){
@@ -327,6 +364,7 @@ zPrimCom zprim_cyl3d_com = {
   _zPrim3DInertiaCyl,
   _zPrim3DBaryInertiaCyl,
   _zPrim3DToPHCyl,
+  _zPrim3DParseZTKCyl,
   _zPrim3DFScanCyl,
   _zPrim3DFPrintCyl,
 };

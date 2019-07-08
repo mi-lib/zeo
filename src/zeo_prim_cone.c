@@ -233,6 +233,53 @@ zPH3D *zCone3DToPH(zCone3D *cone, zPH3D *ph)
   return ph;
 }
 
+/* parse ZTK format */
+
+static void *_zCone3DCenterFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zVec3DFromZTK( zCone3DCenter((zCone3D*)obj), ztk );
+  return obj;
+}
+static void *_zCone3DVertFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zVec3DFromZTK( zCone3DVert((zCone3D*)obj), ztk );
+  return obj;
+}
+static void *_zCone3DRadiusFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zCone3DRadius((zCone3D*)obj) = ZTKDouble(ztk);
+  return obj;
+}
+static void *_zCone3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zCone3DDiv((zCone3D*)obj) = zPrim3DDivFromZTK(ztk);
+  return obj; }
+
+static void _zCone3DCenterFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zCone3DCenter((zCone3D*)obj) ); }
+static void _zCone3DVertFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zCone3DVert((zCone3D*)obj) ); }
+static void _zCone3DRadiusFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zCone3DRadius((zCone3D*)obj) ); }
+static void _zCone3DDivFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d\n", zCone3DDiv((zCone3D*)obj) ); }
+
+static ZTKPrp __ztk_prp_prim_cone[] = {
+  { "center", 1, _zCone3DCenterFromZTK, _zCone3DCenterFPrint },
+  { "vert", 1, _zCone3DVertFromZTK, _zCone3DVertFPrint },
+  { "radius", 1, _zCone3DRadiusFromZTK, _zCone3DRadiusFPrint },
+  { "div", 1, _zCone3DDivFromZTK, _zCone3DDivFPrint },
+};
+
+/* register a definition of tag-and-keys for a 3D cone to a ZTK format processor. */
+bool zCone3DDefRegZTK(ZTK *ztk, char *tag)
+{
+  return ZTKDefRegPrp( ztk, tag, __ztk_prp_prim_cone );
+}
+
+/* read a 3D cone from a ZTK format processor. */
+zCone3D *zCone3DFromZTK(zCone3D *cone, ZTK *ztk)
+{
+  zCone3DInit( cone );
+  return ZTKEncodeKey( cone, NULL, ztk, __ztk_prp_prim_cone );
+}
+
 /* (static)
  * scan a 3D cone (internal function). */
 bool _zCone3DFScan(FILE *fp, void *instance, char *buf, bool *success)
@@ -258,15 +305,10 @@ zCone3D *zCone3DFScan(FILE *fp, zCone3D *cone)
   return cone;
 }
 
-/* print a 3D cone to a file. */
+/* print out a 3D cone to a file. */
 void zCone3DFPrint(FILE *fp, zCone3D *cone)
 {
-  fprintf( fp, "center: " );
-  zVec3DFPrint( fp, zCone3DCenter(cone) );
-  fprintf( fp, "vert: " );
-  zVec3DFPrint( fp, zCone3DVert(cone) );
-  fprintf( fp, "radius: %.10g\n", zCone3DRadius(cone) );
-  fprintf( fp, "div: %d\n", zCone3DDiv(cone) );
+  ZTKPrpKeyFPrint( fp, cone, __ztk_prp_prim_cone );
 }
 
 /* methods for abstraction */
@@ -299,6 +341,8 @@ static void _zPrim3DBaryInertiaCone(void *prim, zVec3D *c, zMat3D *i){
   zCone3DInertia( prim, i ); }
 static zPH3D *_zPrim3DToPHCone(void *prim, zPH3D *ph){
   return zCone3DToPH( prim, ph ); }
+static void *_zPrim3DParseZTKCone(void *prim, ZTK *ztk){
+  return zCone3DFromZTK( prim, ztk ); }
 static void *_zPrim3DFScanCone(FILE *fp, void *prim){
   return zCone3DFScan( fp, prim ); }
 static void _zPrim3DFPrintCone(FILE *fp, void *prim){
@@ -319,6 +363,7 @@ zPrimCom zprim_cone3d_com = {
   _zPrim3DInertiaCone,
   _zPrim3DBaryInertiaCone,
   _zPrim3DToPHCone,
+  _zPrim3DParseZTKCone,
   _zPrim3DFScanCone,
   _zPrim3DFPrintCone,
 };

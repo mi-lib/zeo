@@ -132,6 +132,11 @@ __EXPORT zMat3D *zEllips3DInertia(zEllips3D *ellips, zMat3D *inertia);
 /* default longitudinal & latitudinal division number are the same. */
 __EXPORT zPH3D *zEllips3DToPH(zEllips3D *ellips, zPH3D *ph);
 
+/*! \brief register a definition of tag-and-keys for a 3D ellipsoid to a ZTK format processor. */
+__EXPORT bool zEllips3DDefRegZTK(ZTK *ztk, char *tag);
+/*! \brief read a 3D ellipsoid from a ZTK format processor. */
+__EXPORT zEllips3D *zEllips3DFromZTK(zEllips3D *ellips, ZTK *ztk);
+
 /*! \brief scan and print a 3D ellipsoid.
  *
  * zEllips3DFScan() scans information of a 3D ellipsoid from

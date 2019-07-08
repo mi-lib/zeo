@@ -16,7 +16,7 @@ void assert_create(void)
   zVec3DCopy( &v1, &v2 );
   zAssert( zVec3DCopy, v1.e[0] == v2.e[0] && v1.e[1] == v2.e[1] && v1.e[2] == v2.e[2] );
   zAssert( zVec3DMatch, zVec3DMatch( &v1, &v2 ) );
-  zVec3DClear( &v1 );
+  zVec3DZero( &v1 );
   zAssert( zVec3DIsTiny, zVec3DIsTiny( &v1 ) );
   zVec3DCreate( &v1, 1, 2, HUGE_VAL );
   zVec3DCreate( &v2, 1, 2, NAN );

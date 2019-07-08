@@ -129,6 +129,11 @@ __EXPORT zPH3D *zSphere3DToPH(zSphere3D *sphere, zPH3D *ph);
  */
 __EXPORT zSphere3D *zSphere3DFit(zSphere3D *s, zVec3DList *pc);
 
+/*! \brief register a definition of tag-and-keys for a 3D sphere to a ZTK format processor. */
+__EXPORT bool zSphere3DDefRegZTK(ZTK *ztk, char *tag);
+/*! \brief read a 3D sphere from a ZTK format processor. */
+__EXPORT zSphere3D *zSphere3DFromZTK(zSphere3D *sphere, ZTK *ztk);
+
 /*! \brief scan and print a 3D sphere.
  *
  * zSphere3DFScan() scans information of a 3D sphere from the

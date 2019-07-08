@@ -123,17 +123,53 @@ zMShape3D *zMShape3DToPH(zMShape3D *ms)
   return ms;
 }
 
-/* scan informationi of multiple shapes from a file. */
+/* parse ZTK format */
+
+static void *_zMShape3DOpticFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  return zOpticalInfoFromZTK( zMShape3DOptic((zMShape3D*)obj,i), ztk ) ? obj : NULL;
+}
+static void *_zMShape3DShapeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  return zShape3DFromZTK( zMShape3DShape((zMShape3D*)obj,i),
+    zMShape3DShapeBuf((zMShape3D*)obj), zMShape3DShapeNum((zMShape3D*)obj),
+    zMShape3DOpticBuf((zMShape3D*)obj), zMShape3DOpticNum((zMShape3D*)obj), ztk ) ? obj : NULL;
+}
+
+static ZTKPrp __ztk_prp_mshape[] = {
+  { "optic", -1, _zMShape3DOpticFromZTK, NULL },
+  { "shape", -1, _zMShape3DShapeFromZTK, NULL },
+};
+
+/* read multiple 3D shapes from a ZTK format processor. */
+zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk)
+{
+  int num_optic, num_shape;
+
+  zMShape3DInit( ms );
+  num_optic = ZTKCountTag( ztk, ZTK_TAG_OPTIC );
+  num_shape = ZTKCountTag( ztk, ZTK_TAG_SHAPE );
+  zArrayAlloc( &ms->optic, zOpticalInfo, num_optic );
+  zArrayAlloc( &ms->shape, zShape3D, num_shape );
+  if( zMShape3DOpticNum(ms) != num_optic ||
+      zMShape3DShapeNum(ms) != num_shape ) return NULL;
+  if( zMShape3DShapeNum(ms) == 0 ){
+    ZRUNWARN( ZEO_WARN_MSHAPE_EMPTY );
+    return NULL;
+  }
+  ZTKEncodeTag( ms, NULL, ztk, __ztk_prp_mshape );
+  return ms;
+}
+
+/* scan a ZTK format file and create multiple 3D shapes. */
 zMShape3D *zMShape3DScanFile(zMShape3D *ms, char filename[])
 {
-  FILE *fp;
-  zMShape3D *ret;
+  ZTK ztk;
 
-  if( !( fp = zOpenZTKFile( filename, "r" ) ) )
-    return NULL;
-  ret = zMShape3DFScan( fp, ms );
-  fclose( fp );
-  return ret;
+  ZTKInit( &ztk );
+  if( !zShape3DRegZTK( &ztk ) || !zOpticalInfoRegZTK( &ztk ) ) return NULL;
+  ZTKParse( &ztk, filename );
+  ms = zMShape3DFromZTK( ms, &ztk );
+  ZTKDestroy( &ztk );
+  return ms;
 }
 
 typedef struct{

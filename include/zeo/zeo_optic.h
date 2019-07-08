@@ -112,6 +112,12 @@ __EXPORT zOpticalInfo *zOpticalInfoFScan(FILE *fp, zOpticalInfo *oi);
 __EXPORT void zOpticalInfoFPrint(FILE *fp, zOpticalInfo *oi);
 #define zOpticalInfoPrint(i) zOpticalInfoFPrint( stdout, (i) )
 
+/* register a definition of tag-and-key for the optical info to a ZTK format processor. */
+__EXPORT bool zOpticalInfoRegZTK(ZTK *ztk);
+
+/* encode an optical info from a ZTK format processor. */
+__EXPORT zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk);
+
 __END_DECLS
 
 #endif /* __ZEO_OPTIC_H__ */

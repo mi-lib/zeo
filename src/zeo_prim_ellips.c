@@ -233,6 +233,84 @@ zPH3D* zEllips3DToPH(zEllips3D *ellips, zPH3D *ph)
   return ph;
 }
 
+/* parse ZTK format */
+
+static zVec3D *_zEllips3DAxisFromZTK(zEllips3D *ellips, int i0, int i1, int i2, ZTK *ztk)
+{
+  if( ZTKValCmp( ztk, "auto" ) )
+    zVec3DOuterProd( zEllips3DAxis(ellips,i1), zEllips3DAxis(ellips,i2), zEllips3DAxis(ellips,i0) );
+  else
+    zVec3DFromZTK( zEllips3DAxis(ellips,i0), ztk );
+  zVec3DNormalizeDRC( zEllips3DAxis(ellips,i0) );
+  return zEllips3DAxis(ellips,i0);
+}
+
+static void *_zEllips3DCenterFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zVec3DFromZTK( zEllips3DCenter((zEllips3D*)obj), ztk );
+  return obj; }
+static void *_zEllips3DAxisXFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  _zEllips3DAxisFromZTK( (zEllips3D*)obj, 0, 1, 2, ztk );
+  return obj; }
+static void *_zEllips3DAxisYFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  _zEllips3DAxisFromZTK( (zEllips3D*)obj, 1, 2, 0, ztk );
+  return obj; }
+static void *_zEllips3DAxisZFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  _zEllips3DAxisFromZTK( (zEllips3D*)obj, 2, 0, 1, ztk );
+  return obj; }
+static void *_zEllips3DRadiusXFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zEllips3DRadiusX((zEllips3D*)obj) = ZTKDouble(ztk);
+  return obj; }
+static void *_zEllips3DRadiusYFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zEllips3DRadiusY((zEllips3D*)obj) = ZTKDouble(ztk);
+  return obj; }
+static void *_zEllips3DRadiusZFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zEllips3DRadiusZ((zEllips3D*)obj) = ZTKDouble(ztk);
+  return obj; }
+static void *_zEllips3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zEllips3DDiv((zEllips3D*)obj) = zPrim3DDivFromZTK(ztk);
+  return obj; }
+
+static void _zEllips3DCenterFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zEllips3DCenter((zEllips3D*)obj) ); }
+static void _zEllips3DAxisXFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zX) ); }
+static void _zEllips3DAxisYFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zY) ); }
+static void _zEllips3DAxisZFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zZ) ); }
+static void _zEllips3DRadiusXFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zEllips3DRadiusX((zEllips3D*)obj) ); }
+static void _zEllips3DRadiusYFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zEllips3DRadiusY((zEllips3D*)obj) ); }
+static void _zEllips3DRadiusZFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zEllips3DRadiusZ((zEllips3D*)obj) ); }
+static void _zEllips3DDivFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d\n", zEllips3DDiv((zEllips3D*)obj) ); }
+
+static ZTKPrp __ztk_prp_prim_ellips[] = {
+  { "center", 1, _zEllips3DCenterFromZTK, _zEllips3DCenterFPrint },
+  { "ax", 1, _zEllips3DAxisXFromZTK, _zEllips3DAxisXFPrint },
+  { "ay", 1, _zEllips3DAxisYFromZTK, _zEllips3DAxisYFPrint },
+  { "az", 1, _zEllips3DAxisZFromZTK, _zEllips3DAxisZFPrint },
+  { "rx", 1, _zEllips3DRadiusXFromZTK, _zEllips3DRadiusXFPrint },
+  { "ry", 1, _zEllips3DRadiusYFromZTK, _zEllips3DRadiusYFPrint },
+  { "rz", 1, _zEllips3DRadiusZFromZTK, _zEllips3DRadiusZFPrint },
+  { "div", 1, _zEllips3DDivFromZTK, _zEllips3DDivFPrint },
+};
+
+/* register a definition of tag-and-keys for a 3D ellipsoid to a ZTK format processor. */
+bool zEllips3DDefRegZTK(ZTK *ztk, char *tag)
+{
+  return ZTKDefRegPrp( ztk, tag, __ztk_prp_prim_ellips );
+}
+
+/* read a 3D ellipsoid from a ZTK format processor. */
+zEllips3D *zEllips3DFromZTK(zEllips3D *ellips, ZTK *ztk)
+{
+  zEllips3DInit( ellips );
+  return ZTKEncodeKey( ellips, NULL, ztk, __ztk_prp_prim_ellips );
+}
+
 /* (static)
  * scan a 3D ellipsoid (internal function).
  */
@@ -272,21 +350,10 @@ zEllips3D *zEllips3DFScan(FILE *fp, zEllips3D *ellips)
   return ellips;
 }
 
-/* print a 3D ellipsoid to a file. */
+/* print out a 3D ellipsoid to a file. */
 void zEllips3DFPrint(FILE *fp, zEllips3D *ellips)
 {
-  fprintf( fp, "center: " );
-  zVec3DFPrint( fp, zEllips3DCenter( ellips ) );
-  fprintf( fp, "ax: " );
-  zVec3DFPrint( fp, zEllips3DAxis( ellips, zX ) );
-  fprintf( fp, "ay: " );
-  zVec3DFPrint( fp, zEllips3DAxis( ellips, zY ) );
-  fprintf( fp, "az: " );
-  zVec3DFPrint( fp, zEllips3DAxis( ellips, zZ ) );
-  fprintf( fp, "rx: %.10g\n", zEllips3DRadiusX( ellips ) );
-  fprintf( fp, "ry: %.10g\n", zEllips3DRadiusY( ellips ) );
-  fprintf( fp, "rz: %.10g\n", zEllips3DRadiusZ( ellips ) );
-  fprintf( fp, "div: %d\n", zEllips3DDiv( ellips ) );
+  ZTKPrpKeyFPrint( fp, ellips, __ztk_prp_prim_ellips );
 }
 
 /* methods for abstraction */
@@ -319,6 +386,8 @@ static void _zPrim3DBaryInertiaEllips(void *prim, zVec3D *c, zMat3D *i){
   zEllips3DInertia( prim, i ); }
 static zPH3D *_zPrim3DToPHEllips(void *prim, zPH3D *ph){
   return zEllips3DToPH( prim, ph ); }
+static void *_zPrim3DParseZTKEllips(void *prim, ZTK *ztk){
+  return zEllips3DFromZTK( prim, ztk ); }
 static void *_zPrim3DFScanEllips(FILE *fp, void *prim){
   return zEllips3DFScan( fp, prim ); }
 static void _zPrim3DFPrintEllips(FILE *fp, void *prim){
@@ -339,6 +408,7 @@ zPrimCom zprim_ellips3d_com = {
   _zPrim3DInertiaEllips,
   _zPrim3DBaryInertiaEllips,
   _zPrim3DToPHEllips,
+  _zPrim3DParseZTKEllips,
   _zPrim3DFScanEllips,
   _zPrim3DFPrintEllips,
 };

@@ -1,3 +1,8 @@
+2019. 7. 8. Added *RegZTK and *FromZTK, and reimplemented *FPrint for 3D primitives, polyhedra, NURBS, shape and multiple shapes. [zeo_ph, zeo_nurbs, zeo_prim, zeo_prim_box, zeo_prim_sphere, zeo_prim_cyl, zeo_prim_cone, zeo_prim_ellips, zeo_prim_ecyl, zeo_prim_ph, zeo_prim_nurbs, zeo_shape, zeo_mshape]
+2019. 7. 8. Added zeo_prim and zPrim3DDivFromZTK. [zeo_prim]
+2019. 7. 8. Added zVec3DFromZTK. [zeo_vec3d]
+2019. 7. 8. Added zOpticalInfoRegZTK and zOpticalInfoFromZTK, and reimplemented zOpticalInfoFPrint based on the new specification of ZTK. [zeo_optic]
+2019. 7. 8. Added zRGBFromZTK. [zeo_color]
 2019. 7. 7. Renamed ZOPTIC_TAG and ZSHAPE_TAG to ZTK_TAG_OPTIC and ZTK_TAG_SHAPE. [zeo_optic, zeo_shape, zeo_mshape]
 2019. 7. 6. Reflected renaming of zIndentF to zFIndent. [zeo_col_aabbtree]
 2019. 7. 5. Added zECyl3DDefAxis. [zeo_prim_ecyl]

@@ -228,7 +228,126 @@ zShape3D *zShape3DToPH(zShape3D *shape)
   return ret ? shape : NULL;
 }
 
+/* parse ZTK format */
+
 typedef enum{ ZSHAPE_BB_NONE=0, ZSHAPE_BB_AABB, ZSHAPE_BB_OBB } _zShape3DBBType;
+
+typedef struct{
+  zShape3D *sarray;
+  int ns;
+  zOpticalInfo *oarray;
+  int no;
+  _zShape3DBBType bbtype;
+  bool mirrored;
+} _zShape3DRefProp;
+
+static void *_zShape3DNameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zNameSet( (zShape3D*)obj, ZTKVal(ztk) );
+  return zNamePtr((zShape3D*)obj) ? obj : NULL;
+}
+static void *_zShape3DTypeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zShape3DType((zShape3D*)obj) = zShapeTypeByStr( ZTKVal(ztk) );
+  return obj;
+}
+static void *_zShape3DOpticFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zNameFind( ((_zShape3DRefProp*)arg)->oarray, ((_zShape3DRefProp*)arg)->no, ZTKVal(ztk), zShape3DOptic((zShape3D*)obj) );
+  return zShape3DOptic((zShape3D*)obj) ? obj : NULL;
+}
+static void *_zShape3DBBTypeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  if( ZTKValCmp( ztk, "AABB" ) ) ((_zShape3DRefProp*)arg)->bbtype = ZSHAPE_BB_AABB;
+  else
+  if( ZTKValCmp( ztk, "OBB" ) ) ((_zShape3DRefProp*)arg)->bbtype = ZSHAPE_BB_OBB;
+  else{
+    ZRUNWARN( ZEO_WARN_UNKNOWN_BB_TYPE, ZTKVal(ztk) );
+    ((_zShape3DRefProp*)arg)->bbtype = ZSHAPE_BB_NONE;
+  }
+  return obj;
+}
+static void *_zShape3DMirrorFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zShape3D *ref;
+  zNameFind( ((_zShape3DRefProp*)arg)->sarray, ((_zShape3DRefProp*)arg)->ns, ZTKVal(ztk), ref );
+  if( ref ){
+    if( !ZTKValNext(ztk) ) return NULL;
+    if( !zShape3DMirror( ref, (zShape3D*)obj, zAxisByStr(ZTKVal(ztk)) ) ) return NULL;
+    ((_zShape3DRefProp*)arg)->mirrored = true;
+  } else
+    ZRUNWARN( ZEO_ERR_SHAPE_UNDEF, ZTKVal(ztk) );
+  return obj;
+}
+
+static void _zShape3DNameFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%s\n", zName((zShape3D*)obj) );
+}
+static void _zShape3DTypeFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%s\n", zShapeTypeExpr(zShape3DType((zShape3D*)obj)) );
+}
+static void _zShape3DOpticFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%s\n", zName(zShape3DOptic((zShape3D*)obj)) );
+}
+
+static ZTKPrp __ztk_prp_shape[] = {
+  { "name", 1, _zShape3DNameFromZTK, _zShape3DNameFPrint },
+  { "type", 1, _zShape3DTypeFromZTK, _zShape3DTypeFPrint },
+  { "optic", 1, _zShape3DOpticFromZTK, _zShape3DOpticFPrint },
+  { "bb", 1, _zShape3DBBTypeFromZTK, NULL },
+  { "mirror", 1, _zShape3DMirrorFromZTK, NULL },
+};
+
+/* register a definition of tag-and-keys for a 3D shape to a ZTK format processor. */
+bool zShape3DRegZTK(ZTK *ztk)
+{
+  return ZTKDefRegPrp( ztk, ZTK_TAG_SHAPE, __ztk_prp_shape ) &&
+         zBox3DDefRegZTK( ztk, ZTK_TAG_SHAPE ) &&
+         zSphere3DDefRegZTK( ztk, ZTK_TAG_SHAPE ) &&
+         zCyl3DDefRegZTK( ztk, ZTK_TAG_SHAPE ) &&
+         zCone3DDefRegZTK( ztk, ZTK_TAG_SHAPE ) &&
+         zEllips3DDefRegZTK( ztk, ZTK_TAG_SHAPE ) &&
+         zECyl3DDefRegZTK( ztk, ZTK_TAG_SHAPE ) &&
+         zPH3DDefRegZTK( ztk, ZTK_TAG_SHAPE ) &&
+         zNURBS3DDefRegZTK( ztk, ZTK_TAG_SHAPE );
+}
+
+/* read a 3D shape from a ZTK format processor. */
+zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3D *sarray, int ns, zOpticalInfo *oarray, int no, ZTK *ztk)
+{
+  zPrimCom *com[] = {
+    &zprim_none_com,
+    &zprim_ph3d_com, &zprim_box3d_com,
+    &zprim_sphere3d_com, &zprim_ellips3d_com,
+    &zprim_cyl3d_com, &zprim_ecyl3d_com, &zprim_cone3d_com,
+    &zprim_nurbs_com,
+  };
+  _zShape3DRefProp prp;
+
+  zShape3DInit( shape );
+  /* type, name, associated optical info and mirroring */
+  prp.sarray = sarray;
+  prp.ns = ns;
+  prp.oarray = oarray;
+  prp.no = no;
+  prp.bbtype = ZSHAPE_BB_NONE;
+  prp.mirrored = false;
+  if( !ZTKEncodeKey( shape, &prp, ztk, __ztk_prp_shape ) ) return NULL;
+  if( prp.mirrored ) return shape;
+  /* type-specific decoding */
+  shape->com = com[zShape3DType(shape)];
+  if( !shape->com->_parseZTK( &shape->body, ztk ) ) return NULL;
+  /* bounding box */
+  if( prp.bbtype != ZSHAPE_BB_NONE ){
+    if( zShape3DType(shape) != ZSHAPE_PH ){
+      ZRUNWARN( ZEO_WARN_SHAPE_BB_INVALID );
+    } else{
+      if( prp.bbtype == ZSHAPE_BB_AABB ){
+        zAABox3D aabb;
+        zAABB( &aabb, zShape3DVertBuf(shape), zShape3DVertNum(shape), NULL );
+        zAABox3DToBox3D( &aabb, zShape3DBB(shape) );
+      } else{ /* ZSHAPE_BB_OBB */
+        zOBB( zShape3DBB(shape), zShape3DVertBuf(shape), zShape3DVertNum(shape) );
+      }
+    }
+  }
+  return shape;
+}
 
 typedef struct{
   zShape3D *shape;
@@ -333,14 +452,11 @@ zShape3D *zShape3DFScan(FILE *fp, zShape3D *shape, zShape3D *sarray, int ns, zOp
   return NULL;
 }
 
-/* print a 3D shape to a file. */
+/* print out a 3D shape to a file. */
 void zShape3DFPrint(FILE *fp, zShape3D *shape)
 {
   if( !shape ) return;
-  fprintf( fp, "type : %s\n", zShapeTypeExpr(zShape3DType(shape)) );
-  fprintf( fp, "name : %s\n", zName(shape) );
-  if( zShape3DOptic(shape) )
-    fprintf( fp, "optic: %s\n", zName( zShape3DOptic(shape) ) );
+  ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape );
   shape->com->_fprint( fp, &shape->body );
   fprintf( fp, "\n" );
 }

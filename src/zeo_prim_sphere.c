@@ -201,6 +201,46 @@ zSphere3D *zSphere3DFit(zSphere3D *s, zVec3DList *pc)
   return s;
 }
 
+/* parse ZTK format */
+
+static void *_zSphere3DCenterFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zVec3DFromZTK( zSphere3DCenter((zSphere3D*)obj), ztk );
+  return obj;
+}
+static void *_zSphere3DRadiusFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zSphere3DRadius((zSphere3D*)obj) = ZTKDouble(ztk);
+  return obj;
+}
+static void *_zSphere3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zSphere3DDiv((zSphere3D*)obj) = zPrim3DDivFromZTK(ztk);
+  return obj; }
+
+static void _zSphere3DCenterFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zSphere3DCenter((zSphere3D*)obj) ); }
+static void _zSphere3DRadiusFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zSphere3DRadius((zSphere3D*)obj) ); }
+static void _zSphere3DDivFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d\n", zSphere3DDiv((zSphere3D*)obj) ); }
+
+static ZTKPrp __ztk_prp_prim_sphere[] = {
+  { "center", 1, _zSphere3DCenterFromZTK, _zSphere3DCenterFPrint },
+  { "radius", 1, _zSphere3DRadiusFromZTK, _zSphere3DRadiusFPrint },
+  { "div", 1, _zSphere3DDivFromZTK, _zSphere3DDivFPrint },
+};
+
+/* register a definition of tag-and-keys for a 3D sphere to a ZTK format processor. */
+bool zSphere3DDefRegZTK(ZTK *ztk, char *tag)
+{
+  return ZTKDefRegPrp( ztk, tag, __ztk_prp_prim_sphere );
+}
+
+/* read a 3D sphere from a ZTK format processor. */
+zSphere3D *zSphere3DFromZTK(zSphere3D *sphere, ZTK *ztk)
+{
+  zSphere3DInit( sphere );
+  return ZTKEncodeKey( sphere, NULL, ztk, __ztk_prp_prim_sphere );
+}
+
 /* scan information of a 3D sphere from a file. */
 bool _zSphere3DFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
@@ -221,13 +261,10 @@ zSphere3D *zSphere3DFScan(FILE *fp, zSphere3D *sphere)
   return sphere;
 }
 
-/* print information of a 3D sphere to a file. */
+/* print out a 3D sphere to a file. */
 void zSphere3DFPrint(FILE *fp, zSphere3D *sphere)
 {
-  fprintf( fp, "center: " );
-  zVec3DFPrint( fp, zSphere3DCenter(sphere) );
-  fprintf( fp, "radius: %.10g\n", zSphere3DRadius(sphere) );
-  fprintf( fp, "div: %d\n", zSphere3DDiv(sphere) );
+  ZTKPrpKeyFPrint( fp, sphere, __ztk_prp_prim_sphere );
 }
 
 /* methods for abstraction */
@@ -260,6 +297,8 @@ static void _zPrim3DBaryInertiaSphere(void *prim, zVec3D *c, zMat3D *i){
   zSphere3DInertia( prim, i ); }
 static zPH3D *_zPrim3DToPHSphere(void *prim, zPH3D *ph){
   return zSphere3DToPH( prim, ph ); }
+static void *_zPrim3DParseZTKSphere(void *prim, ZTK *ztk){
+  return zSphere3DFromZTK( prim, ztk ); }
 static void *_zPrim3DFScanSphere(FILE *fp, void *prim){
   return zSphere3DFScan( fp, prim ); }
 static void _zPrim3DFPrintSphere(FILE *fp, void *prim){
@@ -280,6 +319,7 @@ zPrimCom zprim_sphere3d_com = {
   _zPrim3DInertiaSphere,
   _zPrim3DBaryInertiaSphere,
   _zPrim3DToPHSphere,
+  _zPrim3DParseZTKSphere,
   _zPrim3DFScanSphere,
   _zPrim3DFPrintSphere,
 };

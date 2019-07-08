@@ -81,6 +81,15 @@ zRGB *zRGBDec(zRGB *rgb, char *str)
   return str[0] == '#' ? _zRGBHex( rgb, str+1 ) : _zRGBRatio( rgb, str );
 }
 
+/* read a set of RGB from a ZTK format processor. */
+zRGB *zRGBFromZTK(zRGB *rgb, ZTK *ztk)
+{
+  rgb->r = ZTKDouble(ztk);
+  rgb->g = ZTKDouble(ztk);
+  rgb->b = ZTKDouble(ztk);
+  return rgb;
+}
+
 /* scan a set of RGB parameters from a file. */
 zRGB *zRGBFScan(FILE *fp, zRGB *rgb)
 {

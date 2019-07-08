@@ -12,8 +12,8 @@
 __BEGIN_DECLS
 
 /* ********************************************************** */
-/* CLASS: zColor
- * color class - color space expression.
+/*! \struct zRGB
+ * \brief color expression with RGB intensity set.
  * ********************************************************** */
 
 typedef struct{
@@ -21,11 +21,6 @@ typedef struct{
   float g; /* green */
   float b; /* blue */
 } zRGB;
-
-/* ********************************************************** */
-/* CLASS: zRGB
- * RGB class - expression of color with RGB intensity set.
- * ********************************************************** */
 
 /*! \brief black and white RGB set. */
 extern const zRGB zrgbblack, zrgbwhite;
@@ -87,7 +82,10 @@ __EXPORT zRGB *zRGBBlend(zRGB *rgb1, zRGB *rgb2, double ratio, zRGB *rgb);
  */
 __EXPORT zRGB *zRGBDec(zRGB *rgb, char *str);
 
-/*! \brief input/output of a set of RGB parameters.
+/* \brief read a set of RGB from a ZTK format processor. */
+__EXPORT zRGB *zRGBFromZTK(zRGB *rgb, ZTK *ztk);
+
+/*! \brief scan/print of a set of RGB parameters.
  *
  * zRGBFScan() scans three values for RGB from the current
  * position of a file \a fp, and copies them to \a rgb.

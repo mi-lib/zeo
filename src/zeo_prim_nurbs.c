@@ -38,6 +38,8 @@ static void _zPrim3DBaryInertiaNURBS(void *prim, zVec3D *c, zMat3D *i){}
 
 static zPH3D *_zPrim3DToPHNURBS(void *prim, zPH3D *ph){
   return zNURBS3DToPH( prim, ph ); }
+static void *_zPrim3DParseZTKNURBS(void *prim, ZTK *ztk){
+  return zNURBS3DFromZTK( prim, ztk ); }
 static void *_zPrim3DFScanNURBS(FILE *fp, void *prim){
   return zNURBS3DFScan( fp, prim ); }
 static void _zPrim3DFPrintNURBS(FILE *fp, void *prim){
@@ -58,6 +60,7 @@ zPrimCom zprim_nurbs_com = {
   _zPrim3DInertiaNURBS,
   _zPrim3DBaryInertiaNURBS,
   _zPrim3DToPHNURBS,
+  _zPrim3DParseZTKNURBS,
   _zPrim3DFScanNURBS,
   _zPrim3DFPrintNURBS,
 };

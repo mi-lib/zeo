@@ -13,7 +13,6 @@ __BEGIN_DECLS
 
 /* methods for abstraction */
 extern zPrimCom zprim_ph3d_com;
-extern zPrimCom zprim_none_com;
 
 __END_DECLS
 

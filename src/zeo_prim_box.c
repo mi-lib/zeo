@@ -173,6 +173,77 @@ zPH3D* zBox3DToPH(zBox3D *box, zPH3D *ph)
   return ph;
 }
 
+/* parse ZTK format */
+
+static zVec3D *_zBox3DAxisFromZTK(zBox3D *box, int i0, int i1, int i2, ZTK *ztk)
+{
+  if( ZTKValCmp( ztk, "auto" ) )
+    zVec3DOuterProd( zBox3DAxis(box,i1), zBox3DAxis(box,i2), zBox3DAxis(box,i0) );
+  else
+    zVec3DFromZTK( zBox3DAxis(box,i0), ztk );
+  zVec3DNormalizeDRC( zBox3DAxis(box,i0) );
+  return zBox3DAxis(box,i0);
+}
+
+static void *_zBox3DCenterFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  return zVec3DFromZTK( zBox3DCenter((zBox3D*)obj), ztk ) ? obj : NULL; }
+static void *_zBox3DAxisXFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  _zBox3DAxisFromZTK( (zBox3D*)obj, 0, 1, 2, ztk );
+  return obj; }
+static void *_zBox3DAxisYFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  _zBox3DAxisFromZTK( (zBox3D*)obj, 1, 2, 0, ztk );
+  return obj; }
+static void *_zBox3DAxisZFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  _zBox3DAxisFromZTK( (zBox3D*)obj, 2, 0, 1, ztk );
+  return obj; }
+static void *_zBox3DDepthFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zBox3DDepth((zBox3D*)obj) = ZTKDouble(ztk);
+  return obj; }
+static void *_zBox3DWidthFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zBox3DWidth((zBox3D*)obj) = ZTKDouble(ztk);
+  return obj; }
+static void *_zBox3DHeightFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zBox3DHeight((zBox3D*)obj) = ZTKDouble(ztk);
+  return obj; }
+
+static void _zBox3DCenterFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zBox3DCenter((zBox3D*)obj) ); }
+static void _zBox3DAxisXFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zX) ); }
+static void _zBox3DAxisYFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zY) ); }
+static void _zBox3DAxisZFPrint(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zZ) ); }
+static void _zBox3DDepthFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zBox3DDepth((zBox3D*)obj) ); }
+static void _zBox3DWidthFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zBox3DWidth((zBox3D*)obj) ); }
+static void _zBox3DHeightFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zBox3DHeight((zBox3D*)obj) ); }
+
+static ZTKPrp __ztk_prp_prim_box[] = {
+  { "center", 1, _zBox3DCenterFromZTK, _zBox3DCenterFPrint },
+  { "ax", 1, _zBox3DAxisXFromZTK, _zBox3DAxisXFPrint },
+  { "ay", 1, _zBox3DAxisYFromZTK, _zBox3DAxisYFPrint },
+  { "az", 1, _zBox3DAxisZFromZTK, _zBox3DAxisZFPrint },
+  { "depth", 1, _zBox3DDepthFromZTK, _zBox3DDepthFPrint },
+  { "width", 1, _zBox3DWidthFromZTK, _zBox3DWidthFPrint },
+  { "height", 1, _zBox3DHeightFromZTK, _zBox3DHeightFPrint },
+};
+
+/* register a definition of tag-and-keys for a 3D box to a ZTK format processor. */
+bool zBox3DDefRegZTK(ZTK *ztk, char *tag)
+{
+  return ZTKDefRegPrp( ztk, tag, __ztk_prp_prim_box );
+}
+
+/* read a 3D box from a ZTK format processor. */
+zBox3D *zBox3DFromZTK(zBox3D *box, ZTK *ztk)
+{
+  zBox3DInit( box );
+  return ZTKEncodeKey( box, NULL, ztk, __ztk_prp_prim_box );
+}
+
 /* scan a 3D box from a file. */
 bool _zBox3DFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
@@ -208,16 +279,10 @@ zBox3D *zBox3DFScan(FILE *fp, zBox3D *box)
   return box;
 }
 
-/* print a 3D box out to a file. */
+/* print out a 3D box to a file. */
 void zBox3DFPrint(FILE *fp, zBox3D *box)
 {
-  fprintf( fp, "center: " ); zVec3DFPrint( fp, zBox3DCenter(box) );
-  fprintf( fp, "ax: " ); zVec3DFPrint( fp, zBox3DAxis(box,zX) );
-  fprintf( fp, "ay: " ); zVec3DFPrint( fp, zBox3DAxis(box,zY) );
-  fprintf( fp, "az: " ); zVec3DFPrint( fp, zBox3DAxis(box,zZ) );
-  fprintf( fp, "depth: %.10g\n", zBox3DDepth(box) );
-  fprintf( fp, "width: %.10g\n", zBox3DWidth(box) );
-  fprintf( fp, "height: %.10g\n", zBox3DHeight(box) );
+  ZTKPrpKeyFPrint( fp, box, __ztk_prp_prim_box );
 }
 
 /* print a 3D box out to a file in a format to be plotted. */
@@ -250,6 +315,7 @@ void zBox3DDataFPrint(FILE *fp, zBox3D *box)
   fprintf( fp, "\n\n" );
 }
 
+
 /* methods for abstraction */
 
 static void *_zPrim3DInitBox(void* prim){
@@ -280,6 +346,8 @@ static void _zPrim3DBaryInertiaBox(void *prim, zVec3D *c, zMat3D *i){
   zBox3DInertia( prim, i ); }
 static zPH3D *_zPrim3DToPHBox(void *prim, zPH3D *ph){
   return zBox3DToPH( prim, ph ); }
+static void *_zPrim3DParseZTKBox(void *prim, ZTK *ztk){
+  return zBox3DFromZTK( prim, ztk ); }
 static void *_zPrim3DFScanBox(FILE *fp, void *prim){
   return zBox3DFScan( fp, prim ); }
 static void _zPrim3DFPrintBox(FILE *fp, void *prim){
@@ -300,6 +368,7 @@ zPrimCom zprim_box3d_com = {
   _zPrim3DInertiaBox,
   _zPrim3DBaryInertiaBox,
   _zPrim3DToPHBox,
+  _zPrim3DParseZTKBox,
   _zPrim3DFScanBox,
   _zPrim3DFPrintBox,
 };

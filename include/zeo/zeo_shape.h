@@ -168,6 +168,11 @@ __EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
 
 #define ZTK_TAG_SHAPE "shape"
 
+/*! \brief register a definition of tag-and-keys for a 3D shape to a ZTK format processor. */
+__EXPORT bool zShape3DRegZTK(ZTK *ztk);
+/*! \brief read a 3D shape from a ZTK format processor. */
+__EXPORT zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3D *sarray, int ns, zOpticalInfo *oarray, int no, ZTK *ztk);
+
 /*! \brief scan and print a 3D shape.
  *
  * zShape3DFScan() scans information of a 3D shape from the

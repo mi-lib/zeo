@@ -108,6 +108,11 @@ __EXPORT zMat3D *zCone3DInertia(zCone3D *cone, zMat3D *inertia);
  */
 __EXPORT zPH3D *zCone3DToPH(zCone3D *cone, zPH3D *ph);
 
+/*! \brief register a definition of tag-and-keys for a 3D cone to a ZTK format processor. */
+__EXPORT bool zCone3DDefRegZTK(ZTK *ztk, char *tag);
+/*! \brief read a 3D cone from a ZTK format processor. */
+__EXPORT zCone3D *zCone3DFromZTK(zCone3D *cone, ZTK *ztk);
+
 /*! \brief scan and print a 3D cone.
  *
  * zCone3DFScan() scans information of a 3D cone from the

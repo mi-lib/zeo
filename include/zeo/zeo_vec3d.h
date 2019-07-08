@@ -520,6 +520,9 @@ __EXPORT zVec3D *zAngVelToZYZVelSC(zVec3D *angvel, double sa, double ca, double 
 /* I/O
  * ********************************************************** */
 
+/*! \brief read a 3D vector from a ZTK format processor. */
+__EXPORT zVec3D *zVec3DFromZTK(zVec3D *v, ZTK *ztk);
+
 /*! \brief scan and print a 3D vector.
  *
  * zVec3DFScan() scans three values from the current position of

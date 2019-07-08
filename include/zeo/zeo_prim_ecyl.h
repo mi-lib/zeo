@@ -71,6 +71,11 @@ __EXPORT zMat3D *zECyl3DInertia(zECyl3D *cyl, zMat3D *inertia);
 /*! \brief convert an elliptic cylinder to a polyhedron. */
 __EXPORT zPH3D *zECyl3DToPH(zECyl3D *cyl, zPH3D *ph);
 
+/*! \brief register a definition of tag-and-keys for a 3D elliptic cylinder to a ZTK format processor. */
+__EXPORT bool zECyl3DDefRegZTK(ZTK *ztk, char *tag);
+/*! \brief read a 3D elliptic cylinder from a ZTK format processor. */
+__EXPORT zECyl3D *zECyl3DFromZTK(zECyl3D *ecyl, ZTK *ztk);
+
 /*! \brief scan a 3D elliptic cylinder from a file. */
 __EXPORT zECyl3D *zECyl3DFScan(FILE *fp, zECyl3D *cyl);
 #define zECyl3DScan(c) zECyl3DFScan( stdin, (c) )

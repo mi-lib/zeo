@@ -468,6 +468,15 @@ zVec3D *zAngVelToZYZVelSC(zVec3D *angvel, double sa, double ca, double sb, doubl
 /* I/O
  * ********************************************************** */
 
+/* read a 3D vector from a ZTK format processor. */
+zVec3D *zVec3DFromZTK(zVec3D *v, ZTK *ztk)
+{
+  v->e[0] = ZTKDouble(ztk);
+  v->e[1] = ZTKDouble(ztk);
+  v->e[2] = ZTKDouble(ztk);
+  return v;
+}
+
 /* scan a 3D vector from a file. */
 zVec3D *zVec3DFScan(FILE *fp, zVec3D *v)
 {

@@ -19,7 +19,7 @@ OBJ=zeo_color.o zeo_optic.o\
 	zeo_pointcloud.o\
 	zeo_elem.o zeo_elem_list.o zeo_ph.o\
 	zeo_nurbs.o\
-	zeo_prim_box.o zeo_prim_sphere.o zeo_prim_ellips.o zeo_prim_cyl.o zeo_prim_ecyl.o zeo_prim_cone.o zeo_prim_ph.o zeo_prim_nurbs.o\
+	zeo_prim.o zeo_prim_box.o zeo_prim_sphere.o zeo_prim_ellips.o zeo_prim_cyl.o zeo_prim_ecyl.o zeo_prim_cone.o zeo_prim_ph.o zeo_prim_nurbs.o\
 	zeo_shape.o zeo_shape_list.o zeo_mshape.o\
 	zeo_brep.o zeo_brep_trunc.o zeo_brep_bool.o\
 	zeo_bv_ch2.o zeo_bv_aabb.o zeo_bv_obb.o zeo_bv_bball.o zeo_bv_qhull.o\

@@ -139,6 +139,11 @@ __EXPORT zVec3D *zBox3DVert(zBox3D *box, int i, zVec3D *v);
  */
 __EXPORT zPH3D *zBox3DToPH(zBox3D *box, zPH3D *ph);
 
+/*! \brief register a definition of tag-and-keys for a 3D box to a ZTK format processor. */
+__EXPORT bool zBox3DDefRegZTK(ZTK *ztk, char *tag);
+/*! \brief read a 3D box from a ZTK format processor. */
+__EXPORT zBox3D *zBox3DFromZTK(zBox3D *box, ZTK *ztk);
+
 /*! \brief scan and print a box.
  *
  * zBox3DFScan() scans information of a box from the current

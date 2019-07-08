@@ -9,7 +9,7 @@ void assert_create(void)
   zVec6DCopy( &v1, &v2 );
   zAssert( zVec6DCopy, v1.e[0] == v2.e[0] && v1.e[1] == v2.e[1] && v1.e[2] == v2.e[2] && v1.e[3] == v2.e[3] && v1.e[4] == v2.e[4] && v1.e[5] == v2.e[5] );
   zAssert( zVec6DMatch, zVec6DMatch( &v1, &v2 ) );
-  zVec6DClear( &v1 );
+  zVec6DZero( &v1 );
   zAssert( zVec6DIsTiny, zVec6DIsTiny( &v1 ) );
 }
 

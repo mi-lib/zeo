@@ -409,6 +409,70 @@ zPH3D *zPH3DLathe(zPH3D *lathe, zVec3D rim[], int n, int div, zVec3D *center, zV
   return lathe;
 }
 
+/* parse ZTK format */
+
+static void *_zPH3DVertFromZTK(void *obj, int i, void *arg, ZTK *ztk)
+{
+  int vi;
+
+  if( ( vi = ZTKInt(ztk) ) != i )
+    ZRUNWARN( ZEO_WARN_PH_VERT_UNMATCH, vi );
+  zVec3DFromZTK( zPH3DVert((zPH3D*)obj,i), ztk );
+  return obj;
+}
+
+static void *_zPH3DFaceFromZTK(void *obj, int i, void *arg, ZTK *ztk)
+{
+  int i0, i1, i2;
+
+  if( ( i0 = ZTKInt(ztk) ) >= zPH3DVertNum((zPH3D*)obj) ){
+    ZRUNERROR( ZEO_ERR_PH_INVALID_VERT_ID, i0 );
+    return NULL;
+  }
+  if( ( i1 = ZTKInt(ztk) ) >= zPH3DVertNum((zPH3D*)obj) ){
+    ZRUNERROR( ZEO_ERR_PH_INVALID_VERT_ID, i1 );
+    return NULL;
+  }
+  if( ( i2 = ZTKInt(ztk) ) >= zPH3DVertNum((zPH3D*)obj) ){
+    ZRUNERROR( ZEO_ERR_PH_INVALID_VERT_ID, i2 );
+    return NULL;
+  }
+  zTri3DCreate( zPH3DFace((zPH3D*)obj,i),
+    zPH3DVert((zPH3D*)obj,i0), zPH3DVert((zPH3D*)obj,i1), zPH3DVert((zPH3D*)obj,i2) );
+  return obj;
+}
+
+static ZTKPrp __ztk_prp_ph[] = {
+  { "vert", -1, _zPH3DVertFromZTK, NULL },
+  { "face", -1, _zPH3DFaceFromZTK, NULL },
+};
+
+/* register a definition of tag-and-keys for a 3D polyhedron cylinder to a ZTK format processor. */
+bool zPH3DDefRegZTK(ZTK *ztk, char *tag)
+{
+  return ZTKDefRegPrp( ztk, tag, __ztk_prp_ph );
+}
+
+/* read a 3D polyhedron from a ZTK format processor. */
+zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk)
+{
+  int num_vert, num_face;
+
+  zPH3DInit( ph );
+  if( !ZTKKeyRewind( ztk ) ) return NULL;
+  if( ( num_vert = ZTKCountKey( ztk, "vert" ) ) == 0 ){
+    ZRUNWARN( ZEO_WARN_PH_EMPTY );
+    return NULL;
+  }
+  num_face = ZTKCountKey( ztk, "face" );
+  zArrayAlloc( &ph->vert, zVec3D, num_vert );
+  zArrayAlloc( &ph->face, zTri3D, num_face );
+  if( zPH3DVertNum(ph) != num_vert ||
+      zPH3DFaceNum(ph) != num_face ) return NULL;
+  /* vertices & faces */
+  return ZTKEncodeKey( ph, NULL, ztk, __ztk_prp_ph );
+}
+
 typedef struct{
   zPH3D *ph;
   int vc;
@@ -465,17 +529,15 @@ void zPH3DFPrint(FILE *fp, zPH3D *ph)
 
   if( !ph || zPH3DVertNum(ph) == 0 ) return;
   for( i=0; i<zPH3DVertNum(ph); i++ ){
-    fprintf( fp, "vert %d: ", i );
+    fprintf( fp, "vert: %d ", i );
     zVec3DFPrint( fp, zPH3DVert(ph,i) );
   }
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
-    fprintf( fp, "face " );
-    fprintf( fp, "%d %d %d\n",
+    fprintf( fp, "face: %d %d %d\n",
       (int)( zPH3DFaceVert(ph,i,0)-zPH3DVertBuf(ph) ),
       (int)( zPH3DFaceVert(ph,i,1)-zPH3DVertBuf(ph) ),
       (int)( zPH3DFaceVert(ph,i,2)-zPH3DVertBuf(ph) ) );
   }
-  fprintf( fp, "\n" );
 }
 
 /* *** STL format *** */

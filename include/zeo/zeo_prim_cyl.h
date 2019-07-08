@@ -112,6 +112,11 @@ __EXPORT zMat3D *zCyl3DInertia(zCyl3D *cyl, zMat3D *inertia);
  */
 __EXPORT zPH3D *zCyl3DToPH(zCyl3D *cyl, zPH3D *ph);
 
+/*! \brief register a definition of tag-and-keys for a 3D cylinder to a ZTK format processor. */
+__EXPORT bool zCyl3DDefRegZTK(ZTK *ztk, char *tag);
+/*! \brief read a 3D cylinder from a ZTK format processor. */
+__EXPORT zCyl3D *zCyl3DFromZTK(zCyl3D *cyl, ZTK *ztk);
+
 /*! \brief scan and print a 3D cylinder.
  *
  * zCyl3DFScan() scans information of a 3D cylinder from the current

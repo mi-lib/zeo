@@ -336,6 +336,102 @@ zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph)
   return ph;
 }
 
+/* parse ZTK format */
+
+static zVec _zNURBS3DKnotFromZTK(zNURBS3D *nurbs, int id, ZTK *ztk)
+{
+  register int i;
+
+  if( !ZTKValRewind(ztk) ) return NULL;
+  if( nurbs->knot[id] ){
+    ZRUNWARN( ZEO_ERR_NURBS_KNOTALREADY );
+    zVecFree( nurbs->knot[id] );
+  }
+  if( !( nurbs->knot[id] = zVecAlloc( ZTKInt(ztk) ) ) ) return NULL;
+  for( i=0; i<zNURBS3DKnotNum(nurbs,id); i++ )
+    zNURBS3DKnot(nurbs,id,i) = ZTKDouble(ztk);
+  return nurbs->knot[id];
+}
+
+static void *_zNURBS3DDimFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((zNURBS3D*)obj)->dim[0] = ZTKInt( ztk );
+  ((zNURBS3D*)obj)->dim[1] = ZTKInt( ztk );
+  return obj;
+}
+static void *_zNURBS3DUKnotFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  return _zNURBS3DKnotFromZTK( obj, 0, ztk ) ? obj : NULL;
+}
+static void *_zNURBS3DVKnotFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  return _zNURBS3DKnotFromZTK( obj, 1, ztk ) ? obj : NULL;
+}
+static void *_zNURBS3DSliceFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((zNURBS3D*)obj)->ns[0] = ZTKInt( ztk );
+  ((zNURBS3D*)obj)->ns[1] = ZTKInt( ztk );
+  return obj;
+}
+static void *_zNURBS3DSizeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  int size1, size2;
+  if( zNURBS3DCPNum((zNURBS3D*)obj,0) > 0 || zNURBS3DCPNum((zNURBS3D*)obj,1) > 0 ){
+    ZRUNWARN( ZEO_ERR_NURBS_CPALREADY );
+    zArray2Free( &((zNURBS3D*)obj)->cpnet );
+  }
+  size1 = ZTKInt( ztk );
+  size2 = ZTKInt( ztk );
+  zArray2Alloc( &((zNURBS3D*)obj)->cpnet, zNURBS3DCPCell, size1, size2 );
+  return zArray2RowSize(&((zNURBS3D*)obj)->cpnet) == size1 &&
+         zArray2ColSize(&((zNURBS3D*)obj)->cpnet) == size2 ? obj : NULL;
+}
+static void *_zNURBS3DCPFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  int j, k;
+  j = ZTKInt( ztk );
+  k = ZTKInt( ztk );
+  if( !zArray2PosIsValid( &((zNURBS3D*)obj)->cpnet, j, k ) ){
+    ZRUNERROR( ZEO_ERR_NURBS_INVCP );
+    return NULL;
+  }
+  zNURBS3DSetWeight( ((zNURBS3D*)obj), j, k, ZTKDouble(ztk) );
+  zVec3DFromZTK( zNURBS3DCP(((zNURBS3D*)obj),j,k), ztk );
+  return obj;
+}
+
+static void _zNURBS3DDimFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d %d\n", ((zNURBS3D*)obj)->dim[0], ((zNURBS3D*)obj)->dim[1] );
+}
+static void _zNURBS3DUKnotFPrint(FILE *fp, int i, void *obj){
+  if( zVecSizeNC(((zNURBS3D*)obj)->knot[0]) > 0 ) zVecFPrint( fp, ((zNURBS3D*)obj)->knot[0] );
+}
+static void _zNURBS3DVKnotFPrint(FILE *fp, int i, void *obj){
+  if( zVecSizeNC(((zNURBS3D*)obj)->knot[1]) > 0 ) zVecFPrint( fp, ((zNURBS3D*)obj)->knot[1] );
+}
+static void _zNURBS3DSliceFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d %d\n", ((zNURBS3D*)obj)->ns[0], ((zNURBS3D*)obj)->ns[1] );
+}
+static void _zNURBS3DSizeFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d %d\n", zNURBS3DCPNum((zNURBS3D*)obj,0), zNURBS3DCPNum((zNURBS3D*)obj,1) );
+}
+
+static ZTKPrp __ztk_prp_nurbs[] = {
+  { "dim", 1, _zNURBS3DDimFromZTK, _zNURBS3DDimFPrint },
+  { "uknot", 1, _zNURBS3DUKnotFromZTK, _zNURBS3DUKnotFPrint },
+  { "vknot", 1, _zNURBS3DVKnotFromZTK, _zNURBS3DVKnotFPrint },
+  { "size", 1, _zNURBS3DSizeFromZTK, _zNURBS3DSizeFPrint },
+  { "cp", -1, _zNURBS3DCPFromZTK, NULL },
+  { "slice", 1, _zNURBS3DSliceFromZTK, _zNURBS3DSliceFPrint },
+};
+
+/* register a definition of tag-and-keys for a 3D NURBS to a ZTK format processor. */
+bool zNURBS3DDefRegZTK(ZTK *ztk, char *tag)
+{
+  return ZTKDefRegPrp( ztk, tag, __ztk_prp_nurbs );
+}
+
+/* read a 3D NURBS from a ZTK format processor. */
+zNURBS3D *zNURBS3DFromZTK(zNURBS3D *nurbs, ZTK *ztk)
+{
+  zNURBS3DInit( nurbs );
+  return ZTKEncodeKey( nurbs, NULL, ztk, __ztk_prp_nurbs );
+}
+
 static bool _zNURBS3DFScan(FILE *fp, void *instance, char *buf, bool *success);
 
 /* scan information of a 3D NURBS surface from a file. */
@@ -399,22 +495,12 @@ zNURBS3D *zNURBS3DFScan(FILE *fp, zNURBS3D *nurbs)
   return NULL;
 }
 
-/* print information of a 3D NURBS surface out to a file. */
+/* print out a 3D NURBS to a file. */
 void zNURBS3DFPrint(FILE *fp, zNURBS3D *nurbs)
 {
   register int i, j;
 
-  fprintf( fp, "dim: %d %d\n", nurbs->dim[0], nurbs->dim[1] );
-  if( zVecSizeNC(nurbs->knot[0]) > 0 ){
-    fprintf( fp, "uknot: " );
-    zVecFPrint( fp, nurbs->knot[0] );
-  }
-  if( zVecSizeNC(nurbs->knot[1]) > 0 ){
-    fprintf( fp, "vknot: " );
-    zVecFPrint( fp, nurbs->knot[1] );
-  }
-  fprintf( fp, "slice: %d %d\n", nurbs->ns[0], nurbs->ns[1] );
-  fprintf( fp, "size: %d %d\n", zNURBS3DCPNum(nurbs,0), zNURBS3DCPNum(nurbs,1) );
+  ZTKPrpKeyFPrint( fp, nurbs, __ztk_prp_nurbs );
   for( i=0; i<zNURBS3DCPNum(nurbs,0); i++ )
     for( j=0; j<zNURBS3DCPNum(nurbs,1); j++ ){
       fprintf( fp, "cp: %d %d %.12g ", i, j, zNURBS3DWeight(nurbs,i,j) );
