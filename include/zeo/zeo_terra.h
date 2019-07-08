@@ -29,6 +29,8 @@ typedef struct{
 #define zTerraCellZ(c,x,y) \
   ( (c)->_prm.e[zX] * (x) + (c)->_prm.e[zY] * (y) + (c)->_prm.e[zZ] )
 
+zArray2Class( zTerraCellArray, zTerraCell );
+
 /* ********************************************************** */
 /*! \brief elevation map.
  *//* ******************************************************* */
@@ -41,17 +43,17 @@ typedef struct{
   double zmax; /*!< \brief maximum boundary in z */
   double dx;   /*!< \brief spatial interval of grids in x */
   double dy;   /*!< \brief spatial interval of grids in y */
-  /*! \cond */
-  int _nx;     /* number of grids in x */
-  int _ny;     /* number of grids in y */
-  /*! \endcond */
   double travs_th_var; /*!< \brief traversability threshold of variance */
   double travs_th_grd; /*!< \brief traversability threshold of gradient */
   double travs_th_res; /*!< \brief traversability threshold of residual */
-  zTerraCell *grid; /*!< \brief grids */
+  zTerraCellArray gridmap; /*!< \brief grid map */
 } zTerra;
 
-#define zTerraGridNC(terra,i,j) ( &(terra)->grid[(j)*(terra)->_nx+(i)] )
+/* \brief a grid at (\a i, \a j) of a map in \a terra. */
+#define zTerraGridNC(terra,i,j) zArray2ElemNC(&(terra)->gridmap,i,j)
+
+#define zTerraXSize(terra) zArray2RowSize(&(terra)->gridmap)
+#define zTerraYSize(terra) zArray2ColSize(&(terra)->gridmap)
 
 #define zTerraX(terra,i)   ( (terra)->xmin + (i)*(terra)->dx )
 #define zTerraY(terra,j)   ( (terra)->ymin + (j)*(terra)->dy )
@@ -70,7 +72,7 @@ __EXPORT zTerra *zTerraInit(zTerra *terra);
 __EXPORT zTerra *zTerraLevel(zTerra *terra);
 
 /*! \brief allocate the internal grid array of an elevation map. */
-__EXPORT zTerra *zTerraAlloc(zTerra *terra);
+__EXPORT zTerra *zTerraAlloc(zTerra *terra, int xsize, int ysize);
 
 /*! \brief set thresholds of an elevation map for traversability check. */
 #define zTerraSetTravsThreshold(terra,tv,tg,tr) do{\
@@ -81,8 +83,8 @@ __EXPORT zTerra *zTerraAlloc(zTerra *terra);
 
 /*! \brief adjust the maximum horizontal boundary based on resolution and size of an elevation map. */
 #define zTerraAdjustMax(terra) do{\
-  (terra)->xmax = (terra)->xmin + ( (terra)->_nx - 1 ) * (terra)->dx;\
-  (terra)->ymax = (terra)->ymin + ( (terra)->_ny - 1 ) * (terra)->dy;\
+  (terra)->xmax = (terra)->xmin + ( zTerraXSize(terra) - 1 ) * (terra)->dx;\
+  (terra)->ymax = (terra)->ymin + ( zTerraYSize(terra) - 1 ) * (terra)->dy;\
 } while(0)
 
 /*! \brief set the region of an elevation map based on resolution. */
@@ -92,7 +94,7 @@ __EXPORT void zTerraSetRegion(zTerra *terra, double xmin, double ymin, double zm
 __EXPORT zTerra *zTerraAllocRegion(zTerra *terra, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, double dx, double dy);
 
 /*! \brief allocate the internal grid array of an elevation map based on size. */
-__EXPORT zTerra *zTerraAllocGrid(zTerra *terra, double xmin, double ymin, double dx, double dy, int nx, int ny, double zmin, double zmax);
+__EXPORT zTerra *zTerraAllocGrid(zTerra *terra, double xmin, double ymin, double dx, double dy, int xsize, int ysize, double zmin, double zmax);
 
 /*! \brief free the internal grid array of an elevation map. */
 __EXPORT void zTerraFree(zTerra *terra);
@@ -112,8 +114,16 @@ __EXPORT void zTerraCheckTravs(zTerra *terra);
 /*! \brief acquire the actual z-range of an elevation map. */
 __EXPORT void zTerraZRange(zTerra *terra, double *zmin, double *zmax);
 
+/*! \brief adjust z-range of an elevation map. */
+#define zTerraAdjustZRange(terra) zTerraZRange( (terra), &(terra)->zmin, &(terra)->zmax )
+
 /*! \brief estimate z-value at a given horizontal place of an elevation map. */
 __EXPORT double zTerraZ(zTerra *terra, double x, double y);
+
+/*! \brief register a definition of tag-and-keys for a 3D polyhedron cylinder to a ZTK format processor. */
+__EXPORT bool zTerraDefRegZTK(ZTK *ztk, char *tag);
+/*! \brief read a terrain elevation map from a ZTK format processor. */
+__EXPORT zTerra *zTerraFromZTK(zTerra *terra, ZTK *ztk);
 
 /*! \brief scan an elevation map from a file. */
 __EXPORT zTerra *zTerraFScan(FILE *fp, zTerra *terra);

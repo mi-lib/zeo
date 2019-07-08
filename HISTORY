@@ -1,3 +1,7 @@
+2019. 7. 8. Created zMap class for the upperclass of zTerra as a stub. [zeo_map, zeo]
+2019. 7. 8. Added zTerraDefRegZTK and zTerraFromZTK, and reimplemented zTerraFPrint. [zeo_terra]
+2019. 7. 8. Added zTerraAdjustZRange. [zeo_terra]
+2019. 7. 8. Reimplemented zTerra class using zArray2Class. [zeo_terra]
 2019. 7. 8. Added *RegZTK and *FromZTK, and reimplemented *FPrint for 3D primitives, polyhedra, NURBS, shape and multiple shapes. [zeo_ph, zeo_nurbs, zeo_prim, zeo_prim_box, zeo_prim_sphere, zeo_prim_cyl, zeo_prim_cone, zeo_prim_ellips, zeo_prim_ecyl, zeo_prim_ph, zeo_prim_nurbs, zeo_shape, zeo_mshape]
 2019. 7. 8. Added zeo_prim and zPrim3DDivFromZTK. [zeo_prim]
 2019. 7. 8. Added zVec3DFromZTK. [zeo_vec3d]

@@ -24,7 +24,8 @@ OBJ=zeo_color.o zeo_optic.o\
 	zeo_brep.o zeo_brep_trunc.o zeo_brep_bool.o\
 	zeo_bv_ch2.o zeo_bv_aabb.o zeo_bv_obb.o zeo_bv_bball.o zeo_bv_qhull.o\
 	zeo_col.o zeo_col_box.o zeo_col_aabbtree.o zeo_col_minkowski.o zeo_col_gjk.o zeo_col_mpr.o zeo_col_ph.o\
-	zeo_terra.o
+	zeo_terra.o\
+	zeo_map.o
 DLIB=libzeo.so
 
 TARGET=$(DLIB)

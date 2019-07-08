@@ -1,4 +1,5 @@
-#include <zeo/zeo_terra.h>
+#include <unistd.h>
+#include <zeo/zeo_map.h>
 
 #define XMIN -5.0
 #define XMAX  5.0
@@ -13,6 +14,12 @@
 #define DIV_PATH 10
 
 #define N   10000
+
+#define TERRAIN_SRC_FILE  "terrain_src.dat"
+#define TERRAIN_PATH_FILE "path"
+#define TERRAIN_OUT_FILE  "terrain.ztk"
+#define TERRAIN_DAT_FILE  "terrain.dat"
+#define TERRAIN_VAR_FILE  "terrain_var.dat"
 
 void terra_gen_sample(zVec3DList *pl)
 {
@@ -30,7 +37,7 @@ void terra_gen_sample(zVec3DList *pl)
     zVec3DCreate( p, x, y, z );
     zVec3DListInsert( pl, p );
   }
-  fp = fopen( "terrain_sample.dat", "w" );
+  fp = fopen( TERRAIN_SRC_FILE, "w" );
   zVec3DListDataFPrint( fp, pl );
   fclose( fp );
 }
@@ -45,7 +52,7 @@ void path_find_test(zTerra *terra)
   y0 = zRandF( terra->ymin, 0.5 * ( terra->ymin + terra->ymax ) );
   x1 = zRandF( 0.5 * ( terra->xmin + terra->xmax ), terra->xmax );
   y1 = zRandF( 0.5 * ( terra->ymin + terra->ymax ), terra->ymax );
-  fp = fopen( "path", "w" );
+  fp = fopen( TERRAIN_PATH_FILE, "w" );
   for( i=0; i<=DIV_PATH; i++ ){
     x = x0 + ( x1 - x0 ) * i / DIV_PATH;
     y = y0 + ( y1 - y0 ) * i / DIV_PATH;
@@ -61,22 +68,25 @@ void terra_output(zTerra *terra, double scale)
   zTerraCell *grid;
   register int i, j;
 
-  fp = fopen( "terrain.ztr", "w" );
+  fp = zOpenZTKFile( TERRAIN_OUT_FILE, "w" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_MAP );
+  fprintf( fp, "name: test_terrain\n" );
+  fprintf( fp, "type: terra\n" );
   zTerraFPrint( fp, terra );
   fclose( fp );
 
-  fp = fopen( "terrain.dat", "w" );
-  for( i=0; i<terra->_nx; i++ )
-    for( j=0; j<terra->_ny; j++ ){
+  fp = fopen( TERRAIN_DAT_FILE, "w" );
+  for( i=0; i<zTerraXSize(terra); i++ )
+    for( j=0; j<zTerraYSize(terra); j++ ){
       grid = zTerraGridNC(terra,i,j);
       fprintf( fp, "%.10g %.10g %.10g\n", zTerraX(terra,i), zTerraY(terra,j), grid->z );
       fprintf( fp, "%.10g %.10g %.10g\n\n\n", zTerraX(terra,i)+scale*grid->norm.e[zX], zTerraY(terra,j)+scale*grid->norm.e[zY], grid->z+scale*grid->norm.e[zZ] );
     }
   fclose( fp );
 
-  fp = fopen( "terrain_var.dat", "w" );
-  for( i=0; i<terra->_nx; i++ )
-    for( j=0; j<terra->_ny; j++ ){
+  fp = fopen( TERRAIN_VAR_FILE, "w" );
+  for( i=0; i<zTerraXSize(terra); i++ )
+    for( j=0; j<zTerraYSize(terra); j++ ){
       grid = zTerraGridNC(terra,i,j);
       fprintf( fp, "%.10g %.10g %.10g\n", zTerraX(terra,i), zTerraY(terra,j), grid->z-0.5*grid->var );
       fprintf( fp, "%.10g %.10g %.10g\n\n\n", zTerraX(terra,i), zTerraY(terra,j), grid->z+0.5*grid->var );
@@ -84,16 +94,28 @@ void terra_output(zTerra *terra, double scale)
   fclose( fp );
 }
 
+void delete_file(void)
+{
+  unlink( TERRAIN_SRC_FILE );
+  unlink( TERRAIN_PATH_FILE );
+  unlink( TERRAIN_OUT_FILE );
+  unlink( TERRAIN_DAT_FILE );
+  unlink( TERRAIN_VAR_FILE );
+  exit( 0 );
+}
+
 int main(int argc, char *argv[])
 {
   zTerra terra;
   zVec3DList pl;
 
+  if( argc > 1 && strcmp( argv[1], "clear" ) == 0 ) delete_file();
   zRandInit();
   terra_gen_sample( &pl );
   zTerraAllocRegion( &terra, XMIN, XMAX, YMIN, YMAX, ZMIN, ZMAX, DX, DY );
   zTerraIdent( &terra, &pl );
   zTerraCheckTravs( &terra );
+  zTerraAdjustZRange( &terra );
   terra_output( &terra, 0.3 );
   path_find_test( &terra );
   zTerraFree( &terra );

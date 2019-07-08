@@ -29,6 +29,6 @@
 #include <zeo/zeo_pointcloud.h>
 #include <zeo/zeo_col.h>
 #include <zeo/zeo_mshape.h>
-#include <zeo/zeo_terra.h>
+#include <zeo/zeo_map.h>
 
 #endif /* __ZEO_H__ */

@@ -77,8 +77,7 @@ static bool _zTerraFScan(FILE *fp, void *instance, char *buf, bool *success);
 /* retrieve a grid of an elevation map. */
 zTerraCell *zTerraGrid(zTerra *terra, int i, int j)
 {
-  return i < 0 || i >= terra->_nx || j < 0 || j >= terra->_ny ?
-    NULL : zTerraGridNC(terra,i,j);
+  return zArray2PosIsValid(&terra->gridmap,i,j) ? zTerraGridNC(terra,i,j) : NULL;
 }
 
 /* initialize an elevation map. */
@@ -88,31 +87,31 @@ zTerra *zTerraInit(zTerra *terra)
   terra->ymin = terra->ymax = 0;
   terra->zmin = terra->zmax = 0;
   terra->dx = terra->dy = 0;
-  terra->_nx = terra->_ny = 0;
   zTerraSetTravsThreshold( terra, 0, 0, 0 );
-  terra->grid = NULL;
+  zArray2Init( &terra->gridmap );
   return terra;
 }
 
 /* level an elevation map into flat. */
 zTerra *zTerraLevel(zTerra *terra)
 {
-  register int i, j;
+  register int i, n;
 
-  for( i=0; i<terra->_nx; i++ )
-    for( j=0; j<terra->_ny; j++ )
-      _zTerraCellInit( zTerraGridNC(terra,i,j) );
+  n = zTerraXSize(terra) * zTerraYSize(terra);
+  for( i=0; i<n; i++ )
+    _zTerraCellInit( &terra->gridmap.buf[i] );
   return terra;
 }
 
 /* allocate the internal grid array of an elevation map. */
-zTerra *zTerraAlloc(zTerra *terra)
+zTerra *zTerraAlloc(zTerra *terra, int xsize, int ysize)
 {
-  if( terra->_nx == 0 || terra->_ny == 0 ){
+  if( xsize == 0 || ysize == 0 ){
     ZRUNERROR( ZEO_ERR_TERRA_INVSIZ );
     return NULL;
   }
-  if( !( terra->grid = zAlloc( zTerraCell, terra->_nx * terra->_ny ) ) ){
+  zArray2Alloc( &terra->gridmap, zTerraCell, xsize, ysize );
+  if( zTerraXSize(terra) < xsize || zTerraYSize(terra) < ysize ){
     ZALLOCERROR();
     return NULL;
   }
@@ -135,29 +134,31 @@ void zTerraSetRegion(zTerra *terra, double xmin, double ymin, double zmin, doubl
 /* allocate the internal grid array of an elevation map based on resolution. */
 zTerra *zTerraAllocRegion(zTerra *terra, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, double dx, double dy)
 {
+  int xsize, ysize;
+
   if( dx < zTOL || dy < zTOL ){
     ZRUNERROR( ZEO_ERR_TERRA_INVRSL );
     return NULL;
   }
-  terra->_nx = floor( ( xmax - xmin ) / dx ) + 1;
-  terra->_ny = floor( ( ymax - ymin ) / dy ) + 1;
-  zTerraSetRegion( terra, xmin, ymin, zmin, zmax, dx, dy );
-  return zTerraAlloc( terra );
+  xsize = floor( ( xmax - xmin ) / dx ) + 1;
+  ysize = floor( ( ymax - ymin ) / dy ) + 1;
+  return zTerraAllocGrid( terra, xmin, ymin, dx, dy, xsize, ysize, zmin, zmax );
 }
 
 /* allocate the internal grid array of an elevation map based on size. */
-zTerra *zTerraAllocGrid(zTerra *terra, double xmin, double ymin, double dx, double dy, int nx, int ny, double zmin, double zmax)
+zTerra *zTerraAllocGrid(zTerra *terra, double xmin, double ymin, double dx, double dy, int xsize, int ysize, double zmin, double zmax)
 {
-  terra->_nx = nx;
-  terra->_ny = ny;
-  zTerraSetRegion( terra, xmin, ymin, zmin, zmax, dx, dy );
-  return zTerraAlloc( terra );
+  if( zTerraAlloc( terra, xsize, ysize ) ){
+    zTerraSetRegion( terra, xmin, ymin, zmin, zmax, dx, dy );
+    return terra;
+  }
+  return NULL;
 }
 
 /* free the internal grid array of an elevation map. */
 void zTerraFree(zTerra *terra)
 {
-  free( terra->grid );
+  zArray2Free( &terra->gridmap );
   zTerraInit( terra );
 }
 
@@ -196,8 +197,8 @@ zTerra *zTerraForm(zTerra *terra)
 {
   register int i, j;
 
-  for( i=0; i<terra->_nx; i++ )
-    for( j=0; j<terra->_ny; j++ )
+  for( i=0; i<zTerraXSize(terra); i++ )
+    for( j=0; j<zTerraYSize(terra); j++ )
       _zTerraCellForm( zTerraGridNC(terra,i,j), zTerraX(terra,i), zTerraY(terra,j) );
   return terra;
 }
@@ -255,8 +256,8 @@ void zTerraCheckTravs(zTerra *terra)
 {
   register int i, j;
 
-  for( i=0; i<terra->_nx; i++ )
-    for( j=0; j<terra->_ny; j++ )
+  for( i=0; i<zTerraXSize(terra); i++ )
+    for( j=0; j<zTerraYSize(terra); j++ )
       zTerraGridNC(terra,i,j)->travs = _zTerraCheckGridTravs( terra, i, j );
 }
 
@@ -268,8 +269,8 @@ void zTerraZRange(zTerra *terra, double *zmin, double *zmax)
 
   *zmin = HUGE_VAL;
   *zmax =-HUGE_VAL;
-  for( i=0; i<terra->_nx; i++ )
-    for( j=0; j<terra->_ny; j++ ){
+  for( i=0; i<zTerraXSize(terra); i++ )
+    for( j=0; j<zTerraYSize(terra); j++ ){
       z = zTerraGridNC(terra,i,j)->z;
       if( z < *zmin ) *zmin = z;
       if( z > *zmax ) *zmax = z;
@@ -310,14 +311,124 @@ double zTerraZ(zTerra *terra, double x, double y)
   return ( w[0]*z[0] + w[1]*z[1] + w[2]*z[2] + w[3]*z[3] ) / ( w[0] + w[1] + w[2] + w[3] );
 }
 
+/* parse ZTK format */
+
+static void *_zTerraOriginFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((zTerra*)obj)->xmin = ZTKDouble( ztk );
+  ((zTerra*)obj)->ymin = ZTKDouble( ztk );
+  return obj;
+}
+static void *_zTerraResolFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((zTerra*)obj)->dx = ZTKDouble( ztk );
+  ((zTerra*)obj)->dy = ZTKDouble( ztk );
+  if( zIsTiny(((zTerra*)obj)->dx) || zIsTiny(((zTerra*)obj)->dy) ){
+    ZRUNERROR( ZEO_ERR_TERRA_INVRSL );
+    return NULL;
+  }
+  return obj;
+}
+static void *_zTerraSizeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  int xsize, ysize;
+  xsize = ZTKInt( ztk );
+  ysize = ZTKInt( ztk );
+  if( !zTerraAlloc( (zTerra*)obj, xsize, ysize ) ) return NULL;
+  zTerraAdjustMax( (zTerra*)obj );
+  return obj;
+}
+static void *_zTerraZRangeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  double z1, z2;
+  z1 = ZTKDouble( ztk );
+  z2 = ZTKDouble( ztk );
+  ((zTerra*)obj)->zmin = zMin( z1, z2 );
+  ((zTerra*)obj)->zmax = zMax( z1, z2 );
+  return obj;
+}
+static void *_zTerraVarThrsdFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((zTerra*)obj)->travs_th_var = ZTKDouble( ztk );
+  return obj;
+}
+static void *_zTerraGrdThrsdFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((zTerra*)obj)->travs_th_grd = cos( zDeg2Rad( ZTKDouble( ztk ) ) );
+  return obj;
+}
+static void *_zTerraResThrsdFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((zTerra*)obj)->travs_th_res = ZTKDouble( ztk );
+  return obj;
+}
+static void *_zTerraGridFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zTerraCell *grid;
+  int j, k;
+  j = ZTKInt( ztk );
+  k = ZTKInt( ztk );
+  if( !( grid = zTerraGrid((zTerra*)obj,j,k) ) ){
+    ZRUNERROR( ZEO_ERR_TERRA_OORAN );
+    return NULL;
+  }
+  grid->z = ZTKDouble( ztk );
+  grid->norm.e[zX] = ZTKDouble( ztk );
+  grid->norm.e[zY] = ZTKDouble( ztk );
+  grid->norm.e[zZ] = ZTKDouble( ztk );
+  grid->var = ZTKDouble( ztk );
+  grid->travs = ZTKInt( ztk );
+  return obj;
+}
+
+static void _zTerraOriginFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "origin: %.10g %.10g\n", ((zTerra*)obj)->xmin, ((zTerra*)obj)->ymin );
+}
+static void _zTerraResolFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "resolution: %.10g %.10g\n", ((zTerra*)obj)->dx, ((zTerra*)obj)->dy );
+}
+static void _zTerraSizeFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "size: %d %d\n", zTerraXSize((zTerra*)obj), zTerraYSize((zTerra*)obj) );
+}
+static void _zTerraZRangeFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "zrange: %.10g %.10g\n", ((zTerra*)obj)->zmin, ((zTerra*)obj)->zmax );
+}
+static void _zTerraVarThrsdFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "th_var: %.10g\n", ((zTerra*)obj)->travs_th_var );
+}
+static void _zTerraGrdThrsdFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "th_grd: %.10g\n", zRad2Deg( acos( ((zTerra*)obj)->travs_th_grd ) ) );
+}
+static void _zTerraResThrsdFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "th_res: %.10g\n", ((zTerra*)obj)->travs_th_res );
+}
+
+static ZTKPrp __ztk_prp_terra[] = {
+  { "origin", 1, _zTerraOriginFromZTK, _zTerraOriginFPrint },
+  { "resolution", 1, _zTerraResolFromZTK, _zTerraResolFPrint },
+  { "size", 1, _zTerraSizeFromZTK, _zTerraSizeFPrint },
+  { "zrange", 1, _zTerraZRangeFromZTK, _zTerraZRangeFPrint },
+  { "th_var", 1, _zTerraVarThrsdFromZTK, _zTerraVarThrsdFPrint },
+  { "th_grd", 1, _zTerraGrdThrsdFromZTK, _zTerraGrdThrsdFPrint },
+  { "th_res", 1, _zTerraResThrsdFromZTK, _zTerraResThrsdFPrint },
+  { "grid", -1, _zTerraGridFromZTK, NULL },
+};
+
+/* register a definition of tag-and-keys for a 3D polyhedron cylinder to a ZTK format processor. */
+bool zTerraDefRegZTK(ZTK *ztk, char *tag)
+{
+  return ZTKDefRegPrp( ztk, tag, __ztk_prp_terra );
+}
+
+/* read a terrain elevation map from a ZTK format processor. */
+zTerra *zTerraFromZTK(zTerra *terra, ZTK *ztk)
+{
+  zTerraInit( terra );
+  return ZTKEncodeKey( terra, NULL, ztk, __ztk_prp_terra );
+}
+
 /* (static)
  * scan an elevation map from a file (internal function). */
 bool _zTerraFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
   zTerra *terra;
   zTerraCell *grid;
+  int xsize, ysize;
 
   *success = true;
+  xsize = ysize = 0;
   terra = instance;
   if( strcmp( buf, "origin" ) == 0 ){
     terra->xmin = zFDouble( fp );
@@ -328,8 +439,11 @@ bool _zTerraFScan(FILE *fp, void *instance, char *buf, bool *success)
     terra->dy = zFDouble( fp );
   } else
   if( strcmp( buf, "size" ) == 0 ){
-    terra->_nx = zFInt( fp );
-    terra->_ny = zFInt( fp );
+    xsize = zFInt( fp );
+    ysize = zFInt( fp );
+    if( !zTerraAlloc( terra, xsize, ysize ) )
+      return ( *success = false );
+    zTerraAdjustMax( terra );
   } else
   if( strcmp( buf, "th_var" ) == 0 ){
     terra->travs_th_var = zFDouble( fp );
@@ -342,11 +456,6 @@ bool _zTerraFScan(FILE *fp, void *instance, char *buf, bool *success)
   } else
   if( strcmp( buf, "grid" ) == 0 ){
     int i, j;
-    if( !terra->grid ){
-      zTerraAdjustMax( terra );
-      if( !zTerraAlloc( terra ) )
-        return ( *success = false );
-    }
     i = zFInt( fp );
     j = zFInt( fp );
     if( !( grid = zTerraGrid(terra,i,j) ) ){
@@ -379,19 +488,35 @@ void zTerraFPrint(FILE *fp, zTerra *terra)
   register int i, j;
   zTerraCell *grid;
 
+  ZTKPrpKeyFPrint( fp, terra, __ztk_prp_terra );
+  for( i=0; i<zTerraXSize(terra); i++ )
+    for( j=0; j<zTerraYSize(terra); j++ ){
+      if( !( grid = zTerraGridNC(terra,i,j) ) ) continue;
+      fprintf( fp, "grid: %d %d %.10g %.10g %.10g %.10g %.10g %d\n", i, j, grid->z, grid->norm.e[zX], grid->norm.e[zY], grid->norm.e[zZ], grid->var, grid->travs ? 1 : 0 );
+    }
+}
+
+#if 0
+/* print an elevation map out to a file. */
+void zTerraFPrint(FILE *fp, zTerra *terra)
+{
+  register int i, j;
+  zTerraCell *grid;
+
   fprintf( fp, "origin: %.10g %.10g\n", terra->xmin, terra->ymin );
   fprintf( fp, "resolution: %.10g %.10g\n", terra->dx, terra->dy );
-  fprintf( fp, "size: %d %d\n", terra->_nx, terra->_ny );
+  fprintf( fp, "size: %d %d\n", zTerraXSize(terra), zTerraYSize(terra) );
   fprintf( fp, "zrange: %.10g %.10g\n", terra->zmin, terra->zmax );
   fprintf( fp, "th_var: %.10g\n", terra->travs_th_var );
   fprintf( fp, "th_grd: %.10g\n", zRad2Deg( acos( terra->travs_th_grd ) ) );
   fprintf( fp, "th_res: %.10g\n", terra->travs_th_res );
-  for( i=0; i<terra->_nx; i++ )
-    for( j=0; j<terra->_ny; j++ ){
+  for( i=0; i<zTerraXSize(terra); i++ )
+    for( j=0; j<zTerraYSize(terra); j++ ){
       grid = zTerraGridNC(terra,i,j);
       fprintf( fp, "grid: %d %d %.10g %.10g %.10g %.10g %.10g %d\n", i, j, grid->z, grid->norm.e[zX], grid->norm.e[zY], grid->norm.e[zZ], grid->var, grid->travs ? 1 : 0 );
     }
 }
+#endif
 
 /* print an elevation map out to a file in a plot-friendly format. */
 void zTerraDataFPrint(FILE *fp, zTerra *terra)
@@ -399,8 +524,8 @@ void zTerraDataFPrint(FILE *fp, zTerra *terra)
   register int i, j;
   zTerraCell *grid;
 
-  for( i=0; i<terra->_nx; i++ )
-    for( j=0; j<terra->_ny; j++ ){
+  for( i=0; i<zTerraXSize(terra); i++ )
+    for( j=0; j<zTerraYSize(terra); j++ ){
       grid = zTerraGridNC(terra,i,j);
       fprintf( fp, "%.10g %.10g %.10g %.10g %.10g %.10g %.10g %d\n", zTerraX(terra,i), zTerraY(terra,j), grid->z, grid->norm.e[zX], grid->norm.e[zY], grid->norm.e[zZ], grid->var, grid->travs ? 1 : 0 );
     }
