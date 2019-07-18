@@ -11,17 +11,14 @@
 
 __BEGIN_DECLS
 
-zArrayClass( zVertArray, zVec3D );
-zArrayClass( zFaceArray, zTri3D );
-
 /* ********************************************************** */
 /* CLASS: zPH3D
  * 3D polyhedron class
  * ********************************************************** */
 
 typedef struct{
-  zVertArray vert;
-  zFaceArray face;
+  zVec3DArray vert;
+  zTri3DArray face;
 } zPH3D;
 
 #define zPH3DVertNum(ph)      zArraySize(&(ph)->vert)
@@ -220,20 +217,8 @@ __EXPORT zPH3D *zPH3DFScan(FILE *fp, zPH3D *ph);
 __EXPORT void zPH3DFPrint(FILE *fp, zPH3D *ph);
 #define zPH3DPrint(ph) zPH3DFPrint( stdout, (ph) )
 
-/* STL format */
-
-/*! \brief read and write a 3D polyhedron in ASCII STL format. */
-__EXPORT zPH3D *zPH3DFReadSTL_ASCII(FILE *fp, zPH3D *ph, char name[], size_t namesize);
-__EXPORT void zPH3DFWriteSTL_ASCII(FILE *fp, zPH3D *ph, char name[]);
-
-/*! \brief read and write a 3D polyhedron in binary STL format. */
-__EXPORT zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[]);
-__EXPORT void zPH3DFWriteSTL_Bin(FILE *fp, zPH3D *ph, char name[]);
-
-/*! \brief read and write a 3D polyhedron. */
-__EXPORT zPH3D *zPH3DFReadSTL(FILE *fp, zPH3D *ph, char name[], size_t namesize);
-#define zPH3DFWriteSTL zPH3DFWriteSTL_ASCII
-
 __END_DECLS
+
+#include <zeo/zeo_ph_stl.h>
 
 #endif /* __ZEO_PH_H__ */

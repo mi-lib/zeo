@@ -363,6 +363,11 @@ __EXPORT zVec3D *zTri3DConeCircumcenter(zTri3D *t, zVec3D *c);
 __EXPORT void zTri3DFPrint(FILE *fp, zTri3D *t);
 #define zTri3DPrint(t) zTri3DFPrint( stdout, (t) )
 
+/*! \struct zTri3DArray
+ * \brief array class of 3D triangles.
+ */
+zArrayClass( zTri3DArray, zTri3D );
+
 __END_DECLS
 
 #include <zeo/zeo_elem_list.h> /* 3D shape element list */

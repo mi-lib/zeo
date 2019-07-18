@@ -239,9 +239,15 @@ typedef struct{
   int no;
   _zShape3DBBType bbtype;
   bool mirrored;
-} _zShape3DRefProp;
+} _zShape3DRefPrp;
 
 static void *_zShape3DNameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zShape3D *shape;
+  zNameFind( ((_zShape3DRefPrp*)arg)->sarray, ((_zShape3DRefPrp*)arg)->ns, ZTKVal(ztk), shape );
+  if( shape ){
+    ZRUNWARN( ZEO_WARN_SHAPE_DUP, ZTKVal(ztk) );
+    return NULL;
+  }
   zNameSet( (zShape3D*)obj, ZTKVal(ztk) );
   return zNamePtr((zShape3D*)obj) ? obj : NULL;
 }
@@ -250,26 +256,26 @@ static void *_zShape3DTypeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 static void *_zShape3DOpticFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  zNameFind( ((_zShape3DRefProp*)arg)->oarray, ((_zShape3DRefProp*)arg)->no, ZTKVal(ztk), zShape3DOptic((zShape3D*)obj) );
+  zNameFind( ((_zShape3DRefPrp*)arg)->oarray, ((_zShape3DRefPrp*)arg)->no, ZTKVal(ztk), zShape3DOptic((zShape3D*)obj) );
   return zShape3DOptic((zShape3D*)obj) ? obj : NULL;
 }
 static void *_zShape3DBBTypeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  if( ZTKValCmp( ztk, "AABB" ) ) ((_zShape3DRefProp*)arg)->bbtype = ZSHAPE_BB_AABB;
+  if( ZTKValCmp( ztk, "AABB" ) ) ((_zShape3DRefPrp*)arg)->bbtype = ZSHAPE_BB_AABB;
   else
-  if( ZTKValCmp( ztk, "OBB" ) ) ((_zShape3DRefProp*)arg)->bbtype = ZSHAPE_BB_OBB;
+  if( ZTKValCmp( ztk, "OBB" ) ) ((_zShape3DRefPrp*)arg)->bbtype = ZSHAPE_BB_OBB;
   else{
     ZRUNWARN( ZEO_WARN_UNKNOWN_BB_TYPE, ZTKVal(ztk) );
-    ((_zShape3DRefProp*)arg)->bbtype = ZSHAPE_BB_NONE;
+    ((_zShape3DRefPrp*)arg)->bbtype = ZSHAPE_BB_NONE;
   }
   return obj;
 }
 static void *_zShape3DMirrorFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zShape3D *ref;
-  zNameFind( ((_zShape3DRefProp*)arg)->sarray, ((_zShape3DRefProp*)arg)->ns, ZTKVal(ztk), ref );
+  zNameFind( ((_zShape3DRefPrp*)arg)->sarray, ((_zShape3DRefPrp*)arg)->ns, ZTKVal(ztk), ref );
   if( ref ){
     if( !ZTKValNext(ztk) ) return NULL;
     if( !zShape3DMirror( ref, (zShape3D*)obj, zAxisByStr(ZTKVal(ztk)) ) ) return NULL;
-    ((_zShape3DRefProp*)arg)->mirrored = true;
+    ((_zShape3DRefPrp*)arg)->mirrored = true;
   } else
     ZRUNWARN( ZEO_ERR_SHAPE_UNDEF, ZTKVal(ztk) );
   return obj;
@@ -317,7 +323,7 @@ zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3D *sarray, int ns, zOpticalInf
     &zprim_cyl3d_com, &zprim_ecyl3d_com, &zprim_cone3d_com,
     &zprim_nurbs_com,
   };
-  _zShape3DRefProp prp;
+  _zShape3DRefPrp prp;
 
   zShape3DInit( shape );
   /* type, name, associated optical info and mirroring */
@@ -335,6 +341,7 @@ zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3D *sarray, int ns, zOpticalInf
   /* bounding box */
   if( prp.bbtype != ZSHAPE_BB_NONE ){
     if( zShape3DType(shape) != ZSHAPE_PH ){
+      /* BB of primitives other than polyhedra should be implemented in the future. */
       ZRUNWARN( ZEO_WARN_SHAPE_BB_INVALID );
     } else{
       if( prp.bbtype == ZSHAPE_BB_AABB ){

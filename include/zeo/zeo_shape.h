@@ -217,6 +217,11 @@ __EXPORT zShape3D *zShape3DFScan(FILE *fp, zShape3D *shape, zShape3D *sarray, in
 __EXPORT void zShape3DFPrint(FILE *fp, zShape3D *shape);
 #define zShape3DPrint(s) zShape3DFPrint( stdout, (s) )
 
+/*! \struct zShape3DArray
+ * \brief array class of 3D shapes.
+ */
+zArrayClass( zShape3DArray, zShape3D );
+
 __END_DECLS
 
 #include <zeo/zeo_shape_list.h>

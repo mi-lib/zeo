@@ -11,17 +11,14 @@
 
 __BEGIN_DECLS
 
-zArrayClass( zShapeArray, zShape3D );
-zArrayClass( zOpticArray, zOpticalInfo );
-
 /* ********************************************************** */
 /* CLASS: zMShape3D
  * multiple 3D shape class
  * ********************************************************** */
 
 typedef struct{
-  zShapeArray shape;
-  zOpticArray optic;
+  zShape3DArray shape;
+  zOpticalInfoArray optic;
 } zMShape3D;
 
 #define zMShape3DShapeNum(s)      zArraySize(&(s)->shape)
@@ -71,6 +68,15 @@ __EXPORT bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, bool rim);
 
 __EXPORT zMShape3D *zMShape3DToPH(zMShape3D *ms);
 
+/*! \brief register a definition of tag-and-keys for multiple shapes to a ZTK format processor. */
+__EXPORT bool zMShape3DRegZTK(ZTK *ztk);
+
+/*! \brief read multiple 3D shapes from a ZTK format processor. */
+__EXPORT zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk);
+
+/*! \brief read multiple 3D shapes from a ZTK format file. */
+__EXPORT zMShape3D *zMShape3DReadZTK(zMShape3D *ms, char filename[]);
+
 /*! \brief scan and print multiple 3D shapes.
  *
  * zMShape3DScanFile() scans a file \a filename and creates
@@ -108,7 +114,6 @@ __EXPORT zMShape3D *zMShape3DToPH(zMShape3D *ms);
  * \sa
  * zOpticalInfoFScan, zShape3DFScan
  */
-__EXPORT zMShape3D *zMShape3DScanFile(zMShape3D *ms, char filename[]);
 __EXPORT zMShape3D *zMShape3DFScan(FILE *fp, zMShape3D *ms);
 __EXPORT bool zMShape3DPrintFile(zMShape3D *ms, char filename[]);
 __EXPORT void zMShape3DFPrint(FILE *fp, zMShape3D *ms);

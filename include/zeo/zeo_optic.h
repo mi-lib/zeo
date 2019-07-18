@@ -12,7 +12,7 @@
 __BEGIN_DECLS
 
 /* ********************************************************** */
-/*! \brief optical characterization parameters
+/*! \brief optical characteristic parameters
  *//********************************************************* */
 typedef struct{
   Z_NAMED_CLASS
@@ -117,6 +117,11 @@ __EXPORT bool zOpticalInfoRegZTK(ZTK *ztk);
 
 /* encode an optical info from a ZTK format processor. */
 __EXPORT zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk);
+
+/*! \struct zOpticalInfoArray
+ * \brief array class of a set of optical parameters.
+ */
+zArrayClass( zOpticalInfoArray, zOpticalInfo );
 
 __END_DECLS
 

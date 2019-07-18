@@ -79,6 +79,7 @@
 
 #define ZEO_WARN_STL_MISSINGDATA  "missing data in STL"
 
+#define ZEO_WARN_SHAPE_DUP        "%s: name of a shape duplicated."
 #define ZEO_WARN_SHAPE_BB_INVALID "bounding-box not generated because it is only for polyhedra."
 
 #define ZEO_WARN_MSHAPE_EMPTY     "empty shapes assigned."
