@@ -7,102 +7,49 @@
 #ifndef __ZEO_SHAPE_H__
 #define __ZEO_SHAPE_H__
 
-#include <zeo/zeo_prim.h>
+#include <zeo/zeo_nurbs.h>
 #include <zeo/zeo_optic.h>
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* TYPE: zShapeType
- * shape type identifier
- * ********************************************************** */
-
-typedef ubyte zShapeType;
-enum{
-  ZSHAPE_NONE=0,
-  ZSHAPE_PH,
-  ZSHAPE_BOX,
-  ZSHAPE_SPHERE,
-  ZSHAPE_ELLIPS,
-  ZSHAPE_CYLINDER,
-  ZSHAPE_ELLIPTICCYLINDER,
-  ZSHAPE_CONE,
-  ZSHAPE_NURBS,
-};
-
-/*! \brief expression for the type of 3D shape.
- *
- * zShapeTypeExpr() returns a string for the type of a 3D shape
- * \a type according to the followings correspondence:
- *  ZSHAPE_NONE     -> "none"
- *  ZSHAPE_PH       -> "polyhedron"
- *  ZSHAPE_BOX      -> "box"
- *  ZSHAPE_SPHERE   -> "sphere"
- *  ZSHAPE_ELLIPS   -> "ellipsoid"
- *  ZSHAPE_CYLINDER -> "cylinder"
- *  ZSHAPE_ELLIPTICCYLINDER -> "ellipticcylinder"
- *  ZSHAPE_CONE     -> "cone"
- *  ZSHAPE_NURBS    -> "nurbs"
- *
- * zShapeTypeByStr() converts a string \a str to the type of
- * 3D shape in accordance with the above correspondence.
- * \return
- * zShapeTypeExpr() returns a pointer to the string which
- * expresses \a type.
- *
- * zShapeTypeByStr() returns the type converted.
+/*! \brief common methods of shape class.
  */
-__EXPORT char *zShapeTypeExpr(zShapeType type);
-__EXPORT zShapeType zShapeTypeByStr(char str[]);
+typedef struct{
+  const char *typestr;
+  void *(*_init)(void*);
+  void *(*_alloc)(void);
+  void *(*_clone)(void*);
+  void *(*_mirror)(void*,zAxis);
+  void (*_destroy)(void*);
+  void *(*_xform)(void*,zFrame3D*,void*);
+  void *(*_xforminv)(void*,zFrame3D*,void*);
+  double (*_closest)(void*,zVec3D*,zVec3D*);
+  double (*_pointdist)(void*,zVec3D*);
+  bool (*_pointisinside)(void*,zVec3D*,bool);
+  double (*_volume)(void*);
+  zVec3D *(*_barycenter)(void*,zVec3D*);
+  zMat3D *(*_inertia)(void*,zMat3D*);
+  void (*_baryinertia)(void*,zVec3D*,zMat3D*);
+  zPH3D *(*_toph)(void*,zPH3D*);
+  void *(*_parseZTK)(void*,ZTK*);
+  void *(*_fscan)(FILE*,void*);
+  void (*_fprint)(FILE*,void*);
+} zShape3DCom;
 
 /* ********************************************************** */
 /* CLASS: zShape3D
  * 3D unit shape class
  * ********************************************************** */
 
-typedef union{
-  zPH3D ph;
-  zBox3D box;
-  zSphere3D sp;
-  zEllips3D el;
-  zCyl3D cl;
-  zECyl3D ecl;
-  zCone3D cn;
-  zNURBS3D nurbs;
-} zShapeBody;
-
 typedef struct{
   Z_NAMED_CLASS
-  zShapeType type;
-  zShapeBody body;
+  void *body;
   zOpticalInfo *optic;
-  zBox3D bb; /* bounding box */
-  zPrimCom *com; /* methods */
+  zShape3DCom *com; /* methods */
 } zShape3D;
 
-#define zShape3DType(s)         (s)->type
-
-#define zShape3DPH(s)           ( &(s)->body.ph )
-#define zShape3DBox(s)          ( &(s)->body.box )
-#define zShape3DSphere(s)       ( &(s)->body.sp )
-#define zShape3DEllips(s)       ( &(s)->body.el )
-#define zShape3DCyl(s)          ( &(s)->body.cl )
-#define zShape3DECyl(s)         ( &(s)->body.ecl )
-#define zShape3DCone(s)         ( &(s)->body.cn )
-#define zShape3DNURBS(s)        ( &(s)->body.nurbs )
-
-#define zShape3DVertNum(s)      zPH3DVertNum(zShape3DPH(s))
-#define zShape3DVertBuf(s)      zPH3DVertBuf(zShape3DPH(s))
-#define zShape3DVert(s,i)       zPH3DVert(zShape3DPH(s),i)
-#define zShape3DFaceNum(s)      zPH3DFaceNum(zShape3DPH(s))
-#define zShape3DFaceBuf(s)      zPH3DFaceBuf(zShape3DPH(s))
-#define zShape3DFace(s,i)       zPH3DFace(zShape3DPH(s),i)
-
-#define zShape3DFaceVert(s,i,j) zPH3DFaceVert(zShape3DPH(s),i,j)
-#define zShape3DFaceNorm(s,i)   zPH3DFaceNorm(zShape3DPH(s),i)
-#define zShape3DOptic(s)        (s)->optic
-#define zShape3DSetOptic(s,o)   ( (s)->optic = (o) )
-#define zShape3DBB(s)           ( &(s)->bb )
+#define zShape3DOptic(s)      (s)->optic
+#define zShape3DSetOptic(s,o) ( (s)->optic = (o) )
 
 /*! \brief initialize a 3D shape instance.
  *
@@ -111,16 +58,6 @@ typedef struct{
  * \ret a pointer \a shape
  */
 __EXPORT zShape3D *zShape3DInit(zShape3D *shape);
-
-__EXPORT zShape3D *zShape3DCreateBox(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double d, double w, double h);
-__EXPORT zShape3D *zShape3DCreateBoxAlign(zShape3D *shape, zVec3D *c, double d, double w, double h);
-__EXPORT zShape3D *zShape3DCreateSphere(zShape3D *shape, zVec3D *c, double r, int div);
-__EXPORT zShape3D *zShape3DCreateEllips(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double rx, double ry, double rz, int div);
-__EXPORT zShape3D *zShape3DCreateEllipsAlign(zShape3D *shape, zVec3D *c, double rx, double ry, double rz, int div);
-__EXPORT zShape3D *zShape3DCreateCyl(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r, int div);
-__EXPORT zShape3D *zShape3DCreateECyl(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div);
-__EXPORT zShape3D *zShape3DCreateCone(zShape3D *shape, zVec3D *c, zVec3D *v, double r, int div);
-__EXPORT zShape3D *zShape3DAllocNURBS(zShape3D *shape, int size1, int size2, int dim1, int dim2);
 
 /*! \brief destroy a 3D shape instance.
  *
@@ -167,6 +104,12 @@ __EXPORT bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, bool rim);
 __EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
 
 #define ZTK_TAG_SHAPE "shape"
+
+/*! \brief default number of division in conversion from smooth curves to polygonal models. */
+#define ZEO_SHAPE_DEFAULT_DIV 32
+
+/*! \brief read the number of division for smooth primitives from a ZTK format processor. */
+__EXPORT int zShape3DDivFromZTK(ZTK *ztk);
 
 /*! \brief register a definition of tag-and-keys for a 3D shape to a ZTK format processor. */
 __EXPORT bool zShape3DRegZTK(ZTK *ztk);
@@ -223,6 +166,15 @@ __EXPORT void zShape3DFPrint(FILE *fp, zShape3D *shape);
 zArrayClass( zShape3DArray, zShape3D );
 
 __END_DECLS
+
+#include <zeo/zeo_shape_box.h>    /* box */
+#include <zeo/zeo_shape_sphere.h> /* sphere */
+#include <zeo/zeo_shape_ellips.h> /* ellipsoid */
+#include <zeo/zeo_shape_cyl.h>    /* cylinder */
+#include <zeo/zeo_shape_ecyl.h>   /* elliptic cylinder */
+#include <zeo/zeo_shape_cone.h>   /* cone */
+#include <zeo/zeo_shape_ph.h>     /* polyhedron (for class abstraction) */
+#include <zeo/zeo_shape_nurbs.h>  /* NURBS (for class abstraction) */
 
 #include <zeo/zeo_shape_list.h>
 

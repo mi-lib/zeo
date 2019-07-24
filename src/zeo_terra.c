@@ -496,28 +496,6 @@ void zTerraFPrint(FILE *fp, zTerra *terra)
     }
 }
 
-#if 0
-/* print an elevation map out to a file. */
-void zTerraFPrint(FILE *fp, zTerra *terra)
-{
-  register int i, j;
-  zTerraCell *grid;
-
-  fprintf( fp, "origin: %.10g %.10g\n", terra->xmin, terra->ymin );
-  fprintf( fp, "resolution: %.10g %.10g\n", terra->dx, terra->dy );
-  fprintf( fp, "size: %d %d\n", zTerraXSize(terra), zTerraYSize(terra) );
-  fprintf( fp, "zrange: %.10g %.10g\n", terra->zmin, terra->zmax );
-  fprintf( fp, "th_var: %.10g\n", terra->travs_th_var );
-  fprintf( fp, "th_grd: %.10g\n", zRad2Deg( acos( terra->travs_th_grd ) ) );
-  fprintf( fp, "th_res: %.10g\n", terra->travs_th_res );
-  for( i=0; i<zTerraXSize(terra); i++ )
-    for( j=0; j<zTerraYSize(terra); j++ ){
-      grid = zTerraGridNC(terra,i,j);
-      fprintf( fp, "grid: %d %d %.10g %.10g %.10g %.10g %.10g %d\n", i, j, grid->z, grid->norm.e[zX], grid->norm.e[zY], grid->norm.e[zZ], grid->var, grid->travs ? 1 : 0 );
-    }
-}
-#endif
-
 /* print an elevation map out to a file in a plot-friendly format. */
 void zTerraDataFPrint(FILE *fp, zTerra *terra)
 {

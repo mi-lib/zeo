@@ -3,10 +3,10 @@
  *
  * zeo_nurbs - NURBS curve / surface
  */
-#include <zeo/zeo_ph.h>
-
 #ifndef __ZEO_NURBS_H__
 #define __ZEO_NURBS_H__
+
+#include <zeo/zeo_ph.h>
 
 __BEGIN_DECLS
 

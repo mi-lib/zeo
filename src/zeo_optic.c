@@ -175,21 +175,3 @@ void zOpticalInfoFPrint(FILE *fp, zOpticalInfo *oi)
   ZTKPrpKeyFPrint( fp, oi, __ztk_prp_optic );
   fprintf( fp, "\n" );
 }
-
-#if 0
-/* print information of the optical parameter set out to a file. */
-void zOpticalInfoFPrint(FILE *fp, zOpticalInfo *oi)
-{
-  fprintf( fp, "name: %s\n", zName(oi) );
-  fprintf( fp, "ambient: " );
-  zRGBFPrint( fp, &oi->amb );
-  fprintf( fp, "diffuse: " );
-  zRGBFPrint( fp, &oi->dif );
-  fprintf( fp, "specular: " );
-  zRGBFPrint( fp, &oi->spc );
-  fprintf( fp, "esr: %.10g\n", oi->esr );
-  fprintf( fp, "shininess: %.10g\n", oi->sns );
-  fprintf( fp, "alpha: %.10g\n", oi->alpha );
-  fprintf( fp, "\n" );
-}
-#endif

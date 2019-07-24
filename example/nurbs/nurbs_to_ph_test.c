@@ -6,8 +6,8 @@ int main(void)
   zPH3D ph;
   FILE *fp;
 
-  if( !( fp = fopen( "test_nurbs.tkf", "r" ) ) ){
-    eprintf( "cannot open test_nurbs.tkf.\n" );
+  if( !( fp = fopen( "test_nurbs.ztk", "r" ) ) ){
+    eprintf( "cannot open test_nurbs.ztk.\n" );
     eprintf( "run nurbs_test first.\n" );
     return 1;
   }

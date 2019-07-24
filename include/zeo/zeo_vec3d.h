@@ -444,6 +444,7 @@ __EXPORT double zVec3DAngle(zVec3D *v1, zVec3D *v2, zVec3D *n);
 __EXPORT zVec3D *zVec3DProj(zVec3D *v, zVec3D *n, zVec3D *pv);
 __EXPORT zVec3D *zVec3DOrthogonalize(zVec3D *v, zVec3D *n, zVec3D *ov);
 __EXPORT bool zVec3DOrthoSpace(zVec3D *v, zVec3D *sv1, zVec3D *sv2);
+__EXPORT bool zVec3DOrthoNormalSpace(zVec3D *v, zVec3D *sv1, zVec3D *sv2);
 __EXPORT zVec3D *zVec3DRot(zVec3D *v, zVec3D *aa, zVec3D *rv);
 
 /* ********************************************************** */

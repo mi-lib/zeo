@@ -328,6 +328,19 @@ __EXPORT zMat3D *zVec3DTripleProd2Mat3D(zVec3D *v1, zVec3D *v2, zMat3D *m);
 __EXPORT zMat3D *zMulVec3DOPMat3D(zVec3D *ohm, zMat3D *m, zMat3D *mv);
 #define zMulVec3DOPMat3DDRC(o,m) zMulVec3DOPMat3D( o, m, m )
 
+/*! \brief calculate norm of a 3D matrix.
+ *
+ * zMat3DNorm() calculates a norm of a 3D matrix \a m.
+ * zMat3DSqrNorm() calculates a squared norm of \a m.
+ * \return
+ * zMat3DNorm() returns a norm of \a m.
+ * zMat3DSqrNorm() returns a squared norm of \a m.
+ */
+#define _zMat3DSqrNorm(m) ( _zVec3DSqrNorm(&(m)->b.x) + _zVec3DSqrNorm(&(m)->b.y) + _zVec3DSqrNorm(&(m)->b.z) )
+__EXPORT double zMat3DSqrNorm(zMat3D *m);
+#define _zMat3DNorm(m) sqrt( _zMat3DSqrNorm(m) )
+#define zMat3DNorm(m) sqrt( zMat3DSqrNorm(m) )
+
 /* ********************************************************** */
 /* inverse of a 3x3 matrix
  * ********************************************************** */

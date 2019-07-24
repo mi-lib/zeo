@@ -44,8 +44,8 @@
 #define ZEO_ERR_NURBS_CPALREADY   "control point already allocated"
 #define ZEO_ERR_NURBS_INVCP       "invalid index of control point specified"
 
-#define ZEO_ERR_PRIM_ZEROC   "zero-distance centers specified"
-
+#define ZEO_ERR_SHAPE_INVALID "invalid shape type assigned."
+#define ZEO_ERR_SHAPE_ZEROC   "zero-distance centers specified"
 #define ZEO_ERR_SHAPE_MANY   "too many shapes specified"
 #define ZEO_ERR_SHAPE_INV    "invalid description for the shape"
 #define ZEO_ERR_SHAPE_UNNAME "unnamed shape exists"
@@ -81,8 +81,8 @@
 
 #define ZEO_WARN_SHAPE_DUP        "%s: name of a shape duplicated."
 #define ZEO_WARN_SHAPE_BB_INVALID "bounding-box not generated because it is only for polyhedra."
+#define ZEO_WARN_SHAPE_UNKNOWNOPTIC "%s: unknown name of optical info set."
 
 #define ZEO_WARN_MSHAPE_EMPTY     "empty shapes assigned."
-#define ZEO_WARN_UNKNOWN_BB_TYPE  "%s: unknown type of bounding-box"
 
 #endif /* __ZEO_ERRMSG_H__ */

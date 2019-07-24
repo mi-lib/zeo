@@ -7,7 +7,7 @@
 #ifndef __ZEO_BV_H__
 #define __ZEO_BV_H__
 
-#include <zeo/zeo_prim.h>
+#include <zeo/zeo_shape.h>
 
 #include <zeo/zeo_bv_ch2.h>
 #include <zeo/zeo_bv_aabb.h>

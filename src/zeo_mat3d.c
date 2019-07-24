@@ -163,6 +163,12 @@ zMat3D *zMulVec3DOPMat3D(zVec3D *ohm, zMat3D *m, zMat3D *mv)
   return mv;
 }
 
+/* calculate squared norm of a 3D matrix. */
+double zMat3DSqrNorm(zMat3D *m)
+{
+  return _zMat3DSqrNorm( m );
+}
+
 /* ********************************************************** */
 /* inverse of a 3x3 matrix
  * ********************************************************** */
