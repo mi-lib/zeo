@@ -1,3 +1,4 @@
+2019. 7.26. Added prototypes of zVec6DFromZTK, zMat3DFromZTK, zFrame3DFromZTK and zFrame3DDHFromZTK. [zeo_vec6d, zeo_mat3d, zeo_frame]
 2019. 7.26. Renamed zAxisExpr, zAxisByStr and zDirExpr to zAxisStr, zAxisFromStr and zDirStr, respectively. [zeo_misc, zeo_shape]
 2019. 7.26. Added zFrame3DFromZTK and zFrame3DDHFromZTK. [zeo_frame]
 2019. 7.26. Added zMat3DFromZTK. [zeo_mat3d]
