@@ -21,8 +21,8 @@ enum{
 
 /*! \brief convert a string to an axis.
  *
- * zAxisExpr() returns a string for the name of \a axis.
- * zAxisByStr() returns an axis identifier for a string \a str.
+ * zAxisStr() returns a string for the name of \a axis.
+ * zAxisFromStr() returns an axis identifier for a string \a str.
  * The correspondence between strings and axis identifiers are as follows:
  *  zX   <-> "x"
  *  zY   <-> "y"
@@ -31,12 +31,12 @@ enum{
  *  zYA  <-> "elev"
  *  zZA  <-> "azim"
  * \return
- * zAxisExpr() returns a pointer to the string which expresses
+ * zAxisStr() returns a pointer to the string which expresses
  * the name of \a axis.
- * zAxisByStr() returns the corresponding axis identifier.
+ * zAxisFromStr() returns the corresponding axis identifier.
  */
-__EXPORT char *zAxisExpr(zAxis axis);
-__EXPORT zAxis zAxisByStr(char str[]);
+__EXPORT char *zAxisStr(zAxis axis);
+__EXPORT zAxis zAxisFromStr(char str[]);
 
 /*! \brief direction identifiers */
 typedef byte zDir;
@@ -44,9 +44,9 @@ enum{
   zNONE=0, zRIGHT, zLEFT, zFORWARD, zBACKWARD, zUP, zDOWN
 };
 
-/*! \brief expression for the name of direction.
+/*! \brief string for the name of direction.
  *
- * zDirExpr() returns a string for the name of a direction identifier
+ * zDirStr() returns a string for the name of a direction identifier
  * \a dir. The correspondence between strings and direction identifiers
  * are as follows:
  *  zNONE     -> "none"
@@ -57,10 +57,10 @@ enum{
  *  zUP       -> "up"
  *  zDOWN     -> "down"
  * \return
- * zDirExpr() returns a pointer to the string which expresses the name
+ * zDirStr() returns a pointer to the string which expresses the name
  * of \a dir.
  */
-__EXPORT char *zDirExpr(zDir dir);
+__EXPORT char *zDirStr(zDir dir);
 
 /*! \brief reverse a direction.
  *

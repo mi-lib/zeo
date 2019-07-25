@@ -162,7 +162,7 @@ static void *_zShape3DMirrorFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zNameFind( ((_zShape3DRefPrp*)arg)->sarray, ((_zShape3DRefPrp*)arg)->ns, ZTKVal(ztk), ref );
   if( ref ){
     if( !ZTKValNext(ztk) ) return NULL;
-    if( !zShape3DMirror( ref, (zShape3D*)obj, zAxisByStr(ZTKVal(ztk)) ) ) return NULL;
+    if( !zShape3DMirror( ref, (zShape3D*)obj, zAxisFromStr(ZTKVal(ztk)) ) ) return NULL;
     ((_zShape3DRefPrp*)arg)->mirrored = true;
   } else
     ZRUNWARN( ZEO_ERR_SHAPE_UNDEF, ZTKVal(ztk) );
@@ -267,7 +267,7 @@ bool _zShape3DFScan(FILE *fp, void *instance, char *buf, bool *success)
       ZRUNWARN( ZEO_ERR_SHAPE_UNDEF, buf );
     } else{
       zFToken( fp, buf, BUFSIZ );
-      if( !zShape3DMirror( ref, prm->shape, zAxisByStr(buf) ) )
+      if( !zShape3DMirror( ref, prm->shape, zAxisFromStr(buf) ) )
         return ( *success = false );
       prm->referred = true;
     }

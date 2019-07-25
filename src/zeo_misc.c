@@ -9,18 +9,14 @@
 static char *__zaxisname[] = {
   "x", "y", "z", "tilt", "elev", "azim", NULL };
 
-/* zAxisExpr
- * - expression of the name of axis.
- */
-char *zAxisExpr(zAxis axis)
+/* string for the name of axis. */
+char *zAxisStr(zAxis axis)
 {
   return __zaxisname[zLimit(axis,zX,zZA)];
 }
 
-/* zAxisByStr
- * - axis identification from string.
- */
-zAxis zAxisByStr(char str[])
+/* identify axis from a string. */
+zAxis zAxisFromStr(char str[])
 {
   char **jp;
   zAxis axis;
@@ -30,10 +26,8 @@ zAxis zAxisByStr(char str[])
   return -1; /* invalid string */
 }
 
-/* zDirExpr
- * - expression of the name of direction.
- */
-char *zDirExpr(zDir dir)
+/* string for the name of direction. */
+char *zDirStr(zDir dir)
 {
   char *__zdirname[] = {
     "none", "right", "left", "forward", "backward", "up", "down", "(invalid)",
@@ -41,9 +35,7 @@ char *zDirExpr(zDir dir)
   return __zdirname[zLimit(dir,zNONE,zDOWN+1)];
 }
 
-/* zDirRev
- * - reverse direction.
- */
+/* reverse direction. */
 zDir zDirRev(zDir dir)
 {
   return dir == zNONE ? zNONE : ( 1 + dir - (dir+1)%2 *2 );

@@ -235,6 +235,15 @@ __EXPORT double *zFrame3DToArrayAA(zFrame3D *f, double *array);
 __EXPORT zFrame3D *zVec6DToFrame3DAA(zVec6D *v, zFrame3D *f);
 __EXPORT zVec6D *zFrame3DToVec6DAA(zFrame3D *f, zVec6D *v);
 
+/* ********************************************************** */
+/* I/O
+ * ********************************************************** */
+
+/* read a 3D frame from a ZTK format processor. */
+__EXPORT zFrame3D *zFrame3DFromZTK(zFrame3D *f, ZTK *ztk);
+/* read DH parameters from a ZTK format processor. */
+__EXPORT zFrame3D *zFrame3DDHFromZTK(zFrame3D *f, ZTK *ztk);
+
 /*! \brief scan and print a 3D frame.
  *
  * zFrame3DFScan() scans 12 values from the current position of

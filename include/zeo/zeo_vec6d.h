@@ -271,6 +271,9 @@ __EXPORT zVec6D *zVec6DDif(zVec6D *v, zVec6D *vnew, double dt, zVec6D *vel);
 /* I/O
  * ********************************************************** */
 
+/* read a 6D spatial vector from a ZTK format processor. */
+__EXPORT zVec6D *zVec6DFromZTK(zVec6D *v, ZTK *ztk);
+
 /*! \brief scan and print a 6D vector.
  *
  * zVec6DFScan() scans six values from the current position of

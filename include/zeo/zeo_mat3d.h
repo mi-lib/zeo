@@ -688,6 +688,9 @@ __EXPORT void zMat3DSymEig(zMat3D *m, double eval[], zVec3D evec[]);
 /* I/O
  * ********************************************************** */
 
+/* read a 3x3 matrix from a ZTK format processor. */
+__EXPORT zMat3D *zMat3DFromZTK(zMat3D *m, ZTK *ztk);
+
 /*! \brief scan and print a 3x3 matrix.
  *
  * zMat3DFScan() scans nine values from the current position of a file
