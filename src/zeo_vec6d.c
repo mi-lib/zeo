@@ -167,6 +167,18 @@ zVec6D *zVec6DDif(zVec6D *v, zVec6D *vnew, double dt, zVec6D *vel)
 /* I/O
  * ********************************************************** */
 
+/* read a 6D spatial vector from a ZTK format processor. */
+zVec6D *zVec6DFromZTK(zVec6D *v, ZTK *ztk)
+{
+  v->e[0] = ZTKDouble(ztk);
+  v->e[1] = ZTKDouble(ztk);
+  v->e[2] = ZTKDouble(ztk);
+  v->e[3] = ZTKDouble(ztk);
+  v->e[4] = ZTKDouble(ztk);
+  v->e[5] = ZTKDouble(ztk);
+  return v;
+}
+
 /* scan a 6D vector from a file. */
 zVec6D *zVec6DFScan(FILE *fp, zVec6D *v)
 {

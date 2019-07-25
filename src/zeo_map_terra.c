@@ -1,10 +1,10 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_terra - terrain elevation map.
+ * zeo_map_terra - map class: terrain elevation map.
  */
 
-#include <zeo/zeo_terra.h>
+#include <zeo/zeo_map.h>
 
 /* ********************************************************** */
 /* cell type of elevation map.
@@ -155,8 +155,8 @@ zTerra *zTerraAllocGrid(zTerra *terra, double xmin, double ymin, double dx, doub
   return NULL;
 }
 
-/* free the internal grid array of an elevation map. */
-void zTerraFree(zTerra *terra)
+/* destroy the internal grid array of an elevation map. */
+void zTerraDestroy(zTerra *terra)
 {
   zArray2Free( &terra->gridmap );
   zTerraInit( terra );
@@ -374,25 +374,25 @@ static void *_zTerraGridFromZTK(void *obj, int i, void *arg, ZTK *ztk){
 }
 
 static void _zTerraOriginFPrint(FILE *fp, int i, void *obj){
-  fprintf( fp, "origin: %.10g %.10g\n", ((zTerra*)obj)->xmin, ((zTerra*)obj)->ymin );
+  fprintf( fp, "%.10g %.10g\n", ((zTerra*)obj)->xmin, ((zTerra*)obj)->ymin );
 }
 static void _zTerraResolFPrint(FILE *fp, int i, void *obj){
-  fprintf( fp, "resolution: %.10g %.10g\n", ((zTerra*)obj)->dx, ((zTerra*)obj)->dy );
+  fprintf( fp, "%.10g %.10g\n", ((zTerra*)obj)->dx, ((zTerra*)obj)->dy );
 }
 static void _zTerraSizeFPrint(FILE *fp, int i, void *obj){
-  fprintf( fp, "size: %d %d\n", zTerraXSize((zTerra*)obj), zTerraYSize((zTerra*)obj) );
+  fprintf( fp, "%d %d\n", zTerraXSize((zTerra*)obj), zTerraYSize((zTerra*)obj) );
 }
 static void _zTerraZRangeFPrint(FILE *fp, int i, void *obj){
-  fprintf( fp, "zrange: %.10g %.10g\n", ((zTerra*)obj)->zmin, ((zTerra*)obj)->zmax );
+  fprintf( fp, "%.10g %.10g\n", ((zTerra*)obj)->zmin, ((zTerra*)obj)->zmax );
 }
 static void _zTerraVarThrsdFPrint(FILE *fp, int i, void *obj){
-  fprintf( fp, "th_var: %.10g\n", ((zTerra*)obj)->travs_th_var );
+  fprintf( fp, "%.10g\n", ((zTerra*)obj)->travs_th_var );
 }
 static void _zTerraGrdThrsdFPrint(FILE *fp, int i, void *obj){
-  fprintf( fp, "th_grd: %.10g\n", zRad2Deg( acos( ((zTerra*)obj)->travs_th_grd ) ) );
+  fprintf( fp, "%.10g\n", zRad2Deg( acos( ((zTerra*)obj)->travs_th_grd ) ) );
 }
 static void _zTerraResThrsdFPrint(FILE *fp, int i, void *obj){
-  fprintf( fp, "th_res: %.10g\n", ((zTerra*)obj)->travs_th_res );
+  fprintf( fp, "%.10g\n", ((zTerra*)obj)->travs_th_res );
 }
 
 static ZTKPrp __ztk_prp_terra[] = {
@@ -478,7 +478,7 @@ zTerra *zTerraFScan(FILE *fp, zTerra *terra)
 {
   zTerraInit( terra );
   if( zFieldFScan( fp, _zTerraFScan, terra ) ) return terra;
-  zTerraFree( terra );
+  zTerraDestroy( terra );
   return NULL;
 }
 
@@ -508,3 +508,44 @@ void zTerraDataFPrint(FILE *fp, zTerra *terra)
       fprintf( fp, "%.10g %.10g %.10g %.10g %.10g %.10g %.10g %d\n", zTerraX(terra,i), zTerraY(terra,j), grid->z, grid->norm.e[zX], grid->norm.e[zY], grid->norm.e[zZ], grid->var, grid->travs ? 1 : 0 );
     }
 }
+
+/* methods for abstraction */
+
+static void *_zMapAllocTerra(void);
+static void _zMapDestroyTerra(void *terra);
+static void *_zMapParseZTKTerra(void *terra, ZTK *ztk);
+static void _zMapFPrintTerra(FILE *fp, void *terra);
+
+void *_zMapAllocTerra(void)
+{
+  zTerra *terra;
+
+  if( !( terra = zAlloc( zTerra, 1 ) ) ){
+    ZALLOCERROR();
+    return NULL;
+  }
+  return terra;
+}
+
+void _zMapDestroyTerra(void *terra)
+{
+  zTerraDestroy( terra );
+}
+
+void *_zMapParseZTKTerra(void *terra, ZTK *ztk)
+{
+  return zTerraFromZTK( terra, ztk );
+}
+
+void _zMapFPrintTerra(FILE *fp, void *terra)
+{
+  zTerraFPrint( fp, terra );
+}
+
+zMapCom zeo_map_terra_com = {
+  "terra",
+  _zMapAllocTerra,
+  _zMapDestroyTerra,
+  _zMapParseZTKTerra,
+  _zMapFPrintTerra,
+};

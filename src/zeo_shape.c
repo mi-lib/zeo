@@ -147,8 +147,7 @@ static void *_zShape3DTypeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   for( k=0; com[k]; k++ )
     if( strcmp( com[k]->typestr, ZTKVal(ztk) ) == 0 ){
       ((zShape3D*)obj)->com = com[k];
-      ((zShape3D*)obj)->body = ((zShape3D*)obj)->com->_alloc();
-      return obj;
+      return ( ((zShape3D*)obj)->body = ((zShape3D*)obj)->com->_alloc() ) ? obj : NULL;
     }
   return NULL;
 }

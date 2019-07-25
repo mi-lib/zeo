@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
   zTerraAdjustZRange( &terra );
   terra_output( &terra, 0.3 );
   path_find_test( &terra );
-  zTerraFree( &terra );
+  zTerraDestroy( &terra );
   zVec3DListDestroy( &pl );
   return 0;
 }

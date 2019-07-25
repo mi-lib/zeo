@@ -1,13 +1,13 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_terra - terrain elevation map.
+ * zeo_map_terra - map class: terrain elevation map.
  */
 
-#ifndef __ZEO_TERRA_H__
-#define __ZEO_TERRA_H__
+#ifndef __ZEO_MAP_TERRA_H__
+#define __ZEO_MAP_TERRA_H__
 
-#include <zeo/zeo_mat3d.h>
+/* NOTE: never include this header file in user programs. */
 
 __BEGIN_DECLS
 
@@ -96,8 +96,8 @@ __EXPORT zTerra *zTerraAllocRegion(zTerra *terra, double xmin, double xmax, doub
 /*! \brief allocate the internal grid array of an elevation map based on size. */
 __EXPORT zTerra *zTerraAllocGrid(zTerra *terra, double xmin, double ymin, double dx, double dy, int xsize, int ysize, double zmin, double zmax);
 
-/*! \brief free the internal grid array of an elevation map. */
-__EXPORT void zTerraFree(zTerra *terra);
+/*! \brief destroy the internal grid array of an elevation map. */
+__EXPORT void zTerraDestroy(zTerra *terra);
 
 /*! \brief update an elevation map from a point. */
 __EXPORT zTerra *zTerraUpdate(zTerra *terra, zVec3D *p);
@@ -134,6 +134,11 @@ __EXPORT void zTerraFPrint(FILE *fp, zTerra *terra);
 /*! \brief print an elevation map out to a file in a plot-friendly format. */
 __EXPORT void zTerraDataFPrint(FILE *fp, zTerra *terra);
 
+/* methods for abstraction */
+extern zMapCom zeo_map_terra_com;
+
+#define zMapTerra(m) ((zTerra*)(m)->body)
+
 __END_DECLS
 
-#endif /* __ZEO_TERRA_H__ */
+#endif /* __ZEO_MAP_TERRA_H__ */

@@ -65,6 +65,8 @@
 #define ZEO_ERR_TERRA_OOREG   "out of region (%g,%g): cannot estimate ground height"
 #define ZEO_ERR_TERRA_OORAN  "grid out of range"
 
+#define ZEO_ERR_MAP_UNSPEC   "map type unspecified."
+
 #define ZEO_ERR_FATAL        "fatal error! - please report to the author"
 
 /* warning messages */
@@ -84,5 +86,7 @@
 #define ZEO_WARN_SHAPE_UNKNOWNOPTIC "%s: unknown name of optical info set."
 
 #define ZEO_WARN_MSHAPE_EMPTY     "empty shapes assigned."
+
+#define ZEO_WARN_MAPNET_EMPTY     "empty map net assigned."
 
 #endif /* __ZEO_ERRMSG_H__ */

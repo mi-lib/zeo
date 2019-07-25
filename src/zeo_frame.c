@@ -244,6 +244,40 @@ zVec6D* zFrame3DToVec6DAA(zFrame3D *f, zVec6D *v)
   return v;
 }
 
+/* ********************************************************** */
+/* I/O
+ * ********************************************************** */
+
+/* read a 3D frame from a ZTK format processor. */
+zFrame3D *zFrame3DFromZTK(zFrame3D *f, ZTK *ztk)
+{
+  zFrame3DAtt(f)->e[0][0] = ZTKDouble(ztk);
+  zFrame3DAtt(f)->e[1][0] = ZTKDouble(ztk);
+  zFrame3DAtt(f)->e[2][0] = ZTKDouble(ztk);
+  zFrame3DPos(f)->e[0]    = ZTKDouble(ztk);
+  zFrame3DAtt(f)->e[0][1] = ZTKDouble(ztk);
+  zFrame3DAtt(f)->e[1][1] = ZTKDouble(ztk);
+  zFrame3DAtt(f)->e[2][1] = ZTKDouble(ztk);
+  zFrame3DPos(f)->e[1]    = ZTKDouble(ztk);
+  zFrame3DAtt(f)->e[0][2] = ZTKDouble(ztk);
+  zFrame3DAtt(f)->e[1][2] = ZTKDouble(ztk);
+  zFrame3DAtt(f)->e[2][2] = ZTKDouble(ztk);
+  zFrame3DPos(f)->e[2]    = ZTKDouble(ztk);
+  return f;
+}
+
+/* read DH parameters from a ZTK format processor. */
+zFrame3D *zFrame3DDHFromZTK(zFrame3D *f, ZTK *ztk)
+{
+  double a, alpha, d, theta;
+
+  a = ZTKDouble(ztk);
+  alpha = zDeg2Rad( ZTKDouble(ztk) );
+  d = ZTKDouble(ztk);
+  theta = zDeg2Rad( ZTKDouble(ztk) );
+  return zFrame3DFromDH( f, a, alpha, d, theta );
+}
+
 /* scan a 3D frame from a file. */
 zFrame3D *zFrame3DFScan(FILE *fp, zFrame3D *f)
 {
