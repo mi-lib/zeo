@@ -25,7 +25,7 @@ zShape3D *zShape3DInit(zShape3D *shape)
 void zShape3DDestroy(zShape3D *shape)
 {
   if( !shape ) return;
-  zNameDestroy( shape );
+  zNameFree( shape );
   shape->com->_destroy( shape->body );
   zFree( shape->body );
   zShape3DSetOptic( shape, NULL );

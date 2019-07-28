@@ -61,7 +61,7 @@ __EXPORT zOpticalInfo *zOpticalInfoCreate(zOpticalInfo *oi, float ar, float ag, 
 __EXPORT zOpticalInfo *zOpticalInfoCopy(zOpticalInfo *src, zOpticalInfo *dest);
 __EXPORT zOpticalInfo *zOpticalInfoClone(zOpticalInfo *src, zOpticalInfo *dest);
 #define zOpticalInfoDestroy(o) do{\
-  zNameDestroy(o);\
+  zNameFree(o);\
   zOpticalInfoInit(o);\
 } while(0)
 

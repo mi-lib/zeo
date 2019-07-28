@@ -18,7 +18,7 @@ zMap *zMapInit(zMap *map)
 /* destroy a map. */
 void zMapDestroy(zMap *map)
 {
-  zNameDestroy( map );
+  zNameFree( map );
   if( map->com )
     map->com->_destroy( map->body );
   zFree( map->body );
