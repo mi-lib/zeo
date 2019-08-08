@@ -251,8 +251,9 @@ bool _zShape3DFScan(FILE *fp, void *instance, char *buf, bool *success)
   prm = instance;
   if( strcmp( buf, "type" ) == 0 ){
     prm->shape->com = NULL;
+    zFToken( fp, buf, BUFSIZ );
     for( k=0; com[k]; k++ )
-      if( strcmp( com[k]->typestr, zFToken(fp,buf,BUFSIZ) ) == 0 )
+      if( strcmp( com[k]->typestr, buf ) == 0 )
         prm->shape->com = com[k];
   } else if( strcmp( buf, "name" ) == 0 ){
     if( !( zNameSet( prm->shape, zFToken(fp,buf,BUFSIZ) ) ) )
