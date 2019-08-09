@@ -1,7 +1,3 @@
-# default suffices
-# .zph : 3D polyhedron
-# .z3d : 3D shape
-
 include ../config
 
 INCLUDE=-I$(PREFIX)/include -I../include -I.
@@ -19,7 +15,7 @@ INSTALL=install -m 755
 
 CONFIGGEN=zeda-config-gen
 CONFIG=zeo-config
-TARGET=$(CONFIG) zeo_qhull zeo_gjk zeo_stlconv
+TARGET=$(CONFIG) zeo_qhull zeo_gjk zeo_stlconv mshape2gp
 # zeo_terra
 
 #####################################################################
