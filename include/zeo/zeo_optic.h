@@ -123,6 +123,9 @@ __EXPORT zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk);
  */
 zArrayClass( zOpticalInfoArray, zOpticalInfo );
 
+/*! \brief find a set of optical parameters from an array. */
+#define zOpticalInfoArrayFind(a,n,i) zNameFind( zArrayBuf(a), zArraySize(a), n, i )
+
 __END_DECLS
 
 #endif /* __ZEO_OPTIC_H__ */

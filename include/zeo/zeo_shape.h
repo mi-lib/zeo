@@ -103,18 +103,65 @@ __EXPORT bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, bool rim);
 
 __EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
 
+/*! \struct zShape3DArray
+ * \brief array class of 3D shapes.
+ */
+zArrayClass( zShape3DArray, zShape3D );
+
+/*! \brief find a 3D shape from an array. */
+#define zShape3DArrayFind(a,n,s) zNameFind( zArrayBuf(a), zArraySize(a), n, s )
+
 #define ZTK_TAG_SHAPE "shape"
 
 /*! \brief default number of division in conversion from smooth curves to polygonal models. */
 #define ZEO_SHAPE_DEFAULT_DIV 32
 
-/*! \brief read the number of division for smooth primitives from a ZTK format processor. */
+/*! \brief scan the number of division for smooth primitives from a ZTK format processor. */
 __EXPORT int zShape3DDivFromZTK(ZTK *ztk);
 
 /*! \brief register a definition of tag-and-keys for a 3D shape to a ZTK format processor. */
 __EXPORT bool zShape3DRegZTK(ZTK *ztk);
-/*! \brief read a 3D shape from a ZTK format processor. */
-__EXPORT zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3D *sarray, int ns, zOpticalInfo *oarray, int no, ZTK *ztk);
+
+/*! \brief scan a 3D shape from a ZTK format processor.
+ *
+ * zShape3DFromZTK() makes up a 3D shape \a shape from a ZTK \a ztk
+ * parsed by a ZTK format processor. An acceptable ZTK format is as
+ * follows.
+ *
+ *  name: <name of a shape>
+ *  optic: <name of optical info>
+ *  type: <type of a shape>
+ *
+ * followed by key fields that describe actual shapes. The bracketed
+ * parts must be replaced by strings. <name> is an arbitrary name to
+ * identify the shape. It mustn't include white spaces or tab charactors.
+ * <type of a shape> has to be chosen from 'box', 'sphere', 'cylinder',
+ * 'cone', 'ellips', 'ellipticcylinder', 'polyhedron' and 'nurbs'.
+ *
+ * An exceptional description can be done by
+ *  mirror: <name of a shape> <name of axis>
+ * by which another shape <name of a shape> is mirrored along with an
+ * axis <name of axis>.
+ *
+ * \a sarray and \a oarray are an array of 3D shapes and that of optical
+ * information sets, respectively, to be referred.
+ * \return
+ * zShape3DFromZTK() returns a pointer \a shape.
+ */
+__EXPORT zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoArray *oarray, ZTK *ztk);
+
+/*! \brief print a 3D shape to a file stream.
+ *
+ * zShape3DFPrint() prints information of \a shape out to
+ * the current position of a file \a fp in the ZTK format.
+ *
+ * zShape3DPrint() prints information of \a shape out to
+ * the standard output.
+ * \return
+ * zShape3DFPrint() and zShape3DPrint() return no value.
+ */
+__EXPORT void zShape3DFPrint(FILE *fp, zShape3D *shape);
+#define zShape3DPrint(s) zShape3DFPrint( stdout, (s) )
 
 /*! \brief scan and print a 3D shape.
  *
@@ -157,13 +204,6 @@ __EXPORT zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3D *sarray, int ns, zO
 __EXPORT zShape3D *zShape3DFScan(FILE *fp, zShape3D *shape, zShape3D *sarray, int ns, zOpticalInfo *oarray, int no);
 #define zShape3DScan(s,sa,ns,oa,no) \
   zShape3DFScan( stdin, (s), (sa), (ns), (oa), (no) )
-__EXPORT void zShape3DFPrint(FILE *fp, zShape3D *shape);
-#define zShape3DPrint(s) zShape3DFPrint( stdout, (s) )
-
-/*! \struct zShape3DArray
- * \brief array class of 3D shapes.
- */
-zArrayClass( zShape3DArray, zShape3D );
 
 __END_DECLS
 

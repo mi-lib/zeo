@@ -74,8 +74,14 @@ __EXPORT bool zMShape3DRegZTK(ZTK *ztk);
 /*! \brief read multiple 3D shapes from a ZTK format processor. */
 __EXPORT zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk);
 
-/*! \brief read multiple 3D shapes from a ZTK format file. */
-__EXPORT zMShape3D *zMShape3DReadZTK(zMShape3D *ms, char filename[]);
+/*! \brief scan multiple 3D shapes from a ZTK format file. */
+__EXPORT zMShape3D *zMShape3DScanZTK(zMShape3D *ms, char filename[]);
+
+/*! \brief print multiple 3D shapes to a file in a ZTK format. */
+__EXPORT bool zMShape3DPrintZTK(zMShape3D *ms, char filename[]);
+
+__EXPORT void zMShape3DFPrint(FILE *fp, zMShape3D *ms);
+#define zMShape3DPrint(s) zMShape3DFPrint( stdout, (s) )
 
 /*! \brief scan and print multiple 3D shapes.
  *
@@ -115,9 +121,6 @@ __EXPORT zMShape3D *zMShape3DReadZTK(zMShape3D *ms, char filename[]);
  * zOpticalInfoFScan, zShape3DFScan
  */
 __EXPORT zMShape3D *zMShape3DFScan(FILE *fp, zMShape3D *ms);
-__EXPORT bool zMShape3DPrintFile(zMShape3D *ms, char filename[]);
-__EXPORT void zMShape3DFPrint(FILE *fp, zMShape3D *ms);
-#define zMShape3DPrint(s) zMShape3DFPrint( stdout, (s) )
 
 __END_DECLS
 

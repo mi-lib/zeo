@@ -130,8 +130,7 @@ static void *_zMShape3DOpticFromZTK(void *obj, int i, void *arg, ZTK *ztk){
 }
 static void *_zMShape3DShapeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return zShape3DFromZTK( zMShape3DShape((zMShape3D*)obj,i),
-    zMShape3DShapeBuf((zMShape3D*)obj), zMShape3DShapeNum((zMShape3D*)obj),
-    zMShape3DOpticBuf((zMShape3D*)obj), zMShape3DOpticNum((zMShape3D*)obj), ztk ) ? obj : NULL;
+    &((zMShape3D*)obj)->shape, &((zMShape3D*)obj)->optic, ztk ) ? obj : NULL;
 }
 
 static ZTKPrp __ztk_prp_mshape[] = {
@@ -165,8 +164,8 @@ zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk)
   return ms;
 }
 
-/* read multiple 3D shapes from a ZTK format file. */
-zMShape3D *zMShape3DReadZTK(zMShape3D *ms, char filename[])
+/* scan multiple 3D shapes from a ZTK format file. */
+zMShape3D *zMShape3DScanZTK(zMShape3D *ms, char filename[])
 {
   ZTK ztk;
 
@@ -177,6 +176,38 @@ zMShape3D *zMShape3DReadZTK(zMShape3D *ms, char filename[])
   ZTKDestroy( &ztk );
   return ms;
 }
+
+/* print multiple 3D shapes out to a file in ZTK format. */
+bool zMShape3DPrintZTK(zMShape3D *ms, char filename[])
+{
+  char fname[BUFSIZ];
+  FILE *fp;
+
+  if( !( fp = zOpenZTKFile( fname, "w" ) ) ){
+    ZOPENERROR( fname );
+    return false;
+  }
+  zMShape3DFPrint( fp, ms );
+  fclose( fp );
+  return true;
+}
+
+/* print multiple 3D shapes out to a file. */
+void zMShape3DFPrint(FILE *fp, zMShape3D *ms)
+{
+  register int i;
+
+  for( i=0; i<zMShape3DOpticNum(ms); i++ ){
+    fprintf( fp, "[%s]\n", ZTK_TAG_OPTIC );
+    zOpticalInfoFPrint( fp, zMShape3DOptic( ms, i ) );
+  }
+  for( i=0; i<zMShape3DShapeNum(ms); i++ ){
+    fprintf( fp, "[%s]\n", ZTK_TAG_SHAPE );
+    zShape3DFPrint( fp, zMShape3DShape( ms, i ) );
+  }
+}
+
+
 
 typedef struct{
   zMShape3D *ms;
@@ -283,34 +314,4 @@ zMShape3D *_zMShape3DShapeFScan(FILE *fp, zMShape3D *ms, int i)
     return NULL;
   }
   return ms;
-}
-
-/* print information of multiple shapes out to a file. */
-bool zMShape3DPrintFile(zMShape3D *ms, char filename[])
-{
-  char fname[BUFSIZ];
-  FILE *fp;
-
-  if( !( fp = zOpenZTKFile( fname, "w" ) ) ){
-    ZOPENERROR( fname );
-    return false;
-  }
-  zMShape3DFPrint( fp, ms );
-  fclose( fp );
-  return true;
-}
-
-/* print information of multiple shapes out to a file. */
-void zMShape3DFPrint(FILE *fp, zMShape3D *ms)
-{
-  register int i;
-
-  for( i=0; i<zMShape3DOpticNum(ms); i++ ){
-    fprintf( fp, "[%s]\n", ZTK_TAG_OPTIC );
-    zOpticalInfoFPrint( fp, zMShape3DOptic( ms, i ) );
-  }
-  for( i=0; i<zMShape3DShapeNum(ms); i++ ){
-    fprintf( fp, "[%s]\n", ZTK_TAG_SHAPE );
-    zShape3DFPrint( fp, zMShape3DShape( ms, i ) );
-  }
 }
