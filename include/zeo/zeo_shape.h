@@ -108,9 +108,6 @@ __EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
  */
 zArrayClass( zShape3DArray, zShape3D );
 
-/*! \brief find a 3D shape from an array. */
-#define zShape3DArrayFind(a,n,s) zNameFind( zArrayBuf(a), zArraySize(a), n, s )
-
 #define ZTK_TAG_SHAPE "shape"
 
 /*! \brief default number of division in conversion from smooth curves to polygonal models. */

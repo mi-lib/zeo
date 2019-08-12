@@ -122,7 +122,7 @@ typedef struct{
 
 static void *_zShape3DNameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zShape3D *shape;
-  zShape3DArrayFind( ((_zShape3DRefPrp*)arg)->sarray, ZTKVal(ztk), shape );
+  zArrayFindName( ((_zShape3DRefPrp*)arg)->sarray, ZTKVal(ztk), shape );
   if( shape ){
     ZRUNWARN( ZEO_WARN_SHAPE_DUP, ZTKVal(ztk) );
     return NULL;
@@ -150,14 +150,14 @@ static void *_zShape3DTypeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return NULL;
 }
 static void *_zShape3DOpticFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  zOpticalInfoArrayFind( ((_zShape3DRefPrp*)arg)->oarray, ZTKVal(ztk), zShape3DOptic((zShape3D*)obj) );
+  zArrayFindName( ((_zShape3DRefPrp*)arg)->oarray, ZTKVal(ztk), zShape3DOptic((zShape3D*)obj) );
   if( !zShape3DOptic((zShape3D*)obj) )
     ZRUNWARN( ZEO_WARN_SHAPE_UNKNOWNOPTIC, ZTKVal(ztk) );
   return obj;
 }
 static void *_zShape3DMirrorFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zShape3D *ref;
-  zShape3DArrayFind( ((_zShape3DRefPrp*)arg)->sarray, ZTKVal(ztk), ref );
+  zArrayFindName( ((_zShape3DRefPrp*)arg)->sarray, ZTKVal(ztk), ref );
   if( ref ){
     if( !ZTKValNext(ztk) ) return NULL;
     if( !zShape3DMirror( ref, (zShape3D*)obj, zAxisFromStr(ZTKVal(ztk)) ) ) return NULL;
