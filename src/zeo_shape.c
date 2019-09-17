@@ -214,7 +214,7 @@ zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoAr
     ZRUNERROR( ZEO_ERR_SHAPE_INVALID );
     return NULL;
   }
-  if( !shape->com->_parseZTK( shape->body, ztk ) ) return NULL;
+  if( !shape->com->_fromZTK( shape->body, ztk ) ) return NULL;
   return shape;
 }
 

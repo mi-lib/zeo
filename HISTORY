@@ -1,3 +1,4 @@
+2019. 9.17. Renamed _parseZTK member in zShape3D to _fromZTK. [zeo_shape]
 2019. 8.12. Abolished zOpticalInfoArrayFind and zShape3DArrayFind because zArrayFindName is already available. [zeo_optic, zeo_shape]
 2019. 8. 9. Ported mshape2gp from RoKi apps. [app]
 2019. 8. 9. Renamed zMShape3DReadZTK and zMShape3DPrintFile to zMShape3DScanZTK and zMShape3DPrintZTK, respectively. [zeo_mshape, app]

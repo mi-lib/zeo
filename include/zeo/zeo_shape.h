@@ -31,7 +31,7 @@ typedef struct{
   zMat3D *(*_inertia)(void*,zMat3D*);
   void (*_baryinertia)(void*,zVec3D*,zMat3D*);
   zPH3D *(*_toph)(void*,zPH3D*);
-  void *(*_parseZTK)(void*,ZTK*);
+  void *(*_fromZTK)(void*,ZTK*);
   void *(*_fscan)(FILE*,void*);
   void (*_fprint)(FILE*,void*);
 } zShape3DCom;
