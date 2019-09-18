@@ -420,7 +420,7 @@ static ZTKPrp __ztk_prp_nurbs[] = {
 };
 
 /* register a definition of tag-and-keys for a 3D NURBS to a ZTK format processor. */
-bool zNURBS3DDefRegZTK(ZTK *ztk, char *tag)
+bool zNURBS3DRegZTK(ZTK *ztk, char *tag)
 {
   return ZTKDefRegPrp( ztk, tag, __ztk_prp_nurbs );
 }

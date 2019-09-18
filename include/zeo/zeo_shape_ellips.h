@@ -133,10 +133,12 @@ __EXPORT zMat3D *zEllips3DInertia(zEllips3D *ellips, zMat3D *inertia);
 /* default longitudinal & latitudinal division number are the same. */
 __EXPORT zPH3D *zEllips3DToPH(zEllips3D *ellips, zPH3D *ph);
 
+#if 0
 /*! \brief register a definition of tag-and-keys for a 3D ellipsoid to a ZTK format processor. */
-__EXPORT bool zEllips3DDefRegZTK(ZTK *ztk, char *tag);
+__EXPORT bool zEllips3DRegZTK(ZTK *ztk, char *tag);
 /*! \brief read a 3D ellipsoid from a ZTK format processor. */
 __EXPORT zEllips3D *zEllips3DFromZTK(zEllips3D *ellips, ZTK *ztk);
+#endif
 
 /*! \brief scan and print a 3D ellipsoid.
  *
@@ -172,17 +174,20 @@ __EXPORT zEllips3D *zEllips3DFromZTK(zEllips3D *ellips, ZTK *ztk);
  */
 __EXPORT zEllips3D *zEllips3DFScan(FILE *fp, zEllips3D *ellips);
 #define zEllips3DScan(e) zEllips3DFScan( stdin, (e) )
+
+#if 0
 __EXPORT void zEllips3DFPrint(FILE *fp, zEllips3D *ellips);
 #define zEllips3DPrint(e) zEllips3DFPrint( stdout, (e) )
+#endif
 
 /* methods for abstraction */
-extern zShape3DCom zeo_shape_ellips3d_com;
+extern zShape3DCom zeo_shape3d_ellips_com;
 
 #define zShape3DEllips(s) ( (zEllips3D*)(s)->body )
 
-__EXPORT zShape3D *zShape3DCreateEllips(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double rx, double ry, double rz, int div);
+__EXPORT zShape3D *zShape3DEllipsCreate(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double rx, double ry, double rz, int div);
 
-__EXPORT zShape3D *zShape3DCreateEllipsAlign(zShape3D *shape, zVec3D *c, double rx, double ry, double rz, int div);
+__EXPORT zShape3D *zShape3DEllipsCreateAlign(zShape3D *shape, zVec3D *c, double rx, double ry, double rz, int div);
 
 __END_DECLS
 

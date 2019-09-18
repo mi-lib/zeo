@@ -113,10 +113,12 @@ __EXPORT zMat3D *zCyl3DInertia(zCyl3D *cyl, zMat3D *inertia);
  */
 __EXPORT zPH3D *zCyl3DToPH(zCyl3D *cyl, zPH3D *ph);
 
+#if 0
 /*! \brief register a definition of tag-and-keys for a 3D cylinder to a ZTK format processor. */
-__EXPORT bool zCyl3DDefRegZTK(ZTK *ztk, char *tag);
+__EXPORT bool zCyl3DRegZTK(ZTK *ztk, char *tag);
 /*! \brief read a 3D cylinder from a ZTK format processor. */
 __EXPORT zCyl3D *zCyl3DFromZTK(zCyl3D *cyl, ZTK *ztk);
+#endif
 
 /*! \brief scan and print a 3D cylinder.
  *
@@ -146,15 +148,18 @@ __EXPORT zCyl3D *zCyl3DFromZTK(zCyl3D *cyl, ZTK *ztk);
  */
 __EXPORT zCyl3D *zCyl3DFScan(FILE *fp, zCyl3D *cyl);
 #define zCyl3DScan(c) zCyl3DFScan( stdin, (c) )
+
+#if 0
 __EXPORT void zCyl3DFPrint(FILE *fp, zCyl3D *cyl);
 #define zCyl3DPrint(c) zCyl3DFPrint( stdout, (c) )
+#endif
 
 /* methods for abstraction */
-extern zShape3DCom zeo_shape_cyl3d_com;
+extern zShape3DCom zeo_shape3d_cyl_com;
 
 #define zShape3DCyl(s) ( (zCyl3D*)(s)->body )
 
-__EXPORT zShape3D *zShape3DCreateCyl(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r, int div);
+__EXPORT zShape3D *zShape3DCylCreate(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r, int div);
 
 __END_DECLS
 

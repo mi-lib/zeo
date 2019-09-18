@@ -12,7 +12,7 @@
 __BEGIN_DECLS
 
 /* methods for abstraction */
-extern zShape3DCom zeo_shape_ph3d_com;
+extern zShape3DCom zeo_shape3d_ph_com;
 
 #define zShape3DPH(s) ( (zPH3D*)(s)->body )
 

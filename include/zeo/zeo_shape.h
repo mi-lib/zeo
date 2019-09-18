@@ -31,6 +31,7 @@ typedef struct{
   zMat3D *(*_inertia)(void*,zMat3D*);
   void (*_baryinertia)(void*,zVec3D*,zMat3D*);
   zPH3D *(*_toph)(void*,zPH3D*);
+  bool (*_regZTK)(ZTK*,char*);
   void *(*_fromZTK)(void*,ZTK*);
   void *(*_fscan)(FILE*,void*);
   void (*_fprint)(FILE*,void*);
@@ -58,6 +59,9 @@ typedef struct{
  * \ret a pointer \a shape
  */
 __EXPORT zShape3D *zShape3DInit(zShape3D *shape);
+
+/*! \brief assign a method of a 3D shape by referring a string. */
+__EXPORT zShape3D *zShape3DQueryAssign(zShape3D *shape, char *str);
 
 /*! \brief destroy a 3D shape instance.
  *
@@ -212,6 +216,20 @@ __END_DECLS
 #include <zeo/zeo_shape_cone.h>   /* cone */
 #include <zeo/zeo_shape_ph.h>     /* polyhedron (for class abstraction) */
 #include <zeo/zeo_shape_nurbs.h>  /* NURBS (for class abstraction) */
+
+__BEGIN_DECLS
+
+/* add the handle to the following list when you create a new shape class. */
+#define ZEO_SHAPE_COM_ARRAY \
+  zShape3DCom *_zeo_shape_com[] = {\
+    &zeo_shape3d_ph_com, &zeo_shape3d_box_com,\
+    &zeo_shape3d_sphere_com, &zeo_shape3d_ellips_com,\
+    &zeo_shape3d_cyl_com, &zeo_shape3d_ecyl_com, &zeo_shape3d_cone_com,\
+    &zeo_shape3d_nurbs_com,\
+    NULL,\
+  }
+
+__END_DECLS
 
 #include <zeo/zeo_shape_list.h>
 

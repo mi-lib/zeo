@@ -68,7 +68,7 @@ bool stlconv_read(zShape3D *shape)
   suffix = zGetSuffix( option[STLCONV_INPUTFILE].arg );
   if( strcmp( suffix, "stl" ) == 0 ){
     zShape3DInit( shape );
-    shape->com = &zeo_shape_ph3d_com;
+    shape->com = &zeo_shape3d_ph_com;
     eprintf( "read STL file.\n" );
     if( !( ret = zPH3DFReadSTL( fin, zShape3DPH(shape), buf, BUFSIZ ) ? true : false ) )
       eprintf( "read failure.\n" );

@@ -21,6 +21,19 @@ zShape3D *zShape3DInit(zShape3D *shape)
   return shape;
 }
 
+/* assign a method of a 3D shape by referring a string. */
+zShape3D *zShape3DQueryAssign(zShape3D *shape, char *str)
+{
+  ZEO_SHAPE_COM_ARRAY;
+  register int k;
+
+  shape->com = NULL;
+  for( k=0; _zeo_shape_com[k]; k++ )
+    if( strcmp( _zeo_shape_com[k]->typestr, str ) == 0 )
+      return ( shape->body = ( shape->com = _zeo_shape_com[k] )->_alloc() ) ? shape : NULL;
+  return NULL;
+}
+
 /* destroy a 3D shape. */
 void zShape3DDestroy(zShape3D *shape)
 {
@@ -97,7 +110,7 @@ zShape3D *zShape3DToPH(zShape3D *shape)
   }
   if( shape->com->_toph( shape->body, ph ) ){
     shape->body = ph;
-    shape->com = &zeo_shape_ph3d_com;
+    shape->com = &zeo_shape3d_ph_com;
     return shape;
   }
   zPH3DDestroy( ph );
@@ -131,23 +144,7 @@ static void *_zShape3DNameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return zNamePtr((zShape3D*)obj) ? obj : NULL;
 }
 static void *_zShape3DTypeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  /* this should be implemented as a more general function. */
-  zShape3DCom *com[] = {
-    &zeo_shape_ph3d_com, &zeo_shape_box3d_com,
-    &zeo_shape_sphere3d_com, &zeo_shape_ellips3d_com,
-    &zeo_shape_cyl3d_com, &zeo_shape_ecyl3d_com, &zeo_shape_cone3d_com,
-    &zeo_shape_nurbs_com,
-    NULL,
-  };
-  register int k;
-
-  ((zShape3D*)obj)->com = NULL;
-  for( k=0; com[k]; k++ )
-    if( strcmp( com[k]->typestr, ZTKVal(ztk) ) == 0 ){
-      ((zShape3D*)obj)->com = com[k];
-      return ( ((zShape3D*)obj)->body = ((zShape3D*)obj)->com->_alloc() ) ? obj : NULL;
-    }
-  return NULL;
+  return zShape3DQueryAssign( (zShape3D*)obj, ZTKVal(ztk) );
 }
 static void *_zShape3DOpticFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zArrayFindName( ((_zShape3DRefPrp*)arg)->oarray, ZTKVal(ztk), zShape3DOptic((zShape3D*)obj) );
@@ -187,15 +184,13 @@ static ZTKPrp __ztk_prp_shape[] = {
 /* register a definition of tag-and-keys for a 3D shape to a ZTK format processor. */
 bool zShape3DRegZTK(ZTK *ztk)
 {
-  return ZTKDefRegPrp( ztk, ZTK_TAG_SHAPE, __ztk_prp_shape ) &&
-         zBox3DDefRegZTK( ztk, ZTK_TAG_SHAPE ) &&
-         zSphere3DDefRegZTK( ztk, ZTK_TAG_SHAPE ) &&
-         zCyl3DDefRegZTK( ztk, ZTK_TAG_SHAPE ) &&
-         zCone3DDefRegZTK( ztk, ZTK_TAG_SHAPE ) &&
-         zEllips3DDefRegZTK( ztk, ZTK_TAG_SHAPE ) &&
-         zECyl3DDefRegZTK( ztk, ZTK_TAG_SHAPE ) &&
-         zPH3DDefRegZTK( ztk, ZTK_TAG_SHAPE ) &&
-         zNURBS3DDefRegZTK( ztk, ZTK_TAG_SHAPE );
+  ZEO_SHAPE_COM_ARRAY;
+  register int k;
+
+  if( !ZTKDefRegPrp( ztk, ZTK_TAG_SHAPE, __ztk_prp_shape ) ) return false;
+  for( k=0; _zeo_shape_com[k]; k++ )
+    if( !_zeo_shape_com[k]->_regZTK( ztk, ZTK_TAG_SHAPE ) ) return false;
+  return true;
 }
 
 /* read a 3D shape from a ZTK format processor. */
@@ -245,13 +240,7 @@ static bool _zShape3DFScan(FILE *fp, void *instance, char *buf, bool *success);
  * scan a 3D shape (internal function). */
 bool _zShape3DFScan(FILE *fp, void *instance, char *buf, bool *success)
 {
-  zShape3DCom *com[] = {
-    &zeo_shape_ph3d_com, &zeo_shape_box3d_com,
-    &zeo_shape_sphere3d_com, &zeo_shape_ellips3d_com,
-    &zeo_shape_cyl3d_com, &zeo_shape_ecyl3d_com, &zeo_shape_cone3d_com,
-    &zeo_shape_nurbs_com,
-    NULL,
-  };
+  ZEO_SHAPE_COM_ARRAY;
   _zShape3DParam *prm;
   zShape3D *ref = NULL;
   register int k;
@@ -260,9 +249,9 @@ bool _zShape3DFScan(FILE *fp, void *instance, char *buf, bool *success)
   if( strcmp( buf, "type" ) == 0 ){
     prm->shape->com = NULL;
     zFToken( fp, buf, BUFSIZ );
-    for( k=0; com[k]; k++ )
-      if( strcmp( com[k]->typestr, buf ) == 0 )
-        prm->shape->com = com[k];
+    for( k=0; _zeo_shape_com[k]; k++ )
+      if( strcmp( _zeo_shape_com[k]->typestr, buf ) == 0 )
+        prm->shape->com = _zeo_shape_com[k];
   } else if( strcmp( buf, "name" ) == 0 ){
     if( !( zNameSet( prm->shape, zFToken(fp,buf,BUFSIZ) ) ) )
       return ( *success = false );

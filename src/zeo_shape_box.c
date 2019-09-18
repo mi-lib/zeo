@@ -242,8 +242,9 @@ static ZTKPrp __ztk_prp_shape_box[] = {
   { "height", 1, _zBox3DHeightFromZTK, _zBox3DHeightFPrint },
 };
 
+#if 0
 /* register a definition of tag-and-keys for a 3D box to a ZTK format processor. */
-bool zBox3DDefRegZTK(ZTK *ztk, char *tag)
+bool zBox3DRegZTK(ZTK *ztk, char *tag)
 {
   return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_box );
 }
@@ -254,6 +255,7 @@ zBox3D *zBox3DFromZTK(zBox3D *box, ZTK *ztk)
   zBox3DInit( box );
   return ZTKEncodeKey( box, NULL, ztk, __ztk_prp_shape_box );
 }
+#endif
 
 /* scan a 3D box from a file. */
 bool _zBox3DFScan(FILE *fp, void *instance, char *buf, bool *success)
@@ -290,11 +292,13 @@ zBox3D *zBox3DFScan(FILE *fp, zBox3D *box)
   return box;
 }
 
+#if 0
 /* print out a 3D box to a file. */
 void zBox3DFPrint(FILE *fp, zBox3D *box)
 {
   ZTKPrpKeyFPrint( fp, box, __ztk_prp_shape_box );
 }
+#endif
 
 /* print a 3D box out to a file in a format to be plotted. */
 void zBox3DDataFPrint(FILE *fp, zBox3D *box)
@@ -328,83 +332,87 @@ void zBox3DDataFPrint(FILE *fp, zBox3D *box)
 
 /* methods for abstraction */
 
-static void *_zShape3DInitBox(void* shape){
+static void *_zShape3DBoxInit(void* shape){
   return zBox3DInit( shape ); }
-static void *_zShape3DAllocBox(void){
+static void *_zShape3DBoxAlloc(void){
   return zBox3DAlloc(); }
-static void *_zShape3DCloneBox(void *src){
+static void *_zShape3DBoxClone(void *src){
   zBox3D *cln;
   return ( cln = zBox3DAlloc() ) ? zBox3DCopy( src, cln ) : NULL; }
-static void *_zShape3DMirrorBox(void *src, zAxis axis){
+static void *_zShape3DBoxMirror(void *src, zAxis axis){
   zBox3D *mrr;
   return ( mrr = zBox3DAlloc() ) ? zBox3DMirror( src, mrr, axis ) : NULL; }
-static void _zShape3DDestroyBox(void *shape){}
-static void *_zShape3DXformBox(void *src, zFrame3D *f, void *dest){
+static void _zShape3DBoxDestroy(void *shape){}
+static void *_zShape3DBoxXform(void *src, zFrame3D *f, void *dest){
   return zBox3DXform( src, f, dest ); }
-static void *_zShape3DXformInvBox(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DBoxXformInv(void *src, zFrame3D *f, void *dest){
   return zBox3DXformInv( src, f, dest ); }
-static double _zShape3DClosestBox(void *shape, zVec3D *p, zVec3D *cp){
+static double _zShape3DBoxClosest(void *shape, zVec3D *p, zVec3D *cp){
   return zBox3DClosest( shape, p, cp ); }
-static double _zShape3DPointDistBox(void *shape, zVec3D *p){
+static double _zShape3DBoxPointDist(void *shape, zVec3D *p){
   return zBox3DPointDist( shape, p ); }
-static bool _zShape3DPointIsInsideBox(void *shape, zVec3D *p, bool rim){
+static bool _zShape3DBoxPointIsInside(void *shape, zVec3D *p, bool rim){
   return zBox3DPointIsInside( shape, p, rim ); }
-static double _zShape3DVolumeBox(void *shape){
+static double _zShape3DBoxVolume(void *shape){
   return zBox3DVolume( shape ); }
-static zVec3D *_zShape3DBarycenterBox(void *shape, zVec3D *c){
+static zVec3D *_zShape3DBoxBarycenter(void *shape, zVec3D *c){
   zVec3DCopy( zBox3DCenter((zBox3D*)shape), c ); return c; }
-static zMat3D *_zShape3DInertiaBox(void *shape, zMat3D *i){
+static zMat3D *_zShape3DBoxInertia(void *shape, zMat3D *i){
   return zBox3DInertia( shape, i ); }
-static void _zShape3DBaryInertiaBox(void *shape, zVec3D *c, zMat3D *i){
+static void _zShape3DBoxBaryInertia(void *shape, zVec3D *c, zMat3D *i){
   zVec3DCopy( zBox3DCenter((zBox3D*)shape), c );
   zBox3DInertia( shape, i ); }
-static zPH3D *_zShape3DToPHBox(void *shape, zPH3D *ph){
+static zPH3D *_zShape3DBoxToPH(void *shape, zPH3D *ph){
   return zBox3DToPH( shape, ph ); }
-static void *_zShape3DParseZTKBox(void *shape, ZTK *ztk){
-  return zBox3DFromZTK( shape, ztk ); }
-static void *_zShape3DFScanBox(FILE *fp, void *shape){
+static bool _zShape3DBoxRegZTK(ZTK *ztk, char *tag){
+  return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_box ); }
+static void *_zShape3DBoxParseZTK(void *shape, ZTK *ztk){
+  zBox3DInit( shape );
+  return ZTKEncodeKey( shape, NULL, ztk, __ztk_prp_shape_box ); }
+static void *_zShape3DBoxFScan(FILE *fp, void *shape){
   return zBox3DFScan( fp, shape ); }
-static void _zShape3DFPrintBox(FILE *fp, void *shape){
-  return zBox3DFPrint( fp, shape ); }
+static void _zShape3DBoxFPrint(FILE *fp, void *shape){
+  ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape_box ); }
 
-zShape3DCom zeo_shape_box3d_com = {
+zShape3DCom zeo_shape3d_box_com = {
   "box",
-  _zShape3DInitBox,
-  _zShape3DAllocBox,
-  _zShape3DCloneBox,
-  _zShape3DMirrorBox,
-  _zShape3DDestroyBox,
-  _zShape3DXformBox,
-  _zShape3DXformInvBox,
-  _zShape3DClosestBox,
-  _zShape3DPointDistBox,
-  _zShape3DPointIsInsideBox,
-  _zShape3DVolumeBox,
-  _zShape3DBarycenterBox,
-  _zShape3DInertiaBox,
-  _zShape3DBaryInertiaBox,
-  _zShape3DToPHBox,
-  _zShape3DParseZTKBox,
-  _zShape3DFScanBox,
-  _zShape3DFPrintBox,
+  _zShape3DBoxInit,
+  _zShape3DBoxAlloc,
+  _zShape3DBoxClone,
+  _zShape3DBoxMirror,
+  _zShape3DBoxDestroy,
+  _zShape3DBoxXform,
+  _zShape3DBoxXformInv,
+  _zShape3DBoxClosest,
+  _zShape3DBoxPointDist,
+  _zShape3DBoxPointIsInside,
+  _zShape3DBoxVolume,
+  _zShape3DBoxBarycenter,
+  _zShape3DBoxInertia,
+  _zShape3DBoxBaryInertia,
+  _zShape3DBoxToPH,
+  _zShape3DBoxRegZTK,
+  _zShape3DBoxParseZTK,
+  _zShape3DBoxFScan,
+  _zShape3DBoxFPrint,
 };
 
 /* create a 3D shape as a box. */
-zShape3D *zShape3DCreateBox(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double d, double w, double h)
+zShape3D *zShape3DBoxCreate(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double d, double w, double h)
 {
   zShape3DInit( shape );
   if( !( shape->body = zBox3DAlloc() ) ) return NULL;
   zBox3DCreate( zShape3DBox(shape), c, ax, ay, az, d, w, h );
-  shape->com = &zeo_shape_box3d_com;
+  shape->com = &zeo_shape3d_box_com;
   return shape;
 }
 
 /* create a 3D shape as an axis-aligned box. */
-zShape3D *zShape3DCreateBoxAlign(zShape3D *shape, zVec3D *c, double d, double w, double h)
+zShape3D *zShape3DBoxCreateAlign(zShape3D *shape, zVec3D *c, double d, double w, double h)
 {
   zShape3DInit( shape );
   if( !( shape->body = zBox3DAlloc() ) ) return NULL;
   zBox3DCreateAlign( zShape3DBox(shape), c, d, w, h );
-  shape->com = &zeo_shape_box3d_com;
+  shape->com = &zeo_shape3d_box_com;
   return shape;
 }

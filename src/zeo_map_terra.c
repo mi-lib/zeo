@@ -407,7 +407,7 @@ static ZTKPrp __ztk_prp_terra[] = {
 };
 
 /* register a definition of tag-and-keys for a 3D polyhedron cylinder to a ZTK format processor. */
-bool zTerraDefRegZTK(ZTK *ztk, char *tag)
+bool zTerraRegZTK(ZTK *ztk, char *tag)
 {
   return ZTKDefRegPrp( ztk, tag, __ztk_prp_terra );
 }

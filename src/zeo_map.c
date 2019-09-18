@@ -59,7 +59,7 @@ static ZTKPrp __ztk_prp_map_key[] = {
 bool zMapRegZTK(ZTK *ztk)
 {
   return ZTKDefRegPrp( ztk, ZTK_TAG_MAP, __ztk_prp_map_key ) &&
-         zTerraDefRegZTK( ztk, ZTK_TAG_MAP );
+         zTerraRegZTK( ztk, ZTK_TAG_MAP );
 }
 
 zMap *zMapFromZTK(zMap *map, ZTK *ztk)

@@ -109,10 +109,12 @@ __EXPORT zMat3D *zCone3DInertia(zCone3D *cone, zMat3D *inertia);
  */
 __EXPORT zPH3D *zCone3DToPH(zCone3D *cone, zPH3D *ph);
 
+#if 0
 /*! \brief register a definition of tag-and-keys for a 3D cone to a ZTK format processor. */
-__EXPORT bool zCone3DDefRegZTK(ZTK *ztk, char *tag);
+__EXPORT bool zCone3DRegZTK(ZTK *ztk, char *tag);
 /*! \brief read a 3D cone from a ZTK format processor. */
 __EXPORT zCone3D *zCone3DFromZTK(zCone3D *cone, ZTK *ztk);
+#endif
 
 /*! \brief scan and print a 3D cone.
  *
@@ -142,15 +144,18 @@ __EXPORT zCone3D *zCone3DFromZTK(zCone3D *cone, ZTK *ztk);
  */
 __EXPORT zCone3D *zCone3DFScan(FILE *fp, zCone3D *cone);
 #define zCone3DScan(c) zCone3DFScan( stdin, (c) )
+
+#if 0
 __EXPORT void zCone3DFPrint(FILE *fp, zCone3D *cone);
 #define zCone3DPrint(c) zCone3DFPrint( stdout, (c) )
+#endif
 
 /* methods for abstraction */
-extern zShape3DCom zeo_shape_cone3d_com;
+extern zShape3DCom zeo_shape3d_cone_com;
 
 #define zShape3DCone(s) ( (zCone3D*)(s)->body )
 
-__EXPORT zShape3D *zShape3DCreateCone(zShape3D *shape, zVec3D *c, zVec3D *v, double r, int div);
+__EXPORT zShape3D *zShape3DConeCreate(zShape3D *shape, zVec3D *c, zVec3D *v, double r, int div);
 
 __END_DECLS
 

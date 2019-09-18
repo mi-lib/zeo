@@ -130,10 +130,12 @@ __EXPORT zPH3D *zSphere3DToPH(zSphere3D *sphere, zPH3D *ph);
  */
 __EXPORT zSphere3D *zSphere3DFit(zSphere3D *s, zVec3DList *pc);
 
+#if 0
 /*! \brief register a definition of tag-and-keys for a 3D sphere to a ZTK format processor. */
-__EXPORT bool zSphere3DDefRegZTK(ZTK *ztk, char *tag);
+__EXPORT bool zSphere3DRegZTK(ZTK *ztk, char *tag);
 /*! \brief read a 3D sphere from a ZTK format processor. */
 __EXPORT zSphere3D *zSphere3DFromZTK(zSphere3D *sphere, ZTK *ztk);
+#endif
 
 /*! \brief scan and print a 3D sphere.
  *
@@ -168,11 +170,11 @@ __EXPORT void zSphere3DFPrint(FILE *fp, zSphere3D *sphere);
 #define zSphere3DPrint(s) zSphere3DFPrint( stdout, (s) )
 
 /* methods for abstraction */
-extern zShape3DCom zeo_shape_sphere3d_com;
+extern zShape3DCom zeo_shape3d_sphere_com;
 
 #define zShape3DSphere(s) ( (zSphere3D*)(s)->body )
 
-__EXPORT zShape3D *zShape3DCreateSphere(zShape3D *shape, zVec3D *c, double r, int div);
+__EXPORT zShape3D *zShape3DSphereCreate(zShape3D *shape, zVec3D *c, double r, int div);
 
 __END_DECLS
 

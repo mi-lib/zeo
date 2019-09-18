@@ -184,7 +184,7 @@ __EXPORT zPH3D *zPH3DTorus(zPH3D *torus, zVec3D loop[], int n, int div, zVec3D *
 __EXPORT zPH3D *zPH3DLathe(zPH3D *lathe, zVec3D rim[], int n, int div, zVec3D *center, zVec3D *axis);
 
 /*! \brief register a definition of tag-and-keys for a 3D polyhedron cylinder to a ZTK format processor. */
-__EXPORT bool zPH3DDefRegZTK(ZTK *ztk, char *tag);
+__EXPORT bool zPH3DRegZTK(ZTK *ztk, char *tag);
 /*! \brief read a 3D polyhedron from a ZTK format processor. */
 __EXPORT zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk);
 

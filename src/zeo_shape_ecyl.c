@@ -306,6 +306,7 @@ static ZTKPrp __ztk_prp_shape_ecyl[] = {
   { "div", 1, _zECyl3DDivFromZTK, _zECyl3DDivFPrint },
 };
 
+#if 0
 /* register a definition of tag-and-keys for a 3D elliptic cylinder to a ZTK format processor. */
 bool zECyl3DDefRegZTK(ZTK *ztk, char *tag)
 {
@@ -318,6 +319,7 @@ zECyl3D *zECyl3DFromZTK(zECyl3D *ecyl, ZTK *ztk)
   zECyl3DInit( ecyl );
   return ZTKEncodeKey( ecyl, NULL, ztk, __ztk_prp_shape_ecyl );
 }
+#endif
 
 typedef struct{
   int ic; /* number of centers */
@@ -369,81 +371,87 @@ zECyl3D *zECyl3DFScan(FILE *fp, zECyl3D *cyl)
   return zECyl3DCreate( cyl, &prm.c[0], &prm.c[1], prm.r[0], prm.r[1], &prm.ref, prm.div );
 }
 
+#if 0
 /* print out a 3D elliptic cylinder to a file. */
 void zECyl3DFPrint(FILE *fp, zECyl3D *ecyl)
 {
   ZTKPrpKeyFPrint( fp, ecyl, __ztk_prp_shape_ecyl );
 }
+#endif
 
 /* methods for abstraction */
 
-static void *_zShape3DInitECyl(void* shape){
+static void *_zShape3DECylInit(void* shape){
   return zECyl3DInit( shape ); }
-static void *_zShape3DAllocECyl(void){
+static void *_zShape3DECylAlloc(void){
   return zECyl3DAlloc(); }
-static void *_zShape3DCloneECyl(void *src){
+static void *_zShape3DECylClone(void *src){
   zECyl3D *cln;
   return ( cln = zECyl3DAlloc() ) ? zECyl3DCopy( src, cln ) : NULL; }
-static void *_zShape3DMirrorECyl(void *src, zAxis axis){
+static void *_zShape3DECylMirror(void *src, zAxis axis){
   zECyl3D *mrr;
   return ( mrr = zECyl3DAlloc() ) ? zECyl3DMirror( src, mrr, axis ) : NULL; }
-static void _zShape3DDestroyECyl(void *shape){}
-static void *_zShape3DXformECyl(void *src, zFrame3D *f, void *dest){
+static void _zShape3DECylDestroy(void *shape){}
+static void *_zShape3DECylXform(void *src, zFrame3D *f, void *dest){
   return zECyl3DXform( src, f, dest ); }
-static void *_zShape3DXformInvECyl(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DECylXformInv(void *src, zFrame3D *f, void *dest){
   return zECyl3DXformInv( src, f, dest ); }
-static double _zShape3DClosestECyl(void *shape, zVec3D *p, zVec3D *cp){
+static double _zShape3DECylClosest(void *shape, zVec3D *p, zVec3D *cp){
   return zECyl3DClosest( shape, p, cp ); }
-static double _zShape3DPointDistECyl(void *shape, zVec3D *p){
+static double _zShape3DECylPointDist(void *shape, zVec3D *p){
   return zECyl3DPointDist( shape, p ); }
-static bool _zShape3DPointIsInsideECyl(void *shape, zVec3D *p, bool rim){
+static bool _zShape3DECylPointIsInside(void *shape, zVec3D *p, bool rim){
   return zECyl3DPointIsInside( shape, p, rim ); }
-static double _zShape3DVolumeECyl(void *shape){
+static double _zShape3DECylVolume(void *shape){
   return zECyl3DVolume( shape ); }
-static zVec3D *_zShape3DBarycenterECyl(void *shape, zVec3D *c){
+static zVec3D *_zShape3DECylBarycenter(void *shape, zVec3D *c){
   return zECyl3DBarycenter( shape, c ); }
-static zMat3D *_zShape3DInertiaECyl(void *shape, zMat3D *i){
+static zMat3D *_zShape3DECylInertia(void *shape, zMat3D *i){
   return zECyl3DInertia( shape, i ); }
-static void _zShape3DBaryInertiaECyl(void *shape, zVec3D *c, zMat3D *i){
+static void _zShape3DECylBaryInertia(void *shape, zVec3D *c, zMat3D *i){
   zECyl3DBarycenter( shape, c );
   zECyl3DInertia( shape, i ); }
-static zPH3D *_zShape3DToPHECyl(void *shape, zPH3D *ph){
+static zPH3D *_zShape3DECylToPH(void *shape, zPH3D *ph){
   return zECyl3DToPH( shape, ph ); }
-static void *_zShape3DParseZTKECyl(void *shape, ZTK *ztk){
-  return zECyl3DFromZTK( shape, ztk ); }
-static void *_zShape3DFScanECyl(FILE *fp, void *shape){
+static bool _zShape3DECylRegZTK(ZTK *ztk, char *tag){
+  return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_ecyl ); }
+static void *_zShape3DECylParseZTK(void *shape, ZTK *ztk){
+  zECyl3DInit( shape );
+  return ZTKEncodeKey( shape, NULL, ztk, __ztk_prp_shape_ecyl ); }
+static void *_zShape3DECylFScan(FILE *fp, void *shape){
   return zECyl3DFScan( fp, shape ); }
-static void _zShape3DFPrintECyl(FILE *fp, void *shape){
-  return zECyl3DFPrint( fp, shape ); }
+static void _zShape3DECylFPrint(FILE *fp, void *shape){
+  ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape_ecyl ); }
 
-zShape3DCom zeo_shape_ecyl3d_com = {
+zShape3DCom zeo_shape3d_ecyl_com = {
   "ellipticcylinder",
-  _zShape3DInitECyl,
-  _zShape3DAllocECyl,
-  _zShape3DCloneECyl,
-  _zShape3DMirrorECyl,
-  _zShape3DDestroyECyl,
-  _zShape3DXformECyl,
-  _zShape3DXformInvECyl,
-  _zShape3DClosestECyl,
-  _zShape3DPointDistECyl,
-  _zShape3DPointIsInsideECyl,
-  _zShape3DVolumeECyl,
-  _zShape3DBarycenterECyl,
-  _zShape3DInertiaECyl,
-  _zShape3DBaryInertiaECyl,
-  _zShape3DToPHECyl,
-  _zShape3DParseZTKECyl,
-  _zShape3DFScanECyl,
-  _zShape3DFPrintECyl,
+  _zShape3DECylInit,
+  _zShape3DECylAlloc,
+  _zShape3DECylClone,
+  _zShape3DECylMirror,
+  _zShape3DECylDestroy,
+  _zShape3DECylXform,
+  _zShape3DECylXformInv,
+  _zShape3DECylClosest,
+  _zShape3DECylPointDist,
+  _zShape3DECylPointIsInside,
+  _zShape3DECylVolume,
+  _zShape3DECylBarycenter,
+  _zShape3DECylInertia,
+  _zShape3DECylBaryInertia,
+  _zShape3DECylToPH,
+  _zShape3DECylRegZTK,
+  _zShape3DECylParseZTK,
+  _zShape3DECylFScan,
+  _zShape3DECylFPrint,
 };
 
 /* create a 3D shape as an elliptic cylinder. */
-zShape3D *zShape3DCreateECyl(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div)
+zShape3D *zShape3DECylCreate(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div)
 {
   zShape3DInit( shape );
   if( !( shape->body = zECyl3DAlloc() ) ) return NULL;
   zECyl3DCreate( zShape3DECyl(shape), c1, c2, r1, r2, ref, div );
-  shape->com = &zeo_shape_ecyl3d_com;
+  shape->com = &zeo_shape3d_ecyl_com;
   return shape;
 }

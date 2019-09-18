@@ -279,8 +279,9 @@ static ZTKPrp __ztk_prp_shape_cone[] = {
   { "div", 1, _zCone3DDivFromZTK, _zCone3DDivFPrint },
 };
 
+#if 0
 /* register a definition of tag-and-keys for a 3D cone to a ZTK format processor. */
-bool zCone3DDefRegZTK(ZTK *ztk, char *tag)
+bool zCone3DRegZTK(ZTK *ztk, char *tag)
 {
   return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_cone );
 }
@@ -291,6 +292,7 @@ zCone3D *zCone3DFromZTK(zCone3D *cone, ZTK *ztk)
   zCone3DInit( cone );
   return ZTKEncodeKey( cone, NULL, ztk, __ztk_prp_shape_cone );
 }
+#endif
 
 /* (static)
  * scan a 3D cone (internal function). */
@@ -317,81 +319,87 @@ zCone3D *zCone3DFScan(FILE *fp, zCone3D *cone)
   return cone;
 }
 
+#if 0
 /* print out a 3D cone to a file. */
 void zCone3DFPrint(FILE *fp, zCone3D *cone)
 {
   ZTKPrpKeyFPrint( fp, cone, __ztk_prp_shape_cone );
 }
+#endif
 
 /* methods for abstraction */
 
-static void *_zShape3DInitCone(void* shape){
+static void *_zShape3DConeInit(void* shape){
   return zCone3DInit( shape ); }
-static void *_zShape3DAllocCone(void){
+static void *_zShape3DConeAlloc(void){
   return zCone3DAlloc(); }
-static void *_zShape3DCloneCone(void *src){
+static void *_zShape3DConeClone(void *src){
   zCone3D *cln;
   return ( cln = zCone3DAlloc() ) ? zCone3DCopy( src, cln ) : NULL; }
-static void *_zShape3DMirrorCone(void *src, zAxis axis){
+static void *_zShape3DConeMirror(void *src, zAxis axis){
   zCone3D *mrr;
   return ( mrr = zCone3DAlloc() ) ? zCone3DMirror( src, mrr, axis ) : NULL; }
-static void _zShape3DDestroyCone(void *shape){}
-static void *_zShape3DXformCone(void *src, zFrame3D *f, void *dest){
+static void _zShape3DConeDestroy(void *shape){}
+static void *_zShape3DConeXform(void *src, zFrame3D *f, void *dest){
   return zCone3DXform( src, f, dest ); }
-static void *_zShape3DXformInvCone(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DConeXformInv(void *src, zFrame3D *f, void *dest){
   return zCone3DXformInv( src, f, dest ); }
-static double _zShape3DClosestCone(void *shape, zVec3D *p, zVec3D *cp){
+static double _zShape3DConeClosest(void *shape, zVec3D *p, zVec3D *cp){
   return zCone3DClosest( shape, p, cp ); }
-static double _zShape3DPointDistCone(void *shape, zVec3D *p){
+static double _zShape3DConePointDist(void *shape, zVec3D *p){
   return zCone3DPointDist( shape, p ); }
-static bool _zShape3DPointIsInsideCone(void *shape, zVec3D *p, bool rim){
+static bool _zShape3DConePointIsInside(void *shape, zVec3D *p, bool rim){
   return zCone3DPointIsInside( shape, p, rim ); }
-static double _zShape3DVolumeCone(void *shape){
+static double _zShape3DConeVolume(void *shape){
   return zCone3DVolume( shape ); }
-static zVec3D *_zShape3DBarycenterCone(void *shape, zVec3D *c){
+static zVec3D *_zShape3DConeBarycenter(void *shape, zVec3D *c){
   return zCone3DBarycenter( shape, c ); }
-static zMat3D *_zShape3DInertiaCone(void *shape, zMat3D *i){
+static zMat3D *_zShape3DConeInertia(void *shape, zMat3D *i){
   return zCone3DInertia( shape, i ); }
-static void _zShape3DBaryInertiaCone(void *shape, zVec3D *c, zMat3D *i){
+static void _zShape3DConeBaryInertia(void *shape, zVec3D *c, zMat3D *i){
   zCone3DBarycenter( shape, c );
   zCone3DInertia( shape, i ); }
-static zPH3D *_zShape3DToPHCone(void *shape, zPH3D *ph){
+static zPH3D *_zShape3DConeToPH(void *shape, zPH3D *ph){
   return zCone3DToPH( shape, ph ); }
-static void *_zShape3DParseZTKCone(void *shape, ZTK *ztk){
-  return zCone3DFromZTK( shape, ztk ); }
-static void *_zShape3DFScanCone(FILE *fp, void *shape){
+static bool _zShape3DConeRegZTK(ZTK *ztk, char *tag){
+  return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_cone ); }
+static void *_zShape3DConeParseZTK(void *shape, ZTK *ztk){
+  zCone3DInit( shape );
+  return ZTKEncodeKey( shape, NULL, ztk, __ztk_prp_shape_cone ); }
+static void *_zShape3DConeFScan(FILE *fp, void *shape){
   return zCone3DFScan( fp, shape ); }
-static void _zShape3DFPrintCone(FILE *fp, void *shape){
-  return zCone3DFPrint( fp, shape ); }
+static void _zShape3DConeFPrint(FILE *fp, void *shape){
+  ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape_cone ); }
 
-zShape3DCom zeo_shape_cone3d_com = {
+zShape3DCom zeo_shape3d_cone_com = {
   "cone",
-  _zShape3DInitCone,
-  _zShape3DAllocCone,
-  _zShape3DCloneCone,
-  _zShape3DMirrorCone,
-  _zShape3DDestroyCone,
-  _zShape3DXformCone,
-  _zShape3DXformInvCone,
-  _zShape3DClosestCone,
-  _zShape3DPointDistCone,
-  _zShape3DPointIsInsideCone,
-  _zShape3DVolumeCone,
-  _zShape3DBarycenterCone,
-  _zShape3DInertiaCone,
-  _zShape3DBaryInertiaCone,
-  _zShape3DToPHCone,
-  _zShape3DParseZTKCone,
-  _zShape3DFScanCone,
-  _zShape3DFPrintCone,
+  _zShape3DConeInit,
+  _zShape3DConeAlloc,
+  _zShape3DConeClone,
+  _zShape3DConeMirror,
+  _zShape3DConeDestroy,
+  _zShape3DConeXform,
+  _zShape3DConeXformInv,
+  _zShape3DConeClosest,
+  _zShape3DConePointDist,
+  _zShape3DConePointIsInside,
+  _zShape3DConeVolume,
+  _zShape3DConeBarycenter,
+  _zShape3DConeInertia,
+  _zShape3DConeBaryInertia,
+  _zShape3DConeToPH,
+  _zShape3DConeRegZTK,
+  _zShape3DConeParseZTK,
+  _zShape3DConeFScan,
+  _zShape3DConeFPrint,
 };
 
 /* create a 3D shape as a cone. */
-zShape3D *zShape3DCreateCone(zShape3D *shape, zVec3D *c, zVec3D *v, double r, int div)
+zShape3D *zShape3DConeCreate(zShape3D *shape, zVec3D *c, zVec3D *v, double r, int div)
 {
   zShape3DInit( shape );
   if( !( shape->body = zCone3DAlloc() ) ) return NULL;
   zCone3DCreate( zShape3DCone(shape), c, v, r, div );
-  shape->com = &zeo_shape_cone3d_com;
+  shape->com = &zeo_shape3d_cone_com;
   return shape;
 }

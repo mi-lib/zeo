@@ -73,10 +73,12 @@ __EXPORT zMat3D *zECyl3DInertia(zECyl3D *cyl, zMat3D *inertia);
 /*! \brief convert an elliptic cylinder to a polyhedron. */
 __EXPORT zPH3D *zECyl3DToPH(zECyl3D *cyl, zPH3D *ph);
 
+#if 0
 /*! \brief register a definition of tag-and-keys for a 3D elliptic cylinder to a ZTK format processor. */
-__EXPORT bool zECyl3DDefRegZTK(ZTK *ztk, char *tag);
+__EXPORT bool zECyl3DRegZTK(ZTK *ztk, char *tag);
 /*! \brief read a 3D elliptic cylinder from a ZTK format processor. */
 __EXPORT zECyl3D *zECyl3DFromZTK(zECyl3D *ecyl, ZTK *ztk);
+#endif
 
 /*! \brief scan a 3D elliptic cylinder from a file. */
 __EXPORT zECyl3D *zECyl3DFScan(FILE *fp, zECyl3D *cyl);
@@ -87,11 +89,11 @@ __EXPORT void zECyl3DFPrint(FILE *fp, zECyl3D *cyl);
 #define zECyl3DPrint(c) zECyl3DFPrint( stdout, (c) )
 
 /*! \brief methods for abstraction */
-extern zShape3DCom zeo_shape_ecyl3d_com;
+extern zShape3DCom zeo_shape3d_ecyl_com;
 
 #define zShape3DECyl(s) ( (zECyl3D*)(s)->body )
 
-__EXPORT zShape3D *zShape3DCreateECyl(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div);
+__EXPORT zShape3D *zShape3DECylCreate(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div);
 
 __END_DECLS
 

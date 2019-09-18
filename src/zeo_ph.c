@@ -448,7 +448,7 @@ static ZTKPrp __ztk_prp_ph[] = {
 };
 
 /* register a definition of tag-and-keys for a 3D polyhedron cylinder to a ZTK format processor. */
-bool zPH3DDefRegZTK(ZTK *ztk, char *tag)
+bool zPH3DRegZTK(ZTK *ztk, char *tag)
 {
   return ZTKDefRegPrp( ztk, tag, __ztk_prp_ph );
 }
