@@ -33,8 +33,7 @@ typedef struct{
   zPH3D *(*_toph)(void*,zPH3D*);
   bool (*_regZTK)(ZTK*,char*);
   void *(*_fromZTK)(void*,ZTK*);
-  void *(*_fscan)(FILE*,void*);
-  void (*_fprint)(FILE*,void*);
+  void (*_fprintZTK)(FILE*,void*);
 } zShape3DCom;
 
 /* ********************************************************** */
@@ -121,7 +120,7 @@ zArrayClass( zShape3DArray, zShape3D );
 __EXPORT int zShape3DDivFromZTK(ZTK *ztk);
 
 /*! \brief register a definition of tag-and-keys for a 3D shape to a ZTK format processor. */
-__EXPORT bool zShape3DRegZTK(ZTK *ztk);
+__EXPORT bool zShape3DRegZTK(ZTK *ztk, char *tag);
 
 /*! \brief scan a 3D shape from a ZTK format processor.
  *
@@ -153,58 +152,18 @@ __EXPORT zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpti
 
 /*! \brief print a 3D shape to a file stream.
  *
- * zShape3DFPrint() prints information of \a shape out to
- * the current position of a file \a fp in the ZTK format.
- *
- * zShape3DPrint() prints information of \a shape out to
- * the standard output.
+ * zShape3DFPrintZTK() prints information of \a shape out to
+ * the current position of a file \a fp in ZTK format.
  * \return
- * zShape3DFPrint() and zShape3DPrint() return no value.
+ * zShape3DFPrintZTK() returns no value.
  */
-__EXPORT void zShape3DFPrint(FILE *fp, zShape3D *shape);
-#define zShape3DPrint(s) zShape3DFPrint( stdout, (s) )
+__EXPORT void zShape3DFPrintZTK(FILE *fp, zShape3D *shape);
 
-/*! \brief scan and print a 3D shape.
- *
- * zShape3DFScan() scans information of a 3D shape from the
- * current position of a file \a fp and creates a new shape
- * \a shape. An acceptable data file format is as follows.
- *
- *  name : <name>
- *  optic : <optical info>
- *  .
- *  .
- *
- * Since all types of shapes are internally stored as polyhedra,
- * the data description is followed by that of polyhedron.
- * The bracketed parts must be replaced by real numbers.
- * <name> is the identifier of the shape. One can define
- * arbitrary name which does not involve any white spaces
- * or tab charactors.
- *
- * The shapes defined in advance might be referred by
- * others by mirror key. The candidates should be pointed
- * by \a sarray. \a ns is the size of \a sarray.
- *
- * The candidates of optical information set has to be
- * prepared in \a oarray. \a no is the size of \a oarray.
- *
- * zShape3DScan() scans information of a shape from the
- * standard input.
- *
- * zShape3DFPrint() prints information of \a shape out to
- * the current position of a file \a fp in the same format
- * with the above.
- *
- * zShape3DPrint() prints information of \a shape out to
- * the standard output.
- * \return
- * zShape3DFScan() and zShape3DScan() return a pointer \a shape.
- * zShape3DFPrint() and zShape3DPrint() return no value.
- */
-__EXPORT zShape3D *zShape3DFScan(FILE *fp, zShape3D *shape, zShape3D *sarray, int ns, zOpticalInfo *oarray, int no);
-#define zShape3DScan(s,sa,ns,oa,no) \
-  zShape3DFScan( stdin, (s), (sa), (ns), (oa), (no) )
+/*! \brief read a 3D shape from a ZTK format file. */
+__EXPORT zShape3D *zShape3DReadZTK(zShape3D *shape, char filename[]);
+
+/*! \brief write a 3D shape to a ZTK format file. */
+__EXPORT bool zShape3DWriteZTK(zShape3D *shape, char filename[]);
 
 __END_DECLS
 

@@ -74,18 +74,18 @@ double zShapeListClosest(zShapeList *l, zVec3D *p, zVec3D *cp)
   return dmin;
 }
 
-/* print a cell of a shape list out to a file. */
-void zShapeListCellFPrint(FILE *fp, zShapeListCell *cell)
+/* print a cell of a shape list out to a file in a ZTK format. */
+void zShapeListCellFPrintZTK(FILE *fp, zShapeListCell *cell)
 {
   if( !cell || !zShapeListCellShape(cell) ) return;
-  zShape3DFPrint( fp, zShapeListCellShape(cell) );
+  zShape3DFPrintZTK( fp, zShapeListCellShape(cell) );
 }
 
-/* print a list of shapes. */
-void zShapeListFPrint(FILE *fp, zShapeList *list)
+/* print a list of shapes to a file in a ZTK format. */
+void zShapeListFPrintZTK(FILE *fp, zShapeList *list)
 {
   zShapeListCell *cp;
 
   zListForEach( list, cp )
-    zShapeListCellFPrint( fp, cp );
+    zShapeListCellFPrintZTK( fp, cp );
 }

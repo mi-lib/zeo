@@ -260,13 +260,6 @@ __EXPORT zFrame3D *zFrame3DDHFromZTK(zFrame3D *f, ZTK *ztk);
  * zFrame3DScan() scans 12 values from the standard input and
  * creates a 3D frame \a f from them.
  *
- * zFrame3DDHFScan() scans 4 values from the current position
- * of a file \a fp and creates a 3D frame \a f from them. The
- * values mean DH parameters ( a, alpha, d, theta ).
- * The unit of both \a alpha and \a theta is degree.
- * zFrame3DDHScan() scans 4 values from the standard input and
- * creates a 3D frame \a f from them.
- *
  * zFrame3DFPrint() prints a 3D frame \a f out to the current
  * position of a file \a fp in the following style.
  *  {
@@ -285,8 +278,7 @@ __EXPORT zFrame3D *zFrame3DDHFromZTK(zFrame3D *f, ZTK *ztk);
  */
 __EXPORT zFrame3D *zFrame3DFScan(FILE *fp, zFrame3D *f);
 #define zFrame3DScan(f) zFrame3DFScan( stdin, (f) )
-__EXPORT zFrame3D *zFrame3DDHFScan(FILE *fp, zFrame3D *f);
-#define zFrame3DDHScan(f) zFrame3DDHFScan( stdin, (f) )
+
 __EXPORT void zFrame3DFPrint(FILE *fp, zFrame3D *f);
 #define zFrame3DPrint(f) zFrame3DFPrint( stdout, (f) )
 

@@ -6,8 +6,7 @@
 
 #include <zeo/zeo_misc.h>
 
-static char *__zaxisname[] = {
-  "x", "y", "z", "tilt", "elev", "azim", NULL };
+static char *__zaxisname[] = { "x", "y", "z", "tilt", "elev", "azim", NULL };
 
 /* string for the name of axis. */
 char *zAxisStr(zAxis axis)

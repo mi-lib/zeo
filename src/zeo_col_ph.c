@@ -6,9 +6,7 @@
 
 #include <zeo/zeo_col.h>
 
-/* zColChkPH3D
- * - check if two polyhedra intersect with each other.
- */
+/* check if two polyhedra intersect with each other. */
 bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, zVec3D *p1, zVec3D *p2)
 {
   zVec3D _p1, _p2;
@@ -20,25 +18,14 @@ bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, zVec3D *p1, zVec3D *p2)
 
 /* Muller-Preparata's algorithm */
 
-static zVec3D *_zTri3DDualXform(zTri3D *t, zVec3D *p, zVec3D *dx);
-static zVec3D *_zTri3DDualXform_a(zTri3D *t, zVec3D *c, zVec3D *dx);
-static zVec3D *_zTri3DDualXform_b(zTri3D *t, zVec3D *dx);
-static zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib);
-
-/* (static)
- * _zTri3DDualXform
- * - dual transfer from/to point to/from plane.
- */
-zVec3D *_zTri3DDualXform(zTri3D *t, zVec3D *p, zVec3D *dx)
+/* dual transfer from/to point to/from plane. */
+static zVec3D *_zTri3DDualXform(zTri3D *t, zVec3D *p, zVec3D *dx)
 {
   return zVec3DDiv( zTri3DNorm(t), zVec3DInnerProd(zTri3DNorm(t),p), dx );
 }
 
-/* (static)
- * _zTri3DDualXform_a
- * - dual transfer from/to point to/from plane shifting origin.
- */
-zVec3D *_zTri3DDualXform_a(zTri3D *t, zVec3D *c, zVec3D *dx)
+/* dual transfer from/to point to/from plane shifting origin. */
+static zVec3D *_zTri3DDualXform_a(zTri3D *t, zVec3D *c, zVec3D *dx)
 {
   zVec3D p;
 
@@ -46,20 +33,14 @@ zVec3D *_zTri3DDualXform_a(zTri3D *t, zVec3D *c, zVec3D *dx)
   return _zTri3DDualXform( t, &p, dx );
 }
 
-/* (static)
- * _zTri3DDualXform_b
- * - simple dual transfer from/to point to/from plane.
- */
-zVec3D *_zTri3DDualXform_b(zTri3D *t, zVec3D *dx)
+/* simple dual transfer from/to point to/from plane. */
+static zVec3D *_zTri3DDualXform_b(zTri3D *t, zVec3D *dx)
 {
   return _zTri3DDualXform( t, zTri3DVert(t,0), dx );
 }
 
-/* (static)
- * _zIntersectPH3DPointIsInside
- * - return a face of a polyhedron close to a point.
- */
-zTri3D *_zIntersectPH3DPointIsInside(zPH3D *ph, zVec3D *p, double *dis)
+/* return a face of a polyhedron close to a point. */
+static zTri3D *_zIntersectPH3DPointIsInside(zPH3D *ph, zVec3D *p, double *dis)
 {
   register int i;
 
@@ -73,11 +54,8 @@ zTri3D *_zIntersectPH3DPointIsInside(zPH3D *ph, zVec3D *p, double *dis)
   return NULL;
 }
 
-/* (static)
- * _zIntersectPH3D
- * - intersection of convices by Muller-Preparata's algorithm.
- */
-zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib)
+/* intersection of convices by Muller-Preparata's algorithm. */
+static zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib)
 {
   zVec3D *v, p1, p2, p_temp;
   zTri3D *tri;
@@ -91,7 +69,7 @@ zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib)
   if( !zGJKDepth( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2), &p1, &p2 ) ) return NULL;
   zVec3DMid( &p1, &p2, &p_temp );
   zVec3DCopy( &p_temp, &p1) ;
-  for( i=0; i<=Z_MAX_ITER_NUM; i++ ){
+  for( dis1=dis2=0, i=0; i<=Z_MAX_ITER_NUM; i++ ){
     tri1 = _zIntersectPH3DPointIsInside( ph1, &p1, &dis1 );
     tri2 = _zIntersectPH3DPointIsInside( ph2, &p1, &dis2 );
     if( !tri1 && !tri2 ) break;
@@ -145,18 +123,13 @@ zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib)
   return phcol;
 }
 
-/* zIntersectPH3D
- * - intersection of convices by Muller-Preparata's algorithm.
- */
+/* intersection of convices by Muller-Preparata's algorithm. */
 zPH3D *zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol)
 {
   return _zIntersectPH3D( ph1, ph2, phcol, NULL );
 }
 
-/* zIntersectPH3DFast
- * - intersection of convices by Muller-Preparata's algorithm
- *   with a focusing-acceleration.
- */
+/* intersection of convices by Muller-Preparata's algorithm with a focusing-acceleration. */
 zPH3D *zIntersectPH3DFast(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol)
 {
   zAABox3D ib;

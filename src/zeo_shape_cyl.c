@@ -11,8 +11,6 @@
  * 3D cylinder class
  * ********************************************************** */
 
-static bool _zCyl3DFScan(FILE *fp, void *instance, char *buf, bool *success);
-
 /* create a 3D cylinder. */
 zCyl3D *zCyl3DCreate(zCyl3D *cyl, zVec3D *c1, zVec3D *c2, double r, int div)
 {
@@ -249,84 +247,18 @@ static void *_zCyl3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zCyl3DDiv((zCyl3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static void _zCyl3DCenterFPrint(FILE *fp, int i, void *obj){
+static void _zCyl3DCenterFPrintZTK(FILE *fp, int i, void *obj){
   zVec3DFPrint( fp, zCyl3DCenter((zCyl3D*)obj,i) ); }
-static void _zCyl3DRadiusFPrint(FILE *fp, int i, void *obj){
+static void _zCyl3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", zCyl3DRadius((zCyl3D*)obj) ); }
-static void _zCyl3DDivFPrint(FILE *fp, int i, void *obj){
+static void _zCyl3DDivFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%d\n", zCyl3DDiv((zCyl3D*)obj) ); }
 
 static ZTKPrp __ztk_prp_shape_cyl[] = {
-  { "center", 2, _zCyl3DCenterFromZTK, _zCyl3DCenterFPrint },
-  { "radius", 1, _zCyl3DRadiusFromZTK, _zCyl3DRadiusFPrint },
-  { "div", 1, _zCyl3DDivFromZTK, _zCyl3DDivFPrint },
+  { "center", 2, _zCyl3DCenterFromZTK, _zCyl3DCenterFPrintZTK },
+  { "radius", 1, _zCyl3DRadiusFromZTK, _zCyl3DRadiusFPrintZTK },
+  { "div", 1, _zCyl3DDivFromZTK, _zCyl3DDivFPrintZTK },
 };
-
-#if 0
-/* register a definition of tag-and-keys for a 3D cylinder to a ZTK format processor. */
-bool zCyl3DRegZTK(ZTK *ztk, char *tag)
-{
-  return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_cyl );
-}
-
-/* read a 3D cylinder from a ZTK format processor. */
-zCyl3D *zCyl3DFromZTK(zCyl3D *cyl, ZTK *ztk)
-{
-  zCyl3DInit( cyl );
-  return ZTKEncodeKey( cyl, NULL, ztk, __ztk_prp_shape_cyl );
-}
-#endif
-
-typedef struct{
-  zVec3D c[2];
-  int ic;
-  double r;
-  int div;
-} _zCyl3DParam;
-
-/* (static)
- * scan a 3D cylinder (internal function). */
-bool _zCyl3DFScan(FILE *fp, void *instance, char *buf, bool *success)
-{
-  _zCyl3DParam *prm;
-
-  prm = instance;
-  if( strcmp( buf, "center" ) == 0 ){
-    if( prm->ic > 1 )
-      ZRUNWARN( ZEO_ERR_CENTER_MANY );
-    else
-      zVec3DFScan( fp, &prm->c[prm->ic++] );
-  } else if( strcmp( buf, "radius" ) == 0 ){
-    prm->r = zFDouble( fp );
-  } else if( strcmp( buf, "div" ) == 0 ){
-    prm->div = zFInt( fp );
-  } else
-    return false;
-  return true;
-}
-
-/* scan a 3D cylinder from a file. */
-zCyl3D *zCyl3DFScan(FILE *fp, zCyl3D *cyl)
-{
-  _zCyl3DParam prm;
-
-  zCyl3DInit( cyl );
-  zVec3DZero( &prm.c[0] );
-  zVec3DZero( &prm.c[1] );
-  prm.ic = 0;
-  prm.r = 0;
-  prm.div = 0;
-  zFieldFScan( fp, _zCyl3DFScan, &prm );
-  return zCyl3DCreate( cyl, &prm.c[0], &prm.c[1], prm.r, prm.div );
-}
-
-#if 0
-/* print out a 3D cylinder to a file. */
-void zCyl3DFPrint(FILE *fp, zCyl3D *cyl)
-{
-  ZTKPrpKeyFPrint( fp, cyl, __ztk_prp_shape_cyl );
-}
-#endif
 
 /* methods for abstraction */
 
@@ -366,10 +298,8 @@ static bool _zShape3DCylRegZTK(ZTK *ztk, char *tag){
   return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_cyl ); }
 static void *_zShape3DCylParseZTK(void *shape, ZTK *ztk){
   zCyl3DInit( shape );
-  return ZTKEncodeKey( shape, NULL, ztk, __ztk_prp_shape_cyl ); }
-static void *_zShape3DCylFScan(FILE *fp, void *shape){
-  return zCyl3DFScan( fp, shape ); }
-static void _zShape3DCylFPrint(FILE *fp, void *shape){
+  return ZTKEvalKey( shape, NULL, ztk, __ztk_prp_shape_cyl ); }
+static void _zShape3DCylFPrintZTK(FILE *fp, void *shape){
   ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape_cyl ); }
 
 zShape3DCom zeo_shape3d_cyl_com = {
@@ -391,8 +321,7 @@ zShape3DCom zeo_shape3d_cyl_com = {
   _zShape3DCylToPH,
   _zShape3DCylRegZTK,
   _zShape3DCylParseZTK,
-  _zShape3DCylFScan,
-  _zShape3DCylFPrint,
+  _zShape3DCylFPrintZTK,
 };
 
 /* create a 3D shape as a cylinder. */

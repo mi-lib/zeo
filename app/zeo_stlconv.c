@@ -54,71 +54,80 @@ bool stlconv_cmdarg(int argc, char *argv[])
   return true;
 }
 
-bool stlconv_read(zShape3D *shape)
+bool stlconv_read_stl(zShape3D *shape)
 {
   FILE *fin;
-  char *suffix;
-  bool ret = true;
   char buf[BUFSIZ];
+  bool ret = true;
 
   if( !( fin = fopen( option[STLCONV_INPUTFILE].arg, "r" ) ) ){
     ZOPENERROR( option[STLCONV_INPUTFILE].arg );
     return false;
   }
-  suffix = zGetSuffix( option[STLCONV_INPUTFILE].arg );
-  if( strcmp( suffix, "stl" ) == 0 ){
-    zShape3DInit( shape );
-    shape->com = &zeo_shape3d_ph_com;
-    eprintf( "read STL file.\n" );
-    if( !( ret = zPH3DFReadSTL( fin, zShape3DPH(shape), buf, BUFSIZ ) ? true : false ) )
-      eprintf( "read failure.\n" );
-    else if( !zNameSet( shape, buf ) ){
-      ZALLOCERROR();
-      ret = false;
-    }
-  } else
-  if( strcmp( suffix, "ztk" ) == 0 ){
-    eprintf( "read ZTK file.\n" );
-    if( !zShape3DFScan( fin, shape, NULL, 0, NULL, 0 ) ){
-      eprintf( "read failure.\n" );
-      ret = false;
-    }
-  } else{
-    eprintf( "unknown file type.\n" );
+  zShape3DInit( shape );
+  shape->com = &zeo_shape3d_ph_com;
+  eprintf( "read STL file.\n" );
+  if( !( ret = zPH3DFReadSTL( fin, zShape3DPH(shape), buf, BUFSIZ ) ? true : false ) )
+    eprintf( "read failure.\n" );
+  else if( !zNameSet( shape, buf ) ){
+    ZALLOCERROR();
     ret = false;
   }
   fclose( fin );
   return ret;
 }
 
-bool stlconv_write(zShape3D *shape)
+bool stlconv_read(zShape3D *shape)
+{
+  char *suffix;
+
+  suffix = zGetSuffix( option[STLCONV_INPUTFILE].arg );
+  if( strcmp( suffix, "stl" ) == 0 )
+    return stlconv_read_stl( shape );
+  if( strcmp( suffix, "ztk" ) == 0 ){
+    eprintf( "read ZTK file.\n" );
+    if( !zShape3DReadZTK( shape, option[STLCONV_INPUTFILE].arg ) ){
+      eprintf( "read failure.\n" );
+      return false;
+    }
+    return true;
+  }
+  eprintf( "unknown file type.\n" );
+  return false;
+}
+
+bool stlconv_write_stl(zShape3D *shape)
 {
   FILE *fout;
-  char *suffix;
 
   if( !( fout = fopen( option[STLCONV_OUTPUTFILE].arg, "w" ) ) ){
     ZOPENERROR( option[STLCONV_OUTPUTFILE].arg );
     return false;
   }
-  suffix = zGetSuffix( option[STLCONV_OUTPUTFILE].arg );
-  if( strcmp( suffix, "stl" ) == 0 ){
-    if( option[STLCONV_BINARY].flag ){
-      eprintf( "write binary STL file.\n" );
-      zPH3DFWriteSTL_Bin( fout, zShape3DPH(shape), zName(shape) );
-    } else{
-      eprintf( "write ASCII STL file.\n" );
-      zPH3DFWriteSTL_ASCII( fout, zShape3DPH(shape), zName(shape) );
-    }
-  } else
-  if( strcmp( suffix, "ztk" ) == 0 ){
-    eprintf( "write ZTK file.\n" );
-    zShape3DFPrint( fout, shape );
+  if( option[STLCONV_BINARY].flag ){
+    eprintf( "write binary STL file.\n" );
+    zPH3DFWriteSTL_Bin( fout, zShape3DPH(shape), zName(shape) );
   } else{
-    eprintf( "unknown file type.\n" );
-    return false;
+    eprintf( "write ASCII STL file.\n" );
+    zPH3DFWriteSTL_ASCII( fout, zShape3DPH(shape), zName(shape) );
   }
   fclose( fout );
   return true;
+}
+
+bool stlconv_write(zShape3D *shape)
+{
+  char *suffix;
+
+  suffix = zGetSuffix( option[STLCONV_OUTPUTFILE].arg );
+  if( strcmp( suffix, "stl" ) == 0 )
+    return stlconv_write_stl( shape );
+  if( strcmp( suffix, "ztk" ) == 0 ){
+    eprintf( "write ZTK file.\n" );
+    return zShape3DWriteZTK( shape, option[STLCONV_OUTPUTFILE].arg );
+  }
+  eprintf( "unknown file type.\n" );
+  return false;
 }
 
 int main(int argc, char *argv[])

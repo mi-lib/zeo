@@ -27,12 +27,6 @@ typedef union{
   } c;            /*!< \brief 2x2 block matrices */
 } zMat6D;
 
-/* to be outdated. */
-#if 0
-#define zMat6DElem(m,i,j)  zMat3DElem(&(m)->e[(i)/3][(j)/3], (i)%3, (j)%3 )
-#define zMat6DMat3D(m,i,j) ( &(m)->e[(i)][(j)] )
-#endif
-
 /*! \brief create a 6x6 matrix.
  *
  * zMat6DCreate() creates a 6x6 matrix from four 3x3 matrices as follows.

@@ -59,8 +59,19 @@ zMapNet *zMapNetFromZTK(zMapNet *mn, ZTK *ztk)
   zMapNetInit( mn );
   num_map = ZTKCountTag( ztk, ZTK_TAG_MAP );
   if( !zMapNetAlloc( mn, num_map ) ) return NULL;
-  ZTKEncodeTag( mn, NULL, ztk, __ztk_prp_mapnet );
+  ZTKEvalTag( mn, NULL, ztk, __ztk_prp_mapnet );
   return mn;
+}
+
+/* print information of map net out to a file. */
+void zMapNetFPrintZTK(FILE *fp, zMapNet *mn)
+{
+  register int i;
+
+  for( i=0; i<zArraySize(&mn->maparray); i++ ){
+    fprintf( fp, "[%s]\n", ZTK_TAG_MAP );
+    zMapFPrintZTK( fp, zMapNetMap(mn,i) );
+  }
 }
 
 /* read map net from a ZTK format file. */
@@ -76,13 +87,16 @@ zMapNet *zMapNetReadZTK(zMapNet *mn, char filename[])
   return mn;
 }
 
-/* print information of map net out to a file. */
-void zMapNetFPrint(FILE *fp, zMapNet *mn)
+/* write map net to a ZTK format file. */
+bool zMapNetWriteZTK(zMapNet *mn, char filename[])
 {
-  register int i;
+  FILE *fp;
 
-  for( i=0; i<zArraySize(&mn->maparray); i++ ){
-    fprintf( fp, "[%s]\n", ZTK_TAG_MAP );
-    zMapFPrint( fp, zMapNetMap(mn,i) );
+  if( !( fp = zOpenZTKFile( filename, "w" ) ) ){
+    ZOPENERROR( filename );
+    return false;
   }
+  zMapNetFPrintZTK( fp, mn );
+  fclose( fp );
+  return true;
 }

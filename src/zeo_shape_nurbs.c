@@ -52,10 +52,8 @@ static bool _zShape3DNURBSRegZTK(ZTK *ztk, char *tag){
   return zNURBS3DRegZTK( ztk, tag ); }
 static void *_zShape3DNURBSParseZTK(void *shape, ZTK *ztk){
   return zNURBS3DFromZTK( shape, ztk ); }
-static void *_zShape3DNURBSFScan(FILE *fp, void *shape){
-  return zNURBS3DFScan( fp, shape ); }
-static void _zShape3DNURBSFPrint(FILE *fp, void *shape){
-  return zNURBS3DFPrint( fp, shape ); }
+static void _zShape3DNURBSFPrintZTK(FILE *fp, void *shape){
+  return zNURBS3DFPrintZTK( fp, shape ); }
 
 zShape3DCom zeo_shape3d_nurbs_com = {
   "nurbs",
@@ -76,8 +74,7 @@ zShape3DCom zeo_shape3d_nurbs_com = {
   _zShape3DNURBSToPH,
   _zShape3DNURBSRegZTK,
   _zShape3DNURBSParseZTK,
-  _zShape3DNURBSFScan,
-  _zShape3DNURBSFPrint,
+  _zShape3DNURBSFPrintZTK,
 };
 
 /* allocate memory for NURBS stored in a 3D shape. */

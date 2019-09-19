@@ -74,49 +74,14 @@ __EXPORT zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, d
 /* tag to identify optical info. */
 #define ZTK_TAG_OPTIC "optic"
 
-/*! \brief scan and print optical parameters.
- *
- * zOpticalInfoFScan() scans a set of optical parameters from the
- * current position of a file \a fp and copies it to \a oi.
- * An acceptable data file format is as follows.
- *
- *  name     <string> <- the name of optical parameter set
- *  ambient  <value> <value> <value>
- *    ^ coefficients of reflection for ambient
- *  diffuse  <value> <value> <value>
- *    ^ coefficients of diffuse reflection
- *  specular <value> <value> <value>
- *    ^ coefficients of specular reflection
- *  exp      <value>
- *    ^ Phong s exponential for specular reflection
- *  shininess <value>
- *    ^ shininess
- *  alpha <value>
- *    ^ alpha value
- *
- * zOpticalInfoScan() scans a set of optical parameters from the
- * standard input and copies them to \a oi.
- *
- * zOpticalInfoFPrint() prints a set of optical parameters given by \a oi
- * out to the current position of a file \a fp.
- *
- * zOpticalInfoPrint() prints a set of optical parameters given by \a oi
- * out to the standard output.
- * \return
- * zOpticalInfoFScan() and zOpticalInfoScan() return a pointer \a oi.
- *
- * zOpticalInfoFPrint() and zOpticalInfoPrint() return no value.
- */
-__EXPORT zOpticalInfo *zOpticalInfoFScan(FILE *fp, zOpticalInfo *oi);
-#define zOpticalInfoScan(i) zOpticalInfoFScan( stdin, (i) )
-__EXPORT void zOpticalInfoFPrint(FILE *fp, zOpticalInfo *oi);
-#define zOpticalInfoPrint(i) zOpticalInfoFPrint( stdout, (i) )
-
 /* register a definition of tag-and-key for the optical info to a ZTK format processor. */
 __EXPORT bool zOpticalInfoRegZTK(ZTK *ztk);
 
-/* encode an optical info from a ZTK format processor. */
+/* decode an optical info from a ZTK format processor. */
 __EXPORT zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk);
+
+/* print out an optical info to the current stream of a file. */
+__EXPORT void zOpticalInfoFPrintZTK(FILE *fp, zOpticalInfo *oi);
 
 /*! \struct zOpticalInfoArray
  * \brief array class of a set of optical parameters.

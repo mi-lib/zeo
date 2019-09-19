@@ -125,11 +125,8 @@ __EXPORT bool zTerraRegZTK(ZTK *ztk, char *tag);
 /*! \brief read a terrain elevation map from a ZTK format processor. */
 __EXPORT zTerra *zTerraFromZTK(zTerra *terra, ZTK *ztk);
 
-/*! \brief scan an elevation map from a file. */
-__EXPORT zTerra *zTerraFScan(FILE *fp, zTerra *terra);
-
-/*! \brief print an elevation map out to a file. */
-__EXPORT void zTerraFPrint(FILE *fp, zTerra *terra);
+/*! \brief print an elevation map out to a file in ZTK format. */
+__EXPORT void zTerraFPrintZTK(FILE *fp, zTerra *terra);
 
 /*! \brief print an elevation map out to a file in a plot-friendly format. */
 __EXPORT void zTerraDataFPrint(FILE *fp, zTerra *terra);

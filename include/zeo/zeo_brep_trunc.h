@@ -11,27 +11,21 @@
 
 __BEGIN_DECLS
 
-/* METHOD:
- * zBREPTrunc, zBREPTruncPH3D - truncate B-rep.
- * [SYNOPSIS]
- * zBREP *zBREPTrunc(zBREP *brep, zPlane3D *pl);
- * zBREP *zBREPTruncPH3D(zBREP *brep, zPH3D *ph);
- * [DESCRIPTION]
- * 'zBREPTrunc()' directly truncate a B-Rep shape 'brep'
- * by a cutting plane 'pl'. Note that this operation is
- * destructive.
- * #
- * 'zBREPTruncPH3D()' directly truncate 'brep' by a
- * polyhedron 'ph'. It internally truncate 'brep' by
- * all faces of 'ph'.
- * [RETURN VALUE]
- * 'zBREPTrunc()' returns a pointer 'brep' if succeeding
- * to create a truncated shape. If failing to allocate
- * internal workspaces, the null pointer is returned.
- * #
- * 'zBREPTruncPH3D()' returns 'brep' if succeeding.
- * The null pointer is returned according to the same
- * condition with 'zBREPTrunc()'.
+/*! \brief truncate B-rep.
+ *
+ * zBREPTrunc() directly truncates a B-Rep shape \a brep by
+ * a cutting plane \a pl. Note that this operation is destructive.
+ *
+ * zBREPTruncPH3D() directly truncates \a brep by a polyhedron
+ * \a ph. It internally truncate \a brep by all faces of \a ph.
+ * \return
+ * zBREPTrunc() returns a pointer \a brep if it succeeds to create
+ * a truncated shape. If it fails to allocate internal workspace,
+ * the null pointer is returned.
+ *
+ * zBREPTruncPH3D() returns \a brep if it succeeds.
+ * The null pointer is returned according to the same condition
+ * with zBREPTrunc().
  */
 __EXPORT zBREP *zBREPTrunc(zBREP *brep, zPlane3D *pl);
 __EXPORT zBREP *zBREPTruncPH3D(zBREP *brep, zPH3D *ph);

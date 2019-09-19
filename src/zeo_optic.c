@@ -11,8 +11,6 @@
  * class for the optical characteristic parameter set
  * ********************************************************** */
 
-static bool _zOpticalInfoFScan(FILE *fp, void *instance, char *buf, bool *success);
-
 /* create a set of optical parameters. */
 zOpticalInfo *zOpticalInfoCreate(zOpticalInfo *oi, float ar, float ag, float ab, float dr, float dg, float db, float sr, float sg, float sb, double esr, double sns, double alpha, char *name)
 {
@@ -74,39 +72,6 @@ zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, double rat
   return oi;
 }
 
-/* (static)
- * scan information of the optical parameter set from a stream. */
-bool _zOpticalInfoFScan(FILE *fp, void *instance, char *buf, bool *success)
-{
-  if( strcmp( buf, "name" ) == 0 )
-    zNameSet( (zOpticalInfo *)instance, zFToken( fp, buf, BUFSIZ ) );
-  else if( strcmp( buf, "ambient" ) == 0 )
-    zRGBFScan( fp, &((zOpticalInfo *)instance)->amb );
-  else if( strcmp( buf, "diffuse" ) == 0 )
-    zRGBFScan( fp, &((zOpticalInfo *)instance)->dif );
-  else if( strcmp( buf, "specular" ) == 0 )
-    zRGBFScan( fp, &((zOpticalInfo *)instance)->spc );
-  else if( strcmp( buf, "esr" ) == 0 )
-    ((zOpticalInfo *)instance)->esr = zFDouble( fp );
-  else if( strcmp( buf, "shininess" ) == 0 )
-    ((zOpticalInfo *)instance)->sns = zFDouble( fp );
-  else if( strcmp( buf, "alpha" ) == 0 )
-    ((zOpticalInfo *)instance)->alpha = zFDouble( fp );
-  else
-    return false;
-  return true;
-}
-
-/* scan information of the optical parameter set from a file. */
-zOpticalInfo *zOpticalInfoFScan(FILE *fp, zOpticalInfo *oi)
-{
-  zOpticalInfoInit( oi );
-  zFieldFScan( fp, _zOpticalInfoFScan, oi );
-  if( zNamePtr( oi ) ) return oi;
-  ZRUNERROR( ZEO_ERR_OPT_UNNAME );
-  return NULL;
-}
-
 /* parsing a ZTK format. */
 
 static void *_zOpticalInfoNameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
@@ -131,29 +96,29 @@ static void *_zOpticalInfoAlphaFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   ((zOpticalInfo*)obj)->alpha = ZTKDouble(ztk);
   return obj; }
 
-static void _zOpticalInfoNameFPrint(FILE *fp, int i, void *obj){
+static void _zOpticalInfoNameFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%s\n", zName((zOpticalInfo*)obj) ); }
-static void _zOpticalInfoAmbFPrint(FILE *fp, int i, void *obj){
+static void _zOpticalInfoAmbFPrintZTK(FILE *fp, int i, void *obj){
   zRGBFPrint( fp, &((zOpticalInfo*)obj)->amb ); }
-static void _zOpticalInfoDifFPrint(FILE *fp, int i, void *obj){
+static void _zOpticalInfoDifFPrintZTK(FILE *fp, int i, void *obj){
   zRGBFPrint( fp, &((zOpticalInfo*)obj)->dif ); }
-static void _zOpticalInfoSpcFPrint(FILE *fp, int i, void *obj){
+static void _zOpticalInfoSpcFPrintZTK(FILE *fp, int i, void *obj){
   zRGBFPrint( fp, &((zOpticalInfo*)obj)->spc ); }
-static void _zOpticalInfoEsrFPrint(FILE *fp, int i, void *obj){
+static void _zOpticalInfoEsrFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->esr ); }
-static void _zOpticalInfoSnsFPrint(FILE *fp, int i, void *obj){
+static void _zOpticalInfoSnsFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->sns ); }
-static void _zOpticalInfoAlphaFPrint(FILE *fp, int i, void *obj){
+static void _zOpticalInfoAlphaFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->alpha ); }
 
 static ZTKPrp __ztk_prp_optic[] = {
-  { "name", 1, _zOpticalInfoNameFromZTK, _zOpticalInfoNameFPrint },
-  { "ambient", 1, _zOpticalInfoAmbFromZTK, _zOpticalInfoAmbFPrint },
-  { "diffuse", 1, _zOpticalInfoDifFromZTK, _zOpticalInfoDifFPrint },
-  { "specular", 1, _zOpticalInfoSpcFromZTK, _zOpticalInfoSpcFPrint },
-  { "esr", 1, _zOpticalInfoEsrFromZTK, _zOpticalInfoEsrFPrint },
-  { "shininess", 1, _zOpticalInfoSnsFromZTK, _zOpticalInfoSnsFPrint },
-  { "alpha", 1, _zOpticalInfoAlphaFromZTK, _zOpticalInfoAlphaFPrint },
+  { "name", 1, _zOpticalInfoNameFromZTK, _zOpticalInfoNameFPrintZTK },
+  { "ambient", 1, _zOpticalInfoAmbFromZTK, _zOpticalInfoAmbFPrintZTK },
+  { "diffuse", 1, _zOpticalInfoDifFromZTK, _zOpticalInfoDifFPrintZTK },
+  { "specular", 1, _zOpticalInfoSpcFromZTK, _zOpticalInfoSpcFPrintZTK },
+  { "esr", 1, _zOpticalInfoEsrFromZTK, _zOpticalInfoEsrFPrintZTK },
+  { "shininess", 1, _zOpticalInfoSnsFromZTK, _zOpticalInfoSnsFPrintZTK },
+  { "alpha", 1, _zOpticalInfoAlphaFromZTK, _zOpticalInfoAlphaFPrintZTK },
 };
 
 /* register a definition of tag-and-key for the optical info to a ZTK format processor. */
@@ -166,11 +131,11 @@ bool zOpticalInfoRegZTK(ZTK *ztk)
 zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk)
 {
   zOpticalInfoInit( oi );
-  return ZTKEncodeKey( oi, NULL, ztk, __ztk_prp_optic );
+  return ZTKEvalKey( oi, NULL, ztk, __ztk_prp_optic );
 }
 
 /* print information of the optical parameter set out to a file. */
-void zOpticalInfoFPrint(FILE *fp, zOpticalInfo *oi)
+void zOpticalInfoFPrintZTK(FILE *fp, zOpticalInfo *oi)
 {
   ZTKPrpKeyFPrint( fp, oi, __ztk_prp_optic );
   fprintf( fp, "\n" );

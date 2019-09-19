@@ -33,10 +33,13 @@ __EXPORT void zMapNetDestroy(zMapNet *mn);
 __EXPORT bool zMapNetRegZTK(ZTK *ztk);
 /*! \brief read multiple 3D shapes from a ZTK format processor. */
 __EXPORT zMapNet *zMapNetFromZTK(zMapNet *mn, ZTK *ztk);
+/*! \brief print information of map net out to a file in ZTK format. */
+__EXPORT void zMapNetFPrintZTK(FILE *fp, zMapNet *mn);
+
 /*! \brief read map net from a ZTK format file. */
 __EXPORT zMapNet *zMapNetReadZTK(zMapNet *mn, char filename[]);
-/*! \brief print information of map net out to a file. */
-__EXPORT void zMapNetFPrint(FILE *fp, zMapNet *mn);
+/*! \brief write map net to a ZTK format file. */
+__EXPORT bool zMapNetWriteZTK(zMapNet *mn, char filename[]);
 
 __END_DECLS
 

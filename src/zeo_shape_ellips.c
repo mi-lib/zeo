@@ -11,8 +11,6 @@
  * 3D ellipsoid class
  * ********************************************************** */
 
-static bool _zEllips3DFScan(FILE *fp, void *instance, char *buf, bool *success);
-
 /* create a 3D ellipsoid. */
 zEllips3D *zEllips3DCreate(zEllips3D *ellips, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double rx, double ry, double rz, int div)
 {
@@ -282,95 +280,33 @@ static void *_zEllips3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zEllips3DDiv((zEllips3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static void _zEllips3DCenterFPrint(FILE *fp, int i, void *obj){
+static void _zEllips3DCenterFPrintZTK(FILE *fp, int i, void *obj){
   zVec3DFPrint( fp, zEllips3DCenter((zEllips3D*)obj) ); }
-static void _zEllips3DAxisXFPrint(FILE *fp, int i, void *obj){
+static void _zEllips3DAxisXFPrintZTK(FILE *fp, int i, void *obj){
   zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zX) ); }
-static void _zEllips3DAxisYFPrint(FILE *fp, int i, void *obj){
+static void _zEllips3DAxisYFPrintZTK(FILE *fp, int i, void *obj){
   zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zY) ); }
-static void _zEllips3DAxisZFPrint(FILE *fp, int i, void *obj){
+static void _zEllips3DAxisZFPrintZTK(FILE *fp, int i, void *obj){
   zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zZ) ); }
-static void _zEllips3DRadiusXFPrint(FILE *fp, int i, void *obj){
+static void _zEllips3DRadiusXFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", zEllips3DRadiusX((zEllips3D*)obj) ); }
-static void _zEllips3DRadiusYFPrint(FILE *fp, int i, void *obj){
+static void _zEllips3DRadiusYFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", zEllips3DRadiusY((zEllips3D*)obj) ); }
-static void _zEllips3DRadiusZFPrint(FILE *fp, int i, void *obj){
+static void _zEllips3DRadiusZFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", zEllips3DRadiusZ((zEllips3D*)obj) ); }
-static void _zEllips3DDivFPrint(FILE *fp, int i, void *obj){
+static void _zEllips3DDivFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%d\n", zEllips3DDiv((zEllips3D*)obj) ); }
 
 static ZTKPrp __ztk_prp_shape_ellips[] = {
-  { "center", 1, _zEllips3DCenterFromZTK, _zEllips3DCenterFPrint },
-  { "ax", 1, _zEllips3DAxisXFromZTK, _zEllips3DAxisXFPrint },
-  { "ay", 1, _zEllips3DAxisYFromZTK, _zEllips3DAxisYFPrint },
-  { "az", 1, _zEllips3DAxisZFromZTK, _zEllips3DAxisZFPrint },
-  { "rx", 1, _zEllips3DRadiusXFromZTK, _zEllips3DRadiusXFPrint },
-  { "ry", 1, _zEllips3DRadiusYFromZTK, _zEllips3DRadiusYFPrint },
-  { "rz", 1, _zEllips3DRadiusZFromZTK, _zEllips3DRadiusZFPrint },
-  { "div", 1, _zEllips3DDivFromZTK, _zEllips3DDivFPrint },
+  { "center", 1, _zEllips3DCenterFromZTK, _zEllips3DCenterFPrintZTK },
+  { "ax", 1, _zEllips3DAxisXFromZTK, _zEllips3DAxisXFPrintZTK },
+  { "ay", 1, _zEllips3DAxisYFromZTK, _zEllips3DAxisYFPrintZTK },
+  { "az", 1, _zEllips3DAxisZFromZTK, _zEllips3DAxisZFPrintZTK },
+  { "rx", 1, _zEllips3DRadiusXFromZTK, _zEllips3DRadiusXFPrintZTK },
+  { "ry", 1, _zEllips3DRadiusYFromZTK, _zEllips3DRadiusYFPrintZTK },
+  { "rz", 1, _zEllips3DRadiusZFromZTK, _zEllips3DRadiusZFPrintZTK },
+  { "div", 1, _zEllips3DDivFromZTK, _zEllips3DDivFPrintZTK },
 };
-
-#if 0
-/* register a definition of tag-and-keys for a 3D ellipsoid to a ZTK format processor. */
-bool zEllips3DDefRegZTK(ZTK *ztk, char *tag)
-{
-  return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_ellips );
-}
-
-/* read a 3D ellipsoid from a ZTK format processor. */
-zEllips3D *zEllips3DFromZTK(zEllips3D *ellips, ZTK *ztk)
-{
-  zEllips3DInit( ellips );
-  return ZTKEncodeKey( ellips, NULL, ztk, __ztk_prp_shape_ellips );
-}
-#endif
-
-/* (static)
- * scan a 3D ellipsoid (internal function).
- */
-bool _zEllips3DFScan(FILE *fp, void *instance, char *buf, bool *success)
-{
-  zVec3D a;
-
-  if( strcmp( buf, "center" ) == 0 ){
-    zVec3DFScan( fp, zEllips3DCenter( (zEllips3D *)instance ) );
-  } else if( strcmp( buf, "ax" ) == 0 ){
-    zVec3DFScan( fp, &a );
-    zVec3DNormalize( &a, zEllips3DAxis( (zEllips3D *)instance, zX ) );
-  } else if( strcmp( buf, "ay" ) == 0 ){
-    zVec3DFScan( fp, &a );
-    zVec3DNormalize( &a, zEllips3DAxis( (zEllips3D *)instance, zY ) );
-  } else if( strcmp( buf, "az" ) == 0 ){
-    zVec3DFScan( fp, &a );
-    zVec3DNormalize( &a, zEllips3DAxis( (zEllips3D *)instance, zZ ) );
-  } else if( strcmp( buf, "rx" ) == 0 ){
-    zEllips3DSetRadiusX( (zEllips3D *)instance, zFDouble( fp ) );
-  } else if( strcmp( buf, "ry" ) == 0 ){
-    zEllips3DSetRadiusY( (zEllips3D *)instance, zFDouble( fp ) );
-  } else if( strcmp( buf, "rz" ) == 0 ){
-    zEllips3DSetRadiusZ( (zEllips3D *)instance, zFDouble( fp ) );
-  } else if( strcmp( buf, "div" ) == 0 ){
-    zEllips3DSetDiv( (zEllips3D *)instance, zFInt( fp ) );
-  } else
-    return false;
-  return true;
-}
-
-/* scan a 3D ellipsoid from a file. */
-zEllips3D *zEllips3DFScan(FILE *fp, zEllips3D *ellips)
-{
-  zEllips3DInit( ellips );
-  zFieldFScan( fp, _zEllips3DFScan, ellips );
-  return ellips;
-}
-
-#if 0
-/* print out a 3D ellipsoid to a file. */
-void zEllips3DFPrint(FILE *fp, zEllips3D *ellips)
-{
-  ZTKPrpKeyFPrint( fp, ellips, __ztk_prp_shape_ellips );
-}
-#endif
 
 /* methods for abstraction */
 
@@ -410,10 +346,8 @@ static bool _zShape3DEllipsRegZTK(ZTK *ztk, char *tag){
   return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_ellips ); }
 static void *_zShape3DEllipsParseZTK(void *shape, ZTK *ztk){
   zEllips3DInit( shape );
-  return ZTKEncodeKey( shape, NULL, ztk, __ztk_prp_shape_ellips ); }
-static void *_zShape3DEllipsFScan(FILE *fp, void *shape){
-  return zEllips3DFScan( fp, shape ); }
-static void _zShape3DEllipsFPrint(FILE *fp, void *shape){
+  return ZTKEvalKey( shape, NULL, ztk, __ztk_prp_shape_ellips ); }
+static void _zShape3DEllipsFPrintZTK(FILE *fp, void *shape){
   ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape_ellips ); }
 
 zShape3DCom zeo_shape3d_ellips_com = {
@@ -435,8 +369,7 @@ zShape3DCom zeo_shape3d_ellips_com = {
   _zShape3DEllipsToPH,
   _zShape3DEllipsRegZTK,
   _zShape3DEllipsParseZTK,
-  _zShape3DEllipsFScan,
-  _zShape3DEllipsFPrint,
+  _zShape3DEllipsFPrintZTK,
 };
 
 /* create a 3D shape as an ellipsoid. */

@@ -133,53 +133,6 @@ __EXPORT zMat3D *zEllips3DInertia(zEllips3D *ellips, zMat3D *inertia);
 /* default longitudinal & latitudinal division number are the same. */
 __EXPORT zPH3D *zEllips3DToPH(zEllips3D *ellips, zPH3D *ph);
 
-#if 0
-/*! \brief register a definition of tag-and-keys for a 3D ellipsoid to a ZTK format processor. */
-__EXPORT bool zEllips3DRegZTK(ZTK *ztk, char *tag);
-/*! \brief read a 3D ellipsoid from a ZTK format processor. */
-__EXPORT zEllips3D *zEllips3DFromZTK(zEllips3D *ellips, ZTK *ztk);
-#endif
-
-/*! \brief scan and print a 3D ellipsoid.
- *
- * zEllips3DFScan() scans information of a 3D ellipsoid from
- * the current position of a file \a fp, and creates a new
- * ellipsoid \a ellips.
- * An acceptable data file format is as follows.
- *
- *  center: <x> <y> <z>
- *  ax: <x> <y> <z>
- *  ay: <x> <y> <z>
- *  az: <x> <y> <z>
- *  rx: <r>
- *  ry: <r>
- *  rz: <r>
- *  div: <div>
- *
- * The bracketed parts must be replaced by real numbers.
- * The field div is skippable.
- *
- * zEllips3DScan() scans information for \a ellips from the
- * standard input.
- *
- * zEllips3DFPrint() prints information of \a ellips out to the
- * current position of a file \a fp in the same format with the
- * above.
- * zEllips3DPrint() prints information of \a ellips out to the
- * standard output.
- * \return
- * zEllips3DFScan() and zEllips3DScan() return a pointer \a ellips.
- *
- * Neither zEllips3DFPrint() nor zEllips3DPrint() return any values.
- */
-__EXPORT zEllips3D *zEllips3DFScan(FILE *fp, zEllips3D *ellips);
-#define zEllips3DScan(e) zEllips3DFScan( stdin, (e) )
-
-#if 0
-__EXPORT void zEllips3DFPrint(FILE *fp, zEllips3D *ellips);
-#define zEllips3DPrint(e) zEllips3DFPrint( stdout, (e) )
-#endif
-
 /* methods for abstraction */
 extern zShape3DCom zeo_shape3d_ellips_com;
 

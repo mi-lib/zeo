@@ -6,9 +6,7 @@
 
 #include <zeo/zeo_col.h>
 
-/* zPH3DMinkowskiSub
- * - Minkowski subtract.
- */
+/* Minkowski subtract. */
 zPH3D *zPH3DMinkowskiSub(zPH3D *ph, zVec3D p1[], int n1, zVec3D p2[], int n2)
 {
   zVec3D *v;

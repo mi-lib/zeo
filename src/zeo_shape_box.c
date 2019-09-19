@@ -11,8 +11,6 @@
  * 3D box class
  * ********************************************************** */
 
-static bool _zBox3DFScan(FILE *fp, void *instance, char *buf, bool *success);
-
 /* create a 3D box. */
 zBox3D *zBox3DCreate(zBox3D *box, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double d, double w, double h)
 {
@@ -217,88 +215,30 @@ static void *_zBox3DHeightFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zBox3DHeight((zBox3D*)obj) = ZTKDouble(ztk);
   return obj; }
 
-static void _zBox3DCenterFPrint(FILE *fp, int i, void *obj){
+static void _zBox3DCenterFPrintZTK(FILE *fp, int i, void *obj){
   zVec3DFPrint( fp, zBox3DCenter((zBox3D*)obj) ); }
-static void _zBox3DAxisXFPrint(FILE *fp, int i, void *obj){
+static void _zBox3DAxisXFPrintZTK(FILE *fp, int i, void *obj){
   zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zX) ); }
-static void _zBox3DAxisYFPrint(FILE *fp, int i, void *obj){
+static void _zBox3DAxisYFPrintZTK(FILE *fp, int i, void *obj){
   zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zY) ); }
-static void _zBox3DAxisZFPrint(FILE *fp, int i, void *obj){
+static void _zBox3DAxisZFPrintZTK(FILE *fp, int i, void *obj){
   zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zZ) ); }
-static void _zBox3DDepthFPrint(FILE *fp, int i, void *obj){
+static void _zBox3DDepthFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", zBox3DDepth((zBox3D*)obj) ); }
-static void _zBox3DWidthFPrint(FILE *fp, int i, void *obj){
+static void _zBox3DWidthFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", zBox3DWidth((zBox3D*)obj) ); }
-static void _zBox3DHeightFPrint(FILE *fp, int i, void *obj){
+static void _zBox3DHeightFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", zBox3DHeight((zBox3D*)obj) ); }
 
 static ZTKPrp __ztk_prp_shape_box[] = {
-  { "center", 1, _zBox3DCenterFromZTK, _zBox3DCenterFPrint },
-  { "ax", 1, _zBox3DAxisXFromZTK, _zBox3DAxisXFPrint },
-  { "ay", 1, _zBox3DAxisYFromZTK, _zBox3DAxisYFPrint },
-  { "az", 1, _zBox3DAxisZFromZTK, _zBox3DAxisZFPrint },
-  { "depth", 1, _zBox3DDepthFromZTK, _zBox3DDepthFPrint },
-  { "width", 1, _zBox3DWidthFromZTK, _zBox3DWidthFPrint },
-  { "height", 1, _zBox3DHeightFromZTK, _zBox3DHeightFPrint },
+  { "center", 1, _zBox3DCenterFromZTK, _zBox3DCenterFPrintZTK },
+  { "ax", 1, _zBox3DAxisXFromZTK, _zBox3DAxisXFPrintZTK },
+  { "ay", 1, _zBox3DAxisYFromZTK, _zBox3DAxisYFPrintZTK },
+  { "az", 1, _zBox3DAxisZFromZTK, _zBox3DAxisZFPrintZTK },
+  { "depth", 1, _zBox3DDepthFromZTK, _zBox3DDepthFPrintZTK },
+  { "width", 1, _zBox3DWidthFromZTK, _zBox3DWidthFPrintZTK },
+  { "height", 1, _zBox3DHeightFromZTK, _zBox3DHeightFPrintZTK },
 };
-
-#if 0
-/* register a definition of tag-and-keys for a 3D box to a ZTK format processor. */
-bool zBox3DRegZTK(ZTK *ztk, char *tag)
-{
-  return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_box );
-}
-
-/* read a 3D box from a ZTK format processor. */
-zBox3D *zBox3DFromZTK(zBox3D *box, ZTK *ztk)
-{
-  zBox3DInit( box );
-  return ZTKEncodeKey( box, NULL, ztk, __ztk_prp_shape_box );
-}
-#endif
-
-/* scan a 3D box from a file. */
-bool _zBox3DFScan(FILE *fp, void *instance, char *buf, bool *success)
-{
-  zVec3D a;
-
-  if( strcmp( buf, "center" ) == 0 )
-    zVec3DFScan( fp, zBox3DCenter( (zBox3D *)instance ) );
-  else if( strcmp( buf, "ax" ) == 0 ){
-    zVec3DFScan( fp, &a );
-    zVec3DNormalize( &a, zBox3DAxis( (zBox3D *)instance, zX ) );
-  } else if( strcmp( buf, "ay" ) == 0 ){
-    zVec3DFScan( fp, &a );
-    zVec3DNormalize( &a, zBox3DAxis( (zBox3D *)instance, zY ) );
-  } else if( strcmp( buf, "az" ) == 0 ){
-    zVec3DFScan( fp, &a );
-    zVec3DNormalize( &a, zBox3DAxis( (zBox3D *)instance, zZ ) );
-  } else if( strcmp( buf, "depth" ) == 0 )
-    zBox3DSetDepth( (zBox3D *)instance, zFDouble( fp ) );
-  else if( strcmp( buf, "width" ) == 0 )
-    zBox3DSetWidth( (zBox3D *)instance, zFDouble( fp ) );
-  else if( strcmp( buf, "height" ) == 0 )
-    zBox3DSetHeight( (zBox3D *)instance, zFDouble( fp ) );
-  else
-    return false;
-  return true;
-}
-
-/* scan a 3D box from a file. */
-zBox3D *zBox3DFScan(FILE *fp, zBox3D *box)
-{
-  zBox3DInit( box );
-  zFieldFScan( fp, _zBox3DFScan, box );
-  return box;
-}
-
-#if 0
-/* print out a 3D box to a file. */
-void zBox3DFPrint(FILE *fp, zBox3D *box)
-{
-  ZTKPrpKeyFPrint( fp, box, __ztk_prp_shape_box );
-}
-#endif
 
 /* print a 3D box out to a file in a format to be plotted. */
 void zBox3DDataFPrint(FILE *fp, zBox3D *box)
@@ -368,10 +308,8 @@ static bool _zShape3DBoxRegZTK(ZTK *ztk, char *tag){
   return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_box ); }
 static void *_zShape3DBoxParseZTK(void *shape, ZTK *ztk){
   zBox3DInit( shape );
-  return ZTKEncodeKey( shape, NULL, ztk, __ztk_prp_shape_box ); }
-static void *_zShape3DBoxFScan(FILE *fp, void *shape){
-  return zBox3DFScan( fp, shape ); }
-static void _zShape3DBoxFPrint(FILE *fp, void *shape){
+  return ZTKEvalKey( shape, NULL, ztk, __ztk_prp_shape_box ); }
+static void _zShape3DBoxFPrintZTK(FILE *fp, void *shape){
   ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape_box ); }
 
 zShape3DCom zeo_shape3d_box_com = {
@@ -393,8 +331,7 @@ zShape3DCom zeo_shape3d_box_com = {
   _zShape3DBoxToPH,
   _zShape3DBoxRegZTK,
   _zShape3DBoxParseZTK,
-  _zShape3DBoxFScan,
-  _zShape3DBoxFPrint,
+  _zShape3DBoxFPrintZTK,
 };
 
 /* create a 3D shape as a box. */

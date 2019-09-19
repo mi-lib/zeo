@@ -228,12 +228,9 @@ double *zMat2DFScan(FILE *fp, zMat2D m)
 /* print a 2x2 matrix to a file. */
 void zMat2DFPrint(FILE *fp, zMat2D m)
 {
-  if( !m )
-    fprintf( fp, "(null 2x2 matrix)\n" );
-  else{
-    fprintf( fp, "{\n" );
-    fprintf( fp, " %.10g, %.10g\n", m[0], m[1] );
-    fprintf( fp, " %.10g, %.10g\n", m[2], m[3] );
-    fprintf( fp, "}\n" );
-  }
+  if( !m ) return;
+  fprintf( fp, "{\n" );
+  fprintf( fp, " %.10g, %.10g\n", m[0], m[1] );
+  fprintf( fp, " %.10g, %.10g\n", m[2], m[3] );
+  fprintf( fp, "}\n" );
 }

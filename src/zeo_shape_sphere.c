@@ -11,8 +11,6 @@
  * 3D sphere class
  * ********************************************************** */
 
-static bool _zSphere3DFScan(FILE *fp, void *instance, char *buf, bool *success);
-
 /* create a 3D sphere. */
 zSphere3D *zSphere3DCreate(zSphere3D *sphere, zVec3D *c, double r, int div)
 {
@@ -228,61 +226,18 @@ static void *_zSphere3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zSphere3DDiv((zSphere3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static void _zSphere3DCenterFPrint(FILE *fp, int i, void *obj){
+static void _zSphere3DCenterFPrintZTK(FILE *fp, int i, void *obj){
   zVec3DFPrint( fp, zSphere3DCenter((zSphere3D*)obj) ); }
-static void _zSphere3DRadiusFPrint(FILE *fp, int i, void *obj){
+static void _zSphere3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", zSphere3DRadius((zSphere3D*)obj) ); }
-static void _zSphere3DDivFPrint(FILE *fp, int i, void *obj){
+static void _zSphere3DDivFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%d\n", zSphere3DDiv((zSphere3D*)obj) ); }
 
 static ZTKPrp __ztk_prp_shape_sphere[] = {
-  { "center", 1, _zSphere3DCenterFromZTK, _zSphere3DCenterFPrint },
-  { "radius", 1, _zSphere3DRadiusFromZTK, _zSphere3DRadiusFPrint },
-  { "div", 1, _zSphere3DDivFromZTK, _zSphere3DDivFPrint },
+  { "center", 1, _zSphere3DCenterFromZTK, _zSphere3DCenterFPrintZTK },
+  { "radius", 1, _zSphere3DRadiusFromZTK, _zSphere3DRadiusFPrintZTK },
+  { "div", 1, _zSphere3DDivFromZTK, _zSphere3DDivFPrintZTK },
 };
-
-#if 0
-/* register a definition of tag-and-keys for a 3D sphere to a ZTK format processor. */
-bool zSphere3DDefRegZTK(ZTK *ztk, char *tag)
-{
-  return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_sphere );
-}
-
-/* read a 3D sphere from a ZTK format processor. */
-zSphere3D *zSphere3DFromZTK(zSphere3D *sphere, ZTK *ztk)
-{
-  zSphere3DInit( sphere );
-  return ZTKEncodeKey( sphere, NULL, ztk, __ztk_prp_shape_sphere );
-}
-#endif
-
-/* scan information of a 3D sphere from a file. */
-bool _zSphere3DFScan(FILE *fp, void *instance, char *buf, bool *success)
-{
-  if( strcmp( buf, "center" ) == 0 ){
-    zVec3DFScan( fp, zSphere3DCenter( (zSphere3D *)instance ) );
-  } else if( strcmp( buf, "radius" ) == 0 ){
-    zSphere3DSetRadius( (zSphere3D *)instance, zFDouble( fp ) );
-  } else
-    return false;
-  return true;
-}
-
-/* scan information of a 3D sphere from a file. */
-zSphere3D *zSphere3DFScan(FILE *fp, zSphere3D *sphere)
-{
-  zSphere3DInit( sphere );
-  zFieldFScan( fp, _zSphere3DFScan, sphere );
-  return sphere;
-}
-
-#if 0
-/* print out a 3D sphere to a file. */
-void zSphere3DFPrint(FILE *fp, zSphere3D *sphere)
-{
-  ZTKPrpKeyFPrint( fp, sphere, __ztk_prp_shape_sphere );
-}
-#endif
 
 /* methods for abstraction */
 
@@ -322,10 +277,8 @@ static bool _zShape3DSphereRegZTK(ZTK *ztk, char *tag){
   return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_sphere ); }
 static void *_zShape3DSphereParseZTK(void *shape, ZTK *ztk){
   zSphere3DInit( shape );
-  return ZTKEncodeKey( shape, NULL, ztk, __ztk_prp_shape_sphere ); }
-static void *_zShape3DSphereFScan(FILE *fp, void *shape){
-  return zSphere3DFScan( fp, shape ); }
-static void _zShape3DSphereFPrint(FILE *fp, void *shape){
+  return ZTKEvalKey( shape, NULL, ztk, __ztk_prp_shape_sphere ); }
+static void _zShape3DSphereFPrintZTK(FILE *fp, void *shape){
   ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape_sphere ); }
 
 zShape3DCom zeo_shape3d_sphere_com = {
@@ -347,8 +300,7 @@ zShape3DCom zeo_shape3d_sphere_com = {
   _zShape3DSphereToPH,
   _zShape3DSphereRegZTK,
   _zShape3DSphereParseZTK,
-  _zShape3DSphereFScan,
-  _zShape3DSphereFPrint,
+  _zShape3DSphereFPrintZTK,
 };
 
 /* create a 3D shape as a sphere. */

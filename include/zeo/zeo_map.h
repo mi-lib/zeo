@@ -18,8 +18,8 @@ typedef struct{
   const char *typestr;
   void *(* _alloc)(void);
   void (* _destroy)(void *);
-  void *(* _parseZTK)(void*,ZTK*);
-  void (* _fprint)(FILE*,void*);
+  void *(* _fromZTK)(void*,ZTK*);
+  void (* _fprintZTK)(FILE*,void*);
 } zMapCom;
 
 /*! \struct zMap
@@ -40,7 +40,7 @@ __EXPORT void zMapDestroy(zMap *map);
 
 __EXPORT bool zMapRegZTK(ZTK *ztk);
 __EXPORT zMap *zMapFromZTK(zMap *map, ZTK *ztk);
-__EXPORT void zMapFPrint(FILE *fp, zMap *map);
+__EXPORT void zMapFPrintZTK(FILE *fp, zMap *map);
 
 /*! \struct zMapArray
  * \brief array class of maps.

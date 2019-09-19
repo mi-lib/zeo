@@ -44,16 +44,16 @@ static void *_zMapTypeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return NULL;
 }
 
-static void _zMapNameFPrint(FILE *fp, int i, void *obj){
+static void _zMapNameFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%s\n", zName((zMap*)obj) );
 }
-static void _zMapTypeFPrint(FILE *fp, int i, void *obj){
+static void _zMapTypeFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%s\n", ((zMap*)obj)->com->typestr );
 }
 
 static ZTKPrp __ztk_prp_map_key[] = {
-  { "name", 1, _zMapNameFromZTK, _zMapNameFPrint },
-  { "type", 1, _zMapTypeFromZTK, _zMapTypeFPrint },
+  { "name", 1, _zMapNameFromZTK, _zMapNameFPrintZTK },
+  { "type", 1, _zMapTypeFromZTK, _zMapTypeFPrintZTK },
 };
 
 bool zMapRegZTK(ZTK *ztk)
@@ -65,16 +65,16 @@ bool zMapRegZTK(ZTK *ztk)
 zMap *zMapFromZTK(zMap *map, ZTK *ztk)
 {
   zMapInit( map );
-  if( !ZTKEncodeKey( map, NULL, ztk, __ztk_prp_map_key ) ) return NULL;
+  if( !ZTKEvalKey( map, NULL, ztk, __ztk_prp_map_key ) ) return NULL;
   if( !map->body ){
     ZRUNERROR( ZEO_ERR_MAP_UNSPEC );
     return NULL;
   }
-  return map->com->_parseZTK( map->body, ztk ) ? map : NULL;
+  return map->com->_fromZTK( map->body, ztk ) ? map : NULL;
 }
 
-void zMapFPrint(FILE *fp, zMap *map)
+void zMapFPrintZTK(FILE *fp, zMap *map)
 {
   ZTKPrpKeyFPrint( fp, map, __ztk_prp_map_key );
-  map->com->_fprint( fp, map->body );
+  map->com->_fprintZTK( fp, map->body );
 }

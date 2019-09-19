@@ -895,13 +895,10 @@ zMat3D *zMat3DFScan(FILE *fp, zMat3D *m)
 /* print a 3x3 matrix to a file. */
 void zMat3DFPrint(FILE *fp, zMat3D *m)
 {
-  if( !m )
-    fprintf( fp, "(null 3x3 matrix)\n" );
-  else{
-    fprintf( fp, "{\n" );
-    fprintf( fp, " %.10g, %.10g, %.10g\n", m->c.xx, m->c.yx, m->c.zx );
-    fprintf( fp, " %.10g, %.10g, %.10g\n", m->c.xy, m->c.yy, m->c.zy );
-    fprintf( fp, " %.10g, %.10g, %.10g\n", m->c.xz, m->c.yz, m->c.zz );
-    fprintf( fp, "}\n" );
-  }
+  if( !m ) return;
+  fprintf( fp, "{\n" );
+  fprintf( fp, " %.10g, %.10g, %.10g\n", m->c.xx, m->c.yx, m->c.zx );
+  fprintf( fp, " %.10g, %.10g, %.10g\n", m->c.xy, m->c.yy, m->c.zy );
+  fprintf( fp, " %.10g, %.10g, %.10g\n", m->c.xz, m->c.yz, m->c.zz );
+  fprintf( fp, "}\n" );
 }

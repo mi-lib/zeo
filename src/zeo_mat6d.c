@@ -225,29 +225,26 @@ zMat6D *zMat6DDyad(zMat6D *m, zVec6D *v1, zVec6D *v2)
 /* print a 6x6 matrix out to a file. */
 void zMat6DFPrint(FILE *fp, zMat6D *m)
 {
-  if( !m )
-    fprintf( fp, "(null 6x6 matrix)\n" );
-  else{
-    fprintf( fp, "{\n" );
-    fprintf( fp, " %.10g, %.10g, %.10g | %.10g, %.10g, %.10g\n",
-      m->c.ll.c.xx, m->c.ll.c.yx, m->c.ll.c.zx,
-      m->c.la.c.xx, m->c.la.c.yx, m->c.la.c.zx );
-    fprintf( fp, " %.10g, %.10g, %.10g | %.10g, %.10g, %.10g\n",
-      m->c.ll.c.xy, m->c.ll.c.yy, m->c.ll.c.zy,
-      m->c.la.c.xy, m->c.la.c.yy, m->c.la.c.zy );
-    fprintf( fp, " %.10g, %.10g, %.10g | %.10g, %.10g, %.10g\n",
-      m->c.ll.c.xz, m->c.ll.c.yz, m->c.ll.c.zz,
-      m->c.la.c.xz, m->c.la.c.yz, m->c.la.c.zz );
-    fprintf( fp, "------------------------------------------\n" );
-    fprintf( fp, " %.10g, %.10g, %.10g | %.10g, %.10g, %.10g\n",
-      m->c.al.c.xx, m->c.al.c.yx, m->c.al.c.zx,
-      m->c.aa.c.xx, m->c.aa.c.yx, m->c.aa.c.zx );
-    fprintf( fp, " %.10g, %.10g, %.10g | %.10g, %.10g, %.10g\n",
-      m->c.al.c.xy, m->c.al.c.yy, m->c.al.c.zy,
-      m->c.aa.c.xy, m->c.aa.c.yy, m->c.aa.c.zy );
-    fprintf( fp, " %.10g, %.10g, %.10g | %.10g, %.10g, %.10g\n",
-      m->c.al.c.xz, m->c.al.c.yz, m->c.al.c.zz,
-      m->c.aa.c.xz, m->c.aa.c.yz, m->c.aa.c.zz );
-    fprintf( fp, "}\n" );
-  }
+  if( !m ) return;
+  fprintf( fp, "{\n" );
+  fprintf( fp, " %.10g, %.10g, %.10g | %.10g, %.10g, %.10g\n",
+    m->c.ll.c.xx, m->c.ll.c.yx, m->c.ll.c.zx,
+    m->c.la.c.xx, m->c.la.c.yx, m->c.la.c.zx );
+  fprintf( fp, " %.10g, %.10g, %.10g | %.10g, %.10g, %.10g\n",
+    m->c.ll.c.xy, m->c.ll.c.yy, m->c.ll.c.zy,
+    m->c.la.c.xy, m->c.la.c.yy, m->c.la.c.zy );
+  fprintf( fp, " %.10g, %.10g, %.10g | %.10g, %.10g, %.10g\n",
+    m->c.ll.c.xz, m->c.ll.c.yz, m->c.ll.c.zz,
+    m->c.la.c.xz, m->c.la.c.yz, m->c.la.c.zz );
+  fprintf( fp, "------------------------------------------\n" );
+  fprintf( fp, " %.10g, %.10g, %.10g | %.10g, %.10g, %.10g\n",
+    m->c.al.c.xx, m->c.al.c.yx, m->c.al.c.zx,
+    m->c.aa.c.xx, m->c.aa.c.yx, m->c.aa.c.zx );
+  fprintf( fp, " %.10g, %.10g, %.10g | %.10g, %.10g, %.10g\n",
+    m->c.al.c.xy, m->c.al.c.yy, m->c.al.c.zy,
+    m->c.aa.c.xy, m->c.aa.c.yy, m->c.aa.c.zy );
+  fprintf( fp, " %.10g, %.10g, %.10g | %.10g, %.10g, %.10g\n",
+    m->c.al.c.xz, m->c.al.c.yz, m->c.al.c.zz,
+    m->c.aa.c.xz, m->c.aa.c.yz, m->c.aa.c.zz );
+  fprintf( fp, "}\n" );
 }

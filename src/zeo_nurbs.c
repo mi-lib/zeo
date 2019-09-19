@@ -429,74 +429,11 @@ bool zNURBS3DRegZTK(ZTK *ztk, char *tag)
 zNURBS3D *zNURBS3DFromZTK(zNURBS3D *nurbs, ZTK *ztk)
 {
   zNURBS3DInit( nurbs );
-  return ZTKEncodeKey( nurbs, NULL, ztk, __ztk_prp_nurbs );
-}
-
-static bool _zNURBS3DFScan(FILE *fp, void *instance, char *buf, bool *success);
-
-/* scan information of a 3D NURBS surface from a file. */
-bool _zNURBS3DFScan(FILE *fp, void *instance, char *buf, bool *success)
-{
-  zNURBS3D *nurbs;
-  int size1, size2;
-  int i, j;
-
-  nurbs = instance;
-  if( strcmp( buf, "dim" ) == 0 ){
-    nurbs->dim[0] = zFInt( fp );
-    nurbs->dim[1] = zFInt( fp );
-  } else if( strcmp( buf, "uknot" ) == 0 ){
-    if( nurbs->knot[0] ){
-      ZRUNWARN( ZEO_ERR_NURBS_KNOTALREADY );
-      zVecFree( nurbs->knot[0] );
-    }
-    if( !( nurbs->knot[0] = zVecFScan( fp ) ) ) return false;
-  } else if( strcmp( buf, "vknot" ) == 0 ){
-    if( nurbs->knot[1] ){
-      ZRUNWARN( ZEO_ERR_NURBS_KNOTALREADY );
-      zVecFree( nurbs->knot[1] );
-    }
-    if( !( nurbs->knot[1] = zVecFScan( fp ) ) ) return false;
-  } else if( strcmp( buf, "slice" ) == 0 ){
-    nurbs->ns[0] = zFInt( fp );
-    nurbs->ns[1] = zFInt( fp );
-  } else if( strcmp( buf, "size" ) == 0 ){
-    if( zNURBS3DCPNum(nurbs,0) > 0 || zNURBS3DCPNum(nurbs,1) > 0 ){
-      ZRUNWARN( ZEO_ERR_NURBS_CPALREADY );
-      zArray2Free( &nurbs->cpnet );
-    }
-    size1 = zFInt( fp );
-    size2 = zFInt( fp );
-    zArray2Alloc( &nurbs->cpnet, zNURBS3DCPCell, size1, size2 );
-    if( !zArray2Buf(&nurbs->cpnet) ){
-      ZALLOCERROR();
-      return false;
-    }
-  } else if( strcmp( buf, "cp" ) == 0 ){
-    i = zFInt( fp );
-    j = zFInt( fp );
-    if( i < 0 || i > zNURBS3DCPNum(nurbs,0) || j < 0 || j > zNURBS3DCPNum(nurbs,1) ){
-      ZRUNERROR( ZEO_ERR_NURBS_INVCP );
-      return false;
-    }
-    zNURBS3DSetWeight( nurbs, i, j, zFDouble(fp) );
-    zVec3DFScan( fp, zNURBS3DCP(nurbs,i,j) );
-  } else
-    return false;
-  return true;
-}
-
-/* scan information of a 3D NURBS surface from a file. */
-zNURBS3D *zNURBS3DFScan(FILE *fp, zNURBS3D *nurbs)
-{
-  zNURBS3DInit( nurbs );
-  if( zFieldFScan( fp, _zNURBS3DFScan, nurbs ) ) return nurbs;
-  zNURBS3DDestroy( nurbs );
-  return NULL;
+  return ZTKEvalKey( nurbs, NULL, ztk, __ztk_prp_nurbs );
 }
 
 /* print out a 3D NURBS to a file. */
-void zNURBS3DFPrint(FILE *fp, zNURBS3D *nurbs)
+void zNURBS3DFPrintZTK(FILE *fp, zNURBS3D *nurbs)
 {
   register int i, j;
 

@@ -11,8 +11,6 @@
  * 3D elliptic cylinder class
  * ********************************************************** */
 
-static bool _zECyl3DFScan(FILE *fp, void *instance, char *buf, bool *success);
-
 /* create a 3D elliptic cylinder. */
 zECyl3D *zECyl3DCreate(zECyl3D *cyl, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div)
 {
@@ -290,94 +288,21 @@ static void *_zECyl3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zECyl3DDiv((zECyl3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static void _zECyl3DCenterFPrint(FILE *fp, int i, void *obj){
+static void _zECyl3DCenterFPrintZTK(FILE *fp, int i, void *obj){
   zVec3DFPrint( fp, zECyl3DCenter((zECyl3D*)obj,i) ); }
-static void _zECyl3DRadiusFPrint(FILE *fp, int i, void *obj){
+static void _zECyl3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", zECyl3DRadius((zECyl3D*)obj,i) ); }
-static void _zECyl3DRefFPrint(FILE *fp, int i, void *obj){
+static void _zECyl3DRefFPrintZTK(FILE *fp, int i, void *obj){
   zVec3DFPrint( fp, zECyl3DRadVec((zECyl3D*)obj,0) ); }
-static void _zECyl3DDivFPrint(FILE *fp, int i, void *obj){
+static void _zECyl3DDivFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%d\n", zECyl3DDiv((zECyl3D*)obj) ); }
 
 static ZTKPrp __ztk_prp_shape_ecyl[] = {
-  { "center", 2, _zECyl3DCenterFromZTK, _zECyl3DCenterFPrint },
-  { "radius", 2, _zECyl3DRadiusFromZTK, _zECyl3DRadiusFPrint },
-  { "ref", 1, _zECyl3DRefFromZTK, _zECyl3DRefFPrint },
-  { "div", 1, _zECyl3DDivFromZTK, _zECyl3DDivFPrint },
+  { "center", 2, _zECyl3DCenterFromZTK, _zECyl3DCenterFPrintZTK },
+  { "radius", 2, _zECyl3DRadiusFromZTK, _zECyl3DRadiusFPrintZTK },
+  { "ref", 1, _zECyl3DRefFromZTK, _zECyl3DRefFPrintZTK },
+  { "div", 1, _zECyl3DDivFromZTK, _zECyl3DDivFPrintZTK },
 };
-
-#if 0
-/* register a definition of tag-and-keys for a 3D elliptic cylinder to a ZTK format processor. */
-bool zECyl3DDefRegZTK(ZTK *ztk, char *tag)
-{
-  return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_ecyl );
-}
-
-/* read a 3D elliptic cylinder from a ZTK format processor. */
-zECyl3D *zECyl3DFromZTK(zECyl3D *ecyl, ZTK *ztk)
-{
-  zECyl3DInit( ecyl );
-  return ZTKEncodeKey( ecyl, NULL, ztk, __ztk_prp_shape_ecyl );
-}
-#endif
-
-typedef struct{
-  int ic; /* number of centers */
-  int ir; /* number of radi */
-  zVec3D c[2]; /* centers */
-  double r[2]; /* radi */
-  zVec3D ref; /* long radius vector */
-  int div; /* number of division */
-} _zECylParam;
-
-/* (static)
- * scan a 3D elliptic cylinder (internal function). */
-bool _zECyl3DFScan(FILE *fp, void *instance, char *buf, bool *success)
-{
-  _zECylParam *prm;
-
-  prm = instance;
-  if( !strcmp( buf, "center" ) ){
-    if( prm->ic > 1 )
-      ZRUNWARN( ZEO_ERR_CENTER_MANY );
-    else
-      zVec3DFScan( fp, &prm->c[prm->ic++] );
-  } else if( !strcmp( buf, "radius" ) ){
-    if( prm->ir > 1 )
-      ZRUNWARN( ZEO_ERR_RADIUS_MANY );
-    else
-      prm->r[prm->ir++] = zFDouble( fp );
-  } else if( !strcmp( buf, "ref" ) ){
-    zVec3DFScan( fp, &prm->ref );
-  } else if( !strcmp( buf, "div" ) ){
-    prm->div = zFInt( fp );
-  } else
-    return false;
-  return true;
-}
-
-/* scan a 3D elliptic cylinder from a file. */
-zECyl3D *zECyl3DFScan(FILE *fp, zECyl3D *cyl)
-{
-  _zECylParam prm;
-
-  zECyl3DInit( cyl );
-  zVec3DZero( &prm.c[0] );
-  zVec3DZero( &prm.c[1] );
-  zVec3DZero( &prm.ref );
-  prm.r[0] = prm.r[1] = 0;
-  prm.ic = prm.ir = prm.div = 0;
-  zFieldFScan( fp, _zECyl3DFScan, &prm );
-  return zECyl3DCreate( cyl, &prm.c[0], &prm.c[1], prm.r[0], prm.r[1], &prm.ref, prm.div );
-}
-
-#if 0
-/* print out a 3D elliptic cylinder to a file. */
-void zECyl3DFPrint(FILE *fp, zECyl3D *ecyl)
-{
-  ZTKPrpKeyFPrint( fp, ecyl, __ztk_prp_shape_ecyl );
-}
-#endif
 
 /* methods for abstraction */
 
@@ -417,10 +342,8 @@ static bool _zShape3DECylRegZTK(ZTK *ztk, char *tag){
   return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_ecyl ); }
 static void *_zShape3DECylParseZTK(void *shape, ZTK *ztk){
   zECyl3DInit( shape );
-  return ZTKEncodeKey( shape, NULL, ztk, __ztk_prp_shape_ecyl ); }
-static void *_zShape3DECylFScan(FILE *fp, void *shape){
-  return zECyl3DFScan( fp, shape ); }
-static void _zShape3DECylFPrint(FILE *fp, void *shape){
+  return ZTKEvalKey( shape, NULL, ztk, __ztk_prp_shape_ecyl ); }
+static void _zShape3DECylFPrintZTK(FILE *fp, void *shape){
   ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape_ecyl ); }
 
 zShape3DCom zeo_shape3d_ecyl_com = {
@@ -442,8 +365,7 @@ zShape3DCom zeo_shape3d_ecyl_com = {
   _zShape3DECylToPH,
   _zShape3DECylRegZTK,
   _zShape3DECylParseZTK,
-  _zShape3DECylFScan,
-  _zShape3DECylFPrint,
+  _zShape3DECylFPrintZTK,
 };
 
 /* create a 3D shape as an elliptic cylinder. */

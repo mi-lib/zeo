@@ -201,11 +201,8 @@ __EXPORT bool zNURBS3DRegZTK(ZTK *ztk, char *tag);
 /*! \brief read a 3D NURBS from a ZTK format processor. */
 __EXPORT zNURBS3D *zNURBS3DFromZTK(zNURBS3D *nurbs, ZTK *ztk);
 
-/*! \brief scan information of a 3D NURBS surface from a file. */
-__EXPORT zNURBS3D *zNURBS3DFScan(FILE *fp, zNURBS3D *nurbs);
-
 /*! \brief print information of a 3D NURBS surface out to a file. */
-__EXPORT void zNURBS3DFPrint(FILE *fp, zNURBS3D *nurbs);
+__EXPORT void zNURBS3DFPrintZTK(FILE *fp, zNURBS3D *nurbs);
 
 __END_DECLS
 

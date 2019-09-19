@@ -291,34 +291,18 @@ zFrame3D *zFrame3DFScan(FILE *fp, zFrame3D *f)
   return f;
 }
 
-/* scan D-H parameters for a frame from a file. */
-zFrame3D *zFrame3DDHFScan(FILE *fp, zFrame3D *f)
-{
-  register int i;
-  double val[4];
-
-  for( i=0; i<4; i++ )
-    val[i] = zFDouble( fp );
-  val[1] = zDeg2Rad( val[1] );
-  val[3] = zDeg2Rad( val[3] );
-  return zFrame3DFromDH( f, val[0], val[1], val[2], val[3] );
-}
-
 /* print a 3D frame out to a file. */
 void zFrame3DFPrint(FILE *fp, zFrame3D *f)
 {
   register int i;
 
-  if( !f )
-    fprintf( fp, "(null 3D frame)\n" );
-  else{
-    fprintf( fp, "{\n" );
-    for( i=0; i<3; i++ )
-      fprintf( fp, " %.10g, %.10g, %.10g, %.10g\n",
-        zFrame3DAtt(f)->e[0][i],
-        zFrame3DAtt(f)->e[1][i],
-        zFrame3DAtt(f)->e[2][i],
-        zFrame3DPos(f)->e[i] );
-    fprintf( fp, "}\n" );
-  }
+  if( !f ) return;
+  fprintf( fp, "{\n" );
+  for( i=0; i<3; i++ )
+    fprintf( fp, " %.10g, %.10g, %.10g, %.10g\n",
+      zFrame3DAtt(f)->e[0][i],
+      zFrame3DAtt(f)->e[1][i],
+      zFrame3DAtt(f)->e[2][i],
+      zFrame3DPos(f)->e[i] );
+  fprintf( fp, "}\n" );
 }

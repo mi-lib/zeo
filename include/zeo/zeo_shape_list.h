@@ -52,22 +52,22 @@ __EXPORT zShape3D *zShapeListPop(zShapeList *l);
 __EXPORT zVec3D *zShapeListContigVert(zShapeList *l, zVec3D *p, double *d);
 __EXPORT double zShapeListClosest(zShapeList *l, zVec3D *p, zVec3D *cp);
 
-/*! \brief print out a shape list.
+/*! \brief print out a shape list to a file in a ZTK format.
  *
- * zShapeListCellFPrint() prints out properties of a cell of a
- * shape list \a cell to the current position of a file \a fp.
- * The format conforms to that of zShape3D.
+ * zShapeListCellFPrintZTK() prints out properties of a cell of
+ * a shape list \a cell to the current position of a file \a fp
+ * in a ZTK format conforming to that of zShape3D.
  *
- * zShapeListCellPrint() prints out properties of \a cell to
+ * zShapeListCellPrintZTK() prints out properties of \a cell to
  * the standard output.
  * \return
- * Neither zShapeListCellFPrint() nor zShapeListCellPrint()
+ * Neither zShapeListCellFPrintZTK() nor zShapeListCellPrintZTK()
  * return any values.
  */
-__EXPORT void zShapeListCellFPrint(FILE *fp, zShapeListCell *cell);
-#define zShapeListCellPrint(c) zShapeListCellFPrint( stdout, (c) )
-__EXPORT void zShapeListFPrint(FILE *fp, zShapeList *list);
-#define zShapeListPrint(l) zShapeListFPrint( stdout, (l) )
+__EXPORT void zShapeListCellFPrintZTK(FILE *fp, zShapeListCell *cell);
+#define zShapeListCellPrintZTK(c) zShapeListCellFPrintZTK( stdout, (c) )
+__EXPORT void zShapeListFPrintZTK(FILE *fp, zShapeList *list);
+#define zShapeListPrintZTK(l) zShapeListFPrintZTK( stdout, (l) )
 
 __END_DECLS
 

@@ -470,60 +470,11 @@ zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk)
   if( zPH3DVertNum(ph) != num_vert ||
       zPH3DFaceNum(ph) != num_face ) return NULL;
   /* vertices & faces */
-  return ZTKEncodeKey( ph, NULL, ztk, __ztk_prp_ph );
-}
-
-typedef struct{
-  zPH3D *ph;
-  int vc;
-  int fc;
-} _zPH3DParam;
-
-static bool _zPH3DFScan(FILE *fp, void *instance, char *buf, bool *success);
-
-/* (static)
- * scan a 3D polyhedron from a file. */
-bool _zPH3DFScan(FILE *fp, void *instance, char *buf, bool *success)
-{
-  _zPH3DParam *prm;
-  int v1, v2, v3;
-
-  prm = instance;
-  if( strcmp( buf, "vert" ) == 0 ){
-    if( prm->vc >= zPH3DVertNum(prm->ph) ) return false;
-    if( !zFToken( fp, buf, BUFSIZ ) ) /* identifier of a vertex */
-      return ( *success = false );
-    zVec3DFScan( fp, zPH3DVert(prm->ph,prm->vc++) );
-  } else if( strcmp( buf, "face" ) == 0 ){
-    if( prm->fc >= zPH3DFaceNum(prm->ph) ) return false;
-    v1 = zFInt( fp );
-    v2 = zFInt( fp );
-    v3 = zFInt( fp );
-    zTri3DCreate( zPH3DFace(prm->ph,prm->fc++),
-      zPH3DVert(prm->ph,v1), zPH3DVert(prm->ph,v2), zPH3DVert(prm->ph,v3) );
-  } else
-    return false;
-  return true;
-}
-
-/* scan a 3D polyhedron from a file. */
-zPH3D *zPH3DFScan(FILE *fp, zPH3D *ph)
-{
-  _zPH3DParam prm;
-
-  zPH3DInit( ph );
-  prm.vc = zFCountKey( fp, "vert" );
-  prm.fc = zFCountKey( fp, "face" );
-  if( !zPH3DAlloc( ph, prm.vc, prm.fc ) ) return NULL;
-  prm.ph = ph;
-  prm.vc = prm.fc = 0;
-  if( zFieldFScan( fp, _zPH3DFScan, &prm ) ) return ph;
-  zPH3DDestroy( ph );
-  return NULL;
+  return ZTKEvalKey( ph, NULL, ztk, __ztk_prp_ph );
 }
 
 /* print a 3D polyhedron to a file. */
-void zPH3DFPrint(FILE *fp, zPH3D *ph)
+void zPH3DFPrintZTK(FILE *fp, zPH3D *ph)
 {
   register int i;
 

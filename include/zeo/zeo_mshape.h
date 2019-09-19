@@ -74,53 +74,14 @@ __EXPORT bool zMShape3DRegZTK(ZTK *ztk);
 /*! \brief read multiple 3D shapes from a ZTK format processor. */
 __EXPORT zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk);
 
+/*! \brief print multiple 3D shapes to the current position of a file in ZTK format. */
+__EXPORT void zMShape3DFPrintZTK(FILE *fp, zMShape3D *ms);
+
 /*! \brief scan multiple 3D shapes from a ZTK format file. */
-__EXPORT zMShape3D *zMShape3DScanZTK(zMShape3D *ms, char filename[]);
+__EXPORT zMShape3D *zMShape3DReadZTK(zMShape3D *ms, char filename[]);
 
-/*! \brief print multiple 3D shapes to a file in a ZTK format. */
-__EXPORT bool zMShape3DPrintZTK(zMShape3D *ms, char filename[]);
-
-__EXPORT void zMShape3DFPrint(FILE *fp, zMShape3D *ms);
-#define zMShape3DPrint(s) zMShape3DFPrint( stdout, (s) )
-
-/*! \brief scan and print multiple 3D shapes.
- *
- * zMShape3DScanFile() scans a file \a filename and creates
- * new multiple 3D shapes \a ms. The suffix can be omitted;
- * the \a filename.ztk file is examined in that case.
- *
- * zMShape3DFScan() scans information from the current
- * position of the file \a fp.
- *
- * An acceptable data file for these two functions should
- * contain the information of 1) optical information sets and
- * 2) shapes. Each information is separeted by tags [optic]
- * and [shape].
- * The denotation of optical information and 3D shape
- * follows each format.
- * See also zOpticalInfoFScan() and zShape3DFScan().
- *
- * zMShape3DPrintFile() prints information of multiple 3D
- * shapes \a ms to a file \a filename. The suffix can be
- * omitted as well as zMShape3DScanFile().
- *
- * zMShape3DFPrint() prints the information of \a ms out to
- * the current position of a file \a fp in the same format with
- * zMShape3DPrintFile().
- *
- * zShape3DPrint() prints information of \a ms out to the
- * standard output.
- * \return
- * zMShape3DScanFile() and zMShape3DFScan() return a pointer
- * \a ms if succeeding to build new multiple 3D shapes.
- * Otherwise, the null pointer is returned.
- *
- * zMShape3DPrintFile(), zMShape3DFPrint() and zMShape3DPrint()
- * return no values.
- * \sa
- * zOpticalInfoFScan, zShape3DFScan
- */
-__EXPORT zMShape3D *zMShape3DFScan(FILE *fp, zMShape3D *ms);
+/*! \brief write multiple 3D shapes to a ZTK format file. */
+__EXPORT bool zMShape3DWriteZTK(zMShape3D *ms, char filename[]);
 
 __END_DECLS
 

@@ -109,47 +109,6 @@ __EXPORT zMat3D *zCone3DInertia(zCone3D *cone, zMat3D *inertia);
  */
 __EXPORT zPH3D *zCone3DToPH(zCone3D *cone, zPH3D *ph);
 
-#if 0
-/*! \brief register a definition of tag-and-keys for a 3D cone to a ZTK format processor. */
-__EXPORT bool zCone3DRegZTK(ZTK *ztk, char *tag);
-/*! \brief read a 3D cone from a ZTK format processor. */
-__EXPORT zCone3D *zCone3DFromZTK(zCone3D *cone, ZTK *ztk);
-#endif
-
-/*! \brief scan and print a 3D cone.
- *
- * zCone3DFScan() scans information of a 3D cone from the
- * current position of a file 'fp', and creates the new cone
- * \a cone. An acceptable data file format is as follows.
- *
- *  center: <x> <y> <z>
- *  vert: <x> <y> <z>
- *  radius: <r>
- *  div: <div>
- *
- * The bracketed parts must be replaced by real numbers.
- * The field div is skippable.
- *
- * zCone3DScan() scans information for \a cone from the
- * standard input.
- *
- * zCone3DFPrint() prints information of \a cone out to the
- * current position of a file \a fp in the same format with
- * the above. zCone3DPrint() prints information of \a cone
- * out to the standard out.
- *
- * zCone3DFScan() and zCone3DScan() return a pointer \a cone.
- *
- * Neither zCone3DFPrint() nor zCone3DPrint() return any values.
- */
-__EXPORT zCone3D *zCone3DFScan(FILE *fp, zCone3D *cone);
-#define zCone3DScan(c) zCone3DFScan( stdin, (c) )
-
-#if 0
-__EXPORT void zCone3DFPrint(FILE *fp, zCone3D *cone);
-#define zCone3DPrint(c) zCone3DFPrint( stdout, (c) )
-#endif
-
 /* methods for abstraction */
 extern zShape3DCom zeo_shape3d_cone_com;
 

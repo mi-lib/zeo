@@ -113,47 +113,6 @@ __EXPORT zMat3D *zCyl3DInertia(zCyl3D *cyl, zMat3D *inertia);
  */
 __EXPORT zPH3D *zCyl3DToPH(zCyl3D *cyl, zPH3D *ph);
 
-#if 0
-/*! \brief register a definition of tag-and-keys for a 3D cylinder to a ZTK format processor. */
-__EXPORT bool zCyl3DRegZTK(ZTK *ztk, char *tag);
-/*! \brief read a 3D cylinder from a ZTK format processor. */
-__EXPORT zCyl3D *zCyl3DFromZTK(zCyl3D *cyl, ZTK *ztk);
-#endif
-
-/*! \brief scan and print a 3D cylinder.
- *
- * zCyl3DFScan() scans information of a 3D cylinder from the current
- * position of a file \a fp, and creates the new cylinder \a cyl.
- * An acceptable data file format is as follows.
- *
- *  center: <x1> <y1> <z1>
- *  center: <x2> <y2> <z2>
- *  radius: <r>
- *  div: <div>
- *
- * The bracketed parts must be replaced by real numbers.
- * The field div is skippable.
- *
- * If more than two keywords \a center exist in the field, zCyl3DFScan()
- * ignores them.
- * zCyl3DScan() scans information for \a cyl from the standard input.
- *
- * zCyl3DFPrint() prints information of \a cyl out to the current
- * position of a file \a fp in the same format with the above.
- * zCyl3DPrint() prints information of \a cyl out to the standard output.
- * \return
- * zCyl3DFScan() and zCyl3DScan() return a pointer \a cyl.
- *
- * Neither zCyl3DFPrint() nor zCyl3DPrint() returns any values.
- */
-__EXPORT zCyl3D *zCyl3DFScan(FILE *fp, zCyl3D *cyl);
-#define zCyl3DScan(c) zCyl3DFScan( stdin, (c) )
-
-#if 0
-__EXPORT void zCyl3DFPrint(FILE *fp, zCyl3D *cyl);
-#define zCyl3DPrint(c) zCyl3DFPrint( stdout, (c) )
-#endif
-
 /* methods for abstraction */
 extern zShape3DCom zeo_shape3d_cyl_com;
 
