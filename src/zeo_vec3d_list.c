@@ -82,7 +82,7 @@ void zVec3DListFPrint(FILE *fp, zVec3DList *list)
 {
   zVec3DListCell *cp;
 
-  fprintf( fp, "%d\n", zListNum(list) );
+  fprintf( fp, "%d\n", zListSize(list) );
   zListForEach( list, cp )
     zVec3DFPrint( fp, cp->data );
 }
@@ -152,7 +152,7 @@ void zVec3DAddrListFPrint(FILE *fp, zVec3DAddrList *list)
 {
   zVec3DAddr *cp;
 
-  fprintf( fp, "%d\n", zListNum(list) );
+  fprintf( fp, "%d\n", zListSize(list) );
   zListForEach( list, cp )
     zVec3DFPrint( fp, cp->data );
 }

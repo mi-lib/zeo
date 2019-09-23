@@ -178,8 +178,8 @@ zSphere3D *zSphere3DFit(zSphere3D *s, zVec3DList *pc)
   int iter = 0;
   register int i, j;
 
-  c = zMatAlloc( zListNum(pc), 4 );
-  e = zVecAlloc( zListNum(pc) );
+  c = zMatAlloc( zListSize(pc), 4 );
+  e = zVecAlloc( zListSize(pc) );
   d = zVecAlloc( 4 );
   /* initial guess */
   zSphere3DInit( s );
@@ -187,7 +187,7 @@ zSphere3D *zSphere3DFit(zSphere3D *s, zVec3DList *pc)
   zSphere3DSetRadius( s, 0 );
   zListForEach( pc, p )
     zSphere3DRadius(s) += zVec3DDist( p->data, zSphere3DCenter(s) );
-  zSphere3DRadius(s) /= zListNum(pc);
+  zSphere3DRadius(s) /= zListSize(pc);
   /* iterative fitting */
   ZITERINIT( iter );
   for( i=0; i<iter; i++ ){

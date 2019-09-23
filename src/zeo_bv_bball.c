@@ -10,19 +10,8 @@
 /* bounding ball / smallest enclosing ball
  * ********************************************************** */
 
-static zSphere3D *_zBBallTest2(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp);
-static zSphere3D *_zBBallTest3(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp);
-static zSphere3D *_zBBallTest4(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp);
-static int _zBBall4(zSphere3D *bb, zVec3D *v[], zVec3D **vp);
-static int _zBBallPrim(zSphere3D *bb, zVec3DList *p, zVec3D **vp);
-static int _zBBallInc(zSphere3D *bb, zVec3DList *p, zVec3DList *shell, zVec3D **vp);
-
-/* (static)
- * _zBBallTest2
- * - test if a ball with its poles at the first two points
- *   bounds the last two points.
- */
-zSphere3D *_zBBallTest2(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
+/* test if a ball with its poles at the first two points bounds the last two points. */
+static zSphere3D *_zBBallTest2(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
 {
   zVec3D c;
   double r;
@@ -36,12 +25,8 @@ zSphere3D *_zBBallTest2(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3
   return zSphere3DCreate( bb, &c, r, 0 );
 }
 
-/* (static)
- * _zBBallTest3
- * - test if a circum ball of the first three points bounds
- *   the last point.
- */
-zSphere3D *_zBBallTest3(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
+/* test if a circum ball of the first three points bounds the last point. */
+static zSphere3D *_zBBallTest3(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
 {
   zVec3D c;
   zTri3D t;
@@ -57,11 +42,8 @@ zSphere3D *_zBBallTest3(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3
   return zSphere3DCreate( bb, &c, r, 0 );
 }
 
-/* (static)
- * _zBBallTest4
- * - a circum ball of the four points.
- */
-zSphere3D *_zBBallTest4(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
+/* a circum ball of the four points. */
+static zSphere3D *_zBBallTest4(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
 {
   zVec3D v[3], c;
   zTri3D t;
@@ -80,11 +62,8 @@ zSphere3D *_zBBallTest4(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3
   return zSphere3DCreate( bb, &c, r, 0 );
 }
 
-/* (static)
- * _zBBall4
- * - bounding ball of the four points.
- */
-int _zBBall4(zSphere3D *bb, zVec3D *v[], zVec3D **vp)
+/* bounding ball of the four points. */
+static int _zBBall4(zSphere3D *bb, zVec3D *v[], zVec3D **vp)
 {
   if( _zBBallTest2( bb, v[0], v[1], v[2], v[3], vp ) ||
       _zBBallTest2( bb, v[0], v[2], v[1], v[3], vp ) ||
@@ -99,15 +78,12 @@ int _zBBall4(zSphere3D *bb, zVec3D *v[], zVec3D **vp)
   return 0;
 }
 
-/* (static)
- * _zBBallPrim
- * - bounding ball of up to four points.
- */
-int _zBBallPrim(zSphere3D *bb, zVec3DList *p, zVec3D **vp)
+/* bounding ball of up to four points. */
+static int _zBBallPrim(zSphere3D *bb, zVec3DList *p, zVec3D **vp)
 {
   zVec3D c, *v[4];
 
-  switch( zListNum(p) ){
+  switch( zListSize(p) ){
   case 0:
     zSphere3DCreate( bb, ZVEC3DZERO, -1, 0 ); /* vague */
     return 0;
@@ -136,18 +112,14 @@ int _zBBallPrim(zSphere3D *bb, zVec3DList *p, zVec3D **vp)
   return 0;
 }
 
-/* (static)
- * _zBBallInc
- * - a recursive procedure to find bounding ball of two
- *   sets of points, where the latter is the set of those
- *   on the surface of the ball.
- */
-int _zBBallInc(zSphere3D *bb, zVec3DList *p, zVec3DList *shell, zVec3D **vp)
+/* a recursive procedure to find bounding ball of two sets of points,
+ * where the latter is the set of those on the surface of the ball. */
+static int _zBBallInc(zSphere3D *bb, zVec3DList *p, zVec3DList *shell, zVec3D **vp)
 {
   zVec3DListCell *cp;
   int num;
 
-  if( zListIsEmpty(p) || zListNum(shell) == 4 )
+  if( zListIsEmpty(p) || zListSize(shell) == 4 )
     return _zBBallPrim( bb, shell, vp );
   zListDeleteTail( p, &cp );
   num = _zBBallInc( bb, p, shell, vp );
@@ -160,10 +132,7 @@ int _zBBallInc(zSphere3D *bb, zVec3DList *p, zVec3DList *shell, zVec3D **vp)
   return num;
 }
 
-/* zBBallPL
- * - a recursive procedure to find bounding ball of a set
- *   of points.
- */
+/* a recursive procedure to find bounding ball of a set of 3D points. */
 int zBBallPL(zSphere3D *bb, zVec3DList *p, zVec3D **vp)
 {
   zVec3DList shell;
@@ -171,7 +140,7 @@ int zBBallPL(zSphere3D *bb, zVec3DList *p, zVec3D **vp)
   int num;
 
   zListInit( &shell );
-  if( zListNum(p) <= 4 )
+  if( zListSize(p) <= 4 )
     return _zBBallPrim( bb, p, vp );
   zListDeleteTail( p, &cp );
   num = zBBallPL( bb, p, vp );
@@ -184,9 +153,7 @@ int zBBallPL(zSphere3D *bb, zVec3DList *p, zVec3D **vp)
   return num;
 }
 
-/* zBBall
- * - bounding ball of points.
- */
+/* bounding ball of 3D points. */
 int zBBall(zSphere3D *bb, zVec3D p[], int num, zVec3D **vp)
 {
   zVec3DList pl;

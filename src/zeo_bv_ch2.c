@@ -10,12 +10,8 @@
 /* planar (2D) convex hull for a list of points
  * ********************************************************** */
 
-/* (static)
- * _zCH2DBasePL
- * - find two independent base vectors on a plane.
- */
-static zVec3D *_zCH2DBasePL(zVec3DList *pl, zVec3D s[]);
-zVec3D *_zCH2DBasePL(zVec3DList *pl, zVec3D s[])
+/* find two independent base vectors on a plane. */
+static zVec3D *_zCH2DBasePL(zVec3DList *pl, zVec3D s[])
 {
   zVec3DListCell *pc;
   zVec3D n;
@@ -42,12 +38,8 @@ zVec3D *_zCH2DBasePL(zVec3DList *pl, zVec3D s[])
   return s;
 }
 
-/* (static)
- *  __z_ch2d_pl_cmp
- * - comparison function of two vertices for sorting.
- */
-static int __z_ch2d_pl_cmp(void *v1, void *v2, void *priv);
-int __z_ch2d_pl_cmp(void *v1, void *v2, void *priv)
+/* comparison function of two vertices for sorting. */
+static int __z_ch2d_pl_cmp(void *v1, void *v2, void *priv)
 {
   double d1, d2;
   zVec3D *s1, *s2;
@@ -65,9 +57,7 @@ int __z_ch2d_pl_cmp(void *v1, void *v2, void *priv)
   return d1 > d2 ? 1 : -1;
 }
 
-/* zCH2DPL
- * - planar convex hull of a list of vertices.
- */
+/* planar convex hull of a list of vertices. */
 zLoop3D *zCH2DPL(zLoop3D *ch, zVec3DList *pl)
 {
   zVec3D s[2], d;
@@ -106,12 +96,8 @@ zLoop3D *zCH2DPL(zLoop3D *ch, zVec3DList *pl)
 /* planar (2D) convex hull for an array of points
  * ********************************************************** */
 
-/* (static)
- * _zCH2DBase
- * - find two independent base vectors on a plane.
- */
-static zVec3D *_zCH2DBase(zVec3D p[], int num, zVec3D s[]);
-zVec3D *_zCH2DBase(zVec3D p[], int num, zVec3D s[])
+/* find two independent base vectors on a plane. */
+static zVec3D *_zCH2DBase(zVec3D p[], int num, zVec3D s[])
 {
   register int i;
   zVec3D n;
@@ -136,12 +122,8 @@ zVec3D *_zCH2DBase(zVec3D p[], int num, zVec3D s[])
   return s;
 }
 
-/* (static)
- *  __z_ch2d_cmp
- * - comparison function of two vertices for sorting.
- */
-static int __z_ch2d_cmp(void *v1, void *v2, void *priv);
-int __z_ch2d_cmp(void *v1, void *v2, void *priv)
+/* comparison function of two vertices for sorting. */
+static int __z_ch2d_cmp(void *v1, void *v2, void *priv)
 {
   double d1, d2;
   zVec3D *s1, *s2;
@@ -159,9 +141,7 @@ int __z_ch2d_cmp(void *v1, void *v2, void *priv)
   return d1 > d2 ? 1 : -1;
 }
 
-/* zCH2D
- * - planar convex hull of an array of vertices.
- */
+/* planar convex hull of an array of vertices. */
 zLoop3D *zCH2D(zLoop3D *ch, zVec3D p[], int num)
 {
   zVec3D s[2], d;
@@ -197,17 +177,13 @@ zLoop3D *zCH2D(zLoop3D *ch, zVec3D p[], int num)
   return ch;
 }
 
-/* (static)
- * _zCH2D2PH3D
- * - convert a planar convex hull to a polyhedron.
- */
-static zPH3D *_zCH2D2PH3D(zPH3D *ch, zLoop3D *vl);
-zPH3D *_zCH2D2PH3D(zPH3D *ch, zLoop3D *vl)
+/* convert a planar convex hull to a polyhedron. */
+static zPH3D *_zCH2D2PH3D(zPH3D *ch, zLoop3D *vl)
 {
   zLoop3DCell *vc;
   register int vn, i;
 
-  vn = zListNum(vl);
+  vn = zListSize(vl);
   if( !( ch = zPH3DAlloc( ch, vn, 2*(vn-2) ) ) ) return NULL;
   i = 0;
   /* vertices */
@@ -223,9 +199,7 @@ zPH3D *_zCH2D2PH3D(zPH3D *ch, zLoop3D *vl)
   return ch;
 }
 
-/* zCH2D2PH3D
- * - a planar convex hull to a polyhedron.
- */
+/* a planar convex hull to a polyhedron. */
 zPH3D *zCH2D2PH3D(zPH3D *ch, zVec3D vert[], int n)
 {
   zLoop3D vl;
@@ -235,9 +209,7 @@ zPH3D *zCH2D2PH3D(zPH3D *ch, zVec3D vert[], int n)
   return ch;
 }
 
-/* zCH2DPL2PH3D
- * - a planar convex hull of a list of vertices to a polyhedron.
- */
+/* a planar convex hull of a list of vertices to a polyhedron. */
 zPH3D *zCH2DPL2PH3D(zPH3D *ch, zVec3DList *pl)
 {
   zLoop3D vl;
@@ -247,9 +219,7 @@ zPH3D *zCH2DPL2PH3D(zPH3D *ch, zVec3DList *pl)
   return ch;
 }
 
-/* zCH2DClosest
- * - the closest point in a convex hull to a point.
- */
+/* the closest point in a convex hull to a point. */
 double zCH2DClosest(zLoop3D *ch, zVec3D *p, zVec3D *cp)
 {
   zLoop3DCell *vc, *vcp;
@@ -257,16 +227,16 @@ double zCH2DClosest(zLoop3D *ch, zVec3D *p, zVec3D *cp)
   zEdge3D e;
   double d = HUGE_VAL, d_new;
 
-  if( zListNum(ch) == 0 ){
+  if( zListSize(ch) == 0 ){
     ZRUNERROR( ZEO_ERR_EMPTYSET );
     return HUGE_VAL;
   }
   vcp = zListHead(ch);
-  if( zListNum(ch) == 1 ){
+  if( zListSize(ch) == 1 ){
     zVec3DCopy( vcp->data, cp );
     return zVec3DDist( cp, p );;
   }
-  if( zListNum(ch) == 2 ){
+  if( zListSize(ch) == 2 ){
     zEdge3DCreate( &e, zListCellPrev(vcp)->data, vcp->data );
     return zEdge3DClosest( &e, p, cp );
   }

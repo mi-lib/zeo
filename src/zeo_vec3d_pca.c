@@ -14,7 +14,7 @@ zVec3D *zVec3DBarycenterPL(zVec3DList *pl, zVec3D *c)
   zVec3DZero( c );
   zListForEach( pl, pc )
     zVec3DAddDRC( c, pc->data );
-  return zVec3DDivDRC( c, zListNum(pl) );
+  return zVec3DDivDRC( c, zListSize(pl) );
 }
 
 /* barycenter of a point cloud given by an array. */

@@ -11,13 +11,7 @@
  * B-Rep vertex, edge and face class
  * ********************************************************** */
 
-static zBREPVertListCell *_zBREPVertListFindnReg(zBREPVertList *vlist, zVec3D *v);
-static zBREPEdgeListCell *_zBREPEdgeListFindnReg(zBREPEdgeList *elist, zBREPVertListCell *v1, zBREPVertListCell *v2);
-static bool _zBREPFaceInsert(zTri3D *face, zBREPFaceList *flist, zBREPEdgeList *elist, zBREPVertList *vlist);
-
-/* zBREPVertListFind
- * - find vertex list cell.
- */
+/* find vertex list cell. */
 zBREPVertListCell *zBREPVertListFind(zBREPVertList *vlist, zVec3D *v)
 {
   zBREPVertListCell *vp;
@@ -27,11 +21,8 @@ zBREPVertListCell *zBREPVertListFind(zBREPVertList *vlist, zVec3D *v)
   return NULL;
 }
 
-/* (static)
- * _zBREPVertListFindnReg
- * - find or register a vertex list cell.
- */
-zBREPVertListCell *_zBREPVertListFindnReg(zBREPVertList *vlist, zVec3D *v)
+/* find or register a vertex list cell. */
+static zBREPVertListCell *_zBREPVertListFindnReg(zBREPVertList *vlist, zVec3D *v)
 {
   zBREPVertListCell *vp;
 
@@ -45,9 +36,7 @@ zBREPVertListCell *_zBREPVertListFindnReg(zBREPVertList *vlist, zVec3D *v)
   return vp;
 }
 
-/* zBREPEdgeListFind
- * - find edge list cell.
- */
+/* find edge list cell. */
 zBREPEdgeListCell *zBREPEdgeListFind(zBREPEdgeList *elist, zBREPVertListCell *v1, zBREPVertListCell *v2)
 {
   zBREPEdgeListCell *ep;
@@ -58,11 +47,8 @@ zBREPEdgeListCell *zBREPEdgeListFind(zBREPEdgeList *elist, zBREPVertListCell *v1
   return NULL;
 }
 
-/* (static)
- * _zBREPEdgeListFindnReg
- * - find or register an edge list cell.
- */
-zBREPEdgeListCell *_zBREPEdgeListFindnReg(zBREPEdgeList *elist, zBREPVertListCell *v1, zBREPVertListCell *v2)
+/* find or register an edge list cell. */
+static zBREPEdgeListCell *_zBREPEdgeListFindnReg(zBREPEdgeList *elist, zBREPVertListCell *v1, zBREPVertListCell *v2)
 {
   zBREPEdgeListCell *ep;
 
@@ -76,11 +62,8 @@ zBREPEdgeListCell *_zBREPEdgeListFindnReg(zBREPEdgeList *elist, zBREPVertListCel
   return ep;
 }
 
-/* (static)
- * _zBREPFaceInsert
- * - insert face list cell.
- */
-bool _zBREPFaceInsert(zTri3D *face, zBREPFaceList *flist, zBREPEdgeList *elist, zBREPVertList *vlist)
+/* insert face list cell. */
+static bool _zBREPFaceInsert(zTri3D *face, zBREPFaceList *flist, zBREPEdgeList *elist, zBREPVertList *vlist)
 {
   zBREPFaceListCell *f;
   register int i;
@@ -103,9 +86,7 @@ bool _zBREPFaceInsert(zTri3D *face, zBREPFaceList *flist, zBREPEdgeList *elist, 
  * B-Rep class
  * ********************************************************** */
 
-/* zPH3D2BREP
- * - convert polyhedron to B-Rep solid.
- */
+/* convert polyhedron to B-Rep solid. */
 zBREP *zPH3D2BREP(zPH3D *ph, zBREP *brep)
 {
   register int i;
@@ -122,9 +103,7 @@ zBREP *zPH3D2BREP(zPH3D *ph, zBREP *brep)
   return brep;
 }
 
-/* zPH3D2BREPInBox
- * - convert polyhedron restricted in a box to B-Rep solid.
- */
+/* convert polyhedron restricted in a box to B-Rep solid. */
 zBREP *zPH3D2BREPInBox(zPH3D *ph, zAABox3D *box, zBREP *brep)
 {
   zTri3D *tri;
@@ -145,16 +124,14 @@ zBREP *zPH3D2BREPInBox(zPH3D *ph, zAABox3D *box, zBREP *brep)
   return brep;
 }
 
-/* zBREP2PH3D
- * - convert B-Rep solid to polyhedron.
- */
+/* convert B-Rep solid to polyhedron. */
 zPH3D *zBREP2PH3D(zBREP *brep, zPH3D *ph)
 {
   register int i;
   zBREPVertListCell *vp;
   zBREPFaceListCell *fp;
 
-  if( !zPH3DAlloc( ph, zListNum(&brep->vlist), zListNum(&brep->flist) ) ){
+  if( !zPH3DAlloc( ph, zListSize(&brep->vlist), zListSize(&brep->flist) ) ){
     ZALLOCERROR();
     return NULL;
   }
@@ -172,9 +149,7 @@ zPH3D *zBREP2PH3D(zBREP *brep, zPH3D *ph)
   return ph;
 }
 
-/* zBREPDestroy
- * - destroy B-Rep solid.
- */
+/* destroy B-Rep solid. */
 void zBREPDestroy(zBREP *brep)
 {
   zListDestroy( zBREPFaceListCell, &brep->flist );

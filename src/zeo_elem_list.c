@@ -100,7 +100,7 @@ static int _zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist)
   /* normal vector for reference */
   _zLoop3DTriangulateNorm( loop, &norm );
   /* incremental triangulation */
-  while( zListNum(loop) > 2 ){
+  while( zListSize(loop) > 2 ){
     vp = zListTail(loop);
     pre = zListHead(loop);
     pst = zListCellNext(vp);
@@ -116,7 +116,7 @@ static int _zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist)
     zListPurge( loop, vp );
     zFree( vp );
   }
-  return zListNum(tlist);
+  return zListSize(tlist);
 }
 
 /* triangulate a simple loop of vertices. */
@@ -142,5 +142,5 @@ int zTriangulate(zVec3D v[], int n, zTri3DList *tlist)
   }
   _zLoop3DTriangulate( &loop, tlist );
   zLoop3DDestroy( &loop );
-  return zListNum(tlist);
+  return zListSize(tlist);
 }

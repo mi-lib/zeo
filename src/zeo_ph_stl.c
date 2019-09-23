@@ -47,8 +47,8 @@ zVec3DArray *_zSTLVertListToVec3DArray(_zSTLVertList *list, zVec3DArray *array)
   _zSTLVertListCell *cp;
   register int i = 0;
 
-  zArrayAlloc( array, zVec3D, zListNum(list) );
-  if( zArraySize(array) < zListNum(list) ){
+  zArrayAlloc( array, zVec3D, zListSize(list) );
+  if( zArraySize(array) < zListSize(list) ){
     zArrayFree( array );
     return NULL;
   }
@@ -99,8 +99,8 @@ zTri3DArray *_zSTLFacetListToTri3DArray(_zSTLFacetList *list, zVec3DArray *varra
   _zSTLFacetListCell *cp;
   register int i = 0;
 
-  zArrayAlloc( array, zTri3D, zListNum(list) );
-  if( zArraySize(array) < zListNum(list) ){
+  zArrayAlloc( array, zTri3D, zListSize(list) );
+  if( zArraySize(array) < zListSize(list) ){
     zArrayFree( array );
     return NULL;
   }

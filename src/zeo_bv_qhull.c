@@ -34,59 +34,18 @@ typedef struct{
   zQHFacetList fl; /* facets */
 } zQH;
 
-static zQHPoint *_zQHPointCreate(zQHPoint *p, zVec3D *v);
-static zQHFacet *_zQHFacetCreate(zQHFacet *f, zQHPoint *p0, zQHPoint *p1, zQHPoint *p2);
-static void _zQHFacetDestroy(zQHFacet *f);
-static void _zQHFacetContig(zQHFacet *f, zQHFacet *f0, zQHFacet *f1, zQHFacet *f2);
-static zTri3D *_zQHFacet2Tri3D(zQHFacet *f, zTri3D *t);
-static bool _zQHFacetOn(zQHFacet *f, zVec3D *v);
-static void _zQHFacetListDestroy(zQHFacetList *fl);
-
-static int _zQHSimplexVert(zQHPointList *pl, zQHPointListCell *v[]);
-static int _zQHSimplex(zQH *qh, zQHPointList *pl);
-static int _zQHFacetBB(zQHFacet *f, zQHPoint *p, zVec3D *e);
-static void _zQHFacetAssign(zQHFacetList *fl, zQHPointList *pl);
-static void _zQHMerge(zQHFacet *f);
-static void _zQHFacetResetFlag(zQH *qh);
-static bool _zQHVisibleSet(zQH *qh, zQHPoint *p, zQHFacetList *vs, zQHPointList *pl);
-static int _zQHFacetContigID(zQHFacet *f, int s);
-static void _zQHFacetBind(zQHFacet *f1, int s1, zQHFacet *f2, int s2);
-static zQHFacetListCell *_zQHHorizonNewFacet(zQHPoint *p, zQHFacet *f, int s);
-static bool _zQHHorizon(zQHFacetList *vs, zQHPoint *p, zQHFacetList *cone);
-static bool _zQHInc(zQH *qh, zQHFacet *f);
-static void _zQHDiscard(zQH *qh, zQHPointList *pl);
-
-static int _zQHCreate(zQH *qh, zQHPointList *pl);
-static void _zQHDestroy(zQH *qh);
-static zPH3D *_zQH2PH3D(zQH *qh, zPH3D *ph);
-
-#ifdef DEBUG
-static void _zQHFacetInfo(zQHFacet *f);
-static void _zQHFacetListInfo(zQHFacetList *fl);
-static void _zQHPointListPrint(zQHPointList *pl, char filename[]);
-static void _zQHFacetListPrint(zQHFacetList *fl, char filename[]);
-static void _zQHPrint(zQH *qh);
-static void _zQHPrint2(zQH *qh);
-#endif /* DEBUG */
-
 /* facet/point operation */
 
-/* (static)
- * _zQHPointCreate
- * - create a point.
- */
-zQHPoint *_zQHPointCreate(zQHPoint *p, zVec3D *v)
+/* create a point. */
+static zQHPoint *_zQHPointCreate(zQHPoint *p, zVec3D *v)
 {
   p->v = v;
   p->discard = false;
   return p;
 }
 
-/* (static)
- * _zQHFacetCreate
- * - create a new facet.
- */
-zQHFacet *_zQHFacetCreate(zQHFacet *f, zQHPoint *p0, zQHPoint *p1, zQHPoint *p2)
+/* create a new facet. */
+static zQHFacet *_zQHFacetCreate(zQHFacet *f, zQHPoint *p0, zQHPoint *p1, zQHPoint *p2)
 {
   zVec3D e1, e2;
 
@@ -106,33 +65,24 @@ zQHFacet *_zQHFacetCreate(zQHFacet *f, zQHPoint *p0, zQHPoint *p1, zQHPoint *p2)
   return f;
 }
 
-/* (static)
- * _zQHFacetDestroy
- * - destroy a facet.
- */
-void _zQHFacetDestroy(zQHFacet *f)
+/* destroy a facet. */
+static void _zQHFacetDestroy(zQHFacet *f)
 {
   f->p[0] = f->p[1] = f->p[2] = NULL;
   f->c[0] = f->c[1] = f->c[2] = NULL;
   zListDestroy( zQHPointListCell, &f->op );
 }
 
-/* (static)
- * _zQHFacetContig
- * - bind with contiguous facets.
- */
-void _zQHFacetContig(zQHFacet *f, zQHFacet *f0, zQHFacet *f1, zQHFacet *f2)
+/* bind with contiguous facets. */
+static void _zQHFacetContig(zQHFacet *f, zQHFacet *f0, zQHFacet *f1, zQHFacet *f2)
 {
   f->c[0] = f0;
   f->c[1] = f1;
   f->c[2] = f2;
 }
 
-/* (static)
- * _zQHFacet2Tri3D
- * - convert a facet to a triangle element.
- */
-zTri3D *_zQHFacet2Tri3D(zQHFacet *f, zTri3D *t)
+/* convert a facet to a triangle element. */
+static zTri3D *_zQHFacet2Tri3D(zQHFacet *f, zTri3D *t)
 {
   zTri3DSetVert( t, 0, f->p[0]->v );
   zTri3DSetVert( t, 1, f->p[1]->v );
@@ -141,11 +91,8 @@ zTri3D *_zQHFacet2Tri3D(zQHFacet *f, zTri3D *t)
   return t;
 }
 
-/* (static)
- * _zQHFacetOn
- * - check if a point is on a facet.
- */
-bool _zQHFacetOn(zQHFacet *f, zVec3D *v)
+/* check if a point is on a facet. */
+static bool _zQHFacetOn(zQHFacet *f, zVec3D *v)
 {
   zTri3D t;
 
@@ -153,11 +100,8 @@ bool _zQHFacetOn(zQHFacet *f, zVec3D *v)
   return zTri3DPointIsInside( &t, v, true );
 }
 
-/* (static)
- * _zQHFacetListDestroy
- * - destroy facet list.
- */
-void _zQHFacetListDestroy(zQHFacetList *fl)
+/* destroy facet list. */
+static void _zQHFacetListDestroy(zQHFacetList *fl)
 {
   zQHFacetListCell *fc;
 
@@ -170,11 +114,8 @@ void _zQHFacetListDestroy(zQHFacetList *fl)
 
 /* initial simplex */
 
-/* (static)
- * _zQHSimplexVert
- * - find vertices of the initial simplex.
- */
-int _zQHSimplexVert(zQHPointList *pl, zQHPointListCell *v[])
+/* find vertices of the initial simplex. */
+static int _zQHSimplexVert(zQHPointList *pl, zQHPointListCell *v[])
 {
   zQHPointList reserve;
   zVec3D e[3], d[2], n;
@@ -233,11 +174,8 @@ int _zQHSimplexVert(zQHPointList *pl, zQHPointListCell *v[])
   return dim;
 }
 
-/* (static)
- * _zQHSimplex
- * - initial simplex.
- */
-int _zQHSimplex(zQH *qh, zQHPointList *pl)
+/* initial simplex. */
+static int _zQHSimplex(zQH *qh, zQHPointList *pl)
 {
   zQHPointListCell *v[4];
   zQHFacetListCell *fc[4];
@@ -263,11 +201,8 @@ int _zQHSimplex(zQH *qh, zQHPointList *pl)
   return ret;
 }
 
-/* (static)
- * _zQHFacetBB
- * - beneath-beyond test.
- */
-int _zQHFacetBB(zQHFacet *f, zQHPoint *p, zVec3D *e)
+/* beneath-beyond test. */
+static int _zQHFacetBB(zQHFacet *f, zQHPoint *p, zVec3D *e)
 {
   double l;
 
@@ -279,11 +214,8 @@ int _zQHFacetBB(zQHFacet *f, zQHPoint *p, zVec3D *e)
   return _zQHFacetOn( f, p->v ) ? 0 : 1;
 }
 
-/* (static)
- * _zQHFacetAssign
- * - assign points to the outside sets of facets.
- */
-void _zQHFacetAssign(zQHFacetList *fl, zQHPointList *pl)
+/* assign points to the outside sets of facets. */
+static void _zQHFacetAssign(zQHFacetList *fl, zQHPointList *pl)
 {
   zQHFacetListCell *fc;
   zQHPointListCell *pc, *pc_tmp;
@@ -314,11 +246,8 @@ void _zQHFacetAssign(zQHFacetList *fl, zQHPointList *pl)
   zListDestroy( zQHPointListCell, pl );
 }
 
-/* (static)
- * _zQHMerge
- * - merge coplanar facets.
- */
-void _zQHMerge(zQHFacet *f)
+/* merge coplanar facets. */
+static void _zQHMerge(zQHFacet *f)
 {
   f->visible = true;
   f->check = true;
@@ -327,11 +256,8 @@ void _zQHMerge(zQHFacet *f)
   if( f->merge[2] && !f->c[2]->check ) _zQHMerge( f->c[2] );
 }
 
-/* (static)
- * _zQHFacetResetFlag
- * - reset visibility flags of all facets.
- */
-void _zQHFacetResetFlag(zQH *qh)
+/* reset visibility flags of all facets. */
+static void _zQHFacetResetFlag(zQH *qh)
 {
   zQHFacetListCell *fc;
 
@@ -341,11 +267,8 @@ void _zQHFacetResetFlag(zQH *qh)
   }
 }
 
-/* (static)
- * _zQHVisibleSet
- * - purge visible set from facet list and collect outside points.
- */
-bool _zQHVisibleSet(zQH *qh, zQHPoint *p, zQHFacetList *vs, zQHPointList *pl)
+/* purge visible set from facet list and collect outside points. */
+static bool _zQHVisibleSet(zQH *qh, zQHPoint *p, zQHFacetList *vs, zQHPointList *pl)
 {
   zQHFacetListCell *fc, *fc_tmp;
   zVec3D e;
@@ -373,11 +296,8 @@ bool _zQHVisibleSet(zQH *qh, zQHPoint *p, zQHFacetList *vs, zQHPointList *pl)
   return true;
 }
 
-/* (static)
- * _zQHFacetContigID
- * - find counter identifier of the contiguous facet.
- */
-int _zQHFacetContigID(zQHFacet *f, int s)
+/* find counter identifier of the contiguous facet. */
+static int _zQHFacetContigID(zQHFacet *f, int s)
 {
   if( f->c[s]->c[0] == f ) return 0;
   if( f->c[s]->c[1] == f ) return 1;
@@ -386,11 +306,8 @@ int _zQHFacetContigID(zQHFacet *f, int s)
   return -1;
 }
 
-/* (static)
- * _zQHFacetBind
- * - bind two contiguous facets with each other.
- */
-void _zQHFacetBind(zQHFacet *f1, int s1, zQHFacet *f2, int s2)
+/* bind two contiguous facets with each other. */
+static void _zQHFacetBind(zQHFacet *f1, int s1, zQHFacet *f2, int s2)
 {
   zVec3D e, d;
   bool flag = false;
@@ -412,11 +329,8 @@ void _zQHFacetBind(zQHFacet *f1, int s1, zQHFacet *f2, int s2)
   f1->merge[s1] = f2->merge[s2] = flag;
 }
 
-/* (static)
- * _zQHHorizonNewFacet
- * - create a new facet from a new vertex and a horizon ridge.
- */
-zQHFacetListCell *_zQHHorizonNewFacet(zQHPoint *p, zQHFacet *f, int s)
+/* create a new facet from a new vertex and a horizon ridge. */
+static zQHFacetListCell *_zQHHorizonNewFacet(zQHPoint *p, zQHFacet *f, int s)
 {
   zQHFacetListCell *fc;
   int s1, s2;
@@ -435,11 +349,8 @@ zQHFacetListCell *_zQHHorizonNewFacet(zQHPoint *p, zQHFacet *f, int s)
   return NULL;
 }
 
-/* (static)
- * _zQHHorizon
- * - find the horizon ridges and create new facets.
- */
-bool _zQHHorizon(zQHFacetList *vs, zQHPoint *p, zQHFacetList *cone)
+/* find the horizon ridges and create new facets. */
+static bool _zQHHorizon(zQHFacetList *vs, zQHPoint *p, zQHFacetList *cone)
 {
   zQHFacetListCell *fc;
   zQHFacet *f, *f_prev;
@@ -463,7 +374,7 @@ bool _zQHHorizon(zQHFacetList *vs, zQHPoint *p, zQHFacetList *cone)
   zListInsertHead( cone, fc );
   s = ( s + 1 ) % 3;
   p0 = f->p[s];
-  n = zListNum( vs ) * 3;
+  n = zListSize( vs ) * 3;
   do{
     if( i++ > n ){ /* probably a circulation occurs */
       ZRUNERROR( ZEO_ERR_FATAL );
@@ -490,11 +401,8 @@ bool _zQHHorizon(zQHFacetList *vs, zQHPoint *p, zQHFacetList *cone)
   return true;
 }
 
-/* (static)
- * _zQHInc
- * - incrementally create new vertices and facets.
- */
-bool _zQHInc(zQH *qh, zQHFacet *f)
+/* incrementally create new vertices and facets. */
+static bool _zQHInc(zQH *qh, zQHFacet *f)
 {
   zQHPointListCell *pc; /* furthest point */
   zQHPointList pl; /* list of points to be reassigned */
@@ -521,11 +429,8 @@ bool _zQHInc(zQH *qh, zQHFacet *f)
   return true;
 }
 
-/* (static)
- * _zQHDiscard
- * - discard old vertices inside of the convex hull.
- */
-void _zQHDiscard(zQH *qh, zQHPointList *pl)
+/* discard old vertices inside of the convex hull. */
+static void _zQHDiscard(zQH *qh, zQHPointList *pl)
 {
   zQHPointListCell *pc;
 
@@ -539,11 +444,8 @@ void _zQHDiscard(zQH *qh, zQHPointList *pl)
   }
 }
 
-/* (static)
- * _zQHCreate
- * - create the convex hull of a point set.
- */
-int _zQHCreate(zQH *qh, zQHPointList *pl)
+/* create the convex hull of a point set. */
+static int _zQHCreate(zQH *qh, zQHPointList *pl)
 {
   zQHFacetListCell *fc;
   int dim;
@@ -566,28 +468,22 @@ int _zQHCreate(zQH *qh, zQHPointList *pl)
   return dim;
 }
 
-/* (static)
- * _zQHDestroy
- * - destroy the convex hull.
- */
-void _zQHDestroy(zQH *qh)
+/* destroy the convex hull. */
+static void _zQHDestroy(zQH *qh)
 {
   zListDestroy( zQHPointListCell, &qh->vl );
   _zQHFacetListDestroy( &qh->fl );
 }
 
-/* (static)
- * _zQH2PH3D
- * - convert the convex hull to a polyhedron.
- */
-zPH3D *_zQH2PH3D(zQH *qh, zPH3D *ph)
+/* convert the convex hull to a polyhedron. */
+static zPH3D *_zQH2PH3D(zQH *qh, zPH3D *ph)
 {
   zVec3D *vp;
   zTri3D *fp;
   zQHPointListCell *pc;
   zQHFacetListCell *fc;
 
-  if( !zPH3DAlloc( ph, zListNum(&qh->vl), zListNum(&qh->fl) ) )
+  if( !zPH3DAlloc( ph, zListSize(&qh->vl), zListSize(&qh->fl) ) )
     return NULL;
   vp = zPH3DVertBuf(ph);
   zListForEach( &qh->vl, pc ){
@@ -600,9 +496,7 @@ zPH3D *_zQH2PH3D(zQH *qh, zPH3D *ph)
   return ph;
 }
 
-/* zCH3DPL
- * - convex hull from list of points.
- */
+/* convex hull from list of 3D points. */
 zPH3D *zCH3DPL(zPH3D *ch, zVec3DList *vl)
 {
   zVec3DListCell *vc;
@@ -631,9 +525,7 @@ zPH3D *zCH3DPL(zPH3D *ch, zVec3DList *vl)
   return ch;
 }
 
-/* zCH3D
- * - convex hull of points.
- */
+/* convex hull of 3D points. */
 zPH3D *zCH3D(zPH3D *ch, zVec3D p[], int num)
 {
   zQHPointListCell *pc;
@@ -665,7 +557,7 @@ zPH3D *zCH3D(zPH3D *ch, zVec3D p[], int num)
 
 /* for debug */
 #ifdef DEBUG
-void _zQHFacetInfo(zQHFacet *f)
+static void _zQHFacetInfo(zQHFacet *f)
 {
   printf( ">> facet:%p\n", f );
   printf( "[vert#0] " ); zVec3DPrint( f->p[0]->v );
@@ -677,7 +569,7 @@ void _zQHFacetInfo(zQHFacet *f)
   printf( "normal vector: " ); zVec3DPrint( &f->n );
 }
 
-void _zQHFacetListInfo(zQHFacetList *fl)
+static void _zQHFacetListInfo(zQHFacetList *fl)
 {
   zQHFacetListCell *fc;
 
@@ -685,7 +577,7 @@ void _zQHFacetListInfo(zQHFacetList *fl)
     _zQHFacetInfo( &fc->data );
 }
 
-void _zQHPointListPrint(zQHPointList *pl, char filename[])
+static void _zQHPointListPrint(zQHPointList *pl, char filename[])
 {
   zQHPointListCell *pc;
   FILE *fp;
@@ -696,7 +588,7 @@ void _zQHPointListPrint(zQHPointList *pl, char filename[])
   fclose( fp );
 }
 
-void _zQHFacetListPrint(zQHFacetList *fl, char filename[])
+static void _zQHFacetListPrint(zQHFacetList *fl, char filename[])
 {
   zQHFacetListCell *fc;
   FILE *fp;
@@ -713,7 +605,7 @@ void _zQHFacetListPrint(zQHFacetList *fl, char filename[])
   fclose(fp);
 }
 
-void _zQHPrint(zQH *qh)
+static void _zQHPrint(zQH *qh)
 {
   zQHFacetListCell *fc;
   zQHPointListCell *pc;
@@ -728,7 +620,7 @@ void _zQHPrint(zQH *qh)
   fclose( fp );
 }
 
-void _zQHPrint2(zQH *qh)
+static void _zQHPrint2(zQH *qh)
 {
   zQHFacetListCell *fc;
   zQHPointListCell *pc;
