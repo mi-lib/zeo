@@ -121,7 +121,7 @@ double zECyl3DClosest(zECyl3D *cyl, zVec3D *p, zVec3D *cp)
   zVec3D v, axis, vr;
   double rat[3], r0, r1, r02, r12, x2, y2, l;
   zPex pex;
-  zComplex ans[4];
+  zCVec ans;
   register int i;
 
   zVec3DSub( p, zECyl3DCenter(cyl,0), &v );
@@ -133,10 +133,9 @@ double zECyl3DClosest(zECyl3D *cyl, zVec3D *p, zVec3D *cp)
   r12 = zSqr( ( r1 = zECyl3DRadius( cyl, 1 ) ) );
 
   if( x2/r02 + y2/r12 > 1 ){
-    if( !( pex = zPexAlloc( 4 ) ) ){
-      ZALLOCERROR();
-      return HUGE_VAL;
-    }
+    ans = zCVecAlloc( 4 );
+    pex = zPexAlloc( 4 );
+    if( !ans || !pex ) return HUGE_VAL;
     zPexSetCoeff( pex, 4, 1 );
     zPexSetCoeff( pex, 3, 2 * ( r0 + r1 ) );
     zPexSetCoeff( pex, 2, r02 + 4*r0*r1 + r12 - x2 - y2 );
@@ -145,11 +144,12 @@ double zECyl3DClosest(zECyl3D *cyl, zVec3D *p, zVec3D *cp)
     zPexBH( pex, ans, zTOL, 0 );
     zPexFree( pex );
     for( i=0; i<4; i++ )
-      if( ( l = ans[i].re ) >= 0 ) break;
-    if( i == 4 || !zIsTiny( ans[i].im ) ){
+      if( ( l = zCVecElemNC(ans,i)->re ) >= 0 ) break;
+    if( i == 4 || !zIsTiny( zCVecElemNC(ans,i)->im ) ){
       ZRUNERROR( ZEO_ERR_FATAL );
       return HUGE_VAL;
     }
+    zCVecFree( ans );
     rat[0] *= r0 / ( l + r0 );
     rat[1] *= r1 / ( l + r1 );
   }

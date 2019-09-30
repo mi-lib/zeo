@@ -91,13 +91,12 @@ zEllips3D *zEllips3DXformInv(zEllips3D *src, zFrame3D *f, zEllips3D *dest)
   return dest;
 }
 
-/* (static)
- * the closest point from a 3D point to an aligned 3D ellipsoid. */
-zVec3D *_zEllips3DClosest(double rx, double ry, double rz, zVec3D *v, zVec3D *cp)
+/* the closest point from a 3D point to an aligned 3D ellipsoid. */
+static zVec3D *_zEllips3DClosest(double rx, double ry, double rz, zVec3D *v, zVec3D *cp)
 {
   double a, b, c, p, q, r, p2, q2, r2, pqr, l;
   zPex pex;
-  zComplex ans[6];
+  zCVec ans;
   int i;
 
   a = zSqr( v->e[zX] / rx );
@@ -106,10 +105,9 @@ zVec3D *_zEllips3DClosest(double rx, double ry, double rz, zVec3D *v, zVec3D *cp
   p = rx * rx; p2 = p * p;
   q = ry * ry; q2 = q * q;
   r = rz * rz; r2 = r * r; pqr = p * q * r;
-  if( !( pex = zPexAlloc( 6 ) ) ){
-    ZALLOCERROR();
-    return NULL;
-  }
+  pex = zPexAlloc( 6 );
+  ans = zCVecAlloc( 6 );
+  if( !pex || !ans ) return NULL;
   zPexSetCoeff( pex, 6, 1 );
   zPexSetCoeff( pex, 5, 2*(p+q+r) );
   zPexSetCoeff( pex, 4, (1-a)*p2 + (1-c)*r2 + (1-b)*q2 + 4*(p*q+q*r+r*p) );
@@ -121,11 +119,12 @@ zVec3D *_zEllips3DClosest(double rx, double ry, double rz, zVec3D *v, zVec3D *cp
   zPexFree( pex );
 
   for( i=0; i<6; i++ )
-    if( ( l = ans[i].re ) >= 0 ) break;
-  if( i == 6 || !zIsTiny( ans[i].im ) ){
+    if( ( l = zCVecElemNC(ans,i)->re ) >= 0 ) break;
+  if( i == 6 || !zIsTiny( zCVecElemNC(ans,i)->im ) ){
     ZRUNERROR( ZEO_ERR_FATAL );
     return NULL;
   }
+  zCVecFree( ans );
   zVec3DCreate( cp, v->e[zX]/(1+l/p), v->e[zY]/(1+l/q), v->e[zZ]/(1+l/r) );
   return cp;
 }
