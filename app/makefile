@@ -12,11 +12,11 @@ LINK=-lzeo `zm-config -l`
 COMPILE=$(CC) $(CFLAGS) -o $@ $< $(LINK)
 
 INSTALL=install -m 755
+UNINSTALL=rm -f
 
 CONFIGGEN=zeda-config-gen
 CONFIG=zeo-config
 TARGET=$(CONFIG) zeo_qhull zeo_gjk zeo_stlconv mshape2gp
-# zeo_terra
 
 #####################################################################
 all : $(TARGET)
@@ -35,3 +35,6 @@ install: $(TARGET)
 clean :
 	@echo " CLEAN"
 	-@rm -f *.o *~ core $(TARGET) *_out
+uninstall:
+	@echo " UNINSTALL	" $(TARGET)
+	@cd $(BINDIR); $(UNINSTALL) $(TARGET); cd -
