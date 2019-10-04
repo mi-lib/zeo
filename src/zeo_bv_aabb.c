@@ -21,8 +21,8 @@ zAABox3D *zAABox3DInit(zAABox3D *box)
 /* create an axis-aligned box */
 zAABox3D *zAABox3DCreate(zAABox3D *box, double x1, double y1, double z1, double x2, double y2, double z2)
 {
-  zVec3DCreate( &box->pmin, zMin(x1,x2), zMin(y1,y2), zMin(z1,z2) );
-  zVec3DCreate( &box->pmax, zMax(x1,x2), zMax(y1,y2), zMax(z1,z2) );
+  zVec3DCreate( &box->pmin, _zMin(x1,x2), _zMin(y1,y2), _zMin(z1,z2) );
+  zVec3DCreate( &box->pmax, _zMax(x1,x2), _zMax(y1,y2), _zMax(z1,z2) );
   return box;
 }
 
@@ -38,12 +38,12 @@ zAABox3D *zAABox3DCopy(zAABox3D *src, zAABox3D *dst)
 zAABox3D *zAABox3DMerge(zAABox3D *dst, zAABox3D *src1, zAABox3D *src2)
 {
   return zAABox3DCreate( dst,
-    zMin( src1->pmin.e[zX], src2->pmin.e[zX] ),
-    zMin( src1->pmin.e[zY], src2->pmin.e[zY] ),
-    zMin( src1->pmin.e[zZ], src2->pmin.e[zZ] ),
-    zMax( src1->pmax.e[zX], src2->pmax.e[zX] ),
-    zMax( src1->pmax.e[zY], src2->pmax.e[zY] ),
-    zMax( src1->pmax.e[zZ], src2->pmax.e[zZ] ) );
+    _zMin( src1->pmin.e[zX], src2->pmin.e[zX] ),
+    _zMin( src1->pmin.e[zY], src2->pmin.e[zY] ),
+    _zMin( src1->pmin.e[zZ], src2->pmin.e[zZ] ),
+    _zMax( src1->pmax.e[zX], src2->pmax.e[zX] ),
+    _zMax( src1->pmax.e[zY], src2->pmax.e[zY] ),
+    _zMax( src1->pmax.e[zZ], src2->pmax.e[zZ] ) );
 }
 
 /* check if a point is inside of an axis-aligned box. */

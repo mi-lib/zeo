@@ -60,7 +60,7 @@ zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, double rat
 {
   double rn;
 
-  ratio = zLimit( ratio, 0, 1 );
+  ratio = _zLimit( ratio, 0, 1 );
   zNameSet( oi, name );
   zRGBBlend( &oi1->amb, &oi2->amb, ratio, &oi->amb );
   zRGBBlend( &oi1->dif, &oi2->dif, ratio, &oi->dif );

@@ -97,7 +97,7 @@ double zBox3DClosest(zBox3D *box, zVec3D *p, zVec3D *cp)
   for( d=zX; d<=zZ; d++ ){
     min =-0.5 * zBox3DDia(box,d);
     max = 0.5 * zBox3DDia(box,d);
-    cp->e[d] = zLimit( _p.e[d], min, max );
+    cp->e[d] = _zLimit( _p.e[d], min, max );
   }
   zXform3DDRC( &box->f, cp );
   return zVec3DDist( p, cp );

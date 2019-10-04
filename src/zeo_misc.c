@@ -11,7 +11,7 @@ static char *__zaxisname[] = { "x", "y", "z", "tilt", "elev", "azim", NULL };
 /* string for the name of axis. */
 char *zAxisStr(zAxis axis)
 {
-  return __zaxisname[zLimit(axis,zX,zZA)];
+  return __zaxisname[_zLimit(axis,zX,zZA)];
 }
 
 /* identify axis from a string. */
@@ -31,7 +31,7 @@ char *zDirStr(zDir dir)
   char *__zdirname[] = {
     "none", "right", "left", "forward", "backward", "up", "down", "(invalid)",
   };
-  return __zdirname[zLimit(dir,zNONE,zDOWN+1)];
+  return __zdirname[_zLimit(dir,zNONE,zDOWN+1)];
 }
 
 /* reverse direction. */

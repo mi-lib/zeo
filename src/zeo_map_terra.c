@@ -320,8 +320,8 @@ static void *_zTerraZRangeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   double z1, z2;
   z1 = ZTKDouble( ztk );
   z2 = ZTKDouble( ztk );
-  ((zTerra*)obj)->zmin = zMin( z1, z2 );
-  ((zTerra*)obj)->zmax = zMax( z1, z2 );
+  ((zTerra*)obj)->zmin = _zMin( z1, z2 );
+  ((zTerra*)obj)->zmax = _zMax( z1, z2 );
   return obj;
 }
 static void *_zTerraVarThrsdFromZTK(void *obj, int i, void *arg, ZTK *ztk){

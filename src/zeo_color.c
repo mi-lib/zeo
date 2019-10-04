@@ -21,9 +21,9 @@ const zRGB zrgbblack = { 0.0, 0.0, 0.0 }, zrgbwhite = { 1.0, 1.0, 1.0 };
 /* set RGB parameters. */
 zRGB *zRGBSet(zRGB *rgb, float red, float green, float blue)
 {
-  rgb->r = zLimit( red,   0, 1 );
-  rgb->g = zLimit( green, 0, 1 );
-  rgb->b = zLimit( blue,  0, 1 );
+  rgb->r = _zLimit( red,   0, 1 );
+  rgb->g = _zLimit( green, 0, 1 );
+  rgb->b = _zLimit( blue,  0, 1 );
   return rgb;
 }
 
@@ -121,7 +121,7 @@ zHSV *zRGB2HSV(zRGB *rgb, zHSV *hsv)
   if( rgb->r > rgb->g ){
     if( rgb->r > rgb->b ){
       max = rgb->r;
-      min = zMin( rgb->g, rgb->b );
+      min = _zMin( rgb->g, rgb->b );
       phase = rgb->g - rgb->b;
       phase0 = 0;
     } else{
@@ -133,7 +133,7 @@ zHSV *zRGB2HSV(zRGB *rgb, zHSV *hsv)
   } else{
     if( rgb->g > rgb->b ){
       max = rgb->g;
-      min = zMin( rgb->r, rgb->b );
+      min = _zMin( rgb->r, rgb->b );
       phase = rgb->b - rgb->r;
       phase0 = 120;
     } else{

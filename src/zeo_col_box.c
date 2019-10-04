@@ -271,12 +271,12 @@ zAABox3D *zIntersectAABox3D(zAABox3D *dst, zAABox3D *src1, zAABox3D *src2)
 {
   if( !zColChkAABox3D( src1, src2 ) ) return NULL;
   return zAABox3DCreate( dst,
-    zMax( src1->pmin.e[zX], src2->pmin.e[zX] ),
-    zMax( src1->pmin.e[zY], src2->pmin.e[zY] ),
-    zMax( src1->pmin.e[zZ], src2->pmin.e[zZ] ),
-    zMin( src1->pmax.e[zX], src2->pmax.e[zX] ),
-    zMin( src1->pmax.e[zY], src2->pmax.e[zY] ),
-    zMin( src1->pmax.e[zZ], src2->pmax.e[zZ] ) );
+    _zMax( src1->pmin.e[zX], src2->pmin.e[zX] ),
+    _zMax( src1->pmin.e[zY], src2->pmin.e[zY] ),
+    _zMax( src1->pmin.e[zZ], src2->pmin.e[zZ] ),
+    _zMin( src1->pmax.e[zX], src2->pmax.e[zX] ),
+    _zMin( src1->pmax.e[zY], src2->pmax.e[zY] ),
+    _zMin( src1->pmax.e[zZ], src2->pmax.e[zZ] ) );
 }
 
 /* zIntersectPH3DBox

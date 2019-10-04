@@ -1,3 +1,4 @@
+2019.10. 5. Reflected new specification of zMax, zMin and zLimit. [zeo_misc, zeo_color, zeo_optic, zeo_shape_box, zeo_bv_aabb, zeo_col_box, zeo_map_terra]
 2019.10. 1. Enabled make uninstall. [makefile]
 2019. 9.30. Reflected new specification of zPexBH in _zEllips3DClosest and zECyl3DClosest. [zeo_shape_ellips, zeo_shape_ecyl]
 2019. 9.23. Reflected renaming of zListSize. [zeo_vec3d_list, zeo_vec3d_pca, zeo_elem_list, zeo_ph_stl, zeo_shape_sphere, zeo_bv_ch2, zeo_bv_bball, zeo_bv_qhull, zeo_brep]
