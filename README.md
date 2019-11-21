@@ -62,7 +62,7 @@ Do:
    % make uninstall
    ```
 
-which removes $PREFIX/lib/libzm.so and $PREFIX/include/zeo.
+which removes $PREFIX/lib/libzeo.so and $PREFIX/include/zeo.
 
 -----------------------------------------------------------------
 ## [How to use]
