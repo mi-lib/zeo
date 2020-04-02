@@ -326,8 +326,6 @@ void zPH3DFWriteSTL_Bin(FILE *fp, zPH3D *ph, char name[])
   }
 }
 
-#define ZEO_ERR_STL_UNREADABLE "File unreadable. Probably not a STL file."
-
 /* read a 3D polyhedron from either ASCII/binary STL format */
 zPH3D *zPH3DFReadSTL(FILE *fp, zPH3D *ph, char name[], size_t namesize)
 {

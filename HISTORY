@@ -1,3 +1,7 @@
+2020. 4. 2. Debugged _zShape3DNameFromZTK, _zShape3DOpticFromZTK and _zShape3DMirrorFromZTK. [zeo_shape]
+2020. 4. 2. Renamed zeo_stlconv to zeo_phconv and modified it to accept PLY file. [app]
+2020. 4. 2. Added zPH3DFReadPLY, zPH3DFWritePLY_ASCII and zPH3DFWritePLY_Bin. [zeo_errmsg, zeo_ph, zeo_ph_ply]
+2020. 3.30. Moved a macro ZEO_ERR_STL_UNREADABLE to zeo_errmsg.h. [zeo_errmsg, zeo_ph]
 2020. 3.27. Modified some .ztk files to be ready for respecification of ZTK format. [example]
 2019.11.21. Rewrote README as a markdown file. [README]
 2019.10. 5. Reflected new specification of zMax, zMin and zLimit. [zeo_misc, zeo_color, zeo_optic, zeo_shape_box, zeo_bv_aabb, zeo_col_box, zeo_map_terra]

@@ -19,7 +19,7 @@ __EXPORT void zPH3DFWriteSTL_ASCII(FILE *fp, zPH3D *ph, char name[]);
 __EXPORT zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[]);
 __EXPORT void zPH3DFWriteSTL_Bin(FILE *fp, zPH3D *ph, char name[]);
 
-/*! \brief read and write a 3D polyhedron. */
+/*! \brief read and write a 3D polyhedron in STL format. */
 __EXPORT zPH3D *zPH3DFReadSTL(FILE *fp, zPH3D *ph, char name[], size_t namesize);
 #define zPH3DFWriteSTL zPH3DFWriteSTL_ASCII
 

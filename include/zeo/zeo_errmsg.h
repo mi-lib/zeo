@@ -36,7 +36,17 @@
 #define ZEO_ERR_OPT_INV      "invalid description for optical-info"
 #define ZEO_ERR_OPT_UNNAME   "unnamed optical-info exists"
 
+#define ZEO_ERR_STL_UNREADABLE "File unreadable. Probably not a STL file."
 #define ZEO_ERR_STL_INCOMPLETE "incomplete STL file"
+
+#define ZEO_ERR_PLY_UNREADABLE  "File unreadable. Probably not a PLY file"
+#define ZEO_ERR_PLY_INCOMPLETE  "incomplete PLY file"
+#define ZEO_ERR_PLY_INV_FORMAT  "invalid format %s"
+#define ZEO_ERR_PLY_TOOMANYELEM "too many definitions of elements"
+#define ZEO_ERR_PLY_TOOMANYPRP  "too many definitions of properties"
+#define ZEO_ERR_PLY_UNKNOWNELEM "unknown element: %s"
+#define ZEO_ERR_PLY_UNKNOWNPRP  "unknown property: %s"
+#define ZEO_ERR_PLY_UNSUPPORTED "unsupported description"
 
 #define ZEO_ERR_NURBS_INVDIM "invalid dimension specified for NURBS, or lack of control points"
 #define ZEO_ERR_NURBS_SIZMIS      "size mismatch of NURBS surfaces"

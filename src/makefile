@@ -18,7 +18,8 @@ OBJ=zeo_color.o zeo_optic.o\
 	zeo_ep.o zeo_frame.o\
 	zeo_pointcloud.o\
 	zeo_elem.o zeo_elem_list.o\
-	zeo_ph.o zeo_ph_stl.o zeo_nurbs.o\
+	zeo_ph.o zeo_ph_stl.o zeo_ph_ply.o\
+	zeo_nurbs.o\
 	zeo_shape.o zeo_shape_list.o\
 	zeo_shape_box.o zeo_shape_sphere.o zeo_shape_ellips.o zeo_shape_cyl.o zeo_shape_ecyl.o zeo_shape_cone.o zeo_shape_ph.o zeo_shape_nurbs.o\
 	zeo_mshape.o\

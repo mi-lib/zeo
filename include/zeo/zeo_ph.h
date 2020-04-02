@@ -193,5 +193,6 @@ __EXPORT void zPH3DFPrintZTK(FILE *fp, zPH3D *ph);
 __END_DECLS
 
 #include <zeo/zeo_ph_stl.h>
+#include <zeo/zeo_ph_ply.h>
 
 #endif /* __ZEO_PH_H__ */
