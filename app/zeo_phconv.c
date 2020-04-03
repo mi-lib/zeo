@@ -5,6 +5,7 @@ enum{
   PHCONV_OUTPUTFILE,
   PHCONV_ASCII,
   PHCONV_BINARY,
+  PHCONV_SCALE,
   PHCONV_HELP,
   PHCONV_INVALID
 };
@@ -13,6 +14,7 @@ zOption option[] = {
   { "o", "out",   "<output file>", "output STL/PLY/ZTK file", NULL, false },
   { "a", "ascii", NULL,            "output ASCII STL/PLY file", NULL, false },
   { "b", "bin",   NULL,            "output binary STL/PLY file", NULL, false },
+  { "s", "scale", "<factor>",      "scale geometry", "1.0", false },
   { "h", "help",  NULL,            "show this message", NULL, false },
   { NULL, NULL, NULL, NULL, NULL, false },
 };
@@ -154,6 +156,11 @@ bool phconv_write_ply(zShape3D *shape)
 bool phconv_write(zShape3D *shape)
 {
   char *suffix;
+
+/*
+  if( option[PHCONV_SCALE].flag )
+    zShape3DScale( shape, atof( option[PHCONV_SCALE].arg ) );
+*/
 
   suffix = zGetSuffix( option[PHCONV_OUTPUTFILE].arg );
   if( strcmp( suffix, "stl" ) == 0 )
