@@ -1,3 +1,4 @@
+2020. 4. 3. Modified specification of _zShape3DImportFromZTK to accept a scaling factor. [zeo_shape]
 2020. 4. 3. Added scaling operation in zeo_phconv. [app]
 2020. 4. 3. Added zPH3DScale. [zeo_ph]
 2020. 4. 3. Added scaling operation in zeo_phconv (dummy). [app]

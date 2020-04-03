@@ -208,7 +208,11 @@ static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
     ZRUNERROR( ZEO_WARN_SHAPE_UNKNOWNFORMAT, suffix );
     obj = NULL;
   }
-  if( obj ) ((_zShape3DRefPrp*)arg)->imported = true;
+  if( obj ){
+    ((_zShape3DRefPrp*)arg)->imported = true;
+    if( ZTKValNext(ztk) )
+      zPH3DScale( zShape3DPH((zShape3D*)obj), atof(ZTKVal(ztk)) );
+  }
   fclose( fp );
   return obj;
 }
