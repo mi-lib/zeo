@@ -99,11 +99,11 @@ bool phconv_read(zShape3D *shape)
   char *suffix;
 
   suffix = zGetSuffix( option[PHCONV_INPUTFILE].arg );
-  if( strcmp( suffix, "stl" ) == 0 )
+  if( strcmp( suffix, "stl" ) == 0 || strcmp( suffix, "STL" ) == 0 )
     return phconv_read_stl( shape );
-  if( strcmp( suffix, "ply" ) == 0 )
+  if( strcmp( suffix, "ply" ) == 0 || strcmp( suffix, "PLY" ) == 0 )
     return phconv_read_ply( shape );
-  if( strcmp( suffix, "ztk" ) == 0 ){
+  if( strcmp( suffix, "ztk" ) == 0 || strcmp( suffix, "ZTK" ) == 0 ){
     eprintf( "read ZTK file.\n" );
     if( !zShape3DReadZTK( shape, option[PHCONV_INPUTFILE].arg ) ){
       eprintf( "read failure.\n" );
@@ -161,11 +161,11 @@ bool phconv_write(zShape3D *shape)
     zPH3DScale( zShape3DPH(shape), atof( option[PHCONV_SCALE].arg ) );
 
   suffix = zGetSuffix( option[PHCONV_OUTPUTFILE].arg );
-  if( strcmp( suffix, "stl" ) == 0 )
+  if( strcmp( suffix, "stl" ) == 0 || strcmp( suffix, "STL" ) == 0 )
     return phconv_write_stl( shape );
-  if( strcmp( suffix, "ply" ) == 0 )
+  if( strcmp( suffix, "ply" ) == 0 || strcmp( suffix, "PLY" ) == 0 )
     return phconv_write_ply( shape );
-  if( strcmp( suffix, "ztk" ) == 0 ){
+  if( strcmp( suffix, "ztk" ) == 0 || strcmp( suffix, "ZTK" ) == 0 ){
     eprintf( "write ZTK file.\n" );
     return zShape3DWriteZTK( shape, option[PHCONV_OUTPUTFILE].arg );
   }
