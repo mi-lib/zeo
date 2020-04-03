@@ -45,6 +45,9 @@ typedef struct{
  * the size \a vn and triangular faces with the size \a fn in
  * \a ph.
  *
+ * zPH3DScale() directly scales \a ph by multiplying all vertices
+ * by \a scale.
+ *
  * zPH3DClone() makes a clone of a 3D polyhedron \a src. The
  * result is put into \a dest.
  * zPH3DMirrorClone() makes a clone of \a src mirrored about
@@ -59,6 +62,7 @@ __EXPORT zPH3D *zPH3DInit(zPH3D *ph);
 __EXPORT zPH3D *zPH3DAlloc(zPH3D *ph, int vn, int fn);
 __EXPORT zPH3D *zPH3DClone(zPH3D *src, zPH3D *dest);
 __EXPORT zPH3D *zPH3DMirror(zPH3D *src, zPH3D *dest, zAxis axis);
+__EXPORT zPH3D *zPH3DScale(zPH3D *ph, double scale);
 __EXPORT void zPH3DDestroy(zPH3D *ph);
 
 /*! \brief transform coordinates of a 3D polyhedron.

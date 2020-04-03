@@ -72,6 +72,16 @@ zPH3D *zPH3DMirror(zPH3D *src, zPH3D *dest, zAxis axis)
   return dest;
 }
 
+/* scale a 3D polyhedron. */
+zPH3D *zPH3DScale(zPH3D *ph, double scale)
+{
+  register int i;
+
+  for( i=0; i<zPH3DVertNum(ph); i++ )
+    zVec3DMulDRC( zPH3DVert(ph,i), scale );
+  return ph;
+}
+
 /* destroy a 3D polyhedron. */
 void zPH3DDestroy(zPH3D *ph)
 {

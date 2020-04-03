@@ -1,3 +1,5 @@
+2020. 4. 3. Added scaling operation in zeo_phconv. [app]
+2020. 4. 3. Added zPH3DScale. [zeo_ph]
 2020. 4. 3. Added scaling operation in zeo_phconv (dummy). [app]
 2020. 4. 3. Debugged _zShape3DImportFromZTK. [zeo_shape]
 2020. 4. 3. Renamed a member mirrored in _zShape3DRefPrp to imported. [zeo_shape]

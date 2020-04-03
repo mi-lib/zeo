@@ -157,10 +157,8 @@ bool phconv_write(zShape3D *shape)
 {
   char *suffix;
 
-/*
   if( option[PHCONV_SCALE].flag )
-    zShape3DScale( shape, atof( option[PHCONV_SCALE].arg ) );
-*/
+    zPH3DScale( zShape3DPH(shape), atof( option[PHCONV_SCALE].arg ) );
 
   suffix = zGetSuffix( option[PHCONV_OUTPUTFILE].arg );
   if( strcmp( suffix, "stl" ) == 0 )
