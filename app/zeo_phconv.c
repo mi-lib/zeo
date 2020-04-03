@@ -57,20 +57,16 @@ bool phconv_cmdarg(int argc, char *argv[])
 bool phconv_read_stl(zShape3D *shape)
 {
   FILE *fin;
-  char buf[BUFSIZ];
   bool ret = true;
 
   if( !( fin = fopen( option[PHCONV_INPUTFILE].arg, "r" ) ) ){
     ZOPENERROR( option[PHCONV_INPUTFILE].arg );
     return false;
   }
-  zShape3DInit( shape );
-  shape->com = &zeo_shape3d_ph_com;
   eprintf( "read STL file.\n" );
-  if( !( ret = zPH3DFReadSTL( fin, zShape3DPH(shape), buf, BUFSIZ ) ? true : false ) )
+  zShape3DInit( shape );
+  if( !zShape3DFReadSTL( fin, shape ) ){
     eprintf( "read failure.\n" );
-  else if( !zNameSet( shape, buf ) ){
-    ZALLOCERROR();
     ret = false;
   }
   fclose( fin );
@@ -86,13 +82,10 @@ bool phconv_read_ply(zShape3D *shape)
     ZOPENERROR( option[PHCONV_INPUTFILE].arg );
     return false;
   }
-  zShape3DInit( shape );
-  shape->com = &zeo_shape3d_ph_com;
   eprintf( "read PLY file.\n" );
-  if( !( ret = zPH3DFReadPLY( fin, zShape3DPH(shape) ) ? true : false ) )
+  zShape3DInit( shape );
+  if( !zShape3DFReadPLY( fin, shape ) ){
     eprintf( "read failure.\n" );
-  else if( !zNameSet( shape, "noname" ) ){
-    ZALLOCERROR();
     ret = false;
   }
   fclose( fin );

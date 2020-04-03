@@ -94,6 +94,8 @@
 #define ZEO_WARN_SHAPE_DUP        "%s: name of a shape duplicated."
 #define ZEO_WARN_SHAPE_BB_INVALID "bounding-box not generated because it is only for polyhedra."
 #define ZEO_WARN_SHAPE_UNKNOWNOPTIC "%s: unknown name of optical info set."
+#define ZEO_WARN_SHAPE_OVRRDN_PH "shape type overridden by polyhedron"
+#define ZEO_WARN_SHAPE_UNKNOWNFORMAT "%s: unknown format of a shape."
 
 #define ZEO_WARN_MSHAPE_EMPTY     "empty shapes assigned."
 

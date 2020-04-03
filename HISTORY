@@ -1,3 +1,6 @@
+2020. 4. 3. Defined import key for zShape3D in ZTK and added _zShape3DImportFromZTK. [zeo_errmsg, zeo_shape]
+2020. 4. 3. Modified zeo_phconv reflecting newly added zShape3DFReadSTL and zShape3DFReadPLY. [app]
+2020. 4. 3. Added zShape3DFReadSTL and zShape3DFReadPLY. [zeo_errmsg, zeo_shape]
 2020. 4. 2. Debugged _zShape3DNameFromZTK, _zShape3DOpticFromZTK and _zShape3DMirrorFromZTK. [zeo_shape]
 2020. 4. 2. Renamed zeo_stlconv to zeo_phconv and modified it to accept PLY file. [app]
 2020. 4. 2. Added zPH3DFReadPLY, zPH3DFWritePLY_ASCII and zPH3DFWritePLY_Bin. [zeo_errmsg, zeo_ph, zeo_ph_ply]

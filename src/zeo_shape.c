@@ -118,6 +118,30 @@ zShape3D *zShape3DToPH(zShape3D *shape)
   return NULL;
 }
 
+/* read a shape from a STL file. */
+zShape3D *zShape3DFReadSTL(FILE *fp, zShape3D *shape)
+{
+  char buf[BUFSIZ];
+
+  if( shape->com && shape->com != &zeo_shape3d_ph_com )
+    ZRUNWARN( ZEO_WARN_SHAPE_OVRRDN_PH );
+  zShape3DQueryAssign( shape, "polyhedron" );
+  if( !zPH3DFReadSTL( fp, zShape3DPH(shape), buf, BUFSIZ ) ) return NULL;
+  if( !zNamePtr(shape) )
+    if( !zNameSet( shape, buf ) ) return NULL;
+  return shape;
+}
+
+/* read a shape from a PLY file. */
+zShape3D *zShape3DFReadPLY(FILE *fp, zShape3D *shape)
+{
+  if( shape->com && shape->com != &zeo_shape3d_ph_com )
+    ZRUNWARN( ZEO_WARN_SHAPE_OVRRDN_PH );
+  zShape3DQueryAssign( shape, "polyhedron" );
+  if( !zPH3DFReadPLY( fp, zShape3DPH(shape) ) ) return NULL;
+  return shape;
+}
+
 /* parse ZTK format */
 
 /* read the number of division for smooth primitives from a ZTK format processor. */
@@ -166,6 +190,27 @@ static void *_zShape3DMirrorFromZTK(void *obj, int i, void *arg, ZTK *ztk){
     ZRUNWARN( ZEO_ERR_SHAPE_UNDEF, ZTKVal(ztk) );
   return obj;
 }
+static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  char *suffix;
+  FILE *fp;
+
+  if( !( fp = fopen( ZTKVal(ztk), "r" ) ) ){
+    ZOPENERROR( ZTKVal(ztk) );
+    return NULL;
+  }
+  suffix = zGetSuffix( ZTKVal(ztk) );
+  if( strcmp( suffix, "stl" ) == 0 ){
+    if( !zShape3DFReadSTL( fp, obj ) ) obj = NULL;
+  } else
+  if( strcmp( suffix, "ply" ) == 0 ){
+    if( !zShape3DFReadPLY( fp, obj ) ) obj = NULL;
+  } else{
+    ZRUNERROR( ZEO_WARN_SHAPE_UNKNOWNFORMAT, suffix );
+    obj = NULL;
+  }
+  fclose( fp );
+  return obj;
+}
 
 static void _zShape3DNameFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%s\n", zName((zShape3D*)obj) );
@@ -182,6 +227,7 @@ static ZTKPrp __ztk_prp_shape[] = {
   { "type", 1, _zShape3DTypeFromZTK, _zShape3DTypeFPrint },
   { "optic", 1, _zShape3DOpticFromZTK, _zShape3DOpticFPrint },
   { "mirror", 1, _zShape3DMirrorFromZTK, NULL },
+  { "import", 1, _zShape3DImportFromZTK, NULL },
 };
 
 /* register a definition of tag-and-keys for a 3D shape to a ZTK format processor. */
