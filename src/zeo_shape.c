@@ -154,7 +154,7 @@ int zShape3DDivFromZTK(ZTK *ztk)
 typedef struct{
   zShape3DArray *sarray;
   zOpticalInfoArray *oarray;
-  bool mirrored;
+  bool imported;
 } _zShape3DRefPrp;
 
 static void *_zShape3DNameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
@@ -185,7 +185,7 @@ static void *_zShape3DMirrorFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   if( ref ){
     if( !ZTKValNext(ztk) ) return NULL;
     if( !zShape3DMirror( ref, (zShape3D*)obj, zAxisFromStr(ZTKVal(ztk)) ) ) return NULL;
-    ((_zShape3DRefPrp*)arg)->mirrored = true;
+    ((_zShape3DRefPrp*)arg)->imported = true;
   } else
     ZRUNWARN( ZEO_ERR_SHAPE_UNDEF, ZTKVal(ztk) );
   return obj;
@@ -208,6 +208,7 @@ static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
     ZRUNERROR( ZEO_WARN_SHAPE_UNKNOWNFORMAT, suffix );
     obj = NULL;
   }
+  if( obj ) ((_zShape3DRefPrp*)arg)->imported = true;
   fclose( fp );
   return obj;
 }
@@ -248,12 +249,12 @@ zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoAr
   _zShape3DRefPrp prp;
 
   zShape3DInit( shape );
-  /* type, name, associated optical info and mirroring */
+  /* type, name, associated optical info, and mirroring/importing operations */
   prp.sarray = sarray;
   prp.oarray = oarray;
-  prp.mirrored = false;
+  prp.imported = false;
   if( !ZTKEvalKey( shape, &prp, ztk, __ztk_prp_shape ) ) return NULL;
-  if( prp.mirrored ) return shape;
+  if( prp.imported ) return shape;
   if( !shape->com ){
     ZRUNERROR( ZEO_ERR_SHAPE_INVALID );
     return NULL;

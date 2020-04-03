@@ -1,3 +1,5 @@
+2020. 4. 3. Debugged _zShape3DImportFromZTK. [zeo_shape]
+2020. 4. 3. Renamed a member mirrored in _zShape3DRefPrp to imported. [zeo_shape]
 2020. 4. 3. Defined import key for zShape3D in ZTK and added _zShape3DImportFromZTK. [zeo_errmsg, zeo_shape]
 2020. 4. 3. Modified zeo_phconv reflecting newly added zShape3DFReadSTL and zShape3DFReadPLY. [app]
 2020. 4. 3. Added zShape3DFReadSTL and zShape3DFReadPLY. [zeo_errmsg, zeo_shape]
