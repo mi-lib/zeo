@@ -199,10 +199,10 @@ static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
     return NULL;
   }
   suffix = zGetSuffix( ZTKVal(ztk) );
-  if( strcmp( suffix, "stl" ) == 0 ){
+  if( strcmp( suffix, "stl" ) == 0 || strcmp( suffix, "STL" ) == 0 ){
     if( !zShape3DFReadSTL( fp, obj ) ) obj = NULL;
   } else
-  if( strcmp( suffix, "ply" ) == 0 ){
+  if( strcmp( suffix, "ply" ) == 0 || strcmp( suffix, "PLY" ) == 0 ){
     if( !zShape3DFReadPLY( fp, obj ) ) obj = NULL;
   } else{
     ZRUNERROR( ZEO_WARN_SHAPE_UNKNOWNFORMAT, suffix );
