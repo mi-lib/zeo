@@ -156,10 +156,10 @@ int zBBallPL(zSphere3D *bb, zVec3DList *p, zVec3D **vp)
 /* bounding ball of 3D points. */
 int zBBall(zSphere3D *bb, zVec3D p[], int num, zVec3D **vp)
 {
-  zVec3DList pl;
+  zVec3DAddrList pl;
 
-  if( !zVec3DListFromArray( &pl, p, num ) ) return 0;
+  if( !zVec3DAddrListFromArray( &pl, p, num ) ) return 0;
   num = zBBallPL( bb, &pl, vp );
-  zVec3DListDestroy( &pl );
+  zVec3DAddrListDestroy( &pl );
   return num;
 }

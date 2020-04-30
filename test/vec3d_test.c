@@ -93,6 +93,9 @@ void assert_vecprod(void)
     && v4.e[0]==v6.e[0] && v4.e[1]==v6.e[1] && v4.e[2]==v6.e[2]
     && v4.e[0]==v7.e[0] && v4.e[1]==v7.e[1] && v4.e[2]==v7.e[2] );
 
+  zVec3DSub( &v1, &v2, &v3 );
+  zAssert( zVec3DDist, zVec3DDist(&v1,&v2) == zVec3DNorm(&v3) &&
+                       zVec3DDist(&v2,&v1) == zVec3DNorm(&v3) );
   zVec3DNormalize( &v1, &v2 );
   zAssert( zVec3DNormalize, zIsTiny(v2.e[0]*v2.e[0]+v2.e[1]*v2.e[1]+v2.e[2]*v2.e[2]-1) );
   zVec3DNormalizeDRC( &v1 );
