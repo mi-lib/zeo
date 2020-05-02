@@ -16,7 +16,7 @@
  - NURBS curve / surface
  - trianglation of non-convex
  - bounding volume (AABB, OBB, boundin ball, convex-hull)
- - collision checking (AABB tree, GJK, Muller-Preparata)
+ - collision checking (GJK, Muller-Preparata)
  - principal component analysis of point cloud
  - B-Rep (boundary representation) and boolean operations
  - elevation map

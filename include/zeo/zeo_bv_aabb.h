@@ -15,8 +15,8 @@ __BEGIN_DECLS
 /*! \brief axis-aligned box class.
  *//* ******************************************************* */
 typedef struct{
-  zVec3D pmin; /*!< minimum coordinates */
-  zVec3D pmax; /*!< maximum coordinates */
+  zVec3D min; /*!< minimum coordinates */
+  zVec3D max; /*!< maximum coordinates */
 } zAABox3D;
 
 /*! \brief initialize an axis-aligned box */

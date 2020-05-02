@@ -8,12 +8,8 @@
 
 /* axis-aligned box */
 
-/* (static)
- * _zIntersectPlaneAABox3DEdge
- * - check if an edge of an axis-aligned box intersects with a plane.
- */
-static int _zIntersectPlaneAABox3DEdge(zPlane3D *p, zAxis axis, double w1min, double w1max, double w2, double w3, zVec3D *ip);
-int _zIntersectPlaneAABox3DEdge(zPlane3D *p, zAxis axis, double w1min, double w1max, double w2, double w3, zVec3D *ip)
+/* check if an edge of an axis-aligned box intersects with a plane. */
+static int _zIntersectPlaneAABox3DEdge(zPlane3D *p, zAxis axis, double w1min, double w1max, double w2, double w3, zVec3D *ip)
 {
   zAxis a2, a3;
   double w1;
@@ -33,21 +29,18 @@ int _zIntersectPlaneAABox3DEdge(zPlane3D *p, zAxis axis, double w1min, double w1
   return 0;
 }
 
-/* (static)
- * zColChkPlaneAABox3D
- * - check if a plane and an axis-aligned boxes intersect with each other.
- */
+/* check if a plane and an axis-aligned boxes intersect with each other. */
 bool zColChkPlaneAABox3D(zPlane3D *p, zAABox3D *box)
 {
   double x1, y1, z1, x2, y2, z2;
   zVec3D ip;
 
-  x1 = box->pmin.e[zX];
-  y1 = box->pmin.e[zY];
-  z1 = box->pmin.e[zZ];
-  x2 = box->pmax.e[zX];
-  y2 = box->pmax.e[zY];
-  z2 = box->pmax.e[zZ];
+  x1 = box->min.e[zX];
+  y1 = box->min.e[zY];
+  z1 = box->min.e[zZ];
+  x2 = box->max.e[zX];
+  y2 = box->max.e[zY];
+  z2 = box->max.e[zZ];
   return _zIntersectPlaneAABox3DEdge( p, zX, x1, x2, y1, z1, &ip ) > 0 ||
          _zIntersectPlaneAABox3DEdge( p, zX, x1, x2, y2, z1, &ip ) > 0 ||
          _zIntersectPlaneAABox3DEdge( p, zX, x1, x2, y2, z2, &ip ) > 0 ||
@@ -63,21 +56,18 @@ bool zColChkPlaneAABox3D(zPlane3D *p, zAABox3D *box)
     true : false;
 }
 
-/* (static)
- * zIntersectPlaneAABox3D
- * - get an intersection between an axis-aligned box and a plane.
- */
+/* get an intersection between an axis-aligned box and a plane. */
 int zIntersectPlaneAABox3D(zPlane3D *p, zAABox3D *box, zVec3D ip[])
 {
   int n = 0;
   double x1, y1, z1, x2, y2, z2;
 
-  x1 = box->pmin.e[zX];
-  y1 = box->pmin.e[zY];
-  z1 = box->pmin.e[zZ];
-  x2 = box->pmax.e[zX];
-  y2 = box->pmax.e[zY];
-  z2 = box->pmax.e[zZ];
+  x1 = box->min.e[zX];
+  y1 = box->min.e[zY];
+  z1 = box->min.e[zZ];
+  x2 = box->max.e[zX];
+  y2 = box->max.e[zY];
+  z2 = box->max.e[zZ];
   n += _zIntersectPlaneAABox3DEdge( p, zX, x1, x2, y1, z1, &ip[n] );
   n += _zIntersectPlaneAABox3DEdge( p, zX, x1, x2, y2, z1, &ip[n] );
   n += _zIntersectPlaneAABox3DEdge( p, zX, x1, x2, y2, z2, &ip[n] );
@@ -93,20 +83,8 @@ int zIntersectPlaneAABox3D(zPlane3D *p, zAABox3D *box, zVec3D ip[])
   return n;
 }
 
-static bool _zColChkTriAABox3DEdgeAxOne(zVec3D *v1, zVec3D *v2, zAxis axis, zVec3D *p, zAABox3D *box, zVec3D *ip);
-static bool _zColChkTriAABox3DEdgeAx(zVec3D *v1, zVec3D *v2, zAxis axis, zAABox3D *box);
-static bool _zColChkTriAABox3DEdge(zVec3D *v1, zVec3D *v2, zAABox3D *box);
-static bool _zColChkTriAABox3DPlane(zTri3D *t, zAABox3D *box);
-
-static int _zIntersectTriAABox3DEdgeAx(zVec3D *v1, zVec3D *v2, zAxis axis, zAABox3D *box, zVec3D ip[], int n);
-static int _zIntersectTriAABox3DEdge(zVec3D *v1, zVec3D *v2, zAABox3D *box, zVec3D ip[], int n);
-static int _zIntersectTriAABox3DPlane(zTri3D *t, zAABox3D *box, zVec3D ip[], int n);
-
-/* (static)
- * _zColChkTriAABox3DEdgeAxOne
- * - check if an edge of a triangle intersects with a face of an axis-aligned box.
- */
-bool _zColChkTriAABox3DEdgeAxOne(zVec3D *v1, zVec3D *v2, zAxis axis, zVec3D *p, zAABox3D *box, zVec3D *ip)
+/* check if an edge of a triangle intersects with a face of an axis-aligned box. */
+static bool _zColChkTriAABox3DEdgeAxOne(zVec3D *v1, zVec3D *v2, zAxis axis, zVec3D *p, zAABox3D *box, zVec3D *ip)
 {
   double d1, d2, s1, s2;
   int a1, a2;
@@ -118,8 +96,8 @@ bool _zColChkTriAABox3DEdgeAxOne(zVec3D *v1, zVec3D *v2, zAxis axis, zVec3D *p, 
   s1 = v1->e[a1] - ( v2->e[a1] - v1->e[a1] ) * d1 / ( d2 - d1 );
   a2 = ( axis + 2 ) % 3;
   s2 = v1->e[a2] - ( v2->e[a2] - v1->e[a2] ) * d1 / ( d2 - d1 );
-  if( s1 > box->pmin.e[a1] && s1 < box->pmax.e[a1] &&
-      s2 > box->pmin.e[a2] && s2 < box->pmax.e[a2] ){
+  if( s1 > box->min.e[a1] && s1 < box->max.e[a1] &&
+      s2 > box->min.e[a2] && s2 < box->max.e[a2] ){
     if( ip ){
       ip->e[axis] = p->e[axis];
       ip->e[a1] = s1;
@@ -130,33 +108,24 @@ bool _zColChkTriAABox3DEdgeAxOne(zVec3D *v1, zVec3D *v2, zAxis axis, zVec3D *p, 
   return false;
 }
 
-/* (static)
- * _zColChkTriAABox3DEdgeAx
- * - check if an edge of a triangle intersects with a pair of parallel faces of an axis-aligned box.
- */
-bool _zColChkTriAABox3DEdgeAx(zVec3D *v1, zVec3D *v2, zAxis axis, zAABox3D *box)
+/* check if an edge of a triangle intersects with a pair of parallel faces of an axis-aligned box. */
+static bool _zColChkTriAABox3DEdgeAx(zVec3D *v1, zVec3D *v2, zAxis axis, zAABox3D *box)
 {
-  return _zColChkTriAABox3DEdgeAxOne( v1, v2, axis, &box->pmin, box, NULL ) ||
-         _zColChkTriAABox3DEdgeAxOne( v1, v2, axis, &box->pmax, box, NULL ) ?
+  return _zColChkTriAABox3DEdgeAxOne( v1, v2, axis, &box->min, box, NULL ) ||
+         _zColChkTriAABox3DEdgeAxOne( v1, v2, axis, &box->max, box, NULL ) ?
     true : false;
 }
 
-/* (static)
- * _zColChkTriAABox3DEdge
- * - check if an edge of a triangle intersects with an axis-aligned box.
- */
-bool _zColChkTriAABox3DEdge(zVec3D *v1, zVec3D *v2, zAABox3D *box)
+/* check if an edge of a triangle intersects with an axis-aligned box. */
+static bool _zColChkTriAABox3DEdge(zVec3D *v1, zVec3D *v2, zAABox3D *box)
 {
   return _zColChkTriAABox3DEdgeAx( v1, v2, zX, box ) ||
          _zColChkTriAABox3DEdgeAx( v1, v2, zY, box ) ||
          _zColChkTriAABox3DEdgeAx( v1, v2, zZ, box ) ? true : false;
 }
 
-/* (static)
- * _zColChkTriAABox3DPlane
- * - check if a triangle intersects with edges of an axis-aligned box.
- */
-bool _zColChkTriAABox3DPlane(zTri3D *t, zAABox3D *box)
+/* check if a triangle intersects with edges of an axis-aligned box. */
+static bool _zColChkTriAABox3DPlane(zTri3D *t, zAABox3D *box)
 {
   zPlane3D p;
   zVec3D ip[6];
@@ -169,9 +138,7 @@ bool _zColChkTriAABox3DPlane(zTri3D *t, zAABox3D *box)
   return false;
 }
 
-/* zColChkTriAABox3D
- * - check if a triangle intersects with an axis-aligned box.
- */
+/* check if a triangle intersects with an axis-aligned box. */
 bool zColChkTriAABox3D(zTri3D *t, zAABox3D *box)
 {
   if( zAABox3DPointIsInside( box, zTri3DVert(t,0), false ) ||
@@ -185,32 +152,23 @@ bool zColChkTriAABox3D(zTri3D *t, zAABox3D *box)
   return _zColChkTriAABox3DPlane( t, box );
 }
 
-/* (static)
- * _zIntersectTriAABox3DEdgeAxOne
- * - intersection of an edge of a triangle and a face of an axis-aligned box.
- */
-int _zIntersectTriAABox3DEdgeAxOne(zVec3D *v1, zVec3D *v2, zAxis axis, zVec3D *p, zAABox3D *box, zVec3D ip[], int n)
+/* intersection of an edge of a triangle and a face of an axis-aligned box. */
+static int _zIntersectTriAABox3DEdgeAxOne(zVec3D *v1, zVec3D *v2, zAxis axis, zVec3D *p, zAABox3D *box, zVec3D ip[], int n)
 {
   if( _zColChkTriAABox3DEdgeAxOne( v1, v2, axis, p, box, &ip[n] ) ) n++;
   return n;
 }
 
-/* (static)
- * _zIntersectTriAABox3DEdgeAx
- * - intersection of an edge of a triangle and a pair of parallel faces of an axis-aligned box.
- */
-int _zIntersectTriAABox3DEdgeAx(zVec3D *v1, zVec3D *v2, zAxis axis, zAABox3D *box, zVec3D ip[], int n)
+/* intersection of an edge of a triangle and a pair of parallel faces of an axis-aligned box. */
+static int _zIntersectTriAABox3DEdgeAx(zVec3D *v1, zVec3D *v2, zAxis axis, zAABox3D *box, zVec3D ip[], int n)
 {
-  n = _zIntersectTriAABox3DEdgeAxOne( v1, v2, axis, &box->pmin, box, ip, n );
-  n = _zIntersectTriAABox3DEdgeAxOne( v1, v2, axis, &box->pmax, box, ip, n );
+  n = _zIntersectTriAABox3DEdgeAxOne( v1, v2, axis, &box->min, box, ip, n );
+  n = _zIntersectTriAABox3DEdgeAxOne( v1, v2, axis, &box->max, box, ip, n );
   return n;
 }
 
-/* (static)
- * _zIntersectTriAABox3DEdge
- * - intersection of an edge of a triangle and an axis-aligned box.
- */
-int _zIntersectTriAABox3DEdge(zVec3D *v1, zVec3D *v2, zAABox3D *box, zVec3D ip[], int n)
+/* intersection of an edge of a triangle and an axis-aligned box. */
+static int _zIntersectTriAABox3DEdge(zVec3D *v1, zVec3D *v2, zAABox3D *box, zVec3D ip[], int n)
 {
   n = _zIntersectTriAABox3DEdgeAx( v1, v2, zX, box, ip, n );
   n = _zIntersectTriAABox3DEdgeAx( v1, v2, zY, box, ip, n );
@@ -218,11 +176,8 @@ int _zIntersectTriAABox3DEdge(zVec3D *v1, zVec3D *v2, zAABox3D *box, zVec3D ip[]
   return n;
 }
 
-/* (static)
- * _zIntersectTriAABox3DPlane
- * - intersection of a triangle and edges of an axis-aligned box.
- */
-int _zIntersectTriAABox3DPlane(zTri3D *t, zAABox3D *box, zVec3D ip[], int n)
+/* intersection of a triangle and edges of an axis-aligned box. */
+static int _zIntersectTriAABox3DPlane(zTri3D *t, zAABox3D *box, zVec3D ip[], int n)
 {
   zPlane3D p;
   zVec3D pip[6];
@@ -236,9 +191,7 @@ int _zIntersectTriAABox3DPlane(zTri3D *t, zAABox3D *box, zVec3D ip[], int n)
   return n;
 }
 
-/* zIntersectTriAABox3D
- * - intersection of a triangle and an axis-aligned box.
- */
+/* intersection of a triangle and an axis-aligned box. */
 int zIntersectTriAABox3D(zTri3D *t, zAABox3D *box, zVec3D ip[])
 {
   int n = 0;
@@ -250,38 +203,32 @@ int zIntersectTriAABox3D(zTri3D *t, zAABox3D *box, zVec3D ip[])
   return n;
 }
 
-/* zColChkAABox3D
- * - check if two axis-aligned boxes intersect with each other.
- */
+/* check if two axis-aligned boxes intersect with each other. */
 bool zColChkAABox3D(zAABox3D *b1, zAABox3D *b2)
 {
-  return b1->pmin.e[zX] < b2->pmax.e[zX] &&
-         b2->pmin.e[zX] < b1->pmax.e[zX] &&
-         b1->pmin.e[zY] < b2->pmax.e[zY] &&
-         b2->pmin.e[zY] < b1->pmax.e[zY] &&
-         b1->pmin.e[zZ] < b2->pmax.e[zZ] &&
-         b2->pmin.e[zZ] < b1->pmax.e[zZ] ?
+  return b1->min.e[zX] < b2->max.e[zX] &&
+         b2->min.e[zX] < b1->max.e[zX] &&
+         b1->min.e[zY] < b2->max.e[zY] &&
+         b2->min.e[zY] < b1->max.e[zY] &&
+         b1->min.e[zZ] < b2->max.e[zZ] &&
+         b2->min.e[zZ] < b1->max.e[zZ] ?
     true : false;
 }
 
-/* zIntersectAABox3D
- * - intersection of two axis-aligned boxes.
- */
+/* intersection of two axis-aligned boxes. */
 zAABox3D *zIntersectAABox3D(zAABox3D *dst, zAABox3D *src1, zAABox3D *src2)
 {
   if( !zColChkAABox3D( src1, src2 ) ) return NULL;
   return zAABox3DCreate( dst,
-    _zMax( src1->pmin.e[zX], src2->pmin.e[zX] ),
-    _zMax( src1->pmin.e[zY], src2->pmin.e[zY] ),
-    _zMax( src1->pmin.e[zZ], src2->pmin.e[zZ] ),
-    _zMin( src1->pmax.e[zX], src2->pmax.e[zX] ),
-    _zMin( src1->pmax.e[zY], src2->pmax.e[zY] ),
-    _zMin( src1->pmax.e[zZ], src2->pmax.e[zZ] ) );
+    _zMax( src1->min.e[zX], src2->min.e[zX] ),
+    _zMax( src1->min.e[zY], src2->min.e[zY] ),
+    _zMax( src1->min.e[zZ], src2->min.e[zZ] ),
+    _zMin( src1->max.e[zX], src2->max.e[zX] ),
+    _zMin( src1->max.e[zY], src2->max.e[zY] ),
+    _zMin( src1->max.e[zZ], src2->max.e[zZ] ) );
 }
 
-/* zIntersectPH3DBox
- * - intersection of AABBs of two polyhedra.
- */
+/* intersection of AABBs of two polyhedra. */
 zAABox3D *zIntersectPH3DBox(zPH3D *ph1, zPH3D *ph2, zAABox3D *box)
 {
   zAABox3D b1, b2;
@@ -293,14 +240,8 @@ zAABox3D *zIntersectPH3DBox(zPH3D *ph1, zPH3D *ph2, zAABox3D *box)
 
 /* box vs box */
 
-static bool _zColChkBox3DAlong(zBox3D *b1, zDir axis, zBox3D *b2, zVec3D *l);
-static bool _zColChkBox3DPerp(zBox3D *b1, zDir ax1, zBox3D *b2, zDir ax2, zVec3D *l);
-
-/* (static)
- * _zColChkBox3DAlong
- * - deflated collision checking along an axis on a box.
- */
-bool _zColChkBox3DAlong(zBox3D *b1, zDir axis, zBox3D *b2, zVec3D *l)
+/* deflated collision checking along an axis on a box. */
+static bool _zColChkBox3DAlong(zBox3D *b1, zDir axis, zBox3D *b2, zVec3D *l)
 {
   zVec3D *a;
   double d;
@@ -314,12 +255,8 @@ bool _zColChkBox3DAlong(zBox3D *b1, zDir axis, zBox3D *b2, zVec3D *l)
   return fabs( zVec3DInnerProd(l,a) ) < d ? true : false;
 }
 
-/* (static)
- * _zColChkBox3DPerp
- * - deflated collision checking along an axis perpendicular to
- *   edges on boxes.
- */
-bool _zColChkBox3DPerp(zBox3D *b1, zDir ax1, zBox3D *b2, zDir ax2, zVec3D *l)
+/* deflated collision checking along an axis perpendicular to edges on boxes. */
+static bool _zColChkBox3DPerp(zBox3D *b1, zDir ax1, zBox3D *b2, zDir ax2, zVec3D *l)
 {
   zVec3D p;
   zDir ax12, ax13, ax22, ax23;
@@ -341,9 +278,7 @@ bool _zColChkBox3DPerp(zBox3D *b1, zDir ax1, zBox3D *b2, zDir ax2, zVec3D *l)
   return fabs( zVec3DInnerProd(l,&p) ) < d ? true : false;
 }
 
-/* zColChkBox3D
- * - check if two (oriented) boxes intersect with each other.
- */
+/* check if two (oriented) boxes intersect with each other. */
 bool zColChkBox3D(zBox3D *b1, zBox3D *b2)
 {
   zVec3D l;

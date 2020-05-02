@@ -108,7 +108,6 @@ __EXPORT int zIntersectVecListPlane3D(zVec3DList *vl, zPlane3D *p, zVec3D ip[]);
 __END_DECLS
 
 #include <zeo/zeo_col_box.h> /* axis-aligned bounding box (AABB) and oriented bounding box (OBB) */
-#include <zeo/zeo_col_aabbtree.h> /* AABB tree */
 #include <zeo/zeo_col_minkowski.h> /* Minkowski sum */
 #include <zeo/zeo_col_gjk.h> /* Gilbert-Johnson-Keerthi algorithm */
 #include <zeo/zeo_col_mpr.h> /* Minkowski Portal Refinement algorithm */
