@@ -379,13 +379,13 @@ zVec3D *zTri3DContigVert(zTri3D *t, zVec3D *p, double *d)
 /* signed distance from a point to a triangle. */
 double zTri3DPointDist(zTri3D *t, zVec3D *v)
 {
-  zVec3D tmp[3];
+  zVec3D tmp;
   double d[3];
   register int i;
 
   for( i=0; i<3; i++ ){
-    zVec3DSub( v, zTri3DVert(t,i), &tmp[i] );
-    d[i] = zVec3DInnerProd( &tmp[i], zTri3DNorm(t) );
+    zVec3DSub( v, zTri3DVert(t,i), &tmp );
+    d[i] = zVec3DInnerProd( &tmp, zTri3DNorm(t) );
   }
   return ( d[0] + d[1] + d[2] ) / 3;
 }
