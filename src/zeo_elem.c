@@ -32,6 +32,17 @@ double zPlane3DPointDist(zPlane3D *p, zVec3D *v)
   return zVec3DInnerProd( &tmp, zPlane3DNorm(p) );
 }
 
+/* check if a point is on a plane. */
+bool zPlane3DPointIsOn(zPlane3D *p, zVec3D *v)
+{
+  zVec3D tmp;
+
+  zVec3DSub( v, zPlane3DVert(p), &tmp );
+  if( zVec3DIsTiny( &tmp ) ) return true;
+  zVec3DNormalizeDRC( &tmp );
+  return zIsTiny( zVec3DInnerProd( &tmp, zPlane3DNorm(p) ) );
+}
+
 /* projection of a point to a plane. */
 double zPlane3DProj(zPlane3D *p, zVec3D *v, zVec3D *cp)
 {

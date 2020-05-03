@@ -50,14 +50,20 @@ __EXPORT zPlane3D *zPlane3DCreate(zPlane3D *p, zVec3D *v, zVec3D *n);
  * zPlane3DPointDist() calculates the distance between a 3D point \a v
  * and a 3D plane \a p.
  *
+ * zPlane3DPointIsOn() checks if a point \a v is on a plane \a p.
+ *
  * zPlane3DProj() calculates the projection point of a 3D point \a v
  * to a 3D plane \a p. The result is put into the vector pointed by \a cp.
  * \return
  * zPlane3DPointDist() returns the distance calculated.
  *
+ * zPlane3DPointIsOn() returns the true value if \a v is on \a p,
+ * or the false value otherwise.
+ *
  * zPlane3DProj() returns the distance between \a p and \a v.
  */
 __EXPORT double zPlane3DPointDist(zPlane3D *p, zVec3D *v);
+__EXPORT bool zPlane3DPointIsOn(zPlane3D *p, zVec3D *v);
 __EXPORT double zPlane3DProj(zPlane3D *p, zVec3D *v, zVec3D *cp);
 
 /*! \brief mean plane of set of points.
