@@ -1,3 +1,4 @@
+2020. 5.14. Added zVec2DArray. [zeo_vec2d]
 2020. 5. 4. Added zPlane3DPointIsOn. [zeo_elem]
 2020. 5. 3. Modified zTri3DPointDist. [zeo_elem]
 2020. 5. 2. Abolished zeo_col_abbtree. [zeo_col, zeo_col_aabbtree, makefile]

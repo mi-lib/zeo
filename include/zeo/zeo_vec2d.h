@@ -268,6 +268,11 @@ __EXPORT void zVec2DDataNLFPrint(FILE *fp, zVec2D v);
 __EXPORT void zVec2DFPrint(FILE *fp, zVec2D v);
 #define zVec2DPrint(v) zVec2DFPrint( stdout, (v) )
 
+/*! \struct zVec2DArray
+ * \brief array class of 2D vectors.
+ */
+zArrayClass( zVec2DArray, zVec2D );
+
 __END_DECLS
 
 #endif /* __ZEO_VEC2D_H__ */
