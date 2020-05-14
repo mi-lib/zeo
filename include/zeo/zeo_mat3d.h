@@ -16,7 +16,7 @@ __BEGIN_DECLS
  */
 /* The order of matrix components are:
  * |~ e[0][0]  e[1][0]  e[2][0] ~|   |~ c.xx  c.yx  c.zx ~|
- * |  e[0][1]  e[1][1]  e[2][1]  | = |  c.xy  c.yy  c.xy  | = [ v[0]  v[1]  v[2]  | = [ b.x  b.y  b.z ]
+ * |  e[0][1]  e[1][1]  e[2][1]  | = |  c.xy  c.yy  c.zy  | = [ v[0]  v[1]  v[2] ] = [ b.x  b.y  b.z ]
  * |_ e[0][2]  e[1][2]  e[2][2] _|   |_ c.xz  c.yz  c.zz _|
  */
 typedef union{

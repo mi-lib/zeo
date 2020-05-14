@@ -869,15 +869,11 @@ void zMat3DSymEig(zMat3D *m, double eval[], zVec3D evec[])
 /* read a 3x3 matrix from a ZTK format processor. */
 zMat3D *zMat3DFromZTK(zMat3D *m, ZTK *ztk)
 {
-  m->e[0][0] = ZTKDouble(ztk);
-  m->e[1][0] = ZTKDouble(ztk);
-  m->e[2][0] = ZTKDouble(ztk);
-  m->e[0][1] = ZTKDouble(ztk);
-  m->e[1][1] = ZTKDouble(ztk);
-  m->e[2][1] = ZTKDouble(ztk);
-  m->e[0][2] = ZTKDouble(ztk);
-  m->e[1][2] = ZTKDouble(ztk);
-  m->e[2][2] = ZTKDouble(ztk);
+  register int i, j;
+
+  for( i=0; i<3; i++ )
+    for( j=0; j<3; j++ )
+      m->e[j][i] = ZTKDouble(ztk);
   return m;
 }
 

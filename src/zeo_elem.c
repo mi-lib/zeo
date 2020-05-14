@@ -92,8 +92,6 @@ void zPlane3DFPrint(FILE *fp, zPlane3D *p)
  * 3D edge class
  * ********************************************************** */
 
-static bool _zEdge3DProjSet(zEdge3D *e, zVec3D *p, zVec3D *v, zVec3D *dp);
-
 /* initialize an edge. */
 zEdge3D *zEdge3DInit(zEdge3D *e)
 {
@@ -119,7 +117,7 @@ zVec3D *zEdge3DCalcVec(zEdge3D *e)
 }
 
 /* a set of unit edge direction vector and displacement vector. */
-bool _zEdge3DProjSet(zEdge3D *e, zVec3D *p, zVec3D *v, zVec3D *dp)
+static bool _zEdge3DProjSet(zEdge3D *e, zVec3D *p, zVec3D *v, zVec3D *dp)
 {
   zVec3DSub( p, zEdge3DVert(e,0), dp );
   zVec3DNormalize( zEdge3DVec(e), v );
@@ -240,8 +238,6 @@ void zEdge3DFPrint(FILE *fp, zEdge3D *e)
  * 3D triangle class
  * ********************************************************** */
 
-static zVec3D *_zTri3DOuterProd(zTri3D *t, zVec3D *n);
-
 /* initialize a triangle. */
 zTri3D *zTri3DInit(zTri3D *t)
 {
@@ -277,7 +273,7 @@ zTri3D *zTri3DRev(zTri3D *src, zTri3D *dest)
 }
 
 /* outer product of two edges of a triangle. */
-zVec3D *_zTri3DOuterProd(zTri3D *t, zVec3D *n)
+static zVec3D *_zTri3DOuterProd(zTri3D *t, zVec3D *n)
 {
   zVec3D e1, e2;
 
@@ -447,15 +443,13 @@ bool zTri3DPointIsInside(zTri3D *t, zVec3D *v, bool rim)
 
 /* compute a trio of linear scale factors of a point on a triangle.
  * when p is on t, p = l0*t->v0 + l1*t->v1 + l2*t->v2. If p is not on t, the result does not make sense. */
-static void _zTri3DLinScaleVal(double l[], double d1, double d2, double *l0, double *l1, double *l2);
-static void _zTri3DLinScaleDeg2(zTri3D *t, zVec3D *p, int i1, int i2, double *l0, double *l1, double *l2, zVec3D *cp);
-static void _zTri3DLinScaleDeg1(zTri3D *t, int i, double *l0, double *l1, double *l2, zVec3D *cp);
 
-void _zTri3DLinScaleVal(double l[], double d1, double d2, double *l0, double *l1, double *l2)
+static void _zTri3DLinScaleVal(zVec2D *l, double d1, double d2, double *l0, double *l1, double *l2)
 {
-  *l0 = 1 - ( ( *l1 = l[0] / d1 ) + ( *l2 = l[1] / d2 ) );
+  *l0 = 1 - ( ( *l1 = l->c.x / d1 ) + ( *l2 = l->c.y / d2 ) );
 }
-void _zTri3DLinScaleDeg2(zTri3D *t, zVec3D *p, int i1, int i2, double *l0, double *l1, double *l2, zVec3D *cp)
+
+static void _zTri3DLinScaleDeg2(zTri3D *t, zVec3D *p, int i1, int i2, double *l0, double *l1, double *l2, zVec3D *cp)
 {
   zEdge3D e;
   zVec3D pp;
@@ -465,11 +459,13 @@ void _zTri3DLinScaleDeg2(zTri3D *t, zVec3D *p, int i1, int i2, double *l0, doubl
   zEdge3DProj( &e, p, &pp );
   zEdge3DLinScale( &e, &pp, l1, l2, cp );
 }
-void _zTri3DLinScaleDeg1(zTri3D *t, int i, double *l0, double *l1, double *l2, zVec3D *cp)
+
+static void _zTri3DLinScaleDeg1(zTri3D *t, int i, double *l0, double *l1, double *l2, zVec3D *cp)
 {
   *l0 = *l1 = 0; *l2 = 1;
   zVec3DCopy( zTri3DVert(t,i), cp );
 }
+
 double zTri3DLinScale(zTri3D *t, zVec3D *p, double *l0, double *l1, double *l2, zVec3D *cp)
 {
   zVec3D e1, e2, dp;
@@ -490,14 +486,14 @@ double zTri3DLinScale(zTri3D *t, zVec3D *p, double *l0, double *l1, double *l2, 
   zVec3DSub( zTri3DVert(t,i2), zTri3DVert(t,i0), &e2 );
   d2 = zVec3DNormalizeDRC( &e2 );
   zVec3DSub( p, zTri3DVert(t,i0), &dp );
-  zVec2DCreate( v, zVec3DInnerProd(&e1,&dp), zVec3DInnerProd(&e2,&dp) );
+  zVec2DCreate( &v, zVec3DInnerProd(&e1,&dp), zVec3DInnerProd(&e2,&dp) );
   mc = zVec3DInnerProd(&e1,&e2);
-  zMat2DCreate( m, 1.0, mc, mc, 1.0 );
-  zMulInvMat2DVec2D( m, v, l );
+  zMat2DCreate( &m, 1.0, mc, mc, 1.0 );
+  zMulInvMat2DVec2D( &m, &v, &l );
   switch( i0 ){
-  case 0: _zTri3DLinScaleVal( l, d1, d2, l0, l1, l2 ); break;
-  case 1: _zTri3DLinScaleVal( l, d1, d2, l1, l2, l0 ); break;
-  case 2: _zTri3DLinScaleVal( l, d1, d2, l2, l0, l1 ); break;
+  case 0: _zTri3DLinScaleVal( &l, d1, d2, l0, l1, l2 ); break;
+  case 1: _zTri3DLinScaleVal( &l, d1, d2, l1, l2, l0 ); break;
+  case 2: _zTri3DLinScaleVal( &l, d1, d2, l2, l0, l1 ); break;
   default: ;
   }
   switch( ( *l0 < 0 ? 1 : 0 ) | ( *l1 < 0 ? 2 : 0 ) | ( *l2 < 0 ? 4 : 0 ) ){
