@@ -7,7 +7,7 @@
 #include <zeo/zeo_texture.h>
 
 /* texture file reader */
-bool (* __z_texture_read_file)(zTexture *, char *);
+bool (* __z_texture_read_file)(zTexture *, char *) = NULL;
 
 /* allocate coordinates and faces of a texture data */
 zTexture *zTextureAlloc(zTexture *texture, int nc, int nt)
@@ -74,7 +74,8 @@ static void *_zTextureNameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
 
 static void *_zTextureFileFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   if( !( ((zTexture *)obj)->filename = zStrClone( ZTKVal(ztk) ) ) ) return NULL;
-  return zTextureReadFile( (zTexture *)obj, ZTKVal(ztk) ) ? obj : NULL; }
+  zTextureReadFile( (zTexture *)obj, ZTKVal(ztk) );
+  return obj; }
 
 static void *_zTextureCoordFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 {

@@ -1,3 +1,6 @@
+2020. 5.15. Modified _zTextureFileFromZTK. [zeo_texture]
+2020. 5.15. Added zTextureReadFuncIsAssigned. [zeo_texture]
+2020. 5.15. Debugged zTextureInit. [zeo_texture]
 2020. 5.15. Implemented ZTK processors for zTexture. [zeo_texture, zeo_shape, zeo_mshape]
 2020. 5.15. Defined zTextureArray and added an array of textures in zMShape3D. [zeo_texture, zeo_mshape]
 2020. 5.15. Added texture member in zShape3D. [zeo_shape]

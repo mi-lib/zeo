@@ -33,7 +33,7 @@ typedef struct{
 /*! \brief initialize a texture */
 #define zTextureInit(tex) do{\
   zNameSetPtr( tex, NULL );\
-  (tex)->id = -1; \
+  (tex)->id = 0; \
   (tex)->filename = NULL;\
   zArrayInit( &(tex)->coord );\
   zArrayInit( &(tex)->face );\
@@ -45,7 +45,10 @@ typedef struct{
 extern bool (* __z_texture_read_file)(zTexture *, char *);
 
 /*! \brief set a texture file reader */
-#define zTextureSetReadFunc(f) ( __z_texture_read_file = (f) )
+#define zTextureSetReadFunc(f)       ( __z_texture_read_file = (f) )
+
+/*! \brief check if the texture file reader is assigned */
+#define zTextureReadFuncIsAssigned() ( __z_texture_read_file ? true : false )
 
 /*! \brief read an texture image file */
 #define zTextureReadFile(t,f) ( __z_texture_read_file ? __z_texture_read_file( (t), (f) ) : false )
