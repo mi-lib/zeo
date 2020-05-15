@@ -84,8 +84,8 @@ __EXPORT zPlane3D *zPlane3DMean(zPlane3D *pl, zVec3D *pc, zVec3D v[], int n);
  * zPlane3DFPrint() prints information of a 3D plane \a p out
  * to the current position of the file \a fp in the following format:
  *
- * vert: { x y z } <- the passing point
- * norm: { x y z } <- the normal vector
+ * vert: ( x, y, z ) <- the passing point
+ * norm: ( x, y, z ) <- the normal vector
  *
  * zPlane3DPrint() prints information of the plane \a p out to
  * the standard out.
@@ -170,14 +170,12 @@ __EXPORT zVec3D *zEdge3DContigVert(zEdge3D *e, zVec3D *p, double *d);
  * zEdge3DFPrint() prints coordinates of the endpoints of a 3D
  * edge to the current position of a file \a fp in the following format.
  *
- *  vert 0: x0 y0 z0
- *  vert 1: x1 y1 z1
- *  vec: vx vy vz
+ *  vert: 0 ( x0, y0, z0 )
+ *  vert: 1 ( x1, y1, z1 )
+ *  vec: ( vx, vy, vz )
  *
  * where vert 0 is the first endpoint, vert 1 is the second and
  * vec is for the path vector.
- * zEdge3DVertPrint() prints the same information of \a e to the
- * standard output.
  * \return
  * zEdge3DFPrint() and zEdge3DPrint() return no values.
  */
@@ -353,18 +351,17 @@ __EXPORT zVec3D *zTri3DConeCircumcenter(zTri3D *t, zVec3D *c);
  * zTri3DFPrint() prints coordinates of the vertices of a 3D triangle
  * \a t to the current position of a file \a fp in the following format.
  *
- *  vert 0: x0 y0 z0
- *  vert 1: x1 y1 z1
- *  vert 2: x2 y2 z2
- *  norm: nx ny nz
+ *  vert: 0 ( x0, y0, z0 )
+ *  vert: 1 ( x1, y1, z1 )
+ *  vert: 2 ( x2, y2, z2 )
+ *  norm: ( nx, ny, nz )
  *
  * where vert 0 is the first vertex, vert 1 is the second, vert 2 is
  * the third and norm is for the normal vector.
  * zTri3DPrint() prints the same information of \a t out to the
  * standard output.
  * \return
- * None of zTri3DFPrint(), zTri3DPrint(), zTri3DVertFPrint() and
- * zTri3DVertPrint() returns any values.
+ * zTri3DFPrint() and zTri3DPrint() do not return any values.
  */
 __EXPORT void zTri3DFPrint(FILE *fp, zTri3D *t);
 #define zTri3DPrint(t) zTri3DFPrint( stdout, (t) )

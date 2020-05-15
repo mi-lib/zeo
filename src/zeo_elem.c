@@ -224,9 +224,9 @@ void zEdge3DFPrint(FILE *fp, zEdge3D *e)
   if( !e )
     fprintf( fp, "(null edge)\n" );
   else{
-    fprintf( fp, "vert 0: " );
+    fprintf( fp, "vert: 0 " );
     zVec3DFPrint( fp, zEdge3DVert(e,0) );
-    fprintf( fp, "vert 1: " );
+    fprintf( fp, "vert: 1 " );
     zVec3DFPrint( fp, zEdge3DVert(e,1) );
     fprintf( fp, "vec: " );
     zVec3DFPrint( fp, zEdge3DVec(e) );
@@ -582,11 +582,11 @@ void zTri3DFPrint(FILE *fp, zTri3D *t)
   if( !t )
     fprintf( fp, "(null triangle)\n" );
   else{
-    fprintf( fp, "vert 0: " );
+    fprintf( fp, "vert: 0 " );
     zVec3DFPrint( fp, zTri3DVert(t,0) );
-    fprintf( fp, "vert 1: " );
+    fprintf( fp, "vert: 1 " );
     zVec3DFPrint( fp, zTri3DVert(t,1) );
-    fprintf( fp, "vert 2: " );
+    fprintf( fp, "vert: 2 " );
     zVec3DFPrint( fp, zTri3DVert(t,2) );
     fprintf( fp, "norm: " );
     zVec3DFPrint( fp, zTri3DNorm(t) );

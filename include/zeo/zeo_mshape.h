@@ -19,6 +19,7 @@ __BEGIN_DECLS
 typedef struct{
   zShape3DArray shape;
   zOpticalInfoArray optic;
+  zTextureArray texture;
 } zMShape3D;
 
 #define zMShape3DShapeNum(s)      zArraySize(&(s)->shape)
@@ -26,11 +27,18 @@ typedef struct{
 #define zMShape3DShape(s,i)       zArrayElemNC(&(s)->shape,i)
 #define zMShape3DSetShapeNum(s,n) ( zArraySize(&(s)->shape) = (n) )
 #define zMShape3DSetShapeBuf(s,b) ( zArrayBuf(&(s)->shape) = (b) )
+
 #define zMShape3DOpticNum(s)      zArraySize(&(s)->optic)
 #define zMShape3DOpticBuf(s)      zArrayBuf(&(s)->optic)
 #define zMShape3DOptic(s,i)       zArrayElemNC(&(s)->optic,i)
 #define zMShape3DSetOpticNum(s,n) ( zArraySize(&(s)->optic) = (n) )
 #define zMShape3DSetOpticBuf(s,b) ( zArrayBuf(&(s)->optic) = (b) )
+
+#define zMShape3DTextureNum(s)      zArraySize(&(s)->texture)
+#define zMShape3DTextureBuf(s)      zArrayBuf(&(s)->texture)
+#define zMShape3DTexture(s,i)       zArrayElemNC(&(s)->texture,i)
+#define zMShape3DSetTextureNum(s,n) ( zArraySize(&(s)->texture) = (n) )
+#define zMShape3DSetTextureBuf(s,b) ( zArrayBuf(&(s)->texture) = (b) )
 
 /*! \brief initialize and destroy multiple 3D shapes.
  *

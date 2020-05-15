@@ -185,6 +185,14 @@ zVec2D *zVec2DRot(zVec2D *v, double angle, zVec2D *rv)
 /* I/O
  * ********************************************************** */
 
+/* read a 2D vector from a ZTK format processor. */
+zVec2D *zVec2DFromZTK(zVec2D *v, ZTK *ztk)
+{
+  v->c.x = ZTKDouble(ztk);
+  v->c.y = ZTKDouble(ztk);
+  return v;
+}
+
 /* scan a 2D vector from a file. */
 zVec2D *zVec2DFScan(FILE *fp, zVec2D *v)
 {
@@ -197,7 +205,7 @@ zVec2D *zVec2DFScan(FILE *fp, zVec2D *v)
 void zVec2DDataFPrint(FILE *fp, zVec2D *v)
 {
   if( !v ) return;
-  fprintf( fp, " %.10g %.10g", v->c.x, v->c.y );
+  fprintf( fp, " %.10g, %.10g", v->c.x, v->c.y );
 }
 
 /* print a 2D vector data with the new line to a file. */

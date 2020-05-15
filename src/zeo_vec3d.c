@@ -500,7 +500,7 @@ zVec3D *zVec3DFScan(FILE *fp, zVec3D *v)
 zVec3D *zVec3DDataFPrint(FILE *fp, zVec3D *v)
 {
   if( !v ) return NULL;
-  fprintf( fp, " %.10g %.10g %.10g", v->c.x, v->c.y, v->c.z );
+  fprintf( fp, " %.10g, %.10g, %.10g", v->c.x, v->c.y, v->c.z );
   return v;
 }
 

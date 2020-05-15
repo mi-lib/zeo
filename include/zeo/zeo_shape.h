@@ -9,6 +9,7 @@
 
 #include <zeo/zeo_nurbs.h>
 #include <zeo/zeo_optic.h>
+#include <zeo/zeo_texture.h>
 
 __BEGIN_DECLS
 
@@ -45,11 +46,14 @@ typedef struct{
   Z_NAMED_CLASS
   void *body;
   zOpticalInfo *optic;
+  zTexture *texture;
   zShape3DCom *com; /* methods */
 } zShape3D;
 
-#define zShape3DOptic(s)      (s)->optic
-#define zShape3DSetOptic(s,o) ( (s)->optic = (o) )
+#define zShape3DOptic(s)        (s)->optic
+#define zShape3DSetOptic(s,o)   ( (s)->optic = (o) )
+#define zShape3DTexture(s)      (s)->texture
+#define zShape3DSetTexture(s,t) ( (s)->texture = (t) )
 
 /*! \brief initialize a 3D shape instance.
  *
@@ -135,6 +139,7 @@ __EXPORT bool zShape3DRegZTK(ZTK *ztk, char *tag);
  *
  *  name: <name of a shape>
  *  optic: <name of optical info>
+ *  texture: <name of a texture>
  *  type: <type of a shape>
  *
  * followed by key fields that describe actual shapes. The bracketed
@@ -148,12 +153,12 @@ __EXPORT bool zShape3DRegZTK(ZTK *ztk, char *tag);
  * by which another shape <name of a shape> is mirrored along with an
  * axis <name of axis>.
  *
- * \a sarray and \a oarray are an array of 3D shapes and that of optical
- * information sets, respectively, to be referred.
+ * \a sarray, \a oarray and \a tarray are arrays of 3D shapes, optical
+ * information sets, and textures, respectively, to be referred.
  * \return
  * zShape3DFromZTK() returns a pointer \a shape.
  */
-__EXPORT zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoArray *oarray, ZTK *ztk);
+__EXPORT zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoArray *oarray, zTextureArray *tarray, ZTK *ztk);
 
 /*! \brief print a 3D shape to a file stream.
  *

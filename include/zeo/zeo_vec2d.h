@@ -256,6 +256,9 @@ __EXPORT zVec2D *zVec2DRot(zVec2D *v, double angle, zVec2D *rv);
 /* I/O
  * ********************************************************** */
 
+/*! \brief read a 2D vector from a ZTK format processor. */
+__EXPORT zVec2D *zVec2DFromZTK(zVec2D *v, ZTK *ztk);
+
 /*! \brief input and output of a 2D vector.
  *
  * zVec2DFScan() scans two values from the current position of

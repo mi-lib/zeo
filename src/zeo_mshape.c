@@ -16,6 +16,7 @@ zMShape3D *zMShape3DInit(zMShape3D *ms)
 {
   zArrayInit( &ms->shape );
   zArrayInit( &ms->optic );
+  zArrayInit( &ms->texture );
   return ms;
 }
 
@@ -31,6 +32,9 @@ void zMShape3DDestroy(zMShape3D *ms)
   for( i=0; i<zMShape3DOpticNum(ms); i++ )
     zOpticalInfoDestroy( zMShape3DOptic(ms,i) );
   zArrayFree( &ms->optic );
+  for( i=0; i<zMShape3DTextureNum(ms); i++ )
+    zTextureDestroy( zMShape3DTexture(ms,i) );
+  zArrayFree( &ms->texture );
 }
 
 /* clone multiple shapes. */
@@ -48,6 +52,12 @@ zMShape3D *zMShape3DClone(zMShape3D *org)
   if( zMShape3DOpticNum(cln) != zMShape3DOpticNum(org) ) return NULL;
   for( i=0; i<zMShape3DOpticNum(cln); i++ )
     if( !zOpticalInfoClone( zMShape3DOptic(org,i), zMShape3DOptic(cln,i) ) )
+      return NULL;
+  /* texture array */
+  zArrayAlloc( &cln->texture, zTexture, zMShape3DTextureNum(org) );
+  if( zMShape3DTextureNum(cln) != zMShape3DTextureNum(org) ) return NULL;
+  for( i=0; i<zMShape3DTextureNum(cln); i++ )
+    if( !zTextureClone( zMShape3DTexture(org,i), zMShape3DTexture(cln,i) ) )
       return NULL;
   /* shape array */
   zArrayAlloc( &cln->shape, zShape3D, zMShape3DShapeNum(org) );
@@ -122,33 +132,40 @@ zMShape3D *zMShape3DToPH(zMShape3D *ms)
 static void *_zMShape3DOpticFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return zOpticalInfoFromZTK( zMShape3DOptic((zMShape3D*)obj,i), ztk ) ? obj : NULL;
 }
+static void *_zMShape3DTextureFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  return zTextureFromZTK( zMShape3DTexture((zMShape3D*)obj,i), ztk ) ? obj : NULL;
+}
 static void *_zMShape3DShapeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return zShape3DFromZTK( zMShape3DShape((zMShape3D*)obj,i),
-    &((zMShape3D*)obj)->shape, &((zMShape3D*)obj)->optic, ztk ) ? obj : NULL;
+    &((zMShape3D*)obj)->shape, &((zMShape3D*)obj)->optic, &((zMShape3D*)obj)->texture, ztk ) ? obj : NULL;
 }
 
 static ZTKPrp __ztk_prp_mshape[] = {
   { "optic", -1, _zMShape3DOpticFromZTK, NULL },
+  { "texture", -1, _zMShape3DTextureFromZTK, NULL },
   { "shape", -1, _zMShape3DShapeFromZTK, NULL },
 };
 
 /* register a definition of tag-and-keys for multiple shapes to a ZTK format processor. */
 bool zMShape3DRegZTK(ZTK *ztk)
 {
-  return zOpticalInfoRegZTK( ztk ) && zShape3DRegZTK( ztk, ZTK_TAG_SHAPE );
+  return zOpticalInfoRegZTK( ztk ) && zTextureRegZTK( ztk ) && zShape3DRegZTK( ztk, ZTK_TAG_SHAPE );
 }
 
 /* read multiple 3D shapes from a ZTK format processor. */
 zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk)
 {
-  int num_optic, num_shape;
+  int num_optic, num_texture, num_shape;
 
   zMShape3DInit( ms );
   num_optic = ZTKCountTag( ztk, ZTK_TAG_OPTIC );
+  num_texture = ZTKCountTag( ztk, ZTK_TAG_TEXTURE );
   num_shape = ZTKCountTag( ztk, ZTK_TAG_SHAPE );
   zArrayAlloc( &ms->optic, zOpticalInfo, num_optic );
+  zArrayAlloc( &ms->texture, zTexture, num_texture );
   zArrayAlloc( &ms->shape, zShape3D, num_shape );
   if( zMShape3DOpticNum(ms) != num_optic ||
+      zMShape3DTextureNum(ms) != num_texture ||
       zMShape3DShapeNum(ms) != num_shape ) return NULL;
   if( zMShape3DShapeNum(ms) == 0 ){
     ZRUNWARN( ZEO_WARN_MSHAPE_EMPTY );
@@ -166,6 +183,10 @@ void zMShape3DFPrintZTK(FILE *fp, zMShape3D *ms)
   for( i=0; i<zMShape3DOpticNum(ms); i++ ){
     fprintf( fp, "[%s]\n", ZTK_TAG_OPTIC );
     zOpticalInfoFPrintZTK( fp, zMShape3DOptic( ms, i ) );
+  }
+  for( i=0; i<zMShape3DTextureNum(ms); i++ ){
+    fprintf( fp, "[%s]\n", ZTK_TAG_TEXTURE );
+    zTextureFPrintZTK( fp, zMShape3DTexture( ms, i ) );
   }
   for( i=0; i<zMShape3DShapeNum(ms); i++ ){
     fprintf( fp, "[%s]\n", ZTK_TAG_SHAPE );
