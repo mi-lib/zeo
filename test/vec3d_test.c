@@ -118,6 +118,9 @@ void assert_geometry(void)
   zVec3DRot( &v1, &v2, &v3 );
   zVec3DRevDRC( &v2 );
   zAssert( zVec3DRot + zVec3DAngle, zIsTiny(zVec3DAngle(&v1,&v3,&v2)+zVec3DNorm(&v2)) );
+  zVec3DAAError( &v1, &v2, &v4 );
+  zVec3DRot( &v1, &v4, &v3 );
+  zAssert( zVec3DAAError + zVec3DRot, zVec3DIsTiny( zVec3DOuterProd( &v2, &v3, &v4 ) ) );
 }
 
 void assert_angvel_conv(void)
@@ -136,6 +139,68 @@ void assert_angvel_conv(void)
   zAssert( zAngVelToZYZVel + zZYZVelToAngVel, zVec3DEqual(&angvel,&test) );
 }
 
+#define V    (1.0e-4)
+#define STEP 100
+#define TOL  (1.0e-6)
+
+void assert_angvel_zyx_intg(void)
+{
+  zVec3D zyxvel, angvel, zyx, err;
+  zMat3D m1, m2, tmp;
+  register int i;
+  bool res = true;
+
+  zVec3DZero( &zyx );
+  zMat3DIdent( &m2 );
+  zVec3DCreate( &zyxvel, zRandF(-V,V), zRandF(-V,V), zRandF(-V,V) );
+  for( i=0; i<=STEP; i++ ){
+    /* z-y-x Eulerian angle velocity -> angular velocity */
+    zZYXVelToAngVel( &zyxvel, &zyx, &angvel );
+    /* z-y-x Eulerian angle -> matrix */
+    zVec3DAddDRC( &zyx, &zyxvel );
+    zMat3DFromZYX( &m1, zyx.c.x, zyx.c.y, zyx.c.z );
+    /* angular velocity vector -> matrix */
+    zMat3DCopy( &m2, &tmp );
+    zMat3DRot( &tmp, &angvel, &m2 );
+    /* error */
+    zMat3DError( &m1, &m2, &err );
+    if( !zVec3DIsTol( &err, TOL ) ){
+      res = false;
+      break;
+    }
+  }
+  zAssert( zZYXVelToAngVel (integral), res );
+}
+
+void assert_angvel_zyz_intg(void)
+{
+  zVec3D zyzvel, angvel, zyz, err;
+  zMat3D m1, m2, tmp;
+  register int i;
+  bool res = true;
+
+  zVec3DZero( &zyz );
+  zMat3DIdent( &m2 );
+  zVec3DCreate( &zyzvel, zRandF(-V,V), zRandF(-V,V), zRandF(-V,V) );
+  for( i=0; i<=STEP; i++ ){
+    /* z-y-x Eulerian angle velocity -> angular velocity */
+    zZYZVelToAngVel( &zyzvel, &zyz, &angvel );
+    /* z-y-x Eulerian angle -> matrix */
+    zVec3DAddDRC( &zyz, &zyzvel );
+    zMat3DFromZYZ( &m1, zyz.e[zX], zyz.e[zY], zyz.e[zZ] );
+    /* angular velocity vector -> matrix */
+    zMat3DCopy( &m2, &tmp );
+    zMat3DRot( &tmp, &angvel, &m2 );
+    /* error */
+    zMat3DError( &m1, &m2, &err );
+    if( !zVec3DIsTol( &err, TOL ) ){
+      res = false;
+      break;
+    }
+  }
+  zAssert( zZYZVelToAngVel (integral), res );
+}
+
 int main(void)
 {
   zRandInit();
@@ -144,5 +209,7 @@ int main(void)
   assert_vecprod();
   assert_geometry();
   assert_angvel_conv();
+  assert_angvel_zyx_intg();
+  assert_angvel_zyz_intg();
   return EXIT_SUCCESS;
 }

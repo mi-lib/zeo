@@ -412,6 +412,16 @@ __EXPORT zVec3D *zVec3DMid(zVec3D *v1, zVec3D *v2, zVec3D *v);
  */
 __EXPORT double zVec3DAngle(zVec3D *v1, zVec3D *v2, zVec3D *n);
 
+/*! \brief angle-axis error of two vectors.
+ *
+ * zVec3DAAError() calculates the angle-axis error of two vectors
+ * \a v1 and \a v2. The result is stored in \a aa. Namely, \a v1
+ * rotated by \a aa is parallel to \a v2.
+ * \return
+ * zVec3DAAError() returns a pointer \a aa.
+ */
+__EXPORT zVec3D *zVec3DAAError(zVec3D *v1, zVec3D *v2, zVec3D *aa);
+
 /*! \brief projection, orthogonalization and rotation of a 3D vector.
  *
  * zVec3DProj() projects vector \a v onto the line directed by

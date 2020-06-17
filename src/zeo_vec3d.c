@@ -302,6 +302,23 @@ double zVec3DAngle(zVec3D *v1, zVec3D *v2, zVec3D *n)
   return atan2( s, c );
 }
 
+/* angle-axis error of two vectors. */
+zVec3D *zVec3DAAError(zVec3D *v1, zVec3D *v2, zVec3D *aa)
+{
+  double c, s;
+  zVec3D d;
+
+  _zVec3DOuterProd( v1, v2, &d );
+  if( zVec3DIsTiny( &d ) ){
+    _zVec3DZero( aa );
+  } else{
+    c = _zVec3DInnerProd( v1, v2 );
+    s = _zVec3DNorm( &d );
+    _zVec3DMul( &d, atan2( s, c ) / s, aa );
+  }
+  return aa;
+}
+
 /* project a 3D vector onto another. */
 zVec3D *zVec3DProj(zVec3D *v, zVec3D *n, zVec3D *pv)
 {

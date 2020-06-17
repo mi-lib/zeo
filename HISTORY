@@ -1,3 +1,4 @@
+2020. 6.17. Added zVec3DAAError. [zeo_vec3d]
 2020. 5.15. Modified _zTextureFileFromZTK. [zeo_texture]
 2020. 5.15. Added zTextureReadFuncIsAssigned. [zeo_texture]
 2020. 5.15. Debugged zTextureInit. [zeo_texture]
