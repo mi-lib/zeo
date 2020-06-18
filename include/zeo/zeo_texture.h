@@ -11,16 +11,24 @@
 
 __BEGIN_DECLS
 
+enum{
+  ZTEXTURE_COLOR,
+  ZTEXTURE_BUMP,
+};
+
 /*! \struct a texture class */
 typedef struct{
   Z_NAMED_CLASS
   uint id;           /*!< \brief identifier (for visualization) */
+  ubyte type;        /*!< \brief type of mapping (color mapping/bump mapping) */
   char *filename;    /*!< \brief name of the image source file */
   zVec2DArray coord; /*!< \brief array of coordinates */
   zTri2DArray face;  /*!< \brief array of triangular faces */
   int width;         /*!< \brief width of the texture image */
   int height;        /*!< \brief height of the texture image */
-  ubyte *buf;        /*!< \brief buffer for RGB data */
+  double depth;      /*!< \brief depth of bumps (for bump mapping only) */
+  ubyte *buf;        /*!< \brief buffer for texture data */
+  ubyte *lbuf[6];    /*!< \brief buffer for normalized light map */
 } zTexture;
 
 #define zTextureCoordNum(t)      zArraySize(&(t)->coord)
@@ -33,12 +41,15 @@ typedef struct{
 /*! \brief initialize a texture */
 #define zTextureInit(tex) do{\
   zNameSetPtr( tex, NULL );\
-  (tex)->id = 0; \
+  (tex)->id = 0;\
+  (tex)->type = ZTEXTURE_COLOR;\
   (tex)->filename = NULL;\
   zArrayInit( &(tex)->coord );\
   zArrayInit( &(tex)->face );\
   (tex)->width = (tex)->height = 0;\
+  (tex)->depth = 1.0;\
   (tex)->buf = NULL;\
+  (tex)->lbuf[0] = (tex)->lbuf[1] = (tex)->lbuf[2] = (tex)->lbuf[3] = (tex)->lbuf[4] = (tex)->lbuf[5] = NULL;\
 } while(0)
 
 /*! \brief texture file reader */
@@ -50,7 +61,7 @@ extern bool (* __z_texture_read_file)(zTexture *, char *);
 /*! \brief check if the texture file reader is assigned */
 #define zTextureReadFuncIsAssigned() ( __z_texture_read_file ? true : false )
 
-/*! \brief read an texture image file */
+/*! \brief read a texture image file */
 #define zTextureReadFile(t,f) ( __z_texture_read_file ? __z_texture_read_file( (t), (f) ) : false )
 
 /*! \brief allocate coordinates and faces of a texture data */
@@ -67,6 +78,23 @@ __EXPORT void zTextureDestroy(zTexture *texture);
 
 /*! \brief clone a texture */
 __EXPORT zTexture *zTextureClone(zTexture *org, zTexture *cln);
+
+/* bump mapping */
+
+/*! \brief bump map file reader */
+extern bool (* __z_texture_bump_read_file)(zTexture *, char *);
+
+/*! \brief set a bump map texture file reader */
+#define zTextureSetBumpReadFunc(f)   ( __z_texture_bump_read_file = (f) )
+
+/*! \brief check if the texture file reader is assigned */
+#define zTextureBumpReadFuncIsAssigned() ( __z_texture_bump_read_file ? true : false )
+
+/*! \brief read a bump map image file */
+#define zTextureBumpReadFile(t,f) ( __z_texture_bump_read_file ? __z_texture_bump_read_file( (t), (f) ) : false )
+
+/*! \brief allocate workspace for bump mapping */
+__EXPORT bool zTextureBumpAlloc(zTexture *bump, int width, int height);
 
 /* tag to identify a texture */
 #define ZTK_TAG_TEXTURE "texture"

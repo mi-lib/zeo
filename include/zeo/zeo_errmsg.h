@@ -19,6 +19,7 @@
 #define ZEO_ERR_RGB          "invalid size of RGB specification, strlen(%s)=%d"
 
 #define ZEO_ERR_TEXTURE_INVALID_COORD_ID "%d: invalid identifier of a coordinate specified."
+#define ZEO_WARN_TEXTURE_UNKNOWN_TYPE "unknown texture type: %s"
 
 #define ZEO_ERR_INVINDEX     "invalid index specified"
 

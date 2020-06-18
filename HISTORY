@@ -1,3 +1,8 @@
+2020. 6.18. Modified zTextureFromZTK to read a bump map. [zeo_texture]
+2020. 6.18. Added __z_texture_bump_read_file, zTextureSetBumpReadFunc, zTextureBumpReadFuncIsAssigned and zTextureBumpReadFile. [zeo_texture]
+2020. 6.18. Added zTextureBumpAlloc. [zeo_texture, zeo_errmsg]
+2020. 6.17. Added _zTextureTypeFromZTK and _zTextureTypeFPrintZTK. [zeo_texture]
+2020. 6.17. Added type member in zTexture to define bump mapping. [zeo_texture]
 2020. 6.17. Added zVec3DAAError. [zeo_vec3d]
 2020. 5.15. Modified _zTextureFileFromZTK. [zeo_texture]
 2020. 5.15. Added zTextureReadFuncIsAssigned. [zeo_texture]

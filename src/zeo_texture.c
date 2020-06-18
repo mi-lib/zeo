@@ -38,27 +38,38 @@ zTri2D *zTextureSetFace(zTexture *texture, int i, zVec2D *v1, zVec2D *v2, zVec2D
 /* destroy a texture */
 void zTextureDestroy(zTexture *texture)
 {
+  register int i;
+
   zNameFree( texture );
   if( texture->filename ) free( texture->filename );
   zArrayFree( &texture->coord );
   zArrayFree( &texture->face );
   if( texture->buf ) free( texture->buf );
+  for( i=0; i<6; i++ )
+    if( texture->lbuf[i] ) free( texture->lbuf[i] );
   zTextureInit( texture );
 }
 
 /* clone a texture */
 zTexture *zTextureClone(zTexture *org, zTexture *cln)
 {
+  register int i;
+  int wh, hh;
+  bool res;
+
   zTextureInit( cln );
   if( zNamePtr(org) && !zNameSet( cln, zNamePtr(org) ) ) goto FAILURE;
   cln->id = org->id;
+  cln->type = org->type;
   cln->filename = zStrClone( org->filename );
   zArrayAlloc( &cln->coord, zVec2D, zTextureCoordNum(org) );
   zArrayAlloc( &cln->face, zTri2D, zTextureFaceNum(org) );
-  cln->buf = zAlloc( ubyte, org->width * org->height * 3 );
-  if( !cln->filename || !cln->coord.buf || !cln->face.buf || !cln->buf ) goto FAILURE;
-  cln->width = org->width;
-  cln->height = org->height;
+  cln->buf = zClone( org->buf, sizeof(ubyte)*org->width*org->height*3 );
+  wh = ( cln->width = org->width ) / 2;
+  hh = ( cln->height = org->height ) / 2;
+  for( res=true, i=0; i<6; i++ )
+    if( org->lbuf[i] && !( cln->lbuf[i] = zClone( org->lbuf[i], sizeof(ubyte)*wh*hh*3 ) ) ) res = false;
+  if( !cln->filename || !cln->coord.buf || !cln->face.buf || !cln->buf || !res ) goto FAILURE;
   return cln;
 
  FAILURE:
@@ -66,16 +77,59 @@ zTexture *zTextureClone(zTexture *org, zTexture *cln)
   return NULL;
 }
 
+/* bump mapping */
+
+/* bump map file reader */
+bool (* __z_texture_bump_read_file)(zTexture *, char *) = NULL;
+
+/* allocate workspace for bump mapping */
+bool zTextureBumpAlloc(zTexture *bump, int width, int height)
+{
+  register int i;
+  int wh, hh;
+  bool ret = true;
+
+  wh = ( bump->width = width ) / 2;
+  hh = ( bump->height = height ) / 2;
+  bump->buf = zAlloc( ubyte, width * height * 3 );
+  for( i=0; i<6; i++ )
+    if( !( bump->lbuf[i] = zAlloc( ubyte, wh * hh * 3 ) ) ) ret = false;
+  if( !bump->buf || !ret ){
+    zTextureDestroy( bump );
+    return false;
+  }
+  return true;
+}
+
 /* parsing a ZTK format. */
 
 static void *_zTextureNameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zNameSet( (zTexture *)obj, ZTKVal(ztk) );
-  return zNamePtr((zTexture *)obj) ? obj : NULL; }
+  return zNamePtr((zTexture *)obj) ? obj : NULL;
+}
 
 static void *_zTextureFileFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   if( !( ((zTexture *)obj)->filename = zStrClone( ZTKVal(ztk) ) ) ) return NULL;
-  zTextureReadFile( (zTexture *)obj, ZTKVal(ztk) );
-  return obj; }
+  return obj;
+}
+
+static void *_zTextureTypeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  if( strcmp( ZTKVal(ztk), "color" ) == 0 )
+    ((zTexture *)obj)->type = ZTEXTURE_COLOR;
+  else
+  if( strcmp( ZTKVal(ztk), "bump" ) == 0 )
+    ((zTexture *)obj)->type = ZTEXTURE_BUMP;
+  else{
+    ZRUNWARN( ZEO_WARN_TEXTURE_UNKNOWN_TYPE, ZTKVal(ztk) );
+    ((zTexture *)obj)->type = ZTEXTURE_COLOR;
+  }
+  return obj;
+}
+
+static void *_zTextureDepthFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  if( !( ((zTexture *)obj)->depth = ZTKDouble(ztk) ) ) return NULL;
+  return obj;
+}
 
 static void *_zTextureCoordFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 {
@@ -111,14 +165,30 @@ static void *_zTextureFaceFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 }
 
 static void _zTextureNameFPrintZTK(FILE *fp, int i, void *obj){
-  fprintf( fp, "%s\n", zName((zTexture*)obj) ); }
+  fprintf( fp, "%s\n", zName((zTexture*)obj) );
+}
 
 static void _zTextureFileFPrintZTK(FILE *fp, int i, void *obj){
-  fprintf( fp, "%s\n", ((zTexture*)obj)->filename ); }
+  fprintf( fp, "%s\n", ((zTexture*)obj)->filename );
+}
+
+static void _zTextureTypeFPrintZTK(FILE *fp, int i, void *obj){
+  switch( ((zTexture*)obj)->type ){
+  case ZTEXTURE_BUMP:           fprintf( fp, "bump\n" );  break;
+  case ZTEXTURE_COLOR: default: fprintf( fp, "color\n" ); break;
+  }
+}
+
+static void _zTextureDepthFPrintZTK(FILE *fp, int i, void *obj){
+  if( ((zTexture*)obj)->type == ZTEXTURE_BUMP )
+    fprintf( fp, "%.10g\n", ((zTexture*)obj)->depth );
+}
 
 static ZTKPrp __ztk_prp_texture[] = {
   { "name", 1, _zTextureNameFromZTK, _zTextureNameFPrintZTK },
   { "file", 1, _zTextureFileFromZTK, _zTextureFileFPrintZTK },
+  { "type", 1, _zTextureTypeFromZTK, _zTextureTypeFPrintZTK },
+  { "depth", 1, _zTextureDepthFromZTK, _zTextureDepthFPrintZTK },
   { "coord", -1, _zTextureCoordFromZTK, NULL },
   { "face", -1, _zTextureFaceFromZTK, NULL },
 };
@@ -146,7 +216,13 @@ zTexture *zTextureFromZTK(zTexture *texture, ZTK *ztk)
   if( zTextureCoordNum(texture) != num_coord ||
       zTextureFaceNum(texture) != num_face ) return NULL;
   /* vertices & faces */
-  return ZTKEvalKey( texture, NULL, ztk, __ztk_prp_texture );
+  if( !ZTKEvalKey( texture, NULL, ztk, __ztk_prp_texture ) ) return NULL;
+  switch( texture->type ){
+  case ZTEXTURE_COLOR: return zTextureReadFile( texture, texture->filename ) ? texture : NULL;
+  case ZTEXTURE_BUMP:  return zTextureBumpReadFile( texture, texture->filename ) ? texture : NULL;
+  default: ;
+  }
+  return NULL;
 }
 
 /* print information of the texture parameter set out to a file. */
