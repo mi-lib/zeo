@@ -20,6 +20,7 @@ enum{
 typedef struct{
   Z_NAMED_CLASS
   uint id;           /*!< \brief identifier (for visualization) */
+  uint id_bump;      /*!< \brief identifier for bump mapping */
   ubyte type;        /*!< \brief type of mapping (color mapping/bump mapping) */
   char *filename;    /*!< \brief name of the image source file */
   zVec2DArray coord; /*!< \brief array of coordinates */
@@ -42,6 +43,7 @@ typedef struct{
 #define zTextureInit(tex) do{\
   zNameSetPtr( tex, NULL );\
   (tex)->id = 0;\
+  (tex)->id_bump = 0;\
   (tex)->type = ZTEXTURE_COLOR;\
   (tex)->filename = NULL;\
   zArrayInit( &(tex)->coord );\
