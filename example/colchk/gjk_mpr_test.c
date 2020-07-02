@@ -68,7 +68,7 @@ void output(char filename[], zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c
   fprintf( fp, "name: ch1\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
-  zPH3DFPrint( fp, &ch );
+  zPH3DFPrintZTK( fp, &ch );
   zPH3DDestroy( &ch );
   /* convex set 2 */
   zCH3D( &ch, p2, n2 );
@@ -76,7 +76,7 @@ void output(char filename[], zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c
   fprintf( fp, "name: ch2\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
-  zPH3DFPrint( fp, &ch );
+  zPH3DFPrintZTK( fp, &ch );
   zPH3DDestroy( &ch );
 
   fclose( fp );
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
   for( i=0; i<loop; i++ )
     result_gjk = zGJK( a, N, b, N, &ca, &cb );
   printf( "zGJK time = %ld\n", clock() - start );
-  printf( "GJK in collision? %s\n", zBoolExpr( result_gjk ) );
+  printf( "GJK in collision? %s\n", zBoolStr( result_gjk ) );
   output( "gjk.ztk", a, N, b, N, &ca, &cb );
   zVec3DPrint( &ca );
   zVec3DPrint( &cb );
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
   for( i=0; i<loop; i++ )
     result_mpr = zMPRDepth( a, N, b, N, &depth, &pos, &dir );
   printf( "zMPRDepth time = %ld\n", clock() - start );
-  printf( "MPR in collision? %s\n", zBoolExpr( result_mpr ) );
+  printf( "MPR in collision? %s\n", zBoolStr( result_mpr ) );
   if( depth > 0 ){
     printf( "depth = %f\n", depth );
     zVec3DCat( &pos, depth/2, &dir, &ca );

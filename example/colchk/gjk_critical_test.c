@@ -70,7 +70,7 @@ void output(char filename[], zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c
   fprintf( fp, "name: ch1\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
-  zPH3DFPrint( fp, &ch );
+  zPH3DFPrintZTK( fp, &ch );
   zPH3DDestroy( &ch );
   /* convex set 2 */
   zCH3D( &ch, p2, n2 );
@@ -78,7 +78,7 @@ void output(char filename[], zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c
   fprintf( fp, "name: ch2\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
-  zPH3DFPrint( fp, &ch );
+  zPH3DFPrintZTK( fp, &ch );
   zPH3DDestroy( &ch );
 
   fclose( fp );
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
   vec_create( a, b, argc > 1 ? atof(argv[1]) : 0 );
 
-  printf( "in collision? %s\n", zBoolExpr( zGJK( a, N, b, N, &ca, &cb ) ) );
+  printf( "in collision? %s\n", zBoolStr( zGJK( a, N, b, N, &ca, &cb ) ) );
   zVec3DPrint( &ca );
   zVec3DPrint( &cb );
   output( "a", a, N, b, N, &ca, &cb );

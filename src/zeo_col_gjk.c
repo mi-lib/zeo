@@ -20,31 +20,8 @@ typedef struct{
   zGJKSlot slot[4];
 } zGJKSimplex;
 
-static void _zGJKSlotInit(zGJKSlot *slot);
-#ifdef DEBUG
-static void _zGJKSlotVertFPrint(FILE *fp, zGJKSlot *slot);
-static void _zGJKSlotPrint(zGJKSlot *slot);
-#endif
-
-static void _zGJKSimplexInit(zGJKSimplex *s);
-#ifdef DEBUG
-static void _zGJKSimplexYPrint(zGJKSimplex *s);
-static void _zGJKSimplexWPrint(zGJKSimplex *s);
-static void _zGJKSimplexYVertFPrint(FILE *fp, zGJKSimplex *s);
-static void _zGJKSimplexWVertFPrint(FILE *fp, zGJKSimplex *s);
-#endif
-
-static bool _zGJKSimplexCheckSlot(zGJKSimplex *s, zGJKSlot *slot);
-static int _zGJKSimplexAddSlot(zGJKSimplex *s, zGJKSlot *slot);
-static zVec3D *_zGJKSimplexClosest(zGJKSimplex *s, zVec3D *v);
-static void _zGJKSimplexMinimize(zGJKSimplex *s);
-static zVec3D *_zGJKSupportMap(zGJKSlot *s, zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *v);
-static zVec3D *_zGJKSupportMapPL(zGJKSlot *s, zVec3DList *pl1, zVec3DList *pl2, zVec3D *v);
-static void _zGJKPair(zGJKSimplex *s, zVec3D *c1, zVec3D *c2);
-static bool _zGJKCheck(zGJKSimplex *s);
-
 /* initialize GJK slot. */
-void _zGJKSlotInit(zGJKSlot *slot)
+static void _zGJKSlotInit(zGJKSlot *slot)
 {
   slot->sw_w = slot->sw_y = false;
   zVec3DZero( &slot->w );
@@ -53,10 +30,8 @@ void _zGJKSlotInit(zGJKSlot *slot)
 }
 
 #ifdef DEBUG
-/* (static)
- * print out slot information.
- */
-void _zGJKSlotPrint(zGJKSlot *slot)
+/* print out slot information. */
+static void _zGJKSlotPrint(zGJKSlot *slot)
 {
   printf( " w: " ); zVec3DPrint( &slot->w );
   printf( " p1: " ); zVec3DPrint( slot->p1 );
@@ -65,7 +40,7 @@ void _zGJKSlotPrint(zGJKSlot *slot)
 }
 
 /* print out vertices of a slot. */
-void _zGJKSlotVertFPrint(FILE *fp, zGJKSlot *slot)
+static void _zGJKSlotVertFPrint(FILE *fp, zGJKSlot *slot)
 {
   zVec3DDataFPrint( fp, slot->p1 );
   zVec3DDataFPrint( fp, slot->p2 );
@@ -73,7 +48,7 @@ void _zGJKSlotVertFPrint(FILE *fp, zGJKSlot *slot)
 #endif
 
 /* initialize GJK simplex set. */
-void _zGJKSimplexInit(zGJKSimplex *s)
+static void _zGJKSimplexInit(zGJKSimplex *s)
 {
   s->n = 0;
   _zGJKSlotInit( &s->slot[0] );
@@ -84,7 +59,7 @@ void _zGJKSimplexInit(zGJKSimplex *s)
 
 #ifdef DEBUG
 /* print out GJK simplex set Y (non-minimum simplex) */
-void _zGJKSimplexYPrint(zGJKSimplex *s)
+static void _zGJKSimplexYPrint(zGJKSimplex *s)
 {
   register int i;
 
@@ -97,7 +72,7 @@ void _zGJKSimplexYPrint(zGJKSimplex *s)
 }
 
 /* print out GJK simplex set W (minimum simplex) */
-void _zGJKSimplexWPrint(zGJKSimplex *s)
+static void _zGJKSimplexWPrint(zGJKSimplex *s)
 {
   register int i;
 
@@ -110,7 +85,7 @@ void _zGJKSimplexWPrint(zGJKSimplex *s)
 }
 
 /* print out vertices of GJK simplex set Y (non-minimum simplex) */
-void _zGJKSimplexYVertFPrint(FILE *fp, zGJKSimplex *s)
+static void _zGJKSimplexYVertFPrint(FILE *fp, zGJKSimplex *s)
 {
   register int i;
 
@@ -120,7 +95,7 @@ void _zGJKSimplexYVertFPrint(FILE *fp, zGJKSimplex *s)
 }
 
 /* prion out vertices GJK simplex set W (minimum simplex) */
-void _zGJKSimplexWVertFPrint(FILE *fp, zGJKSimplex *s)
+static void _zGJKSimplexWVertFPrint(FILE *fp, zGJKSimplex *s)
 {
   register int i;
 
@@ -131,7 +106,7 @@ void _zGJKSimplexWVertFPrint(FILE *fp, zGJKSimplex *s)
 #endif
 
 /* check if the specified slot is already in the previous testing simplex. */
-bool _zGJKSimplexCheckSlot(zGJKSimplex *s, zGJKSlot *slot)
+static bool _zGJKSimplexCheckSlot(zGJKSimplex *s, zGJKSlot *slot)
 {
   register int i;
 
@@ -142,7 +117,7 @@ bool _zGJKSimplexCheckSlot(zGJKSimplex *s, zGJKSlot *slot)
 }
 
 /* add a slot into the current testing simplex. */
-int _zGJKSimplexAddSlot(zGJKSimplex *s, zGJKSlot *slot)
+static int _zGJKSimplexAddSlot(zGJKSimplex *s, zGJKSlot *slot)
 {
   register int i;
 
@@ -162,7 +137,7 @@ int _zGJKSimplexAddSlot(zGJKSimplex *s, zGJKSlot *slot)
 }
 
 /* find the closest point in/on the testing simplex. */
-zVec3D *_zGJKSimplexClosest(zGJKSimplex *s, zVec3D *v)
+static zVec3D *_zGJKSimplexClosest(zGJKSimplex *s, zVec3D *v)
 {
   double _q[9], _c[3];
   double _a[] = { -1.0, -1.0, -1.0 }, _b[] = { -1.0 }, _l[3];
@@ -203,7 +178,7 @@ zVec3D *_zGJKSimplexClosest(zGJKSimplex *s, zVec3D *v)
 }
 
 /* minimize the testing simplex. */
-void _zGJKSimplexMinimize(zGJKSimplex *s)
+static void _zGJKSimplexMinimize(zGJKSimplex *s)
 {
   register int i;
   zVec3D ws;
@@ -221,7 +196,7 @@ void _zGJKSimplexMinimize(zGJKSimplex *s)
 }
 
 /* support map of Minkowski difference. */
-zVec3D *_zGJKSupportMap(zGJKSlot *s, zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *v)
+static zVec3D *_zGJKSupportMap(zGJKSlot *s, zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *v)
 {
   zVec3D nv;
 
@@ -233,7 +208,7 @@ zVec3D *_zGJKSupportMap(zGJKSlot *s, zVec3D p1[], int n1, zVec3D p2[], int n2, z
 }
 
 /* support map of Minkowski difference. */
-zVec3D *_zGJKSupportMapPL(zGJKSlot *s, zVec3DList *pl1, zVec3DList *pl2, zVec3D *v)
+static zVec3D *_zGJKSupportMapPL(zGJKSlot *s, zVec3DList *pl1, zVec3DList *pl2, zVec3D *v)
 {
   zVec3D nv;
 
@@ -245,7 +220,7 @@ zVec3D *_zGJKSupportMapPL(zGJKSlot *s, zVec3DList *pl1, zVec3DList *pl2, zVec3D 
 }
 
 /* a pair of points on the original convex hulls. */
-void _zGJKPair(zGJKSimplex *s, zVec3D *c1, zVec3D *c2)
+static void _zGJKPair(zGJKSimplex *s, zVec3D *c1, zVec3D *c2)
 {
   register int i;
 
@@ -258,7 +233,7 @@ void _zGJKPair(zGJKSimplex *s, zVec3D *c1, zVec3D *c2)
     }
 }
 
-double _zGJKPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp, int *id)
+static double _zGJKPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp, int *id)
 {
   register int i;
   zVec3D ncp;
@@ -282,7 +257,7 @@ double _zGJKPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp, int *id)
 
 zListClass( zGJKSlotList, zGJKSlotListCell, zGJKSlot );
 
-zGJKSlotListCell *_zGJKSlotListInsert(zGJKSlotList *sl, zGJKSlot *s)
+static zGJKSlotListCell *_zGJKSlotListInsert(zGJKSlotList *sl, zGJKSlot *s)
 {
   zGJKSlotListCell *sc;
 
@@ -297,7 +272,7 @@ zGJKSlotListCell *_zGJKSlotListInsert(zGJKSlotList *sl, zGJKSlot *s)
   return sc;
 }
 
-bool _zGJKPDInitAddPoint(zVec3D p1[], int n1, zVec3D p2[], int n2, zGJKSlotList *slist, zVec3DList *vlist, zVec3D *v, zEdge3D *edge, zTri3D *tri)
+static bool _zGJKPDInitAddPoint(zVec3D p1[], int n1, zVec3D p2[], int n2, zGJKSlotList *slist, zVec3DList *vlist, zVec3D *v, zEdge3D *edge, zTri3D *tri)
 {
   zGJKSlot  ns;
 
@@ -310,7 +285,7 @@ bool _zGJKPDInitAddPoint(zVec3D p1[], int n1, zVec3D p2[], int n2, zGJKSlotList 
   return true;
 }
 
-bool _zGJKPDInit(zVec3D p1[], int n1, zVec3D p2[], int n2, zGJKSimplex *s, zGJKSlotList *slist, zVec3DList *vlist)
+static bool _zGJKPDInit(zVec3D p1[], int n1, zVec3D p2[], int n2, zGJKSimplex *s, zGJKSlotList *slist, zVec3DList *vlist)
 {
   register int i;
   zGJKSlotListCell *sc;
@@ -360,7 +335,7 @@ bool _zGJKPDInit(zVec3D p1[], int n1, zVec3D p2[], int n2, zGJKSimplex *s, zGJKS
 }
 
 /* penetration depth */
-bool _zGJKPD(zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c1, zVec3D *c2, zGJKSimplex *s)
+static bool _zGJKPD(zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c1, zVec3D *c2, zGJKSimplex *s)
 {
   register int i, j;
   zGJKSlot  ns;
@@ -408,7 +383,7 @@ bool _zGJKPD(zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c1, zVec3D *c2, z
   return true;
 }
 
-bool _zGJKCheck(zGJKSimplex *s)
+static bool _zGJKCheck(zGJKSimplex *s)
 {
   zTri3D t;
   zEdge3D e;
@@ -424,7 +399,7 @@ bool _zGJKCheck(zGJKSimplex *s)
   return false;
 }
 
-bool _zGJK(zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c1, zVec3D *c2, zGJKSimplex *s)
+static bool _zGJK(zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c1, zVec3D *c2, zGJKSimplex *s)
 {
   zGJKSimplex _s; /* simplex */
   zGJKSlot slot;
@@ -436,8 +411,7 @@ bool _zGJK(zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c1, zVec3D *c2, zGJ
   for( i=0; i<n1; i++ )
     for( j=0; j<n2; j++ ){
       zVec3DSub( &p1[i], &p2[j], &v );
-      dv2 = zVec3DSqrNorm( &v );
-      if( !zIsTiny(dv2) ) break;
+      if( !zIsTiny( ( dv2 = zVec3DSqrNorm( &v ) ) ) ) break;
     }
   _zGJKSimplexInit( s );
   do{
@@ -492,5 +466,57 @@ bool zGJKPL(zVec3DList *pl1, zVec3DList *pl2, zVec3D *c1, zVec3D *c2)
     dv2 = zVec3DSqrNorm( &v );
   } while( s.n < 4 );
   _zGJKPair( &s, c1, c2 );
+  return _zGJKCheck( &s );
+}
+
+/* support map of Minkowski difference. */
+static zVec3D *_zGJKPointSupportMap(zGJKSlot *s, zVec3D pl[], int n, zVec3D *v)
+{
+  zVec3D nv;
+
+  zVec3DRev( v, &nv );
+  s->p1 = zVec3DSupportMap( pl, n, &nv );
+  zVec3DSub( s->p1, s->p2, &s->w );
+  return &s->w;
+}
+
+/* a pair of points on the original convex hulls. */
+static void _zGJKPointClosest(zGJKSimplex *s, zVec3D *c)
+{
+  register int i;
+
+  zVec3DZero( c );
+  for( i=0; i<4; i++ )
+    if( s->slot[i].sw_w )
+      zVec3DCatDRC( c, s->slot[i].s, s->slot[i].p1 );
+}
+
+/* Gilbert-Johnson-Keerthi algorithm for a set of points and an independent point. */
+bool zGJKPoint(zVec3D pl[], int n, zVec3D *p, zVec3D *c)
+{
+  zGJKSimplex s; /* simplex */
+  zGJKSlot slot;
+  zVec3D v; /* proximity */
+  double dv2 = 0;
+  register int i;
+
+  slot.p2 = p;
+  for( i=0; i<n; i++ ){
+    zVec3DSub( &pl[i], p, &v );
+    if( !zIsTiny( ( dv2 = zVec3DSqrNorm( &v ) ) ) ) break;
+  }
+  _zGJKSimplexInit( &s );
+  do{
+    _zGJKPointSupportMap( &slot, pl, n, &v );
+    if( _zGJKSimplexCheckSlot( &s, &slot ) ||
+        dv2 - zVec3DInnerProd(&slot.w,&v) <= zTOL ){
+      break; /* succeed */
+    }
+    _zGJKSimplexAddSlot( &s, &slot );
+    _zGJKSimplexClosest( &s, &v );
+    _zGJKSimplexMinimize( &s );
+    dv2 = zVec3DSqrNorm( &v );
+  } while( s.n < 4 );
+  _zGJKPointClosest( &s, c );
   return _zGJKCheck( &s );
 }

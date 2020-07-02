@@ -35,20 +35,20 @@ void output(char filename[], zPH3D *a, zPH3D *b, zPH3D *c)
     fprintf( fp, "name: c\n" );
     fprintf( fp, "type: polyhedron\n" );
     fprintf( fp, "optic: yellow\n" );
-    zPH3DFPrint( fp, c );
+    zPH3DFPrintZTK( fp, c );
   }
   /* convex 1 */
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
-  zPH3DFPrint( fp, a );
+  zPH3DFPrintZTK( fp, a );
   /* convex 2 */
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
-  zPH3DFPrint( fp, b );
+  zPH3DFPrintZTK( fp, b );
 
   fclose( fp );
 }

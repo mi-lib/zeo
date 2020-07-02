@@ -10,4 +10,4 @@ CFLAGS=-ansi -Wall -O3 $(LIB) $(INCLUDE) -funroll-loops
 %: %.c
 	$(CC) $(CFLAGS) -o $@ $< $(LINK)
 clean :
-	rm -f *.o *~ core *test
+	rm -f *.o *~ core *test ?
