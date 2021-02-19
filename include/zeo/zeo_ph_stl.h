@@ -15,6 +15,9 @@ __BEGIN_DECLS
 __EXPORT zPH3D *zPH3DFReadSTL_ASCII(FILE *fp, zPH3D *ph, char name[], size_t namesize);
 __EXPORT void zPH3DFWriteSTL_ASCII(FILE *fp, zPH3D *ph, char name[]);
 
+/*! \brief check if STL format is binary. */
+__EXPORT bool zSTLIsBin(FILE *fp);
+
 /*! \brief read and write a 3D polyhedron in binary STL format. */
 __EXPORT zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[]);
 __EXPORT void zPH3DFWriteSTL_Bin(FILE *fp, zPH3D *ph, char name[]);

@@ -85,9 +85,6 @@ _zSTLFacetListCell *_zSTLFacetListReg(_zSTLFacetList *flist, _zSTLVertList *vlis
   cp->data.v2 = &vc2->data;
   cp->data.v3 = &vc3->data;
   zTri3DCreate( &facet, &vc1->data.v, &vc2->data.v, &vc3->data.v );
-  if( !zVec3DEqual( zTri3DNorm(&facet), normal ) ){
-    ZRUNWARN( ZEO_WARN_STL_WRONGNORMAL );
-  }
   zVec3DCopy( zTri3DNorm(&facet), &cp->data.normal );
   zListInsertHead( flist, cp );
   return cp;
@@ -273,6 +270,24 @@ void _zPH3DFWriteSTL_BinVec(FILE *fp, zVec3D *v)
 
 #define ZEO_STL_HEADSIZ 80
 
+/* check if STL format is binary. */
+bool zSTLIsBin(FILE *fp)
+{
+  size_t filesize;
+  uint32_t nf;
+  char buf[BUFSIZ];
+  bool ret = false;
+
+  filesize = zFileSize( fp );
+  if( fread( buf, sizeof(char), ZEO_STL_HEADSIZ, fp ) < ZEO_STL_HEADSIZ ) goto TERMINATE;
+  if( fread( &nf, sizeof(uint32_t), 1, fp ) < 1 ) goto TERMINATE;
+  ret = filesize == ZEO_STL_HEADSIZ + sizeof(uint32_t)
+                  + nf * ( sizeof(float)*12 + sizeof(uint16_t) ) ? true : false;
+ TERMINATE:
+  rewind( fp );
+  return ret;
+}
+
 /* read a 3D polyhedron from binary STL format */
 zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[])
 {
@@ -329,16 +344,7 @@ void zPH3DFWriteSTL_Bin(FILE *fp, zPH3D *ph, char name[])
 /* read a 3D polyhedron from either ASCII/binary STL format */
 zPH3D *zPH3DFReadSTL(FILE *fp, zPH3D *ph, char name[], size_t namesize)
 {
-  char buf[6];
-  long int pos;
-
-  pos = ftell( fp );
-  if( fread( buf, sizeof(char), 6, fp ) < 6 ){
-    ZRUNERROR( ZEO_ERR_STL_UNREADABLE );
-    return NULL;
-  }
-  fseek( fp, pos, SEEK_SET );
-  return strncmp( buf, "solid ", 6 ) == 0 ?
-    zPH3DFReadSTL_ASCII( fp, ph, name, namesize ) :
-    zPH3DFReadSTL_Bin( fp, ph, name );
+  return zSTLIsBin( fp ) ?
+    zPH3DFReadSTL_Bin( fp, ph, name ) :
+    zPH3DFReadSTL_ASCII( fp, ph, name, namesize );
 }

@@ -93,7 +93,6 @@
 #define ZEO_WARN_STL_MIS_LOOP     "missing the initiator of outer loop"
 #define ZEO_WARN_STL_TOOMANYVERT  "too many vertices in an outer loop"
 #define ZEO_WARN_STL_TOOFEWVERT   "too few vertices in an outer loop"
-#define ZEO_WARN_STL_WRONGNORMAL  "inconsistent normal vector, ignored"
 
 #define ZEO_WARN_STL_MISSINGDATA  "missing data in STL"
 

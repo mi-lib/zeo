@@ -1,3 +1,6 @@
+2021. 2.20. Added zSTLIsBin and reimplemented zPH3DFReadSTL. [zeo_ph_stl]
+2021. 2.20. Abolished check of normal vector in _zSTLFacetListReg. [zeo_ph_stl]
+2021. 2.20. Abolished ZEO_WARN_STL_WRONGNORMAL. [zeo_errmsg]
 2020. 7. 2. Added zGJKPoint. [zeo_col_gjk]
 2020. 6.20. Added id_bump member in zTexture in order to handle multiple bump maps. [zeo_texture]
 2020. 6.18. Modified zTextureFromZTK to read a bump map. [zeo_texture]
