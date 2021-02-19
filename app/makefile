@@ -16,7 +16,7 @@ UNINSTALL=rm -f
 
 CONFIGGEN=zeda-config-gen
 CONFIG=zeo-config
-TARGET=$(CONFIG) zeo_qhull zeo_gjk zeo_phconv mshape2gp
+TARGET=$(CONFIG) zeo_qhull zeo_gjk zeo_phconv zeo_stl2ztk mshape2gp
 
 #####################################################################
 all : $(TARGET)
