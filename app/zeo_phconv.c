@@ -5,6 +5,8 @@ enum{
   PHCONV_OUTPUTFILE,
   PHCONV_ASCII,
   PHCONV_BINARY,
+  PHCONV_TRANSLATE,
+  PHCONV_ROTATE,
   PHCONV_SCALE,
   PHCONV_HELP,
   PHCONV_INVALID
@@ -14,6 +16,8 @@ zOption option[] = {
   { "o", "out",   "<output file>", "output STL/PLY/ZTK file", NULL, false },
   { "a", "ascii", NULL,            "output ASCII STL/PLY file", NULL, false },
   { "b", "bin",   NULL,            "output binary STL/PLY file", NULL, false },
+  { "t", "translate", "<x> <y> <z>",   "translate geometry", "0.0 0.0 0.0", false },
+  { "r", "rotate", "<rxx> <rxy> <rxz> <ryz> <ryy> <ryz> <rzx> <rzy> <rzz>", "rotate geometry", "1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0", false },
   { "s", "scale", "<factor>",      "scale geometry", "1.0", false },
   { "h", "help",  NULL,            "show this message", NULL, false },
   { NULL, NULL, NULL, NULL, NULL, false },
@@ -153,13 +157,28 @@ bool phconv_write_ply(zShape3D *shape)
   return true;
 }
 
+bool phconv_xform(zShape3D *shape)
+{
+  zFrame3D frame;
+
+  sscanf( option[PHCONV_TRANSLATE].arg, "%lf %lf %lf",
+    &frame.pos.c.x, &frame.pos.c.y, &frame.pos.c.z );
+  sscanf( option[PHCONV_ROTATE].arg, "%lf %lf %lf %lf %lf %lf %lf %lf %lf",
+    &frame.att.c.xx, &frame.att.c.xy, &frame.att.c.xz,
+    &frame.att.c.yx, &frame.att.c.yy, &frame.att.c.yz,
+    &frame.att.c.zx, &frame.att.c.zy, &frame.att.c.zz );
+  zPH3DXform( zShape3DPH(shape), &frame, zShape3DPH(shape) );
+  return true;
+}
+
 bool phconv_write(zShape3D *shape)
 {
   char *suffix;
 
+  if( option[PHCONV_TRANSLATE].flag || option[PHCONV_ROTATE].flag )
+    phconv_xform( shape );
   if( option[PHCONV_SCALE].flag )
     zPH3DScale( zShape3DPH(shape), atof( option[PHCONV_SCALE].arg ) );
-
   suffix = zGetSuffix( option[PHCONV_OUTPUTFILE].arg );
   if( strcmp( suffix, "stl" ) == 0 || strcmp( suffix, "STL" ) == 0 )
     return phconv_write_stl( shape );
