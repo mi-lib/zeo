@@ -50,6 +50,45 @@ __EXPORT zFrame3D *zFrame3DCreate(zFrame3D *f, zVec3D *p, zMat3D *m);
 #define zFrame3DCopy(src,dest) ( *(dest) = *(src) )
 #define zFrame3DIdent(f) zFrame3DCopy( ZFRAME3DIDENT, f )
 
+/*! \brief transform coordinates of a 3D vector.
+ *
+ * zXform3D() transforms a 3D vector \a v by a frame \a f. The
+ * result is put into \a tv. Suppose \a f is for the
+ * transformation from a frame S1 to S0, \a tv points where \a v
+ * points in S1 with respect to S0.
+ *
+ * On the same assumption for \a f, zXform3DInv() transforms
+ * a 3D vector \a v in S0 to that with respect to S1 by the
+ * inverse frame of \a f. The result is put into \a tv.
+ *
+ * zXform3DDRC() directly transforms the 3D vector \a v by a
+ * frame \a f.
+ *
+ * zXform3DInvDRC() directly transforms a 3D vector \a v by the
+ * inverse of \a f.
+ * \return
+ * zXform3D(), zXform3DInv(), zXform3DDRC() and zXform3DInvDRC()
+ * return a pointer to the result.
+ * \notes
+ * zXform3DInv() expects that the attitude matrix of \a f is an
+ * orthonormal matrix.
+ */
+#define _zXform3D( f, v, tv ) do{\
+  _zMulMat3DVec3D( zFrame3DAtt(f), v, tv );\
+  _zVec3DAddDRC( tv, zFrame3DPos(f) );\
+} while(0)
+__EXPORT zVec3D *zXform3D(zFrame3D *f, zVec3D *v, zVec3D *tv);
+
+#define _zFrame3DInv( f, fi ) do{\
+  _zMat3DT( zFrame3DAtt(f), zFrame3DAtt(fi) );\
+  _zMulMat3DVec3D( zFrame3DAtt(fi), zFrame3DPos(f), zFrame3DPos(fi) );\
+  zVec3DRevDRC( zFrame3DPos(fi) );\
+} while(0)
+__EXPORT zVec3D *zXform3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv);
+
+#define zXform3DDRC(f,v)    zXform3D(f,v,v)
+#define zXform3DInvDRC(f,v) zXform3DInv(f,v,v)
+
 /*! \brief inverse and cascaded transformations of a frame.
  *
  * zFrame3DInv() calculates the inverse transformation frame
@@ -76,38 +115,23 @@ __EXPORT zFrame3D *zFrame3DCreate(zFrame3D *f, zVec3D *p, zMat3D *m);
  * the other arguments. When some of them are equal, anything
  * might happen.
  */
+#define _zXform3DInv( f, v, tv ) do{\
+  _zVec3DSub( v, zFrame3DPos(f), tv );\
+  _zMulMat3DTVec3DDRC( zFrame3DAtt(f), tv );\
+} while(0)
 __EXPORT zFrame3D *zFrame3DInv(zFrame3D *f, zFrame3D *fi);
+
+#define _zFrame3DCascade( f1, f2, f ) do{\
+  zMulMat3DMat3D( zFrame3DAtt(f1), zFrame3DAtt(f2), zFrame3DAtt(f) );\
+  _zXform3D( f1, zFrame3DPos(f2), zFrame3DPos(f) );\
+} while(0)
 __EXPORT zFrame3D *zFrame3DCascade(zFrame3D *f1, zFrame3D *f2, zFrame3D *f);
+
+#define _zFrame3DXform( f1, f2, f ) do{\
+  zMulMat3DTMat3D( zFrame3DAtt(f1), zFrame3DAtt(f2), zFrame3DAtt(f) );\
+  _zXform3DInv( f1, zFrame3DPos(f2), zFrame3DPos(f) );\
+} while(0)
 __EXPORT zFrame3D *zFrame3DXform(zFrame3D *f1, zFrame3D *f2, zFrame3D *f);
-
-/*! \brief transform coordinates of a 3D vector.
- *
- * zXform3D() transforms a 3D vector \a v by a frame \a f. The
- * result is put into \a tv. Suppose \a f is for the
- * transformation from a frame S1 to S0, \a tv points where \a v
- * points in S1 with respect to S0.
- *
- * On the same assumption for \a f, zXform3DInv() transforms
- * a 3D vector \a v in S0 to that with respect to S1 by the
- * inverse frame of \a f. The result is put into \a tv.
- *
- * zXform3DDRC() directly transforms the 3D vector \a v by a
- * frame \a f.
- *
- * zXform3DInvDRC() directly transforms a 3D vector \a v by the
- * inverse of \a f.
- * \return
- * zXform3D(), zXform3DInv(), zXform3DDRC() and zXform3DInvDRC()
- * return a pointer to the result.
- * \notes
- * zXform3DInv() expects that the attitude matrix of \a f is an
- * orthonormal matrix.
- */
-__EXPORT zVec3D *zXform3D(zFrame3D *f, zVec3D *v, zVec3D *tv);
-__EXPORT zVec3D *zXform3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv);
-
-#define zXform3DDRC(f,v)    zXform3D(f,v,v)
-#define zXform3DInvDRC(f,v) zXform3DInv(f,v,v)
 
 /*! \brief transform a 6D vector.
  */

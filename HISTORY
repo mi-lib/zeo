@@ -1,3 +1,5 @@
+2021. 2.23. Reimplemented zXform3D, zXform3DInv, zFrame3DInv, zFrame3DCascade and zFrame3DXform. [zeo_frame]
+2021. 2.23. Added _zXform3D, _zXform3DInv, _zFrame3DInv, _zFrame3DCascade and _zFrame3DXform as macro. [zeo_frame]
 2021. 2.21. Added transformation function in zeo_phconv. [app]
 2021. 2.20. Added zeo_stl2ztk. [app]
 2021. 2.20. Added zSTLIsBin and reimplemented zPH3DFReadSTL. [zeo_ph_stl]

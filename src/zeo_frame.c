@@ -25,45 +25,39 @@ zFrame3D *zFrame3DCreate(zFrame3D *f, zVec3D *p, zMat3D *m)
   return f;
 }
 
+/* transform a position vector by a frame. */
+zVec3D *zXform3D(zFrame3D *f, zVec3D *v, zVec3D *tv)
+{
+  _zXform3D( f, v, tv );
+  return tv;
+}
+
+/* inversely transform a position vector by a frame. */
+zVec3D *zXform3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv)
+{
+  _zXform3DInv( f, v, tv );
+  return tv;
+}
+
 /* invert a 3D frame. */
 zFrame3D *zFrame3DInv(zFrame3D *f, zFrame3D *fi)
 {
-  zMat3DT( zFrame3DAtt(f), zFrame3DAtt(fi) );
-  zMulMat3DVec3D( zFrame3DAtt(fi), zFrame3DPos(f), zFrame3DPos(fi) );
-  zVec3DRevDRC( zFrame3DPos(fi) );
+  _zFrame3DInv( f, fi );
   return fi;
 }
 
 /* cascade a 3D frame to another. */
 zFrame3D *zFrame3DCascade(zFrame3D *f1, zFrame3D *f2, zFrame3D *f)
 {
-  zMulMat3DVec3D( zFrame3DAtt(f1), zFrame3DPos(f2), zFrame3DPos(f) );
-  zVec3DAddDRC( zFrame3DPos(f), zFrame3DPos(f1) );
-  zMulMat3DMat3D( zFrame3DAtt(f1), zFrame3DAtt(f2), zFrame3DAtt(f) );
+  _zFrame3DCascade( f1, f2, f );
   return f;
 }
 
 /* transform a 3D frame to that with respect to another. */
 zFrame3D *zFrame3DXform(zFrame3D *f1, zFrame3D *f2, zFrame3D *f)
 {
-  zFrame3D tmp;
-
-  zFrame3DInv( f1, &tmp );
-  return zFrame3DCascade( &tmp, f2, f );
-}
-
-/* transform a position vector by a frame. */
-zVec3D *zXform3D(zFrame3D *f, zVec3D *v, zVec3D *tv)
-{
-  zMulMat3DVec3D( zFrame3DAtt(f), v, tv );
-  return zVec3DAddDRC( tv, zFrame3DPos(f) );
-}
-
-/* inversely transform a position vector by a frame. */
-zVec3D *zXform3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv)
-{
-  zVec3DSub( v, zFrame3DPos(f), tv );
-  return zMulMat3DTVec3DDRC( zFrame3DAtt(f), tv );
+  _zFrame3DXform( f1, f2, f );
+  return f;
 }
 
 /* vc_lin = R^T ( v_lin + v_ang x p )
