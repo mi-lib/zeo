@@ -38,7 +38,6 @@ __EXPORT void zMapDestroy(zMap *map);
 
 #define ZTK_TAG_MAP "map"
 
-__EXPORT bool zMapRegZTK(ZTK *ztk);
 __EXPORT zMap *zMapFromZTK(zMap *map, ZTK *ztk);
 __EXPORT void zMapFPrintZTK(FILE *fp, zMap *map);
 

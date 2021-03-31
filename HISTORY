@@ -1,3 +1,5 @@
+2021. 3.31. Reflect modification of ZEDA and abolished *RegZTK. [zeo_optic, zeo_texture, zeo_ph, zeo_nurbs, zeo_mshape*, zeo_map, zeo_map_terra, zeo_mapnet]
+2021. 3.31. Modified makefile to separately make and install library and applications. [makefile]
 2021. 2.23. Reimplemented zXform3D, zXform3DInv, zFrame3DInv, zFrame3DCascade and zFrame3DXform. [zeo_frame]
 2021. 2.23. Added _zXform3D, _zXform3DInv, _zFrame3DInv, _zFrame3DCascade and _zFrame3DXform as macro. [zeo_frame]
 2021. 2.21. Added transformation function in zeo_phconv. [app]

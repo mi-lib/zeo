@@ -304,8 +304,6 @@ static void _zShape3DBoxBaryInertia(void *shape, zVec3D *c, zMat3D *i){
   zBox3DInertia( shape, i ); }
 static zPH3D *_zShape3DBoxToPH(void *shape, zPH3D *ph){
   return zBox3DToPH( shape, ph ); }
-static bool _zShape3DBoxRegZTK(ZTK *ztk, char *tag){
-  return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_box ); }
 static void *_zShape3DBoxParseZTK(void *shape, ZTK *ztk){
   zBox3DInit( shape );
   return ZTKEvalKey( shape, NULL, ztk, __ztk_prp_shape_box ); }
@@ -329,7 +327,6 @@ zShape3DCom zeo_shape3d_box_com = {
   _zShape3DBoxInertia,
   _zShape3DBoxBaryInertia,
   _zShape3DBoxToPH,
-  _zShape3DBoxRegZTK,
   _zShape3DBoxParseZTK,
   _zShape3DBoxFPrintZTK,
 };

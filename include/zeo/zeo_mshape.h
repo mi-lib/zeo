@@ -76,9 +76,6 @@ __EXPORT bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, bool rim);
 
 __EXPORT zMShape3D *zMShape3DToPH(zMShape3D *ms);
 
-/*! \brief register a definition of tag-and-keys for multiple shapes to a ZTK format processor. */
-__EXPORT bool zMShape3DRegZTK(ZTK *ztk);
-
 /*! \brief read multiple 3D shapes from a ZTK format processor. */
 __EXPORT zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk);
 

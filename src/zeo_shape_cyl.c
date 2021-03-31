@@ -294,8 +294,6 @@ static void _zShape3DCylBaryInertia(void *shape, zVec3D *c, zMat3D *i){
   zCyl3DInertia( shape, i ); }
 static zPH3D *_zShape3DCylToPH(void *shape, zPH3D *ph){
   return zCyl3DToPH( shape, ph ); }
-static bool _zShape3DCylRegZTK(ZTK *ztk, char *tag){
-  return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_cyl ); }
 static void *_zShape3DCylParseZTK(void *shape, ZTK *ztk){
   zCyl3DInit( shape );
   return ZTKEvalKey( shape, NULL, ztk, __ztk_prp_shape_cyl ); }
@@ -319,7 +317,6 @@ zShape3DCom zeo_shape3d_cyl_com = {
   _zShape3DCylInertia,
   _zShape3DCylBaryInertia,
   _zShape3DCylToPH,
-  _zShape3DCylRegZTK,
   _zShape3DCylParseZTK,
   _zShape3DCylFPrintZTK,
 };

@@ -193,12 +193,6 @@ static ZTKPrp __ztk_prp_texture[] = {
   { "face", -1, _zTextureFaceFromZTK, NULL },
 };
 
-/* register a definition of tag-and-key for the texture to a ZTK format processor. */
-bool zTextureRegZTK(ZTK *ztk)
-{
-  return ZTKDefRegPrp( ztk, ZTK_TAG_TEXTURE, __ztk_prp_texture );
-}
-
 /* encode a texture from a ZTK format processor. */
 zTexture *zTextureFromZTK(zTexture *texture, ZTK *ztk)
 {

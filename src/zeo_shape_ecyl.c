@@ -338,8 +338,6 @@ static void _zShape3DECylBaryInertia(void *shape, zVec3D *c, zMat3D *i){
   zECyl3DInertia( shape, i ); }
 static zPH3D *_zShape3DECylToPH(void *shape, zPH3D *ph){
   return zECyl3DToPH( shape, ph ); }
-static bool _zShape3DECylRegZTK(ZTK *ztk, char *tag){
-  return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_ecyl ); }
 static void *_zShape3DECylParseZTK(void *shape, ZTK *ztk){
   zECyl3DInit( shape );
   return ZTKEvalKey( shape, NULL, ztk, __ztk_prp_shape_ecyl ); }
@@ -363,7 +361,6 @@ zShape3DCom zeo_shape3d_ecyl_com = {
   _zShape3DECylInertia,
   _zShape3DECylBaryInertia,
   _zShape3DECylToPH,
-  _zShape3DECylRegZTK,
   _zShape3DECylParseZTK,
   _zShape3DECylFPrintZTK,
 };

@@ -101,9 +101,6 @@ __EXPORT bool zTextureBumpAlloc(zTexture *bump, int width, int height);
 /* tag to identify a texture */
 #define ZTK_TAG_TEXTURE "texture"
 
-/* register a definition of tag-and-key for the texture to a ZTK format processor. */
-__EXPORT bool zTextureRegZTK(ZTK *ztk);
-
 /* decode a texture from a ZTK format processor. */
 __EXPORT zTexture *zTextureFromZTK(zTexture *texture, ZTK *ztk);
 

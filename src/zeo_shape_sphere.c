@@ -273,8 +273,6 @@ static void _zShape3DSphereBaryInertia(void *shape, zVec3D *c, zMat3D *i){
   zSphere3DInertia( shape, i ); }
 static zPH3D *_zShape3DSphereToPH(void *shape, zPH3D *ph){
   return zSphere3DToPH( shape, ph ); }
-static bool _zShape3DSphereRegZTK(ZTK *ztk, char *tag){
-  return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_sphere ); }
 static void *_zShape3DSphereParseZTK(void *shape, ZTK *ztk){
   zSphere3DInit( shape );
   return ZTKEvalKey( shape, NULL, ztk, __ztk_prp_shape_sphere ); }
@@ -298,7 +296,6 @@ zShape3DCom zeo_shape3d_sphere_com = {
   _zShape3DSphereInertia,
   _zShape3DSphereBaryInertia,
   _zShape3DSphereToPH,
-  _zShape3DSphereRegZTK,
   _zShape3DSphereParseZTK,
   _zShape3DSphereFPrintZTK,
 };

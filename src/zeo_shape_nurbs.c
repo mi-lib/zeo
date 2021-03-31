@@ -48,8 +48,6 @@ static void _zShape3DNURBSBaryInertia(void *shape, zVec3D *c, zMat3D *i){}
 
 static zPH3D *_zShape3DNURBSToPH(void *shape, zPH3D *ph){
   return zNURBS3DToPH( shape, ph ); }
-static bool _zShape3DNURBSRegZTK(ZTK *ztk, char *tag){
-  return zNURBS3DRegZTK( ztk, tag ); }
 static void *_zShape3DNURBSParseZTK(void *shape, ZTK *ztk){
   return zNURBS3DFromZTK( shape, ztk ); }
 static void _zShape3DNURBSFPrintZTK(FILE *fp, void *shape){
@@ -72,7 +70,6 @@ zShape3DCom zeo_shape3d_nurbs_com = {
   _zShape3DNURBSInertia,
   _zShape3DNURBSBaryInertia,
   _zShape3DNURBSToPH,
-  _zShape3DNURBSRegZTK,
   _zShape3DNURBSParseZTK,
   _zShape3DNURBSFPrintZTK,
 };

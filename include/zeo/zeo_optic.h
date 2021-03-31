@@ -74,9 +74,6 @@ __EXPORT zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, d
 /* tag to identify optical info. */
 #define ZTK_TAG_OPTIC "optic"
 
-/* register a definition of tag-and-key for the optical info to a ZTK format processor. */
-__EXPORT bool zOpticalInfoRegZTK(ZTK *ztk);
-
 /* decode an optical info from a ZTK format processor. */
 __EXPORT zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk);
 

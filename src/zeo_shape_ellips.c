@@ -341,8 +341,6 @@ static void _zShape3DEllipsBaryInertia(void *shape, zVec3D *c, zMat3D *i){
   zEllips3DInertia( shape, i ); }
 static zPH3D *_zShape3DEllipsToPH(void *shape, zPH3D *ph){
   return zEllips3DToPH( shape, ph ); }
-static bool _zShape3DEllipsRegZTK(ZTK *ztk, char *tag){
-  return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_ellips ); }
 static void *_zShape3DEllipsParseZTK(void *shape, ZTK *ztk){
   zEllips3DInit( shape );
   return ZTKEvalKey( shape, NULL, ztk, __ztk_prp_shape_ellips ); }
@@ -366,7 +364,6 @@ zShape3DCom zeo_shape3d_ellips_com = {
   _zShape3DEllipsInertia,
   _zShape3DEllipsBaryInertia,
   _zShape3DEllipsToPH,
-  _zShape3DEllipsRegZTK,
   _zShape3DEllipsParseZTK,
   _zShape3DEllipsFPrintZTK,
 };

@@ -46,8 +46,6 @@ static void _zShape3DPHBaryInertia(void *shape, zVec3D *c, zMat3D *i){
   zPH3DBaryInertia( shape, c, i ); }
 static zPH3D *_zShape3DPHToPH(void *shape, zPH3D *ph){
   return zPH3DClone( shape, ph ); }
-static bool _zShape3DPHRegZTK(ZTK *ztk, char *tag){
-  return zPH3DRegZTK( ztk, tag ); }
 static void *_zShape3DPHParseZTK(void *shape, ZTK *ztk){
   return zPH3DFromZTK( shape, ztk ); }
 static void _zShape3DPHFPrintZTK(FILE *fp, void *shape){
@@ -70,7 +68,6 @@ zShape3DCom zeo_shape3d_ph_com = {
   _zShape3DPHInertia,
   _zShape3DPHBaryInertia,
   _zShape3DPHToPH,
-  _zShape3DPHRegZTK,
   _zShape3DPHParseZTK,
   _zShape3DPHFPrintZTK,
 };

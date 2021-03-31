@@ -121,12 +121,6 @@ static ZTKPrp __ztk_prp_optic[] = {
   { "alpha", 1, _zOpticalInfoAlphaFromZTK, _zOpticalInfoAlphaFPrintZTK },
 };
 
-/* register a definition of tag-and-key for the optical info to a ZTK format processor. */
-bool zOpticalInfoRegZTK(ZTK *ztk)
-{
-  return ZTKDefRegPrp( ztk, ZTK_TAG_OPTIC, __ztk_prp_optic );
-}
-
 /* encode an optical info from a ZTK format processor. */
 zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk)
 {

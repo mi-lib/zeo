@@ -311,8 +311,6 @@ static void _zShape3DConeBaryInertia(void *shape, zVec3D *c, zMat3D *i){
   zCone3DInertia( shape, i ); }
 static zPH3D *_zShape3DConeToPH(void *shape, zPH3D *ph){
   return zCone3DToPH( shape, ph ); }
-static bool _zShape3DConeRegZTK(ZTK *ztk, char *tag){
-  return ZTKDefRegPrp( ztk, tag, __ztk_prp_shape_cone ); }
 static void *_zShape3DConeParseZTK(void *shape, ZTK *ztk){
   zCone3DInit( shape );
   return ZTKEvalKey( shape, NULL, ztk, __ztk_prp_shape_cone ); }
@@ -336,7 +334,6 @@ zShape3DCom zeo_shape3d_cone_com = {
   _zShape3DConeInertia,
   _zShape3DConeBaryInertia,
   _zShape3DConeToPH,
-  _zShape3DConeRegZTK,
   _zShape3DConeParseZTK,
   _zShape3DConeFPrintZTK,
 };

@@ -146,12 +146,6 @@ static ZTKPrp __ztk_prp_mshape[] = {
   { "shape", -1, _zMShape3DShapeFromZTK, NULL },
 };
 
-/* register a definition of tag-and-keys for multiple shapes to a ZTK format processor. */
-bool zMShape3DRegZTK(ZTK *ztk)
-{
-  return zOpticalInfoRegZTK( ztk ) && zTextureRegZTK( ztk ) && zShape3DRegZTK( ztk, ZTK_TAG_SHAPE );
-}
-
 /* read multiple 3D shapes from a ZTK format processor. */
 zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk)
 {
@@ -200,7 +194,6 @@ zMShape3D *zMShape3DReadZTK(zMShape3D *ms, char filename[])
   ZTK ztk;
 
   ZTKInit( &ztk );
-  if( !zMShape3DRegZTK( &ztk ) ) return NULL;
   ZTKParse( &ztk, filename );
   ms = zMShape3DFromZTK( ms, &ztk );
   ZTKDestroy( &ztk );

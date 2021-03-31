@@ -79,10 +79,9 @@ __EXPORT zFrame3D *zFrame3DCreate(zFrame3D *f, zVec3D *p, zMat3D *m);
 } while(0)
 __EXPORT zVec3D *zXform3D(zFrame3D *f, zVec3D *v, zVec3D *tv);
 
-#define _zFrame3DInv( f, fi ) do{\
-  _zMat3DT( zFrame3DAtt(f), zFrame3DAtt(fi) );\
-  _zMulMat3DVec3D( zFrame3DAtt(fi), zFrame3DPos(f), zFrame3DPos(fi) );\
-  zVec3DRevDRC( zFrame3DPos(fi) );\
+#define _zXform3DInv( f, v, tv ) do{\
+  _zVec3DSub( v, zFrame3DPos(f), tv );\
+  _zMulMat3DTVec3DDRC( zFrame3DAtt(f), tv );\
 } while(0)
 __EXPORT zVec3D *zXform3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv);
 
@@ -115,9 +114,10 @@ __EXPORT zVec3D *zXform3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv);
  * the other arguments. When some of them are equal, anything
  * might happen.
  */
-#define _zXform3DInv( f, v, tv ) do{\
-  _zVec3DSub( v, zFrame3DPos(f), tv );\
-  _zMulMat3DTVec3DDRC( zFrame3DAtt(f), tv );\
+#define _zFrame3DInv( f, fi ) do{\
+  _zMat3DT( zFrame3DAtt(f), zFrame3DAtt(fi) );\
+  _zMulMat3DVec3D( zFrame3DAtt(fi), zFrame3DPos(f), zFrame3DPos(fi) );\
+  zVec3DRevDRC( zFrame3DPos(fi) );\
 } while(0)
 __EXPORT zFrame3D *zFrame3DInv(zFrame3D *f, zFrame3D *fi);
 

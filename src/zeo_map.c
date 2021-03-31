@@ -56,12 +56,6 @@ static ZTKPrp __ztk_prp_map_key[] = {
   { "type", 1, _zMapTypeFromZTK, _zMapTypeFPrintZTK },
 };
 
-bool zMapRegZTK(ZTK *ztk)
-{
-  return ZTKDefRegPrp( ztk, ZTK_TAG_MAP, __ztk_prp_map_key ) &&
-         zTerraRegZTK( ztk, ZTK_TAG_MAP );
-}
-
 zMap *zMapFromZTK(zMap *map, ZTK *ztk)
 {
   zMapInit( map );

@@ -419,12 +419,6 @@ static ZTKPrp __ztk_prp_nurbs[] = {
   { "slice", 1, _zNURBS3DSliceFromZTK, _zNURBS3DSliceFPrint },
 };
 
-/* register a definition of tag-and-keys for a 3D NURBS to a ZTK format processor. */
-bool zNURBS3DRegZTK(ZTK *ztk, char *tag)
-{
-  return ZTKDefRegPrp( ztk, tag, __ztk_prp_nurbs );
-}
-
 /* read a 3D NURBS from a ZTK format processor. */
 zNURBS3D *zNURBS3DFromZTK(zNURBS3D *nurbs, ZTK *ztk)
 {

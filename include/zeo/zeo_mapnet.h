@@ -29,8 +29,6 @@ __EXPORT void zMapNetDestroy(zMapNet *mn);
 
 /*! \brief parse ZTK format */
 
-/*! \brief register a definition of tag-and-keys for map net to a ZTK format processor. */
-__EXPORT bool zMapNetRegZTK(ZTK *ztk);
 /*! \brief read multiple 3D shapes from a ZTK format processor. */
 __EXPORT zMapNet *zMapNetFromZTK(zMapNet *mn, ZTK *ztk);
 /*! \brief print information of map net out to a file in ZTK format. */

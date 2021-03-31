@@ -196,8 +196,6 @@ __EXPORT zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph);
 
 /* I/O */
 
-/*! \brief register a definition of tag-and-keys for a 3D NURBS to a ZTK format processor. */
-__EXPORT bool zNURBS3DRegZTK(ZTK *ztk, char *tag);
 /*! \brief read a 3D NURBS from a ZTK format processor. */
 __EXPORT zNURBS3D *zNURBS3DFromZTK(zNURBS3D *nurbs, ZTK *ztk);
 

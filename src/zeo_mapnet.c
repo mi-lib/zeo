@@ -45,12 +45,6 @@ static ZTKPrp __ztk_prp_mapnet[] = {
   { "map", -1, _zMapNetMapFromZTK, NULL },
 };
 
-/* register a definition of tag-and-keys for map net to a ZTK format processor. */
-bool zMapNetRegZTK(ZTK *ztk)
-{
-  return zMapRegZTK( ztk );
-}
-
 /* read multiple 3D shapes from a ZTK format processor. */
 zMapNet *zMapNetFromZTK(zMapNet *mn, ZTK *ztk)
 {
@@ -80,7 +74,6 @@ zMapNet *zMapNetReadZTK(zMapNet *mn, char filename[])
   ZTK ztk;
 
   ZTKInit( &ztk );
-  if( !zMapNetRegZTK( &ztk ) ) return NULL;
   ZTKParse( &ztk, filename );
   mn = zMapNetFromZTK( mn, &ztk );
   ZTKDestroy( &ztk );

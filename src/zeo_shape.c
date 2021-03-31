@@ -251,18 +251,6 @@ static ZTKPrp __ztk_prp_shape[] = {
   { "import", 1, _zShape3DImportFromZTK, NULL },
 };
 
-/* register a definition of tag-and-keys for a 3D shape to a ZTK format processor. */
-bool zShape3DRegZTK(ZTK *ztk, char *tag)
-{
-  ZEO_SHAPE_COM_ARRAY;
-  register int k;
-
-  if( !ZTKDefRegPrp( ztk, tag, __ztk_prp_shape ) ) return false;
-  for( k=0; _zeo_shape_com[k]; k++ )
-    if( !_zeo_shape_com[k]->_regZTK( ztk, tag ) ) return false;
-  return true;
-}
-
 /* read a 3D shape from a ZTK format processor. */
 zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoArray *oarray, zTextureArray *tarray, ZTK *ztk)
 {
@@ -299,7 +287,6 @@ zShape3D *zShape3DReadZTK(zShape3D *shape, char filename[])
   ZTK ztk;
 
   ZTKInit( &ztk );
-  if( !zShape3DRegZTK( &ztk, "" ) ) return NULL;
   ZTKParse( &ztk, filename );
   shape = zShape3DFromZTK( shape, NULL, NULL, NULL, &ztk );
   ZTKDestroy( &ztk );

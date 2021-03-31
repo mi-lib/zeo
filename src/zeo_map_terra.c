@@ -387,12 +387,6 @@ static ZTKPrp __ztk_prp_terra[] = {
   { "grid", -1, _zTerraGridFromZTK, NULL },
 };
 
-/* register a definition of tag-and-keys for a 3D polyhedron cylinder to a ZTK format processor. */
-bool zTerraRegZTK(ZTK *ztk, char *tag)
-{
-  return ZTKDefRegPrp( ztk, tag, __ztk_prp_terra );
-}
-
 /* read a terrain elevation map from a ZTK format processor. */
 zTerra *zTerraFromZTK(zTerra *terra, ZTK *ztk)
 {

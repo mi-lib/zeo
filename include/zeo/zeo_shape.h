@@ -32,7 +32,6 @@ typedef struct{
   zMat3D *(*_inertia)(void*,zMat3D*);
   void (*_baryinertia)(void*,zVec3D*,zMat3D*);
   zPH3D *(*_toph)(void*,zPH3D*);
-  bool (*_regZTK)(ZTK*,char*);
   void *(*_fromZTK)(void*,ZTK*);
   void (*_fprintZTK)(FILE*,void*);
 } zShape3DCom;
@@ -127,9 +126,6 @@ zArrayClass( zShape3DArray, zShape3D );
 
 /*! \brief scan the number of division for smooth primitives from a ZTK format processor. */
 __EXPORT int zShape3DDivFromZTK(ZTK *ztk);
-
-/*! \brief register a definition of tag-and-keys for a 3D shape to a ZTK format processor. */
-__EXPORT bool zShape3DRegZTK(ZTK *ztk, char *tag);
 
 /*! \brief scan a 3D shape from a ZTK format processor.
  *
