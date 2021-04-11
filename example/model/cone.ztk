@@ -10,7 +10,6 @@ esr: 1
 name : cone
 type : cone
 optic: magenta
-bb: OBB
 center: ( -0.2, 0.2,-0.2 )
 vert: ( -0.2, 0.0, 0.1 )
 radius: 0.08

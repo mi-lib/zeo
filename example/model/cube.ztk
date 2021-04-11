@@ -10,7 +10,6 @@ esr: 1
 name: cube
 type: polyhedron
 optic: cyan
-bb: OBB
 
 vert: 0 ( 0, 0, 0 )
 vert: 1 ( 1, 0, 0 )

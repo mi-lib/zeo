@@ -717,6 +717,19 @@ __EXPORT zMat3D *zMat3DFScan(FILE *fp, zMat3D *m);
 __EXPORT void zMat3DFPrint(FILE *fp, zMat3D *m);
 #define zMat3DPrint(m) zMat3DFPrint( stdout, (m) )
 
+/*! \brief read a rotation axis and angle from a ZTK format processor and make a 3x3 matrix.
+ *
+ * zAAFromZTK() reads a 3D vector and a scalar from a ZTK format
+ * processor \a ztk, and creates an angle-axis vector from them.
+ * \a aa is a pointer to the 3D vector in which the angle-axis
+ * vector is stored.
+ * \return
+ * zAAFromZTK() returns the result angle-axis vector.
+ * \sa
+ * zMat3DFromZTK
+ */
+__EXPORT zVec3D *zAAFromZTK(zVec3D *aa, ZTK *ztk);
+
 __END_DECLS
 
 #include <zeo/zeo_vec3d_pca.h> /* principal component analysis */

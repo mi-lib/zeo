@@ -10,7 +10,6 @@ esr: 1
 name : cylinder
 type : cylinder
 optic: cyan
-bb: OBB
 center: ( -0.2,-0.1,-0.2 )
 center: ( -0.2, 0.2, 0.2 )
 radius: 0.06

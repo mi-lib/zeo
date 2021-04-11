@@ -498,10 +498,7 @@ zVec6D *zMulMat3DTVec6D(zMat3D *m, zVec6D *v, zVec6D *mv)
 /* rotation
  * ********************************************************** */
 
-/* (static)
- * _zMat3DRotRPYSC
- * - rotate matrix along a base axis.
- */
+/* rotate matrix along a base axis. */
 static zMat3D *_zMat3DRotRPYSC(zMat3D *m, int a0, int a1, int a2, double s, double c, zMat3D *rm);
 zMat3D *_zMat3DRotRPYSC(zMat3D *m, int a0, int a1, int a2, double s, double c, zMat3D *rm)
 {
@@ -517,10 +514,7 @@ zMat3D *_zMat3DRotRPYSC(zMat3D *m, int a0, int a1, int a2, double s, double c, z
   return rm;
 }
 
-/* (static)
- * _zMat3DRotRPYSCDRC
- * - rotate matrix directly along a base axis.
- */
+/* rotate matrix directly along a base axis. */
 static zMat3D *_zMat3DRotRPYSCDRC(zMat3D *m, int a0, int a1, int a2, double s, double c);
 zMat3D *_zMat3DRotRPYSCDRC(zMat3D *m, int a0, int a1, int a2, double s, double c)
 {
@@ -541,9 +535,7 @@ zMat3D *_zMat3DRotRPYSCDRC(zMat3D *m, int a0, int a1, int a2, double s, double c
   return m;
 }
 
-/* zMat3DRotRollSC, zMat3DRotRoll, zMat3DRotRollSCDRC, zMat3DRotRollDRC
- * - rotate matrix along x-axis.
- */
+/* rotate matrix along x-axis. */
 zMat3D *zMat3DRotRollSC(zMat3D *m, double s, double c, zMat3D *rm){
   return _zMat3DRotRPYSC( m, 1, 2, 0, s, c, rm );
 }
@@ -561,9 +553,7 @@ zMat3D *zMat3DRotRollDRC(zMat3D *m, double theta){
   return zMat3DRotRollSCDRC( m, s, c );
 }
 
-/* zMat3DRotPitchSC, zMat3DRotPitch, zMat3DRotPitchSCDRC, zMat3DRotPitchDRC
- * - rotate matrix along y-axis.
- */
+/* rotate matrix along y-axis. */
 zMat3D *zMat3DRotPitchSC(zMat3D *m, double s, double c, zMat3D *rm){
   return _zMat3DRotRPYSC( m, 2, 0, 1, s, c, rm );
 }
@@ -581,9 +571,7 @@ zMat3D *zMat3DRotPitchDRC(zMat3D *m, double theta){
   return zMat3DRotPitchSCDRC( m, s, c );
 }
 
-/* zMat3DRotYawSC, zMat3DRotYaw, zMat3DRotYawSCDRC, zMat3DRotYawDRC
- * - rotate matrix along z-axis.
- */
+/* rotate matrix along z-axis. */
 zMat3D *zMat3DRotYawSC(zMat3D *m, double s, double c, zMat3D *rm){
   return _zMat3DRotRPYSC( m, 0, 1, 2, s, c, rm );
 }
@@ -601,9 +589,7 @@ zMat3D *zMat3DRotYawDRC(zMat3D *m, double theta){
   return zMat3DRotYawSCDRC( m, s, c );
 }
 
-/* zMat3DFromZYXSC, zMat3DFromZYX
- * - 3D attitude matrix expressed by z-y-x Eulerian angle.
- */
+/* create a 3D attitude matrix from z-y-x Eulerian angles. */
 zMat3D *zMat3DFromZYXSC(zMat3D *m, double sa, double ca, double se, double ce, double st, double ct)
 {
   _zMat3DCreate( m,
@@ -622,10 +608,7 @@ zMat3D *zMat3DFromZYX(zMat3D *m, double azim, double elev, double tilt)
   return zMat3DFromZYXSC( m, sa, ca, se, ce, st, ct );
 }
 
-/* zMat3DToZYX
- * - quasi 3D vector for the expression of 3D attitude
- *   as z-y-x Eulerian angle.
- */
+/* convert a 3D attitude matrix to a quasi 3D vector for z-y-x Eulerian angles. */
 zVec3D *zMat3DToZYX(zMat3D *m, zVec3D *angle)
 {
   double azim, ca, sa;
@@ -638,9 +621,7 @@ zVec3D *zMat3DToZYX(zMat3D *m, zVec3D *angle)
   return angle;
 }
 
-/* zMat3DFromZYZSC, zMat3DFromZYZ
- * - 3D attitude matrix expressed by z-y-z Eulerian angle.
- */
+/* create a 3D attitude matrix from z-y-z Eulerian angles. */
 zMat3D *zMat3DFromZYZSC(zMat3D *m, double sh, double ch, double sp, double cp, double sb, double cb)
 {
   _zMat3DCreate( m,
@@ -659,10 +640,7 @@ zMat3D *zMat3DFromZYZ(zMat3D *m, double heading, double pitch, double bank)
   return zMat3DFromZYZSC( m, sh, ch, sp, cp, sb, cb );
 }
 
-/* zMat3DToZYZ
- * - quasi 3D vector for the expression of 3D attitude
- *   as z-y-z Eulerian angle.
- */
+/* convert a 3D attitude matrix to a quasi 3D vector for z-y-z Eulerian angles. */
 zVec3D *zMat3DToZYZ(zMat3D *m, zVec3D *angle)
 {
   double heading, sh, ch;
@@ -675,9 +653,7 @@ zVec3D *zMat3DToZYZ(zMat3D *m, zVec3D *angle)
   return angle;
 }
 
-/* zMat3DFromAA
- * - 3D attitude matrix expressed by angle-axis vector.
- */
+/* create a 3D attitude matrix from an angle-axis vector. */
 zMat3D *zMat3DFromAA(zMat3D *m, zVec3D *aa)
 {
   double l, c, s, r1, r2, r3;
@@ -704,9 +680,7 @@ zMat3D *zMat3DFromAA(zMat3D *m, zVec3D *aa)
   return m;
 }
 
-/* zMat3DToAA
- * - convert 3x3 matrix to equivalent angle-axis vector.
- */
+/* convert a 3D attitude matrix to an angle-axis vector. */
 zVec3D *zMat3DToAA(zMat3D *m, zVec3D *aa)
 {
   register int i;
@@ -897,4 +871,19 @@ void zMat3DFPrint(FILE *fp, zMat3D *m)
   fprintf( fp, " %.10g, %.10g, %.10g\n", m->c.xy, m->c.yy, m->c.zy );
   fprintf( fp, " %.10g, %.10g, %.10g\n", m->c.xz, m->c.yz, m->c.zz );
   fprintf( fp, "}\n" );
+}
+
+/* read a rotation axis and angle from a ZTK format processor and make a 3x3 matrix. */
+zVec3D *zAAFromZTK(zVec3D *aa, ZTK *ztk)
+{
+  zVec3D axis;
+  double angle;
+
+  zVec3DFromZTK( &axis, ztk );
+  angle = zDeg2Rad( ZTKDouble( ztk ) );
+  if( zVec3DNormalizeDRC( &axis ) > 0 )
+    zVec3DMul( &axis, angle, aa );
+  else
+    zVec3DZero( aa );
+  return aa;
 }

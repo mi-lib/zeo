@@ -26,7 +26,6 @@ esr: 1
 name : cone
 type : cone
 optic: green
-bb: OBB
 center: ( -0.2, 0.2,-0.2 )
 vert: ( -0.2, 0.0, 0.1 )
 vert: ( 100, 200, 300 )
@@ -36,7 +35,6 @@ radius: 0.08
 name : sphere
 type : sphere
 optic: yellow
-bb: OBB
 center: ( -0.2, -0.1, 0.0 )
 center: ( 100, 200, 300 )
 radius: 0.1
@@ -46,7 +44,6 @@ radius: 100
 name : cylinder
 type : cylinder
 optic: cyan
-bb: OBB
 center: ( -0.2,-0.1,-0.2 )
 center: ( -0.2, 0.2, 0.2 )
 center: ( -0.2, 1.2, 0.2 )

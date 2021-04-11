@@ -160,6 +160,8 @@ typedef struct{
   zOpticalInfoArray *oarray;
   zTextureArray *tarray;
   bool imported;
+  zFrame3D f;
+  bool xformed;
 } _zShape3DRefPrp;
 
 static void *_zShape3DNameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
@@ -229,6 +231,29 @@ static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 
+static void *_zShape3DPosFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((_zShape3DRefPrp*)arg)->xformed = true;
+  zVec3DFromZTK( zFrame3DPos(&((_zShape3DRefPrp*)arg)->f), ztk );
+  return obj;
+}
+static void *_zShape3DAttFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((_zShape3DRefPrp*)arg)->xformed = true;
+  zMat3DFromZTK( zFrame3DAtt(&((_zShape3DRefPrp*)arg)->f), ztk );
+  return obj;
+}
+static void *_zShape3DRotFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zVec3D aa;
+  ((_zShape3DRefPrp*)arg)->xformed = true;
+  zAAFromZTK( &aa, ztk );
+  zMat3DFromAA( zFrame3DAtt(&((_zShape3DRefPrp*)arg)->f), &aa );
+  return obj;
+}
+static void *_zShape3DFrameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((_zShape3DRefPrp*)arg)->xformed = true;
+  zFrame3DFromZTK( &((_zShape3DRefPrp*)arg)->f, ztk );
+  return obj;
+}
+
 static void _zShape3DNameFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%s\n", zName((zShape3D*)obj) );
 }
@@ -249,6 +274,10 @@ static ZTKPrp __ztk_prp_shape[] = {
   { "texture", 1, _zShape3DTextureFromZTK, _zShape3DTextureFPrint },
   { "mirror", 1, _zShape3DMirrorFromZTK, NULL },
   { "import", 1, _zShape3DImportFromZTK, NULL },
+  { "pos", 1, _zShape3DPosFromZTK, NULL },
+  { "att", 1, _zShape3DAttFromZTK, NULL },
+  { "rot", -1, _zShape3DRotFromZTK, NULL },
+  { "frame", 1, _zShape3DFrameFromZTK, NULL },
 };
 
 /* read a 3D shape from a ZTK format processor. */
@@ -262,13 +291,19 @@ zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoAr
   prp.oarray = oarray;
   prp.tarray = tarray;
   prp.imported = false;
+  zFrame3DIdent( &prp.f );
+  prp.xformed = false;
   if( !ZTKEvalKey( shape, &prp, ztk, __ztk_prp_shape ) ) return NULL;
-  if( prp.imported ) return shape;
-  if( !shape->com ){
-    ZRUNERROR( ZEO_ERR_SHAPE_INVALID );
-    return NULL;
+  if( !prp.imported ){
+    if( !shape->com ){
+      ZRUNERROR( ZEO_ERR_SHAPE_INVALID );
+      return NULL;
+    }
+    if( !shape->com->_fromZTK( shape->body, ztk ) ) return NULL;
   }
-  if( !shape->com->_fromZTK( shape->body, ztk ) ) return NULL;
+  if( prp.xformed ){
+    shape->com->_xform( shape->body, &prp.f, shape->body );
+  }
   return shape;
 }
 

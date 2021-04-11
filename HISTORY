@@ -1,3 +1,6 @@
+2021. 4.10. Modified zShape3DFromZTK to accept local transformation. [zeo_shape]
+2021. 4.10. Added _zShape3DPosFromZTK, _zShape3DAttFromZTK, _zShape3DRotFromZTK and _zShape3DFrameFromZTK. [zeo_shape]
+2021. 4.10. Added zAAFromZTK. [zeo_mat3d]
 2021. 4. 2. Modified zRGBFPrint and zHSVFPrint. [zeo_color]
 2021. 3.31. Reflect modification of ZEDA and abolished *RegZTK. [zeo_optic, zeo_texture, zeo_ph, zeo_nurbs, zeo_mshape*, zeo_map, zeo_map_terra, zeo_mapnet]
 2021. 3.31. Modified makefile to separately make and install library and applications. [makefile]
