@@ -630,10 +630,16 @@ __EXPORT zMat3D *zRotMat3DInv(zMat3D *r, zMat3D *m, zMat3D *rm);
  * \a aa. The rotation axis is in parallel to \a aa and the norm of \a aa
  * is the rotation angle in radian. The direction of rotation is according
  * to right-handed screw rule. The result is put into \a rm.
+ *
+ * zMat3DRotDRC() directly rotates a 3D attitude matrix \a m by an angle-axis
+ * vector \a aa.
  * \return
  * zMat3DRot() returns a pointer \a rm.
+ * zMat3DRotDRC() returns a pointer \a m.
  */
 __EXPORT zMat3D *zMat3DRot(zMat3D *m, zVec3D *aa, zMat3D *rm);
+
+#define zMat3DRotDRC(m,aa) zMat3DRot( m, aa, m )
 
 __EXPORT zMat3D *zMat3DRotCat(zMat3D *m, zVec3D *omega, double dt, zMat3D *rm);
 

@@ -1,5 +1,23 @@
 #include <zeo/zeo.h>
 
+void vec_create_rand(zVec3D *v)
+{
+  zVec3DCreate( v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+}
+
+void vec_create_aa_rand(zVec3D *a)
+{
+  zVec3DCreate( a, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+}
+
+void mat_create_rand(zMat3D *m)
+{
+  zMat3DCreate( m,
+    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
+    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
+    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+}
+
 void assert_matstruct(void)
 {
   zMat3D m, tm;
@@ -58,10 +76,10 @@ void assert_arith(void)
   zVec3D v1, v2;
   double k;
 
-  zMat3DCreate( &m1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  zMat3DCreate( &m2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  zVec3DCreate( &v1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  zVec3DCreate( &v2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  mat_create_rand( &m1 );
+  mat_create_rand( &m2 );
+  vec_create_rand( &v1 );
+  vec_create_rand( &v2 );
   k = zRandF(-10,10);
   zMat3DAdd( &m1, &m2, &m3 );
   zAssert( zMat3DAdd,
@@ -145,10 +163,10 @@ void assert_outerprod(void)
   zVec3D v1, v2, v3, v4, v5, v6;
   zMat3D m1, m2, m3, m4;
 
-  zMat3DCreate( &m2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  zVec3DCreate( &v1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  zVec3DCreate( &v2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  zVec3DCreate( &v3, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  mat_create_rand( &m2 );
+  vec_create_rand( &v1 );
+  vec_create_rand( &v2 );
+  vec_create_rand( &v3 );
   zVec3DOuterProd2Mat3D( &v1, &m1 );
   zMulMat3DMat3D( &m1, &m2, &m3 );
   zVec3DOuterProd( &v1, &m2.v[0], &v4 );
@@ -186,7 +204,7 @@ void assert_inv(void)
 {
   zMat3D m1, m2, m3;
 
-  zMat3DCreate( &m1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  mat_create_rand( &m1 );
   zMat3DInv( &m1, &m2 );
   zMulMat3DMat3D( &m1, &m2, &m3 );
   zAssert( zMat3DInv, zIsTiny(m3.e[0][0]-1) && zIsTiny(m3.e[1][0]) && zIsTiny(m3.e[2][0])
@@ -199,15 +217,9 @@ void assert_mul(void)
   zMat3D m1, m2, m3, m4;
   zVec3D v1, v2, v3, w;
 
-  zMat3DCreate( &m1,
-    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
-    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
-    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  zMat3DCreate( &m2,
-    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
-    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
-    zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  zVec3DCreate( &v1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  mat_create_rand( &m1 );
+  mat_create_rand( &m2 );
+  vec_create_rand( &v1 );
   zMulMat3DVec3D( &m1, &v1, &v2 );
   zAssert( zMulMat3DVec3D, m1.e[0][0]*v1.e[0]+m1.e[1][0]*v1.e[1]+m1.e[2][0]*v1.e[2]==v2.e[0]
                       && m1.e[0][1]*v1.e[0]+m1.e[1][1]*v1.e[1]+m1.e[2][1]*v1.e[2]==v2.e[1]
@@ -301,11 +313,8 @@ void assert_mat_inv(void)
       zRandF(-1,1), zRandF(-1,1)*mag2, zRandF(-1,1),
       zRandF(-1,1)*mag1, zRandF(-1,1)*mag1*mag2, zRandF(-1,1)*mag1,
       zRandF(-1,1), zRandF(-1,1)*mag2, zRandF(-1,1) );
-    zMat3DCreate( &m2,
-      zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
-      zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
-      zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-    zVec3DCreate( &v1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    mat_create_rand( &m2 );
+    vec_create_rand( &v1 );
 
     zMulInvMat3DVec3D( &m, &v1, &v2 );
     zMulMat3DVec3D( &m, &v2, &v1_test );
@@ -337,7 +346,7 @@ void assert_rot(void)
 
   result_zyx = result_zyz = result_aa = true;
   for( i=0; i<testnum; i++ ){
-    zVec3DCreate( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    vec_create_aa_rand( &r );
     zMat3DFromAA( &m1, &r );
 
     zMat3DToZYX( &m1, &r );
@@ -355,7 +364,7 @@ void assert_rot(void)
   zAssert( zMat3DToAA (random test), result_aa );
 
   for( result_zyx=true, i=0; i<testnum; i++ ){
-    zVec3DCreate( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    vec_create_aa_rand( &r );
     zMat3DRotYaw( ZMAT3DIDENT, r.c.x, &m1 );
     zMat3DRotPitch( ZMAT3DIDENT, r.c.y, &m2 );
     zMat3DRotRoll( ZMAT3DIDENT, r.c.z, &m3 );
@@ -377,8 +386,8 @@ void assert_rot(void)
   zAssert( zMat3DToAA (singular non-ident), r.c.x == 0 && r.c.y == 0 && zIsTiny( r.c.z - zDeg2Rad(45) ) );
 
   for( result_aa=true, i=0; i<testnum; i++ ){
-    zVec3DCreate( &aa, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
-    zVec3DCreate( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    vec_create_aa_rand( &aa );
+    vec_create_aa_rand( &r );
     zMat3DFromAA( &m1, &r );
     zMat3DRot( &m1, &aa, &m2 );
     zVec3DRot( &m1.b.x, &aa, &m3.b.x );
@@ -389,9 +398,19 @@ void assert_rot(void)
   zAssert( zMat3DRot, result_aa );
 
   for( result_aa=true, i=0; i<testnum; i++ ){
-    zVec3DCreate( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    vec_create_aa_rand( &aa );
+    vec_create_aa_rand( &r );
     zMat3DFromAA( &m1, &r );
-    zVec3DCreate( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    zMat3DRot( &m1, &aa, &m2 );
+    zMat3DRotDRC( &m1, &aa );
+    if( !zMat3DEqual( &m1, &m2 ) ) result_aa = false;
+  }
+  zAssert( zMat3DRotDRC, result_aa );
+
+  for( result_aa=true, i=0; i<testnum; i++ ){
+    vec_create_aa_rand( &r );
+    zMat3DFromAA( &m1, &r );
+    vec_create_aa_rand( &r );
     zMat3DFromAA( &m2, &r );
     zMat3DError( &m1, &m2, &aa );
     zMat3DRot( &m2, &aa, &m3 );
