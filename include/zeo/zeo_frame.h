@@ -50,6 +50,12 @@ __EXPORT zFrame3D *zFrame3DCreate(zFrame3D *f, zVec3D *p, zMat3D *m);
 #define zFrame3DCopy(src,dest) ( *(dest) = *(src) )
 #define zFrame3DIdent(f) zFrame3DCopy( ZFRAME3DIDENT, f )
 
+/*! \brief check if two 3D frames are equal. */
+#define zFrame3DEqual(f1,f2) ( zVec3DEqual( zFrame3DPos(f1), zFrame3DPos(f2) ) && zMat3DEqual( zFrame3DAtt(f1), zFrame3DAtt(f2) ) )
+
+/*! \brief check if a 3D frame is the identity frame. */
+#define zFrame3DIsIdent(f) zFrame3DEqual( f, ZFRAME3DIDENT )
+
 /*! \brief transform coordinates of a 3D vector.
  *
  * zXform3D() transforms a 3D vector \a v by a frame \a f. The
