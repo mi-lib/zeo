@@ -37,6 +37,12 @@ bool zMat3DEqual(zMat3D *m1, zMat3D *m2)
   return _zMat3DEqual( m1, m2 );
 }
 
+/* check if a 3x3 matrix is the identity matrix. */
+bool zMat3DIsIdent(zMat3D *m)
+{
+  return _zMat3DIsIdent( m );
+}
+
 /* check if a 3D matrix is tiny. */
 bool zMat3DIsTol(zMat3D *m, double tol)
 {

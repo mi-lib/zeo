@@ -83,6 +83,10 @@ __EXPORT bool zMat3DMatch(zMat3D *m1, zMat3D *m2);
 #define _zMat3DEqual(m1,m2) ( _zVec3DEqual(&(m1)->b.x,&(m2)->b.x) && _zVec3DEqual(&(m1)->b.y,&(m2)->b.y) && _zVec3DEqual(&(m1)->b.z,&(m2)->b.z) )
 __EXPORT bool zMat3DEqual(zMat3D *m1, zMat3D *m2);
 
+/*! \brief check if a 3x3 matrix is the identity matrix. */
+#define _zMat3DIsIdent(m) _zMat3DEqual( m, ZMAT3DIDENT )
+__EXPORT bool zMat3DIsIdent(zMat3D *m);
+
 /*! \brief check if a 3D matrix is tiny.
  *
  * zMat3DIsTol() checks if the absolute values of all

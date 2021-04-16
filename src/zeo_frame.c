@@ -25,6 +25,18 @@ zFrame3D *zFrame3DCreate(zFrame3D *f, zVec3D *p, zMat3D *m)
   return f;
 }
 
+/* check if two 3D frames are equal. */
+bool zFrame3DEqual(zFrame3D *f1, zFrame3D *f2)
+{
+  return _zFrame3DEqual( f1, f2 );
+}
+
+/* check if a 3D frame is the identity frame. */
+bool zFrame3DIsIdent(zFrame3D *f)
+{
+  return _zFrame3DIsIdent( f );
+}
+
 /* transform a position vector by a frame. */
 zVec3D *zXform3D(zFrame3D *f, zVec3D *v, zVec3D *tv)
 {

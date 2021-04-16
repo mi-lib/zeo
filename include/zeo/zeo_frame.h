@@ -51,10 +51,12 @@ __EXPORT zFrame3D *zFrame3DCreate(zFrame3D *f, zVec3D *p, zMat3D *m);
 #define zFrame3DIdent(f) zFrame3DCopy( ZFRAME3DIDENT, f )
 
 /*! \brief check if two 3D frames are equal. */
-#define zFrame3DEqual(f1,f2) ( zVec3DEqual( zFrame3DPos(f1), zFrame3DPos(f2) ) && zMat3DEqual( zFrame3DAtt(f1), zFrame3DAtt(f2) ) )
+#define _zFrame3DEqual(f1,f2) ( _zVec3DEqual( zFrame3DPos(f1), zFrame3DPos(f2) ) && _zMat3DEqual( zFrame3DAtt(f1), zFrame3DAtt(f2) ) )
+__EXPORT bool zFrame3DEqual(zFrame3D *f1, zFrame3D *f2);
 
 /*! \brief check if a 3D frame is the identity frame. */
-#define zFrame3DIsIdent(f) zFrame3DEqual( f, ZFRAME3DIDENT )
+#define _zFrame3DIsIdent(f) _zFrame3DEqual( f, ZFRAME3DIDENT )
+__EXPORT bool zFrame3DIsIdent(zFrame3D *f);
 
 /*! \brief transform coordinates of a 3D vector.
  *
