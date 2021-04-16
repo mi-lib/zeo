@@ -1,3 +1,5 @@
+2021. 4.16. Modified zPH3DFReadSTL_Bin to show the progress of reading to stderr. [zeo_ph_stl]
+2021. 4.16. Modified _zSTLVertListReg to speed up find-and-insertion of a vertex. [zeo_ph_stl]
 2021. 4.16. Added zMat3DIsIdent. [zeo_mat3d]
 2021. 4.16. Added zFrame3DEqual and zFrame3DIsIdent. [zeo_frame]
 2021. 4.16. Added zMat3DRotDRC. [zeo_mat3d]
