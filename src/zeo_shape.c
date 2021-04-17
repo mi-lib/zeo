@@ -245,7 +245,7 @@ static void *_zShape3DRotFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zVec3D aa;
   ((_zShape3DRefPrp*)arg)->xformed = true;
   zAAFromZTK( &aa, ztk );
-  zMat3DFromAA( zFrame3DAtt(&((_zShape3DRefPrp*)arg)->f), &aa );
+  zMat3DRotDRC( zFrame3DAtt(&((_zShape3DRefPrp*)arg)->f), &aa );
   return obj;
 }
 static void *_zShape3DFrameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
