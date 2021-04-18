@@ -583,5 +583,6 @@ __END_DECLS
 
 #include <zeo/zeo_vec3d_list.h>  /* 3D vector list */
 #include <zeo/zeo_vec3d_tree.h>  /* 3D vector tree */
+#include <zeo/zeo_vec3d_list_tree.h>
 
 #endif /* __ZEO_VEC3D_H__ */

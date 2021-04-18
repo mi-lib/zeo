@@ -1,3 +1,6 @@
+2021. 4.18. Added zVec3DTree2List and zVec3DList2Tree. [zeo_vec3d_list, zeo_vec3d_tree, zeo_vec3d_list_tree, zeo_vec3d]
+2021. 4.18. Modified specification of zVec3DListNN. [zeo_vec3d_list]
+2021. 4.18. Renamed zVecTree3D to zVec3DTree. [zeo_vec3d_tree]
 2021. 4.17. Modified _zShape3DRotFromZTK. [zeo_shape]
 2021. 4.16. Modified zPH3DFReadSTL_Bin to show the progress of reading to stderr. [zeo_ph_stl]
 2021. 4.16. Modified _zSTLVertListReg to speed up find-and-insertion of a vertex. [zeo_ph_stl]

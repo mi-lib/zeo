@@ -1,7 +1,7 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_vec_list - list of 3D vectors.
+ * zeo_vec3d_list - list of 3D vectors.
  */
 
 #ifndef __ZEO_VEC3D_LIST_H__
@@ -209,7 +209,7 @@ __EXPORT void zVec3DAddrListDataFPrint(FILE *fp, zVec3DAddrList *list);
 
 /*! \brief a naive algorithm to find the nearest neighbor in a list of 3D vectors.
  */
-__EXPORT zVec3D *zVec3DListNN(zVec3DList *list, zVec3D *v, double *dmin);
+__EXPORT double zVec3DListNN(zVec3DList *list, zVec3D *v, zVec3D **nn);
 
 /*! \brief support map of a set of points with respect to a direction vector. */
 __EXPORT zVec3D *zVec3DSupportMap(zVec3D p[], int n, zVec3D *v);

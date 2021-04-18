@@ -171,20 +171,23 @@ void zVec3DAddrListDataFPrint(FILE *fp, zVec3DAddrList *list)
  * ********************************************************** */
 
 /* a naive algorithm to find the nearest neighbor in a list of 3D vectors. */
-zVec3D *zVec3DListNN(zVec3DList *list, zVec3D *v, double *dmin)
+double zVec3DListNN(zVec3DList *list, zVec3D *v, zVec3D **nn)
 {
   zVec3DListCell *cell;
-  double d;
-  zVec3D *nn = NULL;
+  double d, dmin;
+  zVec3D nn_tmp, *nnp_tmp;
 
-  *dmin = HUGE_VAL;
+  if( !nn ){
+    nnp_tmp = &nn_tmp;
+    nn = &nnp_tmp;
+  }
+  dmin = HUGE_VAL;
   zListForEach( list, cell )
-    if( ( d = zVec3DSqrDist( cell->data, v ) ) < *dmin ){
-      *dmin = d;
-      nn = cell->data;
+    if( ( d = zVec3DSqrDist( cell->data, v ) ) < dmin ){
+      dmin = d;
+      *nn = cell->data;
     }
-  *dmin = sqrt( *dmin );
-  return nn;
+  return sqrt( dmin );
 }
 
 /* support map of a set of points with respect to a direction vector. */
@@ -228,4 +231,16 @@ zVec3D *zVec3DListSupportMap(zVec3DList *pl, zVec3D *v)
     }
   }
   return sp;
+}
+
+/* convert a 3D vector list to a 3D vector tree. */
+zVec3DTree *zVec3DList2Tree(zVec3DList *list, zVec3DTree *tree)
+{
+  zVec3DListCell *vc;
+
+  zVec3DTreeInit( tree );
+  zListForEach( list, vc ){
+    if( !zVec3DTreeAdd( tree, vc->data ) ) return NULL;
+  }
+  return tree;
 }

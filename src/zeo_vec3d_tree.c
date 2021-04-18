@@ -7,7 +7,7 @@
 #include <zeo/zeo_vec3d.h>
 
 /* initialize a 3D vector tree. */
-zVecTree3D *zVecTree3DInit(zVecTree3D *tree)
+zVec3DTree *zVec3DTreeInit(zVec3DTree *tree)
 {
   tree->split = -1; /* invalid split axis */
   tree->s[0] = tree->s[1] = NULL;
@@ -17,24 +17,24 @@ zVecTree3D *zVecTree3DInit(zVecTree3D *tree)
 }
 
 /* destroy a 3D vector tree. */
-void zVecTree3DDestroy(zVecTree3D *tree)
+void zVec3DTreeDestroy(zVec3DTree *tree)
 {
   if( tree->s[0] ){
-    zVecTree3DDestroy( tree->s[0] );
+    zVec3DTreeDestroy( tree->s[0] );
     free( tree->s[0] );
   }
   if( tree->s[1] ){
-    zVecTree3DDestroy( tree->s[1] );
+    zVec3DTreeDestroy( tree->s[1] );
     free( tree->s[1] );
   }
 }
 
 /* create a leaf of a 3D vector tree. */
-static zVecTree3D *_zVecTree3DCreateLeaf(zAxis split, zVec3D *v)
+static zVec3DTree *_zVec3DTreeCreateLeaf(zAxis split, zVec3D *v)
 {
-  zVecTree3D *leaf;
+  zVec3DTree *leaf;
 
-  if( !( leaf = zAlloc( zVecTree3D, 1 ) ) ){
+  if( !( leaf = zAlloc( zVec3DTree, 1 ) ) ){
     ZALLOCERROR();
     return NULL;
   }
@@ -45,20 +45,20 @@ static zVecTree3D *_zVecTree3DCreateLeaf(zAxis split, zVec3D *v)
 }
 
 /* return an index of a node which contains a given 3D vector. */
-static int _zVecTree3DChooseBranch(zVecTree3D *node, zVec3D *v)
+static int _zVec3DTreeChooseBranch(zVec3DTree *node, zVec3D *v)
 {
   return v->e[node->split] >= node->v.e[node->split] ? 0 : 1;
 }
 
 /* add a new 3D vector to a tree. */
-static zVecTree3D *_zVecTree3DAdd(zVecTree3D *node, zVec3D *v)
+static zVec3DTree *_zVec3DTreeAdd(zVec3DTree *node, zVec3D *v)
 {
   int b;
-  zVecTree3D *leaf;
+  zVec3DTree *leaf;
 
-  if( node->s[( b = _zVecTree3DChooseBranch( node, v ) )] )
-    return _zVecTree3DAdd( node->s[b], v );
-  if( !( leaf = _zVecTree3DCreateLeaf( ( node->split + 1 ) % 3, v ) ) )
+  if( node->s[( b = _zVec3DTreeChooseBranch( node, v ) )] )
+    return _zVec3DTreeAdd( node->s[b], v );
+  if( !( leaf = _zVec3DTreeCreateLeaf( ( node->split + 1 ) % 3, v ) ) )
     return NULL;
   node->s[b] = leaf;
   zVec3DCopy( &node->vmin, &leaf->vmin );
@@ -71,30 +71,30 @@ static zVecTree3D *_zVecTree3DAdd(zVecTree3D *node, zVec3D *v)
 }
 
 /* add a new 3D vector to a tree. */
-zVecTree3D *zVecTree3DAdd(zVecTree3D *tree, zVec3D *v)
+zVec3DTree *zVec3DTreeAdd(zVec3DTree *tree, zVec3D *v)
 {
   if( tree->split == -1 ){
     tree->split = zX;
     zVec3DCopy( v, &tree->v );
     return tree;
   }
-  return _zVecTree3DAdd( tree, v );
+  return _zVec3DTreeAdd( tree, v );
 }
 
 /* find the partition in which a 3D vector is contained (for debug). */
-zVecTree3D *zVecTree3DPart(zVecTree3D *node, zVec3D *v)
+zVec3DTree *zVec3DTreePart(zVec3DTree *node, zVec3D *v)
 {
   int b;
 
-  if( node->s[( b = _zVecTree3DChooseBranch( node, v ) )] )
-    return zVecTree3DPart( node->s[b], v );
+  if( node->s[( b = _zVec3DTreeChooseBranch( node, v ) )] )
+    return zVec3DTreePart( node->s[b], v );
   return node;
 }
 
 /* nearest neighbor search */
 
 /* check if a sphere is overlapped with a bounding box of a node. */
-static bool _zVecTree3DIsOverlap(zVecTree3D *node, zVec3D *c, double r)
+static bool _zVec3DTreeIsOverlap(zVec3DTree *node, zVec3D *c, double r)
 {
   register int i;
   double d, vd;
@@ -110,7 +110,7 @@ static bool _zVecTree3DIsOverlap(zVecTree3D *node, zVec3D *c, double r)
 }
 
 /* test if a node is the current nearest neighbor to a 3D vector. */
-static void _zVecTree3DNNTest(zVecTree3D *node, zVec3D *v, zVecTree3D **nn, double *dmin)
+static void _zVec3DTreeNNTest(zVec3DTree *node, zVec3D *v, zVec3DTree **nn, double *dmin)
 {
   double d;
 
@@ -121,36 +121,55 @@ static void _zVecTree3DNNTest(zVecTree3D *node, zVec3D *v, zVecTree3D **nn, doub
 }
 
 /* an internal recursive call of the nearest neighbor search; check the opposite side of branch. */
-static double _zVecTree3DNNOpp(zVecTree3D *node, zVec3D *v, zVecTree3D **nn, double *dmin)
+static double _zVec3DTreeNNOpp(zVec3DTree *node, zVec3D *v, zVec3DTree **nn, double *dmin)
 {
-  _zVecTree3DNNTest( node, v, nn, dmin );
-  if( node->s[0] && _zVecTree3DIsOverlap( node->s[0], v, *dmin ) )
-    _zVecTree3DNNOpp( node->s[0], v, nn, dmin );
-  if( node->s[1] && _zVecTree3DIsOverlap( node->s[1], v, *dmin ) )
-    _zVecTree3DNNOpp( node->s[1], v, nn, dmin );
+  _zVec3DTreeNNTest( node, v, nn, dmin );
+  if( node->s[0] && _zVec3DTreeIsOverlap( node->s[0], v, *dmin ) )
+    _zVec3DTreeNNOpp( node->s[0], v, nn, dmin );
+  if( node->s[1] && _zVec3DTreeIsOverlap( node->s[1], v, *dmin ) )
+    _zVec3DTreeNNOpp( node->s[1], v, nn, dmin );
   return *dmin;
 }
 
 /* an internal recursive call of the nearest neighbor search. */
-static double _zVecTree3DNN(zVecTree3D *node, zVec3D *v, zVecTree3D **nn, double *dmin)
+static double _zVec3DTreeNN(zVec3DTree *node, zVec3D *v, zVec3DTree **nn, double *dmin)
 {
   int b;
-  zVecTree3D *ob; /* opposite branch */
+  zVec3DTree *ob; /* opposite branch */
 
-  if( node->s[( b = _zVecTree3DChooseBranch( node, v ) )] )
-    _zVecTree3DNN( node->s[b], v, nn, dmin );
-  _zVecTree3DNNTest( node, v, nn, dmin );
+  if( node->s[( b = _zVec3DTreeChooseBranch( node, v ) )] )
+    _zVec3DTreeNN( node->s[b], v, nn, dmin );
+  _zVec3DTreeNNTest( node, v, nn, dmin );
   ob = node->s[1-b];
-  if( ob && _zVecTree3DIsOverlap( ob, v, *dmin ) )
-    _zVecTree3DNNOpp( ob, v, nn, dmin );
+  if( ob && _zVec3DTreeIsOverlap( ob, v, *dmin ) )
+    _zVec3DTreeNNOpp( ob, v, nn, dmin );
   return *dmin;
 }
 
 /* find the nearest neighbor to a 3D vector in a tree. */
-double zVecTree3DNN(zVecTree3D *tree, zVec3D *v, zVecTree3D **nn)
+double zVec3DTreeNN(zVec3DTree *tree, zVec3D *v, zVec3DTree **nn)
 {
   double dmin = HUGE_VAL;
 
   *nn = NULL;
-  return _zVecTree3DNN( tree, v, nn, &dmin );
+  return _zVec3DTreeNN( tree, v, nn, &dmin );
+}
+
+/* recursively convert a 3D vector node to a 3D vector list. */
+static bool _zVec3DTreeNode2List(zVec3DTree *tree, zVec3DList *list)
+{
+  if( !zVec3DListInsert( list, &tree->v ) ) return false;
+  if( tree->s[0] )
+    if( !_zVec3DTreeNode2List( tree->s[0], list ) ) return false;
+  if( tree->s[1] )
+    if( !_zVec3DTreeNode2List( tree->s[1], list ) ) return false;
+  return true;
+}
+
+/* convert a 3D vector tree to a 3D vector list. */
+zVec3DList *zVec3DTree2List(zVec3DTree *tree, zVec3DList *list)
+{
+  zListInit( list );
+  if( !_zVec3DTreeNode2List( tree, list ) ) return NULL;
+  return list;
 }
