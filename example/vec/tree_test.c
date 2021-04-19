@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
   zVec3DCreate( &tree.vmax, 10, 10, 10 );
   for( i=0; i<NS; i++ ){
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-    zVec3DTreeAddID( &tree, &v, i );
+    zVec3DTreeAdd( &tree, &v );
   }
   zVec3DTreeFPrint( stdout, &tree );
   zVec3DTreeDestroy( &tree );

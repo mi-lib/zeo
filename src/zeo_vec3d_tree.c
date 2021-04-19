@@ -91,7 +91,7 @@ zVec3DTree *zVec3DTreeAddID(zVec3DTree *tree, zVec3D *v, int id)
 /* add a new 3D vector to a tree. */
 zVec3DTree *zVec3DTreeAdd(zVec3DTree *tree, zVec3D *v)
 {
-  return zVec3DTreeAddID( tree, v, -1 );
+  return zVec3DTreeAddID( tree, v, tree->size );
 }
 
 /* find the partition in which a 3D vector is contained (for debug). */
@@ -191,11 +191,10 @@ zVec3DList *zVec3DTree2List(zVec3DTree *tree, zVec3DList *list)
 zVec3DTree *zVec3DList2Tree(zVec3DList *list, zVec3DTree *tree)
 {
   zVec3DListCell *vc;
-  register int i = 0;
 
   zVec3DTreeInit( tree );
   zListForEach( list, vc ){
-    if( !zVec3DTreeAddID( tree, vc->data, i++ ) ) return NULL;
+    if( !zVec3DTreeAdd( tree, vc->data ) ) return NULL;
   }
   return tree;
 }
