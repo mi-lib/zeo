@@ -19,7 +19,7 @@ void mshape2vlist(zMShape3D *ms, zVec3DAddrList *vl)
   for( i=0; i<zMShape3DShapeNum(ms); i++ ){
     s = zMShape3DShape(ms,i);
     for( j=0; j<zShape3DVertNum(s); j++ )
-      if( !zVec3DAddrListInsert( vl, zShape3DVert(s,j) ) ){
+      if( !zVec3DAddrListAdd( vl, zShape3DVert(s,j) ) ){
         ZALLOCERROR();
         exit( EXIT_FAILURE );
       }
@@ -46,7 +46,7 @@ void read_vlist(char filename[], zVec3DAddrList *vl)
     if( !zFToken( fp, buf, BUFSIZ ) ) break;
     z = atof( buf );
     zVec3DCreate( &v, x, y, z );
-    zVec3DAddrListInsert( vl, &v );
+    zVec3DAddrListAdd( vl, &v );
   } while( !feof( fp ) );
   fclose( fp );
 }

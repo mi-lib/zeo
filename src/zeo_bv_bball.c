@@ -158,7 +158,7 @@ int zBBall(zSphere3D *bb, zVec3D p[], int num, zVec3D **vp)
 {
   zVec3DAddrList pl;
 
-  if( !zVec3DAddrListFromArray( &pl, p, num ) ) return 0;
+  if( !zVec3DAddrListCreate( &pl, p, num ) ) return 0;
   num = zBBallPL( bb, &pl, vp );
   zVec3DAddrListDestroy( &pl );
   return num;

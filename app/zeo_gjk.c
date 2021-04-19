@@ -28,7 +28,7 @@ void gjk_read_vset(char filename[], zVec3DList *list)
     if( !zFToken( fp, buf, BUFSIZ ) ) break;
     z = atof( buf );
     zVec3DCreate( &v, x, y, z );
-    zVec3DListInsert( list, &v );
+    zVec3DListAdd( list, &v );
   } while( !feof( fp ) );
   fclose( fp );
 }

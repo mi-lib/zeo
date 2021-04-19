@@ -21,8 +21,8 @@ zVec3DListCell *zVec3DListFind(zVec3DList *list, zVec3D *v)
   return NULL;
 }
 
-/* insert a 3D vector to a vector list. */
-zVec3DListCell *zVec3DListInsert(zVec3DList *list, zVec3D *v)
+/* add a 3D vector to a vector list. */
+zVec3DListCell *zVec3DListAdd(zVec3DList *list, zVec3D *v)
 {
   zVec3DListCell *cell;
 
@@ -40,6 +40,7 @@ zVec3DListCell *zVec3DListInsert(zVec3DList *list, zVec3D *v)
   return cell;
 }
 
+#if 0
 /* register a 3D vector to a list. */
 zVec3DListCell *zVec3DListReg(zVec3DList *list, zVec3D *v)
 {
@@ -49,13 +50,16 @@ zVec3DListCell *zVec3DListReg(zVec3DList *list, zVec3D *v)
     return zVec3DListInsert( list, v );
   return cp;
 }
+#endif
 
-/* create a list of vectors from an array of 3D vectors. */
-zVec3DList *zVec3DListFromArray(zVec3DList *list, zVec3D v[], int num)
+/* converts an array of 3D vectors to a list. */
+zVec3DList *zVec3DArray2List(zVec3DArray *array, zVec3DList *list)
 {
+  register int i;
+
   zListInit( list );
-  while( num-- > 0 )
-    if( !zVec3DListInsert( list, v++ ) ){
+  for( i=0; i<zArraySize(array); i++ )
+    if( !zVec3DListAdd( list, zArrayElemNC(array,i) ) ){
       ZALLOCERROR();
       break;
     }
@@ -101,8 +105,8 @@ void zVec3DListDataFPrint(FILE *fp, zVec3DList *list)
  * list of pointers to 3D vectors
  * ********************************************************** */
 
-/* insert a pointer to a 3D vector into a list of pointers to 3D vectors. */
-zVec3DAddr *zVec3DAddrListInsert(zVec3DAddrList *list, zVec3D *v)
+/* add a pointer to a 3D vector into a list of pointers to 3D vectors. */
+zVec3DAddr *zVec3DAddrListAdd(zVec3DAddrList *list, zVec3D *v)
 {
   zVec3DAddr *cell;
 
@@ -116,11 +120,11 @@ zVec3DAddr *zVec3DAddrListInsert(zVec3DAddrList *list, zVec3D *v)
 }
 
 /* create a list of pointers to 3D vectors from an array of 3D vectors. */
-zVec3DAddrList *zVec3DAddrListFromArray(zVec3DAddrList *list, zVec3D v[], int num)
+zVec3DAddrList *zVec3DAddrListCreate(zVec3DAddrList *list, zVec3D v[], int num)
 {
   zListInit( list );
   while( num-- > 0 )
-    if( !zVec3DAddrListInsert( list, v++ ) ){
+    if( !zVec3DAddrListAdd( list, v++ ) ){
       ZALLOCERROR();
       break;
     }
@@ -231,16 +235,4 @@ zVec3D *zVec3DListSupportMap(zVec3DList *pl, zVec3D *v)
     }
   }
   return sp;
-}
-
-/* convert a 3D vector list to a 3D vector tree. */
-zVec3DTree *zVec3DList2Tree(zVec3DList *list, zVec3DTree *tree)
-{
-  zVec3DListCell *vc;
-
-  zVec3DTreeInit( tree );
-  zListForEach( list, vc ){
-    if( !zVec3DTreeAdd( tree, vc->data ) ) return NULL;
-  }
-  return tree;
 }

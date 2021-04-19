@@ -71,7 +71,7 @@ zLoop3D *zCH2DPL(zLoop3D *ch, zVec3DList *pl)
   }
   zVec3DListQuickSort( pl, __z_ch2d_pl_cmp, s );
   /* upper bound */
-  for( p0=zListTail(pl); p0!=zListHead(pl); zLoop3DInsert( ch, p0->data ), p0=p1 )
+  for( p0=zListTail(pl); p0!=zListHead(pl); zLoop3DAdd( ch, p0->data ), p0=p1 )
     for( t_max=-zPI_2, p1=p=zListCellNext(p0); p!=zListRoot(pl); p=zListCellNext(p) )
       if( !zVec3DIsTiny( zVec3DSub( p->data, p0->data, &d ) ) &&
           ( t = atan2( zVec3DInnerProd(&d,&s[1]), zVec3DInnerProd(&d,&s[0]) ) ) >= t_max ){
@@ -82,7 +82,7 @@ zLoop3D *zCH2DPL(zLoop3D *ch, zVec3DList *pl)
   zVec3DRevDRC( &s[0] );
   zVec3DRevDRC( &s[1] );
   /* lower bound */
-  for( ; p0!=zListTail(pl); zLoop3DInsert( ch, p0->data ), p0=p1 )
+  for( ; p0!=zListTail(pl); zLoop3DAdd( ch, p0->data ), p0=p1 )
     for( t_max=-zPI_2, p1=p=zListCellPrev(p0); p!=zListRoot(pl); p=zListCellPrev(p) )
       if( !zVec3DIsTiny( zVec3DSub( p->data, p0->data, &d ) ) &&
           ( t = atan2( zVec3DInnerProd(&d,&s[1]), zVec3DInnerProd(&d,&s[0]) ) ) >= t_max ){
@@ -156,7 +156,7 @@ zLoop3D *zCH2D(zLoop3D *ch, zVec3D p[], int num)
   zQuickSort( p, num, sizeof(zVec3D), __z_ch2d_cmp, s );
 
   /* upper bound */
-  for( i=0; i<num-1; zLoop3DInsert( ch, &p[i] ), i=j )
+  for( i=0; i<num-1; zLoop3DAdd( ch, &p[i] ), i=j )
     for( t_max=-zPI_2, j=k=i+1; k<num; k++ )
       if( !zVec3DIsTiny( zVec3DSub( &p[k], &p[i], &d ) ) &&
           ( t = atan2( zVec3DInnerProd(&d,&s[1]), zVec3DInnerProd(&d,&s[0]) ) ) >= t_max ){
@@ -167,7 +167,7 @@ zLoop3D *zCH2D(zLoop3D *ch, zVec3D p[], int num)
   zVec3DRevDRC( &s[0] );
   zVec3DRevDRC( &s[1] );
   /* lower bound */
-  for( ; i>0; zLoop3DInsert( ch, &p[i] ), i=j )
+  for( ; i>0; zLoop3DAdd( ch, &p[i] ), i=j )
     for( t_max=-zPI_2, j=k=i-1; k>=0; k-- )
       if( !zVec3DIsTiny( zVec3DSub( &p[k], &p[i], &d ) ) &&
           ( t = atan2( zVec3DInnerProd(&d,&s[1]), zVec3DInnerProd(&d,&s[0]) ) ) >= t_max ){

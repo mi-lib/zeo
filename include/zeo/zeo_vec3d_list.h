@@ -28,15 +28,16 @@ zListClass( zVec3DList, zVec3DListCell, zVec3D* );
  */
 __EXPORT zVec3DListCell *zVec3DListFind(zVec3DList *list, zVec3D *v);
 
-/*! \brief insert a 3D vector to a vector list.
+/*! \brief add a 3D vector to a vector list.
  *
- * zVec3DListInsert() inserts a 3D vector \a v at the head of a list of
- * vectors \a list. Each inserted cell will have a copy of \a v.
+ * zVec3DListAdd() adds a copy of a 3D vector \a v at the head of
+ * a list of vectors \a list.
  * \return
- * zVec3DListInsert() returns a pointer to the newly inserted cell.
+ * zVec3DListAdd() returns a pointer to the newly added cell.
  */
-__EXPORT zVec3DListCell *zVec3DListInsert(zVec3DList *list, zVec3D *v);
+__EXPORT zVec3DListCell *zVec3DListAdd(zVec3DList *list, zVec3D *v);
 
+#if 0
 /*! \brief register a 3D vector to a list.
  *
  * zVec3DListReg() register a 3D vector \a v to a list \a list.
@@ -46,16 +47,17 @@ __EXPORT zVec3DListCell *zVec3DListInsert(zVec3DList *list, zVec3D *v);
  * adds it to \a list, and returns the pointer to it.
  */
 __EXPORT zVec3DListCell *zVec3DListReg(zVec3DList *list, zVec3D *v);
+#endif
 
-/*! \brief create a list of vectors from an array of 3D vectors.
+/*! \brief converts an array of 3D vectors to a list.
  *
- * zVec3DListFromArray() creates a list of vectors \a list from an array
- * of 3D vectors \a varr. \a num is the number of vectors in \a varr.
- * Each cell inserted will have a copy of each vector of \a varr.
+ * zVec3DArray2List() converts an array of 3D vectors \a array to a list
+ * of 3D vectors \a list. Vectors of \a array are copied to cells of
+ * \a list.
  * \return
- * zVec3DListFromArray() returns a pointer \a list.
+ * zVec3DArray2List() returns a pointer \a list.
  */
-__EXPORT zVec3DList *zVec3DListFromArray(zVec3DList *list, zVec3D varr[], int num);
+__EXPORT zVec3DList *zVec3DArray2List(zVec3DArray *array, zVec3DList *list);
 
 /*! \brief destroy a 3D vector list.
  *
@@ -119,26 +121,24 @@ __EXPORT void zVec3DListDataFPrint(FILE *fp, zVec3DList *list);
 typedef zVec3DList zVec3DAddrList;
 typedef zVec3DListCell zVec3DAddr;
 
-/*! \brief insert a pointer to a 3D vector into a list of vectors.
+/*! \brief add a pointer to a 3D vector into a list of vectors.
  *
- * zVec3DAddrListInsert() inserts a pointer to a 3D vector \a v at the
- * head of a list of vectors \a list. Each cell inserted will have a
- * pointer to \a v.
+ * zVec3DAddrListAdd() adds a pointer to a 3D vector \a v at the
+ * head of a list of vectors \a list.
  * \return
- * zVec3DAddrListInsert() returns a pointer to the newly inserted cell.
+ * zVec3DAddrListAdd() returns a pointer to the newly added cell.
  */
-__EXPORT zVec3DAddr *zVec3DAddrListInsert(zVec3DAddrList *list, zVec3D *v);
+__EXPORT zVec3DAddr *zVec3DAddrListAdd(zVec3DAddrList *list, zVec3D *v);
 
-/*! \brief create a list of vectors from an array of 3D vectors.
+/*! \brief create a list of pointers to 3D vectors from an array.
  *
- * zVec3DAddrListFromArray() creates a list of vectors \a list from an
- * array of 3D vectors \a varr. \a num is the number of vectors in
- * \a varr. Each cell inserted will have a pointer to each vector of
- * \a varr.
+ * zVec3DAddrListCreate() creates a list of pointers to 3D vectors
+ * \a list, each cell of which points an element of an array of 3D
+ * vectors \a varr. \a num is the number of vectors in \a varr.
  * \return
- * zVec3DAddrListFromArray() returns a pointer \a list.
+ * zVec3DAddrListCreate() returns a pointer \a list.
  */
-__EXPORT zVec3DAddrList *zVec3DAddrListFromArray(zVec3DAddrList *list, zVec3D varr[], int num);
+__EXPORT zVec3DAddrList *zVec3DAddrListCreate(zVec3DAddrList *list, zVec3D varr[], int num);
 
 /*! \brief clone a list of vectors.
  *

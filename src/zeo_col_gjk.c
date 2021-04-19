@@ -281,7 +281,7 @@ static bool _zGJKPDInitAddPoint(zVec3D p1[], int n1, zVec3D p2[], int n2, zGJKSl
       ( tri != NULL && zIsTiny( zTri3DPointDist( tri, &ns.w ) ) ) )
     return false;
   _zGJKSlotListInsert( slist, &ns );
-  zVec3DListInsert( vlist, &ns.w );
+  zVec3DListAdd( vlist, &ns.w );
   return true;
 }
 
@@ -299,7 +299,7 @@ static bool _zGJKPDInit(zVec3D p1[], int n1, zVec3D p2[], int n2, zGJKSimplex *s
   for( i=0; i<s->n; i++ )
     _zGJKSlotListInsert( slist, &s->slot[i] );
   zListForEach( slist, sc )
-    zVec3DListInsert( vlist, &sc->data.w );
+    zVec3DListAdd( vlist, &sc->data.w );
 
   if( s->n == 2 ){
     zEdge3DCreate( &edge, &s->slot[0].w, &s->slot[1].w );
@@ -359,7 +359,7 @@ static bool _zGJKPD(zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c1, zVec3D
     zListForEach( &slist, sc )
       if( zVec3DEqual( &ns.w, &sc->data.w ) ) goto BREAK;
     _zGJKSlotListInsert( &slist, &ns );
-    zVec3DListInsert( &vlist, &ns.w );
+    zVec3DListAdd( &vlist, &ns.w );
     zPH3DDestroy( &ph );
   }
  BREAK:

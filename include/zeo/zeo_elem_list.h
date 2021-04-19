@@ -19,9 +19,9 @@ __BEGIN_DECLS
 typedef zVec3DAddr zLoop3DCell;
 typedef zVec3DAddrList zLoop3D;
 
-#define zLoop3DInsert(l,c)       zVec3DAddrListInsert( l, c )
-#define zLoop3DFromArray(l,v,n)  zVec3DAddrListFromArray( l, v, n )
-#define zLoop3DDestroy(l)        zVec3DAddrListDestroy( l )
+#define zLoop3DAdd(l,c)      zVec3DAddrListAdd( l, c )
+#define zLoop3DCreate(l,v,n) zVec3DAddrListCreate( l, v, n )
+#define zLoop3DDestroy(l)    zVec3DAddrListDestroy( l )
 
 /* ********************************************************** */
 /* CLASS: zTri3DList
@@ -30,15 +30,14 @@ typedef zVec3DAddrList zLoop3D;
 
 zListClass( zTri3DList, zTri3DListCell, zTri3D );
 
-/*! insert a 3D triangle to a list of 3D triangles.
+/*! add a 3D triangle to a list of 3D triangles.
  *
- * zTri3DListInsert() inserts a new 3D triangle list cell \a t at
- * the head of a triangle list \a list.
- * Each cell inserted will have a copy of \a t.
+ * zTri3DListAdd() adds a copy of a 3D triangle \a t at the head
+ * of a list of 3D triangles \a list.
  * \return
- * zTri3DListInsert() returns a pointer to the newly inserted cell.
+ * zTri3DListAdd() returns a pointer to the newly added cell.
  */
-__EXPORT zTri3DListCell *zTri3DListInsert(zTri3DList *list, zTri3D *t);
+__EXPORT zTri3DListCell *zTri3DListAdd(zTri3DList *list, zTri3D *t);
 
 /*! destroy a list of 3D triangles.
  *

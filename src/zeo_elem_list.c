@@ -136,7 +136,7 @@ int zTriangulate(zVec3D v[], int n, zTri3DList *tlist)
 {
   zLoop3D loop;
 
-  if( !zLoop3DFromArray( &loop, v, n ) ){
+  if( !zLoop3DCreate( &loop, v, n ) ){
     ZALLOCERROR();
     return 0;
   }

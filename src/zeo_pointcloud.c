@@ -430,7 +430,7 @@ bool _zPCDDataASCIIFRead(FILE *fp, _zPCD *pcd, zVec3DList *pc)
     }
     if( !zVec3DIsNan( &v ) ){
       zXform3D( &pcd->viewpoint, &v, &tf );
-      zVec3DListInsert( pc, &tf );
+      zVec3DListAdd( pc, &tf );
     }
   }
   return true;
@@ -449,15 +449,13 @@ bool _zPCDDataBINFRead(FILE *fp, _zPCD *pcd, zVec3DList *pc)
     }
     if( !zVec3DIsNan( &v ) ){
       zXform3D( &pcd->viewpoint, &v, &tf );
-      zVec3DListInsert( pc, &tf );
+      zVec3DListAdd( pc, &tf );
     }
   }
   return true;
 }
 
-/* zVec3DListPCDFRead
- * - read point cloud from a stream of PCD file.
- */
+/* read point cloud from a stream of PCD file. */
 bool zVec3DListPCDFRead(FILE *fp, zVec3DList *pc)
 {
   _zPCD pcd;

@@ -158,7 +158,7 @@ double zVec3DTreeNN(zVec3DTree *tree, zVec3D *v, zVec3DTree **nn)
 /* recursively convert a 3D vector node to a 3D vector list. */
 static bool _zVec3DTreeNode2List(zVec3DTree *tree, zVec3DList *list)
 {
-  if( !zVec3DListInsert( list, &tree->v ) ) return false;
+  if( !zVec3DListAdd( list, &tree->v ) ) return false;
   if( tree->s[0] )
     if( !_zVec3DTreeNode2List( tree->s[0], list ) ) return false;
   if( tree->s[1] )
@@ -172,4 +172,16 @@ zVec3DList *zVec3DTree2List(zVec3DTree *tree, zVec3DList *list)
   zListInit( list );
   if( !_zVec3DTreeNode2List( tree, list ) ) return NULL;
   return list;
+}
+
+/* convert a 3D vector list to a 3D vector tree. */
+zVec3DTree *zVec3DList2Tree(zVec3DList *list, zVec3DTree *tree)
+{
+  zVec3DListCell *vc;
+
+  zVec3DTreeInit( tree );
+  zListForEach( list, vc ){
+    if( !zVec3DTreeAdd( tree, vc->data ) ) return NULL;
+  }
+  return tree;
 }
