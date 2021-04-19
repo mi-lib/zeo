@@ -76,6 +76,12 @@ __EXPORT zVec3DTree *zVec3DTreePart(zVec3DTree *tree, zVec3D *v);
  */
 __EXPORT double zVec3DTreeNN(zVec3DTree *tree, zVec3D *v, zVec3DTree **nn);
 
+/*! \brief convert an array of 3D vectors to a 3D vector tree. */
+__EXPORT zVec3DTree *zVec3DArray2Tree(zVec3DArray *array, zVec3DTree *tree);
+
+/*! \brief convert a 3D vector tree to an array of 3D vectors. */
+__EXPORT zVec3DArray *zVec3DTree2Array(zVec3DTree *tree, zVec3DArray *array);
+
 /*! \brief convert a 3D vector tree to a 3D vector list. */
 __EXPORT zVec3DList *zVec3DTree2List(zVec3DTree *tree, zVec3DList *list);
 

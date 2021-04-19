@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
   zListInit( &list );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-    zVec3DListInsert( &list, &v );
+    zVec3DListAdd( &list, &v );
   }
   zVec3DList2Tree( &list, &tree );
   zVec3DTree2List( &tree, &list2 );

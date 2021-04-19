@@ -168,6 +168,38 @@ double zVec3DTreeNN(zVec3DTree *tree, zVec3D *v, zVec3DTree **nn)
   return _zVec3DTreeNN( tree, v, nn, &dmin );
 }
 
+/* convert an array of 3D vectors to a 3D vector tree. */
+zVec3DTree *zVec3DArray2Tree(zVec3DArray *array, zVec3DTree *tree)
+{
+  register int i;
+
+  zVec3DTreeInit( tree );
+  for( i=0; i<zArraySize(array); i++ )
+    if( !zVec3DTreeAdd( tree, zArrayElem(array,i) ) ) return NULL;
+  return tree;
+}
+
+/* recursively convert a 3D vector node to a cell of an array of 3D vectors. */
+static zVec3DArray *_zVec3DTree2Array(zVec3DTree *tree, zVec3DArray *array)
+{
+  bool ret0, ret1;
+
+  ret0 = ret1 = true;
+  if( !zArraySetElem( array, tree->id, &tree->v ) ) return NULL;
+  if( tree->s[0] )
+    ret0 = _zVec3DTree2Array( tree->s[0], array ) ? true : false;
+  if( tree->s[1] )
+    ret1 = _zVec3DTree2Array( tree->s[1], array ) ? true : false;
+  return ret0 && ret1 ? array : NULL;
+}
+
+/* convert a 3D vector tree to an array of 3D vectors. */
+zVec3DArray *zVec3DTree2Array(zVec3DTree *tree, zVec3DArray *array)
+{
+  zArrayAlloc( array, zVec3D, tree->size );
+  return _zVec3DTree2Array( tree, array );
+}
+
 /* recursively convert a 3D vector node to a 3D vector list. */
 static bool _zVec3DTreeNode2List(zVec3DTree *tree, zVec3DList *list)
 {
