@@ -18,7 +18,7 @@ bool assert_nn_one(void)
 
   for( i=0; i<NS; i++ ){
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-    zVec3DListInsert( &list, &v );
+    zVec3DListAdd( &list, &v );
     zVec3DTreeAdd( &tree, &v );
   }
   zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );

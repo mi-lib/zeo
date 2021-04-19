@@ -1,3 +1,6 @@
+2021. 4.19. Added zVec3DTreeAddID and modified zVec3DTreeAdd. [zeo_vec3d_tree]
+2021. 4.19. Added size and id members to zVec3DTree. [zeo_vec3d_tree]
+2021. 4.19. Added zVec3DTreeFPrint. [zeo_vec3d_tree]
 2021. 4.19. Renamed zTri3DListInsert to zTri3DListAdd. [zeo_elem_list]
 2021. 4.19. Renamed zLoop3DFromArray to zLoop3DCreate. [zeo_elem_list]
 2021. 4.19. Renamed zVec3DAddrListFromArray to zVec3DAddrListCreate. [zeo_vec3d_list, app]

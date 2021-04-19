@@ -24,6 +24,8 @@ __BEGIN_DECLS
  * The tree is freed by calling zVec3DTreeDestroy().
  *//* ******************************************************* */
 typedef struct _zVec3DTree{
+  int size;      /*!< size of tree */
+  int id;        /*!< identifier of a tree node */
   zAxis split;   /*!< split axis index */
   zVec3D v;      /*!< spliting vertex */
   zVec3D vmin;   /*!< minimum corner of bounding box */
@@ -48,10 +50,13 @@ __EXPORT void zVec3DTreeDestroy(zVec3DTree *tree);
 
 /*! \brief add a new 3D vector to a tree.
  *
- * zVec3DTreeAdd() adds a newly given 3D vector \a v to a tree
- * \a tree.
+ * zVec3DTreeAdd() adds a 3D vector \a v to a tree \a tree.
+ * \a v is copied to a node of \a tree.
  */
 __EXPORT zVec3DTree *zVec3DTreeAdd(zVec3DTree *tree, zVec3D *v);
+
+/*! \brief add a new 3D vector to a tree with an identifier. */
+__EXPORT zVec3DTree *zVec3DTreeAddID(zVec3DTree *tree, zVec3D *v, int id);
 
 /*! \brief find the partition in which a 3D vector is contained.
  *
@@ -76,6 +81,9 @@ __EXPORT zVec3DList *zVec3DTree2List(zVec3DTree *tree, zVec3DList *list);
 
 /*! \brief convert a 3D vector list to a 3D vector tree. */
 __EXPORT zVec3DTree *zVec3DList2Tree(zVec3DList *list, zVec3DTree *tree);
+
+/*! \brief print out a 3D vector tree (for debug). */
+__EXPORT void zVec3DTreeFPrint(FILE *fp, zVec3DTree *tree);
 
 __END_DECLS
 

@@ -9,6 +9,8 @@
 /* initialize a 3D vector tree. */
 zVec3DTree *zVec3DTreeInit(zVec3DTree *tree)
 {
+  tree->size = 0;
+  tree->id = -1; /* invalid identifier */
   tree->split = -1; /* invalid split axis */
   tree->s[0] = tree->s[1] = NULL;
   zVec3DCreate( &tree->vmin,-HUGE_VAL,-HUGE_VAL,-HUGE_VAL );
@@ -30,7 +32,7 @@ void zVec3DTreeDestroy(zVec3DTree *tree)
 }
 
 /* create a leaf of a 3D vector tree. */
-static zVec3DTree *_zVec3DTreeCreateLeaf(zAxis split, zVec3D *v)
+static zVec3DTree *_zVec3DTreeCreateLeaf(zAxis split, zVec3D *v, int id)
 {
   zVec3DTree *leaf;
 
@@ -38,6 +40,8 @@ static zVec3DTree *_zVec3DTreeCreateLeaf(zAxis split, zVec3D *v)
     ZALLOCERROR();
     return NULL;
   }
+  leaf->size = 1;
+  leaf->id = id;
   leaf->split = split;
   zVec3DCopy( v, &leaf->v );
   leaf->s[0] = leaf->s[1] = NULL;
@@ -51,14 +55,15 @@ static int _zVec3DTreeChooseBranch(zVec3DTree *node, zVec3D *v)
 }
 
 /* add a new 3D vector to a tree. */
-static zVec3DTree *_zVec3DTreeAdd(zVec3DTree *node, zVec3D *v)
+static zVec3DTree *_zVec3DTreeAdd(zVec3DTree *node, zVec3D *v, int id)
 {
   int b;
   zVec3DTree *leaf;
 
+  node->size++;
   if( node->s[( b = _zVec3DTreeChooseBranch( node, v ) )] )
-    return _zVec3DTreeAdd( node->s[b], v );
-  if( !( leaf = _zVec3DTreeCreateLeaf( ( node->split + 1 ) % 3, v ) ) )
+    return _zVec3DTreeAdd( node->s[b], v, id );
+  if( !( leaf = _zVec3DTreeCreateLeaf( ( node->split + 1 ) % 3, v, id ) ) )
     return NULL;
   node->s[b] = leaf;
   zVec3DCopy( &node->vmin, &leaf->vmin );
@@ -70,15 +75,23 @@ static zVec3DTree *_zVec3DTreeAdd(zVec3DTree *node, zVec3D *v)
   return leaf;
 }
 
-/* add a new 3D vector to a tree. */
-zVec3DTree *zVec3DTreeAdd(zVec3DTree *tree, zVec3D *v)
+/* add a new 3D vector to a tree with an identifier. */
+zVec3DTree *zVec3DTreeAddID(zVec3DTree *tree, zVec3D *v, int id)
 {
   if( tree->split == -1 ){
+    tree->size = 1;
+    tree->id = id;
     tree->split = zX;
     zVec3DCopy( v, &tree->v );
     return tree;
   }
-  return _zVec3DTreeAdd( tree, v );
+  return _zVec3DTreeAdd( tree, v, id );
+}
+
+/* add a new 3D vector to a tree. */
+zVec3DTree *zVec3DTreeAdd(zVec3DTree *tree, zVec3D *v)
+{
+  return zVec3DTreeAddID( tree, v, -1 );
 }
 
 /* find the partition in which a 3D vector is contained (for debug). */
@@ -178,10 +191,27 @@ zVec3DList *zVec3DTree2List(zVec3DTree *tree, zVec3DList *list)
 zVec3DTree *zVec3DList2Tree(zVec3DList *list, zVec3DTree *tree)
 {
   zVec3DListCell *vc;
+  register int i = 0;
 
   zVec3DTreeInit( tree );
   zListForEach( list, vc ){
-    if( !zVec3DTreeAdd( tree, vc->data ) ) return NULL;
+    if( !zVec3DTreeAddID( tree, vc->data, i++ ) ) return NULL;
   }
   return tree;
+}
+
+/* print out a 3D vector tree (for debug). */
+static void _zVec3DTreeFPrint(FILE *fp, zVec3DTree *tree, int level)
+{
+  zFIndent( fp, level );
+  fprintf( fp, "(%d) #%d ", tree->size, tree->id );
+  zVec3DFPrint( fp, &tree->v );
+  if( tree->s[0] )
+    _zVec3DTreeFPrint( fp, tree->s[0], level+2 );
+  if( tree->s[1] )
+    _zVec3DTreeFPrint( fp, tree->s[1], level+2 );
+}
+void zVec3DTreeFPrint(FILE *fp, zVec3DTree *tree)
+{
+  _zVec3DTreeFPrint( fp, tree, 0 );
 }
