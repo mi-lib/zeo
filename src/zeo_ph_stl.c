@@ -260,7 +260,7 @@ zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[])
   if( fread( &nf, sizeof(uint32_t), 1, fp ) < 1 ) ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
   if( nf <= 0 ) return NULL;
   for( i=0; i<nf; i++ ){
-    eprintf( "\r%d/%d", i, nf );
+    eprintf( "\r%d/%d", i+1, nf );
     _zPH3DFReadSTL_BinVec( fp, &normal );
     _zPH3DFReadSTL_BinVec( fp, &v[0] );
     _zPH3DFReadSTL_BinVec( fp, &v[1] );
