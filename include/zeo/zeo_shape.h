@@ -113,6 +113,10 @@ __EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
 __EXPORT zShape3D *zShape3DFReadSTL(FILE *fp, zShape3D *shape);
 /*! \brief read a shape from a PLY file. */
 __EXPORT zShape3D *zShape3DFReadPLY(FILE *fp, zShape3D *shape);
+#ifdef __ZEO_USE_DAE
+/*! \brief read a shape from a DAE file. */
+__EXPORT zShape3D *zShape3DFReadDAE(zShape3D *shape, char *filename);
+#endif /* __ZEO_USE_DAE */
 
 /*! \struct zShape3DArray
  * \brief array class of 3D shapes.

@@ -305,30 +305,30 @@ static bool _zGJKPDInit(zVec3D p1[], int n1, zVec3D p2[], int n2, zGJKSimplex *s
     zEdge3DCreate( &edge, &s->slot[0].w, &s->slot[1].w );
     zVec3DOrthoSpace( zEdge3DVec(&edge), &v1, &v2 );
     if( !_zGJKPDInitAddPoint( p1, n1, p2, n2, slist, vlist, &v1, &edge, NULL ) )
-      goto FALSE;
+      goto FAILURE;
     if( !_zGJKPDInitAddPoint( p1, n1, p2, n2, slist, vlist, &v2, &edge, NULL ) )
-      goto FALSE;
+      goto FAILURE;
     if( !_zGJKPDInitAddPoint( p1, n1, p2, n2, slist, vlist, zVec3DRevDRC( &v1 ), &edge, NULL ) )
-      goto FALSE;
+      goto FAILURE;
     if( !_zGJKPDInitAddPoint( p1, n1, p2, n2, slist, vlist, zVec3DRevDRC( &v2 ), &edge, NULL ) )
-      goto FALSE;
+      goto FAILURE;
     zCH3DPL( &ph, vlist );
     if( !zPH3DPointIsInside( &ph, ZVEC3DZERO, false ) ){
       zPH3DDestroy( &ph );
-      goto FALSE;
+      goto FAILURE;
     }
     zPH3DDestroy(&ph);
   } else
   if( s->n == 3 ){
     zTri3DCreate( &tri, &s->slot[0].w, &s->slot[1].w, &s->slot[2].w );
     if( !_zGJKPDInitAddPoint( p1, n1, p2, n2, slist, vlist, zTri3DNorm(&tri), NULL, &tri ) )
-      goto FALSE;
+      goto FAILURE;
     if( !_zGJKPDInitAddPoint( p1, n1, p2, n2, slist, vlist, zVec3DRev( zTri3DNorm(&tri), &v1 ), NULL, &tri ) )
-      goto FALSE;
+      goto FAILURE;
     }
     return true;
 
- FALSE:
+ FAILURE:
   zVec3DListDestroy( vlist );
   zListDestroy( zGJKSlotListCell, slist );
   return false;

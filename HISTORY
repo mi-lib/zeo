@@ -1,3 +1,7 @@
+2021. 4.29. Modified _zShape3DImportFromZTK to read a DAE file as an extention. [zeo_errmsg, zeo_shape]
+2021. 4.29. Added zShape3DFReadDAE and modified _zShape3DImportFromZTK. [zeo_shape]
+2021. 4.29. Changed FALSE label to FAILURE due to the use of libxml2. [zeo_col_gjk]
+2021. 4.29. Added zeo_ph_dae as an extention. [zeo_ph, zeo_ph_dae]
 2021. 4.29. Modified app/makefile. [app]
 2021. 4.29. Reflected new specification of zeda-config-gen. [app]
 2021. 4.27. Modified zPH3DFReadSTL_Bin. [zeo_ph_stl]

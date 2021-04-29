@@ -51,6 +51,24 @@
 #define ZEO_ERR_PLY_UNKNOWNPRP  "unknown property: %s"
 #define ZEO_ERR_PLY_UNSUPPORTED "unsupported description"
 
+#define ZEO_ERR_DAE_UNSUPPORTED "DAE file not supported"
+#define ZEO_ERR_DAE_ACCESSOR_UNASSIGNED "accessor unassigned to source %s"
+#define ZEO_ERR_DAE_ARRSIZMIS   "inconsistent size of array %d/%d"      
+#define ZEO_ERR_DAE_STRIDEMIS   "inconsistent stride %d/%d"
+#define ZEO_ERR_DAE_URI_EMPTY   "empty URI specified"
+#define ZEO_ERR_DAE_URI_INVALID "invalid URI: %s"
+#define ZEO_ERR_DAE_UNKNOWN_SRC "unknown source %s"
+#define ZEO_ERR_DAE_INVALID_SRC "invalid type of source"
+#define ZEO_ERR_DAE_VERT_UNASSIGNED "vertices unassigned"
+#define ZEO_ERR_DAE_IDENTMIS    "identifiers mismatch %s / %s"
+#define ZEO_ERR_DAE_EMPTYMAT    "empty matrix specified"
+#define ZEO_ERR_DAE_SCENE_UNDEF "visual_scene undefined"
+#define ZEO_ERR_DAE_NOT_COLLADA "This is not a COLLADA file"
+#define ZEO_ERR_DAE_NO_GEOMETRY "no geometries contained"
+#define ZEO_ERR_DAE_PRIM_UNSUPPORTED "non-triangle face, not supported"
+#define ZEO_ERR_DAE_PRIM_INVALID "invalid DAE file %s"
+#define ZEO_ERR_DAE_FAILCONV     "failed to create a polyhedron from a DAE file %s"
+
 #define ZEO_ERR_NURBS_INVDIM "invalid dimension specified for NURBS, or lack of control points"
 #define ZEO_ERR_NURBS_SIZMIS      "size mismatch of NURBS surfaces"
 #define ZEO_ERR_NURBS_KNOTALREADY "knot already allocated"
@@ -63,7 +81,6 @@
 #define ZEO_ERR_SHAPE_INV    "invalid description for the shape"
 #define ZEO_ERR_SHAPE_UNNAME "unnamed shape exists"
 #define ZEO_ERR_SHAPE_UNDEF  "undefined shape %s referred"
-#define ZEO_ERR_SHAPE_INVBB  "unknown bounding box type specified"
 
 #define ZEO_ERR_EMPTYSET     "empty set assigned"
 

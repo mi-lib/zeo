@@ -146,6 +146,18 @@ zShape3D *zShape3DFReadPLY(FILE *fp, zShape3D *shape)
   return shape;
 }
 
+#ifdef __ZEO_USE_DAE
+/* read a shape from a DAE file. */
+zShape3D *zShape3DFReadDAE(zShape3D *shape, char *filename)
+{
+  if( shape->com && shape->com != &zeo_shape3d_ph_com )
+    ZRUNWARN( ZEO_WARN_SHAPE_OVRRDN_PH );
+  zShape3DQueryAssign( shape, "polyhedron" );
+  if( !zPH3DFReadDAE( zShape3DPH(shape), filename ) ) return NULL;
+  return shape;
+}
+#endif /* __ZEO_USE_DAE */
+
 /* parse ZTK format */
 
 /* read the number of division for smooth primitives from a ZTK format processor. */
@@ -208,26 +220,35 @@ static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   char *suffix;
   FILE *fp;
 
-  if( !( fp = fopen( ZTKVal(ztk), "r" ) ) ){
-    ZOPENERROR( ZTKVal(ztk) );
-    return NULL;
-  }
   suffix = zGetSuffix( ZTKVal(ztk) );
-  if( strcmp( suffix, "stl" ) == 0 || strcmp( suffix, "STL" ) == 0 ){
-    if( !zShape3DFReadSTL( fp, obj ) ) obj = NULL;
-  } else
-  if( strcmp( suffix, "ply" ) == 0 || strcmp( suffix, "PLY" ) == 0 ){
-    if( !zShape3DFReadPLY( fp, obj ) ) obj = NULL;
-  } else{
-    ZRUNERROR( ZEO_WARN_SHAPE_UNKNOWNFORMAT, suffix );
+  if( strcmp( suffix, "dae" ) == 0 || strcmp( suffix, "DAE" ) == 0 ){
+#ifdef __ZEO_USE_DAE
+    if( !zShape3DFReadDAE( obj, ZTKVal(ztk) ) ) obj = NULL;
+#else
+    ZRUNWARN( ZEO_ERR_DAE_UNSUPPORTED );
     obj = NULL;
+#endif
+  } else{
+    if( !( fp = fopen( ZTKVal(ztk), "r" ) ) ){
+      ZOPENERROR( ZTKVal(ztk) );
+      return NULL;
+    }
+    if( strcmp( suffix, "stl" ) == 0 || strcmp( suffix, "STL" ) == 0 ){
+      if( !zShape3DFReadSTL( fp, obj ) ) obj = NULL;
+    } else
+    if( strcmp( suffix, "ply" ) == 0 || strcmp( suffix, "PLY" ) == 0 ){
+      if( !zShape3DFReadPLY( fp, obj ) ) obj = NULL;
+    } else{
+      ZRUNERROR( ZEO_WARN_SHAPE_UNKNOWNFORMAT, suffix );
+      obj = NULL;
+    }
+    fclose( fp );
   }
   if( obj ){
     ((_zShape3DRefPrp*)arg)->imported = true;
     if( ZTKValNext(ztk) )
       zPH3DScale( zShape3DPH((zShape3D*)obj), atof(ZTKVal(ztk)) );
   }
-  fclose( fp );
   return obj;
 }
 

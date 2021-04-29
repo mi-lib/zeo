@@ -197,4 +197,8 @@ __END_DECLS
 #include <zeo/zeo_ph_stl.h>
 #include <zeo/zeo_ph_ply.h>
 
+#ifdef __ZEO_USE_DAE
+#include <zeo/zeo_ph_dae.h>
+#endif /* __ZEO_USE_DAE */
+
 #endif /* __ZEO_PH_H__ */

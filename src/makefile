@@ -2,7 +2,7 @@ include ../config
 
 ROOTDIR=..
 LIBDIR=$(ROOTDIR)/lib
-INCLUDE=-I$(ROOTDIR)/include -I$(PREFIX)/include
+INCLUDE=-I$(ROOTDIR)/include `zm-config -I`
 
 CC=gcc
 CFLAGS=-ansi -Wall -fPIC -O3 $(INCLUDE) -funroll-loops
@@ -30,6 +30,11 @@ OBJ=zeo_color.o zeo_optic.o\
 	zeo_map.o zeo_map_terra.o\
 	zeo_mapnet.o
 DLIB=libzeo.so
+
+ifeq ($(CONFIG_USE_DAE),y)
+	OBJ += zeo_ph_dae.o
+	CFLAGS += -D __ZEDA_USE_LIBXML -D__ZEO_USE_DAE
+endif
 
 TARGET=$(DLIB)
 
