@@ -10,6 +10,10 @@ CFLAGS=-ansi -Wall -O3 $(INCLUDE) $(LIB) $(DEF)
 
 LINK=-lzeo `zm-config -l`
 
+ifeq ($(CONFIG_USE_DAE),y)
+	DEF += -D__ZEO_USE_DAE
+endif
+
 COMPILE=$(CC) $(CFLAGS) -o $@ $< $(LINK)
 
 INSTALL=install -m 755

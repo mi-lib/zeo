@@ -1,3 +1,4 @@
+2021. 4.29. Modified app/makefile to define __ZEO_USE_DAE. [app]
 2021. 4.29. Modified _zShape3DImportFromZTK to read a DAE file as an extention. [zeo_errmsg, zeo_shape]
 2021. 4.29. Added zShape3DFReadDAE and modified _zShape3DImportFromZTK. [zeo_shape]
 2021. 4.29. Changed FALSE label to FAILURE due to the use of libxml2. [zeo_col_gjk]
