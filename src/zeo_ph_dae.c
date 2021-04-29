@@ -327,7 +327,7 @@ static bool _zDAEGetXform(xmlNode *node, zFrame3D *f)
   double p, q, r, s;
 
   if( !( str = zXMLGetContent( node ) ) ){
-    ZRUNERROR( ZEO_ERR_DAE_EMPTYMAT );
+    ZRUNERROR( ZEO_ERR_DAE_EMPTYNODE );
     return false;
   }
   sscanf( str, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
@@ -340,6 +340,58 @@ static bool _zDAEGetXform(xmlNode *node, zFrame3D *f)
   return true;
 }
 
+static bool _zDAEGetTrans(xmlNode *node, zFrame3D *f)
+{
+  char *str;
+  zVec3D p;
+
+  if( !( str = zXMLGetContent( node ) ) ){
+    ZRUNERROR( ZEO_ERR_DAE_EMPTYNODE );
+    return false;
+  }
+  sscanf( str, "%lf %lf %lf", &p.c.x, &p.c.y, &p.c.z );
+  zVec3DAddDRC( zFrame3DPos(f), &p );
+  return true;
+}
+
+static bool _zDAEGetRot(xmlNode *node, zFrame3D *f)
+{
+  char *str;
+  double q;
+  zVec3D aa;
+
+  if( !( str = zXMLGetContent( node ) ) ){
+    ZRUNERROR( ZEO_ERR_DAE_EMPTYNODE );
+    return false;
+  }
+  sscanf( str, "%lf %lf %lf %lf", &aa.c.x, &aa.c.y, &aa.c.z, &q );
+  zVec3DMulDRC( &aa, zDeg2Rad(q) );
+  zMat3DRotDRC( zFrame3DAtt(f), &aa );
+  return true;
+}
+
+static bool _zDAEGetScale(xmlNode *node, zFrame3D *f)
+{
+  char *str;
+  double rx, ry, rz;
+
+  if( !( str = zXMLGetContent( node ) ) ){
+    ZRUNERROR( ZEO_ERR_DAE_EMPTYNODE );
+    return false;
+  }
+  sscanf( str, "%lf %lf %lf", &rx, &ry, &rz );
+  zFrame3DAtt(f)->c.xx *= rx;
+  zFrame3DAtt(f)->c.yx *= rx;
+  zFrame3DAtt(f)->c.zx *= rx;
+  zFrame3DAtt(f)->c.xy *= ry;
+  zFrame3DAtt(f)->c.yy *= ry;
+  zFrame3DAtt(f)->c.zy *= ry;
+  zFrame3DAtt(f)->c.xz *= rz;
+  zFrame3DAtt(f)->c.yz *= rz;
+  zFrame3DAtt(f)->c.zz *= rz;
+  return true;
+}
+
 static bool _zDAEEvalXform(xmlNode *node, zDAEMeshList *mlist)
 {
   xmlNode *np;
@@ -349,7 +401,10 @@ static bool _zDAEEvalXform(xmlNode *node, zDAEMeshList *mlist)
 
   zFrame3DIdent( &f );
   zXMLForEachNode( node, np ){
-    zXMLCheckElementAndExec( np, "matrix", _zDAEGetXform( np, &f ) ) else
+    zXMLCheckElementAndExec( np, "matrix",    _zDAEGetXform( np, &f ) ) else
+    zXMLCheckElementAndExec( np, "translate", _zDAEGetTrans( np, &f ) ) else
+    zXMLCheckElementAndExec( np, "rotate",    _zDAEGetRot( np, &f ) ) else
+    zXMLCheckElementAndExec( np, "scale",     _zDAEGetScale( np, &f ) ) else
     if( zXMLCheckElement( np, "instance_geometry" ) ){
       if( !( id = _zDAEEvalURI( np, "url" ) ) ) return false;
       mesh = _zDAEMeshListFind( mlist, id );
@@ -447,8 +502,8 @@ static zPH3D *_zDAEMeshList2PH3D(zPH3D *ph, zDAEMeshList *mlist)
             sp = zSTokenSkim( sp, buf, BUFSIZ );
             if( k == pc->data.voffset ) vi[j] = atoi( buf );
           }
-          zTri3DCreate( zPH3DFace(ph,fo+i), zPH3DVert(ph,vo+vi[0]), zPH3DVert(ph,vo+vi[1]), zPH3DVert(ph,vo+vi[2]) );
         }
+        zTri3DCreate( zPH3DFace(ph,fo+i), zPH3DVert(ph,vo+vi[0]), zPH3DVert(ph,vo+vi[1]), zPH3DVert(ph,vo+vi[2]) );
       }
       fo += pc->data.pcount;
     }

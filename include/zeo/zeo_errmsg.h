@@ -61,7 +61,7 @@
 #define ZEO_ERR_DAE_INVALID_SRC "invalid type of source"
 #define ZEO_ERR_DAE_VERT_UNASSIGNED "vertices unassigned"
 #define ZEO_ERR_DAE_IDENTMIS    "identifiers mismatch %s / %s"
-#define ZEO_ERR_DAE_EMPTYMAT    "empty matrix specified"
+#define ZEO_ERR_DAE_EMPTYNODE   "empty node specified"
 #define ZEO_ERR_DAE_SCENE_UNDEF "visual_scene undefined"
 #define ZEO_ERR_DAE_NOT_COLLADA "This is not a COLLADA file"
 #define ZEO_ERR_DAE_NO_GEOMETRY "no geometries contained"
