@@ -122,14 +122,20 @@ zShape3D *zShape3DToPH(zShape3D *shape)
   return NULL;
 }
 
+/* assign methods for polyhedron class to a shape. */
+static void _zShape3DAssignPH(zShape3D *shape)
+{
+  if( shape->com && shape->com != &zeo_shape3d_ph_com )
+    ZRUNWARN( ZEO_WARN_SHAPE_OVRRDN_PH );
+  zShape3DQueryAssign( shape, "polyhedron" );
+}
+
 /* read a shape from a STL file. */
 zShape3D *zShape3DFReadSTL(FILE *fp, zShape3D *shape)
 {
   char buf[BUFSIZ];
 
-  if( shape->com && shape->com != &zeo_shape3d_ph_com )
-    ZRUNWARN( ZEO_WARN_SHAPE_OVRRDN_PH );
-  zShape3DQueryAssign( shape, "polyhedron" );
+  _zShape3DAssignPH( shape );
   if( !zPH3DFReadSTL( fp, zShape3DPH(shape), buf, BUFSIZ ) ) return NULL;
   if( !zNamePtr(shape) )
     if( !zNameSet( shape, buf ) ) return NULL;
@@ -139,10 +145,16 @@ zShape3D *zShape3DFReadSTL(FILE *fp, zShape3D *shape)
 /* read a shape from a PLY file. */
 zShape3D *zShape3DFReadPLY(FILE *fp, zShape3D *shape)
 {
-  if( shape->com && shape->com != &zeo_shape3d_ph_com )
-    ZRUNWARN( ZEO_WARN_SHAPE_OVRRDN_PH );
-  zShape3DQueryAssign( shape, "polyhedron" );
+  _zShape3DAssignPH( shape );
   if( !zPH3DFReadPLY( fp, zShape3DPH(shape) ) ) return NULL;
+  return shape;
+}
+
+/* read a shape from a OBJ file. */
+zShape3D *zShape3DFReadOBJ(FILE *fp, zShape3D *shape)
+{
+  _zShape3DAssignPH( shape );
+  if( !zPH3DFReadOBJ( fp, zShape3DPH(shape) ) ) return NULL;
   return shape;
 }
 
@@ -150,9 +162,7 @@ zShape3D *zShape3DFReadPLY(FILE *fp, zShape3D *shape)
 /* read a shape from a DAE file. */
 zShape3D *zShape3DFReadDAE(zShape3D *shape, char *filename)
 {
-  if( shape->com && shape->com != &zeo_shape3d_ph_com )
-    ZRUNWARN( ZEO_WARN_SHAPE_OVRRDN_PH );
-  zShape3DQueryAssign( shape, "polyhedron" );
+  _zShape3DAssignPH( shape );
   if( !zPH3DFReadDAE( zShape3DPH(shape), filename ) ) return NULL;
   return shape;
 }
@@ -238,6 +248,9 @@ static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
     } else
     if( strcmp( suffix, "ply" ) == 0 || strcmp( suffix, "PLY" ) == 0 ){
       if( !zShape3DFReadPLY( fp, obj ) ) obj = NULL;
+    } else
+    if( strcmp( suffix, "obj" ) == 0 || strcmp( suffix, "OBJ" ) == 0 ){
+      if( !zShape3DFReadOBJ( fp, obj ) ) obj = NULL;
     } else{
       ZRUNERROR( ZEO_WARN_SHAPE_UNKNOWNFORMAT, suffix );
       obj = NULL;
