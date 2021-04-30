@@ -28,7 +28,7 @@ static zPH3D *_zOBJFReadPH3D(FILE *fp, zPH3D *ph)
   vi = fi = 0;
   rewind( fp );
   while( fgets( buf, BUFSIZ, fp ) ){
-    if( strncmp( buf, "v ", 2 ) == 0 ){
+    if( strncmp( buf, "v ", 2 ) == 0 ){ /* vertex */
       sp = buf + 2;
       for( j=0; j<3; j++ ){
         sp = zSTokenSkim( sp, tkn, BUFSIZ );
@@ -40,12 +40,12 @@ static zPH3D *_zOBJFReadPH3D(FILE *fp, zPH3D *ph)
         break;
       }
     } else
-    if( strncmp( buf, "f ", 2 ) == 0 ){
+    if( strncmp( buf, "f ", 2 ) == 0 ){ /* face */
       sp = buf + 2;
       for( j=0; j<3; j++ ){
         sp = zSTokenSkim( sp, tkn, BUFSIZ );
         *strchr( tkn, '/' ) = '\0';
-        i[j] = atoi( tkn );
+        i[j] = atoi( tkn ) - 1;
         /* normal and texture coordinates are ignored */
       }
       zTri3DCreate( zPH3DFace(ph,fi), zPH3DVert(ph,i[0]), zPH3DVert(ph,i[1]), zPH3DVert(ph,i[2]) );
