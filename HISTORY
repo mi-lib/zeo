@@ -1,3 +1,5 @@
+2021. 5. 2. Abolished zVec3DListReg. [zeo_vec3d_list]
+2021. 5. 2. Added zVec3DArrayAppendList and modified zVec3DArray2List. [zeo_vec3d_list]
 2021. 4.30. Debugged _zOBJFReadPH3D. [zeo_ph_obj]
 2021. 4.30. Added zShape3DFReadOBJ and modified _zShape3DImportFromZTK. [zeo_shape]
 2021. 4.30. Added _zShape3DAssignPH. [zeo_shape]

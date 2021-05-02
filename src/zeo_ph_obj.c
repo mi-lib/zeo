@@ -45,7 +45,7 @@ static zPH3D *_zOBJFReadPH3D(FILE *fp, zPH3D *ph)
       for( j=0; j<3; j++ ){
         sp = zSTokenSkim( sp, tkn, BUFSIZ );
         *strchr( tkn, '/' ) = '\0';
-        i[j] = atoi( tkn ) - 1;
+        i[j] = atoi( tkn ) - 1; /* indices of vertices start from 1 in OBJ format. */
         /* normal and texture coordinates are ignored */
       }
       zTri3DCreate( zPH3DFace(ph,fi), zPH3DVert(ph,i[0]), zPH3DVert(ph,i[1]), zPH3DVert(ph,i[2]) );

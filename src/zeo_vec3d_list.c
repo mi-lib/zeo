@@ -40,30 +40,24 @@ zVec3DListCell *zVec3DListAdd(zVec3DList *list, zVec3D *v)
   return cell;
 }
 
-#if 0
-/* register a 3D vector to a list. */
-zVec3DListCell *zVec3DListReg(zVec3DList *list, zVec3D *v)
-{
-  zVec3DListCell *cp;
-
-  if( !( cp = zVec3DListFind( list, v ) ) )
-    return zVec3DListInsert( list, v );
-  return cp;
-}
-#endif
-
-/* converts an array of 3D vectors to a list. */
-zVec3DList *zVec3DArray2List(zVec3DArray *array, zVec3DList *list)
+/* append an array of 3D vectors to a list. */
+zVec3DList *zVec3DArrayAppendList(zVec3DArray *array, zVec3DList *list)
 {
   register int i;
 
-  zListInit( list );
   for( i=0; i<zArraySize(array); i++ )
     if( !zVec3DListAdd( list, zArrayElemNC(array,i) ) ){
       ZALLOCERROR();
       break;
     }
   return list;
+}
+
+/* converts an array of 3D vectors to a list. */
+zVec3DList *zVec3DArray2List(zVec3DArray *array, zVec3DList *list)
+{
+  zListInit( list );
+  return zVec3DArrayAppendList( array, list );
 }
 
 /* destroy a list of 3D vectors. */

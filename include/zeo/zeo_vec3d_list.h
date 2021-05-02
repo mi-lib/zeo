@@ -37,17 +37,16 @@ __EXPORT zVec3DListCell *zVec3DListFind(zVec3DList *list, zVec3D *v);
  */
 __EXPORT zVec3DListCell *zVec3DListAdd(zVec3DList *list, zVec3D *v);
 
-#if 0
-/*! \brief register a 3D vector to a list.
+/*! \brief append an array of 3D vectors to a list.
  *
- * zVec3DListReg() register a 3D vector \a v to a list \a list.
+ * zVec3DArrayAppendList() appends an array of 3D vectors \a array to
+ * a list of 3D vectors \a list. Vectors of \a array are copied to cells of
+ * \a list.
  * \return
- * If \a v is already registered in \a list, it returns a pointer
- * to the list cell. Otherwise, it allocates a new cell for \a v,
- * adds it to \a list, and returns the pointer to it.
+ * zVec3DArrayAppendList() returns a pointer \a list.
+ * \sa zVec3DArray2List
  */
-__EXPORT zVec3DListCell *zVec3DListReg(zVec3DList *list, zVec3D *v);
-#endif
+__EXPORT zVec3DList *zVec3DArrayAppendList(zVec3DArray *array, zVec3DList *list);
 
 /*! \brief converts an array of 3D vectors to a list.
  *
@@ -56,6 +55,7 @@ __EXPORT zVec3DListCell *zVec3DListReg(zVec3DList *list, zVec3D *v);
  * \a list.
  * \return
  * zVec3DArray2List() returns a pointer \a list.
+ * \sa zVec3DArrayAppendList
  */
 __EXPORT zVec3DList *zVec3DArray2List(zVec3DArray *array, zVec3DList *list);
 
