@@ -39,14 +39,14 @@ __EXPORT zVec3DListCell *zVec3DListAdd(zVec3DList *list, zVec3D *v);
 
 /*! \brief append an array of 3D vectors to a list.
  *
- * zVec3DArrayAppendList() appends an array of 3D vectors \a array to
+ * zVec3DListAppendArray() appends an array of 3D vectors \a array to
  * a list of 3D vectors \a list. Vectors of \a array are copied to cells of
  * \a list.
  * \return
- * zVec3DArrayAppendList() returns a pointer \a list.
+ * zVec3DListAppendArray() returns a pointer \a list.
  * \sa zVec3DArray2List
  */
-__EXPORT zVec3DList *zVec3DArrayAppendList(zVec3DArray *array, zVec3DList *list);
+__EXPORT zVec3DList *zVec3DListAppendArray(zVec3DList *list, zVec3DArray *array);
 
 /*! \brief converts an array of 3D vectors to a list.
  *

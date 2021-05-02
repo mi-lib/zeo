@@ -41,7 +41,7 @@ zVec3DListCell *zVec3DListAdd(zVec3DList *list, zVec3D *v)
 }
 
 /* append an array of 3D vectors to a list. */
-zVec3DList *zVec3DArrayAppendList(zVec3DArray *array, zVec3DList *list)
+zVec3DList *zVec3DListAppendArray(zVec3DList *list, zVec3DArray *array)
 {
   register int i;
 
@@ -57,7 +57,7 @@ zVec3DList *zVec3DArrayAppendList(zVec3DArray *array, zVec3DList *list)
 zVec3DList *zVec3DArray2List(zVec3DArray *array, zVec3DList *list)
 {
   zListInit( list );
-  return zVec3DArrayAppendList( array, list );
+  return zVec3DListAppendArray( list, array );
 }
 
 /* destroy a list of 3D vectors. */
