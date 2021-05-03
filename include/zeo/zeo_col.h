@@ -7,7 +7,7 @@
 #ifndef __ZEO_COL_H__
 #define __ZEO_COL_H__
 
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_bv3d.h>
 
 __BEGIN_DECLS
 

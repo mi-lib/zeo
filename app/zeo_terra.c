@@ -14,7 +14,7 @@
  *     output: shape
  */
 
-#include <zeo/zeo_mshape.h>
+#include <zeo/zeo_mshape3d.h>
 #include <zeo/zeo_terra.h>
 
 enum{

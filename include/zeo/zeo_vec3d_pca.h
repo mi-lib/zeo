@@ -1,7 +1,7 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_vec_pca - principal component analysis.
+ * zeo_vec3d_pca - principal component analysis.
  */
 
 #ifndef __ZEO_VEC3D_PCA_H__

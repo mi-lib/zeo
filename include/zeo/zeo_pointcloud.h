@@ -8,7 +8,7 @@
 #define __ZEO_POINTCLOUD_H__
 
 #include <zeo/zeo_ep.h>
-#include <zeo/zeo_frame.h>
+#include <zeo/zeo_frame3d.h>
 
 __BEGIN_DECLS
 

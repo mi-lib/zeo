@@ -25,10 +25,12 @@
 #ifndef __ZEO_H__
 #define __ZEO_H__
 
+#include <zeo/zeo_mat2d.h>
 #include <zeo/zeo_mat6d.h>
 #include <zeo/zeo_pointcloud.h>
-#include <zeo/zeo_mshape.h>
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_mshape3d.h>
+#include <zeo/zeo_bv2d.h>
+#include <zeo/zeo_bv3d.h>
 #include <zeo/zeo_col.h>
 #include <zeo/zeo_map.h>
 

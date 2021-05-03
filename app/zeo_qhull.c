@@ -1,7 +1,7 @@
 /* qhull: 3D convex hull computation based on quickhull algorithm. */
 
-#include <zeo/zeo_mshape.h>
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_mshape3d.h>
+#include <zeo/zeo_bv3d.h>
 
 void usage(char *arg)
 {

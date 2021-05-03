@@ -6,14 +6,8 @@
 
 #include <zeo/zeo_nurbs.h>
 
-static void _zNURBS3DKnotInit(zNURBS3D *nurbs, int i);
-static int _zNURBS3DSeg(zNURBS3D *nurbs, int i, double t);
-
-static double _zNURBS3DBasis(zNURBS3D *nurbs, int i, double t, int j, int r, int seg);
-static double _zNURBS3DBasisDiff(zNURBS3D *nurbs, int i, double t, int j, int r, int seg);
-
 /* set knots & assign control points & initialize weight uniformly. */
-void _zNURBS3DKnotInit(zNURBS3D *nurbs, int i)
+static void _zNURBS3DKnotInit(zNURBS3D *nurbs, int i)
 {
   register int j;
 
@@ -147,7 +141,7 @@ void zNURBS3DKnotNormalize(zNURBS3D *nurbs)
 }
 
 /* find a knot segment that includes the given parameter. */
-int _zNURBS3DSeg(zNURBS3D *nurbs, int i, double t)
+static int _zNURBS3DSeg(zNURBS3D *nurbs, int i, double t)
 {
   register int j, k, l;
 
@@ -165,7 +159,7 @@ int _zNURBS3DSeg(zNURBS3D *nurbs, int i, double t)
 }
 
 /* basis function of NURBS. */
-double _zNURBS3DBasis(zNURBS3D *nurbs, int i, double t, int j, int r, int seg)
+static double _zNURBS3DBasis(zNURBS3D *nurbs, int i, double t, int j, int r, int seg)
 {
   double t1, tr1, b = 0;
 
@@ -210,7 +204,7 @@ zVec3D *zNURBS3DVec(zNURBS3D *nurbs, double u, double v, zVec3D *p)
 }
 
 /* derivative of the basis function of NURBS. */
-double _zNURBS3DBasisDiff(zNURBS3D *nurbs, int i, double t, int j, int r, int seg)
+static double _zNURBS3DBasisDiff(zNURBS3D *nurbs, int i, double t, int j, int r, int seg)
 {
   double dt, b = 0;
 

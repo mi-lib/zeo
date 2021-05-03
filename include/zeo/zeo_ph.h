@@ -7,7 +7,7 @@
 #ifndef __ZEO_PH_H__
 #define __ZEO_PH_H__
 
-#include <zeo/zeo_elem.h>
+#include <zeo/zeo_elem3d.h>
 
 __BEGIN_DECLS
 
