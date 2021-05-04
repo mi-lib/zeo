@@ -121,6 +121,9 @@ __EXPORT zMat3D *zSphere3DInertia(zSphere3D *sphere, zMat3D *inertia);
 /* default longitudinal & latitudinal division number are the same. */
 __EXPORT zPH3D *zSphere3DToPH(zSphere3D *sphere, zPH3D *ph);
 
+/*! \brief print a 3D sphere out to a file in a ZTK format. */
+__EXPORT void zSphere3DFPrintZTK(FILE *fp, zSphere3D *sphere);
+
 /*! \brief fit a sphere to point cloud.
  *
  * zSphere3DFit() fits a sphere to given point cloud \a pc. The result

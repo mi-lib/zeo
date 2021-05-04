@@ -11,8 +11,8 @@ int main(void)
   register int i;
 
   zRandInit();
-  zMat3DZYX( &m1, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
-  zMat3DZYX( &m2, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+  zMat3DFromZYX( &m1, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+  zMat3DFromZYX( &m2, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
   zMat3DToZYX( &m1, &e1 );
   zMat3DToZYX( &m2, &e2 );
   zMat3DToEP( &m1, &ep1 );

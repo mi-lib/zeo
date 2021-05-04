@@ -24,7 +24,6 @@ void verify(zAABox3D *bb, zVec3D **vp)
   zVec3D vert;
   FILE *fp;
 
-  eprintf( "++verify+++\n" );
   zAABox3DToBox3D( bb, &box );
   for( i=0; i<N; i++ ){
     if( ( ret = zBox3DPointIsInside(&box,&v[i],true) ) == false ){

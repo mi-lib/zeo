@@ -73,6 +73,9 @@ __EXPORT zMat3D *zECyl3DInertia(zECyl3D *cyl, zMat3D *inertia);
 /*! \brief convert an elliptic cylinder to a polyhedron. */
 __EXPORT zPH3D *zECyl3DToPH(zECyl3D *cyl, zPH3D *ph);
 
+/*! \brief print a 3D elliptic cylinder out to a file in a ZTK format. */
+__EXPORT void zECyl3DFPrintZTK(FILE *fp, zECyl3D *ecyl);
+
 /*! \brief methods for abstraction */
 extern zShape3DCom zeo_shape3d_ecyl_com;
 

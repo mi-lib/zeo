@@ -18,7 +18,7 @@ void box_output(zBox3D *b1, zBox3D *b2)
   FILE *fp;
 
   /* for visualization */
-  fp = fopen( "box", "w" );
+  fp = fopen( "box.ztk", "w" );
   fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.8 0.8 1.0\n" );
@@ -37,12 +37,12 @@ void box_output(zBox3D *b1, zBox3D *b2)
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: blue\n" );
-  zBox3DFPrint( fp, b1 );
+  zBox3DFPrintZTK( fp, b1 );
   fprintf( fp, "\n[shape]\n" );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: red\n" );
-  zBox3DFPrint( fp, b2 );
+  zBox3DFPrintZTK( fp, b2 );
   fclose( fp );
 }
 
@@ -54,7 +54,7 @@ int main(void)
   box_create( &b1 );
   box_create( &b2 );
 
-  printf( "in collision? %s\n", zBoolExpr( zColChkBox3D( &b1, &b2 ) ) );
+  printf( "in collision? %s\n", zBoolStr( zColChkBox3D( &b1, &b2 ) ) );
 
   box_output( &b1, &b2 );
   return 0;

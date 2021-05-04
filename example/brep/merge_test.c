@@ -1,15 +1,16 @@
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_mshape3d.h>
+#include <zeo/zeo_bv3d.h>
 #include <zeo/zeo_brep.h>
 
 /* test */
 
 void test_ph(zPH3D *a)
 {
-  FILE *fp;
+  zMShape3D ms;
 
-  fp = fopen( "../model/octahedron.zph", "rt" );
-  zPH3DFScan( fp, a );
-  fclose( fp );
+  if( !zMShape3DReadZTK( &ms, "../model/octahedron.ztk" ) ) exit( 1 );
+  zPH3DClone( zShape3DPH(zMShape3DShape(&ms,0)), a );
+  zMShape3DDestroy( &ms );
 }
 
 void output(zPH3D *a, zPH3D *b, zPH3D *c)
@@ -17,7 +18,7 @@ void output(zPH3D *a, zPH3D *b, zPH3D *c)
   FILE *fp;
 
   /* for visualization */
-  fp = fopen( "org.z3d", "w" );
+  fp = fopen( "org.ztk", "w" );
   fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.2 0.2 0.6\n" );
@@ -36,15 +37,15 @@ void output(zPH3D *a, zPH3D *b, zPH3D *c)
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
-  zPH3DFPrint( fp, a );
+  zPH3DFPrintZTK( fp, a );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
-  zPH3DFPrint( fp, b );
+  zPH3DFPrintZTK( fp, b );
   fclose( fp );
 
-  fp = fopen( "mrg.z3d", "w" );
+  fp = fopen( "mrg.ztk", "w" );
   fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: red\n" );
   fprintf( fp, "ambient: 0.6 0.2 0.2\n" );
@@ -56,7 +57,7 @@ void output(zPH3D *a, zPH3D *b, zPH3D *c)
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
-  zPH3DFPrint( fp, c );
+  zPH3DFPrintZTK( fp, c );
   fclose( fp );
 }
 

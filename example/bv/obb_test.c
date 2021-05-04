@@ -1,4 +1,4 @@
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_bv3d.h>
 
 #define N 1000
 zVec3D vert[N];

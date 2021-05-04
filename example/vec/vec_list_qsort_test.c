@@ -11,7 +11,7 @@ void test_vert(zVec3DList *vl)
   zListInit( vl );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
-    zVec3DListInsert( vl, &v );
+    zVec3DListAdd( vl, &v );
   }
 }
 

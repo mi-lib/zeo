@@ -240,7 +240,13 @@ static ZTKPrp __ztk_prp_shape_box[] = {
   { "height", 1, _zBox3DHeightFromZTK, _zBox3DHeightFPrintZTK },
 };
 
-/* print a 3D box out to a file in a format to be plotted. */
+/* print a 3D box out to a file in a ZTK format. */
+void zBox3DFPrintZTK(FILE *fp, zBox3D *box)
+{
+  ZTKPrpKeyFPrint( fp, box, __ztk_prp_shape_box );
+}
+
+/* print a 3D box out to a file in a plottable format. */
 void zBox3DDataFPrint(FILE *fp, zBox3D *box)
 {
   zVec3D v[8];
@@ -272,8 +278,8 @@ void zBox3DDataFPrint(FILE *fp, zBox3D *box)
 
 /* methods for abstraction */
 
-static void *_zShape3DBoxInit(void* shape){
-  return zBox3DInit( shape ); }
+static void *_zShape3DBoxInit(void *body){
+  return zBox3DInit( body ); }
 static void *_zShape3DBoxAlloc(void){
   return zBox3DAlloc(); }
 static void *_zShape3DBoxClone(void *src){
@@ -282,33 +288,33 @@ static void *_zShape3DBoxClone(void *src){
 static void *_zShape3DBoxMirror(void *src, zAxis axis){
   zBox3D *mrr;
   return ( mrr = zBox3DAlloc() ) ? zBox3DMirror( src, mrr, axis ) : NULL; }
-static void _zShape3DBoxDestroy(void *shape){}
+static void _zShape3DBoxDestroy(void *body){}
 static void *_zShape3DBoxXform(void *src, zFrame3D *f, void *dest){
   return zBox3DXform( src, f, dest ); }
 static void *_zShape3DBoxXformInv(void *src, zFrame3D *f, void *dest){
   return zBox3DXformInv( src, f, dest ); }
-static double _zShape3DBoxClosest(void *shape, zVec3D *p, zVec3D *cp){
-  return zBox3DClosest( shape, p, cp ); }
-static double _zShape3DBoxPointDist(void *shape, zVec3D *p){
-  return zBox3DPointDist( shape, p ); }
-static bool _zShape3DBoxPointIsInside(void *shape, zVec3D *p, bool rim){
-  return zBox3DPointIsInside( shape, p, rim ); }
-static double _zShape3DBoxVolume(void *shape){
-  return zBox3DVolume( shape ); }
-static zVec3D *_zShape3DBoxBarycenter(void *shape, zVec3D *c){
-  zVec3DCopy( zBox3DCenter((zBox3D*)shape), c ); return c; }
-static zMat3D *_zShape3DBoxInertia(void *shape, zMat3D *i){
-  return zBox3DInertia( shape, i ); }
-static void _zShape3DBoxBaryInertia(void *shape, zVec3D *c, zMat3D *i){
-  zVec3DCopy( zBox3DCenter((zBox3D*)shape), c );
-  zBox3DInertia( shape, i ); }
-static zPH3D *_zShape3DBoxToPH(void *shape, zPH3D *ph){
-  return zBox3DToPH( shape, ph ); }
-static void *_zShape3DBoxParseZTK(void *shape, ZTK *ztk){
-  zBox3DInit( shape );
-  return ZTKEvalKey( shape, NULL, ztk, __ztk_prp_shape_box ); }
-static void _zShape3DBoxFPrintZTK(FILE *fp, void *shape){
-  ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape_box ); }
+static double _zShape3DBoxClosest(void *body, zVec3D *p, zVec3D *cp){
+  return zBox3DClosest( body, p, cp ); }
+static double _zShape3DBoxPointDist(void *body, zVec3D *p){
+  return zBox3DPointDist( body, p ); }
+static bool _zShape3DBoxPointIsInside(void *body, zVec3D *p, bool rim){
+  return zBox3DPointIsInside( body, p, rim ); }
+static double _zShape3DBoxVolume(void *body){
+  return zBox3DVolume( body ); }
+static zVec3D *_zShape3DBoxBarycenter(void *body, zVec3D *c){
+  zVec3DCopy( zBox3DCenter((zBox3D*)body), c ); return c; }
+static zMat3D *_zShape3DBoxInertia(void *body, zMat3D *i){
+  return zBox3DInertia( body, i ); }
+static void _zShape3DBoxBaryInertia(void *body, zVec3D *c, zMat3D *i){
+  zVec3DCopy( zBox3DCenter((zBox3D*)body), c );
+  zBox3DInertia( body, i ); }
+static zPH3D *_zShape3DBoxToPH(void *body, zPH3D *ph){
+  return zBox3DToPH( body, ph ); }
+static void *_zShape3DBoxParseZTK(void *body, ZTK *ztk){
+  zBox3DInit( body );
+  return ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_box ); }
+static void _zShape3DBoxFPrintZTK(FILE *fp, void *body){
+  zBox3DFPrintZTK( fp, body ); }
 
 zShape3DCom zeo_shape3d_box_com = {
   "box",

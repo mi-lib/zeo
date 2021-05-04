@@ -1,4 +1,4 @@
-#include <zeo/zeo_elem.h>
+#include <zeo/zeo_elem3d.h>
 
 void create_tri(zTri3D *t, zVec3D *p1, zVec3D *p2, zVec3D *p3)
 {

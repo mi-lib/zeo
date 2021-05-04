@@ -128,11 +128,8 @@ void zAABox3DDataFPrint(FILE *fp, zAABox3D *box)
 /* AABB - axis-aligned bounding box
  * ********************************************************** */
 
-static int _zAABBTest(zAABox3D *bb, zVec3D *p, zDir u);
-
-/* (static)
- * enlarge bounding box if a point is out of the current box. */
-int _zAABBTest(zAABox3D *bb, zVec3D *p, zDir u)
+/* enlarge bounding box if a point is out of the current box. */
+static int _zAABBTest(zAABox3D *bb, zVec3D *p, zDir u)
 {
   if( p->e[u] > bb->max.e[u] ){
     bb->max.e[u] = p->e[u];
@@ -147,12 +144,8 @@ int _zAABBTest(zAABox3D *bb, zVec3D *p, zDir u)
 
 /* *** array version *** */
 
-static void _zAABBIncElem(zAABox3D *bb, zVec3D *p, zDir u, zVec3D **vp);
-static zAABox3D *_zAABBInc(zAABox3D *bb, zVec3D *p, zVec3D **vp);
-
-/* (static)
- * enlarge bounding box along each axis if the point is outside of the box. */
-void _zAABBIncElem(zAABox3D *bb, zVec3D *p, zDir u, zVec3D **vp)
+/* enlarge bounding box along each axis if the point is outside of the box. */
+static void _zAABBIncElem(zAABox3D *bb, zVec3D *p, zDir u, zVec3D **vp)
 {
   int s;
 
@@ -160,9 +153,8 @@ void _zAABBIncElem(zAABox3D *bb, zVec3D *p, zDir u, zVec3D **vp)
     vp[u+s] = p;
 }
 
-/* (static)
- * enlarge bounding box if the point is outside of the box. */
-zAABox3D *_zAABBInc(zAABox3D *bb, zVec3D *p, zVec3D **vp)
+/* enlarge bounding box if the point is outside of the box. */
+static zAABox3D *_zAABBInc(zAABox3D *bb, zVec3D *p, zVec3D **vp)
 {
   _zAABBIncElem( bb, p, zX, vp );
   _zAABBIncElem( bb, p, zY, vp );
@@ -207,12 +199,8 @@ zAABox3D *zAABBXform(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f)
 
 /* *** list version *** */
 
-static void _zAABBPLIncElem(zAABox3D *bb, zVec3DListCell *p, zDir u, zVec3DListCell **vp);
-static zAABox3D *_zAABBPLInc(zAABox3D *bb, zVec3DListCell *p, zVec3DListCell **vp);
-
-/* (static)
- * enlarge bounding box along each axis if the point is outside of the box. */
-void _zAABBPLIncElem(zAABox3D *bb, zVec3DListCell *p, zDir u, zVec3DListCell **vp)
+/* enlarge bounding box along each axis if the point is outside of the box. */
+static void _zAABBPLIncElem(zAABox3D *bb, zVec3DListCell *p, zDir u, zVec3DListCell **vp)
 {
   int s;
 
@@ -220,9 +208,8 @@ void _zAABBPLIncElem(zAABox3D *bb, zVec3DListCell *p, zDir u, zVec3DListCell **v
     vp[u+s] = p;
 }
 
-/* (static)
- * enlarge bounding box if the point is outside of the box. */
-zAABox3D *_zAABBPLInc(zAABox3D *bb, zVec3DListCell *p, zVec3DListCell **vp)
+/* enlarge bounding box if the point is outside of the box. */
+static zAABox3D *_zAABBPLInc(zAABox3D *bb, zVec3DListCell *p, zVec3DListCell **vp)
 {
   _zAABBPLIncElem( bb, p, zX, vp );
   _zAABBPLIncElem( bb, p, zY, vp );

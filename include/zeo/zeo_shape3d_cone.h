@@ -109,6 +109,9 @@ __EXPORT zMat3D *zCone3DInertia(zCone3D *cone, zMat3D *inertia);
  */
 __EXPORT zPH3D *zCone3DToPH(zCone3D *cone, zPH3D *ph);
 
+/*! \brief print a 3D cone out to a file in a ZTK format. */
+__EXPORT void zCone3DFPrintZTK(FILE *fp, zCone3D *cone);
+
 /* methods for abstraction */
 extern zShape3DCom zeo_shape3d_cone_com;
 

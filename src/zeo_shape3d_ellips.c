@@ -307,10 +307,16 @@ static ZTKPrp __ztk_prp_shape_ellips[] = {
   { "div", 1, _zEllips3DDivFromZTK, _zEllips3DDivFPrintZTK },
 };
 
+/* print a 3D ellipsoid out to a file in a ZTK format. */
+void zEllips3DFPrintZTK(FILE *fp, zEllips3D *ellips)
+{
+  ZTKPrpKeyFPrint( fp, ellips, __ztk_prp_shape_ellips );
+}
+
 /* methods for abstraction */
 
-static void *_zShape3DEllipsInit(void* shape){
-  return zEllips3DInit( shape ); }
+static void *_zShape3DEllipsInit(void *body){
+  return zEllips3DInit( body ); }
 static void *_zShape3DEllipsAlloc(void){
   return zEllips3DAlloc(); }
 static void *_zShape3DEllipsClone(void *src){
@@ -319,33 +325,33 @@ static void *_zShape3DEllipsClone(void *src){
 static void *_zShape3DEllipsMirror(void *src, zAxis axis){
   zEllips3D *mrr;
   return ( mrr = zEllips3DAlloc() ) ? zEllips3DMirror( src, mrr, axis ) : NULL; }
-static void _zShape3DEllipsDestroy(void *shape){}
+static void _zShape3DEllipsDestroy(void *body){}
 static void *_zShape3DEllipsXform(void *src, zFrame3D *f, void *dest){
   return zEllips3DXform( src, f, dest ); }
 static void *_zShape3DEllipsXformInv(void *src, zFrame3D *f, void *dest){
   return zEllips3DXformInv( src, f, dest ); }
-static double _zShape3DEllipsClosest(void *shape, zVec3D *p, zVec3D *cp){
-  return zEllips3DClosest( shape, p, cp ); }
-static double _zShape3DEllipsPointDist(void *shape, zVec3D *p){
-  return zEllips3DPointDist( shape, p ); }
-static bool _zShape3DEllipsPointIsInside(void *shape, zVec3D *p, bool rim){
-  return zEllips3DPointIsInside( shape, p, rim ); }
-static double _zShape3DEllipsVolume(void *shape){
-  return zEllips3DVolume( shape ); }
-static zVec3D *_zShape3DEllipsBarycenter(void *shape, zVec3D *c){
-  zVec3DCopy( zEllips3DCenter((zEllips3D*)shape), c ); return c; }
-static zMat3D *_zShape3DEllipsInertia(void *shape, zMat3D *i){
-  return zEllips3DInertia( shape, i ); }
-static void _zShape3DEllipsBaryInertia(void *shape, zVec3D *c, zMat3D *i){
-  zVec3DCopy( zEllips3DCenter((zEllips3D*)shape), c );
-  zEllips3DInertia( shape, i ); }
-static zPH3D *_zShape3DEllipsToPH(void *shape, zPH3D *ph){
-  return zEllips3DToPH( shape, ph ); }
-static void *_zShape3DEllipsParseZTK(void *shape, ZTK *ztk){
-  zEllips3DInit( shape );
-  return ZTKEvalKey( shape, NULL, ztk, __ztk_prp_shape_ellips ); }
-static void _zShape3DEllipsFPrintZTK(FILE *fp, void *shape){
-  ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape_ellips ); }
+static double _zShape3DEllipsClosest(void *body, zVec3D *p, zVec3D *cp){
+  return zEllips3DClosest( body, p, cp ); }
+static double _zShape3DEllipsPointDist(void *body, zVec3D *p){
+  return zEllips3DPointDist( body, p ); }
+static bool _zShape3DEllipsPointIsInside(void *body, zVec3D *p, bool rim){
+  return zEllips3DPointIsInside( body, p, rim ); }
+static double _zShape3DEllipsVolume(void *body){
+  return zEllips3DVolume( body ); }
+static zVec3D *_zShape3DEllipsBarycenter(void *body, zVec3D *c){
+  zVec3DCopy( zEllips3DCenter((zEllips3D*)body), c ); return c; }
+static zMat3D *_zShape3DEllipsInertia(void *body, zMat3D *i){
+  return zEllips3DInertia( body, i ); }
+static void _zShape3DEllipsBaryInertia(void *body, zVec3D *c, zMat3D *i){
+  zVec3DCopy( zEllips3DCenter((zEllips3D*)body), c );
+  zEllips3DInertia( body, i ); }
+static zPH3D *_zShape3DEllipsToPH(void *body, zPH3D *ph){
+  return zEllips3DToPH( body, ph ); }
+static void *_zShape3DEllipsParseZTK(void *body, ZTK *ztk){
+  zEllips3DInit( body );
+  return ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_ellips ); }
+static void _zShape3DEllipsFPrintZTK(FILE *fp, void *body){
+  zEllips3DFPrintZTK( fp, body ); }
 
 zShape3DCom zeo_shape3d_ellips_com = {
   "ellipsoid",

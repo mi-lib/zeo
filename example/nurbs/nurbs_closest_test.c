@@ -7,15 +7,17 @@ int main(void)
   double u, v;
   zVec3D p, nn;
   FILE *fp;
+  ZTK ztk;
 
-  zRandInit();
-  if( !( fp = fopen( "test_nurbs.tkf", "r" ) ) ){
-    eprintf( "cannot open test_nurbs.tkf.\n" );
+  ZTKInit( &ztk );
+  if( !ZTKParse( &ztk, "test_nurbs.ztk" ) ){
+    eprintf( "cannot open test_nurbs.ztk.\n" );
     eprintf( "run nurbs_test first.\n" );
     return 1;
   }
-  zNURBS3DFScan( fp, &nurbs );
-  fclose( fp );
+  ZTKTagRewind( &ztk );
+  zNURBS3DFromZTK( &nurbs, &ztk );
+  ZTKDestroy( &ztk );
 
   fp = fopen( "sfc", "w" );
   for( i=0; i<=nurbs.ns[0]; i++ ){
@@ -31,6 +33,7 @@ int main(void)
   }
   fclose( fp );
 
+  zRandInit();
   fp = fopen( "nn", "w" );
   zVec3DCreate( &p, zRandF(2,6), zRandF(-1,1), zRandF(-3,3) );
   zNURBS3DClosest( &nurbs, &p, &nn, &u, &v );

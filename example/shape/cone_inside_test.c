@@ -1,4 +1,4 @@
-#include <zeo/zeo_shape.h>
+#include <zeo/zeo_shape3d.h>
 
 #define N 100000
 

@@ -1,4 +1,4 @@
-#include <zeo/zeo_mshape.h>
+#include <zeo/zeo_mshape3d.h>
 
 void test(zMShape3D *ms, int n)
 {
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
   zMShape3D ms;
 
   zRandInit();
-  zMShape3DScanFile( &ms, "../model/scc.z3d" );
+  zMShape3DReadZTK( &ms, "../model/scc.ztk" );
   test( &ms, argc > 1 ? atoi(argv[1]) : N );
   zMShape3DDestroy( &ms );
   return 0;

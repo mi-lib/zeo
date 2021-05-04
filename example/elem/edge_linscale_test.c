@@ -1,4 +1,4 @@
-#include <zeo/zeo_elem.h>
+#include <zeo/zeo_elem3d.h>
 
 void assertion(zEdge3D *e, zVec3D *cp, double l0, double l1, double dist)
 {

@@ -1,4 +1,4 @@
-#include <zeo/zeo_elem.h>
+#include <zeo/zeo_elem3d.h>
 
 #define N  1000
 #define NN  100

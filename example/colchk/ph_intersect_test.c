@@ -1,4 +1,4 @@
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_bv3d.h>
 #include <zeo/zeo_col.h>
 #include <zeo/zeo_brep.h> /* for comparison */
 
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
   int dt1, dt2, dt3, dt4;
 
   test_ph( &a, &b, ( n = argc > 1 ? atoi(argv[1]) : N ) );
-  output( "org", &a, &b, NULL );
+  output( "org.ztk", &a, &b, NULL );
 
   t1 = clock();
   if( !zIntersectPH3D( &a, &b, &ip ) ){
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
   t2 = clock();
   dt1 = t2 - t1;
   eprintf( "[MP         ] time=%d\n", dt1 );
-  output( "mp", &a, &b, &ip );
+  output( "mp.ztk", &a, &b, &ip );
   zPH3DDestroy( &ip );
 
   t1 = clock();
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
   t2 = clock();
   dt2 = t2 - t1;
   eprintf( "[MP(fast)   ] time=%d\n", dt2 );
-  output( "mp2", &a, &b, &ip );
+  output( "mp2.ztk", &a, &b, &ip );
   zPH3DDestroy( &ip );
 
   t1 = clock();
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
   t2 = clock();
   dt3 = t2 - t1;
   eprintf( "[B-rep      ] time=%d\n", dt3 );
-  output( "brep", &a, &b, &ip );
+  output( "brep.ztk", &a, &b, &ip );
   zPH3DDestroy( &ip );
 
   t1 = clock();
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
   t2 = clock();
   dt4 = t2 - t1;
   eprintf( "[B-rep(fast)] time=%d\n", dt4 );
-  output( "brep2", &a, &b, &ip );
+  output( "brep2.ztk", &a, &b, &ip );
   zPH3DDestroy( &ip );
   printf( "%d %d %d %d %d\n", n, dt1, dt2, dt3, dt4 );
 

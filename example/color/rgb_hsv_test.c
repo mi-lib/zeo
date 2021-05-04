@@ -1,4 +1,4 @@
-#include <zeo/zeo_color.h>
+#include <zeo/zeo_render_color.h>
 
 int main(int argc, char *argv[])
 {

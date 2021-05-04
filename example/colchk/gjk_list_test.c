@@ -1,5 +1,5 @@
 #include <zeo/zeo_col.h>
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_bv3d.h>
 
 #define DEGENERATE
 
@@ -21,7 +21,7 @@ void vec_create_rand(zVec3DList *vl, int n, double x, double y, double z, double
     v.e[zY] += y;
     v.e[zZ] += z;
 #endif
-    zVec3DListInsert( vl, &v );
+    zVec3DListAdd( vl, &v );
   }
 }
 

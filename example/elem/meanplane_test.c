@@ -1,4 +1,4 @@
-#include <zeo/zeo_elem.h>
+#include <zeo/zeo_elem3d.h>
 
 void vec_create_rand(FILE *fp, zVec3D *v, int n, double x, double y, double z, double r)
 {

@@ -1,4 +1,4 @@
-#include <zeo/zeo_shape.h>
+#include <zeo/zeo_shape3d.h>
 
 void generate_pc_sphere(zSphere3D *s, zVec3DList *pc, int n)
 {
@@ -10,7 +10,7 @@ void generate_pc_sphere(zSphere3D *s, zVec3DList *pc, int n)
     zVec3DCreate( &v, zRandF(0,1), zRandF(0,1), zRandF(0,1) );
     zVec3DMulDRC( &v, (zSphere3DRadius(s)+zRandF(-0.001,0.001))/zVec3DNorm(&v) );
     zVec3DAddDRC( &v, zSphere3DCenter(s) );
-    zVec3DListInsert( pc, &v );
+    zVec3DListAdd( pc, &v );
   }
 }
 
@@ -50,7 +50,7 @@ void output_pc_sphere(zSphere3D *s, zVec3DList *pc)
   fprintf( fp, "name: sphere\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: orange\n" );
-  zSphere3DFPrint( fp, s );
+  zSphere3DFPrintZTK( fp, s );
   fprintf( fp, "div: 8\n\n" );
 
   fclose( fp );
@@ -70,11 +70,11 @@ int main(int argc, char *argv[])
   zVec3DCreate( &c, 0.05, 0.06, 0.07 );
   zSphere3DCreate( &sorg, &c, 0.15, 0 );
   eprintf( "<original sphere>\n" );
-  zSphere3DFPrint( stderr, &sorg );
+  zSphere3DFPrintZTK( stderr, &sorg );
   generate_pc_sphere( &sorg, &pc, n );
   zSphere3DFit( &sout, &pc );
   eprintf( "<estimated sphere>\n" );
-  zSphere3DFPrint( stderr, &sout );
+  zSphere3DFPrintZTK( stderr, &sout );
   output_pc_sphere( &sout, &pc );
   printf( "number of points = %d\n", n );
   printf( "relative center gap = %g\n", zVec3DDist(zSphere3DCenter(&sorg),zSphere3DCenter(&sout))/zSphere3DRadius(&sorg) );

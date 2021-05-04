@@ -12,7 +12,7 @@ void veclist_create_rand(zVec3DList *pl)
   fp = fopen( "src", "w" );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v, zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
-    zVec3DListInsert( pl, &v );
+    zVec3DListAdd( pl, &v );
     zVec3DDataNLFPrint( fp, &v );
   }
   fclose( fp );
@@ -27,7 +27,6 @@ void verify(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vp)
   FILE *fp;
   zVec3DListCell *pc;
 
-  eprintf( "++verify+++\n" );
   zAABox3DToBox3D( bb, &box );
   zListForEach( pl, pc ){
     if( ( ret = zBox3DPointIsInside(&box,pc->data,true) ) == false ){

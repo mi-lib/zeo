@@ -1,4 +1,4 @@
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_bv2d.h>
 
 #define N 100
 zVec3D v[N];

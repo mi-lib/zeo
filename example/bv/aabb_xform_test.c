@@ -35,7 +35,6 @@ void verify(zAABox3D *bb, zFrame3D *f)
   zVec3D vert;
   FILE *fp;
 
-  eprintf( "++verify+++\n" );
   zAABox3DToBox3D( bb, &box );
   for( i=0; i<N; i++ ){
     zXform3D( f, &v[i], &vert );

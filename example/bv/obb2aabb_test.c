@@ -1,4 +1,4 @@
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_bv3d.h>
 
 void gen_box(zBox3D *box)
 {

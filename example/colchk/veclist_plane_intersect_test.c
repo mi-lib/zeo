@@ -1,5 +1,5 @@
 #include <zeo/zeo_col.h>
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_bv2d.h>
 
 /* intersection between a loop of vertices and 3D plane */
 int intersect_vlist_plane(zVec3DList *vl, zPlane3D *p, zVec3D ip[])
@@ -34,7 +34,7 @@ int main(void)
   fp = fopen( "src", "w" );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), 0 );
-    zVec3DListInsert( &vlist, &v );
+    zVec3DListAdd( &vlist, &v );
     zVec3DDataNLFPrint( fp, &v );
   }
   fclose( fp );

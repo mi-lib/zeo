@@ -1,4 +1,4 @@
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_bv3d.h>
 
 int zTetra(zVec3D p[], int n, zVec3D *v[])
 {

@@ -17,7 +17,7 @@ void output(zTri3D *t, zAABox3D *b, zVec3D ip[], int n)
   register int i;
 
   /* for visualization */
-  fp = fopen( "tb", "w" );
+  fp = fopen( "tb.ztk", "w" );
   fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.2 0.2 0.6\n" );
@@ -46,17 +46,17 @@ void output(zTri3D *t, zAABox3D *b, zVec3D ip[], int n)
   fprintf( fp, "name: plane\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: yellow\n" );
-  fprintf( fp, "vert 0: " ); zVec3DDataNLFPrint( fp, zTri3DVert(t,0) );
-  fprintf( fp, "vert 1: " ); zVec3DDataNLFPrint( fp, zTri3DVert(t,1) );
-  fprintf( fp, "vert 2: " ); zVec3DDataNLFPrint( fp, zTri3DVert(t,2) );
-  fprintf( fp, "face 0 1 2\n" );
+  fprintf( fp, "vert: 0 " ); zVec3DDataNLFPrint( fp, zTri3DVert(t,0) );
+  fprintf( fp, "vert: 1 " ); zVec3DDataNLFPrint( fp, zTri3DVert(t,1) );
+  fprintf( fp, "vert: 2 " ); zVec3DDataNLFPrint( fp, zTri3DVert(t,2) );
+  fprintf( fp, "face: 0 1 2\n" );
 
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: c\n" );
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: red\n" );
   zAABox3DToBox3D( b, &box );
-  zBox3DFPrint( fp, &box );
+  zBox3DFPrintZTK( fp, &box );
 
   for( i=0; i<n; i++ ){
     fprintf( fp, "[shape]\n" );
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
   int n;
 
   test_tri_box( p, &t, &b );
-  eprintf( "collision = %s\n", zBoolExpr( zColChkTriAABox3D( &t, &b ) ) );
+  eprintf( "collision = %s\n", zBoolStr( zColChkTriAABox3D( &t, &b ) ) );
   n = zIntersectTriAABox3D( &t, &b, ip );
   eprintf( "num. of intersection point = %d\n", n );
   output( &t, &b, ip, n );

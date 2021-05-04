@@ -8,8 +8,8 @@
 
 /* methods for abstraction of zNURBS3D */
 
-static void *_zShape3DNURBSInit(void* shape){
-  return zNURBS3DInit( shape ); }
+static void *_zShape3DNURBSInit(void *body){
+  return zNURBS3DInit( body ); }
 static void *_zShape3DNURBSAlloc(void){
   zNURBS3D *nurbs;
   if( !( nurbs = zAlloc( zNURBS3D, 1 ) ) ){
@@ -24,34 +24,34 @@ static void *_zShape3DNURBSClone(void *src){
 static void *_zShape3DNURBSMirror(void *src, zAxis axis){
   zNURBS3D *mrr;
   return ( mrr = _zShape3DNURBSAlloc() ) ? zNURBS3DMirror( src, mrr, axis ) : NULL; }
-static void _zShape3DNURBSDestroy(void *shape){
-  zNURBS3DDestroy( shape ); }
+static void _zShape3DNURBSDestroy(void *body){
+  zNURBS3DDestroy( body ); }
 static void *_zShape3DNURBSXform(void *src, zFrame3D *f, void *dest){
   return zNURBS3DXform( src, f, dest ); }
 static void *_zShape3DNURBSXformInv(void *src, zFrame3D *f, void *dest){
   return zNURBS3DXformInv( src, f, dest ); }
-static double _zShape3DNURBSClosest(void *shape, zVec3D *p, zVec3D *cp){
-  return zNURBS3DClosest( shape, p, cp, NULL, NULL ); }
-static double _zShape3DNURBSPointDist(void *shape, zVec3D *p){
+static double _zShape3DNURBSClosest(void *body, zVec3D *p, zVec3D *cp){
+  return zNURBS3DClosest( body, p, cp, NULL, NULL ); }
+static double _zShape3DNURBSPointDist(void *body, zVec3D *p){
   zVec3D nn;
-  return zNURBS3DClosest( shape, p, &nn, NULL, NULL ); }
+  return zNURBS3DClosest( body, p, &nn, NULL, NULL ); }
 
-static bool _zShape3DNURBSPointIsInside(void *shape, zVec3D *p, bool rim){
+static bool _zShape3DNURBSPointIsInside(void *body, zVec3D *p, bool rim){
   return false; }
-static double _zShape3DNURBSVolume(void *shape){
+static double _zShape3DNURBSVolume(void *body){
   return 0; }
-static zVec3D *_zShape3DNURBSBarycenter(void *shape, zVec3D *c){
+static zVec3D *_zShape3DNURBSBarycenter(void *body, zVec3D *c){
   return NULL; }
-static zMat3D *_zShape3DNURBSInertia(void *shape, zMat3D *i){
+static zMat3D *_zShape3DNURBSInertia(void *body, zMat3D *i){
   return NULL; }
-static void _zShape3DNURBSBaryInertia(void *shape, zVec3D *c, zMat3D *i){}
+static void _zShape3DNURBSBaryInertia(void *body, zVec3D *c, zMat3D *i){}
 
-static zPH3D *_zShape3DNURBSToPH(void *shape, zPH3D *ph){
-  return zNURBS3DToPH( shape, ph ); }
-static void *_zShape3DNURBSParseZTK(void *shape, ZTK *ztk){
-  return zNURBS3DFromZTK( shape, ztk ); }
-static void _zShape3DNURBSFPrintZTK(FILE *fp, void *shape){
-  return zNURBS3DFPrintZTK( fp, shape ); }
+static zPH3D *_zShape3DNURBSToPH(void *body, zPH3D *ph){
+  return zNURBS3DToPH( body, ph ); }
+static void *_zShape3DNURBSParseZTK(void *body, ZTK *ztk){
+  return zNURBS3DFromZTK( body, ztk ); }
+static void _zShape3DNURBSFPrintZTK(FILE *fp, void *body){
+  return zNURBS3DFPrintZTK( fp, body ); }
 
 zShape3DCom zeo_shape3d_nurbs_com = {
   "nurbs",

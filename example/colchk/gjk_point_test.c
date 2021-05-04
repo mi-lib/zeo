@@ -1,5 +1,5 @@
 #include <zeo/zeo_col.h>
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_bv3d.h>
 
 void vec_create_rand(zVec3D v[], int n, double r)
 {

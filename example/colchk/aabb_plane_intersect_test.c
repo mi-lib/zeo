@@ -53,7 +53,7 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: red\n" );
   zAABox3DToBox3D( b, &box );
-  zBox3DFPrint( fp, &box );
+  zBox3DFPrintZTK( fp, &box );
 
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: plane\n" );
@@ -67,12 +67,12 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
   zVec3DCatDRC( &v[2],-1.0, &sv2 );
   zVec3DCat( zPlane3DVert(p),-1.0, &sv1, &v[3] );
   zVec3DCatDRC( &v[3], 1.0, &sv2 );
-  fprintf( fp, "vert 0: " ); zVec3DDataNLFPrint( fp, &v[0] );
-  fprintf( fp, "vert 1: " ); zVec3DDataNLFPrint( fp, &v[1] );
-  fprintf( fp, "vert 2: " ); zVec3DDataNLFPrint( fp, &v[2] );
-  fprintf( fp, "vert 3: " ); zVec3DDataNLFPrint( fp, &v[3] );
-  fprintf( fp, "face 0 1 2\n" );
-  fprintf( fp, "face 0 2 3\n" );
+  fprintf( fp, "vert: 0 " ); zVec3DDataNLFPrint( fp, &v[0] );
+  fprintf( fp, "vert: 1 " ); zVec3DDataNLFPrint( fp, &v[1] );
+  fprintf( fp, "vert: 2 " ); zVec3DDataNLFPrint( fp, &v[2] );
+  fprintf( fp, "vert: 3 " ); zVec3DDataNLFPrint( fp, &v[3] );
+  fprintf( fp, "face: 0 1 2\n" );
+  fprintf( fp, "face: 0 2 3\n" );
 
   for( i=0; i<n; i++ ){
     fprintf( fp, "[shape]\n" );
@@ -95,9 +95,9 @@ int main(int argc, char *argv[])
 
   test_plane_box( &p0, &p, &b );
 
-  eprintf( "collision = %s\n", zBoolExpr( zColChkPlaneAABox3D( &p, &b ) ) );
+  eprintf( "collision = %s\n", zBoolStr( zColChkPlaneAABox3D( &p, &b ) ) );
   n = zIntersectPlaneAABox3D( &p, &b, ip );
   eprintf( "num. of intersection point = %d\n", n );
-  output( &p, &b, ip, n, "box" );
+  output( &p, &b, ip, n, "box.ztk" );
   return 0;
 }

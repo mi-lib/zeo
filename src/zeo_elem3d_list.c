@@ -11,8 +11,8 @@
  * 3D triangle list
  * ********************************************************** */
 
-/* insert 3D triangle list cell. */
-zTri3DListCell *zTri3DListInsert(zTri3DList *list, zTri3D *t)
+/* add a 3D triangle list cell. */
+zTri3DListCell *zTri3DListAdd(zTri3DList *list, zTri3D *t)
 {
   zTri3DListCell *cell;
 
@@ -112,7 +112,7 @@ static int _zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist)
       pre = zListCellPrev(vp);
       pst = zListCellNext(vp);
     }
-    if( !zTri3DListInsert( tlist, &t ) ) break;
+    if( !zTri3DListAdd( tlist, &t ) ) break;
     zListPurge( loop, vp );
     zFree( vp );
   }

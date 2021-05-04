@@ -1,4 +1,4 @@
-#include <zeo/zeo_frame.h>
+#include <zeo/zeo_frame3d.h>
 
 void output_vec6d(zVec6D *v, const char *title, const char *lin, const char *ang)
 {

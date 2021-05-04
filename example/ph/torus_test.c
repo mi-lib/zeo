@@ -17,7 +17,7 @@ void output(zPH3D *ph)
   fprintf( fp, "name: torus\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: white\n" );
-  zPH3DFPrint( fp, ph );
+  zPH3DFPrintZTK( fp, ph );
   fclose( fp );
 }
 

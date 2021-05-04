@@ -26,8 +26,7 @@ int main(void)
   zEdge3DPrint( &e );
   printf( "(triangle)\n" );
   zTri3DPrint( &t );
-  printf( "result = %s\n",
-    zBoolExpr( zIntersectEdgeTri3D( &e, &t, &proj ) ) );
+  printf( "result = %s\n", zBoolStr( zIntersectEdgeTri3D( &e, &t, &proj ) ) );
   zVec3DPrint( &proj );
 
   zEdge3DCreate( &e, &v[4], &v[3] );
@@ -35,8 +34,7 @@ int main(void)
   zEdge3DPrint( &e );
   printf( "(triangle)\n" );
   zTri3DPrint( &t );
-  printf( "result = %s\n",
-    zBoolExpr( zIntersectEdgeTri3D( &e, &t, &proj ) ) );
+  printf( "result = %s\n", zBoolStr( zIntersectEdgeTri3D( &e, &t, &proj ) ) );
   zVec3DPrint( &proj );
 
   zEdge3DCreate( &e, &v[4], &point );
@@ -44,8 +42,7 @@ int main(void)
   zEdge3DPrint( &e );
   printf( "(triangle)\n" );
   zTri3DPrint( &t );
-  printf( "result = %s\n",
-    zBoolExpr( zIntersectEdgeTri3D( &e, &t, &proj ) ) );
+  printf( "result = %s\n", zBoolStr( zIntersectEdgeTri3D( &e, &t, &proj ) ) );
   zVec3DPrint( &proj );
 
   return 0;

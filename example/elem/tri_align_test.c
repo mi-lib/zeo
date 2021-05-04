@@ -1,4 +1,4 @@
-#include <zeo/zeo_elem.h>
+#include <zeo/zeo_elem3d.h>
 
 int main(void)
 {
@@ -16,13 +16,13 @@ int main(void)
 
   zListInit( &tlist );
   zTri3DCreate( &t, &v[0], &v[1], &v[2] );
-  zTri3DListInsert( &tlist, &t );
+  zTri3DListAdd( &tlist, &t );
   zTri3DCreate( &t, &v[2], &v[3], &v[1] );
-  zTri3DListInsert( &tlist, &t );
+  zTri3DListAdd( &tlist, &t );
   zTri3DCreate( &t, &v[2], &v[3], &v[5] );
-  zTri3DListInsert( &tlist, &t );
+  zTri3DListAdd( &tlist, &t );
   zTri3DCreate( &t, &v[2], &v[4], &v[5] );
-  zTri3DListInsert( &tlist, &t );
+  zTri3DListAdd( &tlist, &t );
 
   printf( ">>normal vectors\n" );
   zListForEach( &tlist, tp )

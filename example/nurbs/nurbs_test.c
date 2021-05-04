@@ -88,7 +88,7 @@ int main(void)
   fclose( fp );
 
   fp = fopen( "test_nurbs.ztk", "w" );
-  zNURBS3DFPrint( fp, &nurbs );
+  zNURBS3DFPrintZTK( fp, &nurbs );
   fclose( fp );
 
   zNURBS3DDestroy( &nurbs );

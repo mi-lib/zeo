@@ -1,5 +1,5 @@
 #include <zeo/zeo_col.h>
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_bv3d.h>
 
 void vec_create(zVec3D p1[], zVec3D p2[], double z)
 {

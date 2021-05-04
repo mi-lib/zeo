@@ -1,4 +1,4 @@
-#include <zeo/zeo_shape.h>
+#include <zeo/zeo_shape3d.h>
 
 void output_prox(FILE *fp, zVec3D *p, zVec3D *cp)
 {
@@ -59,7 +59,7 @@ void output(zCone3D *cone, zVec3D *p, zVec3D *cp)
   fprintf( fp, "name: cone\n" );
   fprintf( fp, "type: cone\n" );
   fprintf( fp, "optic: gray\n" );
-  zCone3DFPrint( fp, cone );
+  zCone3DFPrintZTK( fp, cone );
   fclose( fp );
 }
 

@@ -1,4 +1,4 @@
-#include <zeo/zeo_elem.h>
+#include <zeo/zeo_elem3d.h>
 
 zVec3D test_loop[] = {
 #if 0
@@ -87,10 +87,10 @@ void generate_loop(zLoop3D *loop, zVec3D v[], int num, double xmin, double ymin,
     r = zRandF( 0, 1 );
     zVec3DCreate( &v[i], r*rx*c+x0, r*ry*s+y0, 0 );
   }
-  zLoop3DFromArray( loop, v, num );
+  zVec3DAddrListCreate( loop, v, num );
 #else
   zListInit( loop );
-  zLoop3DFromArray( loop, test_loop, sizeof(test_loop)/sizeof(zVec3D) );
+  zVec3DAddrListCreate( loop, test_loop, sizeof(test_loop)/sizeof(zVec3D) );
 #endif
 }
 

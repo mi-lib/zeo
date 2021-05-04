@@ -1,4 +1,4 @@
-#include <zeo/zeo_prim.h>
+#include <zeo/zeo_ph.h>
 #include <zeo/zeo_brep.h>
 
 void create_src(zPH3D *ph)
@@ -34,7 +34,7 @@ void output(zPH3D *ph, char name[])
   fprintf( fp, "name: prism\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: white\n" );
-  zPH3DFPrint( fp, ph );
+  zPH3DFPrintZTK( fp, ph );
   fclose( fp );
 }
 
@@ -59,8 +59,8 @@ int main(int argc, char *argv[])
   zBREP2PH3D( &brep, &ph );
 
   brep_output( &brep );
-  output( &prism, "src" );
-  output( &ph, "dest" );
+  output( &prism, "src.ztk" );
+  output( &ph, "dest.ztk" );
 
   zPH3DDestroy( &prism );
   zPH3DDestroy( &ph );

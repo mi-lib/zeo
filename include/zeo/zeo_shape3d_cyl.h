@@ -113,6 +113,9 @@ __EXPORT zMat3D *zCyl3DInertia(zCyl3D *cyl, zMat3D *inertia);
  */
 __EXPORT zPH3D *zCyl3DToPH(zCyl3D *cyl, zPH3D *ph);
 
+/*! \brief print a 3D cylinder out to a file in a ZTK format. */
+__EXPORT void zCyl3DFPrintZTK(FILE *fp, zCyl3D *cyl);
+
 /* methods for abstraction */
 extern zShape3DCom zeo_shape3d_cyl_com;
 

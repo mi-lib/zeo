@@ -24,14 +24,17 @@ int main(void)
   zNURBS3D src, dest;
   zFrame3D f;
   FILE *fp;
+  ZTK ztk;
 
-  if( !( fp = fopen( "test_nurbs.tkf", "r" ) ) ){
-    eprintf( "cannot open test_nurbs.tkf.\n" );
+  ZTKInit( &ztk );
+  if( !ZTKParse( &ztk, "test_nurbs.ztk" ) ){
+    eprintf( "cannot open test_nurbs.ztk.\n" );
     eprintf( "run nurbs_test first.\n" );
     return 1;
   }
-  zNURBS3DFScan( fp, &src );
-  fclose( fp );
+  ZTKTagRewind( &ztk );
+  zNURBS3DFromZTK( &src, &ztk );
+  ZTKDestroy( &ztk );
   zNURBS3DClone( &src, &dest );
 
   fp = fopen( "src", "w" );

@@ -1,4 +1,4 @@
-#include <zeo/zeo_shape.h>
+#include <zeo/zeo_shape3d.h>
 
 void output_prox(FILE *fp, zVec3D *p, zVec3D *cp)
 {
@@ -59,7 +59,7 @@ void output(zEllips3D *el, zVec3D *p, zVec3D *cp)
   fprintf( fp, "name: ellipsoid\n" );
   fprintf( fp, "type: ellipsoid\n" );
   fprintf( fp, "optic: gray\n" );
-  zEllips3DFPrint( fp, el );
+  zEllips3DFPrintZTK( fp, el );
 
   fclose( fp );
 }

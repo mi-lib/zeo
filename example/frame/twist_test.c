@@ -1,4 +1,4 @@
-#include <zeo/zeo_frame.h>
+#include <zeo/zeo_frame3d.h>
 
 int main(int argc, char *argv[])
 {

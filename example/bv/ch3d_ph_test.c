@@ -1,5 +1,5 @@
-#include <zeo/zeo_bv.h>
-#include <zeo/zeo_mshape.h>
+#include <zeo/zeo_bv3d.h>
+#include <zeo/zeo_mshape3d.h>
 
 void src(zPH3D *ph)
 {
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
   zPH3D *ph, ch;
 
   if( argc < 2 ) return 1;
-  zMShape3DScanFile( &shape, argv[1] );
+  zMShape3DReadZTK( &shape, argv[1] );
 
   src( ( ph = zShape3DPH(zMShape3DShape(&shape,0)) ) );
   zCH3D( &ch, zPH3DVertBuf(ph), zPH3DVertNum(ph) );

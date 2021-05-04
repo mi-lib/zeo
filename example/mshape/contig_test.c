@@ -1,4 +1,4 @@
-#include <zeo/zeo_mshape.h>
+#include <zeo/zeo_mshape3d.h>
 
 #define N 100
 
@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
   FILE *fp1, *fp2;
 
   zRandInit();
-  zMShape3DScanFile( &ms, "../model/octahedron.z3d" );
+  zMShape3DReadZTK( &ms, "../model/octahedron.ztk" );
   fp1 = fopen( "p", "w" );
   fp2 = fopen( "cp", "w" );
   for( i=0; i<N; i++ ){

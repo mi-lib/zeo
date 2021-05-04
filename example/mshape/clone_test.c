@@ -1,14 +1,14 @@
-#include <zeo/zeo.h>
+#include <zeo/zeo_mshape3d.h>
 
-#define MODEL "../model/scc.z3d"
+#define MODEL "../model/scc.ztk"
 
 int main(void)
 {
   zMShape3D src, *dest;
 
-  zMShape3DScanFile( &src, MODEL );
+  zMShape3DReadZTK( &src, MODEL );
   dest = zMShape3DClone( &src );
-  zMShape3DPrint( dest );
+  zMShape3DFPrintZTK( stdout, dest );
   zMShape3DDestroy( &src );
   zMShape3DDestroy( dest );
   return 0;

@@ -133,6 +133,9 @@ __EXPORT zMat3D *zEllips3DInertia(zEllips3D *ellips, zMat3D *inertia);
 /* default longitudinal & latitudinal division number are the same. */
 __EXPORT zPH3D *zEllips3DToPH(zEllips3D *ellips, zPH3D *ph);
 
+/*! \brief print a 3D ellipsoid out to a file in a ZTK format. */
+__EXPORT void zEllips3DFPrintZTK(FILE *fp, zEllips3D *ellips);
+
 /* methods for abstraction */
 extern zShape3DCom zeo_shape3d_ellips_com;
 

@@ -37,7 +37,7 @@ int main(void)
   printf( "name: ch\n" );
   printf( "type: polyhedron\n" );
   printf( "optic: white\n" );
-  zPH3DPrint( &ch );
+  zPH3DFPrintZTK( stdout, &ch );
   zPH3DDestroy( &ch );
   return 0;
 }

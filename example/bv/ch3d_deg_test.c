@@ -1,4 +1,4 @@
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_bv3d.h>
 
 #define N 3000
 zVec3D v[N];
@@ -33,7 +33,7 @@ void output(zPH3D *ph, FILE *fp)
   printf( "name: ch\n" );
   printf( "type: polyhedron\n" );
   printf( "optic: white\n" );
-  zPH3DPrint( ph );
+  zPH3DFPrintZTK( stdout, ph );
 }
 
 int main(void)

@@ -140,7 +140,10 @@ __EXPORT zVec3D *zBox3DVert(zBox3D *box, int i, zVec3D *v);
  */
 __EXPORT zPH3D *zBox3DToPH(zBox3D *box, zPH3D *ph);
 
-/*! \brief print a box out to a file in a format to be plotted. */
+/*! \brief print a 3D box out to a file in a ZTK format. */
+__EXPORT void zBox3DFPrintZTK(FILE *fp, zBox3D *box);
+
+/*! \brief print a box out to a file in a plottable format. */
 __EXPORT void zBox3DDataFPrint(FILE *fp, zBox3D *box);
 
 /* methods for abstraction */
