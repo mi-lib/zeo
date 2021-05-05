@@ -1,4 +1,5 @@
-2021. 5. 5. Added zMShape3DVertList and zMShape3DBall. [zeo_mshape3d]
+2021. 5. 5. Debugged zMShape3DBBall. [zeo_mshape3d]
+2021. 5. 5. Added zMShape3DVertList and zMShape3DBBall. [zeo_mshape3d]
 2021. 5. 5. Reordered objects. [src/makefile]
 2021. 5. 5. Corrected examples to conform to the new specifications. [example]
 2021. 5. 4. Renamed zTri3DListInsert to zTri3DListAdd missed in the previous revision. [zeo_elem3d_list]

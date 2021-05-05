@@ -81,7 +81,7 @@ __EXPORT zMShape3D *zMShape3DToPH(zMShape3D *ms);
 __EXPORT zVec3DList *zMShape3DVertList(zMShape3D *ms, zVec3DList *vl);
 
 /*! \brief generate the bounding ball of multiple 3D shapes. */
-__EXPORT zSphere3D *zMShape3DBall(zMShape3D *ms, zSphere3D *bb);
+__EXPORT zSphere3D *zMShape3DBBall(zMShape3D *ms, zSphere3D *bb);
 
 /*! \brief read multiple 3D shapes from a ZTK format processor. */
 __EXPORT zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk);

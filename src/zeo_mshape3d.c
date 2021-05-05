@@ -153,7 +153,7 @@ zVec3DList *zMShape3DVertList(zMShape3D *ms, zVec3DList *vl)
 }
 
 /* generate the bounding ball of multiple 3D shapes. */
-zSphere3D *zMShape3DBall(zMShape3D *ms, zSphere3D *bb)
+zSphere3D *zMShape3DBBall(zMShape3D *ms, zSphere3D *bb)
 {
   zVec3DList pl;
 
