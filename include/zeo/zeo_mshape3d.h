@@ -74,7 +74,14 @@ __EXPORT zVec3D *zMShape3DContigVert(zMShape3D *ms, zVec3D *p, double *d);
 __EXPORT double zMShape3DClosest(zMShape3D *ms, zVec3D *p, zVec3D *cp);
 __EXPORT bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, bool rim);
 
+/*! \brief convert multiple shapes to polyhedra. */
 __EXPORT zMShape3D *zMShape3DToPH(zMShape3D *ms);
+
+/*! \brief make a list of vertices of multiple 3D shapes. */
+__EXPORT zVec3DList *zMShape3DVertList(zMShape3D *ms, zVec3DList *vl);
+
+/*! \brief generate the bounding ball of multiple 3D shapes. */
+__EXPORT zSphere3D *zMShape3DBall(zMShape3D *ms, zSphere3D *bb);
 
 /*! \brief read multiple 3D shapes from a ZTK format processor. */
 __EXPORT zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk);

@@ -5,6 +5,7 @@
  */
 
 #include <zeo/zeo_mshape3d.h>
+#include <zeo/zeo_bv3d.h>
 
 /* ********************************************************** */
 /* CLASS: zMShape3D
@@ -125,6 +126,43 @@ zMShape3D *zMShape3DToPH(zMShape3D *ms)
   for( i=0; i<zMShape3DShapeNum(ms); i++ )
     if( !zShape3DToPH( zMShape3DShape(ms,i) ) ) return NULL;
   return ms;
+}
+
+/* make a list of vertices of multiple 3D shapes. */
+zVec3DList *zMShape3DVertList(zMShape3D *ms, zVec3DList *vl)
+{
+  zShape3D *sp, s;
+  register int i, j;
+
+  zListInit( vl );
+  for( i=0; i<zMShape3DShapeNum(ms); i++ ){
+    sp = zMShape3DShape(ms,i);
+    if( sp->com == &zeo_shape3d_ph_com ){
+      for( j=0; j<zShape3DVertNum(sp); j++ ){
+        if( !zVec3DListAdd( vl, zShape3DVert(sp,j) ) ) return NULL;
+      }
+    } else{
+      zShape3DClone( sp, &s, NULL );
+      if( !zShape3DToPH( &s ) ) return NULL;
+      if( !zVec3DListAppendArray( vl, &zShape3DPH(&s)->vert ) ) vl = NULL;
+      zShape3DDestroy( &s );
+      if( !vl ) return NULL;
+    }
+  }
+  return vl;
+}
+
+/* generate the bounding ball of multiple 3D shapes. */
+zSphere3D *zMShape3DBall(zMShape3D *ms, zSphere3D *bb)
+{
+  zVec3DList pl;
+
+  if( zMShape3DVertList( ms, &pl ) )
+    zBBallPL( bb, &pl, NULL );
+  else
+    bb = NULL;
+  zVec3DListDestroy( &pl );
+  return bb;
 }
 
 /* parse ZTK format */
