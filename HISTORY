@@ -1,3 +1,5 @@
+2021. 5. 6. Renamed zBBallPL to _zBBallPL, and newly created zBBallPL to reduce the risk of stack-overflow. [zeo_bv3_bball]
+2021. 5. 6. Defined ZEO_BBALL_PN_THRESHOLD. [zeo_bv3_bball]
 2021. 5. 5. Debugged zMShape3DBBall. [zeo_mshape3d]
 2021. 5. 5. Added zMShape3DVertList and zMShape3DBBall. [zeo_mshape3d]
 2021. 5. 5. Reordered objects. [src/makefile]

@@ -15,6 +15,10 @@ __BEGIN_DECLS
 /* bounding ball / smallest enclosing ball
  * ********************************************************** */
 
+/*! \brief If the number of points exceeds the this threshold, points inside of the convex hull are discarded from the list. */
+#define ZEO_BBALL_PN_THRESHOLD 1000
+/* NOTE: This should be optimized through a comparison of exection time of _zBBall() and zCH3D(). */
+
 /*! \brief bounding ball of points.
  *
  * zBBall() computes bounding ball (or, smallest enclosing ball)

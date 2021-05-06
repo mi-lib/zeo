@@ -132,25 +132,48 @@ static int _zBBallInc(zSphere3D *bb, zVec3DList *p, zVec3DList *shell, zVec3D **
   return num;
 }
 
-/* a recursive procedure to find bounding ball of a set of 3D points. */
-int zBBallPL(zSphere3D *bb, zVec3DList *p, zVec3D **vp)
+/* a recursive procedure to find bounding ball of a list of 3D points. */
+static int _zBBallPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
 {
   zVec3DList shell;
   zVec3DListCell *cp;
   int num;
 
   zListInit( &shell );
-  if( zListSize(p) <= 4 )
-    return _zBBallPrim( bb, p, vp );
-  zListDeleteTail( p, &cp );
-  num = zBBallPL( bb, p, vp );
+  if( zListSize(pl) <= 4 )
+    return _zBBallPrim( bb, pl, vp );
+  zListDeleteTail( pl, &cp );
+  num = _zBBallPL( bb, pl, vp );
   if( !zSphere3DPointIsInside( bb, cp->data, true ) ){
     zListInsertTail( &shell, cp );
-    num = _zBBallInc( bb, p, &shell, vp );
+    num = _zBBallInc( bb, pl, &shell, vp );
     zListPurge( &shell, cp );
   }
-  zListInsertTail( p, cp );
+  zListInsertTail( pl, cp );
   return num;
+}
+
+/* bounding ball of a list of 3D points. */
+int zBBallPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
+{
+  zPH3D ch;
+  zVec3DAddrList al;
+  int ret;
+
+  if( zListSize(pl) > ZEO_BBALL_PN_THRESHOLD ){
+    /* discard points inside of the convex hull from the list. */
+    if( !zCH3DPL( &ch, pl ) ){
+      ret = 0;
+    } else{
+      zFree( zPH3DFaceBuf(&ch) );
+      zVec3DAddrListCreate( &al, zPH3DVertBuf(&ch), zPH3DVertNum(&ch) );
+      ret = _zBBallPL( bb, &al, vp );
+      zVec3DAddrListDestroy( &al );
+    }
+    zPH3DDestroy( &ch );
+  } else
+    ret = _zBBallPL( bb, pl, vp );
+  return ret;
 }
 
 /* bounding ball of 3D points. */
