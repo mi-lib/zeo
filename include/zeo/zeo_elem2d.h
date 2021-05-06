@@ -10,9 +10,11 @@
 #include <zeo/zeo_vec2d.h>
 
 __BEGIN_DECLS
+
 /* ********************************************************** */
 /*! \brief 2D triangle class.
  *//********************************************************* */
+
 typedef struct{
   zVec2D *v[3]; /*!< vertices */
 } zTri2D;
@@ -32,6 +34,21 @@ typedef struct{
  */
 __EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
 #define zTri2DInit(t) zTri2DCreate( t, NULL, NULL, NULL )
+
+/*! \brief create a triangle. */
+__EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
+
+/*! \brief barycenter of a triangle. */
+__EXPORT zVec2D *zTri2DBarycenter(zTri2D *t, zVec2D *c);
+
+/*! \brief circumcenter of a 2D triangle */
+__EXPORT zVec2D *zTri2DCircumcenter(zTri2D *t, zVec2D *c);
+
+/*! \brief incenter of a triangle */
+__EXPORT zVec2D *zTri2DIncenter(zTri2D *t, zVec2D *c);
+
+/*! \brief orthocenter of a triangle */
+__EXPORT zVec2D *zTri2DOrthocenter(zTri2D *t, zVec2D *c);
 
 /*! \brief print a 2D triangle.
  *
@@ -54,6 +71,38 @@ __EXPORT void zTri2DFPrint(FILE *fp, zTri2D *t);
  * \brief array class of 2D triangles.
  */
 zArrayClass( zTri2DArray, zTri2D );
+
+/* NOTE: is the following to be moved to zeo_shape2d? */
+
+/* ********************************************************** */
+/*! \brief 2D disk class.
+ *//********************************************************* */
+
+typedef struct{
+  zVec2D center;
+  double radius;
+} zDisk2D;
+
+#define zDisk2DCenter(d)      ( &(d)->center )
+#define zDisk2DRadius(d)      (d)->radius
+
+#define zDisk2DSetCenter(d,c) zVec2DCopy( c, zDisk2DCenter(d) )
+#define zDisk2DSetRadius(d,r) ( zDisk2DRadius(d) = (r) )
+
+/*! \brief create a 2D disk. */
+__EXPORT zDisk2D *zDisk2DCreate(zDisk2D *d, zVec2D *c, double r);
+
+/*! \brief signed distance from a 2D point to a disk. */
+__EXPORT double zDisk2DPointDist(zDisk2D *d, zVec2D *p);
+
+/*! \brief check if a 2D point is inside of a disk. */
+__EXPORT bool zDisk2DPointIsInside(zDisk2D *d, zVec2D *p, bool rim);
+
+/*! \brief create a 2D disk from two points at both ends of diameter. */
+__EXPORT zDisk2D *zDisk2DFrom2(zDisk2D *d, zVec2D *v1, zVec2D *v2);
+
+/*! \brief create a 2D disk from three points as a circumcircle of them. */
+__EXPORT zDisk2D *zDisk2DFrom3(zDisk2D *d, zVec2D *v1, zVec2D *v2, zVec2D *v3);
 
 __END_DECLS
 

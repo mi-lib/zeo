@@ -92,6 +92,15 @@ __EXPORT double zSphere3DClosest(zSphere3D *sphere, zVec3D *p, zVec3D *cp);
 __EXPORT double zSphere3DPointDist(zSphere3D *sphere, zVec3D *p);
 __EXPORT bool zSphere3DPointIsInside(zSphere3D *sphere, zVec3D *p, bool rim);
 
+/*! \brief create a 3D sphere from two points at both ends of diameter. */
+__EXPORT zSphere3D *zSphere3DFrom2(zSphere3D *sphere, zVec3D *v1, zVec3D *v2);
+
+/*! \brief create a 3D sphere from three points to include their circumcircle as the great circle. */
+__EXPORT zSphere3D *zSphere3DFrom3(zSphere3D *sphere, zVec3D *v1, zVec3D *v2, zVec3D *v3);
+
+/*! \brief create a 3D sphere from four points as the circumscribing sphere of them. */
+__EXPORT zSphere3D *zSphere3DFrom4(zSphere3D *sphere, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4);
+
 /*! \brief volume and inertia of a 3D sphere.
  *
  * zSphere3DVolume() calculates the volume of a 3D sphere \a sphere.

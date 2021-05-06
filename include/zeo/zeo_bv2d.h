@@ -7,9 +7,12 @@
 #ifndef __ZEO_BV2D_H__
 #define __ZEO_BV2D_H__
 
+#include <zeo/zeo_elem2d.h>
+
 /* NOTE: the following should be replaced with zeo_elem2d or zeo_pg2d in future. */
 #include <zeo/zeo_ph.h>
 
+#include <zeo/zeo_bv2d_bdisk.h>
 #include <zeo/zeo_bv2d_ch.h>
 
 #endif /* __ZEO_BV2D_H__ */

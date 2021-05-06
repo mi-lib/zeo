@@ -21,6 +21,14 @@ typedef union{
   double e[2];
 } zVec2D;
 
+/*! \brief 2D zero vector and unit vectors */
+extern const zVec2D zvec2Dzero;
+extern const zVec2D zvec2Dx;
+extern const zVec2D zvec2Dy;
+#define ZVEC2DZERO ( (zVec2D *)&zvec2Dzero )
+#define ZVEC2DX    ( (zVec2D *)&zvec2Dx )
+#define ZVEC2DY    ( (zVec2D *)&zvec2Dy )
+
 /*! \brief create, copy and zero a 2D vector.
  *
  * zVec2DCreate() creates a 2D vector \a v which consists of
@@ -299,5 +307,7 @@ __EXPORT void zVec2DFPrint(FILE *fp, zVec2D *v);
 zArrayClass( zVec2DArray, zVec2D );
 
 __END_DECLS
+
+#include <zeo/zeo_vec2d_list.h>  /* 2D vector list */
 
 #endif /* __ZEO_VEC2D_H__ */

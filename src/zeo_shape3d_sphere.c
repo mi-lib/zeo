@@ -102,6 +102,44 @@ bool zSphere3DPointIsInside(zSphere3D *sphere, zVec3D *p, bool rim)
   return zSphere3DPointDist( sphere, p ) < ( rim ? zTOL : 0 ) ? true : false;
 }
 
+/* create a 3D sphere from two points at both ends of diameter. */
+zSphere3D *zSphere3DFrom2(zSphere3D *sphere, zVec3D *v1, zVec3D *v2)
+{
+  zVec3D c;
+  double r;
+
+  r = zVec3DDist( zVec3DMid( v1, v2, &c ), v1 );
+  return zSphere3DCreate( sphere, &c, r, 0 );
+}
+
+/* create a 3D sphere from three points to include their circumcircle as the great circle. */
+zSphere3D *zSphere3DFrom3(zSphere3D *sphere, zVec3D *v1, zVec3D *v2, zVec3D *v3)
+{
+  zVec3D c;
+  zTri3D t;
+  double r;
+
+  zTri3DCreate( &t, v1, v2, v3 );
+  r = zVec3DDist( zTri3DCircumcenter( &t, &c ), v3 );
+  return zSphere3DCreate( sphere, &c, r, 0 );
+}
+
+/* create a 3D sphere from four points as the circumscribing sphere of them. */
+zSphere3D *zSphere3DFrom4(zSphere3D *sphere, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4)
+{
+  zVec3D e1, e2, e3, c;
+  zTri3D t;
+  double r;
+
+  zVec3DSub( v2, v1, &e1 );
+  zVec3DSub( v3, v1, &e2 );
+  zVec3DSub( v4, v1, &e3 );
+  zTri3DCreate( &t, &e1, &e2, &e3 );
+  r = zVec3DNorm( zTri3DConeCircumcenter( &t, &c ) );
+  zVec3DAddDRC( &c, v1 );
+  return zSphere3DCreate( sphere, &c, r, 0 );
+}
+
 /* volume of a 3D sphere. */
 double zSphere3DVolume(zSphere3D *sphere)
 {

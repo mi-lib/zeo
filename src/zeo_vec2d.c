@@ -11,6 +11,11 @@
  * 2D vector class
  * ********************************************************** */
 
+/* 3D zero vector and unit vectors along (x,y,z) axis. */
+const zVec2D zvec2Dzero = { { 0, 0 } };
+const zVec2D zvec2Dx    = { { 1, 0 } };
+const zVec2D zvec2Dy    = { { 0, 1 } };
+
 /* create a 2D vector. */
 zVec2D *zVec2DCreate(zVec2D *v, double x, double y)
 {
