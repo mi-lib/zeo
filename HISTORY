@@ -1,3 +1,6 @@
+2021. 5. 7. Renamed zBDisk to zBDisk2D. [zeo_bv2d_bdisk]
+2021. 5. 7. Renamed zBBall* to zBBall3D*. [zeo_bv3d_bball, zeo_mshape3d]
+2021. 5. 7. Renamed zAABB* to zAABB3D*. [zeo_bv3d_aabb, zeo_col_box]
 2021. 5. 6. Modified zBBall and zBBallPL to compute the actual radius without a margin. [zeo_bv3d_bball]
 2021. 5. 6. Debugged _zBBall4. [zeo_bv3d_bball]
 2021. 5. 6. Reimplemented _zBBallTest? and _zBBallPrim with zSphere3DFrom?. [zeo_bv3d_bball]

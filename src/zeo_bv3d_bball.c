@@ -11,7 +11,7 @@
  * ********************************************************** */
 
 /* test if a ball with its poles at the first two points bounds the last two points. */
-static zSphere3D *_zBBallTest2(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
+static zSphere3D *_zBBall3DTest2(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
 {
   zSphere3DFrom2( bb, v1, v2 );
   if( !zSphere3DPointIsInside(bb,v3,true) || !zSphere3DPointIsInside(bb,v4,true) ) return NULL;
@@ -22,7 +22,7 @@ static zSphere3D *_zBBallTest2(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3
 }
 
 /* test if a circum ball of the first three points bounds the last point. */
-static zSphere3D *_zBBallTest3(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
+static zSphere3D *_zBBall3DTest3(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
 {
   zSphere3DFrom3( bb, v1, v2, v3 );
   if( !zSphere3DPointIsInside(bb,v4,true) ) return NULL;
@@ -33,7 +33,7 @@ static zSphere3D *_zBBallTest3(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3
 }
 
 /* a circum ball of the four points. */
-static zSphere3D *_zBBallTest4(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
+static zSphere3D *_zBBall3DTest4(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
 {
   if( vp ){
     vp[0] = v1; vp[1] = v2; vp[2] = v3; vp[3] = v4;
@@ -42,23 +42,23 @@ static zSphere3D *_zBBallTest4(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3
 }
 
 /* bounding ball of the four points. */
-static int _zBBall4(zSphere3D *bb, zVec3D *v[], zVec3D **vp)
+static int _zBBall3D4(zSphere3D *bb, zVec3D *v[], zVec3D **vp)
 {
-  if( _zBBallTest2( bb, v[0], v[1], v[2], v[3], vp ) ||
-      _zBBallTest2( bb, v[0], v[2], v[1], v[3], vp ) ||
-      _zBBallTest2( bb, v[0], v[3], v[1], v[2], vp ) ||
-      _zBBallTest2( bb, v[1], v[2], v[0], v[3], vp ) ||
-      _zBBallTest2( bb, v[1], v[3], v[0], v[2], vp ) ||
-      _zBBallTest2( bb, v[2], v[3], v[0], v[1], vp ) ) return 2;
-  if( _zBBallTest3( bb, v[0], v[1], v[2], v[3], vp ) ||
-      _zBBallTest3( bb, v[0], v[1], v[3], v[2], vp ) ||
-      _zBBallTest3( bb, v[1], v[2], v[3], v[0], vp ) ) return 3;
-  _zBBallTest4( bb, v[0], v[1], v[2], v[3], vp );
+  if( _zBBall3DTest2( bb, v[0], v[1], v[2], v[3], vp ) ||
+      _zBBall3DTest2( bb, v[0], v[2], v[1], v[3], vp ) ||
+      _zBBall3DTest2( bb, v[0], v[3], v[1], v[2], vp ) ||
+      _zBBall3DTest2( bb, v[1], v[2], v[0], v[3], vp ) ||
+      _zBBall3DTest2( bb, v[1], v[3], v[0], v[2], vp ) ||
+      _zBBall3DTest2( bb, v[2], v[3], v[0], v[1], vp ) ) return 2;
+  if( _zBBall3DTest3( bb, v[0], v[1], v[2], v[3], vp ) ||
+      _zBBall3DTest3( bb, v[0], v[1], v[3], v[2], vp ) ||
+      _zBBall3DTest3( bb, v[1], v[2], v[3], v[0], vp ) ) return 3;
+  _zBBall3DTest4( bb, v[0], v[1], v[2], v[3], vp );
   return 4;
 }
 
 /* bounding ball of up to four points. */
-static int _zBBallPrim(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
+static int _zBBall3DPrim(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
 {
   zVec3D *v[4];
 
@@ -83,7 +83,7 @@ static int _zBBallPrim(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
     v[1] = zListCellNext(zListTail(pl))->data;
     v[2] = zListCellNext(zListCellNext(zListTail(pl)))->data;
     v[3] = zListHead(pl)->data;
-    return _zBBall4( bb, v, vp );
+    return _zBBall3D4( bb, v, vp );
   default:
     ZRUNERROR( ZEO_ERR_FATAL );
   }
@@ -92,18 +92,18 @@ static int _zBBallPrim(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
 
 /* a recursive procedure to find bounding ball of two sets of points,
  * where the latter is the set of those on the surface of the ball. */
-static int _zBBallInc(zSphere3D *bb, zVec3DList *pl, zVec3DList *shell, zVec3D **vp)
+static int _zBBall3DInc(zSphere3D *bb, zVec3DList *pl, zVec3DList *shell, zVec3D **vp)
 {
   zVec3DListCell *cp;
   int num;
 
   if( zListIsEmpty(pl) || zListSize(shell) == 4 )
-    return _zBBallPrim( bb, shell, vp );
+    return _zBBall3DPrim( bb, shell, vp );
   zListDeleteTail( pl, &cp );
-  num = _zBBallInc( bb, pl, shell, vp );
+  num = _zBBall3DInc( bb, pl, shell, vp );
   if( !zSphere3DPointIsInside( bb, cp->data, true ) ){
     zListInsertTail( shell, cp );
-    num = _zBBallInc( bb, pl, shell, vp );
+    num = _zBBall3DInc( bb, pl, shell, vp );
     zListPurge( shell, cp );
   }
   zListInsertTail( pl, cp );
@@ -111,7 +111,7 @@ static int _zBBallInc(zSphere3D *bb, zVec3DList *pl, zVec3DList *shell, zVec3D *
 }
 
 /* a recursive procedure to find bounding ball of a list of 3D points. */
-static int _zBBallPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
+static int _zBBall3DPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
 {
   zVec3DList shell;
   zVec3DListCell *cp;
@@ -119,12 +119,12 @@ static int _zBBallPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
 
   zListInit( &shell );
   if( zListSize(pl) <= 4 )
-    return _zBBallPrim( bb, pl, vp );
+    return _zBBall3DPrim( bb, pl, vp );
   zListDeleteTail( pl, &cp );
-  num = _zBBallPL( bb, pl, vp );
+  num = _zBBall3DPL( bb, pl, vp );
   if( !zSphere3DPointIsInside( bb, cp->data, true ) ){
     zListInsertTail( &shell, cp );
-    num = _zBBallInc( bb, pl, &shell, vp );
+    num = _zBBall3DInc( bb, pl, &shell, vp );
     zListPurge( &shell, cp );
   }
   zListInsertTail( pl, cp );
@@ -132,7 +132,7 @@ static int _zBBallPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
 }
 
 /* bounding ball of a list of 3D points. */
-int zBBallPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
+int zBBall3DPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
 {
   zPH3D ch;
   zVec3DAddrList al;
@@ -145,22 +145,22 @@ int zBBallPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
     } else{
       zFree( zPH3DFaceBuf(&ch) );
       zVec3DAddrListCreate( &al, zPH3DVertBuf(&ch), zPH3DVertNum(&ch) );
-      ret = _zBBallPL( bb, &al, vp );
+      ret = _zBBall3DPL( bb, &al, vp );
       zVec3DAddrListDestroy( &al );
     }
     zPH3DDestroy( &ch );
   } else
-    ret = _zBBallPL( bb, pl, vp );
+    ret = _zBBall3DPL( bb, pl, vp );
   return ret;
 }
 
 /* bounding ball of 3D points. */
-int zBBall(zSphere3D *bb, zVec3D p[], int num, zVec3D **vp)
+int zBBall3D(zSphere3D *bb, zVec3D p[], int num, zVec3D **vp)
 {
   zVec3DAddrList pl;
 
   if( !zVec3DAddrListCreate( &pl, p, num ) ) return 0;
-  num = zBBallPL( bb, &pl, vp );
+  num = zBBall3DPL( bb, &pl, vp );
   zVec3DAddrListDestroy( &pl );
   return num;
 }

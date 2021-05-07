@@ -13,11 +13,11 @@ __BEGIN_DECLS
 
 /*! \brief bounding disk of 2D points.
  *
- * zBDisk() computes the bounding disk (or, smallest enclosing disk)
+ * zBDisk2D() computes the bounding disk (or, smallest enclosing disk)
  * of a set of 2D points \a p. \a num is the number of points.
  * The result is put int \a bd.
  *
- * zBDiskPL() also computes the bounding disk. For this function,
+ * zBDisk2DPL() also computes the bounding disk. For this function,
  * the set of points is given as a vector list \a p.
  *
  * The pointers to points on the outer rim circle will be stored
@@ -25,11 +25,11 @@ __BEGIN_DECLS
  *
  * The algorithm is according to E. Welzl(1991).
  * \return
- * zBDisk() and zBDiskPL() return the number of points on the
+ * zBDisk2D() and zBDisk2DPL() return the number of points on the
  * outer rim circle of \a bd.
  */
-__EXPORT int zBDiskPL(zDisk2D *bd, zVec2DList *pl, zVec2D **vp);
-__EXPORT int zBDisk(zDisk2D *bd, zVec2D p[], int num, zVec2D **vp);
+__EXPORT int zBDisk2DPL(zDisk2D *bd, zVec2DList *pl, zVec2D **vp);
+__EXPORT int zBDisk2D(zDisk2D *bd, zVec2D p[], int num, zVec2D **vp);
 
 __END_DECLS
 

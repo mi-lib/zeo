@@ -158,7 +158,7 @@ zSphere3D *zMShape3DBBall(zMShape3D *ms, zSphere3D *bb)
   zVec3DList pl;
 
   if( zMShape3DVertList( ms, &pl ) )
-    zBBallPL( bb, &pl, NULL );
+    zBBall3DPL( bb, &pl, NULL );
   else
     bb = NULL;
   zVec3DListDestroy( &pl );

@@ -88,7 +88,7 @@ zAABox3D *zBox3DToAABox3D(zBox3D *box, zAABox3D *aabox)
 
   for( i=0; i<8; i++ )
     zBox3DVert( box, i, &v[i] );
-  return zAABB( aabox, v, 8, NULL );
+  return zAABB3D( aabox, v, 8, NULL );
 }
 
 /* print an axis-aligned box out to a file in a format to be plotted. */
@@ -128,8 +128,8 @@ void zAABox3DDataFPrint(FILE *fp, zAABox3D *box)
 /* AABB - axis-aligned bounding box
  * ********************************************************** */
 
-/* enlarge bounding box if a point is out of the current box. */
-static int _zAABBTest(zAABox3D *bb, zVec3D *p, zDir u)
+/* enlarge bounding box if a 3D point is out of the current box. */
+static int _zAABB3DTest(zAABox3D *bb, zVec3D *p, zDir u)
 {
   if( p->e[u] > bb->max.e[u] ){
     bb->max.e[u] = p->e[u];
@@ -145,25 +145,25 @@ static int _zAABBTest(zAABox3D *bb, zVec3D *p, zDir u)
 /* *** array version *** */
 
 /* enlarge bounding box along each axis if the point is outside of the box. */
-static void _zAABBIncElem(zAABox3D *bb, zVec3D *p, zDir u, zVec3D **vp)
+static void _zAABB3DIncElem(zAABox3D *bb, zVec3D *p, zDir u, zVec3D **vp)
 {
   int s;
 
-  if( ( s = _zAABBTest( bb, p, u ) ) != -1 && vp )
+  if( ( s = _zAABB3DTest( bb, p, u ) ) != -1 && vp )
     vp[u+s] = p;
 }
 
 /* enlarge bounding box if the point is outside of the box. */
-static zAABox3D *_zAABBInc(zAABox3D *bb, zVec3D *p, zVec3D **vp)
+static zAABox3D *_zAABB3DInc(zAABox3D *bb, zVec3D *p, zVec3D **vp)
 {
-  _zAABBIncElem( bb, p, zX, vp );
-  _zAABBIncElem( bb, p, zY, vp );
-  _zAABBIncElem( bb, p, zZ, vp );
+  _zAABB3DIncElem( bb, p, zX, vp );
+  _zAABB3DIncElem( bb, p, zY, vp );
+  _zAABB3DIncElem( bb, p, zZ, vp );
   return bb;
 }
 
 /* bounding box of points. */
-zAABox3D *zAABB(zAABox3D *bb, zVec3D p[], int num, zVec3D **vp)
+zAABox3D *zAABB3D(zAABox3D *bb, zVec3D p[], int num, zVec3D **vp)
 {
   register int i;
 
@@ -174,12 +174,12 @@ zAABox3D *zAABB(zAABox3D *bb, zVec3D p[], int num, zVec3D **vp)
   zVec3DCopy( &p[0], &bb->max );
   if( vp ) vp[0] = vp[1] = vp[2] = vp[3] = vp[4] = vp[5] = &p[0];
   for( i=1; i<num; i++ )
-    _zAABBInc( bb, &p[i], vp );
+    _zAABB3DInc( bb, &p[i], vp );
   return bb;
 }
 
 /* bounding box of points in a specified frame. */
-zAABox3D *zAABBXform(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f)
+zAABox3D *zAABB3DXform(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f)
 {
   register int i;
   zVec3D px;
@@ -192,7 +192,7 @@ zAABox3D *zAABBXform(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f)
   zVec3DCopy( &px, &bb->max );
   for( i=1; i<num; i++ ){
     zXform3D( f, &p[i], &px );
-    _zAABBInc( bb, &px, NULL );
+    _zAABB3DInc( bb, &px, NULL );
   }
   return bb;
 }
@@ -200,25 +200,25 @@ zAABox3D *zAABBXform(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f)
 /* *** list version *** */
 
 /* enlarge bounding box along each axis if the point is outside of the box. */
-static void _zAABBPLIncElem(zAABox3D *bb, zVec3DListCell *p, zDir u, zVec3DListCell **vp)
+static void _zAABB3DPLIncElem(zAABox3D *bb, zVec3DListCell *p, zDir u, zVec3DListCell **vp)
 {
   int s;
 
-  if( ( s = _zAABBTest( bb, p->data, u ) ) != -1 && vp )
+  if( ( s = _zAABB3DTest( bb, p->data, u ) ) != -1 && vp )
     vp[u+s] = p;
 }
 
 /* enlarge bounding box if the point is outside of the box. */
-static zAABox3D *_zAABBPLInc(zAABox3D *bb, zVec3DListCell *p, zVec3DListCell **vp)
+static zAABox3D *_zAABB3DPLInc(zAABox3D *bb, zVec3DListCell *p, zVec3DListCell **vp)
 {
-  _zAABBPLIncElem( bb, p, zX, vp );
-  _zAABBPLIncElem( bb, p, zY, vp );
-  _zAABBPLIncElem( bb, p, zZ, vp );
+  _zAABB3DPLIncElem( bb, p, zX, vp );
+  _zAABB3DPLIncElem( bb, p, zY, vp );
+  _zAABB3DPLIncElem( bb, p, zZ, vp );
   return bb;
 }
 
 /* bounding box of a list of points. */
-zAABox3D *zAABBPL(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vp)
+zAABox3D *zAABB3DPL(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vp)
 {
   zVec3DListCell *pc;
 
@@ -230,12 +230,12 @@ zAABox3D *zAABBPL(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vp)
   memcpy( &bb->max, &pc->data, sizeof(zVec3D) );
   if( vp ) vp[0] = vp[1] = vp[2] = vp[3] = vp[4] = vp[5] = pc;
   zListForEach( pl, pc )
-    _zAABBPLInc( bb, pc, vp );
+    _zAABB3DPLInc( bb, pc, vp );
   return bb;
 }
 
 /* bounding box of a list of points in a specified frame. */
-zAABox3D *zAABBXformPL(zAABox3D *bb, zVec3DList *pl, zFrame3D *f)
+zAABox3D *zAABB3DXformPL(zAABox3D *bb, zVec3DList *pl, zFrame3D *f)
 {
   zVec3D px;
   zVec3DListCell *pc;
@@ -249,7 +249,7 @@ zAABox3D *zAABBXformPL(zAABox3D *bb, zVec3DList *pl, zFrame3D *f)
   memcpy( &bb->max, pc->data, sizeof(zVec3D) );
   zListForEach( pl, pc ){
     zXform3D( f, pc->data, &px );
-    _zAABBInc( bb, &px, NULL );
+    _zAABB3DInc( bb, &px, NULL );
   }
   return bb;
 }

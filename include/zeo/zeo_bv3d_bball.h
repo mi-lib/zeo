@@ -17,23 +17,23 @@ __BEGIN_DECLS
 
 /*! \brief bounding ball of 3D points.
  *
- * zBBall() computes the bounding ball (or, smallest enclosing ball)
- * of a set of 3D points \a p. \a num is the number of points.
- * The result is put int \a bb.
+ * zBBall3D() computes the bounding ball (also known as smallest
+ * enclosing ball) of a set of 3D points \a p. \a num is the number
+ * of points. The result is put int \a bb.
  *
- * zBBallPL() also computes the bounding ball. For this function,
- * the set of points is given as a vector list \a p.
+ * zBBall3DPL() also computes the bounding ball. For this function,
+ * the set of 3D points is given as a vector list \a p.
  *
  * The pointers to points on the sphere will be stored into the
  * array pointed by \a vp, unless \a vp is the null pointer.
  *
  * The algorithm is according to E. Welzl(1991).
  * \return
- * zBBall() and zBBallPL() return the number of points on the
+ * zBBall3D() and zBBall3DPL() return the number of points on the
  * sphere of \a bb.
  */
-__EXPORT int zBBall(zSphere3D *bb, zVec3D p[], int num, zVec3D **vp);
-__EXPORT int zBBallPL(zSphere3D *bb, zVec3DList *p, zVec3D **vp);
+__EXPORT int zBBall3D(zSphere3D *bb, zVec3D p[], int num, zVec3D **vp);
+__EXPORT int zBBall3DPL(zSphere3D *bb, zVec3DList *p, zVec3D **vp);
 
 __END_DECLS
 

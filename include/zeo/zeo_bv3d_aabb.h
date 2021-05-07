@@ -50,10 +50,10 @@ __EXPORT zAABox3D *zBox3DToAABox3D(zBox3D *box, zAABox3D *aabox);
 /* AABB - axis-aligned bounding box
  * ********************************************************** */
 
-/*! \brief axis-aligned bounding box of points.
+/*! \brief axis-aligned bounding box of 3D points.
  *
- * zAABB() computes the axis-aligned bounding box of a set of
- * points \a p. \a num is the number of the points. The result
+ * zAABB3D() computes the axis-aligned bounding box of a set of
+ * 3D points \a p. \a num is the number of the points. The result
  * is put into \a bb.
  *
  * The pointers to the extreme points (i.e. points on the faces
@@ -68,36 +68,36 @@ __EXPORT zAABox3D *zBox3DToAABox3D(zBox3D *box, zAABox3D *aabox);
  *  y _|_____|/
  *        5
  *
- * zAABBPL() also computes the axis-aligned bounding box of a
- * set of points given by a list of pointers to the points \a pl.
- * This function stores the pointers to the cell of extreme
+ * zAABB3DPL() also computes the axis-aligned bounding box of a
+ * set of 3D points given by a list of pointers to the points
+ * \a pl. This function stores the pointers to the cell of extreme
  * points into the array pointed by \a vc, unless \a vc is the
  * null pointer. The correspondency follows the above, too.
  *
- * zAABBXform() computes the axis-aligned bouding box of a set
- * of points. \a p is an array of the points in a frame \a f.
+ * zAABB3DXform() computes the axis-aligned bouding box of a set
+ * of 3D points. \a p is an array of the points in a frame \a f.
  * Namely, the actual positions of the points are obtained by
  * transforming \a p by \a f. \a num is the number of the points.
  * The result is put into \a bb.
  *
- * zAABBXformPL() also computes the axis-aligned bounding box
- * of a set of points given by a list of vectors \a pl in a
+ * zAABB3DXformPL() also computes the axis-aligned bounding box
+ * of a set of 3D points given by a list of vectors \a pl in a
  * frame \a f. The result is put into \a bb. This function does
  * not store addresses of the extreme points.
  * \return
- * zAABB(), zAABBPL(), zAABBXform() and zAABBXFormPL()  return
- * a pointer \a bb.
+ * zAABB3D(), zAABB3DPL(), zAABB3DXform() and zAABB3DXFormPL()
+ * return a pointer \a bb.
  * \notes
  * Arrays pointed by \a vp and \a vc must have more than six
  * elements, when they point non-null addresses.
- * Since some of extreme points are possibly at edges or corners
- * of \a bb, some of the elements in \a vp and \a vc could point
- * the same points.
+ * Since some of the extreme points are possibly at edges or
+ * corners* of \a bb, some of the elements in \a vp and \a vc
+ * could point the same points.
  */
-__EXPORT zAABox3D *zAABB(zAABox3D *bb, zVec3D p[], int num, zVec3D **vp);
-__EXPORT zAABox3D *zAABBPL(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vc);
-__EXPORT zAABox3D *zAABBXform(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f);
-__EXPORT zAABox3D *zAABBXformPL(zAABox3D *bb, zVec3DList *pl, zFrame3D *f);
+__EXPORT zAABox3D *zAABB3D(zAABox3D *bb, zVec3D p[], int num, zVec3D **vp);
+__EXPORT zAABox3D *zAABB3DPL(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vc);
+__EXPORT zAABox3D *zAABB3DXform(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f);
+__EXPORT zAABox3D *zAABB3DXformPL(zAABox3D *bb, zVec3DList *pl, zFrame3D *f);
 
 __END_DECLS
 

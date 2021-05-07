@@ -233,8 +233,8 @@ zAABox3D *zIntersectPH3DBox(zPH3D *ph1, zPH3D *ph2, zAABox3D *box)
 {
   zAABox3D b1, b2;
 
-  zAABB( &b1, zPH3DVertBuf(ph1), zPH3DVertNum(ph1), NULL );
-  zAABB( &b2, zPH3DVertBuf(ph2), zPH3DVertNum(ph2), NULL );
+  zAABB3D( &b1, zPH3DVertBuf(ph1), zPH3DVertNum(ph1), NULL );
+  zAABB3D( &b2, zPH3DVertBuf(ph2), zPH3DVertNum(ph2), NULL );
   return zIntersectAABox3D( box, &b1, &b2 ) ? box : NULL;
 }
 
