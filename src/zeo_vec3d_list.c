@@ -46,10 +46,7 @@ zVec3DList *zVec3DListAppendArray(zVec3DList *list, zVec3DArray *array)
   register int i;
 
   for( i=0; i<zArraySize(array); i++ )
-    if( !zVec3DListAdd( list, zArrayElemNC(array,i) ) ){
-      ZALLOCERROR();
-      break;
-    }
+    if( !zVec3DListAdd( list, zArrayElemNC(array,i) ) ) break;
   return list;
 }
 
@@ -113,16 +110,21 @@ zVec3DAddr *zVec3DAddrListAdd(zVec3DAddrList *list, zVec3D *v)
   return cell;
 }
 
+/* append an array of 3D vectors to a list of pointers to 3D vectors. */
+zVec3DAddrList *zVec3DAddrListAppendArray(zVec3DAddrList *list, zVec3DArray *array)
+{
+  register int i;
+
+  for( i=0; i<zArraySize(array); i++ )
+    if( !zVec3DAddrListAdd( list, zArrayElemNC(array,i) ) ) break;
+  return list;
+}
+
 /* create a list of pointers to 3D vectors from an array of 3D vectors. */
-zVec3DAddrList *zVec3DAddrListCreate(zVec3DAddrList *list, zVec3D v[], int num)
+zVec3DAddrList *zVec3DAddrListCreate(zVec3DAddrList *list, zVec3DArray *array)
 {
   zListInit( list );
-  while( num-- > 0 )
-    if( !zVec3DAddrListAdd( list, v++ ) ){
-      ZALLOCERROR();
-      break;
-    }
-  return list;
+  return zVec3DAddrListAppendArray( list, array );
 }
 
 /* clone a list of pointers to 3D vectors. */

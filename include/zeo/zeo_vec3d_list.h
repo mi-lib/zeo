@@ -43,7 +43,8 @@ __EXPORT zVec3DListCell *zVec3DListAdd(zVec3DList *list, zVec3D *v);
  * a list of 3D vectors \a list. Vectors of \a array are copied to cells of
  * \a list.
  * \return
- * zVec3DListAppendArray() returns a pointer \a list.
+ * zVec3DListAppendArray() returns \a list if succeeding. Otherwise,
+ * the null pointer is returned.
  * \sa zVec3DArray2List
  */
 __EXPORT zVec3DList *zVec3DListAppendArray(zVec3DList *list, zVec3DArray *array);
@@ -130,15 +131,26 @@ typedef zVec3DListCell zVec3DAddr;
  */
 __EXPORT zVec3DAddr *zVec3DAddrListAdd(zVec3DAddrList *list, zVec3D *v);
 
+/*! \brief append an array of 3D vectors to a list of pointers to 3D vectors.
+ *
+ * zVec3DAddrListAppendArray() appends an array of 3D vectors \a array to
+ * a list of pointers to 3D vectors \a list.
+ * \return
+ * zVec3DAddrListAppendArray() returns \a list if succeeding. Otherwise,
+ * the null pointer is returned.
+ * \sa zVec3DArray2List
+ */
+__EXPORT zVec3DAddrList *zVec3DAddrListAppendArray(zVec3DAddrList *list, zVec3DArray *array);
+
 /*! \brief create a list of pointers to 3D vectors from an array.
  *
  * zVec3DAddrListCreate() creates a list of pointers to 3D vectors
  * \a list, each cell of which points an element of an array of 3D
- * vectors \a varr. \a num is the number of vectors in \a varr.
+ * vectors \a array.
  * \return
  * zVec3DAddrListCreate() returns a pointer \a list.
  */
-__EXPORT zVec3DAddrList *zVec3DAddrListCreate(zVec3DAddrList *list, zVec3D varr[], int num);
+__EXPORT zVec3DAddrList *zVec3DAddrListCreate(zVec3DAddrList *list, zVec3DArray *array);
 
 /*! \brief clone a list of vectors.
  *

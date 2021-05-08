@@ -19,9 +19,9 @@ __BEGIN_DECLS
 typedef zVec3DAddr zLoop3DCell;
 typedef zVec3DAddrList zLoop3D;
 
-#define zLoop3DAdd(l,c)      zVec3DAddrListAdd( l, c )
-#define zLoop3DCreate(l,v,n) zVec3DAddrListCreate( l, v, n )
-#define zLoop3DDestroy(l)    zVec3DAddrListDestroy( l )
+#define zLoop3DAdd(l,c)    zVec3DAddrListAdd( l, c )
+#define zLoop3DCreate(l,a) zVec3DAddrListCreate( l, a )
+#define zLoop3DDestroy(l)  zVec3DAddrListDestroy( l )
 
 /* ********************************************************** */
 /* CLASS: zTri3DList
@@ -78,14 +78,13 @@ __EXPORT int zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist);
 /*! \brief trianglate a looped series of vertices of a non-convex.
  *
  * zTriangulate() triangulates a looped series of vertices of a non-convex
- * given by an array of 3D vectors \a v. Namely, it divides the non-convex
- * into triangle pieces. \a n is the number of vertices.
+ * given by an array of 3D vectors \a array. Namely, it divides the non-convex
+ * into triangle pieces.
  * As the result, a triangle list \a tlist is newly created.
  * \return
- * zTriangulate() returns the number of the generated triangles, which
- * is up to \a n -2.
+ * zTriangulate() returns the number of the generated triangles.
  */
-__EXPORT int zTriangulate(zVec3D v[], int n, zTri3DList *tlist);
+__EXPORT int zTriangulate(zVec3DArray *array, zTri3DList *tlist);
 
 __END_DECLS
 

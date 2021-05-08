@@ -236,24 +236,21 @@ void zPH3DBaryInertia(zPH3D *ph, zVec3D *c, zMat3D *i)
 }
 
 /* solid modeling */
-static int _zPH3DLoopNext(int n, int i);
-static int _zPH3DSweepBottom(zVec3D v[], int n, zTri3D f[], zVec3D *ref);
 
-/* (static)
- * next vertex of the bottom loop. */
-int _zPH3DLoopNext(int n, int i){
+/* next vertex of the bottom loop. */
+static int _zPH3DLoopNext(int n, int i)
+{
   if( ++i == n ) i = 0;
   return i;
 }
 
-/* (static)
- * triangulate the bottom loop. */
-int _zPH3DSweepBottom(zVec3D v[], int n, zTri3D f[], zVec3D *ref)
+/* triangulate the bottom loop. */
+static int _zPH3DSweepBottom(zVec3DArray *va, zTri3D f[], zVec3D *ref)
 {
   zTri3DList tlist;
   int nf;
 
-  nf = zTriangulate( v, n, &tlist );
+  nf = zTriangulate( va, &tlist );
   zTri3DListAlign( &tlist, ref );
   zTri3DListCopyArray( &tlist, f, nf );
   zTri3DListDestroy( &tlist );
@@ -268,6 +265,7 @@ zPH3D *zPH3DPrism(zPH3D *prism, zVec3D bottom[], int n, zVec3D *shift)
   zTri3D *(*_tri)(zTri3D*,zVec3D*,zVec3D*,zVec3D*) = zTri3DCreate;
   zTri3D *fbuf;
   zVec3D ref;
+  zVec3DArray va;
 
   if( !zPH3DAlloc( prism, n*2, 4*(n-1) ) ) return NULL;
   /* vertices */
@@ -277,9 +275,12 @@ zPH3D *zPH3DPrism(zPH3D *prism, zVec3D bottom[], int n, zVec3D *shift)
   }
   /* bottom faces */
   zVec3DRev( shift, &ref );
-  nf = _zPH3DSweepBottom( zPH3DVert(prism,0), n, zPH3DFace(prism,0), &ref );
+  zArraySize(&va) = n;
+  zArrayBuf(&va) = zPH3DVert(prism,0);
+  nf = _zPH3DSweepBottom( &va, zPH3DFace(prism,0), &ref );
   zVec3DRevDRC( &ref );
-  nf+= _zPH3DSweepBottom( zPH3DVert(prism,n), n, zPH3DFace(prism,nf), &ref );
+  zArrayBuf(&va) = zPH3DVert(prism,n);
+  nf+= _zPH3DSweepBottom( &va, zPH3DFace(prism,nf), &ref );
 
   if( nf > 2*(n-2) ) goto FATAL_ERROR;
   /* side faces */
@@ -316,6 +317,7 @@ zPH3D *zPH3DPyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3D *vert)
   zTri3D *(*_tri)(zTri3D*,zVec3D*,zVec3D*,zVec3D*) = zTri3DCreate;
   zTri3D *fbuf;
   zVec3D ref;
+  zVec3DArray va;
 
   if( !zPH3DAlloc( pyr, n+1, 2*(n-1) ) ) return NULL;
   /* vertices */
@@ -324,7 +326,9 @@ zPH3D *zPH3DPyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3D *vert)
   zVec3DCopy( vert, zPH3DVert(pyr,n) );
   /* bottom faces */
   zVec3DSub( zPH3DVert(pyr,0), vert, &ref );
-  nf = _zPH3DSweepBottom( zPH3DVert(pyr,0), n, zPH3DFace(pyr,0), &ref );
+  zArraySize(&va) = n;
+  zArrayBuf(&va) = zPH3DVert(pyr,0);
+  nf = _zPH3DSweepBottom( &va, zPH3DFace(pyr,0), &ref );
 
   if( nf > n-2 ) goto FATAL_ERROR;
   /* side faces */

@@ -61,11 +61,11 @@ __EXPORT zVec2DAddr *zVec2DAddrListAdd(zVec2DAddrList *list, zVec2D *v);
  *
  * zVec2DAddrListCreate() creates a list of pointers to 2D vectors
  * \a list, each cell of which points an element of an array of 2D
- * vectors \a varr. \a num is the number of vectors in \a varr.
+ * vectors \a va.
  * \return
  * zVec2DAddrListCreate() returns a pointer \a list.
  */
-__EXPORT zVec2DAddrList *zVec2DAddrListCreate(zVec2DAddrList *list, zVec2D v[], int num);
+__EXPORT zVec2DAddrList *zVec2DAddrListCreate(zVec2DAddrList *list, zVec2DArray *va);
 
 /*! \brief destroy a list of 2D vectors.
  *

@@ -72,13 +72,12 @@ zVec2DAddr *zVec2DAddrListAdd(zVec2DAddrList *list, zVec2D *v)
 }
 
 /* create a list of pointers to 2D vectors from an array of 2D vectors. */
-zVec2DAddrList *zVec2DAddrListCreate(zVec2DAddrList *list, zVec2D v[], int num)
+zVec2DAddrList *zVec2DAddrListCreate(zVec2DAddrList *list, zVec2DArray *va)
 {
+  register int i;
+
   zListInit( list );
-  while( num-- > 0 )
-    if( !zVec2DAddrListAdd( list, v++ ) ){
-      ZALLOCERROR();
-      break;
-    }
+  for( i=0; i<zArraySize(va); i++ )
+    if( !zVec2DAddrListAdd( list, zArrayElemNC(va,i) ) ) break;
   return list;
 }

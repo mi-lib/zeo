@@ -132,11 +132,11 @@ int zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist)
 }
 
 /* triangulate a non-convex loop of vertices. */
-int zTriangulate(zVec3D v[], int n, zTri3DList *tlist)
+int zTriangulate(zVec3DArray *array, zTri3DList *tlist)
 {
   zLoop3D loop;
 
-  if( !zLoop3DCreate( &loop, v, n ) ){
+  if( !zLoop3DCreate( &loop, array ) ){
     ZALLOCERROR();
     return 0;
   }

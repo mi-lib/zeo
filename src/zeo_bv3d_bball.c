@@ -144,7 +144,7 @@ int zBBall3DPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
       ret = 0;
     } else{
       zFree( zPH3DFaceBuf(&ch) );
-      zVec3DAddrListCreate( &al, zPH3DVertBuf(&ch), zPH3DVertNum(&ch) );
+      zVec3DAddrListCreate( &al, &ch.vert );
       ret = _zBBall3DPL( bb, &al, vp );
       zVec3DAddrListDestroy( &al );
     }
@@ -155,11 +155,12 @@ int zBBall3DPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
 }
 
 /* bounding ball of 3D points. */
-int zBBall3D(zSphere3D *bb, zVec3D p[], int num, zVec3D **vp)
+int zBBall3D(zSphere3D *bb, zVec3DArray *pa, zVec3D **vp)
 {
   zVec3DAddrList pl;
+  int num;
 
-  if( !zVec3DAddrListCreate( &pl, p, num ) ) return 0;
+  if( !zVec3DAddrListCreate( &pl, pa ) ) return 0;
   num = zBBall3DPL( bb, &pl, vp );
   zVec3DAddrListDestroy( &pl );
   return num;

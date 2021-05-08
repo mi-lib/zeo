@@ -120,11 +120,12 @@ int zBDisk2DPL(zDisk2D *bd, zVec2DList *pl, zVec2D **vp)
 }
 
 /* bounding disk of 2D points. */
-int zBDisk2D(zDisk2D *bd, zVec2D p[], int num, zVec2D **vp)
+int zBDisk2D(zDisk2D *bd, zVec2DArray *pa, zVec2D **vp)
 {
   zVec2DAddrList pl;
+  int num;
 
-  if( !zVec2DAddrListCreate( &pl, p, num ) ) return 0;
+  if( !zVec2DAddrListCreate( &pl, pa ) ) return 0;
   num = zBDisk2DPL( bd, &pl, vp );
   zVec2DAddrListDestroy( &pl );
   return num;
