@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     fprintf( fp, "\n" );
   }
   fclose( fp );
-  zBDiskPL( &bd, &pl, NULL );
+  zBDisk2DPL( &bd, &pl, NULL );
   fp = fopen( "d", "w" );
   for( i=0; i<=DIV; i++ ){
     fprintf( fp, "%.10g %.10g\n",

@@ -1,3 +1,5 @@
+2021. 5.11. Renamed zOBB and zOBBPL to zOBB3D and zOBB3DPL, respectively. [zeo_bv3d_obb]
+2021. 5.11. Modified some examples for bounding volume. [example]
 2021. 5. 9. Modified specification of zBDisk2D. [zeo_bv2d_bdisk]
 2021. 5. 9. Modified specification of zVec2DAddrListCreate. [zeo_vec2d_list]
 2021. 5. 9. Modified specification of zBBall3D. [zeo_bv3d_bball]

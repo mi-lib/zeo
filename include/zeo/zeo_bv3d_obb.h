@@ -13,19 +13,19 @@ __BEGIN_DECLS
 
 /*! \brief oriented bounding box of points.
  *
- * zOBB() computes oriented bounding box of a set of points \a p.
+ * zOBB3D() computes oriented bounding box of a set of points \a p.
  * \a num is the number of points. The result is put into \a obb.
  *
  * \a obb is a combination of a box and the attitude matrix.
  * About zBox3D class, see zeo_prim_box.h.
  *
- * zOBBPL() also computes oriented bounding box of a set of
+ * zOBB3DPL() also computes oriented bounding box of a set of
  * points, which is given by a list of pointers to points \a pl.
  * \return
- * zOBB() returns a pointer \a obb.
+ * zOBB3D() returns a pointer \a obb.
  */
-__EXPORT zBox3D *zOBB(zBox3D *obb, zVec3D p[], int n);
-__EXPORT zBox3D *zOBBPL(zBox3D *obb, zVec3DList *pl);
+__EXPORT zBox3D *zOBB3D(zBox3D *obb, zVec3D p[], int n);
+__EXPORT zBox3D *zOBB3DPL(zBox3D *obb, zVec3DList *pl);
 
 __END_DECLS
 
