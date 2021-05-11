@@ -1,3 +1,5 @@
+2021. 5.11. Modified zAABB3D, zAABB3DXform, zAABB3DPL and zAABB3DXformPL. [zeo_bv3d_aabb]
+2021. 5.11. Added zAABox2D, zAABB2D and zAABB2DPL. [zeo_bv2d_aabb, zeo_bv2d]
 2021. 5.11. Renamed zOBB and zOBBPL to zOBB3D and zOBB3DPL, respectively. [zeo_bv3d_obb]
 2021. 5.11. Modified some examples for bounding volume. [example]
 2021. 5. 9. Modified specification of zBDisk2D. [zeo_bv2d_bdisk]

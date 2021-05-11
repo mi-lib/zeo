@@ -12,6 +12,7 @@
 /* NOTE: the following should be replaced with zeo_elem2d or zeo_pg2d in future. */
 #include <zeo/zeo_ph.h>
 
+#include <zeo/zeo_bv2d_aabb.h>
 #include <zeo/zeo_bv2d_bdisk.h>
 #include <zeo/zeo_bv2d_ch.h>
 
