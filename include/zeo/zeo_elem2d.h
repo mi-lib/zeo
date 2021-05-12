@@ -12,11 +12,69 @@
 __BEGIN_DECLS
 
 /* ********************************************************** */
+/*! \brief 2D edge class.
+ *//********************************************************* */
+typedef struct{
+  zVec2D *vert[2]; /*!< \brief two vertices */
+  zVec2D vec;      /*!< \brief edge vector */
+} zEdge2D;
+
+#define zEdge2DVert(e,i)      (e)->vert[(i)]
+#define zEdge2DVec(e)         ( &(e)->vec )
+
+#define zEdge2DSetVert(e,i,p) ( (e)->vert[(i)] = (p) )
+#define zEdge2DSetVec(e,v)    zVec2DCopy( v, zEdge2DVec(e) )
+
+/*! \brief initialize and create of a 2D edge.
+ *
+ * zEdge2DInit() initializes an edge \a e, setting both endpoints for
+ * the null vectors.
+ *
+ * zEdge2DCreate() creates a edge from two endpoints \a v1 and \a v2.
+ * \return
+ * Each of zEdge2DInit() and zEdge2DCreate() returns a pointer \a e.
+ */
+__EXPORT zEdge2D *zEdge2DInit(zEdge2D *e);
+__EXPORT zEdge2D *zEdge2DCreate(zEdge2D *e, zVec2D *v1, zVec2D *v2);
+
+/*! \brief path vector of a 2D edge.
+ *
+ * zEdge2DCalcVec() calculates the path vector from the first endpoint
+ * to the second of an edge \a e. The vector is contained by the edge
+ * itself within. One can access the path vector by calling zEdge2DVec().
+ * \return
+ * zEdge2DCalcVec() returns the pointer to the path vector.
+ */
+__EXPORT zVec2D *zEdge2DCalcVec(zEdge2D *e);
+
+/*! \brief distance between a point and a 2D edge.
+ *
+ * zEdge2DProj() finds the projection of a given 2D point \a p onto
+ * a 2D edge \a e. The result is put into \a cp.
+ *
+ * zEdge2DPointDist() calculates a distance between an edge \a e and a
+ * point \a p. \a e is regarded as an infinite-length edge, namely, it
+ * returns the length of the perpendicular from \a p to \a e.
+ *
+ * zEdge2DClosest(), on the contrary, calculates the actual closest point
+ * on \a e from \a p and sets it into \a cp. When the perpendicular from
+ * \a p to \a e does not cross with \a e, it returns the closest endpoint
+ * of \a e from \a p.
+ * \return
+ * zEdge2DPointDist() returns the distance calculated, nameyl, the length
+ * of the perpendicular from \a p to \a e.
+ *
+ * zEdge2DClosest() returns the distance between \a p and \a cp.
+ */
+__EXPORT zVec2D *zEdge2DProj(zEdge2D *e, zVec2D *p, zVec2D *cp);
+__EXPORT double zEdge2DPointDist(zEdge2D *e, zVec2D *p);
+
+/* ********************************************************** */
 /*! \brief 2D triangle class.
  *//********************************************************* */
 
 typedef struct{
-  zVec2D *v[3]; /*!< vertices */
+  zVec2D *v[3]; /*!< \brief vertices */
 } zTri2D;
 
 #define zTri2DVert(t,i)      (t)->v[i]
@@ -35,19 +93,28 @@ typedef struct{
 __EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
 #define zTri2DInit(t) zTri2DCreate( t, NULL, NULL, NULL )
 
-/*! \brief create a triangle. */
+/*! \brief initialize and create a 2D triangle.
+ *
+ * zTri2DCreate() creates a 2D triangle from three vertices \a v1, \a v2
+ * and \a v3.
+ * \return
+ * zTri2DCreate() returns a pointer \a t.
+ */
 __EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
 
-/*! \brief barycenter of a triangle. */
+/*! \brief various centers of a 2D triangle.
+ *
+ * zTri2DBarycenter(), zTri2DCircumcenter(), zTri2DIncenter() and
+ * zTri2DOrthocenter() calculate barycenter, circumcenter, incenter
+ * and orthocenter of \a t, respectively.
+ * The result is put into \a c.
+ * \return
+ * zTri2DBarycenter(), zTri2DCircumcenter(), zTri2DIncenter() and
+ * zTri2DOrthocenter() return a pointer \a c.
+ */
 __EXPORT zVec2D *zTri2DBarycenter(zTri2D *t, zVec2D *c);
-
-/*! \brief circumcenter of a 2D triangle */
 __EXPORT zVec2D *zTri2DCircumcenter(zTri2D *t, zVec2D *c);
-
-/*! \brief incenter of a triangle */
 __EXPORT zVec2D *zTri2DIncenter(zTri2D *t, zVec2D *c);
-
-/*! \brief orthocenter of a triangle */
 __EXPORT zVec2D *zTri2DOrthocenter(zTri2D *t, zVec2D *c);
 
 /*! \brief print a 2D triangle.

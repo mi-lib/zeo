@@ -93,7 +93,7 @@ void zPlane3DFPrint(FILE *fp, zPlane3D *p)
  * 3D edge class
  * ********************************************************** */
 
-/* initialize an edge. */
+/* initialize a 3D edge. */
 zEdge3D *zEdge3DInit(zEdge3D *e)
 {
   zEdge3DSetVert( e, 0, NULL );
@@ -102,7 +102,7 @@ zEdge3D *zEdge3DInit(zEdge3D *e)
   return e;
 }
 
-/* create an edge. */
+/* create a 3D edge. */
 zEdge3D *zEdge3DCreate(zEdge3D *e, zVec3D *v1, zVec3D *v2)
 {
   zEdge3DSetVert( e, 0, v1 );
@@ -111,7 +111,7 @@ zEdge3D *zEdge3DCreate(zEdge3D *e, zVec3D *v1, zVec3D *v2)
   return e;
 }
 
-/* path vector of an edge. */
+/* path vector of a 3D edge. */
 zVec3D *zEdge3DCalcVec(zEdge3D *e)
 {
   return zVec3DSub( zEdge3DVert(e,1), zEdge3DVert(e,0), zEdge3DVec(e) );
@@ -125,7 +125,7 @@ static bool _zEdge3DProjSet(zEdge3D *e, zVec3D *p, zVec3D *v, zVec3D *dp)
   return !zVec3DIsTiny( dp );
 }
 
-/* project a point to an edge. */
+/* project a point to a 3D edge. */
 zVec3D *zEdge3DProj(zEdge3D *e, zVec3D *p, zVec3D *cp)
 {
   zVec3D v, dp;
@@ -135,7 +135,7 @@ zVec3D *zEdge3DProj(zEdge3D *e, zVec3D *p, zVec3D *cp)
   return zVec3DAddDRC( cp, zEdge3DVert(e,0) );
 }
 
-/* distance between a point and an edge. */
+/* distance between a point and a 3D edge. */
 double zEdge3DPointDist(zEdge3D *e, zVec3D *p)
 {
   zVec3D v, dp;
@@ -154,7 +154,7 @@ bool zEdge3DPointIsOn(zEdge3D *e, zVec3D *p)
   return zVec3DIsTiny( zVec3DOuterProd( &dp, &v, &v ) );
 }
 
-/* compute a pair of linear scale factors of a point on an edge.
+/* compute a pair of linear scale factors of a point on a 3D edge.
  * when p is on e, p = l0*e->v0 + l1*e->v1. If p is not on e, the result does not make sense. */
 double zEdge3DLinScale(zEdge3D *e, zVec3D *p, double *l0, double *l1, zVec3D *cp)
 {
@@ -192,7 +192,7 @@ double zEdge3DLinScale(zEdge3D *e, zVec3D *p, double *l0, double *l1, zVec3D *cp
   return 0;
 }
 
-/* the closest point from point to an edge. */
+/* the closest point from point to a 3D edge. */
 double zEdge3DClosest(zEdge3D *e, zVec3D *p, zVec3D *cp)
 {
   zVec3D tmp;
@@ -203,7 +203,7 @@ double zEdge3DClosest(zEdge3D *e, zVec3D *p, zVec3D *cp)
   return zVec3DDist( p, cp );
 }
 
-/* contiguous vertix of an edge to a point. */
+/* contiguous vertix of a 3D edge to a point. */
 zVec3D *zEdge3DContigVert(zEdge3D *e, zVec3D *p, double *d)
 {
   double d0, d1;
@@ -219,7 +219,7 @@ zVec3D *zEdge3DContigVert(zEdge3D *e, zVec3D *p, double *d)
   }
 }
 
-/* print information of an edge to a file. */
+/* print information of a 3D edge to a file. */
 void zEdge3DFPrint(FILE *fp, zEdge3D *e)
 {
   if( !e )
@@ -306,28 +306,31 @@ zVec3D *zTri3DBarycenter(zTri3D *t, zVec3D *c)
 {
   zVec3DAdd( zTri3DVert(t,0), zTri3DVert(t,1), c );
   zVec3DAddDRC( c, zTri3DVert(t,2) );
-  return zVec3DDivDRC( c, 3 );
+  zVec3DDivDRC( c, 3 );
+  return c;
 }
+
+#define _zTri3DWeightedCenter(t,w1,w2,w3,p) do{\
+  double __d;\
+  __d = (w1) + (w2) + (w3);\
+  (p)->c.x = ( (w1)*zTri3DVert(t,0)->c.x + (w2)*zTri3DVert(t,1)->c.x + (w3)*zTri3DVert(t,2)->c.x ) / __d;\
+  (p)->c.y = ( (w1)*zTri3DVert(t,0)->c.y + (w2)*zTri3DVert(t,1)->c.y + (w3)*zTri3DVert(t,2)->c.y ) / __d;\
+  (p)->c.z = ( (w1)*zTri3DVert(t,0)->c.z + (w2)*zTri3DVert(t,1)->c.z + (w3)*zTri3DVert(t,2)->c.z ) / __d;\
+} while(0)
 
 /* circumcenter of a triangle */
-static double __z_tri3D_angle(zTri3D *t, int i, int j, int k){
-  zVec3D e[2];
-  zVec3DSub( zTri3DVert(t,j), zTri3DVert(t,i), &e[0] );
-  zVec3DSub( zTri3DVert(t,k), zTri3DVert(t,i), &e[1] );
-  return sin( 2 * zVec3DAngle( &e[0], &e[1], NULL ) );
-}
 zVec3D *zTri3DCircumcenter(zTri3D *t, zVec3D *c)
 {
-  double s[3];
+  double r[3], s[3];
 
-  s[0] = __z_tri3D_angle( t, 0, 1, 2 );
-  s[1] = __z_tri3D_angle( t, 1, 2, 0 );
-  s[2] = __z_tri3D_angle( t, 2, 0, 1 );
-  zVec3DZero( c );
-  zVec3DCatDRC( c, s[0], zTri3DVert(t,0) );
-  zVec3DCatDRC( c, s[1], zTri3DVert(t,1) );
-  zVec3DCatDRC( c, s[2], zTri3DVert(t,2) );
-  return zVec3DDivDRC( c, s[0] + s[1] + s[2] );
+  r[0] = zVec3DSqrDist( zTri3DVert(t,2), zTri3DVert(t,1) );
+  r[1] = zVec3DSqrDist( zTri3DVert(t,0), zTri3DVert(t,2) );
+  r[2] = zVec3DSqrDist( zTri3DVert(t,1), zTri3DVert(t,0) );
+  s[0] = r[0] * ( r[1] + r[2] - r[0] );
+  s[1] = r[1] * ( r[2] + r[0] - r[1] );
+  s[2] = r[2] * ( r[0] + r[1] - r[2] );
+  _zTri3DWeightedCenter( t, s[0], s[1], s[2], c );
+  return c;
 }
 
 /* incenter of a triangle */
@@ -338,11 +341,8 @@ zVec3D *zTri3DIncenter(zTri3D *t, zVec3D *c)
   s[0] = zVec3DDist( zTri3DVert(t,1), zTri3DVert(t,2) );
   s[1] = zVec3DDist( zTri3DVert(t,2), zTri3DVert(t,0) );
   s[2] = zVec3DDist( zTri3DVert(t,0), zTri3DVert(t,1) );
-  zVec3DZero( c );
-  zVec3DCatDRC( c, s[0], zTri3DVert(t,0) );
-  zVec3DCatDRC( c, s[1], zTri3DVert(t,1) );
-  zVec3DCatDRC( c, s[2], zTri3DVert(t,2) );
-  return zVec3DDivDRC( c, s[0] + s[1] + s[2] );
+  _zTri3DWeightedCenter( t, s[0], s[1], s[2], c );
+  return c;
 }
 
 /* orthocenter of a triangle */
@@ -350,11 +350,11 @@ zVec3D *zTri3DOrthocenter(zTri3D *t, zVec3D *c)
 {
   zVec3D cg, cc;
 
-  zTri3DBarycenter( t, &cg );
   zTri3DCircumcenter( t, &cc );
-  zVec3DMulDRC( &cg, 3 );
-  zVec3DMulDRC( &cc, 2 );
-  return zVec3DSub( &cg, &cc, c );
+  zTri3DBarycenter( t, &cg );
+  zVec3DMul( &cg, 3, c );
+  zVec3DCatDRC( c, -2, &cc );
+  return c;
 }
 
 /* contiguous vertix of a triangle to a point. */
@@ -423,21 +423,17 @@ double zTri3DProj(zTri3D *t, zVec3D *v, zVec3D *cp)
 bool zTri3DPointIsInside(zTri3D *t, zVec3D *v, bool rim)
 {
   register int i;
-  zVec3D e, *v1, *v2, tmp;
+  zVec3D e, tmp;
   double d;
 
   for( i=0; i<3; i++ ){
-    v1 = zTri3DVert(t,i);
-    v2 = zTri3DVertNext(t,i);
-    zVec3DSub( v, v1, &tmp );
-    if( zVec3DIsTiny( &tmp ) ) /* coincide with a vertex */
-      return rim;
-    zVec3DNormalizeNCDRC( &tmp );
-    zVec3DSub( v2, v1, &e );
+    if( zVec3DIsTiny( zVec3DSub( v, zTri3DVert(t,i), &tmp ) ) ) return rim; /* coincide with a vertex */
+    zVec3DSub( zTri3DVertNext(t,i), zTri3DVert(t,i), &e );
+    zVec3DNormalizeDRC( &tmp );
     zVec3DNormalizeDRC( &e );
     zVec3DOuterProd( &e, &tmp, &tmp );
     d = zVec3DInnerProd( &tmp, zTri3DNorm(t) );
-    if( d < 0 || ( !rim && d <= zTOL ) ) return false;
+    if( ( rim && d <= -zTOL ) || ( !rim && d <= zTOL ) ) return false;
   }
   return true;
 }

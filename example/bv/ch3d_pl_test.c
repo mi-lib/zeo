@@ -1,4 +1,4 @@
-#include <zeo/zeo_bv.h>
+#include <zeo/zeo_bv3d.h>
 
 #define N 10000
 
@@ -15,7 +15,7 @@ void vec_create_rand(zVec3DList *pl)
     zVec3DCreatePolar( &v, zRandF(-0.5,0.5), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
     v.e[0] += 3;
     zVec3DDataNLFPrint( fp, &v );
-    zVec3DListInsert( pl, &v );
+    zVec3DListAdd( pl, &v );
   }
   fclose( fp );
 }
@@ -54,7 +54,7 @@ void output(zPH3D *ph)
   printf( "name: ch\n" );
   printf( "type: polyhedron\n" );
   printf( "optic: white\n" );
-  zPH3DPrint( ph );
+  zPH3DFPrintZTK( stdout, ph );
 }
 
 int main(void)

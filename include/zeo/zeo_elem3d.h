@@ -98,7 +98,8 @@ __EXPORT void zPlane3DFPrint(FILE *fp, zPlane3D *p);
 /*! \brief 3D edge class.
  *//********************************************************* */
 typedef struct{
-  zVec3D *vert[2], vec;
+  zVec3D *vert[2]; /*!< \brief two vertices */
+  zVec3D vec;      /*!< \brief edge vector */
 } zEdge3D;
 
 #define zEdge3DVert(e,i)      (e)->vert[(i)]
@@ -119,18 +120,20 @@ typedef struct{
 __EXPORT zEdge3D *zEdge3DInit(zEdge3D *e);
 __EXPORT zEdge3D *zEdge3DCreate(zEdge3D *e, zVec3D *v1, zVec3D *v2);
 
-/*! \brief path vector of 3D edge.
+/*! \brief path vector of a 3D edge.
  *
  * zEdge3DCalcVec() calculates the path vector from the first endpoint
  * to the second of an edge \a e. The vector is contained by the edge
- * itself within. One can access the path vector by calling zEdge3DVec()
- * (see zeo_elem.h).
+ * itself within. One can access the path vector by calling zEdge3DVec().
  * \return
  * zEdge3DCalcVec() returns the pointer to the path vector.
  */
 __EXPORT zVec3D *zEdge3DCalcVec(zEdge3D *e);
 
-/*! \brief distance between a point and an edge.
+/*! \brief distance between a point and a 3D edge.
+ *
+ * zEdge3DProj() finds the projection of a given 3D point \a p onto
+ * a 3D edge \a e. The result is put into \a cp.
  *
  * zEdge3DPointDist() calculates a distance between an edge \a e and a
  * point \a p. \a e is regarded as an infinite-length edge, namely, it
@@ -196,14 +199,14 @@ typedef struct{
 #define zTri3DSetNorm(t,n)   zVec3DCopy( n, zTri3DNorm(t) )
 #define zTri3DSetVert(t,i,v) ( zTri3DVert(t,i) = (v) )
 
-/*! \brief initialize and create 3D triangle.
+/*! \brief initialize and create a 3D triangle.
  *
- * zTri3DInit() initializes a triangle instance \a t, setting three
+ * zTri3DInit() initializes a 3D triangle instance \a t, setting three
  * vertices for the null vector.
  *
- * zTri3DCreate() creates a triangle from three vertices \a v1, \a v2
+ * zTri3DCreate() creates a 3D triangle from three vertices \a v1, \a v2
  * and \a v3.
- * zTri3DCreateRev() creates a triangle from \a v1, \a v2 and \a v3 in
+ * zTri3DCreateRev() creates a 3D triangle from \a v1, \a v2 and \a v3 in
  * reversed order of zTri3DCreate(), i.e. it is equivalent to
  * zTri3DCreate( v1, v3, v2 ).
  *
@@ -212,7 +215,7 @@ typedef struct{
  * to the same address with \a src. Actually, zTri3DRevDRC(), which is
  * the destructive version of zTri3DRev() is defined as so.
  * \return
- * zTri3DInit(), zTri3DCreate(), zTri3DCreateRev() and zTri3DRevDRC(
+ * zTri3DInit(), zTri3DCreate(), zTri3DCreateRev() and zTri3DRevDRC()
  * return a pointer \a t.
  *
  * zTri3DRev() returns a pointer \a dest.

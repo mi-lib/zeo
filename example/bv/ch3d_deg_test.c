@@ -2,6 +2,7 @@
 
 #define N 3000
 zVec3D v[N];
+
 void vec_create_rand(FILE *fp)
 {
   register int i;
@@ -19,6 +20,8 @@ void output(zPH3D *ph, FILE *fp)
 
   for( i=0; i<zPH3DVertNum(ph); i++ )
     zVec3DDataNLFPrint( fp, zPH3DVert(ph,i) );
+  zVec3DDataNLFPrint( fp, zPH3DVert(ph,0) );
+  fprintf( fp, "\n" );
 
   /* for visualization */
   printf( "[optic]\n" );
@@ -44,13 +47,10 @@ int main(void)
   fp1 = fopen( "src", "w" );
   fp2 = fopen( "ch", "w" );
   vec_create_rand( fp1 );
-
   zCH3D( &ch, v, N );
-
   output( &ch, fp2 );
   fclose( fp1 );
   fclose( fp2 );
-
   zPH3DDestroy( &ch );
   return 0;
 }

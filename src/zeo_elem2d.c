@@ -7,6 +7,62 @@
 #include <zeo/zeo_elem2d.h>
 
 /* ********************************************************** */
+/* CLASS: zEdge2D
+ * 2D edge class
+ * ********************************************************** */
+
+/* initialize a 2D edge. */
+zEdge2D *zEdge2DInit(zEdge2D *e)
+{
+  zEdge2DSetVert( e, 0, NULL );
+  zEdge2DSetVert( e, 1, NULL );
+  zEdge2DSetVec( e, ZVEC2DZERO );
+  return e;
+}
+
+/* create a 2D edge. */
+zEdge2D *zEdge2DCreate(zEdge2D *e, zVec2D *v1, zVec2D *v2)
+{
+  zEdge2DSetVert( e, 0, v1 );
+  zEdge2DSetVert( e, 1, v2 );
+  zEdge2DCalcVec( e );
+  return e;
+}
+
+/* path vector of a 2D edge. */
+zVec2D *zEdge2DCalcVec(zEdge2D *e)
+{
+  return zVec2DSub( zEdge2DVert(e,1), zEdge2DVert(e,0), zEdge2DVec(e) );
+}
+
+/* a set of unit edge direction vector and displacement vector. */
+static bool _zEdge2DProjSet(zEdge2D *e, zVec2D *p, zVec2D *v, zVec2D *dp)
+{
+  zVec2DSub( p, zEdge2DVert(e,0), dp );
+  zVec2DNormalize( zEdge2DVec(e), v );
+  return !zVec2DIsTiny( dp );
+}
+
+/* project a point to a 2D edge. */
+zVec2D *zEdge2DProj(zEdge2D *e, zVec2D *p, zVec2D *cp)
+{
+  zVec2D v, dp;
+
+  _zEdge2DProjSet( e, p, &v, &dp );
+  zVec2DMul( &v, zVec2DInnerProd(&dp,&v), cp );
+  return zVec2DAddDRC( cp, zEdge2DVert(e,0) );
+}
+
+/* distance between a point and a 2D edge. */
+double zEdge2DPointDist(zEdge2D *e, zVec2D *p)
+{
+  zVec2D v, dp;
+
+  _zEdge2DProjSet( e, p, &v, &dp );
+  return zVec2DOuterProd( &dp, &v );
+}
+
+/* ********************************************************** */
 /* CLASS: zTri2D
  * 2D triangle class
  * ********************************************************** */
@@ -23,30 +79,31 @@ zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3)
 /* barycenter of a triangle. */
 zVec2D *zTri2DBarycenter(zTri2D *t, zVec2D *c)
 {
-  c->c.x = ( zTri2DVert(t,0)->c.x + zTri2DVert(t,1)->c.x + zTri2DVert(t,2)->c.x ) / 3;
-  c->c.y = ( zTri2DVert(t,0)->c.y + zTri2DVert(t,1)->c.y + zTri2DVert(t,2)->c.y ) / 3;
-  return c;
+  zVec2DAdd( zTri2DVert(t,0), zTri2DVert(t,1), c );
+  zVec2DAddDRC( c, zTri2DVert(t,2) );
+  return zVec2DDivDRC( c, 3 );
 }
 
-/* circumcenter of a 2D triangle */
-static double __z_tri2D_angle(zTri2D *t, int i, int j, int k){
-  zVec2D e[2];
-  zVec2DSub( zTri2DVert(t,j), zTri2DVert(t,i), &e[0] );
-  zVec2DSub( zTri2DVert(t,k), zTri2DVert(t,i), &e[1] );
-  return sin( 2 * zVec2DAngle( &e[0], &e[1] ) );
-}
+#define _zTri2DWeightedCenter(t,w1,w2,w3,p) do{\
+  double __d;\
+  __d = (w1) + (w2) + (w3);\
+  (p)->c.x = ( (w1)*zTri2DVert(t,0)->c.x + (w2)*zTri2DVert(t,1)->c.x + (w3)*zTri2DVert(t,2)->c.x ) / __d;\
+  (p)->c.y = ( (w1)*zTri2DVert(t,0)->c.y + (w2)*zTri2DVert(t,1)->c.y + (w3)*zTri2DVert(t,2)->c.y ) / __d;\
+} while(0)
+
+/* circumcenter of a triangle */
 zVec2D *zTri2DCircumcenter(zTri2D *t, zVec2D *c)
 {
-  double s[3];
+  double r[3], s[3];
 
-  s[0] = __z_tri2D_angle( t, 0, 1, 2 );
-  s[1] = __z_tri2D_angle( t, 1, 2, 0 );
-  s[2] = __z_tri2D_angle( t, 2, 0, 1 );
-  zVec2DZero( c );
-  zVec2DCatDRC( c, s[0], zTri2DVert(t,0) );
-  zVec2DCatDRC( c, s[1], zTri2DVert(t,1) );
-  zVec2DCatDRC( c, s[2], zTri2DVert(t,2) );
-  return zVec2DDivDRC( c, s[0] + s[1] + s[2] );
+  r[0] = zVec2DSqrDist( zTri2DVert(t,2), zTri2DVert(t,1) );
+  r[1] = zVec2DSqrDist( zTri2DVert(t,0), zTri2DVert(t,2) );
+  r[2] = zVec2DSqrDist( zTri2DVert(t,1), zTri2DVert(t,0) );
+  s[0] = r[0] * ( r[1] + r[2] - r[0] );
+  s[1] = r[1] * ( r[2] + r[0] - r[1] );
+  s[2] = r[2] * ( r[0] + r[1] - r[2] );
+  _zTri2DWeightedCenter( t, s[0], s[1], s[2], c );
+  return c;
 }
 
 /* incenter of a triangle */
@@ -57,11 +114,8 @@ zVec2D *zTri2DIncenter(zTri2D *t, zVec2D *c)
   s[0] = zVec2DDist( zTri2DVert(t,1), zTri2DVert(t,2) );
   s[1] = zVec2DDist( zTri2DVert(t,2), zTri2DVert(t,0) );
   s[2] = zVec2DDist( zTri2DVert(t,0), zTri2DVert(t,1) );
-  zVec2DZero( c );
-  zVec2DCatDRC( c, s[0], zTri2DVert(t,0) );
-  zVec2DCatDRC( c, s[1], zTri2DVert(t,1) );
-  zVec2DCatDRC( c, s[2], zTri2DVert(t,2) );
-  return zVec2DDivDRC( c, s[0] + s[1] + s[2] );
+  _zTri2DWeightedCenter( t, s[0], s[1], s[2], c );
+  return c;
 }
 
 /* orthocenter of a triangle */
@@ -69,11 +123,10 @@ zVec2D *zTri2DOrthocenter(zTri2D *t, zVec2D *c)
 {
   zVec2D cg, cc;
 
-  zTri2DBarycenter( t, &cg );
   zTri2DCircumcenter( t, &cc );
-  zVec2DMulDRC( &cg, 3 );
-  zVec2DMulDRC( &cc, 2 );
-  return zVec2DSub( &cg, &cc, c );
+  zTri2DBarycenter( t, &cg );
+  zVec2DMul( &cg, 3, c );
+  return zVec2DCatDRC( c, -2, &cc );
 }
 
 /* print information of a triangle to a file. */
