@@ -1,3 +1,4 @@
+2021. 5.15. Added zeo_delaunay2d and zDelaunay2D. [zeo, zeo_delaunay2d]
 2021. 5.15. Added zTri2DPointIsInside. [zeo_elem2d]
 2021. 5.15. Corrected mismatch between prototype and definition of zOBB3D and zOBB3DPL. [zeo_bv3d_obb]
 2021. 5.15. Applied zTreeClass and zTreeClassMethod to zeo_vec3d_tree. [zeo_vec3d_tree, zeo_ph_stl]
