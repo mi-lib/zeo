@@ -17,23 +17,6 @@ zVec2DAddrList *zVec2DAddrListCopy(zVec2DAddrList *al, zVec2DList *vl)
   return al;
 }
 
-#define zTri2DVertNext(t,i)  zTri2DVert( t, ( (i)+1 ) % 3 )
-
-/* check if a point is inside of a triangle. */
-bool zTri2DPointIsInside(zTri2D *t, zVec2D *v, bool rim)
-{
-  register int i;
-  zVec2D e, tmp;
-  double d[3];
-
-  for( i=0; i<3; i++ ){
-    if( zVec2DIsTiny( zVec2DSub( v, zTri2DVert(t,i), &tmp ) ) ) return rim; /* coincide with a vertex */
-    zVec2DSub( zTri2DVertNext(t,i), zTri2DVert(t,i), &e );
-    d[i] = _zVec2DOuterProd( &e, &tmp );
-  }
-  return rim ? ( d[0] >= 0 && d[1] >= 0 && d[2] >= 0 ) : ( d[0] > zTOL && d[1] > zTOL && d[2] > zTOL );
-}
-
 typedef struct _zDTTri2D{
   zTri2D t;
   struct _zDTTri2D *adj[3];

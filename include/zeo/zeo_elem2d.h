@@ -80,6 +80,8 @@ typedef struct{
 #define zTri2DVert(t,i)      (t)->v[i]
 #define zTri2DSetVert(t,i,v) ( zTri2DVert(t,i) = (v) )
 
+#define zTri2DVertNext(t,i)  zTri2DVert( t, ( (i)+1 ) % 3 )
+
 /*! \brief initialize and create 2D triangle.
  *
  * zTri2DInit() initializes a triangle instance \a t, setting three
@@ -101,6 +103,18 @@ __EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
  * zTri2DCreate() returns a pointer \a t.
  */
 __EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
+
+/*! \brief check if a point is inside of a triangle.
+ *
+ * zTri2DPointIsInside() checks if a point \a v is inside of a 2D
+ * triangle \a t. If the true value for \a rim is given, the function
+ * returns the true value if \a v is on the rim of or in \a t.
+ * \return
+ * zTri2DPointIsInside() returns the true value if \a v is inside of \a t.
+ * If \a v is on the rim of \a t and \a rim is true, it returns the true
+ * value. Otherwise, the false value is returned.
+ */
+__EXPORT bool zTri2DPointIsInside(zTri2D *t, zVec2D *v, bool rim);
 
 /*! \brief various centers of a 2D triangle.
  *

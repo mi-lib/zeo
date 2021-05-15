@@ -76,6 +76,22 @@ zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3)
   return t;
 }
 
+/* check if a point is inside of a triangle. */
+bool zTri2DPointIsInside(zTri2D *t, zVec2D *v, bool rim)
+{
+  register int i;
+  zVec2D e, tmp;
+  double d[3];
+
+  for( i=0; i<3; i++ ){
+    if( zVec2DIsTiny( zVec2DSub( v, zTri2DVert(t,i), &tmp ) ) ) return rim; /* coincide with a vertex */
+    zVec2DNormalizeDRC( &tmp );
+    zVec2DNormalizeDRC( zVec2DSub( zTri2DVertNext(t,i), zTri2DVert(t,i), &e ) );
+    d[i] = _zVec2DOuterProd( &e, &tmp );
+  }
+  return rim ? ( d[0] > -zTOL && d[1] > -zTOL && d[2] > -zTOL ) : ( d[0] > zTOL && d[1] > zTOL && d[2] > zTOL );
+}
+
 /* barycenter of a triangle. */
 zVec2D *zTri2DBarycenter(zTri2D *t, zVec2D *c)
 {
