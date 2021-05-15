@@ -13,8 +13,8 @@ bool assert_nn_one(void)
 
   zListInit( &list );
   zVec3DTreeInit( &tree );
-  zVec3DCreate( &tree.vmin,-10,-10,-10 );
-  zVec3DCreate( &tree.vmax, 10, 10, 10 );
+  zVec3DCreate( &tree.data.vmin,-10,-10,-10 );
+  zVec3DCreate( &tree.data.vmax, 10, 10, 10 );
 
   for( i=0; i<NS; i++ ){
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
@@ -25,7 +25,7 @@ bool assert_nn_one(void)
 
   zVec3DTreeNN( &tree, &v, &node );
   zVec3DListNN( &list, &v, &nn );  /* for comparison */
-  if( !zVec3DEqual( &node->v, nn ) ) ret = false;
+  if( !zVec3DEqual( &node->data.v, nn ) ) ret = false;
   zVec3DListDestroy( &list );
   zVec3DTreeDestroy( &tree );
   return ret;

@@ -23,30 +23,17 @@ __BEGIN_DECLS
  * zVec3DTreeNN().
  * The tree is freed by calling zVec3DTreeDestroy().
  *//* ******************************************************* */
-typedef struct _zVec3DTree{
-  int size;      /*!< size of tree */
+typedef struct{
   int id;        /*!< identifier of a tree node */
   zAxis split;   /*!< split axis index */
   zVec3D v;      /*!< spliting vertex */
   zVec3D vmin;   /*!< minimum corner of bounding box */
   zVec3D vmax;   /*!< maximum corner of bounding box */
-  struct _zVec3DTree *s[2]; /*!< binary branches */
-} zVec3DTree;
+} zVec3DTreeData;
 
-/*! \brief initialize a 3D vector tree.
- *
- * zVec3DTreeInit() initializes a 3D vector tree \a tree.
- * The bounding box is set at default for infinite volume.
- * \return a pointer \a tree is returned.
- */
-__EXPORT zVec3DTree *zVec3DTreeInit(zVec3DTree *tree);
+__EXPORT zVec3DTreeData *zVec3DTreeDataInit(zVec3DTreeData *data);
 
-/*! \brief destroy a 3D vector tree.
- *
- * zVec3DTreeDestroy() destroys a 3D vector tree \a tree.
- * All nodes and leaves are freed.
- */
-__EXPORT void zVec3DTreeDestroy(zVec3DTree *tree);
+zTreeClass( zVec3DTree, zVec3DTreeData );
 
 /*! \brief add a new 3D vector to a tree.
  *

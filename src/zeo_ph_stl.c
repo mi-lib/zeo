@@ -12,7 +12,7 @@ static zVec3DTree *_zSTLVertReg(zVec3DTree *tree, zVec3D *v)
   zVec3DTree *node;
 
   zVec3DTreeNN( tree, v, &node );
-  if( zVec3DEqual( v, &node->v ) ) return node;
+  if( zVec3DEqual( v, &node->data.v ) ) return node;
   return zVec3DTreeAdd( tree, v );
 }
 
@@ -40,7 +40,7 @@ static _zSTLFacetListCell *_zSTLFacetListReg(_zSTLFacetList *flist, zVec3DTree *
   cp->data.v1 = vc1;
   cp->data.v2 = vc2;
   cp->data.v3 = vc3;
-  zTri3DCreate( &facet, &vc1->v, &vc2->v, &vc3->v );
+  zTri3DCreate( &facet, &vc1->data.v, &vc2->data.v, &vc3->data.v );
   zVec3DCopy( zTri3DNorm(&facet), &cp->data.normal );
   zListInsertHead( flist, cp );
   return cp;
@@ -58,9 +58,9 @@ static zTri3DArray *_zSTLFacetListToTri3DArray(_zSTLFacetList *list, zVec3DArray
     return NULL;
   }
   zListForEach( list, cp ){
-    zTri3DSetVert( zArrayElemNC(array,i), 0, zArrayElemNC(varray,cp->data.v1->id) );
-    zTri3DSetVert( zArrayElemNC(array,i), 1, zArrayElemNC(varray,cp->data.v2->id) );
-    zTri3DSetVert( zArrayElemNC(array,i), 2, zArrayElemNC(varray,cp->data.v3->id) );
+    zTri3DSetVert( zArrayElemNC(array,i), 0, zArrayElemNC(varray,cp->data.v1->data.id) );
+    zTri3DSetVert( zArrayElemNC(array,i), 1, zArrayElemNC(varray,cp->data.v2->data.id) );
+    zTri3DSetVert( zArrayElemNC(array,i), 2, zArrayElemNC(varray,cp->data.v3->data.id) );
     zTri3DSetNorm( zArrayElemNC(array,i), &cp->data.normal );
     i++;
   }
