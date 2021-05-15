@@ -28,7 +28,7 @@ void output_blue(FILE *fp)
   fprintf( fp, "diffuse: 0.2 0.2 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 1.0\n" );
-  fprintf( fp, "exp: 0.0\n\n" );
+  fprintf( fp, "esr: 0.0\n\n" );
 }
 
 void output_red(FILE *fp)
@@ -39,7 +39,7 @@ void output_red(FILE *fp)
   fprintf( fp, "diffuse: 1.0 0.2 0.2\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 1.0\n" );
-  fprintf( fp, "exp: 0.0\n\n" );
+  fprintf( fp, "esr: 0.0\n\n" );
 }
 
 void output(zPH3D *a, zPH3D *b, zPH3D *sa, zPH3D *sb)

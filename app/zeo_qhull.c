@@ -60,7 +60,7 @@ void output(zPH3D *ch)
   printf( "diffuse: 0.7 1.0 1.0\n" );
   printf( "specular: 0.0 0.0 0.0\n" );
   printf( "alpha: 0.4\n" );
-  printf( "exp: 0.0\n\n" );
+  printf( "esr: 0.0\n\n" );
   printf( "[shape]\n" );
   printf( "name: ch\n" );
   printf( "type: polyhedron\n" );

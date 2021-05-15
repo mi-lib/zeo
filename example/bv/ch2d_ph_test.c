@@ -32,7 +32,7 @@ int main(void)
   printf( "diffuse: 0.8 0.8 0.8\n" );
   printf( "specular: 0.0 0.0 0.0\n" );
   printf( "alpha: 0.8\n" );
-  printf( "exp: 1.0\n\n" );
+  printf( "esr: 1.0\n\n" );
   printf( "[shape]\n" );
   printf( "name: ch\n" );
   printf( "type: polyhedron\n" );

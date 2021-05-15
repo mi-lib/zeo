@@ -13,14 +13,14 @@ void output_src(zVec3D p1[], int n1, zVec3D p2[], int n2)
   fprintf( fp, "diffuse: 1.0 0.2 0.2\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.6\n" );
-  fprintf( fp, "exp: 1.0\n\n" );
+  fprintf( fp, "esr: 1.0\n\n" );
   fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.2 0.2 0.8\n" );
   fprintf( fp, "diffuse: 0.2 0.2 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.6\n" );
-  fprintf( fp, "exp: 1.0\n\n" );
+  fprintf( fp, "esr: 1.0\n\n" );
   /* convex set 1 */
   zCH3D( &ch, p1, n1 );
   fprintf( fp, "[shape]\n" );
@@ -53,14 +53,14 @@ void output_ms(zPH3D *ph)
   fprintf( fp, "diffuse: 1.0 1.0 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.6\n" );
-  fprintf( fp, "exp: 1.0\n\n" );
+  fprintf( fp, "esr: 1.0\n\n" );
   fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: yellow\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.4\n" );
   fprintf( fp, "diffuse: 1.0 1.0 0.4\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 1.0\n" );
-  fprintf( fp, "exp: 1.0\n\n" );
+  fprintf( fp, "esr: 1.0\n\n" );
   /* convex set */
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: minkowski_sub\n" );

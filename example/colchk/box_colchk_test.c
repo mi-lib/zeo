@@ -25,14 +25,14 @@ void box_output(zBox3D *b1, zBox3D *b2)
   fprintf( fp, "diffuse: 0.8 0.8 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 1.0\n" );
-  fprintf( fp, "exp: 1.0\n\n" );
+  fprintf( fp, "esr: 1.0\n\n" );
   fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: red\n" );
   fprintf( fp, "ambient: 1.0 0.6 0.6\n" );
   fprintf( fp, "diffuse: 1.0 0.6 0.6\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 1.0\n" );
-  fprintf( fp, "exp: 1.0\n\n" );
+  fprintf( fp, "esr: 1.0\n\n" );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: box\n" );

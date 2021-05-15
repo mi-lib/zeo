@@ -27,21 +27,21 @@ void output(char filename[], zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c
   fprintf( fp, "diffuse: 1.0 0.2 0.2\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.6\n" );
-  fprintf( fp, "exp: 1.0\n\n" );
+  fprintf( fp, "esr: 1.0\n\n" );
   fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.2 0.2 0.8\n" );
   fprintf( fp, "diffuse: 0.2 0.2 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.6\n" );
-  fprintf( fp, "exp: 1.0\n\n" );
+  fprintf( fp, "esr: 1.0\n\n" );
   fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: yellow\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.4\n" );
   fprintf( fp, "diffuse: 1.0 1.0 0.4\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.6\n" );
-  fprintf( fp, "exp: 1.0\n\n" );
+  fprintf( fp, "esr: 1.0\n\n" );
   /* pair of proximities */
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: p1\n" );

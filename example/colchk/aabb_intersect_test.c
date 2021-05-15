@@ -20,7 +20,7 @@ void output(zAABox3D *b1, zAABox3D *b2, zAABox3D *b)
   fprintf( fp, "diffuse: 0.2 0.2 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.4\n" );
-  fprintf( fp, "exp: 0.0\n\n" );
+  fprintf( fp, "esr: 0.0\n\n" );
 
   fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: red\n" );
@@ -28,7 +28,7 @@ void output(zAABox3D *b1, zAABox3D *b2, zAABox3D *b)
   fprintf( fp, "diffuse: 1.0 0.2 0.2\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.4\n" );
-  fprintf( fp, "exp: 0.0\n\n" );
+  fprintf( fp, "esr: 0.0\n\n" );
 
   if( b ){
     fprintf( fp, "[optic]\n" );
@@ -37,7 +37,7 @@ void output(zAABox3D *b1, zAABox3D *b2, zAABox3D *b)
     fprintf( fp, "diffuse: 1.0 1.0 0.2\n" );
     fprintf( fp, "specular: 0.0 0.0 0.0\n" );
     fprintf( fp, "alpha: 0.4\n" );
-    fprintf( fp, "exp: 0.0\n\n" );
+    fprintf( fp, "esr: 0.0\n\n" );
 
     fprintf( fp, "[shape]\n" );
     fprintf( fp, "name: c\n" );

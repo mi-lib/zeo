@@ -14,21 +14,21 @@ void output(char filename[], zPH3D *a, zPH3D *b, zPH3D *c)
   fprintf( fp, "diffuse: 1.0 0.2 0.2\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.4\n" );
-  fprintf( fp, "exp: 1.0\n\n" );
+  fprintf( fp, "esr: 1.0\n\n" );
   fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.2 0.2 0.8\n" );
   fprintf( fp, "diffuse: 0.2 0.2 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.4\n" );
-  fprintf( fp, "exp: 1.0\n\n" );
+  fprintf( fp, "esr: 1.0\n\n" );
   fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: yellow\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.4\n" );
   fprintf( fp, "diffuse: 1.0 1.0 0.4\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.6\n" );
-  fprintf( fp, "exp: 1.0\n\n" );
+  fprintf( fp, "esr: 1.0\n\n" );
   /* intersection convex */
   if( c ){
     fprintf( fp, "[shape]\n" );

@@ -30,7 +30,7 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
   fprintf( fp, "diffuse: 0.2 0.2 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 1.0\n" );
-  fprintf( fp, "exp: 0.0\n\n" );
+  fprintf( fp, "esr: 0.0\n\n" );
 
   fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: red\n" );
@@ -38,7 +38,7 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
   fprintf( fp, "diffuse: 1.0 0.2 0.2\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 1.0\n" );
-  fprintf( fp, "exp: 0.0\n\n" );
+  fprintf( fp, "esr: 0.0\n\n" );
 
   fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: yellow\n" );
@@ -46,7 +46,7 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
   fprintf( fp, "diffuse: 1.0 1.0 0.2\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.4\n" );
-  fprintf( fp, "exp: 0.0\n\n" );
+  fprintf( fp, "esr: 0.0\n\n" );
 
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: c\n" );
