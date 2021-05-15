@@ -93,7 +93,7 @@ static bool _zOBB3DMaxDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
 }
 
 /* oriented bounding box. */
-zBox3D *zOBB(zBox3D *obb, zVec3D p[], int n)
+zBox3D *zOBB3D(zBox3D *obb, zVec3D p[], int n)
 {
   zPH3D ch;
   zPlane3D pln;
@@ -106,7 +106,7 @@ zBox3D *zOBB(zBox3D *obb, zVec3D p[], int n)
 }
 
 /* oriented bounding box of a list of points. */
-zBox3D *zOBBPL(zBox3D *obb, zVec3DList *pl)
+zBox3D *zOBB3DPL(zBox3D *obb, zVec3DList *pl)
 {
   zPH3D ch;
   zPlane3D pln;
