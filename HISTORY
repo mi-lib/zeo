@@ -1,3 +1,4 @@
+2021. 5.16. Reflected new specification of zFDouble. [zeo_render_color, zeo_vec2d, zeo_mat2d, zeo_vec3d, zeo_vec6d, zeo_mat3d, zeo_frame3d, zeo_ph_ply, app]
 2021. 5.15. Added zeo_delaunay2d. [app]
 2021. 5.15. Corrected key for specular reflection in examples and zeo_qhull. [example, app]
 2021. 5.15. Added zeo_delaunay2d and zDelaunay2D. [zeo, zeo_delaunay2d]

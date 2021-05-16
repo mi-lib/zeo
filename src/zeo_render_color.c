@@ -93,12 +93,12 @@ zRGB *zRGBFromZTK(zRGB *rgb, ZTK *ztk)
 /* scan a set of RGB parameters from a file. */
 zRGB *zRGBFScan(FILE *fp, zRGB *rgb)
 {
-  float r, g, b;
+  double r, g, b;
 
-  r = zFDouble(fp);
-  g = zFDouble(fp);
-  b = zFDouble(fp);
-  return zRGBSet( rgb, r, g, b );
+  zFDouble( fp, &r );
+  zFDouble( fp, &g );
+  zFDouble( fp, &b );
+  return zRGBSet( rgb, (float)r, (float)g, (float)b );
 }
 
 /* print a set of RGB parameters out to a file. */

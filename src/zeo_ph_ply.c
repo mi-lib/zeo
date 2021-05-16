@@ -44,10 +44,26 @@ ZEO_PLY_DEF_FREAD_INT_REV( dword )
 ZEO_PLY_DEF_FREAD_INT_REV( float )
 ZEO_PLY_DEF_FREAD_INT_REV( double )
 
-static double zPLY_fread_ASCII_double_int(FILE *fp){ return (double)zFInt( fp ); }
-static double zPLY_fread_ASCII_double_double(FILE *fp){ return zFDouble( fp ); }
-static int zPLY_fread_ASCII_int_int(FILE *fp){ return zFInt( fp ); }
-static int zPLY_fread_ASCII_int_double(FILE *fp){ return (int)zFDouble( fp ); }
+static double zPLY_fread_ASCII_double_int(FILE *fp){
+  int val;
+  zFInt( fp, &val );
+  return (double)val;
+}
+static double zPLY_fread_ASCII_double_double(FILE *fp){
+  double val;
+  zFDouble( fp, &val );
+  return val;
+}
+static int zPLY_fread_ASCII_int_int(FILE *fp){
+  int val;
+  zFInt( fp, &val );
+  return val;
+}
+static int zPLY_fread_ASCII_int_double(FILE *fp){
+  double val;
+  zFDouble( fp, &val );
+  return (int)val;
+}
 
 typedef enum{
   ZEO_PLY_DATA_NONE=-1,
@@ -275,7 +291,7 @@ static bool _zPLYFReadElement(zPLY *ply, char *buf)
     return false;
   }
   zSToken( buf, tkn, BUFSIZ );
-  num = zSInt( buf );
+  zSInt( buf, &num );
   if( strcmp( tkn, "vertex" ) == 0 ){
     ply->elem[ply->elemnum].type = ZEO_PLY_ELEM_VERTEX;
   } else

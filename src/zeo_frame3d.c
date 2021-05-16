@@ -291,8 +291,8 @@ zFrame3D *zFrame3DFScan(FILE *fp, zFrame3D *f)
 
   for( i=0; i<3; i++ ){
     for( j=0; j<3; j++ )
-      zFrame3DAtt(f)->e[j][i] = zFDouble(fp);
-    zFrame3DPos(f)->e[i] = zFDouble(fp);
+      zFDouble( fp, &zFrame3DAtt(f)->e[j][i] );
+    zFDouble( fp, &zFrame3DPos(f)->e[i] );
   }
   return f;
 }

@@ -30,8 +30,6 @@ void read_vlist(char filename[], zVec3DAddrList *vl)
 {
   FILE *fp;
   zVec3D v;
-  double x, y, z;
-  char buf[BUFSIZ];
 
   if( !( fp = fopen( filename, "r" ) ) ){
     ZOPENERROR( filename );
@@ -39,13 +37,7 @@ void read_vlist(char filename[], zVec3DAddrList *vl)
   }
   zListInit( vl );
   do{
-    if( !zFToken( fp, buf, BUFSIZ ) ) break;
-    x = atof( buf );
-    if( !zFToken( fp, buf, BUFSIZ ) ) break;
-    y = atof( buf );
-    if( !zFToken( fp, buf, BUFSIZ ) ) break;
-    z = atof( buf );
-    zVec3DCreate( &v, x, y, z );
+    zVec3DFScan( fp, &v );
     zVec3DAddrListAdd( vl, &v );
   } while( !feof( fp ) );
   fclose( fp );

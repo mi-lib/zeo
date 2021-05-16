@@ -507,9 +507,9 @@ zVec3D *zVec3DFromZTK(zVec3D *v, ZTK *ztk)
 /* scan a 3D vector from a file. */
 zVec3D *zVec3DFScan(FILE *fp, zVec3D *v)
 {
-  v->c.x = zFDouble( fp );
-  v->c.y = zFDouble( fp );
-  v->c.z = zFDouble( fp );
+  zFDouble( fp, &v->c.x );
+  zFDouble( fp, &v->c.y );
+  zFDouble( fp, &v->c.z );
   return v;
 }
 

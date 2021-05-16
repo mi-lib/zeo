@@ -201,8 +201,8 @@ zVec2D *zVec2DFromZTK(zVec2D *v, ZTK *ztk)
 /* scan a 2D vector from a file. */
 zVec2D *zVec2DFScan(FILE *fp, zVec2D *v)
 {
-  v->c.x = zFDouble( fp );
-  v->c.y = zFDouble( fp );
+  zFDouble( fp, &v->c.x );
+  zFDouble( fp, &v->c.y );
   return v;
 }
 

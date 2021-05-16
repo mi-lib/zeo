@@ -236,7 +236,7 @@ zMat2D *zMat2DFScan(FILE *fp, zMat2D *m)
 
   for( i=0; i<2; i++ )
     for( j=0; j<2; j++ )
-      m->e[j][i] = zFDouble( fp );
+      zFDouble( fp, &m->e[j][i] );
   return m;
 }
 

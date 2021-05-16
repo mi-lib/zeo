@@ -11,8 +11,6 @@ void delaunay2d_read_vset(char filename[], zVec2DList *pl)
 {
   FILE *fp;
   zVec2D v;
-  double x, y;
-  char buf[BUFSIZ];
 
   if( !( fp = fopen( filename, "r" ) ) ){
     ZOPENERROR( filename );
@@ -20,11 +18,7 @@ void delaunay2d_read_vset(char filename[], zVec2DList *pl)
   }
   zListInit( pl );
   do{
-    if( !zFToken( fp, buf, BUFSIZ ) ) break;
-    x = atof( buf );
-    if( !zFToken( fp, buf, BUFSIZ ) ) break;
-    y = atof( buf );
-    zVec2DCreate( &v, x, y );
+    zVec2DFScan( fp, &v );
     zVec2DListAdd( pl, &v );
   } while( !feof( fp ) );
   fclose( fp );

@@ -12,8 +12,6 @@ void gjk_read_vset(char filename[], zVec3DList *list)
 {
   FILE *fp;
   zVec3D v;
-  double x, y, z;
-  char buf[BUFSIZ];
 
   if( !( fp = fopen( filename, "r" ) ) ){
     ZOPENERROR( filename );
@@ -21,13 +19,7 @@ void gjk_read_vset(char filename[], zVec3DList *list)
   }
   zListInit( list );
   do{
-    if( !zFToken( fp, buf, BUFSIZ ) ) break;
-    x = atof( buf );
-    if( !zFToken( fp, buf, BUFSIZ ) ) break;
-    y = atof( buf );
-    if( !zFToken( fp, buf, BUFSIZ ) ) break;
-    z = atof( buf );
-    zVec3DCreate( &v, x, y, z );
+    zVec3DFScan( fp, &v );
     zVec3DListAdd( list, &v );
   } while( !feof( fp ) );
   fclose( fp );

@@ -185,7 +185,7 @@ zVec6D *zVec6DFScan(FILE *fp, zVec6D *v)
   register int i;
 
   for( i=zX; i<=zZA; i++ )
-    v->e[i] = zFDouble( fp );
+    zFDouble( fp, &v->e[i] );
   return v;
 }
 
