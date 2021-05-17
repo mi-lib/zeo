@@ -16,7 +16,7 @@
  - NURBS curve / surface
  - trianglation of non-convex
  - bounding volume (AABB, OBB, boundin ball, convex-hull)
- - Delaunay triangularization (2D)
+ - 2D Delaunay triangulation and Voronoi diagram
  - collision checking (GJK, Muller-Preparata)
  - principal component analysis of point cloud
  - B-Rep (boundary representation) and boolean operations
@@ -31,7 +31,7 @@
 #include <zeo/zeo_pointcloud.h>
 #include <zeo/zeo_mshape3d.h>
 #include <zeo/zeo_bv3d.h>
-#include <zeo/zeo_delaunay2d.h>
+#include <zeo/zeo_voronoi2d.h>
 #include <zeo/zeo_col.h>
 #include <zeo/zeo_map.h>
 

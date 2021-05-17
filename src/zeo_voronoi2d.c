@@ -1,12 +1,14 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_delaunay2d - 2D Delaunay triangularization.
+ * zeo_voronoi2d - 2D Voronoi diagram.
  */
 
-#include <zeo/zeo_delaunay2d.h>
+#include <zeo/zeo_voronoi2d.h>
 
-/* create a 2D triangle for Delaunay triangularization */
+/* *** 2D Delaunay triangulation *** */
+
+/* create a 2D triangle for Delaunay triangulation */
 static zDTTri2D *_zDTTri2DCreate(zDTTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3, zDTTri2D *t1, zDTTri2D *t2, zDTTri2D *t3)
 {
   zTri2DCreate( &t->t, v1, v2, v3 );
@@ -16,7 +18,7 @@ static zDTTri2D *_zDTTri2DCreate(zDTTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3
   return t;
 }
 
-/* bind two adjacent 2D triangles for Delaunay triangularization */
+/* bind two adjacent 2D triangles for Delaunay triangulation */
 static int _zDTTri2DBind(zDTTri2D *t, int i, zDTTri2D *a)
 {
   register int ia;
@@ -33,15 +35,13 @@ static int _zDTTri2DBind(zDTTri2D *t, int i, zDTTri2D *a)
   return -1; /* invalid case */
 }
 
-/* find index of a reference vertex of the specified adjacent 2D triangle for Delaunay triangularization */
+/* find index of a reference vertex of the specified adjacent 2D triangle for Delaunay triangulation */
 static int _zDTTri2DFindAdj(zDTTri2D *t, zDTTri2D *at)
 {
   register int i;
 
   for( i=0; i<3; i++ )
-    if( t->adj[i] == at ){
-      return i;
-    }
+    if( t->adj[i] == at ) return i;
   return -1; /* not bound */
 }
 
@@ -59,7 +59,7 @@ static void _zDTTri2DFPrint(FILE *fp, zDTTri2D *t)
 }
 #endif
 
-/* find a 2D triangle that includes a specified point for Delaunay triangularization */
+/* find a 2D triangle that includes a specified point for Delaunay triangulation */
 static zDTTri2DListCell *_zDTTri2DListFind(zDTTri2DList *tl, zVec2D *p)
 {
   zDTTri2DListCell *tc;
@@ -69,7 +69,7 @@ static zDTTri2DListCell *_zDTTri2DListFind(zDTTri2DList *tl, zVec2D *p)
   return NULL;
 }
 
-/* add a new 2D triangle to a list for Delaunay triangularization */
+/* add a new 2D triangle to a list for Delaunay triangulation */
 static zDTTri2DListCell *_zDTTri2DListAdd(zDTTri2DList *tl)
 {
   zDTTri2DListCell *tc;
@@ -96,14 +96,14 @@ void zDTTri2DListFPrint(FILE *fp, zDTTri2DList *tl)
   }
 }
 
-/* stack of an edge of a 2D triangle to be legalized for Delaunay triangularization */
+/* stack of an edge of a 2D triangle to be legalized for Delaunay triangulation */
 typedef struct{
   zDTTri2D *t;
   int i; /* index of the new adjacent */
 } zDTPair2D;
 zListClass( zDTPair2DStack, zDTPair2DCell, zDTPair2D );
 
-/* push an edge of a 2D triangle to be legalized on a stack for Delaunay triangularization */
+/* push an edge of a 2D triangle to be legalized on a stack for Delaunay triangulation */
 static bool _zDTPair2DStackPush(zDTPair2DStack *ps, zDTTri2D *t, int i)
 {
   zDTPair2DCell *pc;
@@ -119,7 +119,7 @@ static bool _zDTPair2DStackPush(zDTPair2DStack *ps, zDTTri2D *t, int i)
   return true;
 }
 
-/* legalize a pair of 2D triangles for Delaunay triangularization */
+/* legalize a pair of 2D triangles for Delaunay triangulation */
 static bool _zDT2DLegalizeOne(zDTTri2DList *tl, zDTTri2D *t, int i, zDTPair2DStack *ps)
 {
   zVec2D c, *pk, *pn;
@@ -146,7 +146,7 @@ static bool _zDT2DLegalizeOne(zDTTri2DList *tl, zDTTri2D *t, int i, zDTPair2DSta
   return _zDTPair2DStackPush( ps, t, i ) && _zDTPair2DStackPush( ps, a, ka );
 }
 
-/* legalize pairs of 2D triangles in a stack for Delaunay triangularization */
+/* legalize pairs of 2D triangles in a stack for Delaunay triangulation */
 static void _zDT2DLegalize(zDTTri2DList *tl, zDTPair2DStack *ps)
 {
   zDTPair2DCell *pc;
@@ -158,7 +158,7 @@ static void _zDT2DLegalize(zDTTri2DList *tl, zDTPair2DStack *ps)
   }
 }
 
-/* create the outer 2D triangle that contains all points for Delaunay triangularization */
+/* create the outer 2D triangle that contains all points for Delaunay triangulation */
 static zDTTri2D *_zDT2DCreateOuter(zDTTri2DList *tl, zVec2DList *pl, zVec2D sp[])
 {
   zDisk2D d;
@@ -178,7 +178,7 @@ static zDTTri2D *_zDT2DCreateOuter(zDTTri2DList *tl, zVec2DList *pl, zVec2D sp[]
   return &tc->data;
 }
 
-/* update a list of 2D triangles Delaunay triangularization */
+/* update a list of 2D triangles Delaunay triangulation */
 static bool _zDT2DUpdate(zDTTri2DList *tl, zVec2D *p)
 {
   zDTTri2DListCell *tc, *t1, *t2, *t3;
@@ -214,7 +214,7 @@ static bool _zDT2DUpdate(zDTTri2DList *tl, zVec2D *p)
   return true;
 }
 
-/* purge the outer 2D triangle from the list for Delaunay triangularization */
+/* purge the outer 2D triangle from the list for Delaunay triangulation */
 static void _zDT2DPurgeOuter(zDTTri2DList *tl, zVec2D *sp)
 {
   zDTTri2DListCell *tc, *tmp;
@@ -231,7 +231,7 @@ static void _zDT2DPurgeOuter(zDTTri2DList *tl, zVec2D *sp)
   }
 }
 
-/* 2D Delaunay triangularization */
+/* 2D Delaunay triangulation */
 bool zDelaunay2D(zVec2DList *pl, zDTTri2DList *tl)
 {
   zVec2DListCell *pc;
@@ -242,4 +242,165 @@ bool zDelaunay2D(zVec2DList *pl, zDTTri2DList *tl)
     if( !_zDT2DUpdate( tl, pc->data ) ) return false;
   _zDT2DPurgeOuter( tl, sp );
   return true;
+}
+
+/* print 2D Voronoi diagram from a set of 2D Delaunay triangles */
+void zDTTri2DListVD2DFPrint(FILE *fp, zDTTri2DList *tl)
+{
+  zVec2D c, c0, c1, c2;
+  zDTTri2DListCell *tc;
+
+  zListForEach( tl, tc ){
+    zTri2DCircumcenter( &tc->data.t, &c );
+    if( tc->data.adj[0] ){
+      zTri2DCircumcenter( &tc->data.adj[0]->t, &c0 );
+      zVec2DDataNLFPrint( fp, &c );
+      zVec2DDataNLFPrint( fp, &c0 );
+      fprintf( fp, "\n" );
+    }
+    if( tc->data.adj[1] ){
+      zTri2DCircumcenter( &tc->data.adj[1]->t, &c1 );
+      zVec2DDataNLFPrint( fp, &c );
+      zVec2DDataNLFPrint( fp, &c1 );
+      fprintf( fp, "\n" );
+    }
+    if( tc->data.adj[2] ){
+      zTri2DCircumcenter( &tc->data.adj[2]->t, &c2 );
+      zVec2DDataNLFPrint( fp, &c );
+      zVec2DDataNLFPrint( fp, &c2 );
+      fprintf( fp, "\n" );
+    }
+  }
+}
+
+/* *** 2D Voronoi diagram *** */
+
+/* initialize a list of triangles by 2D Delaunay triangulation for 2D Voronoi diagram */
+static bool _zVD2DListInit(zVD2DList *vl, zVec2DList *pl, zDTTri2DList *tl, zVec2D sp[])
+{
+  zVec2DListCell *pc;
+  zVD2DCell *vc;
+
+  zListInit( vl );
+  _zDT2DCreateOuter( tl, pl, sp );
+  zListForEach( pl, pc )
+    if( !_zDT2DUpdate( tl, pc->data ) ) return false;
+  zListForEach( pl, pc ){
+    if( !( vc = zAlloc( zVD2DCell, 1 ) ) ){
+      ZALLOCERROR();
+      return false;
+    }
+    vc->data.seed = pc->data;
+    zListInit( &vc->data.loop );
+    zListInsertHead( vl, vc );
+  }
+  return true;
+}
+
+/* destroy a list of 2D Voronoi cells */
+void zVD2DListDestroy(zVD2DList *vl)
+{
+  zVD2DCell *vc;
+
+  while( !zListIsEmpty( vl ) ){
+    zListDeleteHead( vl, &vc );
+    zListDestroy( zVD2DLoopCell, &vc->data.loop );
+    zFree( vc );
+  }
+}
+
+/* find a 2D Voronoi cell with the specified seed */
+static zVD2DCell *_zVD2DListFind(zVD2DList *vl, zVec2D *p)
+{
+  zVD2DCell *vc;
+
+  zListForEach( vl, vc )
+    if( vc->data.seed == p ) return vc;
+  return NULL;
+}
+
+/* add a node of a 2D Voronoi cell */
+static zVD2DLoopCell *_zVD2DCellAddLoop(zVD2DData *vd, zDTTri2D *t, zDTTri2D *a, zVec2D *node)
+{
+  zVD2DLoopCell *lc;
+
+  if( !( lc = zAlloc( zVD2DLoopCell, 1 ) ) ){
+    ZALLOCERROR();
+    return NULL;
+  }
+  lc->data.t[0] = t;
+  lc->data.t[1] = a;
+  zVec2DCopy( node, &lc->data.node );
+  zListInsertHead( &vd->loop, lc );
+  return lc;
+}
+
+/* close the outer loop of a 2D Voronoi cell */
+static void _zVD2DListLoopClose(zVD2DList *vl)
+{
+  zVD2DCell *vc;
+  zVD2DLoopCell *lc1, *lc2;
+
+  zListForEach( vl, vc )
+    zListForEach( &vc->data.loop, lc1 )
+      for( lc2=zListCellNext(lc1); lc2!=zListRoot(&vc->data.loop); lc2=zListCellNext(lc2) )
+        if( lc2->data.t[0] == lc1->data.t[1] ){
+          zListPurge( &vc->data.loop, lc2 );
+          zListCellInsertNext( lc1, lc2 );
+        }
+}
+
+/* convert a vertex of a 2D triangle to a node of a 2D Voronoi cell */
+static bool _zVD2DListFromDTTri2D(zVD2DList *vl, zDTTri2DListCell *tc, int i, zVec2D *node)
+{
+  zVD2DCell *vc;
+
+  if( !tc->data.adj[i] ) return true;
+  if( !( vc = _zVD2DListFind( vl, zTri2DVert(&tc->data.t,i) ) ) ) return true;
+  return _zVD2DCellAddLoop( &vc->data, &tc->data, tc->data.adj[i], node ) ? true : false;
+}
+
+/* convert a list of 2D Delaunay triangles to a list of 2D Voronoi cells */
+static zVD2DList *_zVD2DListFromDTTri2DList(zVD2DList *vl, zDTTri2DList *tl)
+{
+  zDTTri2DListCell *tc;
+  zVec2D node;
+
+  zListForEach( tl, tc ){
+    zTri2DCircumcenter( &tc->data.t, &node );
+    if( !_zVD2DListFromDTTri2D( vl, tc, 0, &node ) ) return NULL;
+    if( !_zVD2DListFromDTTri2D( vl, tc, 1, &node ) ) return NULL;
+    if( !_zVD2DListFromDTTri2D( vl, tc, 2, &node ) ) return NULL;
+  }
+  _zVD2DListLoopClose( vl );
+  return vl;
+}
+
+/* print a list of 2D Voronoi cells */
+void zVD2DListFPrint(FILE *fp, zVD2DList *vl)
+{
+  zVD2DCell *vc;
+  zVD2DLoopCell *lc;
+
+  zListForEach( vl, vc ){
+    zListForEach( &vc->data.loop, lc )
+      zVec2DDataNLFPrint( fp, &lc->data.node );
+    zVec2DDataNLFPrint( fp, &zListTail(&vc->data.loop)->data.node );
+    fprintf( fp, "\n" );
+  }
+}
+
+/* 2D Voronoi diagram */
+bool zVoronoi2D(zVec2DList *pl, zVD2DList *vl)
+{
+  zVec2D sp[3];
+  zDTTri2DList tl;
+  bool ret = true;
+
+  if( _zVD2DListInit( vl, pl, &tl, sp ) ){
+    _zVD2DListFromDTTri2DList( vl, &tl );
+  } else
+    ret = false;
+  zDTTri2DListDestroy( &tl );
+  return ret;
 }

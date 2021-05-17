@@ -1,4 +1,4 @@
-#include <zeo/zeo_delaunay2d.h>
+#include <zeo/zeo_voronoi2d.h>
 
 void generate_points(FILE *fp, zVec2DList *pl, int n)
 {
@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
 {
   zVec2DList pl;
   zDTTri2DList tl;
+  zVD2DList vl;
   FILE *fp;
 
   zRandInit();
@@ -36,7 +37,13 @@ int main(int argc, char *argv[])
   zDTTri2DListFPrint( fp, &tl );
   fclose( fp );
 
+  zVoronoi2D( &pl, &vl );
+  fp = fopen( "c", "w" );
+  zVD2DListFPrint( fp, &vl );
+  fclose( fp );
+
   zVec2DListDestroy( &pl );
-  zListDestroy( zDTTri2DListCell, &tl );
+  zDTTri2DListDestroy( &tl );
+  zVD2DListDestroy( &vl );
   return 0;
 }

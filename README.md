@@ -1,4 +1,4 @@
-<Zeo - Z/Geometry and optics computation library.
+Zeo - Z/Geometry and optics computation library.
 =================================================================
 Copyright (C) Tomomichi Sugihara (Zhidao) since 2005
 
@@ -19,7 +19,7 @@ including:
 - point cloud
 - trianglation of non-convex
 - bounding volume (AABB, OBB, boundin ball, convex-hull)
-- Delaunay triangularization (2D)
+- 2D Delaunay triangulation and Voronoi diagram
 - collision checking (AABB tree, GJK, Muller-Preparata)
 - principal component analysis of point cloud
 - B-Rep (boundary representation) and boolean operations

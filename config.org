@@ -1,6 +1,6 @@
 PREFIX=$(HOME)/usr
 PROJNAME=zeo
-VERSION=1.9.12
+VERSION=1.9.13
 
 DEPENDENCY="zeda=1.6.0;zm=1.3.9"
 
