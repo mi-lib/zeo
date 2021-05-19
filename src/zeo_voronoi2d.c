@@ -283,9 +283,8 @@ static bool _zVD2DListInit(zVD2DList *vl, zVec2DList *pl, zDTTri2DList *tl, zVec
 
   zListInit( vl );
   _zDT2DCreateOuter( tl, pl, sp );
-  zListForEach( pl, pc )
-    if( !_zDT2DUpdate( tl, pc->data ) ) return false;
   zListForEach( pl, pc ){
+    if( !_zDT2DUpdate( tl, pc->data ) ) return false;
     if( !( vc = zAlloc( zVD2DCell, 1 ) ) ){
       ZALLOCERROR();
       return false;

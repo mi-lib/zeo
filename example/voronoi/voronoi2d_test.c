@@ -26,10 +26,12 @@ int main(int argc, char *argv[])
   zDTTri2DList tl;
   zVD2DList vl;
   FILE *fp;
+  int n;
 
+  n = argc > 1 ? atoi( argv[1] ) : N;
   zRandInit();
   fp = fopen( "v", "w" );
-  generate_points( fp, &pl, N );
+  generate_points( fp, &pl, n );
   fclose( fp );
 
   zDelaunay2D( &pl, &tl );

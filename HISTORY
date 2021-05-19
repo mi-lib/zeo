@@ -1,3 +1,4 @@
+2021. 5.19. Modified _zVD2DListInit. [zeo_voronoi2d]
 2021. 5.17. Abolished zeo_delaunay2d from applications. [app]
 2021. 5.17. Renamed zeo_delaunay2d to zeo_voronoi2d. [zeo, zeo_voronoi2d]
 2021. 5.17. Added zVoronoi2D. [zeo_delaunay2d]
