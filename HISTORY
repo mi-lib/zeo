@@ -1,3 +1,5 @@
+2021. 6. 1. Applied new zeda-makefile-gen to compilation of shared objects. [src]
+2021. 6. 1. Modified allclean.sh in example to skip directories without makefile. [example]
 2021. 5.30. Applied zeda-deb-gen. [makefile]
 2021. 5.19. Modified _zVD2DListInit. [zeo_voronoi2d]
 2021. 5.17. Abolished zeo_delaunay2d from applications. [app]

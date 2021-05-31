@@ -1,0 +1,27 @@
+OBJ=zeo_misc.o\
+	zeo_render_color.o zeo_render_optic.o zeo_render_texture.o\
+	zeo_vec2d.o zeo_mat2d.o zeo_elem2d.o\
+	zeo_vec2d_list.o\
+	zeo_vec3d.o zeo_vec6d.o zeo_mat3d.o zeo_mat6d.o\
+	zeo_vec3d_list.o zeo_vec3d_tree.o zeo_vec3d_pca.o\
+	zeo_ep.o zeo_frame3d.o\
+	zeo_pointcloud.o\
+	zeo_elem3d.o zeo_elem3d_list.o\
+	zeo_ph.o zeo_ph_stl.o zeo_ph_ply.o zeo_ph_obj.o\
+	zeo_nurbs.o\
+	zeo_shape3d.o zeo_shape3d_list.o\
+	zeo_shape3d_box.o zeo_shape3d_sphere.o zeo_shape3d_ellips.o zeo_shape3d_cyl.o zeo_shape3d_ecyl.o zeo_shape3d_cone.o zeo_shape3d_ph.o zeo_shape3d_nurbs.o\
+	zeo_bv2d_aabb.o zeo_bv2d_bdisk.o zeo_bv2d_ch.o\
+	zeo_bv3d_aabb.o zeo_bv3d_obb.o zeo_bv3d_bball.o zeo_bv3d_ch.o\
+	zeo_voronoi2d.o\
+	zeo_brep.o zeo_brep_trunc.o zeo_brep_bool.o\
+	zeo_col.o zeo_col_box.o zeo_col_minkowski.o zeo_col_gjk.o zeo_col_mpr.o zeo_col_ph.o\
+	zeo_mshape3d.o\
+	zeo_map.o zeo_map_terra.o\
+	zeo_mapnet.o
+DLIB=libzeo.so
+
+ifeq ($(CONFIG_USE_DAE),y)
+	OBJ += zeo_ph_dae.o
+	CFLAGS += -D __ZEDA_USE_LIBXML -D__ZEO_USE_DAE
+endif
