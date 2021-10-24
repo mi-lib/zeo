@@ -162,17 +162,16 @@ zVec3D *zCyl3DBarycenter(zCyl3D *cyl, zVec3D *c)
   return zVec3DMid( zCyl3DCenter(cyl,0), zCyl3DCenter(cyl,1), c );
 }
 
-/* inertia tensor of a 3D cylinder. */
-zMat3D *zCyl3DInertia(zCyl3D *cyl, zMat3D *inertia)
+/* inertia tensor of a 3D cylinder from mass. */
+zMat3D *zCyl3DInertiaMass(zCyl3D *cyl, double mass, zMat3D *inertia)
 {
-  double vol, rr, hh;
+  double rr, hh;
   zMat3D i, att;
 
-  vol = zCyl3DVolume( cyl );
   /* aligned inertia tensor */
-  rr = 3 * zSqr(zCyl3DRadius(cyl)) * vol;
+  rr = 3 * mass * zSqr(zCyl3DRadius(cyl));
   zCyl3DAxis( cyl, &att.b.z );
-  hh = zVec3DSqrNorm(&att.b.z) * vol;
+  hh = mass * zVec3DSqrNorm(&att.b.z);
   zMat3DCreate( &i,
     (rr+hh)/12, 0, 0,
     0, (rr+hh)/12, 0,
@@ -180,6 +179,12 @@ zMat3D *zCyl3DInertia(zCyl3D *cyl, zMat3D *inertia)
   /* rotate */
   zVec3DOrthoNormalSpace( &att.b.z, &att.b.x, &att.b.y );
   return zRotMat3D( &att, &i, inertia );
+}
+
+/* inertia tensor of a 3D cylinder. */
+zMat3D *zCyl3DInertia(zCyl3D *cyl, double density, zMat3D *inertia)
+{
+  return zCyl3DInertiaMass( cyl, density * zCyl3DVolume( cyl ), inertia );
 }
 
 /* convert a cylinder to a polyhedron. */
@@ -293,11 +298,13 @@ static double _zShape3DCylVolume(void *body){
   return zCyl3DVolume( body ); }
 static zVec3D *_zShape3DCylBarycenter(void *body, zVec3D *c){
   return zCyl3DBarycenter( body, c ); }
-static zMat3D *_zShape3DCylInertia(void *body, zMat3D *i){
-  return zCyl3DInertia( body, i ); }
-static void _zShape3DCylBaryInertia(void *body, zVec3D *c, zMat3D *i){
+static zMat3D *_zShape3DCylInertiaMass(void *body, double mass, zMat3D *i){
+  return zCyl3DInertiaMass( body, mass, i ); }
+static zMat3D *_zShape3DCylInertia(void *body, double density, zMat3D *i){
+  return zCyl3DInertia( body, density, i ); }
+static void _zShape3DCylBaryInertia(void *body, double density, zVec3D *c, zMat3D *i){
   zCyl3DBarycenter( body, c );
-  zCyl3DInertia( body, i ); }
+  zCyl3DInertia( body, density, i ); }
 static zPH3D *_zShape3DCylToPH(void *body, zPH3D *ph){
   return zCyl3DToPH( body, ph ); }
 static void *_zShape3DCylParseZTK(void *body, ZTK *ztk){
@@ -320,6 +327,7 @@ zShape3DCom zeo_shape3d_cyl_com = {
   _zShape3DCylPointIsInside,
   _zShape3DCylVolume,
   _zShape3DCylBarycenter,
+  _zShape3DCylInertiaMass,
   _zShape3DCylInertia,
   _zShape3DCylBaryInertia,
   _zShape3DCylToPH,

@@ -79,8 +79,8 @@ void assert_volume_inertia(void)
   zBox3DToPH( &box, &ph );
   zAssert( zBox3DVolume, zIsTiny( zBox3DVolume( &box ) - zPH3DVolume( &ph ) ) );
 
-  zBox3DInertia( &box, &i );
-  zPH3DBaryInertia( &ph, &center, &iph );
+  zBox3DInertia( &box, 1, &i );
+  zPH3DBaryInertia( &ph, 1, &center, &iph );
   zMat3DSubDRC( &i, &iph );
   zAssert( zBox3DInertia, zMat3DIsTiny( &i ) );
   zPH3DDestroy( &ph );

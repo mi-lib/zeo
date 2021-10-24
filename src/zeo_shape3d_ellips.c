@@ -172,21 +172,27 @@ double zEllips3DVolume(zEllips3D *ellips)
   return 4.0*zPI*zEllips3DRadiusX(ellips)*zEllips3DRadiusY(ellips)*zEllips3DRadiusZ(ellips)/3.0;
 }
 
-/* inertia of a 3D ellipsoid. */
-zMat3D *zEllips3DInertia(zEllips3D *ellips, zMat3D *inertia)
+/* inertia of a 3D ellipsoid from mass. */
+zMat3D *zEllips3DInertiaMass(zEllips3D *ellips, double mass, zMat3D *inertia)
 {
   zMat3D i;
-  double vol, xx, yy, zz;
+  double c, xx, yy, zz;
 
-  vol = 0.2 * zEllips3DVolume( ellips );
-  xx = zSqr( zEllips3DRadiusX(ellips) ) * vol;
-  yy = zSqr( zEllips3DRadiusY(ellips) ) * vol;
-  zz = zSqr( zEllips3DRadiusZ(ellips) ) * vol;
+  c = 0.2 * mass;
+  xx = zSqr( zEllips3DRadiusX(ellips) ) * c;
+  yy = zSqr( zEllips3DRadiusY(ellips) ) * c;
+  zz = zSqr( zEllips3DRadiusZ(ellips) ) * c;
   zMat3DCreate( &i,
     yy+zz, 0, 0,
     0, zz+xx, 0,
     0, 0, xx+yy );
   return zRotMat3D( zFrame3DAtt(&ellips->f), &i, inertia );
+}
+
+/* inertia of a 3D ellipsoid. */
+zMat3D *zEllips3DInertia(zEllips3D *ellips, double density, zMat3D *inertia)
+{
+  return zEllips3DInertiaMass( ellips, density * zEllips3DVolume( ellips ), inertia );
 }
 
 /* convert an ellipsoid to a polyhedron. */
@@ -340,11 +346,13 @@ static double _zShape3DEllipsVolume(void *body){
   return zEllips3DVolume( body ); }
 static zVec3D *_zShape3DEllipsBarycenter(void *body, zVec3D *c){
   zVec3DCopy( zEllips3DCenter((zEllips3D*)body), c ); return c; }
-static zMat3D *_zShape3DEllipsInertia(void *body, zMat3D *i){
-  return zEllips3DInertia( body, i ); }
-static void _zShape3DEllipsBaryInertia(void *body, zVec3D *c, zMat3D *i){
+static zMat3D *_zShape3DEllipsInertiaMass(void *body, double mass, zMat3D *i){
+  return zEllips3DInertiaMass( body, mass, i ); }
+static zMat3D *_zShape3DEllipsInertia(void *body, double density, zMat3D *i){
+  return zEllips3DInertia( body, density, i ); }
+static void _zShape3DEllipsBaryInertia(void *body, double density, zVec3D *c, zMat3D *i){
   zVec3DCopy( zEllips3DCenter((zEllips3D*)body), c );
-  zEllips3DInertia( body, i ); }
+  zEllips3DInertia( body, density, i ); }
 static zPH3D *_zShape3DEllipsToPH(void *body, zPH3D *ph){
   return zEllips3DToPH( body, ph ); }
 static void *_zShape3DEllipsParseZTK(void *body, ZTK *ztk){
@@ -367,6 +375,7 @@ zShape3DCom zeo_shape3d_ellips_com = {
   _zShape3DEllipsPointIsInside,
   _zShape3DEllipsVolume,
   _zShape3DEllipsBarycenter,
+  _zShape3DEllipsInertiaMass,
   _zShape3DEllipsInertia,
   _zShape3DEllipsBaryInertia,
   _zShape3DEllipsToPH,

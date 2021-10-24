@@ -538,7 +538,7 @@ zVec3D *zTri3DConeBarycenter(zTri3D *t, zVec3D *v, zVec3D *c)
 }
 
 /* inertial tensor of a cone. */
-zMat3D *zTri3DConeInertia(zTri3D *t, zMat3D *i)
+zMat3D *zTri3DConeInertia(zTri3D *t, double density, zMat3D *i)
 {
   register int j;
   zMat3D m;
@@ -557,7 +557,7 @@ zMat3D *zTri3DConeInertia(zTri3D *t, zMat3D *i)
     _zMat3DMulDRC( &m, 0.5 );
     _zMat3DSubDRC( i, &m );
   }
-  zMat3DMulDRC( i, 0.1*zTri3DConeVolume( t, ZVEC3DZERO ) );
+  zMat3DMulDRC( i, density * zVec3DGrassmannProd( zTri3DVert(t,0), zTri3DVert(t,1), zTri3DVert(t,2) ) / 60 );
   return i;
 }
 

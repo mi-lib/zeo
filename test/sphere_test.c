@@ -20,7 +20,7 @@ void test_volume_inertia(zSphere3D *sphere, int div, double v0, zMat3D *i0, doub
   zSphere3DSetDiv( sphere, div );
   zSphere3DToPH( sphere, &ph );
   vol = zPH3DVolume( &ph );
-  zPH3DBaryInertia( &ph, &bc, &inertia );
+  zPH3DBaryInertia( &ph, 1, &bc, &inertia );
   zPH3DDestroy( &ph );
   *ev = vol - v0;
   *ei = zMat3DNorm( zMat3DSub( &inertia, i0, &ierr ) );
@@ -47,7 +47,7 @@ void assert_volume_inertia(void)
 
   generate_sphere_rand( &sphere );
   vol = zSphere3DVolume( &sphere );
-  zSphere3DInertia( &sphere, &i );
+  zSphere3DInertia( &sphere, 1, &i );
   test_volume_inertia( &sphere, div, vol, &i, &ev, &ei );
   for( div*=2; div<=div_max; div*=2 )
     if( !eval_volume_inertia( &sphere, div, vol, &i, &ev, &ei ) ) ret = false;

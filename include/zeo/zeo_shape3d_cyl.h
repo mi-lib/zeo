@@ -77,7 +77,7 @@ __EXPORT double zCyl3DClosest(zCyl3D *cyl, zVec3D *p, zVec3D *cp);
 __EXPORT double zCyl3DPointDist(zCyl3D *cyl, zVec3D *p);
 __EXPORT bool zCyl3DPointIsInside(zCyl3D *cyl, zVec3D *p, bool rim);
 
-/*! \brief axis vector, height and volume of a 3D cylinder.
+/*! \brief axis vector and height of a 3D cylinder.
  *
  * zCyl3DAxis() calculates the axis vector of a 3D cylinder \a cyl;
  * the axis from the center point on the bottom base to the center point
@@ -85,19 +85,46 @@ __EXPORT bool zCyl3DPointIsInside(zCyl3D *cyl, zVec3D *p, bool rim);
  *
  * zCyl3DHeight() calculates the height from the bottom base to the top
  * base of a 3D cylinder \a cyl.
- *
- * zCyl3DVolume() calculates the volume of a 3D cylinder \a cyl.
  * \return
  * zCyl3DAxis() returns a pointer \a axis.
  * zCyl3DHeight() returns the calculated height.
- * zCyl3DVolume() returns the calculated volume.
  */
 #define zCyl3DAxis(c,a) \
   zVec3DSub( zCyl3DCenter(c,1), zCyl3DCenter(c,0), a )
 __EXPORT double zCyl3DHeight(zCyl3D *cyl);
+
+/*! \brief volume of a 3D cylinder.
+ *
+ * zCyl3DVolume() calculates the volume of a 3D cylinder \a cyl.
+ * \return
+ * zCyl3DVolume() returns the calculated volume.
+ */
 __EXPORT double zCyl3DVolume(zCyl3D *cyl);
+
+/*! \brief barycenter of a cylinder.
+ *
+ * zCyl3DBarycenter() calculates the barycenter of a 3D cylinder \a cyl.
+ * The result is put into \a c.
+ * \return
+ * zCyl3DBarycenter() returns a pointer \a c.
+ */
 __EXPORT zVec3D *zCyl3DBarycenter(zCyl3D *cyl, zVec3D *c);
-__EXPORT zMat3D *zCyl3DInertia(zCyl3D *cyl, zMat3D *inertia);
+
+/*! \brief inertia of a cylinder.
+ *
+ * zCyl3DInertia() calculates the inertia tensor of a cylinder \a cyl around
+ * its barycenter, supposing it is a solid. Its density has to be specified
+ * by \a density.
+ * zCyl3DInertiaMass() calculates the inertia tensor of \a cyl around its
+ * barycenter, where its mass instead of density has to be specified by \a mass.
+ * For the both functions, the result is put into \a inertia.
+ * \return
+ * zCyl3DInertia() and zCyl3DInertiaMass() return a pointer \a inertia.
+ * \sa
+ * zCyl3DVolume(), zCyl3DBarycenter()
+ */
+__EXPORT zMat3D *zCyl3DInertiaMass(zCyl3D *cyl, double mass, zMat3D *inertia);
+__EXPORT zMat3D *zCyl3DInertia(zCyl3D *cyl, double density, zMat3D *inertia);
 
 /*! \brief convert a 3D cylinder to a polyhedron.
  *

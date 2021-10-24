@@ -326,8 +326,8 @@ __EXPORT double zTri3DClosest(zTri3D *t, zVec3D *v, zVec3D *cp);
  * of a triangle \a t as the base and a vector \a v as the vertex.
  *
  * zTri3DConeInertia() calculates the inertia tensor of a cone which
- * consists of \a t and the original point and sets it into a 3x3 matrix
- * \a i.
+ * consists of \a t and the original point, given its density by
+ * \a density. The result is put into a 3x3 matrix \a i.
  *
  * zTri3DConeBarycenter() calculates the barycenter of a cone which
  * consists of \a t and \a v and sets it into \a c.
@@ -344,7 +344,7 @@ __EXPORT double zTri3DClosest(zTri3D *t, zVec3D *v, zVec3D *cp);
  * zTri3DConeCircumcenter() returns a pointer \a c.
  */
 __EXPORT double zTri3DConeVolume(zTri3D *t, zVec3D *v);
-__EXPORT zMat3D *zTri3DConeInertia(zTri3D *t, zMat3D *i);
+__EXPORT zMat3D *zTri3DConeInertia(zTri3D *t, double density, zMat3D *i);
 __EXPORT zVec3D *zTri3DConeBarycenter(zTri3D *t, zVec3D *v, zVec3D *c);
 __EXPORT zVec3D *zTri3DConeCircumcenter(zTri3D *t, zVec3D *c);
 

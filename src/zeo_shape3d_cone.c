@@ -179,17 +179,16 @@ zVec3D *zCone3DBarycenter(zCone3D *cone, zVec3D *c)
   return zVec3DInterDiv( zCone3DCenter(cone), zCone3DVert(cone), 0.25, c );
 }
 
-/* inertia tensor of a 3D cone. */
-zMat3D *zCone3DInertia(zCone3D *cone, zMat3D *inertia)
+/* inertia tensor of a 3D cone from mass. */
+zMat3D *zCone3DInertiaMass(zCone3D *cone, double mass, zMat3D *inertia)
 {
-  double vol, rr, hh;
+  double rr, hh;
   zMat3D i, att;
 
-  vol = zCone3DVolume( cone );
   /* aligned inertia tensor */
-  rr = 3 * zSqr(zCone3DRadius(cone)) * vol;
+  rr = 3 * mass * zSqr(zCone3DRadius(cone));
   zCone3DAxis( cone, &att.b.z );
-  hh = 0.75 * zVec3DSqrNorm(&att.b.z) * vol;
+  hh = 0.75 * mass * zVec3DSqrNorm(&att.b.z);
   zMat3DCreate( &i,
     0.05*(rr+hh), 0, 0,
     0, 0.05*(rr+hh), 0,
@@ -197,6 +196,12 @@ zMat3D *zCone3DInertia(zCone3D *cone, zMat3D *inertia)
   /* rotate */
   zVec3DOrthoNormalSpace( &att.b.z, &att.b.x, &att.b.y );
   return zRotMat3D( &att, &i, inertia );
+}
+
+/* inertia tensor of a 3D cone. */
+zMat3D *zCone3DInertia(zCone3D *cone, double density, zMat3D *inertia)
+{
+  return zCone3DInertiaMass( cone, density * zCone3DVolume( cone ), inertia );
 }
 
 /* convert a cone to a polyhedron. */
@@ -310,11 +315,13 @@ static double _zShape3DConeVolume(void *body){
   return zCone3DVolume( body ); }
 static zVec3D *_zShape3DConeBarycenter(void *body, zVec3D *c){
   return zCone3DBarycenter( body, c ); }
-static zMat3D *_zShape3DConeInertia(void *body, zMat3D *i){
-  return zCone3DInertia( body, i ); }
-static void _zShape3DConeBaryInertia(void *body, zVec3D *c, zMat3D *i){
+static zMat3D *_zShape3DConeInertiaMass(void *body, double mass, zMat3D *i){
+  return zCone3DInertiaMass( body, mass, i ); }
+static zMat3D *_zShape3DConeInertia(void *body, double density, zMat3D *i){
+  return zCone3DInertia( body, density, i ); }
+static void _zShape3DConeBaryInertia(void *body, double density, zVec3D *c, zMat3D *i){
   zCone3DBarycenter( body, c );
-  zCone3DInertia( body, i ); }
+  zCone3DInertia( body, density, i ); }
 static zPH3D *_zShape3DConeToPH(void *body, zPH3D *ph){
   return zCone3DToPH( body, ph ); }
 static void *_zShape3DConeParseZTK(void *body, ZTK *ztk){
@@ -337,6 +344,7 @@ zShape3DCom zeo_shape3d_cone_com = {
   _zShape3DConePointIsInside,
   _zShape3DConeVolume,
   _zShape3DConeBarycenter,
+  _zShape3DConeInertiaMass,
   _zShape3DConeInertia,
   _zShape3DConeBaryInertia,
   _zShape3DConeToPH,

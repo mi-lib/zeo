@@ -101,19 +101,29 @@ __EXPORT zSphere3D *zSphere3DFrom3(zSphere3D *sphere, zVec3D *v1, zVec3D *v2, zV
 /*! \brief create a 3D sphere from four points as the circumscribing sphere of them. */
 __EXPORT zSphere3D *zSphere3DFrom4(zSphere3D *sphere, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4);
 
-/*! \brief volume and inertia of a 3D sphere.
+/*! \brief volume of a 3D sphere.
  *
  * zSphere3DVolume() calculates the volume of a 3D sphere \a sphere.
- *
- * zSphere3DInertia() calculates the inertia tensor of a 3D sphere
- * \a sphere around its center. It treats \a sphere as a solid model.
- * The result is put into \a inertia.
  * \return
- * zSphere3DVolume() returns the volume calculated.
- * zSphere3DInertia() returns a pointer \a inertia.
+ * zSphere3DVolume() returns the calculated volume.
  */
 __EXPORT double zSphere3DVolume(zSphere3D *sphere);
-__EXPORT zMat3D *zSphere3DInertia(zSphere3D *sphere, zMat3D *inertia);
+
+/*! \brief inertia of a 3D sphere.
+ *
+ * zSphere3DInertia() calculates the inertia tensor of a sphere \a sphere around
+ * its barycenter, supposing it is a solid. Its density has to be specified by
+ * \a density.
+ * zSphere3DInertiaMass() calculates the inertia tensor of \a sphere around its
+ * barycenter, where its mass instead of density has to be specified by \a mass.
+ * For the both functions, the result is put into \a inertia.
+ * \return
+ * zSphere3DInertia() and zSphere3DInertiaMass() return a pointer \a inertia.
+ * \sa
+ * zSphere3DVolume()
+ */
+__EXPORT zMat3D *zSphere3DInertiaMass(zSphere3D *sphere, double mass, zMat3D *inertia);
+__EXPORT zMat3D *zSphere3DInertia(zSphere3D *sphere, double density, zMat3D *inertia);
 
 /*! \brief convert a 3D sphere to a polyhedron.
  *

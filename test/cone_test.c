@@ -19,7 +19,7 @@ void test_volume_inertia(zCone3D *cone, int div, double v0, zMat3D *i0, double *
   zCone3DSetDiv( cone, div );
   zCone3DToPH( cone, &ph );
   vol = zPH3DVolume( &ph );
-  zPH3DBaryInertia( &ph, &bc, &inertia );
+  zPH3DBaryInertia( &ph, 1, &bc, &inertia );
   zPH3DDestroy( &ph );
   *ev = vol - v0;
   *ei = zMat3DNorm( zMat3DSub( &inertia, i0, &ierr ) );
@@ -46,7 +46,7 @@ void assert_volume_inertia(void)
 
   generate_cone_rand( &cone );
   vol = zCone3DVolume( &cone );
-  zCone3DInertia( &cone, &i );
+  zCone3DInertia( &cone, 1, &i );
   test_volume_inertia( &cone, div, vol, &i, &ev, &ei );
   for( div*=2; div<=div_max; div*=2 )
     if( !eval_volume_inertia( &cone, div, vol, &i, &ev, &ei ) ) ret = false;

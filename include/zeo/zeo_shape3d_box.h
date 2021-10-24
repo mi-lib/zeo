@@ -97,19 +97,29 @@ __EXPORT double zBox3DClosest(zBox3D *box, zVec3D *p, zVec3D *cp);
 __EXPORT double zBox3DPointDist(zBox3D *box, zVec3D *p);
 __EXPORT bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, bool rim);
 
-/*! \brief volume and inertia of a box.
+/*! \brief volume of a box.
  *
  * zBox3DVolume() calculates the volume of a box \a box.
- *
- * zBox3DInertia() calculates the inertia tensor of a box \a box
- * around its center.
- * It treats \a box as a solid model. The result is put into \a inertia.
  * \return
- * zBox3DVolume() returns the volume calculated.
- * zBox3DInertia() returns a pointer \a inertia.
+ * zBox3DVolume() returns the calculated volume.
  */
 __EXPORT double zBox3DVolume(zBox3D *box);
-__EXPORT zMat3D *zBox3DInertia(zBox3D *box, zMat3D *inertia);
+
+/*! \brief inertia of a box.
+ *
+ * zBox3DInertia() calculates the inertia tensor of a box \a box around its
+ * its center, supposing it is a solid. Its density has to be specified by
+ * \a density.
+ * zBox3DInertiaMass() calculates the inertia tensor of \a box around its
+ * center, where its mass instead of density has to be specified by \a mass.
+ * For the both functions, the result is put into \a inertia.
+ * \return
+ * zBox3DInertia() and zBox3DInertiaMass() return a pointer \a inertia.
+ * \sa
+ * zBox3DVolume()
+ */
+__EXPORT zMat3D *zBox3DInertiaMass(zBox3D *box, double mass, zMat3D *inertia);
+__EXPORT zMat3D *zBox3DInertia(zBox3D *box, double density, zMat3D *inertia);
 
 /*! \brief pick up a vertex of a box.
  *

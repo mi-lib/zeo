@@ -113,32 +113,43 @@ __EXPORT double zPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp);
 __EXPORT double zPH3DPointDist(zPH3D *ph, zVec3D *p);
 __EXPORT bool zPH3DPointIsInside(zPH3D *ph, zVec3D *v, bool rim);
 
-/*! \brief volume, barycenter and inertia of a 3D polyhedron.
+/*! \brief volume of a 3D polyhedron.
  *
  * zPH3DVolume() calculates the volume of a polyhedron \a ph.
+ * \return
+ * zPH3DVolume() returns the calculated volume.
+ */
+__EXPORT double zPH3DVolume(zPH3D *ph);
+
+/*! \brief barycenter of a 3D polyhedron.
  *
- * zPH3DBarycenter() calculates the barycenter of \a ph. The
- * result is put into \a c.
+ * zPH3DBarycenter() calculates the barycenter of a polyhedron \a ph.
+ * The result is put into \a c.
+ * \return
+ * zPH3DBarycenter() returns a pointer to \a c.
+ */
+__EXPORT zVec3D *zPH3DBarycenter(zPH3D *ph, zVec3D *c);
+
+/*! \brief inertia of a 3D polyhedron.
  *
- * zPH3DInertia() calculates the inertial tensor of \a ph about
- * the original point. The result is put into \a inertia.
+ * zPH3DInertia() calculates the inertial tensor of a polyhedron
+ * \a ph about the original point, given its density by \a density.
+ * zPH3DInertiaMass() calculates the inertial tensor of \a ph about
+ * the original point, given its mass by \a mass instead of density.
+ * For the both functions, the result is put into \a inertia.
  *
  * zPH3DBaryInertia() calculates the barycenter and the inertia
- * tensor about the barycenter of \a ph simultaneously, and puts
- * them into \a c and \a i, respectively.
+ * tensor about the barycenter of \a ph simultaneously, given its
+ * density by \a density, and puts them into \a c and \a i,
+ * respectively.
  * \return
- * zPH3DVolume() returns the volum calculated.
- *
- * zPH3DBarycenter() returns a pointer to \a c.
- *
- * zPH3DInertia() returns a pointer \a inertia.
+ * zPH3DInertia() and zPH3DInertiaMass() return a pointer \a inertia.
  *
  * zPH3DBaryInertia() returns no value.
  */
-__EXPORT double zPH3DVolume(zPH3D *ph);
-__EXPORT zVec3D *zPH3DBarycenter(zPH3D *ph, zVec3D *c);
-__EXPORT zMat3D *zPH3DInertia(zPH3D *ph, zMat3D *inertia);
-__EXPORT void zPH3DBaryInertia(zPH3D *ph, zVec3D *c, zMat3D *i);
+__EXPORT zMat3D *zPH3DInertia(zPH3D *ph, double density, zMat3D *inertia);
+__EXPORT zMat3D *zPH3DInertiaMass(zPH3D *ph, double mass, zMat3D *inertia);
+__EXPORT void zPH3DBaryInertia(zPH3D *ph, double density, zVec3D *c, zMat3D *i);
 
 /*! \brief create prism and pyramid by extrusion.
  *

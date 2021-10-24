@@ -59,16 +59,34 @@ __EXPORT double zECyl3DPointDist(zECyl3D *cyl, zVec3D *p);
 /*! \brief check if a point is inside of an elliptic cylinder. */
 __EXPORT bool zECyl3DPointIsInside(zECyl3D *cyl, zVec3D *p, bool rim);
 
+/*! \brief axis vector a 3D elliptic cylinder. */
 #define zECyl3DAxis(c,a) \
   zVec3DSub( zECyl3DCenter(c,1), zECyl3DCenter(c,0), a )
+
 /*! \brief height of a 3D elliptic cylinder. */
 __EXPORT double zECyl3DHeight(zECyl3D *cyl);
+
 /*! \brief volume of a 3D elliptic cylinder. */
 __EXPORT double zECyl3DVolume(zECyl3D *cyl);
+
 /*! \brief barycenter of a 3D elliptic cylinder. */
 __EXPORT zVec3D *zECyl3DBarycenter(zECyl3D *cyl, zVec3D *c);
-/*! \brief inertia tensor of a 3D elliptic cylinder. */
-__EXPORT zMat3D *zECyl3DInertia(zECyl3D *cyl, zMat3D *inertia);
+
+/*! \brief inertia tensor of a 3D elliptic cylinder.
+ *
+ * zECyl3DInertia() calculates the inertia tensor of an elliptic cylinder
+ * \a cyl around its barycenter, supposing it is a solid. Its density has
+ * to be specified by \a density.
+ * zECyl3DInertiaMass() calculates the inertia tensor of \a cyl around its
+ * barycenter, where its mass instead of density has to be specified by \a mass.
+ * For the both functions, the result is put into \a inertia.
+ * \return
+ * zECyl3DInertia() and zECyl3DInertiaMass() return a pointer \a inertia.
+ * \sa
+ * zECyl3DVolume(), zECyl3DBarycenter()
+ */
+__EXPORT zMat3D *zECyl3DInertiaMass(zECyl3D *cyl, double mass, zMat3D *inertia);
+__EXPORT zMat3D *zECyl3DInertia(zECyl3D *cyl, double density, zMat3D *inertia);
 
 /*! \brief convert an elliptic cylinder to a polyhedron. */
 __EXPORT zPH3D *zECyl3DToPH(zECyl3D *cyl, zPH3D *ph);

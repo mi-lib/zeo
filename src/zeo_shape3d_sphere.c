@@ -146,15 +146,20 @@ double zSphere3DVolume(zSphere3D *sphere)
   return 4.0 * zPI * pow(zSphere3DRadius(sphere),3) / 3.0;
 }
 
-/* inertia of a 3D sphere. */
-zMat3D *zSphere3DInertia(zSphere3D *sphere, zMat3D *inertia)
+/* inertia of a 3D sphere from mass. */
+zMat3D *zSphere3DInertiaMass(zSphere3D *sphere, double mass, zMat3D *inertia)
 {
-  double vol, i;
+  double i;
 
-  vol = zSphere3DVolume( sphere );
-  i = 0.4 * zSqr( zSphere3DRadius(sphere) ) * vol;
+  i = 0.4 * mass * zSqr( zSphere3DRadius(sphere) );
   zMat3DCreate( inertia, i, 0, 0, 0, i, 0, 0, 0, i );
   return inertia;
+}
+
+/* inertia of a 3D sphere. */
+zMat3D *zSphere3DInertia(zSphere3D *sphere, double density, zMat3D *inertia)
+{
+  return zSphere3DInertiaMass( sphere, density * zSphere3DVolume( sphere ), inertia );
 }
 
 /* convert a sphere to a polyhedron. */
@@ -310,11 +315,13 @@ static double _zShape3DSphereVolume(void *body){
   return zSphere3DVolume( body ); }
 static zVec3D *_zShape3DSphereBarycenter(void *body, zVec3D *c){
   zVec3DCopy( zSphere3DCenter((zSphere3D*)body), c ); return c; }
-static zMat3D *_zShape3DSphereInertia(void *body, zMat3D *i){
-  return zSphere3DInertia( body, i ); }
-static void _zShape3DSphereBaryInertia(void *body, zVec3D *c, zMat3D *i){
+static zMat3D *_zShape3DSphereInertiaMass(void *body, double mass, zMat3D *i){
+  return zSphere3DInertiaMass( body, mass, i ); }
+static zMat3D *_zShape3DSphereInertia(void *body, double density, zMat3D *i){
+  return zSphere3DInertia( body, density, i ); }
+static void _zShape3DSphereBaryInertia(void *body, double density, zVec3D *c, zMat3D *i){
   zVec3DCopy( zSphere3DCenter((zSphere3D*)body), c );
-  zSphere3DInertia( body, i ); }
+  zSphere3DInertia( body, density, i ); }
 static zPH3D *_zShape3DSphereToPH(void *body, zPH3D *ph){
   return zSphere3DToPH( body, ph ); }
 static void *_zShape3DSphereParseZTK(void *body, ZTK *ztk){
@@ -337,6 +344,7 @@ zShape3DCom zeo_shape3d_sphere_com = {
   _zShape3DSpherePointIsInside,
   _zShape3DSphereVolume,
   _zShape3DSphereBarycenter,
+  _zShape3DSphereInertiaMass,
   _zShape3DSphereInertia,
   _zShape3DSphereBaryInertia,
   _zShape3DSphereToPH,

@@ -29,8 +29,9 @@ typedef struct{
   bool (*_pointisinside)(void*,zVec3D*,bool);
   double (*_volume)(void*);
   zVec3D *(*_barycenter)(void*,zVec3D*);
-  zMat3D *(*_inertia)(void*,zMat3D*);
-  void (*_baryinertia)(void*,zVec3D*,zMat3D*);
+  zMat3D *(*_inertia_m)(void*,double,zMat3D*);
+  zMat3D *(*_inertia_d)(void*,double,zMat3D*);
+  void (*_baryinertia)(void*,double,zVec3D*,zMat3D*);
   zPH3D *(*_toph)(void*,zPH3D*);
   void *(*_fromZTK)(void*,ZTK*);
   void (*_fprintZTK)(FILE*,void*);

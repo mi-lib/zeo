@@ -21,7 +21,7 @@ int main(void)
 
   for( count=0, i=0; i<N; i++ ){
     r1 = zVec3DDist( zSphere3DCenter(&bb), zArrayElem(&arr,i) );
-    if( r1 > r ){
+    if( r1 > r + zTOL ){
       eprintf( "a point outside of the bounding ball found. (%.10g > %.10g)\n", r1, r );
       errcode = 1;
     }

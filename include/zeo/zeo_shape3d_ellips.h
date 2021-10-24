@@ -103,20 +103,31 @@ __EXPORT double zEllips3DClosest(zEllips3D *ellips, zVec3D *p, zVec3D *cp);
 __EXPORT double zEllips3DPointDist(zEllips3D *ellips, zVec3D *p);
 __EXPORT bool zEllips3DPointIsInside(zEllips3D *ellips, zVec3D *p, bool rim);
 
-/*! \brief calculate volume and inertia of a 3D ellipsoid.
+/*! \brief calculate volume a 3D ellipsoid.
  *
  * zEllips3DVolume() calculates the volume of a 3D ellipsoid
  * \a ellips.
- *
- * zEllips3DInertia() calculates the inertia tensor of a 3D
- * ellipsoid \a ellips around its center. It treats \a ellips
- * as a solid model. The result is put into \a inertia.
  * \return
  * zEllips3DVolume() returns the calculated volume.
- * zEllips3DInertia() returns a pointer \a inertia.
  */
 __EXPORT double zEllips3DVolume(zEllips3D *ellips);
-__EXPORT zMat3D *zEllips3DInertia(zEllips3D *ellips, zMat3D *inertia);
+
+/*! \brief calculate inertia of a 3D ellipsoid.
+ *
+ * zEllips3DInertia() calculates the inertia tensor of an ellipsoid \a ellips
+ * around its barycenter, supposing it is a solid. Its density has to be
+ * specified by \a density.
+ * zEllips3DInertiaMass() calculates the inertia tensor of \a ellips around
+ * its barycenter, where its mass instead of density has to be specified by
+ * \a mass.
+ * For the both functions, the result is put into \a inertia.
+ * \return
+ * zEllips3DInertia() and zEllips3DInertiaMass() return a pointer \a inertia.
+ * \sa
+ * zEllips3DVolume()
+ */
+__EXPORT zMat3D *zEllips3DInertiaMass(zEllips3D *ellips, double mass, zMat3D *inertia);
+__EXPORT zMat3D *zEllips3DInertia(zEllips3D *ellips, double density, zMat3D *inertia);
 
 /*! \brief convert an ellipsoid to a polyhedron.
  *

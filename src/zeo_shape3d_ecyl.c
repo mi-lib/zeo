@@ -202,18 +202,17 @@ zVec3D *zECyl3DBarycenter(zECyl3D *cyl, zVec3D *c)
   return zVec3DMid( zECyl3DCenter(cyl,0), zECyl3DCenter(cyl,1), c );
 }
 
-/* inertia tensor of a 3D elliptic cylinder. */
-zMat3D *zECyl3DInertia(zECyl3D *cyl, zMat3D *inertia)
+/* inertia tensor of a 3D elliptic cylinder from mass. */
+zMat3D *zECyl3DInertiaMass(zECyl3D *cyl, double mass, zMat3D *inertia)
 {
-  double vol, aa, bb, hh;
+  double aa, bb, hh;
   zMat3D i, att;
 
-  vol = zECyl3DVolume( cyl );
   /* aligned inertia tensor */
-  aa = 0.25 * zSqr( zECyl3DRadius(cyl,0) ) * vol;
-  bb = 0.25 * zSqr( zECyl3DRadius(cyl,1) ) * vol;
+  aa = 0.25 * mass * zSqr( zECyl3DRadius(cyl,0) );
+  bb = 0.25 * mass * zSqr( zECyl3DRadius(cyl,1) );
   zECyl3DAxis( cyl, &att.b.z );
-  hh = zVec3DSqrNorm(&att.b.z) * vol / 12.0;
+  hh = zVec3DSqrNorm(&att.b.z) * mass / 12.0;
   zMat3DCreate( &i,
     bb+hh, 0, 0,
     0, aa+hh, 0,
@@ -223,6 +222,12 @@ zMat3D *zECyl3DInertia(zECyl3D *cyl, zMat3D *inertia)
   zVec3DCopy( zECyl3DRadVec(cyl,1), &att.b.y );
   zVec3DNormalizeDRC( &att.b.z );
   return zRotMat3D( &att, &i, inertia );
+}
+
+/* inertia tensor of a 3D elliptic cylinder. */
+zMat3D *zECyl3DInertia(zECyl3D *cyl, double density, zMat3D *inertia)
+{
+  return zECyl3DInertiaMass( cyl, density * zECyl3DVolume( cyl ), inertia );
 }
 
 /* convert an elliptic cylinder to a polyhedron. */
@@ -337,11 +342,13 @@ static double _zShape3DECylVolume(void *body){
   return zECyl3DVolume( body ); }
 static zVec3D *_zShape3DECylBarycenter(void *body, zVec3D *c){
   return zECyl3DBarycenter( body, c ); }
-static zMat3D *_zShape3DECylInertia(void *body, zMat3D *i){
-  return zECyl3DInertia( body, i ); }
-static void _zShape3DECylBaryInertia(void *body, zVec3D *c, zMat3D *i){
+static zMat3D *_zShape3DECylInertiaMass(void *body, double mass, zMat3D *i){
+  return zECyl3DInertiaMass( body, mass, i ); }
+static zMat3D *_zShape3DECylInertia(void *body, double density, zMat3D *i){
+  return zECyl3DInertia( body, density, i ); }
+static void _zShape3DECylBaryInertia(void *body, double density, zVec3D *c, zMat3D *i){
   zECyl3DBarycenter( body, c );
-  zECyl3DInertia( body, i ); }
+  zECyl3DInertia( body, density, i ); }
 static zPH3D *_zShape3DECylToPH(void *body, zPH3D *ph){
   return zECyl3DToPH( body, ph ); }
 static void *_zShape3DECylParseZTK(void *body, ZTK *ztk){
@@ -364,6 +371,7 @@ zShape3DCom zeo_shape3d_ecyl_com = {
   _zShape3DECylPointIsInside,
   _zShape3DECylVolume,
   _zShape3DECylBarycenter,
+  _zShape3DECylInertiaMass,
   _zShape3DECylInertia,
   _zShape3DECylBaryInertia,
   _zShape3DECylToPH,

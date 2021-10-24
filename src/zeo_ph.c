@@ -210,28 +210,34 @@ zVec3D *zPH3DBarycenter(zPH3D *ph, zVec3D *c)
 }
 
 /* inertia tensor of a 3D polyhedron. */
-zMat3D *zPH3DInertia(zPH3D *ph, zMat3D *inertia)
+zMat3D *zPH3DInertia(zPH3D *ph, double density, zMat3D *inertia)
 {
   register int j;
   zMat3D i;
 
   zMat3DZero( inertia );
   for( j=0; j<zPH3DFaceNum(ph); j++ ){
-    zTri3DConeInertia( zPH3DFace(ph,j), &i );
+    zTri3DConeInertia( zPH3DFace(ph,j), density, &i );
     _zMat3DAddDRC( inertia, &i );
   }
   return inertia;
 }
 
+/* inertia tensor of a 3D polyhedron from mass. */
+zMat3D *zPH3DInertiaMass(zPH3D *ph, double mass, zMat3D *inertia)
+{
+  return zPH3DInertia( ph, mass / zPH3DVolume( ph ), inertia );
+}
+
 /* inertia about barycenter of a 3D polyhedron. */
-void zPH3DBaryInertia(zPH3D *ph, zVec3D *c, zMat3D *i)
+void zPH3DBaryInertia(zPH3D *ph, double density, zVec3D *c, zMat3D *i)
 {
   zMat3D m;
 
   zPH3DBarycenter( ph, c );
   zVec3DTripleProd2Mat3D( c, c, &m );
   zMat3DMulDRC( &m, zPH3DVolume( ph ) );
-  zPH3DInertia( ph, i );
+  zPH3DInertia( ph, density, i );
   _zMat3DAddDRC( i, &m );
 }
 
