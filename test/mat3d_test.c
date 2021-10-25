@@ -162,11 +162,13 @@ void assert_outerprod(void)
 {
   zVec3D v1, v2, v3, v4, v5, v6;
   zMat3D m1, m2, m3, m4;
+  double k;
 
   mat_create_rand( &m2 );
   vec_create_rand( &v1 );
   vec_create_rand( &v2 );
   vec_create_rand( &v3 );
+  k = zRandF(-10,10);
   zVec3DOuterProd2Mat3D( &v1, &m1 );
   zMulMat3DMat3D( &m1, &m2, &m3 );
   zVec3DOuterProd( &v1, &m2.v[0], &v4 );
@@ -191,13 +193,19 @@ void assert_outerprod(void)
     && zIsTiny(m3.e[0][0]-v4.e[0]) && zIsTiny(m3.e[0][1]-v4.e[1]) && zIsTiny(m3.e[0][2]-v4.e[2])
     && zIsTiny(m3.e[1][0]-v5.e[0]) && zIsTiny(m3.e[1][1]-v5.e[1]) && zIsTiny(m3.e[1][2]-v5.e[2])
     && zIsTiny(m3.e[2][0]-v6.e[0]) && zIsTiny(m3.e[2][1]-v6.e[1]) && zIsTiny(m3.e[2][2]-v6.e[2]) );
-
-  zMulVec3DOPMat3D( &v1, &m2, &m3 );
+  zVec3DTripleProd2Mat3D( &v1, &v1, &m3 );
+  zVec3DDoubleOuterProd2Mat3D( &v1, &m4 );
+  zAssert( zVec3DDoubleOuterProdMat3D, zMat3DEqual( &m3, &m4 ) );
+  zMat3DCatVec3DDoubleOuterProd( &m2, k, &v1, &m3 );
+  zVec3DDoubleOuterProd2Mat3D( &v1, &m1 );
+  zMat3DCat( &m2, k, &m1, &m4 );
+  zAssert( zMat3DCatVec3DDoubleOuterProd, zMat3DEqual( &m3, &m4 ) );
+  zMulVec3DOuterProdMat3D( &v1, &m2, &m3 );
   zVec3DOuterProd2Mat3D( &v1, &m1 );
   zMulMat3DMat3D( &m1, &m2, &m4 );
-  zAssert( zMulVec3DOPMat3D, zMat3DEqual( &m3, &m4 ) );
-  zMulVec3DOPMat3DDRC( &v1, &m2 );
-  zAssert( zMulVec3DOPMat3DDRC, zMat3DEqual( &m2, &m4 ) );
+  zAssert( zMulVec3DOuterProdMat3D, zMat3DEqual( &m3, &m4 ) );
+  zMulVec3DOuterProdMat3DDRC( &v1, &m2 );
+  zAssert( zMulVec3DOuterProdMat3DDRC, zMat3DEqual( &m2, &m4 ) );
 }
 
 void assert_inv(void)

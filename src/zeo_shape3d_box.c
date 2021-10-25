@@ -133,8 +133,8 @@ double zBox3DVolume(zBox3D *box)
   return zBox3DDepth(box) * zBox3DWidth(box) * zBox3DHeight(box);
 }
 
-/* inertia of a 3D box from mass. */
-zMat3D *zBox3DInertiaMass(zBox3D *box, double mass, zMat3D *inertia)
+/* inertia tensor about barycenter of a 3D box from mass. */
+zMat3D *zBox3DBaryInertiaMass(zBox3D *box, double mass, zMat3D *inertia)
 {
   zMat3D i;
   double xx, yy, zz, c;
@@ -150,10 +150,10 @@ zMat3D *zBox3DInertiaMass(zBox3D *box, double mass, zMat3D *inertia)
   return zRotMat3D( zFrame3DAtt(&box->f), &i, inertia );
 }
 
-/* inertia of a 3D box. */
-zMat3D *zBox3DInertia(zBox3D *box, double density, zMat3D *inertia)
+/* inertia tensor about barycenter of a 3D box. */
+zMat3D *zBox3DBaryInertia(zBox3D *box, double density, zMat3D *inertia)
 {
-  return zBox3DInertiaMass( box, density * zBox3DVolume( box ), inertia );
+  return zBox3DBaryInertiaMass( box, density * zBox3DVolume( box ), inertia );
 }
 
 /* get vertex of a box. */
@@ -309,13 +309,15 @@ static double _zShape3DBoxVolume(void *body){
   return zBox3DVolume( body ); }
 static zVec3D *_zShape3DBoxBarycenter(void *body, zVec3D *c){
   zVec3DCopy( zBox3DCenter((zBox3D*)body), c ); return c; }
-static zMat3D *_zShape3DBoxInertiaMass(void *body, double mass, zMat3D *i){
-  return zBox3DInertiaMass( body, mass, i ); }
-static zMat3D *_zShape3DBoxInertia(void *body, double density, zMat3D *i){
-  return zBox3DInertia( body, density, i ); }
+static zMat3D *_zShape3DBoxBaryInertiaMass(void *body, double mass, zMat3D *i){
+  return zBox3DBaryInertiaMass( body, mass, i ); }
+static zMat3D *_zShape3DBoxBaryInertia(void *body, double density, zMat3D *i){
+  return zBox3DBaryInertia( body, density, i ); }
+#if 0
 static void _zShape3DBoxBaryInertia(void *body, double density, zVec3D *c, zMat3D *i){
   zVec3DCopy( zBox3DCenter((zBox3D*)body), c );
   zBox3DInertia( body, density, i ); }
+#endif
 static zPH3D *_zShape3DBoxToPH(void *body, zPH3D *ph){
   return zBox3DToPH( body, ph ); }
 static void *_zShape3DBoxParseZTK(void *body, ZTK *ztk){
@@ -338,9 +340,11 @@ zShape3DCom zeo_shape3d_box_com = {
   _zShape3DBoxPointIsInside,
   _zShape3DBoxVolume,
   _zShape3DBoxBarycenter,
-  _zShape3DBoxInertiaMass,
-  _zShape3DBoxInertia,
+  _zShape3DBoxBaryInertiaMass,
   _zShape3DBoxBaryInertia,
+#if 0
+  _zShape3DBoxBaryInertia,
+#endif
   _zShape3DBoxToPH,
   _zShape3DBoxParseZTK,
   _zShape3DBoxFPrintZTK,

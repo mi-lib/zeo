@@ -110,21 +110,21 @@ __EXPORT double zCyl3DVolume(zCyl3D *cyl);
  */
 __EXPORT zVec3D *zCyl3DBarycenter(zCyl3D *cyl, zVec3D *c);
 
-/*! \brief inertia of a cylinder.
+/*! \brief inertia tensor of a cylinder.
  *
- * zCyl3DInertia() calculates the inertia tensor of a cylinder \a cyl around
+ * zCyl3DBaryInertia() calculates the inertia tensor of a cylinder \a cyl about
  * its barycenter, supposing it is a solid. Its density has to be specified
  * by \a density.
- * zCyl3DInertiaMass() calculates the inertia tensor of \a cyl around its
+ * zCyl3DBaryInertiaMass() calculates the inertia tensor of \a cyl about its
  * barycenter, where its mass instead of density has to be specified by \a mass.
  * For the both functions, the result is put into \a inertia.
  * \return
- * zCyl3DInertia() and zCyl3DInertiaMass() return a pointer \a inertia.
+ * zCyl3DBaryInertia() and zCyl3DBaryInertiaMass() return a pointer \a inertia.
  * \sa
  * zCyl3DVolume(), zCyl3DBarycenter()
  */
-__EXPORT zMat3D *zCyl3DInertiaMass(zCyl3D *cyl, double mass, zMat3D *inertia);
-__EXPORT zMat3D *zCyl3DInertia(zCyl3D *cyl, double density, zMat3D *inertia);
+__EXPORT zMat3D *zCyl3DBaryInertiaMass(zCyl3D *cyl, double mass, zMat3D *inertia);
+__EXPORT zMat3D *zCyl3DBaryInertia(zCyl3D *cyl, double density, zMat3D *inertia);
 
 /*! \brief convert a 3D cylinder to a polyhedron.
  *

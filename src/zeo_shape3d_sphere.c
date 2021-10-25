@@ -146,8 +146,8 @@ double zSphere3DVolume(zSphere3D *sphere)
   return 4.0 * zPI * pow(zSphere3DRadius(sphere),3) / 3.0;
 }
 
-/* inertia of a 3D sphere from mass. */
-zMat3D *zSphere3DInertiaMass(zSphere3D *sphere, double mass, zMat3D *inertia)
+/* inertia tensor about barycenter of a 3D sphere from mass. */
+zMat3D *zSphere3DBaryInertiaMass(zSphere3D *sphere, double mass, zMat3D *inertia)
 {
   double i;
 
@@ -156,10 +156,10 @@ zMat3D *zSphere3DInertiaMass(zSphere3D *sphere, double mass, zMat3D *inertia)
   return inertia;
 }
 
-/* inertia of a 3D sphere. */
-zMat3D *zSphere3DInertia(zSphere3D *sphere, double density, zMat3D *inertia)
+/* inertia tensor about barycenter of a 3D sphere. */
+zMat3D *zSphere3DBaryInertia(zSphere3D *sphere, double density, zMat3D *inertia)
 {
-  return zSphere3DInertiaMass( sphere, density * zSphere3DVolume( sphere ), inertia );
+  return zSphere3DBaryInertiaMass( sphere, density * zSphere3DVolume( sphere ), inertia );
 }
 
 /* convert a sphere to a polyhedron. */
@@ -315,13 +315,15 @@ static double _zShape3DSphereVolume(void *body){
   return zSphere3DVolume( body ); }
 static zVec3D *_zShape3DSphereBarycenter(void *body, zVec3D *c){
   zVec3DCopy( zSphere3DCenter((zSphere3D*)body), c ); return c; }
-static zMat3D *_zShape3DSphereInertiaMass(void *body, double mass, zMat3D *i){
-  return zSphere3DInertiaMass( body, mass, i ); }
-static zMat3D *_zShape3DSphereInertia(void *body, double density, zMat3D *i){
-  return zSphere3DInertia( body, density, i ); }
+static zMat3D *_zShape3DSphereBaryInertiaMass(void *body, double mass, zMat3D *i){
+  return zSphere3DBaryInertiaMass( body, mass, i ); }
+static zMat3D *_zShape3DSphereBaryInertia(void *body, double density, zMat3D *i){
+  return zSphere3DBaryInertia( body, density, i ); }
+#if 0
 static void _zShape3DSphereBaryInertia(void *body, double density, zVec3D *c, zMat3D *i){
   zVec3DCopy( zSphere3DCenter((zSphere3D*)body), c );
   zSphere3DInertia( body, density, i ); }
+#endif
 static zPH3D *_zShape3DSphereToPH(void *body, zPH3D *ph){
   return zSphere3DToPH( body, ph ); }
 static void *_zShape3DSphereParseZTK(void *body, ZTK *ztk){
@@ -344,9 +346,11 @@ zShape3DCom zeo_shape3d_sphere_com = {
   _zShape3DSpherePointIsInside,
   _zShape3DSphereVolume,
   _zShape3DSphereBarycenter,
-  _zShape3DSphereInertiaMass,
-  _zShape3DSphereInertia,
+  _zShape3DSphereBaryInertiaMass,
   _zShape3DSphereBaryInertia,
+#if 0
+  _zShape3DSphereBaryInertia,
+#endif
   _zShape3DSphereToPH,
   _zShape3DSphereParseZTK,
   _zShape3DSphereFPrintZTK,

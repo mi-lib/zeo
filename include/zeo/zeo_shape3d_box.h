@@ -105,21 +105,22 @@ __EXPORT bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, bool rim);
  */
 __EXPORT double zBox3DVolume(zBox3D *box);
 
-/*! \brief inertia of a box.
+/*! \brief inertia tensor of a box.
  *
- * zBox3DInertia() calculates the inertia tensor of a box \a box around its
- * its center, supposing it is a solid. Its density has to be specified by
- * \a density.
- * zBox3DInertiaMass() calculates the inertia tensor of \a box around its
- * center, where its mass instead of density has to be specified by \a mass.
+ * zBox3DBaryInertia() calculates the inertia tensor of a box \a box about
+ * its barycenter, supposing it is a solid. Its density has to be specified
+ * by \a density.
+ * zBox3DBaryInertiaMass() calculates the inertia tensor of \a box about
+ * its barycenter, where its mass instead of density has to be specified by
+ * \a mass.
  * For the both functions, the result is put into \a inertia.
  * \return
- * zBox3DInertia() and zBox3DInertiaMass() return a pointer \a inertia.
+ * zBox3DBaryInertia() and zBox3DBaryInertiaMass() return a pointer \a inertia.
  * \sa
  * zBox3DVolume()
  */
-__EXPORT zMat3D *zBox3DInertiaMass(zBox3D *box, double mass, zMat3D *inertia);
-__EXPORT zMat3D *zBox3DInertia(zBox3D *box, double density, zMat3D *inertia);
+__EXPORT zMat3D *zBox3DBaryInertiaMass(zBox3D *box, double mass, zMat3D *inertia);
+__EXPORT zMat3D *zBox3DBaryInertia(zBox3D *box, double density, zMat3D *inertia);
 
 /*! \brief pick up a vertex of a box.
  *

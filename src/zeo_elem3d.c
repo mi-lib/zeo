@@ -537,7 +537,7 @@ zVec3D *zTri3DConeBarycenter(zTri3D *t, zVec3D *v, zVec3D *c)
   return zVec3DMulDRC( c, 0.25 );
 }
 
-/* inertial tensor of a cone. */
+/* inertia tensor of a cone. */
 zMat3D *zTri3DConeInertia(zTri3D *t, double density, zMat3D *i)
 {
   register int j;

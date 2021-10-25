@@ -36,17 +36,20 @@ static double _zShape3DNURBSPointDist(void *body, zVec3D *p){
   zVec3D nn;
   return zNURBS3DClosest( body, p, &nn, NULL, NULL ); }
 
+/* dummy functions */
 static bool _zShape3DNURBSPointIsInside(void *body, zVec3D *p, bool rim){
   return false; }
 static double _zShape3DNURBSVolume(void *body){
   return 0; }
 static zVec3D *_zShape3DNURBSBarycenter(void *body, zVec3D *c){
   return NULL; }
-static zMat3D *_zShape3DNURBSInertiaMass(void *body, double mass, zMat3D *i){
+static zMat3D *_zShape3DNURBSBaryInertiaMass(void *body, double mass, zMat3D *i){
   return NULL; }
-static zMat3D *_zShape3DNURBSInertia(void *body, double density, zMat3D *i){
+static zMat3D *_zShape3DNURBSBaryInertia(void *body, double density, zMat3D *i){
   return NULL; }
+#if 0
 static void _zShape3DNURBSBaryInertia(void *body, double density, zVec3D *c, zMat3D *i){}
+#endif
 
 static zPH3D *_zShape3DNURBSToPH(void *body, zPH3D *ph){
   return zNURBS3DToPH( body, ph ); }
@@ -69,9 +72,11 @@ zShape3DCom zeo_shape3d_nurbs_com = {
   _zShape3DNURBSPointIsInside,
   _zShape3DNURBSVolume,
   _zShape3DNURBSBarycenter,
-  _zShape3DNURBSInertiaMass,
-  _zShape3DNURBSInertia,
+  _zShape3DNURBSBaryInertiaMass,
   _zShape3DNURBSBaryInertia,
+#if 0
+  _zShape3DNURBSBaryInertia,
+#endif
   _zShape3DNURBSToPH,
   _zShape3DNURBSParseZTK,
   _zShape3DNURBSFPrintZTK,

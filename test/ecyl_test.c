@@ -19,13 +19,12 @@ void test_volume_inertia(zECyl3D *ecyl, int div, double v0, zMat3D *i0, double *
 {
   zPH3D ph;
   double vol;
-  zVec3D bc;
   zMat3D inertia, ierr;
 
   zECyl3DSetDiv( ecyl, div );
   zECyl3DToPH( ecyl, &ph );
   vol = zPH3DVolume( &ph );
-  zPH3DBaryInertia( &ph, 1, &bc, &inertia );
+  zPH3DBaryInertia( &ph, 1, &inertia );
   zPH3DDestroy( &ph );
   *ev = vol - v0;
   *ei = zMat3DNorm( zMat3DSub( &inertia, i0, &ierr ) );
@@ -52,7 +51,7 @@ void assert_volume_inertia(void)
 
   generate_ecyl_rand( &ecyl );
   vol = zECyl3DVolume( &ecyl );
-  zECyl3DInertia( &ecyl, 1, &i );
+  zECyl3DBaryInertia( &ecyl, 1, &i );
   test_volume_inertia( &ecyl, div, vol, &i, &ev, &ei );
   for( div*=2; div<=div_max; div*=2 )
     if( !eval_volume_inertia( &ecyl, div, vol, &i, &ev, &ei ) ) ret = false;

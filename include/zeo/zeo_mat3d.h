@@ -294,43 +294,86 @@ __EXPORT zMat3D *zMat3DAddDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
 } while(0)
 __EXPORT zMat3D *zMat3DSubDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
 
-/*! \brief create a 3x3 matrix equivalent to the outer product of a 3D vector.
+/*! \brief create a 3x3 matrix equivalent to outer product of 3D vectors.
  *
- * zVec3DOuterProdMat3D() computes the outer-product skew-symmetric matrix
- * of a 3D vector \a v and puts it into \a m. Namely, \a m a is equivalent
- * with \a v x a with respect to an arbitrary 3D vector a.
+ * zVec3DOuterProd2Mat3D() computes the outer-product matrix of a 3D vector
+ * \a v and puts it into \a m. Namely, \a m a is equivalent with \a v x a
+ * with respect to an arbitrary 3D vector a. \a m becomes skew-symmetric.
  *
- * zVec3DOuterProd2Mat3D() computes the twice-outer-product matrix of a 3D
- * vector \a v1 and \a v2 and puts it into \a m. Namely, \a m a is equivalent
- * with \a v1 x ( \a v2 x a ) ) with respect to an arbitrary 3D vector a.
+ * zVec3DTripleProd2Mat3D() computes the triple product matrix of a 3D vector
+ * \a v1 and \a v2 and puts it into \a m. Namely, \a m a is equivalent with
+ * \a v1 x ( \a v2 x a ) ) with respect to an arbitrary 3D vector a.
+ *
+ * zVec3DDoubleOuterProd2Mat3D() computes the triple product matrix of a 3D
+ * vector \a v and puts it into \a m. Namely, the result is equivalent with
+ * zVec3DOuterProd2Mat3D( \a v, \a v, \a m ).
  * \return
- * zVec3DOuterProdMat3D() and zVec3DOuterProd2Mat3D() return a pointer \a m.
+ * zVec3DOuterProd2Mat3D(), zVec3DTripleProd2Mat3D() and zVec3DDoubleOuterProd2Mat3D()
+ * return a pointer \a m.
  */
 #define _zVec3DOuterProd2Mat3D(vo,m) \
-  _zMat3DCreate( m, 0.0,-(vo)->c.z, (vo)->c.y,\
-                    (vo)->c.z, 0.0,-(vo)->c.x,\
-                   -(vo)->c.y, (vo)->c.x, 0.0 )
+  _zMat3DCreate( m,\
+    0.0,-(vo)->c.z, (vo)->c.y,\
+    (vo)->c.z, 0.0,-(vo)->c.x,\
+   -(vo)->c.y, (vo)->c.x, 0.0 )
 __EXPORT zMat3D *zVec3DOuterProd2Mat3D(zVec3D *v, zMat3D *m);
 #define _zVec3DTripleProd2Mat3D(v1,v2,m) \
-  _zMat3DCreate( m,-(v1)->c.y*(v2)->c.y-(v1)->c.z*(v2)->c.z, (v1)->c.y*(v2)->c.x, (v1)->c.z*(v2)->c.x,\
-                    (v1)->c.x*(v2)->c.y,-(v1)->c.z*(v2)->c.z-(v1)->c.x*(v2)->c.x, (v1)->c.z*(v2)->c.y,\
-                    (v1)->c.x*(v2)->c.z, (v1)->c.y*(v2)->c.z,-(v1)->c.x*(v2)->c.x-(v1)->c.y*(v2)->c.y )
+  _zMat3DCreate( m,\
+    -(v1)->c.y*(v2)->c.y-(v1)->c.z*(v2)->c.z, (v1)->c.y*(v2)->c.x, (v1)->c.z*(v2)->c.x,\
+     (v1)->c.x*(v2)->c.y,-(v1)->c.z*(v2)->c.z-(v1)->c.x*(v2)->c.x, (v1)->c.z*(v2)->c.y,\
+     (v1)->c.x*(v2)->c.z, (v1)->c.y*(v2)->c.z,-(v1)->c.x*(v2)->c.x-(v1)->c.y*(v2)->c.y )
 __EXPORT zMat3D *zVec3DTripleProd2Mat3D(zVec3D *v1, zVec3D *v2, zMat3D *m);
+#define _zVec3DDoubleOuterProd2Mat3D(v,m) do{\
+  double __xx, __yy, __zz;\
+  __xx = (v)->c.x * (v)->c.x;\
+  __yy = (v)->c.y * (v)->c.y;\
+  __zz = (v)->c.z * (v)->c.z;\
+  (m)->c.xx = -__yy-__zz;\
+  (m)->c.yy = -__zz-__xx;\
+  (m)->c.zz = -__xx-__yy;\
+  (m)->c.xy = (m)->c.yx = (v)->c.x*(v)->c.y;\
+  (m)->c.yz = (m)->c.zy = (v)->c.y*(v)->c.z;\
+  (m)->c.zx = (m)->c.xz = (v)->c.z*(v)->c.x;\
+} while(0)
+__EXPORT zMat3D *zVec3DDoubleOuterProd2Mat3D(zVec3D *v, zMat3D *m);
+
+/*! \brief concatenate a double outer-product matrix of a 3D vector to another matrix. */
+#define _zMat3DCatVec3DDoubleOuterProd(m,k,v,dm) do{\
+  double __kxx, __kyy, __kzz, __kxy, __kyz, __kzx;\
+  __kxx = (k) * (v)->c.x * (v)->c.x;\
+  __kyy = (k) * (v)->c.y * (v)->c.y;\
+  __kzz = (k) * (v)->c.z * (v)->c.z;\
+  __kxy = (k) * (v)->c.x * (v)->c.y;\
+  __kyz = (k) * (v)->c.y * (v)->c.z;\
+  __kzx = (k) * (v)->c.z * (v)->c.x;\
+  (dm)->c.xx = (m)->c.xx - __kyy - __kzz;\
+  (dm)->c.yy = (m)->c.yy - __kzz - __kxx;\
+  (dm)->c.zz = (m)->c.zz - __kxx - __kyy;\
+  (dm)->c.xy = (m)->c.xy + __kxy;\
+  (dm)->c.yx = (m)->c.yx + __kxy;\
+  (dm)->c.yz = (m)->c.yz + __kyz;\
+  (dm)->c.zy = (m)->c.zy + __kyz;\
+  (dm)->c.zx = (m)->c.zx + __kzx;\
+  (dm)->c.xz = (m)->c.xz + __kzx;\
+} while(0)
+__EXPORT zMat3D *zMat3DCatVec3DDoubleOuterProd(zMat3D *m, double k, zVec3D *v, zMat3D *dm);
+#define _zMat3DCatVec3DDoubleOuterProdDRC(m,k,v) _zMat3DCatVec3DDoubleOuterProd(m,k,v,m)
+#define zMat3DCatVec3DDoubleOuterProdDRC(m,k,v) zMat3DCatVec3DDoubleOuterProd(m,k,v,m)
 
 /*! \brief multiply cross product of a 3D vector and a 3x3 matrix.
  *
- * zMulVec3DOPMat3D() multiplies a 3x3 matrix \a m by the outer product of
- * a 3D vector \a ohm and puts it into \a mv. Namely,
+ * zMulVec3DOuterProdMat3D() multiplies a 3x3 matrix \a m by the outer
+ * product of a 3D vector \a ohm and puts it into \a mv. Namely,
  *   \a mv = \a ohm x \a m.
  *
- * zMulVec3DOPMat3DDRC() directly multiplies a 3x3 matrix \a m by the
- * outer product of a 3D vector \a ohm.
+ * zMulVec3DOuterProdMat3DDRC() directly multiplies a 3x3 matrix \a m
+ * by the outer product of a 3D vector \a ohm.
  * \return
- * zMulVec3DOPMat3D() returns a pointer \a mv.
- * zMulVec3DOPMat3DDRC() returns a pointer \a m.
+ * zMulVec3DOuterProdMat3D() returns a pointer \a mv.
+ * zMulVec3DOuterProdMat3DDRC() returns a pointer \a m.
  */
-__EXPORT zMat3D *zMulVec3DOPMat3D(zVec3D *ohm, zMat3D *m, zMat3D *mv);
-#define zMulVec3DOPMat3DDRC(o,m) zMulVec3DOPMat3D( o, m, m )
+__EXPORT zMat3D *zMulVec3DOuterProdMat3D(zVec3D *ohm, zMat3D *m, zMat3D *mv);
+#define zMulVec3DOuterProdMat3DDRC(o,m) zMulVec3DOuterProdMat3D( o, m, m )
 
 /*! \brief calculate norm of a 3D matrix.
  *

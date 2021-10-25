@@ -1,10 +1,10 @@
 #include <zeo/zeo.h>
 
-void generate_box_rand(zBox3D *box, zVec3D *center, zVec3D *ax, zVec3D *ay, zVec3D *az)
+void generate_box_rand(zBox3D *box, zVec3D *ax, zVec3D *ay, zVec3D *az)
 {
-  zVec3D tmp;
+  zVec3D center, tmp;
 
-  zVec3DCreate( center, zRandF(-3,3), zRandF(-3,3), zRandF(-3,3) );
+  zVec3DCreate( &center, zRandF(-3,3), zRandF(-3,3), zRandF(-3,3) );
   zVec3DCreate( ax, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
   zVec3DCreate( &tmp, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
   zVec3DOrthogonalize( &tmp, ax, ay );
@@ -13,17 +13,17 @@ void generate_box_rand(zBox3D *box, zVec3D *center, zVec3D *ax, zVec3D *ay, zVec
   zVec3DNormalizeDRC( ay );
   zVec3DNormalizeDRC( az );
 
-  zBox3DCreate( box, center, ax, ay, az, zRandF(0,5), zRandF(0,5), zRandF(0,5) );
+  zBox3DCreate( box, &center, ax, ay, az, zRandF(0,5), zRandF(0,5), zRandF(0,5) );
 }
 
 void assert_vert(void)
 {
   zBox3D box;
-  zVec3D center, ax, ay, az, tmp;
+  zVec3D ax, ay, az, tmp;
   zVec3D v[8], e[12];
   register int i;
 
-  generate_box_rand( &box, &center, &ax, &ay, &az );
+  generate_box_rand( &box, &ax, &ay, &az );
   for( i=0; i<8; i++ )
     zBox3DVert( &box, i, &v[i] );
   zVec3DSub( &v[0], &v[1], &e[0] );
@@ -72,15 +72,15 @@ void assert_volume_inertia(void)
 {
   zBox3D box;
   zPH3D ph;
-  zVec3D center, ax, ay, az;
+  zVec3D ax, ay, az;
   zMat3D i, iph;
 
-  generate_box_rand( &box, &center, &ax, &ay, &az );
+  generate_box_rand( &box, &ax, &ay, &az );
   zBox3DToPH( &box, &ph );
   zAssert( zBox3DVolume, zIsTiny( zBox3DVolume( &box ) - zPH3DVolume( &ph ) ) );
 
-  zBox3DInertia( &box, 1, &i );
-  zPH3DBaryInertia( &ph, 1, &center, &iph );
+  zBox3DBaryInertia( &box, 1, &i );
+  zPH3DBaryInertia( &ph, 1, &iph );
   zMat3DSubDRC( &i, &iph );
   zAssert( zBox3DInertia, zMat3DIsTiny( &i ) );
   zPH3DDestroy( &ph );
@@ -97,12 +97,12 @@ bool box_cat(zBox3D *box, double d, double w, double h, zVec3D *p)
 void assert_inside(void)
 {
   zBox3D box;
-  zVec3D center, ax, ay, az, p;
+  zVec3D ax, ay, az, p;
   double d, w, h;
   register int i;
   int n = 1000, ni, no, nitest, notest;
 
-  generate_box_rand( &box, &center, &ax, &ay, &az );
+  generate_box_rand( &box, &ax, &ay, &az );
   for( ni=no=nitest=notest=0, i=0; i<n; i++ ){
     d = zRandF(-1.0,1.0);
     w = zRandF(-1.0,1.0);

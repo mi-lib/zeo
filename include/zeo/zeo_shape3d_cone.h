@@ -107,21 +107,21 @@ __EXPORT double zCone3DVolume(zCone3D *cone);
  */
 __EXPORT zVec3D *zCone3DBarycenter(zCone3D *cone, zVec3D *c);
 
-/*! \brief inertia of a cone.
+/*! \brief inertia tensor of a cone.
  *
- * zCone3DInertia() calculates the inertia tensor of a cone \a cone around
+ * zCone3DBaryInertia() calculates the inertia tensor of a cone \a cone about
  * its barycenter, supposing it is a solid. Its density has to be specified
  * by \a density.
- * zCone3DInertiaMass() calculates the inertia tensor of \a cone around its
+ * zCone3DBaryInertiaMass() calculates the inertia tensor of \a cone about its
  * barycenter, where its mass instead of density has to be specified by \a mass.
  * For the both functions, the result is put into \a inertia.
  * \return
- * zCone3DInertia() and zCone3DInertiaMass() return a pointer \a inertia.
+ * zCone3DBaryInertia() and zCone3DBaryInertiaMass() return a pointer \a inertia.
  * \sa
  * zCone3DVolume(), zCone3DBarycenter()
  */
-__EXPORT zMat3D *zCone3DInertiaMass(zCone3D *cone, double mass, zMat3D *inertia);
-__EXPORT zMat3D *zCone3DInertia(zCone3D *cone, double density, zMat3D *inertia);
+__EXPORT zMat3D *zCone3DBaryInertiaMass(zCone3D *cone, double mass, zMat3D *inertia);
+__EXPORT zMat3D *zCone3DBaryInertia(zCone3D *cone, double density, zMat3D *inertia);
 
 /*! \brief convert cone to polyhedron.
  *

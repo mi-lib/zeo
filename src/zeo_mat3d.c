@@ -146,22 +146,36 @@ zMat3D *zMat3DSubDyad(zMat3D *m, zVec3D *v1, zVec3D *v2)
   return m;
 }
 
-/* create a skew-symmetric outer-product matrix. */
+/* create an outer-product matrix of a 3D vector. */
 zMat3D *zVec3DOuterProd2Mat3D(zVec3D *v, zMat3D *m)
 {
   _zVec3DOuterProd2Mat3D( v, m );
   return m;
 }
 
-/* create a twice-outer-product matrix. */
+/* create a triple-product matrix of a 3D vector. */
 zMat3D *zVec3DTripleProd2Mat3D(zVec3D *v1, zVec3D *v2, zMat3D *m)
 {
   _zVec3DTripleProd2Mat3D( v1, v2, m );
   return m;
 }
 
+/* create a double outer-product matrix of a 3D vector. */
+zMat3D *zVec3DDoubleOuterProd2Mat3D(zVec3D *v, zMat3D *m)
+{
+  _zVec3DDoubleOuterProd2Mat3D( v, m );
+  return m;
+}
+
+/* concatenate a double outer-product matrix of a 3D vector to another matrix. */
+zMat3D *zMat3DCatVec3DDoubleOuterProd(zMat3D *m, double k, zVec3D *v, zMat3D *dm)
+{
+  _zMat3DCatVec3DDoubleOuterProd( m, k, v, dm );
+  return dm;
+}
+
 /* multiply cross product of vector and matrix. */
-zMat3D *zMulVec3DOPMat3D(zVec3D *ohm, zMat3D *m, zMat3D *mv)
+zMat3D *zMulVec3DOuterProdMat3D(zVec3D *ohm, zMat3D *m, zMat3D *mv)
 {
   zVec3DOuterProd( ohm, &m->b.x, &mv->b.x );
   zVec3DOuterProd( ohm, &m->b.y, &mv->b.y );

@@ -22,13 +22,12 @@ void test_volume_inertia(zEllips3D *ellips, int div, double v0, zMat3D *i0, doub
 {
   zPH3D ph;
   double vol;
-  zVec3D bc;
   zMat3D inertia, ierr;
 
   zEllips3DSetDiv( ellips, div );
   zEllips3DToPH( ellips, &ph );
   vol = zPH3DVolume( &ph );
-  zPH3DBaryInertia( &ph, 1, &bc, &inertia );
+  zPH3DBaryInertia( &ph, 1, &inertia );
   zPH3DDestroy( &ph );
   *ev = vol - v0;
   *ei = zMat3DNorm( zMat3DSub( &inertia, i0, &ierr ) );
@@ -55,7 +54,7 @@ void assert_volume_inertia(void)
 
   generate_ellips_rand( &ellips );
   vol = zEllips3DVolume( &ellips );
-  zEllips3DInertia( &ellips, 1, &i );
+  zEllips3DBaryInertia( &ellips, 1, &i );
   test_volume_inertia( &ellips, div, vol, &i, &ev, &ei );
   for( div*=2; div<=div_max; div*=2 )
     if( !eval_volume_inertia( &ellips, div, vol, &i, &ev, &ei ) ) ret = false;
