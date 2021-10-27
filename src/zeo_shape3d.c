@@ -102,6 +102,52 @@ bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, bool rim)
   return shape->com->_pointisinside( shape->body, p, rim );
 }
 
+/* volume of a 3D shape. */
+double zShape3DVolume(zShape3D *shape)
+{
+  return shape->com->_volume( shape->body );
+}
+
+/* barycenter of a 3D shape. */
+zVec3D *zShape3DBarycenter(zShape3D *shape, zVec3D *c)
+{
+  return shape->com->_barycenter( shape->body, c );
+}
+
+/* inertia tensor about barycenter of a 3D shape from mass. */
+zMat3D *zShape3DBaryInertiaMass(zShape3D *shape, double mass, zMat3D *inertia)
+{
+  return shape->com->_baryinertia_m( shape->body, mass, inertia );
+}
+
+/* inertia tensor about barycenter of a 3D shape. */
+zMat3D *zShape3DBaryInertia(zShape3D *shape, double density, zMat3D *inertia)
+{
+  return shape->com->_baryinertia_d( shape->body, density, inertia );
+}
+
+/* inertia tensor about origin of a 3D shape from mass. */
+zMat3D *zShape3DInertiaMass(zShape3D *shape, double mass, zMat3D *inertia)
+{
+  zVec3D c;
+
+  zShape3DBarycenter( shape, &c );
+  zShape3DBaryInertiaMass( shape, mass, inertia );
+  return zMat3DCatVec3DDoubleOuterProdDRC( inertia, -mass, &c );
+}
+
+/* inertia tensor about origin of a 3D shape. */
+zMat3D *zShape3DInertia(zShape3D *shape, double density, zMat3D *inertia)
+{
+  zVec3D c;
+  double mass;
+
+  zShape3DBarycenter( shape, &c );
+  mass = density * zShape3DVolume( shape );
+  zShape3DBaryInertiaMass( shape, mass, inertia );
+  return zMat3DCatVec3DDoubleOuterProdDRC( inertia, -mass, &c );
+}
+
 /* convert a shape to a polyhedron. */
 zShape3D *zShape3DToPH(zShape3D *shape)
 {

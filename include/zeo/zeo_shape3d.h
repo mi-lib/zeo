@@ -99,7 +99,7 @@ __EXPORT zShape3D *zShape3DXformInv(zShape3D *src, zFrame3D *f, zShape3D *dest);
  * a shape \a shape.
  *
  * \a p on the surface of \a shape is judged to be inside of
- * \ashape if the true value is given for \a rim.
+ * \a shape if the true value is given for \a rim.
  * \return
  * zShape3DPointIsInside() returns the true value if \a p is
  * inside of \a shape, or the false value otherwise.
@@ -109,6 +109,20 @@ __EXPORT zShape3D *zShape3DXformInv(zShape3D *src, zFrame3D *f, zShape3D *dest);
 __EXPORT double zShape3DClosest(zShape3D *shape, zVec3D *p, zVec3D *cp);
 __EXPORT double zShape3DPointDist(zShape3D *shape, zVec3D *p);
 __EXPORT bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, bool rim);
+
+/*! \brief volume of a 3D shape. */
+__EXPORT double zShape3DVolume(zShape3D *shape);
+/*! \brief barycenter of a 3D shape. */
+__EXPORT zVec3D *zShape3DBarycenter(zShape3D *shape, zVec3D *c);
+
+/*! \brief inertia tensor about barycenter of a 3D shape from mass. */
+__EXPORT zMat3D *zShape3DBaryInertiaMass(zShape3D *shape, double mass, zMat3D *inertia);
+/*! \brief inertia tensor about barycenter of a 3D shape. */
+__EXPORT zMat3D *zShape3DBaryInertia(zShape3D *shape, double density, zMat3D *inertia);
+/*! \brief inertia tensor about origin of a 3D shape from mass. */
+__EXPORT zMat3D *zShape3DInertiaMass(zShape3D *shape, double mass, zMat3D *inertia);
+/*! \brief inertia tensor about origin of a 3D shape. */
+__EXPORT zMat3D *zShape3DInertia(zShape3D *shape, double density, zMat3D *inertia);
 
 /*! \brief convert a shape to a polyhedron. */
 __EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
