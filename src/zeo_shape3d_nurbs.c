@@ -47,9 +47,6 @@ static zMat3D *_zShape3DNURBSBaryInertiaMass(void *body, double mass, zMat3D *i)
   return NULL; }
 static zMat3D *_zShape3DNURBSBaryInertia(void *body, double density, zMat3D *i){
   return NULL; }
-#if 0
-static void _zShape3DNURBSBaryInertia(void *body, double density, zVec3D *c, zMat3D *i){}
-#endif
 
 static zPH3D *_zShape3DNURBSToPH(void *body, zPH3D *ph){
   return zNURBS3DToPH( body, ph ); }
@@ -74,9 +71,6 @@ zShape3DCom zeo_shape3d_nurbs_com = {
   _zShape3DNURBSBarycenter,
   _zShape3DNURBSBaryInertiaMass,
   _zShape3DNURBSBaryInertia,
-#if 0
-  _zShape3DNURBSBaryInertia,
-#endif
   _zShape3DNURBSToPH,
   _zShape3DNURBSParseZTK,
   _zShape3DNURBSFPrintZTK,

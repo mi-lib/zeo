@@ -229,15 +229,6 @@ zMat3D *zPH3DInertiaMass(zPH3D *ph, double mass, zMat3D *inertia)
   return zPH3DInertia( ph, mass / zPH3DVolume( ph ), inertia );
 }
 
-#if 0
-/* inertia about barycenter of a 3D polyhedron. */
-void zPH3DBaryInertia(zPH3D *ph, double density, zVec3D *c, zMat3D *i)
-{
-  zPH3DInertia( ph, density, i );
-  zPH3DBarycenter( ph, c );
-  _zMat3DCatVec3DDoubleOuterProdDRC( i, density * zPH3DVolume( ph ), c );
-}
-#else
 /* inertia tensor about barycenter of a 3D polyhedron. */
 zMat3D *zPH3DBaryInertia(zPH3D *ph, double density, zMat3D *i)
 {
@@ -259,7 +250,6 @@ zMat3D *zPH3DBaryInertiaMass(zPH3D *ph, double mass, zMat3D *i)
   _zMat3DCatVec3DDoubleOuterProdDRC( i, mass, &c );
   return i;
 }
-#endif
 
 /* solid modeling */
 

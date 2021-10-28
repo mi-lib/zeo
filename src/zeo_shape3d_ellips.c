@@ -350,11 +350,6 @@ static zMat3D *_zShape3DEllipsBaryInertiaMass(void *body, double mass, zMat3D *i
   return zEllips3DBaryInertiaMass( body, mass, i ); }
 static zMat3D *_zShape3DEllipsBaryInertia(void *body, double density, zMat3D *i){
   return zEllips3DBaryInertia( body, density, i ); }
-#if 0
-static void _zShape3DEllipsBaryInertia(void *body, double density, zVec3D *c, zMat3D *i){
-  zVec3DCopy( zEllips3DCenter((zEllips3D*)body), c );
-  zEllips3DInertia( body, density, i ); }
-#endif
 static zPH3D *_zShape3DEllipsToPH(void *body, zPH3D *ph){
   return zEllips3DToPH( body, ph ); }
 static void *_zShape3DEllipsParseZTK(void *body, ZTK *ztk){
@@ -379,9 +374,6 @@ zShape3DCom zeo_shape3d_ellips_com = {
   _zShape3DEllipsBarycenter,
   _zShape3DEllipsBaryInertiaMass,
   _zShape3DEllipsBaryInertia,
-#if 0
-  _zShape3DEllipsBaryInertia,
-#endif
   _zShape3DEllipsToPH,
   _zShape3DEllipsParseZTK,
   _zShape3DEllipsFPrintZTK,

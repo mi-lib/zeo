@@ -146,12 +146,8 @@ __EXPORT zVec3D *zPH3DBarycenter(zPH3D *ph, zVec3D *c);
  */
 __EXPORT zMat3D *zPH3DInertia(zPH3D *ph, double density, zMat3D *inertia);
 __EXPORT zMat3D *zPH3DInertiaMass(zPH3D *ph, double mass, zMat3D *inertia);
-#if 0
-__EXPORT void zPH3DBaryInertia(zPH3D *ph, double density, zVec3D *c, zMat3D *i);
-#else
 __EXPORT zMat3D *zPH3DBaryInertia(zPH3D *ph, double density, zMat3D *inertia);
 __EXPORT zMat3D *zPH3DBaryInertiaMass(zPH3D *ph, double mass, zMat3D *inertia);
-#endif
 
 /*! \brief create prism and pyramid by extrusion.
  *

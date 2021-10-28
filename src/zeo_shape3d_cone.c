@@ -319,11 +319,6 @@ static zMat3D *_zShape3DConeBaryInertiaMass(void *body, double mass, zMat3D *i){
   return zCone3DBaryInertiaMass( body, mass, i ); }
 static zMat3D *_zShape3DConeBaryInertia(void *body, double density, zMat3D *i){
   return zCone3DBaryInertia( body, density, i ); }
-#if 0
-static void _zShape3DConeBaryInertia(void *body, double density, zVec3D *c, zMat3D *i){
-  zCone3DBarycenter( body, c );
-  zCone3DInertia( body, density, i ); }
-#endif
 static zPH3D *_zShape3DConeToPH(void *body, zPH3D *ph){
   return zCone3DToPH( body, ph ); }
 static void *_zShape3DConeParseZTK(void *body, ZTK *ztk){
@@ -348,9 +343,6 @@ zShape3DCom zeo_shape3d_cone_com = {
   _zShape3DConeBarycenter,
   _zShape3DConeBaryInertiaMass,
   _zShape3DConeBaryInertia,
-#if 0
-  _zShape3DConeBaryInertia,
-#endif
   _zShape3DConeToPH,
   _zShape3DConeParseZTK,
   _zShape3DConeFPrintZTK,

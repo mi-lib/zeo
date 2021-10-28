@@ -40,21 +40,10 @@ static double _zShape3DPHVolume(void *body){
   return zPH3DVolume( body ); }
 static zVec3D *_zShape3DPHBarycenter(void *body, zVec3D *c){
   return zPH3DBarycenter( body, c ); }
-#if 0
-static zMat3D *_zShape3DPHBaryInertia(void *body, double density, zMat3D *i){
-  zVec3D c;
-  zPH3DBaryInertia( body, density, &c, i );
-  return i; }
-static zMat3D *_zShape3DPHBaryInertiaMass(void *body, double mass, zMat3D *i){
-  return _zShape3DPHInertia( body, mass / _zShape3DPHVolume(body), i ); }
-static void _zShape3DPHBaryInertia(void *body, double density, zVec3D *c, zMat3D *i){
-  zPH3DBaryInertia( body, density, c, i ); }
-#else
 static zMat3D *_zShape3DPHBaryInertiaMass(void *body, double mass, zMat3D *i){
   return zPH3DBaryInertiaMass( body, mass, i ); }
 static zMat3D *_zShape3DPHBaryInertia(void *body, double density, zMat3D *i){
   return zPH3DBaryInertia( body, density, i ); }
-#endif
 static zPH3D *_zShape3DPHToPH(void *body, zPH3D *ph){
   return zPH3DClone( body, ph ); }
 static void *_zShape3DPHParseZTK(void *body, ZTK *ztk){
@@ -78,9 +67,6 @@ zShape3DCom zeo_shape3d_ph_com = {
   _zShape3DPHBarycenter,
   _zShape3DPHBaryInertiaMass,
   _zShape3DPHBaryInertia,
-#if 0
-  _zShape3DPHBaryInertia,
-#endif
   _zShape3DPHToPH,
   _zShape3DPHParseZTK,
   _zShape3DPHFPrintZTK,

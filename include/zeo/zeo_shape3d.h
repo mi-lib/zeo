@@ -31,9 +31,6 @@ typedef struct{
   zVec3D *(*_barycenter)(void*,zVec3D*);
   zMat3D *(*_baryinertia_m)(void*,double,zMat3D*);
   zMat3D *(*_baryinertia_d)(void*,double,zMat3D*);
-#if 0
-  void (*_baryinertia)(void*,double,zVec3D*,zMat3D*);
-#endif
   zPH3D *(*_toph)(void*,zPH3D*);
   void *(*_fromZTK)(void*,ZTK*);
   void (*_fprintZTK)(FILE*,void*);

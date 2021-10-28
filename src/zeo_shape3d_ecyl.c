@@ -346,11 +346,6 @@ static zMat3D *_zShape3DECylBaryInertiaMass(void *body, double mass, zMat3D *i){
   return zECyl3DBaryInertiaMass( body, mass, i ); }
 static zMat3D *_zShape3DECylBaryInertia(void *body, double density, zMat3D *i){
   return zECyl3DBaryInertia( body, density, i ); }
-#if 0
-static void _zShape3DECylBaryInertia(void *body, double density, zVec3D *c, zMat3D *i){
-  zECyl3DBarycenter( body, c );
-  zECyl3DInertia( body, density, i ); }
-#endif
 static zPH3D *_zShape3DECylToPH(void *body, zPH3D *ph){
   return zECyl3DToPH( body, ph ); }
 static void *_zShape3DECylParseZTK(void *body, ZTK *ztk){
@@ -375,9 +370,6 @@ zShape3DCom zeo_shape3d_ecyl_com = {
   _zShape3DECylBarycenter,
   _zShape3DECylBaryInertiaMass,
   _zShape3DECylBaryInertia,
-#if 0
-  _zShape3DECylBaryInertia,
-#endif
   _zShape3DECylToPH,
   _zShape3DECylParseZTK,
   _zShape3DECylFPrintZTK,
