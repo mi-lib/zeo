@@ -66,7 +66,7 @@ static zBREPEdgeListCell *_zBREPEdgeListFindnReg(zBREPEdgeList *elist, zBREPVert
 static bool _zBREPFaceInsert(zTri3D *face, zBREPFaceList *flist, zBREPEdgeList *elist, zBREPVertList *vlist)
 {
   zBREPFaceListCell *f;
-  register int i;
+  int i;
 
   if( !( f = zAlloc( zBREPFaceListCell, 1 ) ) ){
     ZALLOCERROR();
@@ -89,7 +89,7 @@ static bool _zBREPFaceInsert(zTri3D *face, zBREPFaceList *flist, zBREPEdgeList *
 /* convert polyhedron to B-Rep solid. */
 zBREP *zPH3D2BREP(zPH3D *ph, zBREP *brep)
 {
-  register int i;
+  int i;
 
   zListInit( &brep->vlist );
   zListInit( &brep->elist );
@@ -107,7 +107,7 @@ zBREP *zPH3D2BREP(zPH3D *ph, zBREP *brep)
 zBREP *zPH3D2BREPInBox(zPH3D *ph, zAABox3D *box, zBREP *brep)
 {
   zTri3D *tri;
-  register int i;
+  int i;
 
   zListInit( &brep->vlist );
   zListInit( &brep->elist );
@@ -127,7 +127,7 @@ zBREP *zPH3D2BREPInBox(zPH3D *ph, zAABox3D *box, zBREP *brep)
 /* convert B-Rep solid to polyhedron. */
 zPH3D *zBREP2PH3D(zBREP *brep, zPH3D *ph)
 {
-  register int i;
+  int i;
   zBREPVertListCell *vp;
   zBREPFaceListCell *fp;
 

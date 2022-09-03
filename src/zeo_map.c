@@ -34,7 +34,7 @@ static void *_zMapTypeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
     &zeo_map_terra_com,
     NULL,
   };
-  register int k;
+  int k;
 
   for( k=0; com[k]; k++ )
     if( strcmp( com[k]->typestr, ZTKVal(ztk) ) == 0 ){

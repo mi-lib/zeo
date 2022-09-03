@@ -99,7 +99,7 @@ zLoop3D *zCH2DPL(zLoop3D *ch, zVec3DList *pl)
 /* find two independent base vectors on a plane. */
 static zVec3D *_zCH2DBase(zVec3D p[], int num, zVec3D s[])
 {
-  register int i;
+  int i;
   zVec3D n;
 
   for( i=1; i<num; i++ )
@@ -145,7 +145,7 @@ static int __z_ch2d_cmp(void *v1, void *v2, void *priv)
 zLoop3D *zCH2D(zLoop3D *ch, zVec3D p[], int num)
 {
   zVec3D s[2], d;
-  register int i, j, k;
+  int i, j, k;
   double t, t_max;
 
   zListInit( ch );
@@ -181,7 +181,7 @@ zLoop3D *zCH2D(zLoop3D *ch, zVec3D p[], int num)
 static zPH3D *_zCH2D2PH3D(zPH3D *ch, zLoop3D *vl)
 {
   zLoop3DCell *vc;
-  register int vn, i;
+  int vn, i;
 
   vn = zListSize(vl);
   if( !( ch = zPH3DAlloc( ch, vn, 2*(vn-2) ) ) ) return NULL;

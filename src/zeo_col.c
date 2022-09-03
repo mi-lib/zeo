@@ -40,7 +40,7 @@ int zIntersectEdgePlane3D(zEdge3D *e, zPlane3D *p, zVec3D ip[])
 /* check if a plane and a triangle intersect with each other. */
 bool zColChkTriPlane3D(zTri3D *t, zPlane3D *p)
 {
-  register int i;
+  int i;
   zEdge3D e;
 
   for( i=0; i<3; i++ ){
@@ -53,7 +53,7 @@ bool zColChkTriPlane3D(zTri3D *t, zPlane3D *p)
 /* intersection of 3D plane and triangle. */
 int zIntersectTriPlane3D(zTri3D *t, zPlane3D *p, zVec3D ip[])
 {
-  register int i, j, k;
+  int i, j, k;
   int n, ne;
   zVec3D v[2];
   zEdge3D e;
@@ -82,7 +82,7 @@ bool zColChkEdgeTri3D(zEdge3D *e, zTri3D *t)
 /* intersection of 3D edge and triangle. */
 int zIntersectEdgeTri3D(zEdge3D *e, zTri3D *t, zVec3D ip[])
 {
-  register int i, ne, n = 0;
+  int i, ne, n = 0;
   zVec3D v[2];
   zPlane3D p;
 
@@ -106,7 +106,7 @@ bool zColChkTri3D(zTri3D *t1, zTri3D *t2)
 /* intersection of two 3D triangles. */
 int zIntersectTri3D(zTri3D *t1, zTri3D *t2, zVec3D ip[])
 {
-  register int i, j;
+  int i, j;
   int np[2], n = 0;
   zVec3D v[2][3];
   zPlane3D p;

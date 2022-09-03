@@ -168,7 +168,7 @@ zPH3D *zSphere3DToPH(zSphere3D *sphere, zPH3D *ph)
   zVec3D *vert;
   zTri3D *face;
   double theta;
-  register int i, j, k, l, n;
+  int i, j, k, l, n;
 
   if( !zPH3DAlloc( ph,
       zSphere3DDiv(sphere)*(zSphere3DDiv(sphere)-1)+2,
@@ -218,8 +218,7 @@ zSphere3D *zSphere3DFit(zSphere3D *s, zVec3DList *pc)
   zMat c;
   zVec e, d;
   zVec3DListCell *p;
-  int iter = 0;
-  register int i, j;
+  int i, j, iter = 0;
 
   c = zMatAlloc( zListSize(pc), 4 );
   e = zVecAlloc( zListSize(pc) );

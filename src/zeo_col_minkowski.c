@@ -10,7 +10,7 @@
 zPH3D *zPH3DMinkowskiSub(zPH3D *ph, zVec3D p1[], int n1, zVec3D p2[], int n2)
 {
   zVec3D *v;
-  register int i, j;
+  int i, j;
 
   if( ( v = zAlloc( zVec3D, n1*n2 ) ) == NULL ){
     ZALLOCERROR();

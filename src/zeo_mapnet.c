@@ -28,7 +28,7 @@ zMapNet *zMapNetAlloc(zMapNet *mn, int size)
 /* destroy map net. */
 void zMapNetDestroy(zMapNet *mn)
 {
-  register int i;
+  int i;
 
   for( i=0; i<zArraySize(&mn->maparray); i++ )
     zMapDestroy( zMapNetMap(mn,i) );
@@ -60,7 +60,7 @@ zMapNet *zMapNetFromZTK(zMapNet *mn, ZTK *ztk)
 /* print information of map net out to a file. */
 void zMapNetFPrintZTK(FILE *fp, zMapNet *mn)
 {
-  register int i;
+  int i;
 
   for( i=0; i<zArraySize(&mn->maparray); i++ ){
     fprintf( fp, "[%s]\n", ZTK_TAG_MAP );

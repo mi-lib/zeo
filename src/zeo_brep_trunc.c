@@ -6,21 +6,8 @@
 
 #include <zeo/zeo_brep.h>
 
-static int _zBREPTruncBBCheck(zBREPVertList *vlist, zPlane3D *pl);
-static bool _zBREPTruncIntersect(zBREP *brep, zPlane3D *pl);
-
-static bool _zBREPTruncFaceA(zBREP *brep, zBREPFace *f, int i1, int i2, int i3);
-static bool _zBREPTruncFaceV(zBREP *brep, zBREPFace *f, int i1, int i2, int i3);
-static bool _zBREPTruncFaceE(zBREP *brep, zBREPFace *f, int i1, int i2, int i3);
-static bool _zBREPTruncFace(zBREP *brep, zBREPFaceListCell **fp);
-static void _zBREPTruncEdgeShrink(zBREPEdgeList *elist);
-static void _zBREPTruncGR(zBREP *brep);
-
-/* (static)
- * _zBREPTruncBBCheck
- * - beneath-beyond check with respect to a plane.
- */
-int _zBREPTruncBBCheck(zBREPVertList *vlist, zPlane3D *pl)
+/* beneath-beyond check with respect to a plane. */
+static int _zBREPTruncBBCheck(zBREPVertList *vlist, zPlane3D *pl)
 {
   int count = 0;
   zBREPVertListCell *vp;
@@ -35,11 +22,8 @@ int _zBREPTruncBBCheck(zBREPVertList *vlist, zPlane3D *pl)
   return count;
 }
 
-/* (static)
- * _zBREPTruncIntersect
- * - compute intersections of edges and a cutting plane.
- */
-bool _zBREPTruncIntersect(zBREP *brep, zPlane3D *pl)
+/* compute intersections of edges and a cutting plane. */
+static bool _zBREPTruncIntersect(zBREP *brep, zPlane3D *pl)
 {
   zBREPEdgeListCell *ep;
   zBREPVertListCell *vp;
@@ -64,11 +48,8 @@ bool _zBREPTruncIntersect(zBREP *brep, zPlane3D *pl)
   return true;
 }
 
-/* (static)
- * _zBREPTruncFaceA
- * - A type face reconfiguration (2-beneath, 1-beyond).
- */
-bool _zBREPTruncFaceA(zBREP *brep, zBREPFace *f, int i1, int i2, int i3)
+/* A type face reconfiguration (2-beneath, 1-beyond). */
+static bool _zBREPTruncFaceA(zBREP *brep, zBREPFace *f, int i1, int i2, int i3)
 {
   zBREPEdgeListCell *e4, *e5;
   zBREPFaceListCell *fp;
@@ -103,11 +84,8 @@ bool _zBREPTruncFaceA(zBREP *brep, zBREPFace *f, int i1, int i2, int i3)
   return true;
 }
 
-/* (static)
- * _zBREPTruncFaceV
- * - V type face reconfiguration (1-beneath, 2-beyond).
- */
-bool _zBREPTruncFaceV(zBREP *brep, zBREPFace *f, int i1, int i2, int i3)
+/* V type face reconfiguration (1-beneath, 2-beyond). */
+static bool _zBREPTruncFaceV(zBREP *brep, zBREPFace *f, int i1, int i2, int i3)
 {
   zBREPEdgeListCell *e4;
 
@@ -125,11 +103,8 @@ bool _zBREPTruncFaceV(zBREP *brep, zBREPFace *f, int i1, int i2, int i3)
   return true;
 }
 
-/* (static)
- * _zBREPTruncFaceE
- * - E type face reconfiguration (1-beneath, 1-beyond, 1-border).
- */
-bool _zBREPTruncFaceE(zBREP *brep, zBREPFace *f, int i1, int i2, int i3)
+/* E type face reconfiguration (1-beneath, 1-beyond, 1-border). */
+static bool _zBREPTruncFaceE(zBREP *brep, zBREPFace *f, int i1, int i2, int i3)
 {
   zBREPEdgeListCell *e4;
 
@@ -146,11 +121,8 @@ bool _zBREPTruncFaceE(zBREP *brep, zBREPFace *f, int i1, int i2, int i3)
   return true;
 }
 
-/* (static)
- * _zBREPTruncEdgeShrink
- * - shrink intersecting edges.
- */
-void _zBREPTruncEdgeShrink(zBREPEdgeList *elist)
+/* shrink intersecting edges. */
+static void _zBREPTruncEdgeShrink(zBREPEdgeList *elist)
 {
   zBREPEdgeListCell *ep;
 
@@ -164,16 +136,13 @@ void _zBREPTruncEdgeShrink(zBREPEdgeList *elist)
   }
 }
 
-/* (static)
- * _zBREPTruncGR
- * - release garbages.
- */
-void _zBREPTruncGR(zBREP *brep)
+/* release garbages. */
+static void _zBREPTruncGR(zBREP *brep)
 {
   zBREPVertListCell *vp, *vpp;
   zBREPEdgeListCell *ep, *epp;
   zBREPFaceListCell *fp;
-  register int i;
+  int i;
 
   /* initialize mark */
   zListForEach( &brep->vlist, vp ) vp->data._p = NULL;
@@ -203,12 +172,9 @@ void _zBREPTruncGR(zBREP *brep)
     }
 }
 
-/* (static)
- * _zBREPTruncFace
- * - face reconfiguration.
- */
+/* face reconfiguration. */
 #define __z_brep_trunc_pat(d) ( (d)<0 ? 3: ( (d)>0 ? 1 : 0 ) )
-bool _zBREPTruncFace(zBREP *brep, zBREPFaceListCell **fp)
+static bool _zBREPTruncFace(zBREP *brep, zBREPFaceListCell **fp)
 {
   zBREPFaceListCell *fpp;
   zBREPFace *f;
@@ -243,9 +209,7 @@ bool _zBREPTruncFace(zBREP *brep, zBREPFaceListCell **fp)
   return false;
 }
 
-/* zBREPTrunc
- * - truncate B-Rep by a plane.
- */
+/* truncate B-Rep by a plane. */
 zBREP *zBREPTrunc(zBREP *brep, zPlane3D *pl)
 {
   zBREPFaceListCell *fp;
@@ -261,12 +225,10 @@ zBREP *zBREPTrunc(zBREP *brep, zPlane3D *pl)
   return brep;
 }
 
-/* zBREPTruncPH3D
- * - truncate B-Rep by a polyhedron.
- */
+/* truncate B-Rep by a polyhedron. */
 zBREP *zBREPTruncPH3D(zBREP *brep, zPH3D *ph)
 {
-  register int i;
+  int i;
   zPlane3D pl;
 
   for( i=0; i<zPH3DFaceNum(ph); i++ ){

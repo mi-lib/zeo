@@ -96,7 +96,7 @@ static zPLYPrp z_ply_prp[] = {
 
 static const zPLYPrp *_zPLYPrpFind(char *str)
 {
-  register int i;
+  int i;
 
   for( i=0; z_ply_prp[i].typestr; i++ )
     if( strcmp( str, z_ply_prp[i].typestr ) == 0 )
@@ -131,7 +131,7 @@ static void _zPLYElementInit(zPLYElement *elem)
 /* for debug */
 static void _zPLYElementFPrint(FILE *fp, zPLYElement *elem)
 {
-  register int i;
+  int i;
 
   switch( elem->type ){
   case ZEO_PLY_ELEM_VERTEX:   fprintf( fp, "vertex" );    break;
@@ -160,7 +160,7 @@ typedef struct{
 
 static void _zPLYInit(zPLY *ply)
 {
-  register int i;
+  int i;
 
   ply->format = ZEO_PLY_FORMAT_NONE;
   strcpy( ply->version, "\0\0\0\0" );
@@ -204,7 +204,7 @@ static void _zPLYPrpInit(zPLY *ply)
     zPLY_fread_int_float_rev,       zPLY_fread_int_double_rev };
   double (** read_double)(FILE*) = NULL;
   int (** read_int)(FILE*) = NULL;
-  register int i;
+  int i;
 
   switch( ply->format ){
   case ZEO_PLY_FORMAT_ASCII:
@@ -225,7 +225,7 @@ static void _zPLYPrpInit(zPLY *ply)
 /* for debug */
 static void _zPLYFPrint(FILE *fp, zPLY *ply)
 {
-  register int i;
+  int i;
 
   switch( ply->format ){
   case ZEO_PLY_FORMAT_ASCII:   fprintf( fp, "ASCII" ); break;
@@ -387,7 +387,7 @@ static void _zPH3DSetPLYVert(zPH3D *ph, zPLY *ply, int i, int j, double val)
 
 static bool _zPH3DFReadPLYVert(FILE *fp, zPH3D *ph, zPLY *ply, zPLYElement *elem)
 {
-  register int i, j;
+  int i, j;
   double val;
 
   if( elem->num > 0 ){ /* vertices */
@@ -409,7 +409,7 @@ static bool _zPH3DFReadPLYVert(FILE *fp, zPH3D *ph, zPLY *ply, zPLYElement *elem
 
 static bool _zPH3DFReadPLYFace(FILE *fp, zPH3D *ph, zPLY *ply, zPLYElement *elem)
 {
-  register int i, j, k;
+  int i, j, k;
   int nv; /* number of vertices of a face */
   int nf = 0; /* number of faces */
   int v1, v2, v3; /* vertex indices */
@@ -456,7 +456,7 @@ static bool _zPH3DFReadPLYFace(FILE *fp, zPH3D *ph, zPLY *ply, zPLYElement *elem
 
 static bool _zPH3DFReadPLYElem(FILE *fp, zPH3D *ph, zPLY *ply, zPLYElement *elem)
 {
-  register int i, j;
+  int i, j;
 
   for( i=0; i<elem->num; i++ ){
     for( j=0; j<elem->prpnum; j++ ){
@@ -472,7 +472,7 @@ static bool _zPH3DFReadPLYElem(FILE *fp, zPH3D *ph, zPLY *ply, zPLYElement *elem
 
 static bool _zPH3DFReadPLYData(FILE *fp, zPH3D *ph, zPLY *ply)
 {
-  register int i;
+  int i;
 
   for( i=0; i<=ply->elemnum; i++ ){
     switch( ply->elem[i].type ){
@@ -522,7 +522,7 @@ static void _zPH3DFWritePLYHeader(FILE *fp, zPH3D *ph, char format[])
 
 static void _zPH3DFWritePLYDataASCII(FILE *fp, zPH3D *ph)
 {
-  register int i;
+  int i;
 
   for( i=0; i<zPH3DVertNum(ph); i++ )
     zVec3DDataNLFPrint( fp, zPH3DVert(ph,i) );
@@ -535,7 +535,7 @@ static void _zPH3DFWritePLYDataASCII(FILE *fp, zPH3D *ph)
 
 static void _zPH3DFWritePLYDataBin(FILE *fp, zPH3D *ph)
 {
-  register int i;
+  int i;
 
   for( i=0; i<zPH3DVertNum(ph); i++ ){
     fwrite_float( fp, zPH3DVert(ph,i)->e[0] );

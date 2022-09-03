@@ -193,13 +193,8 @@ double zMat3DSqrNorm(zMat3D *m)
 /* inverse of a 3x3 matrix
  * ********************************************************** */
 
-static double _zMat3DBalancingMinMaxIndex(zVec3D *v, int *imax, int *imin);
-static double _zMat3DRowBalancingScale(zMat3D *m, zVec3D *s);
-static double _zMat3DColBalancingScale(zMat3D *m, zVec3D *s);
-static zMat3D *_zMat3DInv(zMat3D *m, zMat3D *im);
-
 /* find indices of maximum and minimum components of a 3D vector. */
-double _zMat3DBalancingMinMaxIndex(zVec3D *v, int *imax, int *imin)
+static double _zMat3DBalancingMinMaxIndex(zVec3D *v, int *imax, int *imin)
 {
   if( v->e[0] > v->e[1] ){
     *imax = 0; *imin = 1;
@@ -216,7 +211,7 @@ double _zMat3DBalancingMinMaxIndex(zVec3D *v, int *imax, int *imin)
 }
 
 /* find a scaling vector for row-balancing of a 3x3 matrix. */
-double _zMat3DRowBalancingScale(zMat3D *m, zVec3D *s)
+static double _zMat3DRowBalancingScale(zMat3D *m, zVec3D *s)
 {
   zVec3D v;
   int imax, imin;
@@ -232,7 +227,7 @@ double _zMat3DRowBalancingScale(zMat3D *m, zVec3D *s)
 }
 
 /* find a scaling vector for column-balancing of a 3x3 matrix. */
-double _zMat3DColBalancingScale(zMat3D *m, zVec3D *s)
+static double _zMat3DColBalancingScale(zMat3D *m, zVec3D *s)
 {
   zVec3D v;
   int imax, imin;
@@ -273,7 +268,7 @@ double zMat3DDet(zMat3D *m)
 } while(0)
 
 /* inverse matrix of a 3x3 matrix. */
-zMat3D *_zMat3DInv(zMat3D *m, zMat3D *im)
+static zMat3D *_zMat3DInv(zMat3D *m, zMat3D *im)
 {
   double det, idet;
 
@@ -703,7 +698,7 @@ zMat3D *zMat3DFromAA(zMat3D *m, zVec3D *aa)
 /* convert a 3D attitude matrix to an angle-axis vector. */
 zVec3D *zMat3DToAA(zMat3D *m, zVec3D *aa)
 {
-  register int i;
+  int i;
   double l, a;
   double eval[3];
   zVec3D evec[3];
@@ -798,10 +793,9 @@ zVec3D *zMat3DDif(zMat3D *m, zMat3D *mnew, double dt, zVec3D *omega)
  * ********************************************************** */
 
 /* transformation of a symmetric matrix by Jacobi's rotation. */
-static bool _zMat3DSymEigRot(zMat3D *m, zMat3D *r, int i, int j);
-bool _zMat3DSymEigRot(zMat3D *m, zMat3D *r, int i, int j)
+static bool _zMat3DSymEigRot(zMat3D *m, zMat3D *r, int i, int j)
 {
-  register int k;
+  int k;
   double v, t, ti, c, s;
   double tmp1, tmp2;
 
@@ -863,7 +857,7 @@ void zMat3DSymEig(zMat3D *m, double eval[], zVec3D evec[])
 /* read a 3x3 matrix from a ZTK format processor. */
 zMat3D *zMat3DFromZTK(zMat3D *m, ZTK *ztk)
 {
-  register int i, j;
+  int i, j;
 
   for( i=0; i<3; i++ )
     for( j=0; j<3; j++ )
@@ -874,7 +868,7 @@ zMat3D *zMat3DFromZTK(zMat3D *m, ZTK *ztk)
 /* scan a 3x3 matrix from a file. */
 zMat3D *zMat3DFScan(FILE *fp, zMat3D *m)
 {
-  register int i, j;
+  int i, j;
 
   for( i=0; i<3; i++ )
     for( j=0; j<3; j++ )

@@ -79,7 +79,7 @@ zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3)
 /* check if a point is inside of a triangle. */
 bool zTri2DPointIsInside(zTri2D *t, zVec2D *v, bool rim)
 {
-  register int i;
+  int i;
   zVec2D e, tmp;
   double d[3];
 

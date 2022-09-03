@@ -80,7 +80,7 @@ zTerra *zTerraInit(zTerra *terra)
 /* level an elevation map into flat. */
 zTerra *zTerraLevel(zTerra *terra)
 {
-  register int i, n;
+  int i, n;
 
   n = zTerraXSize(terra) * zTerraYSize(terra);
   for( i=0; i<n; i++ )
@@ -179,7 +179,7 @@ zTerra *zTerraUpdate(zTerra *terra, zVec3D *p)
 /* form terrain profile of an elevation map. */
 zTerra *zTerraForm(zTerra *terra)
 {
-  register int i, j;
+  int i, j;
 
   for( i=0; i<zTerraXSize(terra); i++ )
     for( j=0; j<zTerraYSize(terra); j++ )
@@ -236,7 +236,7 @@ static bool _zTerraCheckGridTravs(zTerra *terra, int i, int j)
 /* check traversability of each grid of an elevation map. */
 void zTerraCheckTravs(zTerra *terra)
 {
-  register int i, j;
+  int i, j;
 
   for( i=0; i<zTerraXSize(terra); i++ )
     for( j=0; j<zTerraYSize(terra); j++ )
@@ -246,7 +246,7 @@ void zTerraCheckTravs(zTerra *terra)
 /* acquire the actual z-range of an elevation map. */
 void zTerraZRange(zTerra *terra, double *zmin, double *zmax)
 {
-  register int i, j;
+  int i, j;
   double z;
 
   *zmin = HUGE_VAL;
@@ -397,7 +397,7 @@ zTerra *zTerraFromZTK(zTerra *terra, ZTK *ztk)
 /* print an elevation map out to a file. */
 void zTerraFPrintZTK(FILE *fp, zTerra *terra)
 {
-  register int i, j;
+  int i, j;
   zTerraCell *grid;
 
   ZTKPrpKeyFPrint( fp, terra, __ztk_prp_terra );
@@ -411,7 +411,7 @@ void zTerraFPrintZTK(FILE *fp, zTerra *terra)
 /* print an elevation map out to a file in a plot-friendly format. */
 void zTerraDataFPrint(FILE *fp, zTerra *terra)
 {
-  register int i, j;
+  int i, j;
   zTerraCell *grid;
 
   for( i=0; i<zTerraXSize(terra); i++ )

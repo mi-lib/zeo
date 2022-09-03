@@ -75,7 +75,7 @@ static int _zAABB2DTest(zAABox2D *bb, zVec2D *p, zDir u)
 /* bounding box of 2D points. */
 zAABox2D *zAABB2D(zAABox2D *bb, zVec2D p[], int num, zVec2D **vp)
 {
-  register int i, s;
+  int i, s;
 
   zAABox2DInit( bb );
   if( num <= 0 ) return NULL;

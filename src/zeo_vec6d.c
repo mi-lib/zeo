@@ -182,7 +182,7 @@ zVec6D *zVec6DFromZTK(zVec6D *v, ZTK *ztk)
 /* scan a 6D vector from a file. */
 zVec6D *zVec6DFScan(FILE *fp, zVec6D *v)
 {
-  register int i;
+  int i;
 
   for( i=zX; i<=zZA; i++ )
     zFDouble( fp, &v->e[i] );

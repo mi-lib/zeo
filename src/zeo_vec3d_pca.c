@@ -20,7 +20,7 @@ zVec3D *zVec3DBarycenterPL(zVec3DList *pl, zVec3D *c)
 /* barycenter of a point cloud given by an array. */
 zVec3D *zVec3DBarycenter(zVec3D p[], int num, zVec3D *c)
 {
-  register int i;
+  int i;
 
   zVec3DZero( c );
   for( i=0; i<num; i++ )
@@ -47,7 +47,7 @@ zVec3D *zVec3DPCA(zVec3D p[], int num, zVec3D evec[])
 {
   zMat3D vm;
   double eval[3];
-  register int i;
+  int i;
 
   zMat3DZero( &vm );
   for( i=0; i<num; i++ )
@@ -80,7 +80,7 @@ zVec3D *zVec3DBaryPCA(zVec3D p[], int num, zVec3D *c, zVec3D evec[])
   zMat3D vm;
   double eval[3];
   zVec3D dp;
-  register int i;
+  int i;
 
   zVec3DBarycenter( p, num, c );
   zMat3DZero( &vm );

@@ -12,7 +12,7 @@ zBREP *zBREPMerge(zBREP *target, zBREP *sub)
   zBREPVertListCell *vp;
   zBREPEdgeListCell *ep, *en;
   zBREPFaceListCell *fp;
-  register int i;
+  int i;
 
   /* mark vertices */
   zListForEach( &sub->vlist, vp )

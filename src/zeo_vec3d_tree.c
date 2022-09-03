@@ -96,7 +96,7 @@ zVec3DTree *zVec3DTreePart(zVec3DTree *node, zVec3D *v)
 /* check if a sphere is overlapped with a bounding box of a node. */
 static bool _zVec3DTreeIsOverlap(zVec3DTree *node, zVec3D *c, double r)
 {
-  register int i;
+  int i;
   double d, vd;
 
   for( d=0, i=zX; i<=zZ; i++ ){
@@ -158,7 +158,7 @@ double zVec3DTreeNN(zVec3DTree *tree, zVec3D *v, zVec3DTree **nn)
 /* convert an array of 3D vectors to a 3D vector tree. */
 zVec3DTree *zVec3DArray2Tree(zVec3DArray *array, zVec3DTree *tree)
 {
-  register int i;
+  int i;
 
   zVec3DTreeInit( tree );
   for( i=0; i<zArraySize(array); i++ )

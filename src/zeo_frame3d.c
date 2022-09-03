@@ -160,7 +160,7 @@ zFrame3D *zArrayToFrame3DZYX(double *array, zFrame3D *f)
 /* convert a 3D frame to an array of values for position and z-y-x Eulerian angles. */
 double *zFrame3DToArrayZYX(zFrame3D *f, double *array)
 {
-  register int i;
+  int i;
   zVec3D angle;
 
   zMat3DToZYX( zFrame3DAtt(f), &angle );
@@ -193,7 +193,7 @@ zFrame3D *zArrayToFrame3DZYZ(double *array, zFrame3D *f)
 /* convert a 3D frame to an array of values for position and z-y-z Eulerian angles. */
 double *zFrame3DToArrayZYZ(zFrame3D *f, double *array)
 {
-  register int i;
+  int i;
   zVec3D angle;
 
   zMat3DToZYZ( zFrame3DAtt(f), &angle );
@@ -227,7 +227,7 @@ zFrame3D* zArrayToFrame3DAA(double *array, zFrame3D *f)
 double* zFrame3DToArrayAA(zFrame3D *f, double *array)
 {
   zVec3D aa;
-  register int i;
+  int i;
 
   zMat3DToAA( zFrame3DAtt(f), &aa );
   for( i=0; i<3; i++ ){
@@ -287,7 +287,7 @@ zFrame3D *zFrame3DDHFromZTK(zFrame3D *f, ZTK *ztk)
 /* scan a 3D frame from a file. */
 zFrame3D *zFrame3DFScan(FILE *fp, zFrame3D *f)
 {
-  register int i, j;
+  int i, j;
 
   for( i=0; i<3; i++ ){
     for( j=0; j<3; j++ )
@@ -300,7 +300,7 @@ zFrame3D *zFrame3DFScan(FILE *fp, zFrame3D *f)
 /* print a 3D frame out to a file. */
 void zFrame3DFPrint(FILE *fp, zFrame3D *f)
 {
-  register int i;
+  int i;
 
   if( !f ) return;
   fprintf( fp, "{\n" );

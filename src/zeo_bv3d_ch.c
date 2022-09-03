@@ -356,8 +356,7 @@ static bool _zQHHorizon(zQHFacetList *vs, zQHPoint *p, zQHFacetList *cone)
   zQHFacetListCell *fc;
   zQHFacet *f, *f_prev;
   zQHPoint *p0;
-  int n;
-  register int i = 0, s;
+  int i = 0, s, n;
 
   zListInit( cone );
   /* find first ridge */
@@ -532,8 +531,7 @@ zPH3D *zCH3D(zPH3D *ch, zVec3D p[], int num)
   zQHPointListCell *pc;
   zQHPointList pl;
   zQH qh;
-  register int i;
-  int ret;
+  int i, ret;
 
   zPH3DInit( ch );
   /* create point list */

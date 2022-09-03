@@ -456,8 +456,7 @@ static zPH3D *_zDAEMeshList2PH3D(zPH3D *ph, zDAEMeshList *mlist)
   zDAEMeshCell *mc;
   zDAEPrimitiveCell *pc;
   int nv, nf, ns, vi[3];
-  register int i, j, k;
-  int vo, fo;
+  int i, j, k, vo, fo;
   char *sp, *vp, buf[BUFSIZ];
 
   zPH3DInit( ph );

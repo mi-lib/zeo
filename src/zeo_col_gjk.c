@@ -61,7 +61,7 @@ static void _zGJKSimplexInit(zGJKSimplex *s)
 /* print out GJK simplex set Y (non-minimum simplex) */
 static void _zGJKSimplexYPrint(zGJKSimplex *s)
 {
-  register int i;
+  int i;
 
   printf( "[Y]\n" );
   for( i=0; i<4; i++ )
@@ -74,7 +74,7 @@ static void _zGJKSimplexYPrint(zGJKSimplex *s)
 /* print out GJK simplex set W (minimum simplex) */
 static void _zGJKSimplexWPrint(zGJKSimplex *s)
 {
-  register int i;
+  int i;
 
   printf( "[W]\n" );
   for( i=0; i<4; i++ )
@@ -87,7 +87,7 @@ static void _zGJKSimplexWPrint(zGJKSimplex *s)
 /* print out vertices of GJK simplex set Y (non-minimum simplex) */
 static void _zGJKSimplexYVertFPrint(FILE *fp, zGJKSimplex *s)
 {
-  register int i;
+  int i;
 
   for( i=0; i<4; i++ )
     if( s->slot[i].sw_y )
@@ -97,7 +97,7 @@ static void _zGJKSimplexYVertFPrint(FILE *fp, zGJKSimplex *s)
 /* prion out vertices GJK simplex set W (minimum simplex) */
 static void _zGJKSimplexWVertFPrint(FILE *fp, zGJKSimplex *s)
 {
-  register int i;
+  int i;
 
   for( i=0; i<4; i++ )
     if( s->slot[i].sw_w )
@@ -108,7 +108,7 @@ static void _zGJKSimplexWVertFPrint(FILE *fp, zGJKSimplex *s)
 /* check if the specified slot is already in the previous testing simplex. */
 static bool _zGJKSimplexCheckSlot(zGJKSimplex *s, zGJKSlot *slot)
 {
-  register int i;
+  int i;
 
   for( i=0; i<4; i++ )
     if( s->slot[i].sw_y && zVec3DMatch( &s->slot[i].w, &slot->w ) )
@@ -119,7 +119,7 @@ static bool _zGJKSimplexCheckSlot(zGJKSimplex *s, zGJKSlot *slot)
 /* add a slot into the current testing simplex. */
 static int _zGJKSimplexAddSlot(zGJKSimplex *s, zGJKSlot *slot)
 {
-  register int i;
+  int i;
 
   for( i=0; i<4; i++ )
     s->slot[i].sw_y = s->slot[i].sw_w;
@@ -145,8 +145,7 @@ static zVec3D *_zGJKSimplexClosest(zGJKSimplex *s, zVec3D *v)
   zVecStruct c, b, l;
   zVec3D dp[3];
   double s0, cost;
-  register int i, j, n, n1;
-  int index[4];
+  int i, j, n, n1, index[4];
 
   /* create index */
   for( n=0, i=0; i<4; i++ )
@@ -180,7 +179,7 @@ static zVec3D *_zGJKSimplexClosest(zGJKSimplex *s, zVec3D *v)
 /* minimize the testing simplex. */
 static void _zGJKSimplexMinimize(zGJKSimplex *s)
 {
-  register int i;
+  int i;
   zVec3D ws;
 
   for( s->n=0, i=0; i<4; i++ ){
@@ -222,7 +221,7 @@ static zVec3D *_zGJKSupportMapPL(zGJKSlot *s, zVec3DList *pl1, zVec3DList *pl2, 
 /* a pair of points on the original convex hulls. */
 static void _zGJKPair(zGJKSimplex *s, zVec3D *c1, zVec3D *c2)
 {
-  register int i;
+  int i;
 
   zVec3DZero( c1 );
   zVec3DZero( c2 );
@@ -235,7 +234,7 @@ static void _zGJKPair(zGJKSimplex *s, zVec3D *c1, zVec3D *c2)
 
 static double _zGJKPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp, int *id)
 {
-  register int i;
+  int i;
   zVec3D ncp;
   double d, dmin;
 
@@ -287,7 +286,7 @@ static bool _zGJKPDInitAddPoint(zVec3D p1[], int n1, zVec3D p2[], int n2, zGJKSl
 
 static bool _zGJKPDInit(zVec3D p1[], int n1, zVec3D p2[], int n2, zGJKSimplex *s, zGJKSlotList *slist, zVec3DList *vlist)
 {
-  register int i;
+  int i;
   zGJKSlotListCell *sc;
   zPH3D ph;
   zTri3D tri;
@@ -337,7 +336,7 @@ static bool _zGJKPDInit(zVec3D p1[], int n1, zVec3D p2[], int n2, zGJKSimplex *s
 /* penetration depth */
 static bool _zGJKPD(zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c1, zVec3D *c2, zGJKSimplex *s)
 {
-  register int i, j;
+  int i, j;
   zGJKSlot  ns;
   zGJKSlotList slist;
   zGJKSlotListCell *sc;
@@ -405,7 +404,7 @@ static bool _zGJK(zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c1, zVec3D *
   zGJKSlot slot;
   zVec3D v; /* proximity */
   double dv2 = 0;
-  register int i, j;
+  int i, j;
 
   if( s == NULL ) s = &_s;
   for( i=0; i<n1; i++ )
@@ -483,7 +482,7 @@ static zVec3D *_zGJKPointSupportMap(zGJKSlot *s, zVec3D pl[], int n, zVec3D *v)
 /* a pair of points on the original convex hulls. */
 static void _zGJKPointClosest(zGJKSimplex *s, zVec3D *c)
 {
-  register int i;
+  int i;
 
   zVec3DZero( c );
   for( i=0; i<4; i++ )
@@ -498,7 +497,7 @@ bool zGJKPoint(zVec3D pl[], int n, zVec3D *p, zVec3D *c)
   zGJKSlot slot;
   zVec3D v; /* proximity */
   double dv2 = 0;
-  register int i;
+  int i;
 
   slot.p2 = p;
   for( i=0; i<n; i++ ){

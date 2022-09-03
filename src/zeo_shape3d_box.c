@@ -91,7 +91,7 @@ double zBox3DClosest(zBox3D *box, zVec3D *p, zVec3D *cp)
 {
   zVec3D _p;
   double min, max;
-  register zDir d;
+  zDir d;
 
   zXform3DInv( &box->f, p, &_p );
   for( d=zX; d<=zZ; d++ ){
@@ -113,7 +113,7 @@ double zBox3DPointDist(zBox3D *box, zVec3D *p)
 /* check if a point is inside of a box. */
 bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, bool rim)
 {
-  register zDir d;
+  zDir d;
   zVec3D err;
   double l;
 
@@ -174,7 +174,7 @@ zVec3D *zBox3DVert(zBox3D *box, int i, zVec3D *v)
 /* convert a box to a polyhedron. */
 zPH3D* zBox3DToPH(zBox3D *box, zPH3D *ph)
 {
-  register int i;
+  int i;
 
   if( !zPH3DAlloc( ph, 8, 12 ) ) return NULL;
   for( i=0; i<8; i++ )
@@ -256,7 +256,7 @@ void zBox3DFPrintZTK(FILE *fp, zBox3D *box)
 void zBox3DDataFPrint(FILE *fp, zBox3D *box)
 {
   zVec3D v[8];
-  register int i;
+  int i;
 
   for( i=0; i<8; i++ )
     zBox3DVert( box, i, &v[i] );

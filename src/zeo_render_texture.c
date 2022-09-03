@@ -38,7 +38,7 @@ zTri2D *zTextureSetFace(zTexture *texture, int i, zVec2D *v1, zVec2D *v2, zVec2D
 /* destroy a texture */
 void zTextureDestroy(zTexture *texture)
 {
-  register int i;
+  int i;
 
   zNameFree( texture );
   if( texture->filename ) free( texture->filename );
@@ -53,8 +53,7 @@ void zTextureDestroy(zTexture *texture)
 /* clone a texture */
 zTexture *zTextureClone(zTexture *org, zTexture *cln)
 {
-  register int i;
-  int wh, hh;
+  int i, wh, hh;
   bool res;
 
   zTextureInit( cln );
@@ -85,8 +84,7 @@ bool (* __z_texture_bump_read_file)(zTexture *, char *) = NULL;
 /* allocate workspace for bump mapping */
 bool zTextureBumpAlloc(zTexture *bump, int width, int height)
 {
-  register int i;
-  int wh, hh;
+  int i, wh, hh;
   bool ret = true;
 
   wh = ( bump->width = width ) / 2;
@@ -222,7 +220,7 @@ zTexture *zTextureFromZTK(zTexture *texture, ZTK *ztk)
 /* print information of the texture parameter set out to a file. */
 void zTextureFPrintZTK(FILE *fp, zTexture *texture)
 {
-  register int i;
+  int i;
 
   if( !texture ) return;
   ZTKPrpKeyFPrint( fp, texture, __ztk_prp_texture );

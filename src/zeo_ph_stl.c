@@ -50,7 +50,7 @@ static _zSTLFacetListCell *_zSTLFacetListReg(_zSTLFacetList *flist, zVec3DTree *
 static zTri3DArray *_zSTLFacetListToTri3DArray(_zSTLFacetList *list, zVec3DArray *varray, zTri3DArray *array)
 {
   _zSTLFacetListCell *cp;
-  register int i = 0;
+  int i = 0;
 
   zArrayAlloc( array, zTri3D, zListSize(list) );
   if( zArraySize(array) < zListSize(list) ){
@@ -180,7 +180,7 @@ zPH3D *zPH3DFReadSTL_ASCII(FILE *fp, zPH3D *ph, char name[], size_t namesize)
 /* print a 3D polyhedron to ASCII STL format */
 void zPH3DFWriteSTL_ASCII(FILE *fp, zPH3D *ph, char name[])
 {
-  register int i;
+  int i;
 
   fprintf( fp, "solid %s\n", name );
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
@@ -250,7 +250,7 @@ zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[])
   zVec3D normal, v[3];
   zVec3DTree vert_tree;
   _zSTLFacetList facet_list;
-  register int i;
+  int i;
 
   zVec3DTreeInit( &vert_tree );
   zListInit( &facet_list );
@@ -278,7 +278,7 @@ void zPH3DFWriteSTL_Bin(FILE *fp, zPH3D *ph, char name[])
 {
   uint32_t nf;
   uint16_t dummy = 0;
-  register int i;
+  int i;
 
   if( fwrite( name, sizeof(char), ZEO_STL_HEADSIZ, fp ) < ZEO_STL_HEADSIZ );
   nf = zPH3DFaceNum(ph);

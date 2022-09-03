@@ -21,7 +21,7 @@ static zDTTri2D *_zDTTri2DCreate(zDTTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3
 /* bind two adjacent 2D triangles for Delaunay triangulation */
 static int _zDTTri2DBind(zDTTri2D *t, int i, zDTTri2D *a)
 {
-  register int ia;
+  int ia;
   zVec2D *pj;
 
   if( !( t->adj[i] = a ) ) return -1;
@@ -38,7 +38,7 @@ static int _zDTTri2DBind(zDTTri2D *t, int i, zDTTri2D *a)
 /* find index of a reference vertex of the specified adjacent 2D triangle for Delaunay triangulation */
 static int _zDTTri2DFindAdj(zDTTri2D *t, zDTTri2D *at)
 {
-  register int i;
+  int i;
 
   for( i=0; i<3; i++ )
     if( t->adj[i] == at ) return i;

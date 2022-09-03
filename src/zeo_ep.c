@@ -84,7 +84,7 @@ zMat3D *zMat3DFromEP(zMat3D *m, zEP* ep)
 zEP *zMat3DToEP(zMat3D *m, zEP *ep)
 {
   double k, s[4];
-  register int i, imax;
+  int i, imax;
 
   s[0] = m->c.xx + m->c.yy + m->c.zz + 1.0;
   s[1] = m->c.xx - m->c.yy - m->c.zz + 1.0;

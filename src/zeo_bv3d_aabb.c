@@ -81,7 +81,7 @@ zBox3D *zAABox3DToBox3D(zAABox3D *aab, zBox3D *box)
 zAABox3D *zBox3DToAABox3D(zBox3D *box, zAABox3D *aabox)
 {
   zVec3D v[8];
-  register int i;
+  int i;
 
   for( i=0; i<8; i++ )
     zBox3DVert( box, i, &v[i] );
@@ -155,7 +155,7 @@ static zAABox3D *_zAABB3DInc(zAABox3D *bb, zVec3D *p, zVec3D **vp)
 /* bounding box of 3D points. */
 zAABox3D *zAABB3D(zAABox3D *bb, zVec3D p[], int num, zVec3D **vp)
 {
-  register int i;
+  int i;
 
   zAABox3DInit( bb );
   if( num <= 0 ) return NULL;
@@ -171,7 +171,7 @@ zAABox3D *zAABB3D(zAABox3D *bb, zVec3D p[], int num, zVec3D **vp)
 /* bounding box of 3D points in a specified frame. */
 zAABox3D *zAABB3DXform(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f)
 {
-  register int i;
+  int i;
   zVec3D px;
 
   zAABox3DInit( bb );

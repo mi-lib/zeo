@@ -26,7 +26,7 @@ zShape3D *zShape3DInit(zShape3D *shape)
 zShape3D *zShape3DQueryAssign(zShape3D *shape, char *str)
 {
   ZEO_SHAPE_COM_ARRAY;
-  register int k;
+  int k;
 
   shape->com = NULL;
   for( k=0; _zeo_shape_com[k]; k++ )

@@ -209,7 +209,7 @@ zPH3D *zCone3DToPH(zCone3D *cone, zPH3D *ph)
 {
   zVec3D *vert, d, s, r, aa;
   zTri3D *face;
-  register int i, j, n;
+  int i, j, n;
 
   if( !zPH3DAlloc( ph, zCone3DDiv(cone)+1, zCone3DDiv(cone)*2-2 ) )
     return NULL;

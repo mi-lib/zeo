@@ -122,7 +122,7 @@ double zECyl3DClosest(zECyl3D *cyl, zVec3D *p, zVec3D *cp)
   double rat[3], r0, r1, r02, r12, x2, y2, l;
   zPex pex;
   zCVec ans;
-  register int i;
+  int i;
 
   zVec3DSub( p, zECyl3DCenter(cyl,0), &v );
   zECyl3DAxis( cyl, &axis );
@@ -236,7 +236,7 @@ zPH3D *zECyl3DToPH(zECyl3D *cyl, zPH3D *ph)
   zVec3D *vert, d, r;
   zTri3D *face;
   double s, c;
-  register int i, j, n;
+  int i, j, n;
 
   if( !zPH3DAlloc( ph, zECyl3DDiv(cyl)*2, (zECyl3DDiv(cyl)-1)*4 ) )
     return NULL;

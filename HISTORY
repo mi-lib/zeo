@@ -1,3 +1,4 @@
+2022. 9. 3. Removed register keywords. [zeo_render_texture, zeo_vec2d_list, zeo_vec3d_list, zeo_vec3d_tree, zeo_vec3d_pca, zeo_vec6d, zeo_mat2d, zeo_mat3d, zeo_ep, zeo_frame3d, zeo_elem2d, zeo_elem3d, zeo_elem3d_list, zeo_voronoi2d, zeo_shape3d, zeo_shape3d_box, zeo_shape3d_sphere, zeo_shape3d_ellips, zeo_shape3d_cyl, zeo_shape3d_cone, zeo_shape3d_ecyl, zeo_ph, zeo_ph_ply, zeo_ph_stl, zeo_ph_obj, zeo_ph_dae, zeo_nurbs, zeo_mshape3d, zeo_bv2d_aabb, zeo_bv2d_ch, zeo_bv3d_aabb, zeo_bv3d_obb, zeo_bv3d_ch, zeo_col, zeo_col_box, zeo_col_ph, zeo_col_minkowski, zeo_col_gjk, zeo_col_mpr, zeo_brep, zeo_brep_trunc, zeo_brep_bool, zeo_map, zeo_map_terra, zeo_mapnet]
 2021.10.29. Abolished _baryinertia from zShape3DCom. [zeo_shape3d, zeo_shape3d_*]
 2021.10.27. Added zShape3DVolume, zShape3DBarycenter, zShape3DInertiaMass and zShape3DInertia. [zeo_shape3d]
 2021.10.27. Added zShape3DBaryInertiaMass and zShape3DBaryInertia. [zeo_shape3d]

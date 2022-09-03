@@ -39,7 +39,7 @@ void zTri3DListAlign(zTri3DList *list, zVec3D *ref)
 void zTri3DListCopyArray(zTri3DList *list, zTri3D t[], int n)
 {
   zTri3DListCell *tp;
-  register int i = 0;
+  int i = 0;
 
   zListForEach( list, tp ){
     zCopy( zTri3D, &tp->data, &t[i] );

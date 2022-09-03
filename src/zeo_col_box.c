@@ -129,7 +129,7 @@ static bool _zColChkTriAABox3DPlane(zTri3D *t, zAABox3D *box)
 {
   zPlane3D p;
   zVec3D ip[6];
-  register int i, n;
+  int i, n;
 
   zTri3DToPlane3D( t, &p );
   n = zIntersectPlaneAABox3D( &p, box, ip );
@@ -181,7 +181,7 @@ static int _zIntersectTriAABox3DPlane(zTri3D *t, zAABox3D *box, zVec3D ip[], int
 {
   zPlane3D p;
   zVec3D pip[6];
-  register int i, np;
+  int i, np;
 
   zTri3DToPlane3D( t, &p );
   np = zIntersectPlaneAABox3D( &p, box, pip );

@@ -47,7 +47,7 @@ zVec3D *_zMPRSupportMap(zMPRSlot *s, zVec3D p1[], int n1, zVec3D p2[], int n2, z
 /* original Minkowski portal of sets of points. */
 zVec3D *_zMPROrigin(zMPRSlot *center, zVec3D p1[], int n1, zVec3D p2[], int n2)
 {
-  register int i;
+  int i;
 
   for( zVec3DZero( &center->v1 ), i=0; i<n1; i++ )
     zVec3DAddDRC( &center->v1, &p1[i] );
@@ -285,8 +285,7 @@ bool _zMPRDepth(zMPRSimplex* portal, zVec3D p1[], int n1, zVec3D p2[], int n2, d
 {
   zVec3D d;
   zMPRSlot s;
-  int iter = 0;
-  register int i;
+  int i, iter = 0;
 
   ZITERINIT( iter );
   for( i=0; i<iter; i++ ){

@@ -57,7 +57,7 @@ double zPlane3DProj(zPlane3D *p, zVec3D *v, zVec3D *cp)
 /* mean plane of a set of points. */
 zPlane3D *zPlane3DMean(zPlane3D *pl, zVec3D *pc, zVec3D v[], int n)
 {
-  register int i;
+  int i;
   double eval[3];
   zVec3D p, evec[3];
   zMat3D m;
@@ -389,7 +389,7 @@ double zTri3DPointDist(zTri3D *t, zVec3D *v)
 {
   zVec3D tmp;
   double d[3];
-  register int i;
+  int i;
 
   for( i=0; i<3; i++ ){
     zVec3DSub( v, zTri3DVert(t,i), &tmp );
@@ -422,7 +422,7 @@ double zTri3DProj(zTri3D *t, zVec3D *v, zVec3D *cp)
 /* check if a point is inside of a triangle. */
 bool zTri3DPointIsInside(zTri3D *t, zVec3D *v, bool rim)
 {
-  register int i;
+  int i;
   zVec3D e, tmp;
   double d;
 
@@ -540,7 +540,7 @@ zVec3D *zTri3DConeBarycenter(zTri3D *t, zVec3D *v, zVec3D *c)
 /* inertia tensor of a cone. */
 zMat3D *zTri3DConeInertia(zTri3D *t, double density, zMat3D *i)
 {
-  register int j;
+  int j;
   zMat3D m;
   zVec3D *v1, *v2;
 
