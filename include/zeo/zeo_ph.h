@@ -168,8 +168,8 @@ __EXPORT zMat3D *zPH3DBaryInertiaMass(zPH3D *ph, double mass, zMat3D *inertia);
  * zPH3DPrism() returns a pointer \a prism.
  * zPH3DPyramid() returns a pointer \a pyr.
  */
-__EXPORT zPH3D *zPH3DPrism(zPH3D *prism, zVec3D bottom[], int n, zVec3D *shift);
-__EXPORT zPH3D *zPH3DPyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3D *vert);
+__EXPORT zPH3D *zPH3DPrism(zPH3D *prism, zVec3D bottom[], uint n, zVec3D *shift);
+__EXPORT zPH3D *zPH3DPyramid(zPH3D *pyr, zVec3D bottom[], uint n, zVec3D *vert);
 
 /*! \brief create solid revolution.
  *
@@ -193,8 +193,8 @@ __EXPORT zPH3D *zPH3DPyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3D *vert);
  * These functions do not check the validity of the shape
  * of cross-sections.
  */
-__EXPORT zPH3D *zPH3DTorus(zPH3D *torus, zVec3D loop[], int n, int div, zVec3D *center, zVec3D *axis);
-__EXPORT zPH3D *zPH3DLathe(zPH3D *lathe, zVec3D rim[], int n, int div, zVec3D *center, zVec3D *axis);
+__EXPORT zPH3D *zPH3DTorus(zPH3D *torus, zVec3D loop[], uint n, uint div, zVec3D *center, zVec3D *axis);
+__EXPORT zPH3D *zPH3DLathe(zPH3D *lathe, zVec3D rim[], uint n, uint div, zVec3D *center, zVec3D *axis);
 
 /*! \brief read a 3D polyhedron from a ZTK format processor. */
 __EXPORT zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk);

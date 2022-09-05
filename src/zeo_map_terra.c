@@ -60,7 +60,7 @@ static void _zTerraCellForm(zTerraCell *cell, double x, double y)
  * ********************************************************** */
 
 /* retrieve a grid of an elevation map. */
-zTerraCell *zTerraGrid(zTerra *terra, int i, int j)
+zTerraCell *zTerraGrid(zTerra *terra, uint i, uint j)
 {
   return zArray2PosIsValid(&terra->gridmap,i,j) ? zTerraGridNC(terra,i,j) : NULL;
 }
@@ -80,7 +80,7 @@ zTerra *zTerraInit(zTerra *terra)
 /* level an elevation map into flat. */
 zTerra *zTerraLevel(zTerra *terra)
 {
-  int i, n;
+  uint i, n;
 
   n = zTerraXSize(terra) * zTerraYSize(terra);
   for( i=0; i<n; i++ )
@@ -89,7 +89,7 @@ zTerra *zTerraLevel(zTerra *terra)
 }
 
 /* allocate the internal grid array of an elevation map. */
-zTerra *zTerraAlloc(zTerra *terra, int xsize, int ysize)
+zTerra *zTerraAlloc(zTerra *terra, uint xsize, uint ysize)
 {
   if( xsize == 0 || ysize == 0 ){
     ZRUNERROR( ZEO_ERR_TERRA_INVSIZ );
@@ -119,7 +119,7 @@ void zTerraSetRegion(zTerra *terra, double xmin, double ymin, double zmin, doubl
 /* allocate the internal grid array of an elevation map based on resolution. */
 zTerra *zTerraAllocRegion(zTerra *terra, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, double dx, double dy)
 {
-  int xsize, ysize;
+  uint xsize, ysize;
 
   if( dx < zTOL || dy < zTOL ){
     ZRUNERROR( ZEO_ERR_TERRA_INVRSL );
@@ -148,7 +148,7 @@ void zTerraDestroy(zTerra *terra)
 }
 
 /* get the base grid a square with which contains a given point. */
-static zTerraCell *_zTerraGetBaseGrid(zTerra *terra, zVec3D *p, int *i, int *j)
+static zTerraCell *_zTerraGetBaseGrid(zTerra *terra, zVec3D *p, uint *i, uint *j)
 {
   if( p->e[zZ] < terra->zmin || p->e[zZ] > terra->zmax ) return NULL;
   *i = floor( ( p->e[zX] - terra->xmin ) / terra->dx );
@@ -170,7 +170,7 @@ static zTerraCell *_zTerraGetBaseGrid(zTerra *terra, zVec3D *p, int *i, int *j)
 zTerra *zTerraUpdate(zTerra *terra, zVec3D *p)
 {
   zTerraCell *grid;
-  int ic = 0, jc = 0;
+  uint ic = 0, jc = 0;
 
   _zTerraUpdate( terra, p, grid, ic, jc );
   return terra;
@@ -179,7 +179,7 @@ zTerra *zTerraUpdate(zTerra *terra, zVec3D *p)
 /* form terrain profile of an elevation map. */
 zTerra *zTerraForm(zTerra *terra)
 {
-  int i, j;
+  uint i, j;
 
   for( i=0; i<zTerraXSize(terra); i++ )
     for( j=0; j<zTerraYSize(terra); j++ )
@@ -192,7 +192,7 @@ zTerra *zTerraIdent(zTerra *terra, zVec3DList *pl)
 {
   zVec3DListCell *pc;
   zTerraCell *grid;
-  int ic = 0, jc = 0;
+  uint ic = 0, jc = 0;
 
   zListForEach( pl, pc ){
     _zTerraUpdate( terra, pc->data, grid, ic, jc );
@@ -236,7 +236,7 @@ static bool _zTerraCheckGridTravs(zTerra *terra, int i, int j)
 /* check traversability of each grid of an elevation map. */
 void zTerraCheckTravs(zTerra *terra)
 {
-  int i, j;
+  uint i, j;
 
   for( i=0; i<zTerraXSize(terra); i++ )
     for( j=0; j<zTerraYSize(terra); j++ )
@@ -246,7 +246,7 @@ void zTerraCheckTravs(zTerra *terra)
 /* acquire the actual z-range of an elevation map. */
 void zTerraZRange(zTerra *terra, double *zmin, double *zmax)
 {
-  int i, j;
+  uint i, j;
   double z;
 
   *zmin = HUGE_VAL;
@@ -274,7 +274,7 @@ double zTerraZ(zTerra *terra, double x, double y)
 {
   double z[4], d[4], w[4];
   zVec3D p;
-  int i, j;
+  uint i, j;
 
   zVec3DCreate( &p, x, y, 0.5*(terra->zmin+terra->zmax) );
   if( !_zTerraGetBaseGrid( terra, &p, &i, &j ) ){
@@ -309,7 +309,7 @@ static void *_zTerraResolFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 static void *_zTerraSizeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  int xsize, ysize;
+  uint xsize, ysize;
   xsize = ZTKInt( ztk );
   ysize = ZTKInt( ztk );
   if( !zTerraAlloc( (zTerra*)obj, xsize, ysize ) ) return NULL;
@@ -338,7 +338,7 @@ static void *_zTerraResThrsdFromZTK(void *obj, int i, void *arg, ZTK *ztk){
 }
 static void *_zTerraGridFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zTerraCell *grid;
-  int j, k;
+  uint j, k;
   j = ZTKInt( ztk );
   k = ZTKInt( ztk );
   if( !( grid = zTerraGrid((zTerra*)obj,j,k) ) ){
@@ -391,13 +391,13 @@ static ZTKPrp __ztk_prp_terra[] = {
 zTerra *zTerraFromZTK(zTerra *terra, ZTK *ztk)
 {
   zTerraInit( terra );
-  return ZTKEvalKey( terra, NULL, ztk, __ztk_prp_terra );
+  return (zTerra *)ZTKEvalKey( terra, NULL, ztk, __ztk_prp_terra );
 }
 
 /* print an elevation map out to a file. */
 void zTerraFPrintZTK(FILE *fp, zTerra *terra)
 {
-  int i, j;
+  uint i, j;
   zTerraCell *grid;
 
   ZTKPrpKeyFPrint( fp, terra, __ztk_prp_terra );
@@ -411,7 +411,7 @@ void zTerraFPrintZTK(FILE *fp, zTerra *terra)
 /* print an elevation map out to a file in a plot-friendly format. */
 void zTerraDataFPrint(FILE *fp, zTerra *terra)
 {
-  int i, j;
+  uint i, j;
   zTerraCell *grid;
 
   for( i=0; i<zTerraXSize(terra); i++ )
@@ -428,15 +428,15 @@ static void *_zMapTerraAlloc(void){
 }
 
 static void _zMapTerraDestroy(void *terra){
-  zTerraDestroy( terra );
+  zTerraDestroy( (zTerra *)terra );
 }
 
 static void *_zMapTerraParseZTK(void *terra, ZTK *ztk){
-  return zTerraFromZTK( terra, ztk );
+  return zTerraFromZTK( (zTerra *)terra, ztk );
 }
 
 static void _zMapTerraFPrintZTK(FILE *fp, void *terra){
-  zTerraFPrintZTK( fp, terra );
+  zTerraFPrintZTK( fp, (zTerra *)terra );
 }
 
 zMapCom zeo_map_terra_com = {

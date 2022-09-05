@@ -285,41 +285,41 @@ void zBox3DDataFPrint(FILE *fp, zBox3D *box)
 /* methods for abstraction */
 
 static void *_zShape3DBoxInit(void *body){
-  return zBox3DInit( body ); }
+  return zBox3DInit( (zBox3D*)body ); }
 static void *_zShape3DBoxAlloc(void){
   return zBox3DAlloc(); }
 static void *_zShape3DBoxClone(void *src){
   zBox3D *cln;
-  return ( cln = zBox3DAlloc() ) ? zBox3DCopy( src, cln ) : NULL; }
+  return ( cln = (zBox3D*)zBox3DAlloc() ) ? zBox3DCopy( (zBox3D*)src, cln ) : NULL; }
 static void *_zShape3DBoxMirror(void *src, zAxis axis){
   zBox3D *mrr;
-  return ( mrr = zBox3DAlloc() ) ? zBox3DMirror( src, mrr, axis ) : NULL; }
+  return ( mrr = zBox3DAlloc() ) ? zBox3DMirror( (zBox3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DBoxDestroy(void *body){}
 static void *_zShape3DBoxXform(void *src, zFrame3D *f, void *dest){
-  return zBox3DXform( src, f, dest ); }
+  return zBox3DXform( (zBox3D*)src, f, (zBox3D*)dest ); }
 static void *_zShape3DBoxXformInv(void *src, zFrame3D *f, void *dest){
-  return zBox3DXformInv( src, f, dest ); }
+  return zBox3DXformInv( (zBox3D*)src, f, (zBox3D*)dest ); }
 static double _zShape3DBoxClosest(void *body, zVec3D *p, zVec3D *cp){
-  return zBox3DClosest( body, p, cp ); }
+  return zBox3DClosest( (zBox3D*)body, p, cp ); }
 static double _zShape3DBoxPointDist(void *body, zVec3D *p){
-  return zBox3DPointDist( body, p ); }
+  return zBox3DPointDist( (zBox3D*)body, p ); }
 static bool _zShape3DBoxPointIsInside(void *body, zVec3D *p, bool rim){
-  return zBox3DPointIsInside( body, p, rim ); }
+  return zBox3DPointIsInside( (zBox3D*)body, p, rim ); }
 static double _zShape3DBoxVolume(void *body){
-  return zBox3DVolume( body ); }
+  return zBox3DVolume( (zBox3D*)body ); }
 static zVec3D *_zShape3DBoxBarycenter(void *body, zVec3D *c){
   zVec3DCopy( zBox3DCenter((zBox3D*)body), c ); return c; }
 static zMat3D *_zShape3DBoxBaryInertiaMass(void *body, double mass, zMat3D *i){
-  return zBox3DBaryInertiaMass( body, mass, i ); }
+  return zBox3DBaryInertiaMass( (zBox3D*)body, mass, i ); }
 static zMat3D *_zShape3DBoxBaryInertia(void *body, double density, zMat3D *i){
-  return zBox3DBaryInertia( body, density, i ); }
+  return zBox3DBaryInertia( (zBox3D*)body, density, i ); }
 static zPH3D *_zShape3DBoxToPH(void *body, zPH3D *ph){
-  return zBox3DToPH( body, ph ); }
+  return zBox3DToPH( (zBox3D*)body, ph ); }
 static void *_zShape3DBoxParseZTK(void *body, ZTK *ztk){
-  zBox3DInit( body );
+  zBox3DInit( (zBox3D*)body );
   return ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_box ); }
 static void _zShape3DBoxFPrintZTK(FILE *fp, void *body){
-  zBox3DFPrintZTK( fp, body ); }
+  zBox3DFPrintZTK( fp, (zBox3D*)body ); }
 
 zShape3DCom zeo_shape3d_box_com = {
   "box",

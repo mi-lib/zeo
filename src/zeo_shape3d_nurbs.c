@@ -9,7 +9,7 @@
 /* methods for abstraction of zNURBS3D */
 
 static void *_zShape3DNURBSInit(void *body){
-  return zNURBS3DInit( body ); }
+  return zNURBS3DInit( (zNURBS3D*)body ); }
 static void *_zShape3DNURBSAlloc(void){
   zNURBS3D *nurbs;
   if( !( nurbs = zAlloc( zNURBS3D, 1 ) ) ){
@@ -20,21 +20,21 @@ static void *_zShape3DNURBSAlloc(void){
 }
 static void *_zShape3DNURBSClone(void *src){
   zNURBS3D *cln;
-  return ( cln = _zShape3DNURBSAlloc() ) ?  zNURBS3DClone( src, cln ) : NULL; }
+  return ( cln = (zNURBS3D*)_zShape3DNURBSAlloc() ) ?  zNURBS3DClone( (zNURBS3D*)src, cln ) : NULL; }
 static void *_zShape3DNURBSMirror(void *src, zAxis axis){
   zNURBS3D *mrr;
-  return ( mrr = _zShape3DNURBSAlloc() ) ? zNURBS3DMirror( src, mrr, axis ) : NULL; }
+  return ( mrr = (zNURBS3D*)_zShape3DNURBSAlloc() ) ? zNURBS3DMirror( (zNURBS3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DNURBSDestroy(void *body){
-  zNURBS3DDestroy( body ); }
+  zNURBS3DDestroy( (zNURBS3D*)body ); }
 static void *_zShape3DNURBSXform(void *src, zFrame3D *f, void *dest){
-  return zNURBS3DXform( src, f, dest ); }
+  return zNURBS3DXform( (zNURBS3D*)src, f, (zNURBS3D*)dest ); }
 static void *_zShape3DNURBSXformInv(void *src, zFrame3D *f, void *dest){
-  return zNURBS3DXformInv( src, f, dest ); }
+  return zNURBS3DXformInv( (zNURBS3D*)src, f, (zNURBS3D*)dest ); }
 static double _zShape3DNURBSClosest(void *body, zVec3D *p, zVec3D *cp){
-  return zNURBS3DClosest( body, p, cp, NULL, NULL ); }
+  return zNURBS3DClosest( (zNURBS3D*)body, p, cp, NULL, NULL ); }
 static double _zShape3DNURBSPointDist(void *body, zVec3D *p){
   zVec3D nn;
-  return zNURBS3DClosest( body, p, &nn, NULL, NULL ); }
+  return zNURBS3DClosest( (zNURBS3D*)body, p, &nn, NULL, NULL ); }
 
 /* dummy functions */
 static bool _zShape3DNURBSPointIsInside(void *body, zVec3D *p, bool rim){
@@ -49,11 +49,11 @@ static zMat3D *_zShape3DNURBSBaryInertia(void *body, double density, zMat3D *i){
   return NULL; }
 
 static zPH3D *_zShape3DNURBSToPH(void *body, zPH3D *ph){
-  return zNURBS3DToPH( body, ph ); }
+  return zNURBS3DToPH( (zNURBS3D*)body, ph ); }
 static void *_zShape3DNURBSParseZTK(void *body, ZTK *ztk){
-  return zNURBS3DFromZTK( body, ztk ); }
+  return zNURBS3DFromZTK( (zNURBS3D*)body, ztk ); }
 static void _zShape3DNURBSFPrintZTK(FILE *fp, void *body){
-  return zNURBS3DFPrintZTK( fp, body ); }
+  return zNURBS3DFPrintZTK( fp, (zNURBS3D*)body ); }
 
 zShape3DCom zeo_shape3d_nurbs_com = {
   "nurbs",

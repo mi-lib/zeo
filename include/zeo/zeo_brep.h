@@ -47,8 +47,8 @@ typedef struct{
 zListClass( zBREPEdgeList, zBREPEdgeListCell, zBREPEdge );
 
 #define zBREPEdgeListCellInit(e,v1,v2) do{\
-  (e)->data.v[0] = (v1);\
-  (e)->data.v[1] = (v2);\
+  (e)->data.v[0] = (zBREPVertListCell *)(v1);\
+  (e)->data.v[1] = (zBREPVertListCell *)(v2);\
   (e)->data._v  = NULL;\
 } while(0)
 

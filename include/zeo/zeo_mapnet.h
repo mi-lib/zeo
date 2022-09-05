@@ -23,7 +23,7 @@ typedef struct{
 /*! \brief initialize map net. */
 __EXPORT zMapNet *zMapNetInit(zMapNet *mn);
 /*! \brief allocate memory of map net. */
-__EXPORT zMapNet *zMapNetAlloc(zMapNet *mn, int size);
+__EXPORT zMapNet *zMapNetAlloc(zMapNet *mn, uint size);
 /*! \brief destroy map net. */
 __EXPORT void zMapNetDestroy(zMapNet *mn);
 

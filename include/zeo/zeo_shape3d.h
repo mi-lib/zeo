@@ -63,7 +63,7 @@ typedef struct{
 __EXPORT zShape3D *zShape3DInit(zShape3D *shape);
 
 /*! \brief assign a method of a 3D shape by referring a string. */
-__EXPORT zShape3D *zShape3DQueryAssign(zShape3D *shape, char *str);
+__EXPORT zShape3D *zShape3DQueryAssign(zShape3D *shape, const char *str);
 
 /*! \brief destroy a 3D shape instance.
  *

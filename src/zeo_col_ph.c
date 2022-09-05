@@ -42,7 +42,7 @@ static zVec3D *_zTri3DDualXform_b(zTri3D *t, zVec3D *dx)
 /* return a face of a polyhedron close to a point. */
 static zTri3D *_zIntersectPH3DPointIsInside(zPH3D *ph, zVec3D *p, double *dis)
 {
-  int i;
+  uint i;
 
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
     *dis = zTri3DPointDist( zPH3DFace(ph,i), p );
@@ -60,7 +60,7 @@ static zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib
   zVec3D *v, p1, p2, p_temp;
   zTri3D *tri;
   zPH3D ch;
-  int i, n;
+  uint i, n;
   double dis1, dis2;
   zTri3D *tri1, *tri2;
 

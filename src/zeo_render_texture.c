@@ -10,7 +10,7 @@
 bool (* __z_texture_read_file)(zTexture *, char *) = NULL;
 
 /* allocate coordinates and faces of a texture data */
-zTexture *zTextureAlloc(zTexture *texture, int nc, int nt)
+zTexture *zTextureAlloc(zTexture *texture, uint nc, uint nt)
 {
   zArrayAlloc( &texture->coord, zVec2D, nc );
   zArrayAlloc( &texture->face, zTri2D, nt );
@@ -22,14 +22,14 @@ zTexture *zTextureAlloc(zTexture *texture, int nc, int nt)
 }
 
 /* set coordinates in a texture image */
-zVec2D *zTextureSetCoord(zTexture *texture, int i, double u, double v)
+zVec2D *zTextureSetCoord(zTexture *texture, uint i, double u, double v)
 {
   if( !zArrayPosIsValid( &texture->coord, i ) ) return NULL;
   return zVec2DCreate( zTextureCoord(texture,i), u, v );
 }
 
 /* set a triangular face in a texure image */
-zTri2D *zTextureSetFace(zTexture *texture, int i, zVec2D *v1, zVec2D *v2, zVec2D *v3)
+zTri2D *zTextureSetFace(zTexture *texture, uint i, zVec2D *v1, zVec2D *v2, zVec2D *v3)
 {
   if( !zArrayPosIsValid( &texture->face, i ) ) return NULL;
   return zTri2DCreate( zTextureFace(texture,i), v1, v2, v3 );
@@ -63,11 +63,11 @@ zTexture *zTextureClone(zTexture *org, zTexture *cln)
   cln->filename = zStrClone( org->filename );
   zArrayAlloc( &cln->coord, zVec2D, zTextureCoordNum(org) );
   zArrayAlloc( &cln->face, zTri2D, zTextureFaceNum(org) );
-  cln->buf = zClone( org->buf, sizeof(ubyte)*org->width*org->height*3 );
+  cln->buf = (ubyte *)zClone( org->buf, sizeof(ubyte)*org->width*org->height*3 );
   wh = ( cln->width = org->width ) / 2;
   hh = ( cln->height = org->height ) / 2;
   for( res=true, i=0; i<6; i++ )
-    if( org->lbuf[i] && !( cln->lbuf[i] = zClone( org->lbuf[i], sizeof(ubyte)*wh*hh*3 ) ) ) res = false;
+    if( org->lbuf[i] && !( cln->lbuf[i] = (ubyte *)zClone( org->lbuf[i], sizeof(ubyte)*wh*hh*3 ) ) ) res = false;
   if( !cln->filename || !cln->coord.buf || !cln->face.buf || !cln->buf || !res ) goto FAILURE;
   return cln;
 
@@ -141,7 +141,7 @@ static void *_zTextureCoordFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 
 static void *_zTextureFaceFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 {
-  int i0, i1, i2;
+  uint i0, i1, i2;
 
   if( ( i0 = ZTKInt(ztk) ) >= zTextureCoordNum((zTexture*)obj) ){
     ZRUNERROR( ZEO_ERR_TEXTURE_INVALID_COORD_ID, i0 );
@@ -194,7 +194,7 @@ static ZTKPrp __ztk_prp_texture[] = {
 /* encode a texture from a ZTK format processor. */
 zTexture *zTextureFromZTK(zTexture *texture, ZTK *ztk)
 {
-  int num_coord, num_face;
+  uint num_coord, num_face;
 
   zTextureInit( texture );
   if( !ZTKKeyRewind( ztk ) ) return NULL;
@@ -220,7 +220,7 @@ zTexture *zTextureFromZTK(zTexture *texture, ZTK *ztk)
 /* print information of the texture parameter set out to a file. */
 void zTextureFPrintZTK(FILE *fp, zTexture *texture)
 {
-  int i;
+  uint i;
 
   if( !texture ) return;
   ZTKPrpKeyFPrint( fp, texture, __ztk_prp_texture );

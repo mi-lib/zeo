@@ -10,9 +10,9 @@
 typedef enum{ ZEO_DAE_COORD_INVALID=-1, ZEO_DAE_XYZ, ZEO_DAE_TEXTURE } zDAECoordType;
 typedef struct{
   char *id;
-  int count;
-  int vcount;
-  int stride;
+  uint count;
+  uint vcount;
+  uint stride;
   char *content;
   int accessor[3];
   zDAECoordType type;
@@ -43,9 +43,9 @@ static zDAESrc *_zDAESrcFind(zDAESrcList *slist, char *str)
 /* primitive of mesh in DAE */
 typedef struct{
   char *vcount;
-  int pcount;
-  int ni;
-  int voffset;
+  uint pcount;
+  uint ni;
+  uint voffset;
   char *p;
 } zDAEPrimitive;
 
@@ -144,7 +144,7 @@ static bool _zDAESrcEvalAccessor(xmlNode *node, zDAESrc *s)
 {
   xmlNode *np;
   xmlAttr *attr;
-  int i;
+  uint i;
 
   if( !( node = zXMLFindNodeElement( node, "accessor" ) ) ){
     ZRUNERROR( ZEO_ERR_DAE_ACCESSOR_UNASSIGNED, s->id );
@@ -188,7 +188,7 @@ static bool _zDAESrcEval(xmlNode *node, zDAESrcList *slist)
   return true;
 }
 
-static char *_zDAEEvalURI(xmlNode *node, char *name)
+static char *_zDAEEvalURI(xmlNode *node, const char *name)
 {
   char *id;
 
@@ -235,7 +235,7 @@ static bool _zDAEPrimitiveEvalFace(xmlNode *node, zDAEMesh *mesh)
   xmlNode *np;
   xmlAttr *attr;
   char *source_id;
-  int offset;
+  uint offset;
   zDAEPrimitiveCell *pc;
 
   if( !( pc = zAlloc( zDAEPrimitiveCell, 1 ) ) ){
@@ -455,8 +455,8 @@ static zPH3D *_zDAEMeshList2PH3D(zPH3D *ph, zDAEMeshList *mlist)
 {
   zDAEMeshCell *mc;
   zDAEPrimitiveCell *pc;
-  int nv, nf, ns, vi[3];
-  int i, j, k, vo, fo;
+  uint nv, nf, ns, vi[3];
+  uint i, j, k, vo, fo;
   char *sp, *vp, buf[BUFSIZ];
 
   zPH3DInit( ph );

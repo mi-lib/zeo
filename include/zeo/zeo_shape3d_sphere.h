@@ -19,7 +19,7 @@ __BEGIN_DECLS
 typedef struct{
   zVec3D center;
   double radius;
-  int div;
+  uint div;
 } zSphere3D;
 
 #define zSphere3DCenter(s)      ( &(s)->center )

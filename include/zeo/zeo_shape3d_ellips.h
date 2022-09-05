@@ -19,7 +19,7 @@ __BEGIN_DECLS
 typedef struct{
   zVec3D radius;
   zFrame3D f;
-  int div;
+  uint div;
 } zEllips3D;
 
 #define zEllips3DRadius(ellips,d) ( (ellips)->radius.e[(d)] )

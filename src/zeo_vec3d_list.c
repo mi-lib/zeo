@@ -43,7 +43,7 @@ zVec3DListCell *zVec3DListAdd(zVec3DList *list, zVec3D *v)
 /* append an array of 3D vectors to a list. */
 zVec3DList *zVec3DListAppendArray(zVec3DList *list, zVec3DArray *array)
 {
-  int i;
+  uint i;
 
   for( i=0; i<zArraySize(array); i++ )
     if( !zVec3DListAdd( list, zArrayElemNC(array,i) ) ) break;
@@ -113,7 +113,7 @@ zVec3DAddr *zVec3DAddrListAdd(zVec3DAddrList *list, zVec3D *v)
 /* append an array of 3D vectors to a list of pointers to 3D vectors. */
 zVec3DAddrList *zVec3DAddrListAppendArray(zVec3DAddrList *list, zVec3DArray *array)
 {
-  int i;
+  uint i;
 
   for( i=0; i<zArraySize(array); i++ )
     if( !zVec3DAddrListAdd( list, zArrayElemNC(array,i) ) ) break;

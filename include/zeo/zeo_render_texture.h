@@ -67,13 +67,13 @@ extern bool (* __z_texture_read_file)(zTexture *, char *);
 #define zTextureReadFile(t,f) ( __z_texture_read_file ? __z_texture_read_file( (t), (f) ) : false )
 
 /*! \brief allocate coordinates and faces of a texture data */
-__EXPORT zTexture *zTextureAlloc(zTexture *texture, int nc, int nt);
+__EXPORT zTexture *zTextureAlloc(zTexture *texture, uint nc, uint nt);
 
 /*! \brief set coordinates in a texture image */
-__EXPORT zVec2D *zTextureSetCoord(zTexture *texture, int i, double u, double v);
+__EXPORT zVec2D *zTextureSetCoord(zTexture *texture, uint i, double u, double v);
 
 /*! \brief set a triangular face in a texure image */
-__EXPORT zTri2D *zTextureSetFace(zTexture *texture, int i, zVec2D *v1, zVec2D *v2, zVec2D *v3);
+__EXPORT zTri2D *zTextureSetFace(zTexture *texture, uint i, zVec2D *v1, zVec2D *v2, zVec2D *v3);
 
 /*! \brief destroy a texture */
 __EXPORT void zTextureDestroy(zTexture *texture);

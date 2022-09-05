@@ -21,7 +21,7 @@ zBREP *zBREPMerge(zBREP *target, zBREP *sub)
   zListForEach( &sub->elist, ep ){
     ep->data._v = NULL;
     if( ep->data.v[0]->data._p && ep->data.v[1]->data._p )
-      if( !( ep->data._v = (void *)zBREPEdgeListFind( &target->elist, ep->data.v[0]->data._p, ep->data.v[1]->data._p ) ) ){
+      if( !( ep->data._v = (void *)zBREPEdgeListFind( &target->elist, (zBREPVertListCell *)ep->data.v[0]->data._p, (zBREPVertListCell *)ep->data.v[1]->data._p ) ) ){
         if( !( en = zAlloc( zBREPEdgeListCell, 1 ) ) ){
           ZALLOCERROR();
           return NULL;

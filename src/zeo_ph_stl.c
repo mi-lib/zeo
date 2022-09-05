@@ -180,7 +180,7 @@ zPH3D *zPH3DFReadSTL_ASCII(FILE *fp, zPH3D *ph, char name[], size_t namesize)
 /* print a 3D polyhedron to ASCII STL format */
 void zPH3DFWriteSTL_ASCII(FILE *fp, zPH3D *ph, char name[])
 {
-  int i;
+  uint i;
 
   fprintf( fp, "solid %s\n", name );
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
@@ -250,7 +250,7 @@ zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[])
   zVec3D normal, v[3];
   zVec3DTree vert_tree;
   _zSTLFacetList facet_list;
-  int i;
+  uint i;
 
   zVec3DTreeInit( &vert_tree );
   zListInit( &facet_list );
@@ -278,12 +278,12 @@ void zPH3DFWriteSTL_Bin(FILE *fp, zPH3D *ph, char name[])
 {
   uint32_t nf;
   uint16_t dummy = 0;
-  int i;
+  uint i;
 
   if( fwrite( name, sizeof(char), ZEO_STL_HEADSIZ, fp ) < ZEO_STL_HEADSIZ );
   nf = zPH3DFaceNum(ph);
   if( fwrite( &nf, sizeof(uint32_t), 1, fp ) < 1 );
-  for( i=0; i<nf; i++ ){
+  for( i=0; i<(uint)nf; i++ ){
     _zPH3DFWriteSTL_BinVec( fp, zTri3DNorm(zPH3DFace(ph,i)) );
     _zPH3DFWriteSTL_BinVec( fp, zTri3DVert(zPH3DFace(ph,i),0) );
     _zPH3DFWriteSTL_BinVec( fp, zTri3DVert(zPH3DFace(ph,i),1) );

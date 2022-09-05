@@ -63,7 +63,7 @@ typedef struct{
 #define ZTERRA_TRAVS_TH_RES ( 1.0e-1 )
 
 /*! \brief retrieve a grid of an elevation map. */
-__EXPORT zTerraCell *zTerraGrid(zTerra *terra, int i, int j);
+__EXPORT zTerraCell *zTerraGrid(zTerra *terra, uint i, uint j);
 
 /*! \brief initialize an elevation map. */
 __EXPORT zTerra *zTerraInit(zTerra *terra);
@@ -72,7 +72,7 @@ __EXPORT zTerra *zTerraInit(zTerra *terra);
 __EXPORT zTerra *zTerraLevel(zTerra *terra);
 
 /*! \brief allocate the internal grid array of an elevation map. */
-__EXPORT zTerra *zTerraAlloc(zTerra *terra, int xsize, int ysize);
+__EXPORT zTerra *zTerraAlloc(zTerra *terra, uint xsize, uint ysize);
 
 /*! \brief set thresholds of an elevation map for traversability check. */
 #define zTerraSetTravsThreshold(terra,tv,tg,tr) do{\

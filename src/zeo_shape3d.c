@@ -23,7 +23,7 @@ zShape3D *zShape3DInit(zShape3D *shape)
 }
 
 /* assign a method of a 3D shape by referring a string. */
-zShape3D *zShape3DQueryAssign(zShape3D *shape, char *str)
+zShape3D *zShape3DQueryAssign(zShape3D *shape, const char *str)
 {
   ZEO_SHAPE_COM_ARRAY;
   int k;
@@ -279,7 +279,7 @@ static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   suffix = zGetSuffix( ZTKVal(ztk) );
   if( strcmp( suffix, "dae" ) == 0 || strcmp( suffix, "DAE" ) == 0 ){
 #ifdef __ZEO_USE_DAE
-    if( !zShape3DFReadDAE( obj, ZTKVal(ztk) ) ) obj = NULL;
+    if( !zShape3DFReadDAE( (zShape3D *)obj, ZTKVal(ztk) ) ) obj = NULL;
 #else
     ZRUNWARN( ZEO_ERR_DAE_UNSUPPORTED );
     obj = NULL;
@@ -290,13 +290,13 @@ static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
       return NULL;
     }
     if( strcmp( suffix, "stl" ) == 0 || strcmp( suffix, "STL" ) == 0 ){
-      if( !zShape3DFReadSTL( fp, obj ) ) obj = NULL;
+      if( !zShape3DFReadSTL( fp, (zShape3D *)obj ) ) obj = NULL;
     } else
     if( strcmp( suffix, "ply" ) == 0 || strcmp( suffix, "PLY" ) == 0 ){
-      if( !zShape3DFReadPLY( fp, obj ) ) obj = NULL;
+      if( !zShape3DFReadPLY( fp, (zShape3D *)obj ) ) obj = NULL;
     } else
     if( strcmp( suffix, "obj" ) == 0 || strcmp( suffix, "OBJ" ) == 0 ){
-      if( !zShape3DFReadOBJ( fp, obj ) ) obj = NULL;
+      if( !zShape3DFReadOBJ( fp, (zShape3D *)obj ) ) obj = NULL;
     } else{
       ZRUNERROR( ZEO_WARN_SHAPE_UNKNOWNFORMAT, suffix );
       obj = NULL;

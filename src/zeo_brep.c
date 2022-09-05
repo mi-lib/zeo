@@ -89,7 +89,7 @@ static bool _zBREPFaceInsert(zTri3D *face, zBREPFaceList *flist, zBREPEdgeList *
 /* convert polyhedron to B-Rep solid. */
 zBREP *zPH3D2BREP(zPH3D *ph, zBREP *brep)
 {
-  int i;
+  uint i;
 
   zListInit( &brep->vlist );
   zListInit( &brep->elist );
@@ -107,7 +107,7 @@ zBREP *zPH3D2BREP(zPH3D *ph, zBREP *brep)
 zBREP *zPH3D2BREPInBox(zPH3D *ph, zAABox3D *box, zBREP *brep)
 {
   zTri3D *tri;
-  int i;
+  uint i;
 
   zListInit( &brep->vlist );
   zListInit( &brep->elist );
@@ -127,7 +127,7 @@ zBREP *zPH3D2BREPInBox(zPH3D *ph, zAABox3D *box, zBREP *brep)
 /* convert B-Rep solid to polyhedron. */
 zPH3D *zBREP2PH3D(zBREP *brep, zPH3D *ph)
 {
-  int i;
+  uint i;
   zBREPVertListCell *vp;
   zBREPFaceListCell *fp;
 
@@ -143,7 +143,7 @@ zPH3D *zBREP2PH3D(zBREP *brep, zPH3D *ph)
   }
   i = 0;
   zListForEach( &brep->flist, fp ){
-    zTri3DCreate( zPH3DFace(ph,i), fp->data.v[0]->data._p, fp->data.v[1]->data._p, fp->data.v[2]->data._p );
+    zTri3DCreate( zPH3DFace(ph,i), (zVec3D*)fp->data.v[0]->data._p, (zVec3D*)fp->data.v[1]->data._p, (zVec3D*)fp->data.v[2]->data._p );
     i++;
   }
   return ph;

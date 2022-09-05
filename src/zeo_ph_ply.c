@@ -104,7 +104,8 @@ static const zPLYPrp *_zPLYPrpFind(char *str)
   return NULL;
 }
 
-typedef enum{ ZEO_PLY_ELEM_NONE=-1,
+typedef enum{
+  ZEO_PLY_ELEM_NONE=-1,
   ZEO_PLY_ELEM_VERTEX, ZEO_PLY_ELEM_FACE, ZEO_PLY_ELEM_EDGE, ZEO_PLY_ELEM_MATERIAL,
   ZEO_PLY_ELEM_NUM
 } zPLYElemType;
@@ -146,10 +147,13 @@ static void _zPLYElementFPrint(FILE *fp, zPLYElement *elem)
 }
 #endif
 
+typedef enum{
+  ZEO_PLY_FORMAT_NONE=-1,
+  ZEO_PLY_FORMAT_ASCII, ZEO_PLY_FORMAT_BIN, ZEO_PLY_FORMAT_BIN_REV,
+} zPLYFormat;
+
 typedef struct{
-  enum{ ZEO_PLY_FORMAT_NONE=-1,
-    ZEO_PLY_FORMAT_ASCII, ZEO_PLY_FORMAT_BIN, ZEO_PLY_FORMAT_BIN_REV,
-  } format;
+  zPLYFormat format;
   char version[4];
   int elemnum;
   zPLYElement elem[ZEO_PLY_ELEM_MAX_NUM];
@@ -160,7 +164,7 @@ typedef struct{
 
 static void _zPLYInit(zPLY *ply)
 {
-  int i;
+  uint i;
 
   ply->format = ZEO_PLY_FORMAT_NONE;
   strcpy( ply->version, "\0\0\0\0" );
@@ -507,7 +511,7 @@ zPH3D *zPH3DFReadPLY(FILE *fp, zPH3D *ph)
   return ph;
 }
 
-static void _zPH3DFWritePLYHeader(FILE *fp, zPH3D *ph, char format[])
+static void _zPH3DFWritePLYHeader(FILE *fp, zPH3D *ph, const char *format)
 {
   fprintf( fp, "ply\n" );
   fprintf( fp, "format %s 1.0\n", format );
@@ -522,7 +526,7 @@ static void _zPH3DFWritePLYHeader(FILE *fp, zPH3D *ph, char format[])
 
 static void _zPH3DFWritePLYDataASCII(FILE *fp, zPH3D *ph)
 {
-  int i;
+  uint i;
 
   for( i=0; i<zPH3DVertNum(ph); i++ )
     zVec3DDataNLFPrint( fp, zPH3DVert(ph,i) );
@@ -535,7 +539,7 @@ static void _zPH3DFWritePLYDataASCII(FILE *fp, zPH3D *ph)
 
 static void _zPH3DFWritePLYDataBin(FILE *fp, zPH3D *ph)
 {
-  int i;
+  uint i;
 
   for( i=0; i<zPH3DVertNum(ph); i++ ){
     fwrite_float( fp, zPH3DVert(ph,i)->e[0] );

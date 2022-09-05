@@ -181,25 +181,7 @@ typedef struct{
   _zPCDDataType datatype;
 } _zPCD;
 
-static void _zPCDInit(_zPCD *pcd);
-static int _zPCDFieldAttrFind(char *tkn, const char *attrlist[]);
-static bool _zPCDVersionFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn);
-static bool _zPCDFieldsFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn);
-static bool _zPCDCheckFieldNum(_zPCD *pcd, int n);
-static bool _zPCDSizeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn);
-static bool _zPCDTypeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn);
-static bool _zPCDCountFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn);
-static bool _zPCDWidthFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn);
-static bool _zPCDHeightFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn);
-static bool _zPCDViewpointFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn);
-static bool _zPCDPointsFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn);
-static bool _zPCDDataTypeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn);
-
-static bool _zPCDHeaderFRead(FILE *fp, _zPCD *pcd);
-static bool _zPCDDataASCIIFRead(FILE *fp, _zPCD *pcd, zVec3DList *pc);
-static bool _zPCDDataBINFRead(FILE *fp, _zPCD *pcd, zVec3DList *pc);
-
-void _zPCDInit(_zPCD *pcd)
+static void _zPCDInit(_zPCD *pcd)
 {
   int i;
 
@@ -213,7 +195,7 @@ void _zPCDInit(_zPCD *pcd)
   pcd->datatype = ZEO_PCD_DATATYPE_INVALID;
 }
 
-int _zPCDFieldAttrFind(char *tkn, const char *attrlist[])
+static int _zPCDFieldAttrFind(char *tkn, const char *attrlist[])
 {
   int i;
 
@@ -222,7 +204,7 @@ int _zPCDFieldAttrFind(char *tkn, const char *attrlist[])
   return -1;
 }
 
-bool _zPCDVersionFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
+static bool _zPCDVersionFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   char *cp;
 
@@ -240,12 +222,12 @@ bool _zPCDVersionFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
   return true;
 }
 
-bool _zPCDFieldsFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
+static bool _zPCDFieldsFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   int i;
 
   for( i=0; zSToken( buf, tkn, BUFSIZ ) && i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
-    if( ( pcd->field[i].def = _zPCDFieldAttrFind( tkn, __z_pcd_def ) ) < 0 ){
+    if( ( pcd->field[i].def = (_zPCDDef)_zPCDFieldAttrFind( tkn, __z_pcd_def ) ) < 0 ){
       ZRUNERROR( "unknown field identifier: %s", tkn );
       return false;
     }
@@ -254,7 +236,7 @@ bool _zPCDFieldsFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
   return true;
 }
 
-bool _zPCDCheckFieldNum(_zPCD *pcd, int n)
+static bool _zPCDCheckFieldNum(_zPCD *pcd, int n)
 {
   if( n != pcd->fieldnum ){
     ZRUNERROR( "mismatch number of fields: %d", n );
@@ -263,7 +245,7 @@ bool _zPCDCheckFieldNum(_zPCD *pcd, int n)
   return true;
 }
 
-bool _zPCDSizeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
+static bool _zPCDSizeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   int i;
 
@@ -281,12 +263,12 @@ bool _zPCDSizeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
   return _zPCDCheckFieldNum( pcd, i );
 }
 
-bool _zPCDTypeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
+static bool _zPCDTypeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   int i;
 
   for( i=0; zSToken( buf, tkn, BUFSIZ ) && i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
-    if( ( pcd->field[i].type = _zPCDFieldAttrFind( tkn, __z_pcd_type ) ) < 0 ){
+    if( ( pcd->field[i].type = (_zPCDType)_zPCDFieldAttrFind( tkn, __z_pcd_type ) ) < 0 ){
       ZRUNERROR( "unknown field type identifier: %s", tkn );
       return false;
     }
@@ -294,7 +276,7 @@ bool _zPCDTypeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
   return _zPCDCheckFieldNum( pcd, i );
 }
 
-bool _zPCDCountFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
+static bool _zPCDCountFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   int i;
 
@@ -307,7 +289,7 @@ bool _zPCDCountFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
   return _zPCDCheckFieldNum( pcd, i );
 }
 
-bool _zPCDWidthFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
+static bool _zPCDWidthFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   if( zSToken( buf, tkn, BUFSIZ ) == NULL ){
     ZRUNERROR( "width not specified" );
@@ -317,7 +299,7 @@ bool _zPCDWidthFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
   return true;
 }
 
-bool _zPCDHeightFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
+static bool _zPCDHeightFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   if( zSToken( buf, tkn, BUFSIZ ) == NULL ){
     ZRUNERROR( "height not specified" );
@@ -327,7 +309,7 @@ bool _zPCDHeightFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
   return true;
 }
 
-bool _zPCDViewpointFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
+static bool _zPCDViewpointFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   double val[7];
   int i;
@@ -347,7 +329,7 @@ bool _zPCDViewpointFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
   return true;
 }
 
-bool _zPCDPointsFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
+static bool _zPCDPointsFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   int points;
 
@@ -364,13 +346,13 @@ bool _zPCDPointsFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
   return true;
 }
 
-bool _zPCDDataTypeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
+static bool _zPCDDataTypeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   if( zSToken( buf, tkn, BUFSIZ ) == NULL ){
     ZRUNERROR( "data type not specified" );
     return false;
   }
-  if( ( pcd->datatype = _zPCDFieldAttrFind( tkn, __z_pcd_datatype ) ) < 0 ){
+  if( ( pcd->datatype = (_zPCDDataType)_zPCDFieldAttrFind( tkn, __z_pcd_datatype ) ) < 0 ){
     ZRUNERROR( "unknown data type identifier: %s", tkn );
     return false;
   }
@@ -378,7 +360,7 @@ bool _zPCDDataTypeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 }
 
 static const struct _zPCDProperty{
-  char *key;
+  const char *key;
   bool (* read)(FILE*,_zPCD*,char*,char*);
 } __z_pcd_property[] = {
   { "VERSION",   _zPCDVersionFRead },
@@ -394,7 +376,7 @@ static const struct _zPCDProperty{
   { NULL, NULL },
 };
 
-bool _zPCDHeaderFRead(FILE *fp, _zPCD *pcd)
+static bool _zPCDHeaderFRead(FILE *fp, _zPCD *pcd)
 {
   char buf[BUFSIZ], tkn[BUFSIZ];
   struct _zPCDProperty *property;
@@ -412,7 +394,7 @@ bool _zPCDHeaderFRead(FILE *fp, _zPCD *pcd)
   return false;
 }
 
-bool _zPCDDataASCIIFRead(FILE *fp, _zPCD *pcd, zVec3DList *pc)
+static bool _zPCDDataASCIIFRead(FILE *fp, _zPCD *pcd, zVec3DList *pc)
 {
   char buf[BUFSIZ], tkn[BUFSIZ];
   int i;
@@ -436,7 +418,7 @@ bool _zPCDDataASCIIFRead(FILE *fp, _zPCD *pcd, zVec3DList *pc)
   return true;
 }
 
-bool _zPCDDataBINFRead(FILE *fp, _zPCD *pcd, zVec3DList *pc)
+static bool _zPCDDataBINFRead(FILE *fp, _zPCD *pcd, zVec3DList *pc)
 {
   int i;
   zVec3D v, tf;
@@ -486,7 +468,7 @@ bool zVec3DListReadPCDFile(zVec3DList *pc, char filename[])
   FILE *fp;
   bool ret;
 
-  if( !( fp = zOpenFile( filename, ZEO_PCD_SUFFIX, "r" ) ) )
+  if( !( fp = zOpenFile( filename, (char *)ZEO_PCD_SUFFIX, (char *)"r" ) ) )
     return false;
   ret = zVec3DListPCDFRead( fp, pc );
   fclose( fp );

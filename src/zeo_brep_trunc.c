@@ -72,15 +72,15 @@ static bool _zBREPTruncFaceA(zBREP *brep, zBREPFace *f, int i1, int i2, int i3)
   zListInsertHead( &brep->elist, e5 );
   /* upper triangle */
   fp->data.v[0] = f->v[i2];
-  fp->data.v[1] = f->e[i2]->data._v;
-  fp->data.v[2] = f->e[i3]->data._v;
+  fp->data.v[1] = (zBREPVertListCell *)f->e[i2]->data._v;
+  fp->data.v[2] = (zBREPVertListCell *)f->e[i3]->data._v;
   fp->data.e[0] = e4;
   fp->data.e[1] = f->e[i3];
   fp->data.e[2] = e5;
   zListInsertTail( &brep->flist, fp );
   /* lower triangle */
   f->e[i3] = e5;
-  f->v[i1] = f->e[i2]->data._v;
+  f->v[i1] = (zBREPVertListCell *)f->e[i2]->data._v;
   return true;
 }
 
@@ -98,8 +98,8 @@ static bool _zBREPTruncFaceV(zBREP *brep, zBREPFace *f, int i1, int i2, int i3)
   zListInsertHead( &brep->elist, e4 );
   /* renewal triangle */
   f->e[i1] = e4;
-  f->v[i2] = f->e[i3]->data._v;
-  f->v[i3] = f->e[i2]->data._v;
+  f->v[i2] = (zBREPVertListCell *)f->e[i3]->data._v;
+  f->v[i3] = (zBREPVertListCell *)f->e[i2]->data._v;
   return true;
 }
 
@@ -116,7 +116,7 @@ static bool _zBREPTruncFaceE(zBREP *brep, zBREPFace *f, int i1, int i2, int i3)
   zBREPEdgeListCellInit( e4, f->v[i1], f->e[i1]->data._v );
   zListInsertHead( &brep->elist, e4 );
   /* renewal triangle */
-  f->v[i3] = f->e[i1]->data._v;
+  f->v[i3] = (zBREPVertListCell *)f->e[i1]->data._v;
   f->e[i2] = e4;
   return true;
 }
@@ -129,9 +129,9 @@ static void _zBREPTruncEdgeShrink(zBREPEdgeList *elist)
   zListForEach( elist, ep ){
     if( !ep->data._v ) continue;
     if( ep->data.v[0]->data._d > 0 )
-      ep->data.v[0] = ep->data._v;
+      ep->data.v[0] = (zBREPVertListCell *)ep->data._v;
     else
-      ep->data.v[1] = ep->data._v;
+      ep->data.v[1] = (zBREPVertListCell *)ep->data._v;
     ep->data._v = NULL;
   }
 }
@@ -228,7 +228,7 @@ zBREP *zBREPTrunc(zBREP *brep, zPlane3D *pl)
 /* truncate B-Rep by a polyhedron. */
 zBREP *zBREPTruncPH3D(zBREP *brep, zPH3D *ph)
 {
-  int i;
+  uint i;
   zPlane3D pl;
 
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
