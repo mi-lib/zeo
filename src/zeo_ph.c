@@ -63,7 +63,7 @@ zPH3D *zPH3DMirror(zPH3D *src, zPH3D *dest, zAxis axis)
 
   if( !zPH3DClone( src, dest ) ) return NULL;
   for( i=0; i<zPH3DVertNum(dest); i++ )
-    zPH3DVert(dest,i)->e[axis] *= -1;
+    zPH3DVert(dest,i)->e[(int)axis] *= -1;
   for( i=0; i<zPH3DFaceNum(dest); i++ ){
     zSwap( zVec3D*, zPH3DFaceVert(dest,i,1), zPH3DFaceVert(dest,i,2) );
     zVec3DRevDRC( zPH3DFaceNorm(dest,i) );

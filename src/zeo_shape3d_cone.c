@@ -50,8 +50,8 @@ zCone3D *zCone3DCopy(zCone3D *src, zCone3D *dest)
 zCone3D *zCone3DMirror(zCone3D *src, zCone3D *dest, zAxis axis)
 {
   zCone3DCopy( src, dest );
-  zCone3DCenter(dest)->e[axis] *= -1;
-  zCone3DVert(dest)->e[axis] *= -1;
+  zCone3DCenter(dest)->e[(int)axis] *= -1;
+  zCone3DVert(dest)->e[(int)axis] *= -1;
   return dest;
 }
 

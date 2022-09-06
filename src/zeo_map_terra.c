@@ -440,9 +440,9 @@ static void _zMapTerraFPrintZTK(FILE *fp, void *terra){
 }
 
 zMapCom zeo_map_terra_com = {
-  typestr: "terra",
-  _alloc: _zMapTerraAlloc,
-  _destroy: _zMapTerraDestroy,
-  _fromZTK: _zMapTerraParseZTK,
-  _fprintZTK: _zMapTerraFPrintZTK,
+  .typestr = "terra",
+  ._alloc = _zMapTerraAlloc,
+  ._destroy = _zMapTerraDestroy,
+  ._fromZTK = _zMapTerraParseZTK,
+  ._fprintZTK = _zMapTerraFPrintZTK,
 };

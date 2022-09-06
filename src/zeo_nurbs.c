@@ -103,7 +103,7 @@ zNURBS3D *zNURBS3DMirror(zNURBS3D *src, zNURBS3D *dest, zAxis axis)
   if( !zNURBS3DCopy( src, dest ) ) return NULL;
   for( i=0; i<zNURBS3DCPNum(dest,0); i++ )
     for( j=0; j<zNURBS3DCPNum(dest,1); j++ )
-      zNURBS3DCP(dest,i,j)->e[axis] *= -1;
+      zNURBS3DCP(dest,i,j)->e[(int)axis] *= -1;
   return dest;
 }
 

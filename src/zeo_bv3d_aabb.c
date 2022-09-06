@@ -128,12 +128,12 @@ void zAABox3DDataFPrint(FILE *fp, zAABox3D *box)
 /* enlarge bounding box if a 3D point is out of the current box. */
 static int _zAABB3DTest(zAABox3D *bb, zVec3D *p, zDir u)
 {
-  if( p->e[u] > bb->max.e[u] ){
-    bb->max.e[u] = p->e[u];
+  if( p->e[(int)u] > bb->max.e[(int)u] ){
+    bb->max.e[(int)u] = p->e[(int)u];
     return 0;
   }
-  if( p->e[u] < bb->min.e[u] ){
-    bb->min.e[u] = p->e[u];
+  if( p->e[(int)u] < bb->min.e[(int)u] ){
+    bb->min.e[(int)u] = p->e[(int)u];
     return 3;
   }
   return -1;

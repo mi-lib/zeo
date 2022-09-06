@@ -1,3 +1,6 @@
+2022. 9. 6. Corrected designators of members of a structure to the up-to-date style. [zeo_map_terra]
+2022. 9. 6. Corrected empty body of if statements. [zeo_ph_stl]
+2022. 9. 6. Corrected byte-type array subscripts to integer values. [zeo_vec3d_tree, zeo_ph, zeo_nurbs, zeo_shape3d_box, zeo_shape3d_sphere, zeo_shape3d_cyl, zeo_shape3d_cone, zeo_shape3d_ellips, zeo_shape3d_ecyl, zeo_bv2d_aabb, zeo_bv3d_aabb, zeo_col_box]
 2022. 9. 5. Corrected arithmetic of signed integer values. [zeo_render_texture, zeo_vec2d_list, zeo_vec3d_list, zeo_vec3d_tree, zeo_ph, zeo_ph_ply, zeo_ph_obj, zeo_nurbs, zeo_shape3D_cyl, zeo_shape3D_cone, zeo_shape3d_sphere, zeo_shape3d_ellips, zeo_shape3d_ecyl, zeo_bv3d_obb, zeo_brep, zeo_brep_trunc, zeo_col_gjk, zeo_col_ph, zeo_mshape3d]
 2022. 9. 5. Added castings from integer to enumerate values. [zeo_pointcloud]
 2022. 9. 5. Added explicit castings from void pointers. [zeo_render_optic, zeo_render_texture, zeo_ph, zeo_nurbs, zeo_shape3d, zeo_shape3d_box, zeo_shape3D_cyl, zeo_shape3D_cone, zeo_shape3d_sphere, zeo_shape3d_ellips, zeo_shape3d_ecyl, zeo_shape3d_ph, zeo_shape3d_nurbs, zeo_brep, zeo_brep_trunc, zeo_brep_bool]

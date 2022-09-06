@@ -38,7 +38,7 @@ static zVec3DTree *_zVec3DTreeCreateLeaf(zAxis split, zVec3D *v, int id)
 /* return an index of a node which contains a given 3D vector. */
 static int _zVec3DTreeChooseBranch(zVec3DTree *node, zVec3D *v)
 {
-  return v->e[node->data.split] >= node->data.v.e[node->data.split] ? 0 : 1;
+  return v->e[(int)node->data.split] >= node->data.v.e[(int)node->data.split] ? 0 : 1;
 }
 
 /* add a new 3D vector to a tree. */
@@ -56,9 +56,9 @@ static zVec3DTree *_zVec3DTreeAdd(zVec3DTree *node, zVec3D *v, int id)
   zVec3DCopy( &node->data.vmin, &leaf->data.vmin );
   zVec3DCopy( &node->data.vmax, &leaf->data.vmax );
   if( b == 0 )
-    leaf->data.vmin.e[node->data.split] = node->data.v.e[node->data.split];
+    leaf->data.vmin.e[(int)node->data.split] = node->data.v.e[(int)node->data.split];
   else /* b == 1 */
-    leaf->data.vmax.e[node->data.split] = node->data.v.e[node->data.split];
+    leaf->data.vmax.e[(int)node->data.split] = node->data.v.e[(int)node->data.split];
   return leaf;
 }
 

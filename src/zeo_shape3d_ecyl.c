@@ -65,10 +65,10 @@ zECyl3D *zECyl3DCopy(zECyl3D *src, zECyl3D *dest)
 zECyl3D *zECyl3DMirror(zECyl3D *src, zECyl3D *dest, zAxis axis)
 {
   zECyl3DCopy( src, dest );
-  zECyl3DCenter(dest,0)->e[axis] *= -1;
-  zECyl3DCenter(dest,1)->e[axis] *= -1;
-  zECyl3DRadVec(dest,0)->e[axis] *= -1;
-  zECyl3DRadVec(dest,1)->e[axis] *= -1;
+  zECyl3DCenter(dest,0)->e[(int)axis] *= -1;
+  zECyl3DCenter(dest,1)->e[(int)axis] *= -1;
+  zECyl3DRadVec(dest,0)->e[(int)axis] *= -1;
+  zECyl3DRadVec(dest,1)->e[(int)axis] *= -1;
   zVec3DRevDRC( zECyl3DRadVec(dest,1) );
   return dest;
 }

@@ -203,10 +203,13 @@ static zVec3D *_zPH3DFReadSTL_BinVec(FILE *fp, zVec3D *v)
 {
   float val1, val2, val3;
 
-  if( fread( &val1, sizeof(float), 1, fp ) < 1 );
-  if( fread( &val2, sizeof(float), 1, fp ) < 1 );
-  if( fread( &val3, sizeof(float), 1, fp ) < 1 );
+  if( fread( &val1, sizeof(float), 1, fp ) < 1 ) goto ERROR;
+  if( fread( &val2, sizeof(float), 1, fp ) < 1 ) goto ERROR;
+  if( fread( &val3, sizeof(float), 1, fp ) < 1 ) goto ERROR;
   return zVec3DCreate( v, val1, val2, val3 );
+ ERROR:
+  ZRUNERROR( ZEO_ERR_STL_INCOMPLETE );
+  return NULL;
 }
 
 /* write a 3D vector to binary STL format */
@@ -280,15 +283,17 @@ void zPH3DFWriteSTL_Bin(FILE *fp, zPH3D *ph, char name[])
   uint16_t dummy = 0;
   uint i;
 
-  if( fwrite( name, sizeof(char), ZEO_STL_HEADSIZ, fp ) < ZEO_STL_HEADSIZ );
+  if( fwrite( name, sizeof(char), ZEO_STL_HEADSIZ, fp ) < ZEO_STL_HEADSIZ )
+    ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
   nf = zPH3DFaceNum(ph);
-  if( fwrite( &nf, sizeof(uint32_t), 1, fp ) < 1 );
+  if( fwrite( &nf, sizeof(uint32_t), 1, fp ) < 1 ) ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
   for( i=0; i<(uint)nf; i++ ){
     _zPH3DFWriteSTL_BinVec( fp, zTri3DNorm(zPH3DFace(ph,i)) );
     _zPH3DFWriteSTL_BinVec( fp, zTri3DVert(zPH3DFace(ph,i),0) );
     _zPH3DFWriteSTL_BinVec( fp, zTri3DVert(zPH3DFace(ph,i),1) );
     _zPH3DFWriteSTL_BinVec( fp, zTri3DVert(zPH3DFace(ph,i),2) );
-    if( fwrite( &dummy, sizeof(uint16_t), 1, fp ) < 1 ); /* two empty bytes */
+    if( fwrite( &dummy, sizeof(uint16_t), 1, fp ) < 1 ) /* two empty bytes */
+      ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
   }
 }
 

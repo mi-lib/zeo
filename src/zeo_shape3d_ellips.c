@@ -56,10 +56,10 @@ zEllips3D *zEllips3DCopy(zEllips3D *src, zEllips3D *dest)
 zEllips3D *zEllips3DMirror(zEllips3D *src, zEllips3D *dest, zAxis axis)
 {
   zEllips3DCopy( src, dest );
-  zEllips3DCenter(dest)->e[axis] *= -1;
-  zEllips3DAxis(dest,0)->e[axis] *= -1;
-  zEllips3DAxis(dest,1)->e[axis] *= -1;
-  zEllips3DAxis(dest,2)->e[axis] *= -1;
+  zEllips3DCenter(dest)->e[(int)axis] *= -1;
+  zEllips3DAxis(dest,0)->e[(int)axis] *= -1;
+  zEllips3DAxis(dest,1)->e[(int)axis] *= -1;
+  zEllips3DAxis(dest,2)->e[(int)axis] *= -1;
   return dest;
 }
 

@@ -61,12 +61,12 @@ void zAABox2DDataFPrint(FILE *fp, zAABox2D *box)
 /* enlarge bounding box if a 2D point is out of the current box. */
 static int _zAABB2DTest(zAABox2D *bb, zVec2D *p, zDir u)
 {
-  if( p->e[u] > bb->max.e[u] ){
-    bb->max.e[u] = p->e[u];
+  if( p->e[(int)u] > bb->max.e[(int)u] ){
+    bb->max.e[(int)u] = p->e[(int)u];
     return 0;
   }
-  if( p->e[u] < bb->min.e[u] ){
-    bb->min.e[u] = p->e[u];
+  if( p->e[(int)u] < bb->min.e[(int)u] ){
+    bb->min.e[(int)u] = p->e[(int)u];
     return 2;
   }
   return -1;

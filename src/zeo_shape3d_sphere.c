@@ -49,7 +49,7 @@ zSphere3D *zSphere3DCopy(zSphere3D *src, zSphere3D *dest)
 zSphere3D *zSphere3DMirror(zSphere3D *src, zSphere3D *dest, zAxis axis)
 {
   zSphere3DCopy( src, dest );
-  zSphere3DCenter(dest)->e[axis] *= -1;
+  zSphere3DCenter(dest)->e[(int)axis] *= -1;
   return dest;
 }
 

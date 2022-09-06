@@ -14,16 +14,16 @@ static int _zIntersectPlaneAABox3DEdge(zPlane3D *p, zAxis axis, double w1min, do
   zAxis a2, a3;
   double w1;
 
-  if( zIsTiny( zPlane3DNorm(p)->e[axis] ) ) return 0;
+  if( zIsTiny( zPlane3DNorm(p)->e[(int)axis] ) ) return 0;
   a2 = ( axis + 1 ) % 3;
   a3 = ( axis + 2 ) % 3;
   w1 = ( zVec3DInnerProd(zPlane3DNorm(p),zPlane3DVert(p))
-       - zPlane3DNorm(p)->e[a2]*w2
-       - zPlane3DNorm(p)->e[a3]*w3 ) / zPlane3DNorm(p)->e[axis];
+       - zPlane3DNorm(p)->e[(int)a2]*w2
+       - zPlane3DNorm(p)->e[(int)a3]*w3 ) / zPlane3DNorm(p)->e[(int)axis];
   if( w1 > w1min && w1 < w1max ){
-    ip->e[axis] = w1;
-    ip->e[a2] = w2;
-    ip->e[a3] = w3;
+    ip->e[(int)axis] = w1;
+    ip->e[(int)a2] = w2;
+    ip->e[(int)a3] = w3;
     return 1;
   }
   return 0;
@@ -89,8 +89,8 @@ static bool _zColChkTriAABox3DEdgeAxOne(zVec3D *v1, zVec3D *v2, zAxis axis, zVec
   double d1, d2, s1, s2;
   int a1, a2;
 
-  d1 = v1->e[axis] - p->e[axis];
-  d2 = v2->e[axis] - p->e[axis];
+  d1 = v1->e[(int)axis] - p->e[(int)axis];
+  d2 = v2->e[(int)axis] - p->e[(int)axis];
   if( ( d1 > 0 && d2 > 0 ) || ( d1 < 0 && d2 < 0 ) ) return false;
   a1 = ( axis + 1 ) % 3;
   s1 = v1->e[a1] - ( v2->e[a1] - v1->e[a1] ) * d1 / ( d2 - d1 );
@@ -99,7 +99,7 @@ static bool _zColChkTriAABox3DEdgeAxOne(zVec3D *v1, zVec3D *v2, zAxis axis, zVec
   if( s1 > box->min.e[a1] && s1 < box->max.e[a1] &&
       s2 > box->min.e[a2] && s2 < box->max.e[a2] ){
     if( ip ){
-      ip->e[axis] = p->e[axis];
+      ip->e[(int)axis] = p->e[(int)axis];
       ip->e[a1] = s1;
       ip->e[a2] = s2;
     }
@@ -246,12 +246,12 @@ static bool _zColChkBox3DAlong(zBox3D *b1, zDir axis, zBox3D *b2, zVec3D *l)
   zVec3D *a;
   double d;
 
-  a = zBox3DAxis( b1, axis );
+  a = zBox3DAxis( b1, (int)axis );
   d = 0.5*
      ( fabs( zVec3DInnerProd(zBox3DAxis(b2,zX),a) )*zBox3DDepth(b2)
      + fabs( zVec3DInnerProd(zBox3DAxis(b2,zY),a) )*zBox3DWidth(b2)
      + fabs( zVec3DInnerProd(zBox3DAxis(b2,zZ),a) )*zBox3DHeight(b2)
-     + zBox3DDia(b1,axis) );
+     + zBox3DDia(b1,(int)axis) );
   return fabs( zVec3DInnerProd(l,a) ) < d ? true : false;
 }
 
@@ -262,7 +262,7 @@ static bool _zColChkBox3DPerp(zBox3D *b1, zDir ax1, zBox3D *b2, zDir ax2, zVec3D
   zDir ax12, ax13, ax22, ax23;
   double d;
 
-  zVec3DOuterProd( zBox3DAxis(b1,ax1), zBox3DAxis(b2,ax2), &p );
+  zVec3DOuterProd( zBox3DAxis(b1,(int)ax1), zBox3DAxis(b2,(int)ax2), &p );
   if( zVec3DIsTiny( &p ) )
     return true; /* parallel edges, should have been already checked. */
   zVec3DNormalizeDRC( &p );
@@ -271,10 +271,10 @@ static bool _zColChkBox3DPerp(zBox3D *b1, zDir ax1, zBox3D *b2, zDir ax2, zVec3D
   ax22 = ( ax2 + 1 ) % 3;
   ax23 = ( ax2 + 2 ) % 3;
   d = 0.5*
-    ( fabs( zVec3DInnerProd(zBox3DAxis(b1,ax12),&p) )*zBox3DDia(b1,ax12)
-    + fabs( zVec3DInnerProd(zBox3DAxis(b1,ax13),&p) )*zBox3DDia(b1,ax13)
-    + fabs( zVec3DInnerProd(zBox3DAxis(b2,ax22),&p) )*zBox3DDia(b2,ax22)
-    + fabs( zVec3DInnerProd(zBox3DAxis(b2,ax23),&p) )*zBox3DDia(b2,ax23) );
+    ( fabs( zVec3DInnerProd(zBox3DAxis(b1,(int)ax12),&p) )*zBox3DDia(b1,(int)ax12)
+    + fabs( zVec3DInnerProd(zBox3DAxis(b1,(int)ax13),&p) )*zBox3DDia(b1,(int)ax13)
+    + fabs( zVec3DInnerProd(zBox3DAxis(b2,(int)ax22),&p) )*zBox3DDia(b2,(int)ax22)
+    + fabs( zVec3DInnerProd(zBox3DAxis(b2,(int)ax23),&p) )*zBox3DDia(b2,(int)ax23) );
   return fabs( zVec3DInnerProd(l,&p) ) < d ? true : false;
 }
 

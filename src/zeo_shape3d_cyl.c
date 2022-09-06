@@ -51,8 +51,8 @@ zCyl3D *zCyl3DCopy(zCyl3D *src, zCyl3D *dest)
 zCyl3D *zCyl3DMirror(zCyl3D *src, zCyl3D *dest, zAxis axis)
 {
   zCyl3DCopy( src, dest );
-  zCyl3DCenter(dest,0)->e[axis] *= -1;
-  zCyl3DCenter(dest,1)->e[axis] *= -1;
+  zCyl3DCenter(dest,0)->e[(int)axis] *= -1;
+  zCyl3DCenter(dest,1)->e[(int)axis] *= -1;
   return dest;
 }
 

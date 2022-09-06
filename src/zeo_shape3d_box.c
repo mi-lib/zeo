@@ -53,10 +53,10 @@ zBox3D *zBox3DCopy(zBox3D *src, zBox3D *dest)
 zBox3D *zBox3DMirror(zBox3D *src, zBox3D *dest, zAxis axis)
 {
   zBox3DCopy( src, dest );
-  zBox3DCenter(dest)->e[axis] *= -1;
-  zBox3DAxis(dest,0)->e[axis] *= -1;
-  zBox3DAxis(dest,1)->e[axis] *= -1;
-  zBox3DAxis(dest,2)->e[axis] *= -1;
+  zBox3DCenter(dest)->e[(int)axis] *= -1;
+  zBox3DAxis(dest,0)->e[(int)axis] *= -1;
+  zBox3DAxis(dest,1)->e[(int)axis] *= -1;
+  zBox3DAxis(dest,2)->e[(int)axis] *= -1;
   return dest;
 }
 
@@ -95,9 +95,9 @@ double zBox3DClosest(zBox3D *box, zVec3D *p, zVec3D *cp)
 
   zXform3DInv( &box->f, p, &_p );
   for( d=zX; d<=zZ; d++ ){
-    min =-0.5 * zBox3DDia(box,d);
-    max = 0.5 * zBox3DDia(box,d);
-    cp->e[d] = _zLimit( _p.e[d], min, max );
+    min =-0.5 * zBox3DDia(box,(int)d);
+    max = 0.5 * zBox3DDia(box,(int)d);
+    cp->e[(int)d] = _zLimit( _p.e[(int)d], min, max );
   }
   zXform3DDRC( &box->f, cp );
   return zVec3DDist( p, cp );
@@ -119,9 +119,9 @@ bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, bool rim)
 
   zXform3DInv( &box->f, p, &err );
   for( d=zX; d<=zZ; d++ ){
-    l = 0.5 * zBox3DDia(box,d);
+    l = 0.5 * zBox3DDia(box,(int)d);
     if( rim ) l += zTOL;
-    if( err.e[d] > l || err.e[d] < -l )
+    if( err.e[(int)d] > l || err.e[(int)d] < -l )
       return false;
   }
   return true;
