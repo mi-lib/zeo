@@ -1,4 +1,4 @@
-/* Zeo - Z/Geometry and optics computation library.
+﻿/* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
  * zeo_ph - polyhedron
@@ -25,15 +25,15 @@ zPH3D *zPH3DAlloc(zPH3D *ph, int vn, int fn)
   zPH3DInit( ph );
   if( vn > 0 ){ /* vertices */
     zArrayAlloc( &ph->vert, zVec3D, vn );
-    if( !zPH3DVertBuf(ph) ) goto ERROR;
+    if( !zPH3DVertBuf(ph) ) goto ZPH3DALLOC_ERROR;
   }
   if( fn > 0 ){ /* faces */
     zArrayAlloc( &ph->face, zTri3D, fn );
-    if( !zPH3DFaceBuf(ph) ) goto ERROR;
+    if( !zPH3DFaceBuf(ph) ) goto ZPH3DALLOC_ERROR;
   }
   return ph;
 
- ERROR:
+ ZPH3DALLOC_ERROR:
   ZALLOCERROR();
   zPH3DDestroy( ph );
   return NULL;

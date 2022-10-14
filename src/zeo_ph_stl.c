@@ -203,11 +203,11 @@ static zVec3D *_zPH3DFReadSTL_BinVec(FILE *fp, zVec3D *v)
 {
   float val1, val2, val3;
 
-  if( fread( &val1, sizeof(float), 1, fp ) < 1 ) goto ERROR;
-  if( fread( &val2, sizeof(float), 1, fp ) < 1 ) goto ERROR;
-  if( fread( &val3, sizeof(float), 1, fp ) < 1 ) goto ERROR;
+  if( fread( &val1, sizeof(float), 1, fp ) < 1 ) goto ZPH3DFREADSTL_BINVEC_ERROR;
+  if( fread( &val2, sizeof(float), 1, fp ) < 1 ) goto ZPH3DFREADSTL_BINVEC_ERROR;
+  if( fread( &val3, sizeof(float), 1, fp ) < 1 ) goto ZPH3DFREADSTL_BINVEC_ERROR;
   return zVec3DCreate( v, val1, val2, val3 );
- ERROR:
+ ZPH3DFREADSTL_BINVEC_ERROR:
   ZRUNERROR( ZEO_ERR_STL_INCOMPLETE );
   return NULL;
 }
