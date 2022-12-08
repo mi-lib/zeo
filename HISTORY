@@ -1,3 +1,4 @@
+2022.12. 9. Modified _zOBB3DMinDir to cope with a bug of GCC 11. This should be reseted in future. [zeo_bv3d_obb]
 2022. 9. 6. Corrected designators of members of a structure to the up-to-date style. [zeo_map_terra]
 2022. 9. 6. Corrected empty body of if statements. [zeo_ph_stl]
 2022. 9. 6. Corrected byte-type array subscripts to integer values. [zeo_vec3d_tree, zeo_ph, zeo_nurbs, zeo_shape3d_box, zeo_shape3d_sphere, zeo_shape3d_cyl, zeo_shape3d_cone, zeo_shape3d_ellips, zeo_shape3d_ecyl, zeo_bv2d_aabb, zeo_bv3d_aabb, zeo_col_box]

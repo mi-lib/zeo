@@ -24,7 +24,11 @@ static void _zOBB3DMinDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
       zBox3DSetHeight( obb, l );
     }
   }
+#if 0 /* GCC 11 doesn't compile the following line correctly. I don't know why. */
   zVec3DCopy( zTri3DNorm(bot), zBox3DAxis(obb,zZ) );
+#else
+  zVec3DCreate( zBox3DAxis(obb,zZ), zTri3DNorm(bot)->c.x, zTri3DNorm(bot)->c.y, zTri3DNorm(bot)->c.z );
+#endif
   zVec3DCat( zTri3DVert(bot,0), -0.5*zBox3DHeight(obb), zBox3DAxis(obb,zZ), zBox3DCenter(obb) ); /* tentative origin */
   zPlane3DCreate( pl, zBox3DCenter(obb), zBox3DAxis(obb,zZ) );
 }
