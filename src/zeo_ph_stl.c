@@ -12,7 +12,7 @@ static zVec3DTree *_zSTLVertReg(zVec3DTree *tree, zVec3D *v)
   zVec3DTree *node;
 
   zVec3DTreeNN( tree, v, &node );
-  if( zVec3DEqual( v, &node->data.v ) ) return node;
+  if( node && zVec3DEqual( v, &node->data.v ) ) return node;
   return zVec3DTreeAdd( tree, v );
 }
 

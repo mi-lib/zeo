@@ -1,3 +1,4 @@
+2022.12.15. Debugged _zSTLVertReg (thanks to Mr. Daishi Kaneta). [zeo_ph_stl]
 2022.12. 9. Modified _zOBB3DMinDir to cope with a bug of GCC 11. This should be reseted in future. [zeo_bv3d_obb]
 2022. 9. 6. Corrected designators of members of a structure to the up-to-date style. [zeo_map_terra]
 2022. 9. 6. Corrected empty body of if statements. [zeo_ph_stl]
