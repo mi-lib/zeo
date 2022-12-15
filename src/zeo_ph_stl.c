@@ -146,6 +146,7 @@ static zPH3D *_zPH3DFReadSTL_ASCIIsolid(FILE *fp, zPH3D *ph, char name[], size_t
   char buf[BUFSIZ];
   zVec3DTree vert_tree;
   _zSTLFacetList facet_list;
+  uint i = 0;
 
   zVec3DTreeInit( &vert_tree );
   zListInit( &facet_list );
@@ -155,9 +156,12 @@ static zPH3D *_zPH3DFReadSTL_ASCIIsolid(FILE *fp, zPH3D *ph, char name[], size_t
       ZRUNERROR( ZEO_ERR_STL_INCOMPLETE );
       break;
     }
-    if( strcmp( buf, "endsolid" ) == 0 )
+    if( strcmp( buf, "endsolid" ) == 0 ){
+      eprintf( "\n" );
       return _zSTLToPH3D( &vert_tree, &facet_list, ph );
+    }
     if( strcmp( buf, "facet" ) != 0 ) continue; /* skip as a comment */
+    eprintf( "\r%d facets", ++i );
     if( !_zPH3DFReadSTL_ASCIIfacet( fp, buf, ph, &vert_tree, &facet_list ) ) break; /* read a facet */
   }
   return NULL;
