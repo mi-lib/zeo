@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 
   if( argc <= 1 ) return 1;
   zMapNetReadZTK( &mn, argv[1] );
-  zMapNetFPrint( stdout, &mn );
+  zMapNetFPrintZTK( stdout, &mn );
   zMapNetDestroy( &mn );
   return 0;
 }

@@ -1,5 +1,7 @@
-#include <unistd.h>
 #include <zeo/zeo_map.h>
+#ifndef __WINDOWS__
+#include <unistd.h>
+#endif
 
 #define XMIN -5.0
 #define XMAX  5.0
@@ -35,7 +37,7 @@ void terra_gen_sample(zVec3DList *pl)
     z = 2*cos( zPI*x/(XMAX-XMIN) )*cos( zPI*y/(XMAX-XMIN) ) + 0.5*cos( 4*zPI*x/(XMAX-XMIN) )*cos( 4*zPI*y/(XMAX-XMIN) ) + zRandF(-1.0,1.0);
     p = zAlloc( zVec3D, 1 );
     zVec3DCreate( p, x, y, z );
-    zVec3DListInsert( pl, p );
+    zVec3DListAdd( pl, p );
   }
   fp = fopen( TERRAIN_SRC_FILE, "w" );
   zVec3DListDataFPrint( fp, pl );
@@ -72,7 +74,7 @@ void terra_output(zTerra *terra, double scale)
   fprintf( fp, "[%s]\n", ZTK_TAG_MAP );
   fprintf( fp, "name: test_terrain\n" );
   fprintf( fp, "type: terra\n" );
-  zTerraFPrint( fp, terra );
+  zTerraFPrintZTK( fp, terra );
   fclose( fp );
 
   fp = fopen( TERRAIN_DAT_FILE, "w" );

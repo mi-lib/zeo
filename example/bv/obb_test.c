@@ -37,7 +37,7 @@ int main(void)
   zRandInit();
   test_vert( X, Y, Z, 10, 20, 30, 2, 1, 3 );
 
-  zOBB( &obb, vert, N );
+  zOBB3D( &obb, vert, N );
   printf( "vol=(%f x %f x %f)=%f\n", zBox3DDepth(&obb), zBox3DWidth(&obb), zBox3DHeight(&obb), zBox3DDepth(&obb)*zBox3DWidth(&obb)*zBox3DHeight(&obb) );
 
   fp = fopen( "a", "w" );
