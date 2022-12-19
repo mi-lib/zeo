@@ -22,7 +22,7 @@ zAxis zAxisFromStr(char str[])
 
   for( axis=zX, jp=(char **)__zaxisname; *jp; jp++, axis++ )
     if( strcmp( str, *jp ) == 0 ) return axis;
-  return -1; /* invalid string */
+  return zAxisInvalid; /* invalid string */
 }
 
 /* string for the name of direction. */

@@ -10,7 +10,7 @@
 zVec3DTreeData *zVec3DTreeDataInit(zVec3DTreeData *data)
 {
   data->id = -1; /* invalid identifier */
-  data->split = -1; /* invalid split axis */
+  data->split = zAxisInvalid; /* invalid split axis */
   zVec3DCreate( &data->vmin,-HUGE_VAL,-HUGE_VAL,-HUGE_VAL );
   zVec3DCreate( &data->vmax, HUGE_VAL, HUGE_VAL, HUGE_VAL );
   return data;
@@ -65,7 +65,7 @@ static zVec3DTree *_zVec3DTreeAdd(zVec3DTree *node, zVec3D *v, int id)
 /* add a new 3D vector to a tree with an identifier. */
 zVec3DTree *zVec3DTreeAddID(zVec3DTree *tree, zVec3D *v, int id)
 {
-  if( tree->data.split == -1 ){
+  if( tree->data.split == zAxisInvalid ){
     tree->size = 1;
     tree->data.id = id;
     tree->data.split = zX;

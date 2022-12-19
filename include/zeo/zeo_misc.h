@@ -16,7 +16,7 @@ __BEGIN_DECLS
 /*! \brief axis identifiers */
 typedef byte zAxis;
 enum{
-  zX=0, zY, zZ, zXA, zYA, zZA,
+  zAxisInvalid=-1, zX=0, zY, zZ, zXA, zYA, zZA,
 };
 
 /*! \brief convert a string to an axis.
