@@ -159,6 +159,8 @@ zShape3D *zShape3DToPH(zShape3D *shape)
     return NULL;
   }
   if( shape->com->_toph( shape->body, ph ) ){
+    shape->com->_destroy( shape->body );
+    free( shape->body );
     shape->body = ph;
     shape->com = &zeo_shape3d_ph_com;
     return shape;

@@ -88,6 +88,8 @@ int main(void)
   fclose( fp );
 
   fp = fopen( "test_nurbs.ztk", "w" );
+  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "type: nurbs\n" );
   zNURBS3DFPrintZTK( fp, &nurbs );
   fclose( fp );
 

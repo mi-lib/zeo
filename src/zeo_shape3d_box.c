@@ -183,7 +183,7 @@ zPH3D* zBox3DToPH(zBox3D *box, zPH3D *ph)
   __zBox3DToPH_tri( ph, 2, 0, 4, 5, 1 );
   __zBox3DToPH_tri( ph, 4, 1, 5, 6, 2 );
   __zBox3DToPH_tri( ph, 6, 2, 6, 7, 3 );
-  __zBox3DToPH_tri( ph, 8, 3, 7, 4, 0 );
+  __zBox3DToPH_tri( ph, 8, 0, 3, 7, 4 );
   __zBox3DToPH_tri( ph,10, 7, 6, 5, 4 );
   return ph;
 }

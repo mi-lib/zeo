@@ -1,3 +1,4 @@
+2023. 1.11. Debugged zShape3DToPH (thanks to Kenta Imanishi). [zeo_shape3d]
 2022.12.19. Added zAxisInvalid in the enum type zAxis (thanks to Daishi Kaneta). [zeo_misc, zeo_vec3d_tree]
 2022.12.15. Modified _zPH3DFReadSTL_ASCIIsolid to display the number of read facets. [zeo_ph_stl]
 2022.12.15. Debugged _zSTLVertReg (thanks to Mr. Daishi Kaneta). [zeo_ph_stl]
