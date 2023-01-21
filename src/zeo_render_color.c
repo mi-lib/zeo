@@ -12,9 +12,6 @@
  * RGB class - expression of color with RGB intensity set.
  * ********************************************************** */
 
-static zRGB *_zRGBRatio(zRGB *rgb, char *ratio);
-static zRGB *_zRGBHex(zRGB *rgb, char *hex);
-
 /* RGB sets for black and white */
 const zRGB zrgbblack = { 0.0, 0.0, 0.0 }, zrgbwhite = { 1.0, 1.0, 1.0 };
 
@@ -45,9 +42,8 @@ zRGB *zRGBBlend(zRGB *rgb1, zRGB *rgb2, double ratio, zRGB *rgb)
   return rgb;
 }
 
-/* (static)
- * decode a string of sequential floating-point values to RGB. */
-zRGB *_zRGBRatio(zRGB *rgb, char *ratio)
+/* decode a string of sequential floating-point values to RGB. */
+static zRGB *_zRGBRatio(zRGB *rgb, char *ratio)
 {
   float r, g, b;
 
@@ -55,9 +51,8 @@ zRGB *_zRGBRatio(zRGB *rgb, char *ratio)
   return zRGBSet( rgb, r, g, b );
 }
 
-/* (static)
- * decode a hexadecimal string to RGB. */
-zRGB *_zRGBHex(zRGB *rgb, char *hex)
+/* decode a hexadecimal string to RGB. */
+static zRGB *_zRGBHex(zRGB *rgb, char *hex)
 {
   int len, i;
   uint r, g, b, d;
@@ -84,6 +79,8 @@ zRGB *zRGBDec(zRGB *rgb, char *str)
 /* read a set of RGB from a ZTK format processor. */
 zRGB *zRGBFromZTK(zRGB *rgb, ZTK *ztk)
 {
+  if( ZTKVal(ztk)[0] == '#' )
+    return zRGBDec( rgb, ZTKVal(ztk) );
   rgb->r = ZTKDouble(ztk);
   rgb->g = ZTKDouble(ztk);
   rgb->b = ZTKDouble(ztk);
