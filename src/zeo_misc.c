@@ -11,7 +11,11 @@ static const char *__zaxisname[] = { "x", "y", "z", "tilt", "elev", "azim", NULL
 /* string for the name of axis. */
 char *zAxisStr(zAxis axis)
 {
-  return (char *)__zaxisname[_zLimit(axis,zX,zZA)];
+  if( axis < zX || axis > zZA ){
+    ZRUNERROR( ZEO_ERR_AXIS_INVALID, axis );
+    return NULL;
+  }
+  return (char *)__zaxisname[axis];
 }
 
 /* identify axis from a string. */
@@ -22,6 +26,7 @@ zAxis zAxisFromStr(char str[])
 
   for( axis=zX, jp=(char **)__zaxisname; *jp; jp++, axis++ )
     if( strcmp( str, *jp ) == 0 ) return axis;
+  ZRUNERROR( ZEO_ERR_AXIS_INVNAME, str );
   return zAxisInvalid; /* invalid string */
 }
 
@@ -29,9 +34,13 @@ zAxis zAxisFromStr(char str[])
 char *zDirStr(zDir dir)
 {
   const char *__zdirname[] = {
-    "none", "right", "left", "forward", "backward", "up", "down", "(invalid)",
+    "none", "right", "left", "forward", "backward", "up", "down", NULL,
   };
-  return (char *)__zdirname[_zLimit(dir,zNONE,zDOWN+1)];
+  if( dir < zNONE || dir > zDOWN ){
+    ZRUNERROR( ZEO_ERR_DIR_INV, dir );
+    return NULL;
+  }
+  return (char *)__zdirname[dir];
 }
 
 /* reverse direction. */

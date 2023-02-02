@@ -63,6 +63,14 @@ zShape3D *zShape3DClone(zShape3D *org, zShape3D *cln, zOpticalInfo *oi)
 /* mirror a 3D shape. */
 zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis)
 {
+  if( dest->com ){
+    ZRUNWARN( ZEO_WARN_SHAPE_MIRROR_INV_TYPE, dest->com->typestr );
+    zShape3DDestroy( dest );
+  }
+  if( axis < zX || axis > zZ ){
+    ZRUNERROR( ZEO_ERR_SHAPE_MIRROR_INV_AXIS, zAxisStr(axis) );
+    return NULL;
+  }
   if( !( dest->body = ( dest->com = src->com )->_mirror( src->body, axis ) ) )
     return NULL;
   zShape3DSetOptic( dest, zShape3DOptic(src) );
