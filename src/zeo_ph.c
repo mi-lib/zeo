@@ -470,9 +470,12 @@ static void *_zPH3DFaceFromZTK(void *obj, int i, void *arg, ZTK *ztk)
   return obj;
 }
 
+#define ZEO_PH_KEY_VERT "vert"
+#define ZEO_PH_KEY_FACE "face"
+
 static ZTKPrp __ztk_prp_ph[] = {
-  { "vert", -1, _zPH3DVertFromZTK, NULL },
-  { "face", -1, _zPH3DFaceFromZTK, NULL },
+  { ZEO_PH_KEY_VERT, -1, _zPH3DVertFromZTK, NULL },
+  { ZEO_PH_KEY_FACE, -1, _zPH3DFaceFromZTK, NULL },
 };
 
 /* read a 3D polyhedron from a ZTK format processor. */
@@ -482,11 +485,11 @@ zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk)
 
   zPH3DInit( ph );
   if( !ZTKKeyRewind( ztk ) ) return NULL;
-  if( ( num_vert = ZTKCountKey( ztk, "vert" ) ) == 0 ){
+  if( ( num_vert = ZTKCountKey( ztk, ZEO_PH_KEY_VERT ) ) == 0 ){
     ZRUNWARN( ZEO_WARN_PH_EMPTY );
     return NULL;
   }
-  num_face = ZTKCountKey( ztk, "face" );
+  num_face = ZTKCountKey( ztk, ZEO_PH_KEY_FACE );
   zArrayAlloc( &ph->vert, zVec3D, num_vert );
   zArrayAlloc( &ph->face, zTri3D, num_face );
   if( zPH3DVertNum(ph) != num_vert ||
@@ -502,11 +505,11 @@ void zPH3DFPrintZTK(FILE *fp, zPH3D *ph)
 
   if( !ph || zPH3DVertNum(ph) == 0 ) return;
   for( i=0; i<zPH3DVertNum(ph); i++ ){
-    fprintf( fp, "vert: %d ", i );
+    fprintf( fp, "%s: %d ", ZEO_PH_KEY_VERT, i );
     zVec3DFPrint( fp, zPH3DVert(ph,i) );
   }
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
-    fprintf( fp, "face: %d %d %d\n",
+    fprintf( fp, "%s: %d %d %d\n", ZEO_PH_KEY_FACE,
       (int)( zPH3DFaceVert(ph,i,0)-zPH3DVertBuf(ph) ),
       (int)( zPH3DFaceVert(ph,i,1)-zPH3DVertBuf(ph) ),
       (int)( zPH3DFaceVert(ph,i,2)-zPH3DVertBuf(ph) ) );
