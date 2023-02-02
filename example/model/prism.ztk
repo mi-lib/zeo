@@ -1,0 +1,39 @@
+[optic]
+name: yellow
+ambient: 0.5, 0.5, 0.5
+diffuse: 1.0, 1.0, 0.0
+specular: 1.0, 1.0, 0.0
+alpha: 1
+esr: 1
+
+[optic]
+name: magenta
+ambient: 0.5, 0.5, 0.5
+diffuse: 1.0, 0.0, 1.0
+specular: 1.0, 0.0, 1.0
+alpha: 1
+esr: 1
+
+[shape]
+name: prism
+type: polyhedron
+optic: yellow
+vert: 0 { 0, 0, 0 }
+vert: 1 { 0, 1, 0 }
+vert: 2 { 0.5, 1, 0 }
+vert: 3 { 0.5, 0.5, 0 }
+vert: 4 { 1, 0.5, 0 }
+vert: 5 { 1, 0, 0 }
+prism: { 0.2, 0.2, 1 }
+
+[shape]
+name: pyramid
+type: polyhedron
+optic: magenta
+vert: 0 { 0, 0, 0 }
+vert: 1 { 0, -1, 0 }
+vert: 2 { -0.5, -1, 0 }
+vert: 3 { -0.5, -0.5, 0 }
+vert: 4 { -1, -0.5, 0 }
+vert: 5 { -1, 0, 0 }
+pyramid: { -0.2, -0.2, -1 }
