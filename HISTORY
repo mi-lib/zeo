@@ -1,3 +1,4 @@
+2023. 2.13. Debugged _zPH3DLoopArcFromZTK. [zeo_ph]
 2023. 2.13. Renamed members of zDir from z* to ZEO_DIR_*. [zeo_misc]
 2023. 2.13. Added _zPH3DLoopFromZTK. [zeo_ph, zeo_errmsg]
 2023. 2.13. Added zDirFromStr and modified zDirStr. [zeo_misc]

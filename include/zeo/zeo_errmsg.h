@@ -37,7 +37,8 @@
 
 #define ZEO_ERR_PH_INVALID_VERT_ID "%d: invalid identifier of a vertex specified."
 #define ZEO_ERR_PH_INV_FACE    "found %d invalid face keys"
-#define ZEO_ERR_PH_LOO_INVALID "invalid format for loop"
+#define ZEO_ERR_PH_LOOP_INVALID "invalid format for loop"
+#define ZEO_ERR_PH_ARC_INV_RADIUS "too small radius for an arc: %g"
 
 #define ZEO_ERR_LONGNAME     "too long name, truncated to %s"
 

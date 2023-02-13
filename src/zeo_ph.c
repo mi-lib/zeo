@@ -473,11 +473,11 @@ static void *_zPH3DFaceFromZTK(void *obj, int i, void *arg, ZTK *ztk)
   return obj;
 }
 
-static bool _zPH3DLookArcFromZTK(ZTK *ztk, zVec2DList *vlist)
+static bool _zPH3DLoopArcFromZTK(ZTK *ztk, zVec2DList *vlist)
 {
   zVec2D *v1, v2, d1, d2, c, d;
   zDir dir;
-  double r, angle;
+  double r, angle, cr;
   int div, n, i;
 
   dir = zDirFromStr( ZTKVal(ztk) );
@@ -487,7 +487,10 @@ static bool _zPH3DLookArcFromZTK(ZTK *ztk, zVec2DList *vlist)
   }
   ZTKValNext(ztk);
   r = ZTKDouble(ztk);
-  n = div = ZTKInt(ztk);
+  if( ( n = div = ZTKInt(ztk) ) == 0 ){
+    ZRUNERROR( ZEO_ERR_ZERODIV );
+    return false;
+  }
   if( ZTKValPtr(ztk) ){
     v2.e[0] = ZTKDouble(ztk);
     v2.e[1] = ZTKDouble(ztk);
@@ -498,8 +501,12 @@ static bool _zPH3DLookArcFromZTK(ZTK *ztk, zVec2DList *vlist)
   v1 = zListHead(vlist)->data;
   /* center */
   zVec2DSub( &v2, v1, &d1 );
-  zVec2DRot( &d1, dir == 0 ? -zPI_2 : zPI_2, &c );
-  zVec2DMulDRC( &c, sqrt( zSqr(r) / zVec2DSqrNorm(&d1) - 0.25 ) );
+  zVec2DRot( &d1, dir == ZEO_DIR_CW ? -zPI_2 : zPI_2, &c );
+  if( ( cr = zSqr(r) / zVec2DSqrNorm(&d1) - 0.25 ) < 0 ){
+    ZRUNERROR( ZEO_ERR_PH_ARC_INV_RADIUS, r );
+    return false;
+  }
+  zVec2DMulDRC( &c, sqrt( cr ) );
   zVec2DCatDRC( &c, 0.5, &d1 );
   zVec2DAddDRC( &c, v1 );
   /* radius vector */
@@ -529,7 +536,7 @@ static void *_zPH3DLoopFromZTK(void *obj, int i, void *arg, ZTK *ztk)
     return NULL;
   }
   if( !ZTKValNext( ztk ) ){
-    ZRUNERROR( ZEO_ERR_PH_LOO_INVALID );
+    ZRUNERROR( ZEO_ERR_PH_LOOP_INVALID );
     return NULL;
   }
   plane_val = ZTKDouble(ztk);
@@ -540,7 +547,7 @@ static void *_zPH3DLoopFromZTK(void *obj, int i, void *arg, ZTK *ztk)
   while( ZTKValPtr(ztk) ){
     if( ZTKValCmp( ztk, "arc" ) ){
       ZTKValNext( ztk );
-      if( !_zPH3DLookArcFromZTK( ztk, &vlist ) ) break;
+      if( !_zPH3DLoopArcFromZTK( ztk, &vlist ) ) break;
     } else{
       v.e[0] = ZTKDouble(ztk);
       v.e[1] = ZTKDouble(ztk);
