@@ -18,7 +18,8 @@
 
 #define ZEO_ERR_AXIS_INVALID "invalid axis identifier : %d"
 #define ZEO_ERR_AXIS_INVNAME "invalid axis name : %s"
-#define ZEO_ERR_DIR_INV      "invalid direction identifier : %d"
+#define ZEO_ERR_DIR_INVALID  "invalid direction identifier : %d"
+#define ZEO_ERR_DIR_INVNAME  "invalid direction name : %s"
 
 #define ZEO_ERR_RGB          "invalid size of RGB specification, strlen(%s)=%d"
 
@@ -35,7 +36,8 @@
 #define ZEO_ERR_RADIUS_MANY  "too many radii"
 
 #define ZEO_ERR_PH_INVALID_VERT_ID "%d: invalid identifier of a vertex specified."
-#define ZEO_ERR_PH_INV_FACE  "found %d invalid face keys"
+#define ZEO_ERR_PH_INV_FACE    "found %d invalid face keys"
+#define ZEO_ERR_PH_LOO_INVALID "invalid format for loop"
 
 #define ZEO_ERR_LONGNAME     "too long name, truncated to %s"
 
@@ -109,7 +111,6 @@
 #define ZEO_WARN_TEXTURE_UNKNOWN_TYPE  "unknown texture type: %s"
 #define ZEO_WARN_TEXTURE_EMPTY         "empty set of coordinates assigned for a texture."
 
-#define ZEO_WARN_PH_EMPTY         "empty set of vertices assigned for a polyhedron."
 #define ZEO_WARN_PH_VERT_UNMATCH  "%d: unmatched identifier of a vertex"
 #define ZEO_WARN_PH_DUPDEF        "duplicate definition of polyhedron, ignored"
 

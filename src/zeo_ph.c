@@ -5,6 +5,7 @@
  */
 
 #include <zeo/zeo_ph.h>
+#include <zeo/zeo_vec2d.h>
 
 /* ********************************************************** */
 /* CLASS: zPH3D
@@ -472,6 +473,94 @@ static void *_zPH3DFaceFromZTK(void *obj, int i, void *arg, ZTK *ztk)
   return obj;
 }
 
+static bool _zPH3DLookArcFromZTK(ZTK *ztk, zVec2DList *vlist)
+{
+  zVec2D *v1, v2, d1, d2, c, d;
+  zDir dir;
+  double r, angle;
+  int div, n, i;
+
+  dir = zDirFromStr( ZTKVal(ztk) );
+  if( dir != ZEO_DIR_CW && dir != ZEO_DIR_CCW ){
+    ZRUNERROR( ZEO_ERR_DIR_INVNAME, ZTKVal(ztk) );
+    return false;
+  }
+  ZTKValNext(ztk);
+  r = ZTKDouble(ztk);
+  n = div = ZTKInt(ztk);
+  if( ZTKValPtr(ztk) ){
+    v2.e[0] = ZTKDouble(ztk);
+    v2.e[1] = ZTKDouble(ztk);
+  } else{
+    zVec2DCopy( zListTail(vlist)->data, &v2 );
+    n--;
+  }
+  v1 = zListHead(vlist)->data;
+  /* center */
+  zVec2DSub( &v2, v1, &d1 );
+  zVec2DRot( &d1, dir == 0 ? -zPI_2 : zPI_2, &c );
+  zVec2DMulDRC( &c, sqrt( zSqr(r) / zVec2DSqrNorm(&d1) - 0.25 ) );
+  zVec2DCatDRC( &c, 0.5, &d1 );
+  zVec2DAddDRC( &c, v1 );
+  /* radius vector */
+  zVec2DSub( v1, &c, &d1 );
+  zVec2DSub( &v2, &c, &d2 );
+  angle = zVec2DAngle( &d1, &d2 );
+  /* vertices list */
+  for( i=1; i<=n; i++ ){
+    zVec2DRot( &d1, angle * i / div, &d );
+    zVec2DAddDRC( &d, &c );
+    if( !zVec2DListAdd( vlist, &d ) ) return false;
+  }
+  return true;
+}
+static void *_zPH3DLoopFromZTK(void *obj, int i, void *arg, ZTK *ztk)
+{
+  zAxis plane_axis, vert1_axis, vert2_axis;
+  double plane_val;
+  zVec2DList vlist;
+  zVec2DListCell *cp;
+  zVec2D v;
+  int j;
+
+  plane_axis = zAxisFromStr( ZTKVal(ztk) );
+  if( plane_axis != zX && plane_axis != zY && plane_axis != zZ ){
+    ZRUNERROR( ZEO_ERR_AXIS_INVNAME, ZTKVal(ztk) );
+    return NULL;
+  }
+  if( !ZTKValNext( ztk ) ){
+    ZRUNERROR( ZEO_ERR_PH_LOO_INVALID );
+    return NULL;
+  }
+  plane_val = ZTKDouble(ztk);
+  vert1_axis = ( plane_axis + 1 ) % 3;
+  vert2_axis = ( plane_axis + 2 ) % 3;
+  /* loop */
+  zListInit( &vlist );
+  while( ZTKValPtr(ztk) ){
+    if( ZTKValCmp( ztk, "arc" ) ){
+      ZTKValNext( ztk );
+      if( !_zPH3DLookArcFromZTK( ztk, &vlist ) ) break;
+    } else{
+      v.e[0] = ZTKDouble(ztk);
+      v.e[1] = ZTKDouble(ztk);
+      if( !zVec2DListAdd( &vlist, &v ) ) break;
+    }
+  }
+  /* vertices */
+  zArrayAlloc( (zVec3DArray*)arg, zVec3D, zListSize(&vlist) );
+  if( zArraySize((zVec3DArray*)arg) != zListSize(&vlist) ) return NULL;
+  j = 0;
+  zListForEach( &vlist, cp ){
+    ((zVec3D*)zArrayElemNC((zVec3DArray*)arg,j))->e[vert1_axis] = cp->data->e[0];
+    ((zVec3D*)zArrayElemNC((zVec3DArray*)arg,j))->e[vert2_axis] = cp->data->e[1];
+    ((zVec3D*)zArrayElemNC((zVec3DArray*)arg,j))->e[plane_axis] = plane_val;
+    j++;
+  }
+  zVec2DListDestroy( &vlist );
+  return obj;
+}
+
 static void *_zPH3DPrismFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 {
   zVec3D shift;
@@ -502,12 +591,14 @@ static void *_zPH3DPyramidFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 
 #define ZEO_PH_KEY_VERT    "vert"
 #define ZEO_PH_KEY_FACE    "face"
+#define ZEO_PH_KEY_LOOP    "loop"
 #define ZEO_PH_KEY_PRISM   "prism"
 #define ZEO_PH_KEY_PYRAMID "pyramid"
 
 static ZTKPrp __ztk_prp_ph[] = {
   { ZEO_PH_KEY_VERT,   -1, _zPH3DVertFromZTK,    NULL },
   { ZEO_PH_KEY_FACE,   -1, _zPH3DFaceFromZTK,    NULL },
+  { ZEO_PH_KEY_LOOP,    1, _zPH3DLoopFromZTK,    NULL },
   { ZEO_PH_KEY_PRISM,   1, _zPH3DPrismFromZTK,   NULL },
   { ZEO_PH_KEY_PYRAMID, 1, _zPH3DPyramidFromZTK, NULL },
 };
@@ -521,10 +612,7 @@ zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk)
   zPH3DInit( ph );
   zArrayInit( &varray );
   if( !ZTKKeyRewind( ztk ) ) return NULL;
-  if( ( num_vert = ZTKCountKey( ztk, ZEO_PH_KEY_VERT ) ) == 0 ){
-    ZRUNWARN( ZEO_WARN_PH_EMPTY );
-    return NULL;
-  }
+  num_vert = ZTKCountKey( ztk, ZEO_PH_KEY_VERT );
   num_face = ZTKCountKey( ztk, ZEO_PH_KEY_FACE );
   if( ZTKCountKey( ztk, ZEO_PH_KEY_PRISM ) > 0 ||
       ZTKCountKey( ztk, ZEO_PH_KEY_PYRAMID ) > 0 ){
@@ -532,8 +620,10 @@ zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk)
       ZRUNERROR( ZEO_ERR_PH_INV_FACE, num_face );
       return NULL;
     }
-    zArrayAlloc( &varray, zVec3D, num_vert );
-    if( zArraySize(&varray) != num_vert ) return NULL;
+    if( num_vert > 0 ){
+      zArrayAlloc( &varray, zVec3D, num_vert );
+      if( zArraySize(&varray) != num_vert ) return NULL;
+    }
   } else{
     zArrayAlloc( &ph->vert, zVec3D, num_vert );
     zArrayAlloc( &ph->face, zTri3D, num_face );

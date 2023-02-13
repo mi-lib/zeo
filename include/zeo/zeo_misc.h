@@ -36,38 +36,43 @@ enum{
  * zAxisFromStr() returns the corresponding axis identifier.
  */
 __EXPORT char *zAxisStr(zAxis axis);
-__EXPORT zAxis zAxisFromStr(char str[]);
+__EXPORT zAxis zAxisFromStr(char *str);
 
 /*! \brief direction identifiers */
 typedef byte zDir;
 enum{
-  zNONE=0, zRIGHT, zLEFT, zFORWARD, zBACKWARD, zUP, zDOWN
+  ZEO_DIR_NONE=0, ZEO_DIR_RIGHT, ZEO_DIR_LEFT, ZEO_DIR_FORWARD, ZEO_DIR_BACKWARD, ZEO_DIR_UP, ZEO_DIR_DOWN, ZEO_DIR_CW, ZEO_DIR_CCW,
 };
 
 /*! \brief string for the name of direction.
  *
- * zDirStr() returns a string for the name of a direction identifier
- * \a dir. The correspondence between strings and direction identifiers
- * are as follows:
- *  zNONE     -> "none"
- *  zRIGHT    -> "right"
- *  zLEFT     -> "left"
- *  zFORWARD  -> "forward"
- *  zBACKWARD -> "backward"
- *  zUP       -> "up"
- *  zDOWN     -> "down"
+ * zDirStr() returns a string for the name of a direction identifier \a dir.
+ * zDirFromStr() returns a direction identifier for a string \a str.
+ * The correspondence between strings and direction identifiers are as follows:
+ *  ZEO_DIR_NONE     <-> "none"
+ *  ZEO_DIR_RIGHT    <-> "right"
+ *  ZEO_DIR_LEFT     <-> "left"
+ *  ZEO_DIR_FORWARD  <-> "forward"
+ *  ZEO_DIR_BACKWARD <-> "backward"
+ *  ZEO_DIR_UP       <-> "up"
+ *  ZEO_DIR_DOWN     <-> "down"
+ *  ZEO_DIR_CW       <-> "cw"
+ *  ZEO_DIR_CCW      <-> "ccw"
  * \return
- * zDirStr() returns a pointer to the string which expresses the name
- * of \a dir.
+ * zDirStr() returns a pointer to the string which expresses the name of \a dir.
+ * zDirFromStr() returns the corresponding direction identifier.
  */
 __EXPORT char *zDirStr(zDir dir);
+__EXPORT zDir zDirFromStr(char *str);
 
 /*! \brief reverse a direction.
  *
  * zDirRev() returns the reverse direction of \a dir, namely:
- * zLEFT for zRIGHT, zRIGHT for zLEFT, zBACKWARD for zFORWARD,
- * zFORWARD for zBACKWARD, zDOWN for zUP and zUP for zDOWN.
- * When \a dir is zNONE, zNONE is returned.
+ * ZEO_DIR_LEFT for ZEO_DIR_RIGHT, ZEO_DIR_RIGHT for ZEO_DIR_LEFT,
+ * ZEO_DIR_BACKWARD for ZEO_DIR_FORWARD, ZEO_DIR_FORWARD for ZEO_DIR_BACKWARD,
+ * ZEO_DIR_DOWN for ZEO_DIR_UP and ZEO_DIR_UP for ZEO_DIR_DOWN,
+ * and ZEO_DIR_CCW for ZEO_DIR_CW and ZEO_DIR_CW for ZEO_DIR_CCW.
+ * When \a dir is ZEO_DIR_NONE, ZEO_DIR_NONE is returned.
  */
 __EXPORT zDir zDirRev(zDir dir);
 
