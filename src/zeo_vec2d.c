@@ -12,9 +12,15 @@
  * ********************************************************** */
 
 /* 3D zero vector and unit vectors along (x,y,z) axis. */
+#ifdef __cplusplus
+const zVec2D zVec2D::zvec2Dzero = { { 0, 0 } };
+const zVec2D zVec2D::zvec2Dx    = { { 1, 0 } };
+const zVec2D zVec2D::zvec2Dy    = { { 0, 1 } };
+#else
 const zVec2D zvec2Dzero = { { 0, 0 } };
 const zVec2D zvec2Dx    = { { 1, 0 } };
 const zVec2D zvec2Dy    = { { 0, 1 } };
+#endif
 
 /* create a 2D vector. */
 zVec2D *zVec2DCreate(zVec2D *v, double x, double y)
@@ -53,6 +59,13 @@ bool zVec2DEqual(zVec2D *v1, zVec2D *v2)
 bool zVec2DIsTol(zVec2D *v, double tol)
 {
   return _zVec2DIsTol( v, tol );
+}
+
+/* check if a 2D vector includes NaN or Inf components. */
+bool zVec2DIsNan(zVec2D *v)
+{
+  return zIsNan( v->c.x ) || zIsInf( v->c.x ) ||
+         zIsNan( v->c.y ) || zIsInf( v->c.y );
 }
 
 /* ********************************************************** */
@@ -99,11 +112,86 @@ zVec2D *zVec2DDiv(zVec2D *v, double k, zVec2D *dv)
   return dv;
 }
 
+/* amplify a 2D vector by another. */
+zVec2D *zVec2DAmp(zVec2D *v1, zVec2D *v2, zVec2D *v)
+{
+  _zVec2DAmp( v1, v2, v );
+  return v;
+}
+
+/* demagnify a 2D vector by another. */
+zVec2D *zVec2DDem(zVec2D *v1, zVec2D *v2, zVec2D *v)
+{
+  _zVec2DDem( v1, v2, v );
+  return v;
+}
+
 /* concatenate a 2D vector with another. */
 zVec2D *zVec2DCat(zVec2D *v1, double k, zVec2D *v2, zVec2D *v)
 {
   _zVec2DCat( v1, k, v2, v );
   return v;
+}
+
+/* directly add a 2D vector to another. */
+zVec2D *zVec2DAddDRC(zVec2D *v1, zVec2D *v2)
+{
+  _zVec2DAddDRC( v1, v2 );
+  return v1;
+}
+
+/* directly subtract a 2D vector from another. */
+zVec2D *zVec2DSubDRC(zVec2D *v1, zVec2D *v2)
+{
+  _zVec2DSubDRC( v1, v2 );
+  return v1;
+}
+
+/* directly reverse a 2D vector. */
+zVec2D *zVec2DRevDRC(zVec2D *v)
+{
+  _zVec2DRevDRC( v );
+  return v;
+}
+
+/* directly multiply a 2D vector by a scalar value. */
+zVec2D *zVec2DMulDRC(zVec2D *v, double k)
+{
+  _zVec2DMulDRC( v, k );
+  return v;
+}
+
+/* directly divide a 2D vector by a scalar value. */
+zVec2D *zVec2DDivDRC(zVec2D *v, double k)
+{
+  if( k == 0 ){
+    ZRUNWARN( ZEO_ERR_ZERODIV );
+    return NULL;
+  }
+  k = 1.0 / k;
+  _zVec2DMulDRC( v, k );
+  return v;
+}
+
+/* directly amplify a 2D vector by another. */
+zVec2D *zVec2DAmpDRC(zVec2D *v1, zVec2D *v2)
+{
+  _zVec2DAmpDRC( v1, v2 );
+  return v1;
+}
+
+/* directly demagnify a 2D vector by another. */
+zVec2D *zVec2DDemDRC(zVec2D *v1, zVec2D *v2)
+{
+  _zVec2DDemDRC( v1, v2 );
+  return v1;
+}
+
+/* directly concatenate a 2D vector with another. */
+zVec2D *zVec2DCatDRC(zVec2D *v1, double k, zVec2D *v2)
+{
+  _zVec2DCatDRC( v1, k, v2 );
+  return v1;
 }
 
 /* inner product of two 2D vectors. */
@@ -132,14 +220,28 @@ double zVec2DSqrDist(zVec2D *v1, zVec2D *v2)
   return zVec2DSqrNorm( zVec2DSub( v1, v2, &v ) );
 }
 
-/* normalize a 2D vector. */
-zVec2D *zVec2DNormalize(zVec2D *v, zVec2D *nv)
+/* normalize a 2D vector without checking vector size. */
+double zVec2DNormalizeNC(zVec2D *v, zVec2D *nv)
 {
+  double l, k;
+
+  k = 1.0 / ( l = zVec2DNorm(v) );
+  _zVec2DMul( v, k, nv );
+  return l;
+}
+
+/* normalize a 2D vector. */
+double zVec2DNormalize(zVec2D *v, zVec2D *nv)
+{
+  double l, k;
+
   if( zVec2DIsTiny( v ) ){
-    ZRUNERROR( ZEO_ERR_ZERONORM );
-    return NULL;
+    ZRUNWARN( ZEO_ERR_ZERONORM );
+    return -1;
   }
-  return zVec2DDiv( v, zVec2DNorm(v), nv );
+  k = 1.0 / ( l = zVec2DNorm(v) );
+  _zVec2DMul( v, k, nv );
+  return l;
 }
 
 /* ********************************************************** */
@@ -171,7 +273,7 @@ zVec2D *zVec2DProj(zVec2D *v, zVec2D *n, zVec2D *pv)
 {
   zVec2D d;
 
-  if( !zVec2DNormalize( n, &d ) ) return NULL;
+  if( zVec2DNormalize( n, &d ) < 0 ) return NULL;
   _zVec2DMul( &d, _zVec2DInnerProd(&d,v), pv );
   return pv;
 }

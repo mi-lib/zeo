@@ -12,8 +12,13 @@
  * ********************************************************** */
 
 /* 3x3 zero matrix and identity matrix. */
+#ifdef __cplusplus
+const zMat3D zMat3D::zmat3Dzero  = { { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } } };
+const zMat3D zMat3D::zmat3Dident = { { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } } };
+#else
 const zMat3D zmat3Dzero  = { { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } } };
 const zMat3D zmat3Dident = { { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } } };
+#endif /* __cplusplus */
 
 /* create a 3x3 matrix. */
 zMat3D *zMat3DCreate(zMat3D *m,

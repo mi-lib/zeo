@@ -14,13 +14,54 @@ __BEGIN_DECLS
 /*! \struct zVec3D
  * \brief 3D vector.
  */
+#ifdef __cplusplus
+union zVec3D{
+#else
 typedef union{
+#endif /* __cplusplus */
   struct{
     double x, y, z;
   } c;
   double e[3];
+#ifdef __cplusplus
+  zVec3D &create(double x, double y, double z);
+  zVec3D &createPolar(double r, double theta, double phi);
+  zVec3D &copy(zVec3D &src);
+  zVec3D &zero();
+  bool operator==(zVec3D &v);
+  bool isEqual(zVec3D &v);
+  bool isTol(double tol);
+  bool isTiny();
+  bool isNan();
+  zVec3D operator+(zVec3D &v);
+  zVec3D operator-(zVec3D &v);
+  zVec3D operator-();
+  zVec3D operator*(double k);
+  zVec3D operator*(zVec3D &v);
+  zVec3D operator/(double k);
+  zVec3D operator/(zVec3D &v);
+  zVec3D &add(zVec3D &v);
+  zVec3D &sub(zVec3D &v);
+  zVec3D &rev();
+  zVec3D &mul(double k);
+  zVec3D &div(double k);
+  zVec3D &amp(zVec3D &v);
+  zVec3D &dem(zVec3D &v);
+  zVec3D &cat(double k, zVec3D &v);
+  double sqrNorm();
+  double norm();
+  zVec3D &normalize();
+  static const zVec3D zvec3Dzero;
+  static const zVec3D zvec3Dx;
+  static const zVec3D zvec3Dy;
+  static const zVec3D zvec3Dz;
+};
+#define ZVEC3DZERO ( (zVec3D *)&zVec3D::zvec3Dzero )
+#define ZVEC3DX    ( (zVec3D *)&zVec3D::zvec3Dx )
+#define ZVEC3DY    ( (zVec3D *)&zVec3D::zvec3Dy )
+#define ZVEC3DZ    ( (zVec3D *)&zVec3D::zvec3Dz )
+#else
 } zVec3D;
-
 /*! \brief 3D zero vector and unit vectors */
 extern const zVec3D zvec3Dzero;
 extern const zVec3D zvec3Dx;
@@ -30,6 +71,7 @@ extern const zVec3D zvec3Dz;
 #define ZVEC3DX    ( (zVec3D *)&zvec3Dx )
 #define ZVEC3DY    ( (zVec3D *)&zvec3Dy )
 #define ZVEC3DZ    ( (zVec3D *)&zvec3Dz )
+#endif /* __cplusplus */
 
 /*! \brief create a 3D vector.
  *
@@ -573,6 +615,36 @@ __EXPORT zVec3D *zVec3DDataNLFPrint(FILE *fp, zVec3D *v);
 #define zVec3DDataNLPrint(v) zVec3DDataNLFPrint( stdout, (v) )
 __EXPORT zVec3D *zVec3DFPrint(FILE *fp, zVec3D *v);
 #define zVec3DPrint(v) zVec3DFPrint( stdout, (v) )
+
+#ifdef __cplusplus
+inline zVec3D &zVec3D::create(double x, double y, double z){ _zVec3DCreate( this, x, y, z ); return *this; }
+inline zVec3D &zVec3D::createPolar(double r, double theta, double phi){ zVec3DCreatePolar( this, r, theta, phi ); return *this; }
+inline zVec3D &zVec3D::copy(zVec3D &src){ zVec3DCopy( &src, this ); return *this; }
+inline zVec3D &zVec3D::zero(){ _zVec3DZero( this ); return *this; }
+inline bool zVec3D::operator==(zVec3D &v){ return _zVec3DMatch( this, &v ); }
+inline bool zVec3D::isEqual(zVec3D &v){ return _zVec3DEqual( this, &v ); }
+inline bool zVec3D::isTol(double tol){ return _zVec3DIsTol( this, tol ); }
+inline bool zVec3D::isTiny(){ return _zVec3DIsTiny( this ); }
+inline bool zVec3D::isNan(){ return zVec3DIsNan( this ); }
+inline zVec3D zVec3D::operator+(zVec3D &v){ zVec3D ret; _zVec3DAdd( this, &v, &ret ); return ret; }
+inline zVec3D zVec3D::operator-(zVec3D &v){ zVec3D ret; _zVec3DSub( this, &v, &ret ); return ret; }
+inline zVec3D zVec3D::operator-(){ zVec3D ret; _zVec3DRev( this, &ret ); return ret; }
+inline zVec3D zVec3D::operator*(double k){ zVec3D ret; _zVec3DMul( this, k, &ret ); return ret; }
+inline zVec3D zVec3D::operator*(zVec3D &v){ zVec3D ret; _zVec3DAmp( this, &v, &ret ); return ret; }
+inline zVec3D zVec3D::operator/(double k){ zVec3D ret; zVec3DDiv( this, k, &ret ); return ret; }
+inline zVec3D zVec3D::operator/(zVec3D &v){ zVec3D ret; _zVec3DDem( this, &v, &ret ); return ret; }
+inline zVec3D &zVec3D::add(zVec3D &v){ _zVec3DAddDRC( this, &v ); return *this; }
+inline zVec3D &zVec3D::sub(zVec3D &v){ _zVec3DSubDRC( this, &v ); return *this; }
+inline zVec3D &zVec3D::rev(){ _zVec3DRevDRC( this ); return *this; }
+inline zVec3D &zVec3D::mul(double k){ _zVec3DMulDRC( this, k ); return *this; }
+inline zVec3D &zVec3D::div(double k){ zVec3DDivDRC( this, k ); return *this; }
+inline zVec3D &zVec3D::amp(zVec3D &v){ _zVec3DAmpDRC( this, &v ); return *this; }
+inline zVec3D &zVec3D::dem(zVec3D &v){ _zVec3DDemDRC( this, &v ); return *this; }
+inline zVec3D &zVec3D::cat(double k, zVec3D &v){ _zVec3DCatDRC( this, k, &v ); return *this; }
+inline double zVec3D::sqrNorm(){ return _zVec3DSqrNorm( this ); }
+inline double zVec3D::norm(){ return sqrt( sqrNorm() ); }
+inline zVec3D &zVec3D::normalize(){ zVec3DNormalizeNCDRC( this ); return *this; }
+#endif /* __cplusplus */
 
 /*! \struct zVec3DArray
  * \brief array class of 3D vectors.

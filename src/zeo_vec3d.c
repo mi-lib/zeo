@@ -12,10 +12,17 @@
  * ********************************************************** */
 
 /* 3D zero vector and unit vectors along (x,y,z) axis. */
+#ifdef __cplusplus
+const zVec3D zVec3D::zvec3Dzero = { { 0, 0, 0 } };
+const zVec3D zVec3D::zvec3Dx = { { 1, 0, 0 } };
+const zVec3D zVec3D::zvec3Dy = { { 0, 1, 0 } };
+const zVec3D zVec3D::zvec3Dz = { { 0, 0, 1 } };
+#else
 const zVec3D zvec3Dzero = { { 0, 0, 0 } };
 const zVec3D zvec3Dx    = { { 1, 0, 0 } };
 const zVec3D zvec3Dy    = { { 0, 1, 0 } };
 const zVec3D zvec3Dz    = { { 0, 0, 1 } };
+#endif /* __cplusplus */
 
 /* create a 3D vector. */
 zVec3D *zVec3DCreate(zVec3D *v, double x, double y, double z)

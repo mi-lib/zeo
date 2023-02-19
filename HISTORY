@@ -1,3 +1,8 @@
+2023. 2.19. Modified zVec2D, zVec3D, zVec6D, zMat3D, zFrame3D, and zEP to have C++ interfaces. [zeo_vec2d, zeo_vec3d, zeo_vec6d, zeo_mat3d, zeo_frame]
+2023. 2.14. Reimplemented zVec2DNormalizeNC, zVec2DNormalize, zVec2DNormalizeNCDRC, and zVec2DNormalizeDRC. [zeo_vec2d]
+2023. 2.14. Added _zVec2DZero, _zVec2DIsTiny, and zVec2DIsNan. [zeo_vec2d]
+2023. 2.14. Added _zVec2DAddDRC, _zVec2DSubDRC, _zVec2DRevDRC, _zVec2DMulDRC, _zVec2DAmpDRC, _zVec2DDemDRC, and _zVec2DCatDRC. [zeo_vec2d]
+2023. 2.14. Reiemplemented _zVec2DAdd, zVec2DAdd, _zVec2DSub, zVec2DSub, _zVec2DRev, zVec2DRev, _zVec2DMul, zVec2DMul, zVec2DDiv, _zVec2DAmp, zVec2DAmp, _zVec2DDem, zVec2DDem, _zVec2DCat, zVec2DCat, zVec2DAddDRC, zVec2DSubDRC, zVec2DRevDRC, zVec2DMulDRC, zVec2DDivDRC, zVec2DAmpDRC, zVec2DDemDRC, and zVec2DCatDRC. [zeo_vec2d]
 2023. 2.13. Debugged _zPH3DLoopArcFromZTK. [zeo_ph]
 2023. 2.13. Renamed members of zDir from z* to ZEO_DIR_*. [zeo_misc]
 2023. 2.13. Added _zPH3DLoopFromZTK. [zeo_ph, zeo_errmsg]

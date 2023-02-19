@@ -14,13 +14,22 @@ __BEGIN_DECLS
 /*! \struct zEP
  * \brief Euler parameter.
  */
+#ifdef __cplusplus
+union zEP{
+#else
 typedef union{
+#endif /* __cplusplus */
   struct{
     double w;
     zVec3D v;
   } ex;
   double e[4];
+#ifdef __cplusplus
+  zEP() : e{ 1, 0, 0, 0 } {}
+};
+#else
 } zEP;
+#endif /* __cplusplus */
 
 /*! \brief create and copy Euler parameter.
  *

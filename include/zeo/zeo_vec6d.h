@@ -14,19 +14,53 @@ __BEGIN_DECLS
 /*! \struct zVec6D
  * \brief 6D spatial vector for linear/angular quantities.
  */
+#ifdef __cplusplus
+union zVec6D{
+#else
 typedef union {
+#endif /* __cplusplus */
   double e[6];
   zVec3D v[2];
   struct{
     zVec3D lin, ang;
   } t;
+#ifdef __cplusplus
+/*! \brief 6D zero vector and unit vectors */
+  zVec6D &create(double x, double y, double z, double xa, double ya, double za);
+  zVec6D &create(zVec3D &vl, zVec3D &va);
+  zVec6D &copy(zVec6D &src);
+  zVec6D &zero();
+  bool operator==(zVec6D &v);
+  bool isEqual(zVec6D &v);
+  bool isTol(double tol);
+  bool isTiny();
+  zVec6D operator+(zVec6D &v);
+  zVec6D operator-(zVec6D &v);
+  zVec6D operator-();
+  zVec6D operator*(double k);
+  zVec6D operator/(double k);
+  zVec6D add(zVec6D &v);
+  zVec6D sub(zVec6D &v);
+  zVec6D rev();
+  zVec6D mul(double k);
+  zVec6D div(double k);
+  static const zVec6D zvec6Dzero;
+  static const zVec6D zvec6Dlinx;
+  static const zVec6D zvec6Dliny;
+  static const zVec6D zvec6Dlinz;
+  static const zVec6D zvec6Dangx;
+  static const zVec6D zvec6Dangy;
+  static const zVec6D zvec6Dangz;
+};
+#define ZVEC6DZERO ( (zVec6D *)&zVec6D::zvec6Dzero )
+#define ZVEC6DLINX ( (zVec6D *)&zVec6D::zvec6Dlinx )
+#define ZVEC6DLINY ( (zVec6D *)&zVec6D::zvec6Dliny )
+#define ZVEC6DLINZ ( (zVec6D *)&zVec6D::zvec6Dlinz )
+#define ZVEC6DANGX ( (zVec6D *)&zVec6D::zvec6Dangx )
+#define ZVEC6DANGY ( (zVec6D *)&zVec6D::zvec6Dangy )
+#define ZVEC6DANGZ ( (zVec6D *)&zVec6D::zvec6Dangz )
+#else
 } zVec6D;
-
-#define zVec6DLin(u)         ( &(u)->t.lin )
-#define zVec6DAng(u)         ( &(u)->t.ang )
-#define zVec6DSetLin(u,l)    zVec3DCopy( l, zVec6DLin(u) )
-#define zVec6DSetAng(u,r)    zVec3DCopy( r, zVec6DAng(u) )
-
 /*! \brief 6D zero vector and unit vectors */
 extern const zVec6D zvec6Dzero;
 extern const zVec6D zvec6Dlinx;
@@ -42,6 +76,12 @@ extern const zVec6D zvec6Dangz;
 #define ZVEC6DANGX ( (zVec6D *)&zvec6Dangx )
 #define ZVEC6DANGY ( (zVec6D *)&zvec6Dangy )
 #define ZVEC6DANGZ ( (zVec6D *)&zvec6Dangz )
+#endif /* __cplusplus */
+
+#define zVec6DLin(u)         ( &(u)->t.lin )
+#define zVec6DAng(u)         ( &(u)->t.ang )
+#define zVec6DSetLin(u,l)    zVec3DCopy( l, zVec6DLin(u) )
+#define zVec6DSetAng(u,r)    zVec3DCopy( r, zVec6DAng(u) )
 
 /*! \brief create a 6D vector.
  *
@@ -253,12 +293,8 @@ __EXPORT double zVec6DInnerProd(zVec6D *v1, zVec6D *v2);
  * zVec6DLinShiftDRC() and zVec6DAngShift() return a pointer \a vec.
  */
 __EXPORT zVec6D *zVec6DLinShiftDRC(zVec6D *vec, zVec3D *pos);
-#define _zVec6DLinShift(s,p,d) do{\
-} while(0)
 __EXPORT zVec6D *zVec6DLinShift(zVec6D *src, zVec3D *pos, zVec6D *dest);
 __EXPORT zVec6D *zVec6DAngShiftDRC(zVec6D *vec, zVec3D *pos);
-#define _zVec6DAngShift(s,p,d) do{\
-} while(0)
 __EXPORT zVec6D *zVec6DAngShift(zVec6D *src, zVec3D *pos, zVec6D *dest);
 
 /* ********************************************************** */
@@ -307,6 +343,28 @@ __EXPORT zVec6D *zVec6DDataNLFPrint(FILE *fp, zVec6D *v);
 #define zVec6DDataNLPrint(v) zVec6DDataNLFPrint( stdout, (v) )
 __EXPORT zVec6D *zVec6DFPrint(FILE *fp, zVec6D *v);
 #define zVec6DPrint(v) zVec6DFPrint( stdout, (v) )
+
+#ifdef __cplusplus
+/*! \brief 6D zero vector and unit vectors */
+inline zVec6D &zVec6D::create(double x, double y, double z, double xa, double ya, double za){ _zVec6DCreate( this, x, y, z, xa, ya, za ); return *this; }
+inline zVec6D &zVec6D::create(zVec3D &vl, zVec3D &va){ _zVec6DFromVec3D( this, &vl, &va ); return *this; }
+inline zVec6D &zVec6D::copy(zVec6D &src){ zVec6DCopy( &src, this ); return *this; }
+inline zVec6D &zVec6D::zero(){ _zVec6DZero( this ); return *this; }
+inline bool zVec6D::operator==(zVec6D &v){ return _zVec6DMatch( this, &v ); }
+inline bool zVec6D::isEqual(zVec6D &v){ return _zVec6DEqual( this, &v ); }
+inline bool zVec6D::isTol(double tol){ return _zVec6DIsTol( this, tol ); }
+inline bool zVec6D::isTiny(){ return _zVec6DIsTiny( this ); }
+inline zVec6D zVec6D::operator+(zVec6D &v){ zVec6D ret; _zVec6DAdd( this, &v, &ret ); return ret; }
+inline zVec6D zVec6D::operator-(zVec6D &v){ zVec6D ret; _zVec6DSub( this, &v, &ret ); return ret; }
+inline zVec6D zVec6D::operator-(){ zVec6D ret; _zVec6DRev( this, &ret ); return ret; }
+inline zVec6D zVec6D::operator*(double k){ zVec6D ret; _zVec6DMul( this, k, &ret ); return ret; }
+inline zVec6D zVec6D::operator/(double k){ zVec6D ret; zVec6DDiv( this, k, &ret ); return ret; }
+inline zVec6D zVec6D::add(zVec6D &v){ _zVec6DAddDRC( this, &v ); return *this; }
+inline zVec6D zVec6D::sub(zVec6D &v){ _zVec6DSubDRC( this, &v ); return *this; }
+inline zVec6D zVec6D::rev(){ _zVec6DRevDRC( this ); return *this; }
+inline zVec6D zVec6D::mul(double k){ _zVec6DMulDRC( this, k ); return *this; }
+inline zVec6D zVec6D::div(double k){ return *zVec6DDivDRC( this, k ); }
+#endif /* __cplusplus */
 
 __END_DECLS
 
