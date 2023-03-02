@@ -62,13 +62,13 @@ typedef union {
 #else
 } zVec6D;
 /*! \brief 6D zero vector and unit vectors */
-extern const zVec6D zvec6Dzero;
-extern const zVec6D zvec6Dlinx;
-extern const zVec6D zvec6Dliny;
-extern const zVec6D zvec6Dlinz;
-extern const zVec6D zvec6Dangx;
-extern const zVec6D zvec6Dangy;
-extern const zVec6D zvec6Dangz;
+__EXPORT const zVec6D zvec6Dzero;
+__EXPORT const zVec6D zvec6Dlinx;
+__EXPORT const zVec6D zvec6Dliny;
+__EXPORT const zVec6D zvec6Dlinz;
+__EXPORT const zVec6D zvec6Dangx;
+__EXPORT const zVec6D zvec6Dangy;
+__EXPORT const zVec6D zvec6Dangz;
 #define ZVEC6DZERO ( (zVec6D *)&zvec6Dzero )
 #define ZVEC6DLINX ( (zVec6D *)&zvec6Dlinx )
 #define ZVEC6DLINY ( (zVec6D *)&zvec6Dliny )

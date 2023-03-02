@@ -153,7 +153,7 @@ __EXPORT void zSphere3DFPrintZTK(FILE *fp, zSphere3D *sphere);
 __EXPORT zSphere3D *zSphere3DFit(zSphere3D *s, zVec3DList *pc);
 
 /* methods for abstraction */
-extern zShape3DCom zeo_shape3d_sphere_com;
+__EXPORT zShape3DCom zeo_shape3d_sphere_com;
 
 #define zShape3DSphere(s) ( (zSphere3D*)(s)->body )
 

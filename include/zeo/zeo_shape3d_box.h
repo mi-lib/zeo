@@ -158,7 +158,7 @@ __EXPORT void zBox3DFPrintZTK(FILE *fp, zBox3D *box);
 __EXPORT void zBox3DDataFPrint(FILE *fp, zBox3D *box);
 
 /* methods for abstraction */
-extern zShape3DCom zeo_shape3d_box_com;
+__EXPORT zShape3DCom zeo_shape3d_box_com;
 
 #define zShape3DBox(s) ( (zBox3D*)(s)->body )
 

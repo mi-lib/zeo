@@ -139,7 +139,7 @@ __EXPORT zPH3D *zCone3DToPH(zCone3D *cone, zPH3D *ph);
 __EXPORT void zCone3DFPrintZTK(FILE *fp, zCone3D *cone);
 
 /* methods for abstraction */
-extern zShape3DCom zeo_shape3d_cone_com;
+__EXPORT zShape3DCom zeo_shape3d_cone_com;
 
 #define zShape3DCone(s) ( (zCone3D*)(s)->body )
 

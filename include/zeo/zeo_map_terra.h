@@ -130,7 +130,7 @@ __EXPORT void zTerraFPrintZTK(FILE *fp, zTerra *terra);
 __EXPORT void zTerraDataFPrint(FILE *fp, zTerra *terra);
 
 /* methods for abstraction */
-extern zMapCom zeo_map_terra_com;
+__EXPORT zMapCom zeo_map_terra_com;
 
 #define zMapTerra(m) ((zTerra*)(m)->body)
 

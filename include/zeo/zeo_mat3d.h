@@ -89,8 +89,8 @@ typedef union{
 #else
 } zMat3D;
 /*! \brief 3D zero matrix and identity matrix */
-extern const zMat3D zmat3Dzero;
-extern const zMat3D zmat3Dident;
+__EXPORT const zMat3D zmat3Dzero;
+__EXPORT const zMat3D zmat3Dident;
 #define ZMAT3DZERO  ( (zMat3D *)&zmat3Dzero )
 #define ZMAT3DIDENT ( (zMat3D *)&zmat3Dident )
 #endif /* __cplusplus */

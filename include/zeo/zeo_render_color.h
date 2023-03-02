@@ -23,7 +23,8 @@ typedef struct{
 } zRGB;
 
 /*! \brief black and white RGB set. */
-extern const zRGB zrgbblack, zrgbwhite;
+__EXPORT const zRGB zrgbblack; /*!< RGB set for black */
+__EXPORT const zRGB zrgbwhite; /*!< RGB set for white */
 #define ZRGBBLACK ( (zRGB *)&zrgbblack )
 #define ZRGBWHITE ( (zRGB *)&zrgbwhite )
 

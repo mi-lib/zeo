@@ -61,9 +61,9 @@ typedef union{
 #else
 } zVec2D;
 /*! \brief 2D zero vector and unit vectors */
-extern const zVec2D zvec2Dzero;
-extern const zVec2D zvec2Dx;
-extern const zVec2D zvec2Dy;
+__EXPORT const zVec2D zvec2Dzero;
+__EXPORT const zVec2D zvec2Dx;
+__EXPORT const zVec2D zvec2Dy;
 #define ZVEC2DZERO ( (zVec2D *)&zvec2Dzero )
 #define ZVEC2DX    ( (zVec2D *)&zvec2Dx )
 #define ZVEC2DY    ( (zVec2D *)&zvec2Dy )

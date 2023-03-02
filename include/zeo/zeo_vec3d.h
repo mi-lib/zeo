@@ -63,10 +63,10 @@ typedef union{
 #else
 } zVec3D;
 /*! \brief 3D zero vector and unit vectors */
-extern const zVec3D zvec3Dzero;
-extern const zVec3D zvec3Dx;
-extern const zVec3D zvec3Dy;
-extern const zVec3D zvec3Dz;
+__EXPORT const zVec3D zvec3Dzero;
+__EXPORT const zVec3D zvec3Dx;
+__EXPORT const zVec3D zvec3Dy;
+__EXPORT const zVec3D zvec3Dz;
 #define ZVEC3DZERO ( (zVec3D *)&zvec3Dzero )
 #define ZVEC3DX    ( (zVec3D *)&zvec3Dx )
 #define ZVEC3DY    ( (zVec3D *)&zvec3Dy )

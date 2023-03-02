@@ -148,7 +148,7 @@ __EXPORT zPH3D *zEllips3DToPH(zEllips3D *ellips, zPH3D *ph);
 __EXPORT void zEllips3DFPrintZTK(FILE *fp, zEllips3D *ellips);
 
 /* methods for abstraction */
-extern zShape3DCom zeo_shape3d_ellips_com;
+__EXPORT zShape3DCom zeo_shape3d_ellips_com;
 
 #define zShape3DEllips(s) ( (zEllips3D*)(s)->body )
 

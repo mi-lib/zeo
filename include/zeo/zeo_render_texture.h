@@ -55,7 +55,7 @@ typedef struct{
 } while(0)
 
 /*! \brief texture file reader */
-extern bool (* __z_texture_read_file)(zTexture *, char *);
+__EXPORT bool (* __z_texture_read_file)(zTexture *, char *);
 
 /*! \brief set a texture file reader */
 #define zTextureSetReadFunc(f)       ( __z_texture_read_file = (f) )
@@ -84,7 +84,7 @@ __EXPORT zTexture *zTextureClone(zTexture *org, zTexture *cln);
 /* bump mapping */
 
 /*! \brief bump map file reader */
-extern bool (* __z_texture_bump_read_file)(zTexture *, char *);
+__EXPORT bool (* __z_texture_bump_read_file)(zTexture *, char *);
 
 /*! \brief set a bump map texture file reader */
 #define zTextureSetBumpReadFunc(f)   ( __z_texture_bump_read_file = (f) )

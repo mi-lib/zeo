@@ -58,7 +58,7 @@ typedef struct{
 #else
 } zFrame3D;
 /*! \brief the identity frame. */
-extern const zFrame3D zframe3Dident;
+__EXPORT const zFrame3D zframe3Dident;
 #define ZFRAME3DIDENT ( (zFrame3D *)&zframe3Dident )
 #endif /* __cplusplus */
 

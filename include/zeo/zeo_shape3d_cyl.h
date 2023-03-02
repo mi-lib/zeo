@@ -144,7 +144,7 @@ __EXPORT zPH3D *zCyl3DToPH(zCyl3D *cyl, zPH3D *ph);
 __EXPORT void zCyl3DFPrintZTK(FILE *fp, zCyl3D *cyl);
 
 /* methods for abstraction */
-extern zShape3DCom zeo_shape3d_cyl_com;
+__EXPORT zShape3DCom zeo_shape3d_cyl_com;
 
 #define zShape3DCyl(s) ( (zCyl3D*)(s)->body )
 

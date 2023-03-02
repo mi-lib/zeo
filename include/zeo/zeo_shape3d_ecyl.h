@@ -95,7 +95,7 @@ __EXPORT zPH3D *zECyl3DToPH(zECyl3D *cyl, zPH3D *ph);
 __EXPORT void zECyl3DFPrintZTK(FILE *fp, zECyl3D *ecyl);
 
 /*! \brief methods for abstraction */
-extern zShape3DCom zeo_shape3d_ecyl_com;
+__EXPORT zShape3DCom zeo_shape3d_ecyl_com;
 
 #define zShape3DECyl(s) ( (zECyl3D*)(s)->body )
 

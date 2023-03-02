@@ -12,7 +12,7 @@
 __BEGIN_DECLS
 
 /* methods for abstraction */
-extern zShape3DCom zeo_shape3d_nurbs_com;
+__EXPORT zShape3DCom zeo_shape3d_nurbs_com;
 
 #define zShape3DNURBS(s) ( (zNURBS3D*)(s)->body )
 
