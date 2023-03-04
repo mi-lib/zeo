@@ -19,11 +19,7 @@ __BEGIN_DECLS
  * |  e[0][1]  e[1][1]  e[2][1]  | = |  c.xy  c.yy  c.zy  | = [ v[0]  v[1]  v[2] ] = [ b.x  b.y  b.z ]
  * |_ e[0][2]  e[1][2]  e[2][2] _|   |_ c.xz  c.yz  c.zz _|
  */
-#ifdef __cplusplus
-union zMat3D{
-#else
-typedef union{
-#endif /* __cplusplus */
+ZDEF_UNION( zMat3D ){
   double e[3][3];   /*!< 3x3 matrix */
   zVec3D v[3];      /*!< 3 column vectors */
   struct{
@@ -83,12 +79,14 @@ typedef union{
 
   static const zMat3D zmat3Dzero;
   static const zMat3D zmat3Dident;
+#endif /* __cplusplus */
 };
+
+/*! \brief 3D zero matrix and identity matrix */
+#ifdef __cplusplus
 #define ZMAT3DZERO  ( (zMat3D *)&zMat3D::zmat3Dzero )
 #define ZMAT3DIDENT ( (zMat3D *)&zMat3D::zmat3Dident )
 #else
-} zMat3D;
-/*! \brief 3D zero matrix and identity matrix */
 __EXPORT const zMat3D zmat3Dzero;
 __EXPORT const zMat3D zmat3Dident;
 #define ZMAT3DZERO  ( (zMat3D *)&zmat3Dzero )

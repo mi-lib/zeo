@@ -19,13 +19,13 @@ __BEGIN_DECLS
  * |~ m[0]  m[2] ~| = |~ e[0][0]  e[1][0] ~| = |~ ll  al ~|
  * |_ m[1]  m[3] _|   |_ e[0][1]  e[1][1] _|   |_ la  aa _|
  */
-typedef union{
+ZDEF_UNION( zMat6D ){
   zMat3D m[4];    /*!< \brief four 3x3 matrices */
   zMat3D e[2][2]; /*!< \brief 2x2 3x3 matrices */
   struct{
     zMat3D ll, la, al, aa;
   } c;            /*!< \brief 2x2 block matrices */
-} zMat6D;
+};
 
 /*! \brief create a 6x6 matrix.
  *

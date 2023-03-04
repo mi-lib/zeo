@@ -16,11 +16,7 @@ __BEGIN_DECLS
  * 3D frame class
  * ********************************************************** */
 
-#ifdef __cplusplus
-struct zFrame3D{
-#else
-typedef struct{
-#endif /* __cplusplus */
+ZDEF_STRUCT( zFrame3D ){
   zVec3D pos;
   zMat3D att;
 #ifdef __cplusplus
@@ -53,11 +49,13 @@ typedef struct{
   zVec6D toZYZ();
   zVec6D toAA();
   static const zFrame3D zframe3Dident;
+#endif /* __cplusplus */
 };
+
+/*! \brief the identity frame. */
+#ifdef __cplusplus
 #define ZFRAME3DIDENT ( (zFrame3D *)&zFrame3D::zframe3Dident )
 #else
-} zFrame3D;
-/*! \brief the identity frame. */
 __EXPORT const zFrame3D zframe3Dident;
 #define ZFRAME3DIDENT ( (zFrame3D *)&zframe3Dident )
 #endif /* __cplusplus */

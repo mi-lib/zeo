@@ -14,11 +14,7 @@ __BEGIN_DECLS
 /*! \struct zVec2D
  * \brief 2D vector.
  */
-#ifdef __cplusplus
-union zVec2D{
-#else
-typedef union{
-#endif /* __cplusplus */
+ZDEF_UNION( zVec2D ){
   struct{
     double x, y;
   } c;
@@ -54,13 +50,15 @@ typedef union{
   static const zVec2D zvec2Dzero;
   static const zVec2D zvec2Dx;
   static const zVec2D zvec2Dy;
+#endif /* __cplusplus */
 };
+
+/*! \brief 2D zero vector and unit vectors */
+#ifdef __cplusplus
 #define ZVEC2DZERO ( (zVec2D *)&zVec2D::zvec2Dzero )
 #define ZVEC2DX    ( (zVec2D *)&zVec2D::zvec2Dx )
 #define ZVEC2DY    ( (zVec2D *)&zVec2D::zvec2Dy )
 #else
-} zVec2D;
-/*! \brief 2D zero vector and unit vectors */
 __EXPORT const zVec2D zvec2Dzero;
 __EXPORT const zVec2D zvec2Dx;
 __EXPORT const zVec2D zvec2Dy;

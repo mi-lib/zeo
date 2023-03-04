@@ -14,11 +14,7 @@ __BEGIN_DECLS
 /*! \struct zVec3D
  * \brief 3D vector.
  */
-#ifdef __cplusplus
-union zVec3D{
-#else
-typedef union{
-#endif /* __cplusplus */
+ZDEF_UNION( zVec3D ){
   struct{
     double x, y, z;
   } c;
@@ -55,14 +51,16 @@ typedef union{
   static const zVec3D zvec3Dx;
   static const zVec3D zvec3Dy;
   static const zVec3D zvec3Dz;
+#endif /* __cplusplus */
 };
+
+/*! \brief 3D zero vector and unit vectors */
+#ifdef __cplusplus
 #define ZVEC3DZERO ( (zVec3D *)&zVec3D::zvec3Dzero )
 #define ZVEC3DX    ( (zVec3D *)&zVec3D::zvec3Dx )
 #define ZVEC3DY    ( (zVec3D *)&zVec3D::zvec3Dy )
 #define ZVEC3DZ    ( (zVec3D *)&zVec3D::zvec3Dz )
 #else
-} zVec3D;
-/*! \brief 3D zero vector and unit vectors */
 __EXPORT const zVec3D zvec3Dzero;
 __EXPORT const zVec3D zvec3Dx;
 __EXPORT const zVec3D zvec3Dy;

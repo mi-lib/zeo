@@ -1,3 +1,6 @@
+2023. 3. 4. Added methods to zEP class. [zeo_ep]
+2023. 3. 4. Added zEPAdd. [zeo_ep]
+2023. 3. 4. Redefined zVec2D, zVec3D, zVec6D, zMat3D, zMat6D, zFrame3D, and zEP by using ZDEF_STRUCT/ZDEF_UNION. [zeo_vec2d, zeo_vec3d, zeo_vec6d, zeo_mat3d, zeo_mat6d zeo_frame3d, zeo_ep]
 2023. 3. 3. Modified zrgbblack, zrgbwhite, __z_texture_read_file, __z_texture_bump_read_file, zvec2Dzero, zvec2Dx, zvec2Dy, zvec3Dzero, zvec3Dx, zvec3Dy, zvec3Dz, zvec6Dzero, zvec6Dlinx, zvec6Dliny, zvec6Dlinz, zvec6Dangx, zvec6Dangy, zvec6Dangz, zmat3Dzero, zmat3Dident, zframe3Dident, zeo_shape3d_box_com, zeo_shape3d_sphere_com, zeo_shape3d_cyl_com, zeo_shape3d_cone_com, zeo_shape3d_ellips_com, zeo_shape3d_ecyl_com, zeo_shape3d_ph_com, zeo_shape3d_nurbs_com, and zeo_map_terra_com with the new definition of __EXPORT. [zeo_render_color, zeo_render_texture, zeo_vec2d, zeo_vec3d, zeo_vec6d, zeo_mat3d, zeo_frame3d, zeo_shape3d_box, zeo_shape3d_sphere, zeo_shape3d_cyl, zeo_shape3d_cone, zeo_shape3d_ellips, zeo_shape3d_ecyl, zeo_shape3d_ph, zeo_shape3d_nurbs, zeo_map_terra]
 2023. 2.19. Modified zVec2D, zVec3D, zVec6D, zMat3D, zFrame3D, and zEP to have C++ interfaces. [zeo_vec2d, zeo_vec3d, zeo_vec6d, zeo_mat3d, zeo_frame]
 2023. 2.14. Reimplemented zVec2DNormalizeNC, zVec2DNormalize, zVec2DNormalizeNCDRC, and zVec2DNormalizeDRC. [zeo_vec2d]

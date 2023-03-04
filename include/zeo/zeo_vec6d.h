@@ -14,11 +14,7 @@ __BEGIN_DECLS
 /*! \struct zVec6D
  * \brief 6D spatial vector for linear/angular quantities.
  */
-#ifdef __cplusplus
-union zVec6D{
-#else
-typedef union {
-#endif /* __cplusplus */
+ZDEF_UNION( zVec6D ){
   double e[6];
   zVec3D v[2];
   struct{
@@ -51,7 +47,11 @@ typedef union {
   static const zVec6D zvec6Dangx;
   static const zVec6D zvec6Dangy;
   static const zVec6D zvec6Dangz;
+#endif /* __cplusplus */
 };
+
+/*! \brief 6D zero vector and unit vectors */
+#ifdef __cplusplus
 #define ZVEC6DZERO ( (zVec6D *)&zVec6D::zvec6Dzero )
 #define ZVEC6DLINX ( (zVec6D *)&zVec6D::zvec6Dlinx )
 #define ZVEC6DLINY ( (zVec6D *)&zVec6D::zvec6Dliny )
@@ -60,8 +60,6 @@ typedef union {
 #define ZVEC6DANGY ( (zVec6D *)&zVec6D::zvec6Dangy )
 #define ZVEC6DANGZ ( (zVec6D *)&zVec6D::zvec6Dangz )
 #else
-} zVec6D;
-/*! \brief 6D zero vector and unit vectors */
 __EXPORT const zVec6D zvec6Dzero;
 __EXPORT const zVec6D zvec6Dlinx;
 __EXPORT const zVec6D zvec6Dliny;
