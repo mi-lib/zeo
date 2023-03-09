@@ -287,6 +287,7 @@ __EXPORT zVec2D *zVec2DCatDRC(zVec2D *v1, double k, zVec2D *v2);
 __EXPORT double zVec2DInnerProd(zVec2D *v1, zVec2D *v2);
 #define _zVec2DOuterProd(v1,v2) ( (v1)->c.x * (v2)->c.y - (v1)->c.y * (v2)->c.x )
 __EXPORT double zVec2DOuterProd(zVec2D *v1, zVec2D *v2);
+#define zVec2DOuterProdNorm(v1,v2) zVec2DOuterProd( v1, v2 )
 
 /*! \brief norm of a 2D vector.
  *

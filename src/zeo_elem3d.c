@@ -94,55 +94,22 @@ void zPlane3DFPrint(FILE *fp, zPlane3D *p)
  * ********************************************************** */
 
 /* initialize a 3D edge. */
-zEdge3D *zEdge3DInit(zEdge3D *e)
-{
-  zEdge3DSetVert( e, 0, NULL );
-  zEdge3DSetVert( e, 1, NULL );
-  zEdge3DSetVec( e, ZVEC3DZERO );
-  return e;
-}
+ZEDGEXD_INIT( 3D )
 
 /* create a 3D edge. */
-zEdge3D *zEdge3DCreate(zEdge3D *e, zVec3D *v1, zVec3D *v2)
-{
-  zEdge3DSetVert( e, 0, v1 );
-  zEdge3DSetVert( e, 1, v2 );
-  zEdge3DCalcVec( e );
-  return e;
-}
+ZEDGEXD_CREATE( 3D )
 
 /* path vector of a 3D edge. */
-zVec3D *zEdge3DCalcVec(zEdge3D *e)
-{
-  return zVec3DSub( zEdge3DVert(e,1), zEdge3DVert(e,0), zEdge3DVec(e) );
-}
+ZEDGEXD_CALC_VEC( 3D )
 
 /* a set of unit edge direction vector and displacement vector. */
-static bool _zEdge3DProjSet(zEdge3D *e, zVec3D *p, zVec3D *v, zVec3D *dp)
-{
-  zVec3DSub( p, zEdge3DVert(e,0), dp );
-  zVec3DNormalize( zEdge3DVec(e), v );
-  return !zVec3DIsTiny( dp );
-}
+_ZEDGEXD_PROJ_SET( 3D )
 
 /* project a point to a 3D edge. */
-zVec3D *zEdge3DProj(zEdge3D *e, zVec3D *p, zVec3D *cp)
-{
-  zVec3D v, dp;
-
-  _zEdge3DProjSet( e, p, &v, &dp );
-  zVec3DMul( &v, zVec3DInnerProd(&dp,&v), cp );
-  return zVec3DAddDRC( cp, zEdge3DVert(e,0) );
-}
+ZEDGEXD_PROJ( 3D )
 
 /* distance between a point and a 3D edge. */
-double zEdge3DPointDist(zEdge3D *e, zVec3D *p)
-{
-  zVec3D v, dp;
-
-  _zEdge3DProjSet( e, p, &v, &dp );
-  return zVec3DOuterProdNorm( &dp, &v );
-}
+ZEDGEXD_POINT_DIST( 3D )
 
 /* check if a point is on the line. */
 bool zEdge3DPointIsOn(zEdge3D *e, zVec3D *p)
@@ -156,52 +123,10 @@ bool zEdge3DPointIsOn(zEdge3D *e, zVec3D *p)
 
 /* compute a pair of linear scale factors of a point on a 3D edge.
  * when p is on e, p = l0*e->v0 + l1*e->v1. If p is not on e, the result does not make sense. */
-double zEdge3DLinScale(zEdge3D *e, zVec3D *p, double *l0, double *l1, zVec3D *cp)
-{
-  zVec3D dp0, dp1, v;
-  double d, ret;
-  int ni;
-
-  zVec3DSub( p, zEdge3DVert(e,0), &dp0 );
-  zVec3DSub( p, zEdge3DVert(e,1), &dp1 );
-  ni = ( zVec3DSqrNorm(&dp0) <= zVec3DSqrNorm(&dp1) ) ? 0 : 1;
-  if( ( d = zVec3DNormalize( zEdge3DVec(e), &v ) ) < 0 ){
-    ZRUNERROR( ZEO_ERR_ELEM_DEGE );
-    return -1;
-  }
-  if( ni == 0 ){
-    *l1 = zVec3DInnerProd( &dp0, &v ) / d;
-    *l0 = 1 - *l1;
-  } else{
-    *l0 =-zVec3DInnerProd( &dp1, &v ) / d;
-    *l1 = 1 - *l0;
-  }
-  if( *l1 < 0 ){
-    ret = -*l1 * d;
-    *l1 = 0; *l0 = 1;
-    zVec3DCopy( zEdge3DVert(e,0), cp );
-    return ret;
-  } else
-  if( *l0 < 0 ){
-    ret = -*l0 * d;
-    *l0 = 0; *l1 = 1;
-    zVec3DCopy( zEdge3DVert(e,1), cp );
-    return ret;
-  }
-  zVec3DCopy( p, cp );
-  return 0;
-}
+ZEDGEXD_LINSCALE( 3D )
 
 /* the closest point from point to a 3D edge. */
-double zEdge3DClosest(zEdge3D *e, zVec3D *p, zVec3D *cp)
-{
-  zVec3D tmp;
-  double l0, l1;
-
-  zEdge3DProj( e, p, &tmp );
-  zEdge3DLinScale( e, &tmp, &l0, &l1, cp );
-  return zVec3DDist( p, cp );
-}
+ZEDGEXD_CLOSEST( 3D )
 
 /* contiguous vertix of a 3D edge to a point. */
 zVec3D *zEdge3DContigVert(zEdge3D *e, zVec3D *p, double *d)
@@ -302,13 +227,7 @@ zVec3D *zTri3DCalcNorm(zTri3D *t)
 }
 
 /* barycenter of a triangle. */
-zVec3D *zTri3DBarycenter(zTri3D *t, zVec3D *c)
-{
-  zVec3DAdd( zTri3DVert(t,0), zTri3DVert(t,1), c );
-  zVec3DAddDRC( c, zTri3DVert(t,2) );
-  zVec3DDivDRC( c, 3 );
-  return c;
-}
+ZTRIXD_BARYCENTER( 3D )
 
 #define _zTri3DWeightedCenter(t,w1,w2,w3,p) do{\
   double __d;\
@@ -319,43 +238,13 @@ zVec3D *zTri3DBarycenter(zTri3D *t, zVec3D *c)
 } while(0)
 
 /* circumcenter of a triangle */
-zVec3D *zTri3DCircumcenter(zTri3D *t, zVec3D *c)
-{
-  double r[3], s[3];
-
-  r[0] = zVec3DSqrDist( zTri3DVert(t,2), zTri3DVert(t,1) );
-  r[1] = zVec3DSqrDist( zTri3DVert(t,0), zTri3DVert(t,2) );
-  r[2] = zVec3DSqrDist( zTri3DVert(t,1), zTri3DVert(t,0) );
-  s[0] = r[0] * ( r[1] + r[2] - r[0] );
-  s[1] = r[1] * ( r[2] + r[0] - r[1] );
-  s[2] = r[2] * ( r[0] + r[1] - r[2] );
-  _zTri3DWeightedCenter( t, s[0], s[1], s[2], c );
-  return c;
-}
+ZTRIXD_CIRCUMCENTER( 3D )
 
 /* incenter of a triangle */
-zVec3D *zTri3DIncenter(zTri3D *t, zVec3D *c)
-{
-  double s[3];
-
-  s[0] = zVec3DDist( zTri3DVert(t,1), zTri3DVert(t,2) );
-  s[1] = zVec3DDist( zTri3DVert(t,2), zTri3DVert(t,0) );
-  s[2] = zVec3DDist( zTri3DVert(t,0), zTri3DVert(t,1) );
-  _zTri3DWeightedCenter( t, s[0], s[1], s[2], c );
-  return c;
-}
+ZTRIXD_INCENTER( 3D )
 
 /* orthocenter of a triangle */
-zVec3D *zTri3DOrthocenter(zTri3D *t, zVec3D *c)
-{
-  zVec3D cg, cc;
-
-  zTri3DCircumcenter( t, &cc );
-  zTri3DBarycenter( t, &cg );
-  zVec3DMul( &cg, 3, c );
-  zVec3DCatDRC( c, -2, &cc );
-  return c;
-}
+ZTRIXD_ORTHOCENTER( 3D )
 
 /* contiguous vertix of a triangle to a point. */
 zVec3D *zTri3DContigVert(zTri3D *t, zVec3D *p, double *d)

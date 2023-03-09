@@ -1,3 +1,5 @@
+2023. 3. 9. Added zEdge2DLinScale and zEdge2DClosest by using ZEDGEXD_LINSCALE and ZEDGEXD_CLOSEST macros. [zeo_elemxd, zeo_elem2d, zeo_elem3d]
+2023. 3. 9. Added zeo_elemxd and reimplemented some methods that are common in zeo_elem2d and zeo_elem3d. [zeo_elemxd, zeo_elem2d, zeo_elem3d]
 2023. 3. 4. Added methods to zEP class. [zeo_ep]
 2023. 3. 4. Added zEPAdd. [zeo_ep]
 2023. 3. 4. Redefined zVec2D, zVec3D, zVec6D, zMat3D, zMat6D, zFrame3D, and zEP by using ZDEF_STRUCT/ZDEF_UNION. [zeo_vec2d, zeo_vec3d, zeo_vec6d, zeo_mat3d, zeo_mat6d zeo_frame3d, zeo_ep]

@@ -9,6 +9,8 @@
 
 #include <zeo/zeo_frame3d.h>
 
+#include <zeo/zeo_elemxd.h>
+
 __BEGIN_DECLS
 
 /* ********************************************************** */
@@ -117,8 +119,8 @@ typedef struct{
  * \return
  * Each of zEdge3DInit() and zEdge3DCreate() returns a pointer \a e.
  */
-__EXPORT zEdge3D *zEdge3DInit(zEdge3D *e);
-__EXPORT zEdge3D *zEdge3DCreate(zEdge3D *e, zVec3D *v1, zVec3D *v2);
+__EXPORT ZEDGEXD_INIT_PROTOTYPE( 3D );
+__EXPORT ZEDGEXD_CREATE_PROTOTYPE( 3D );
 
 /*! \brief path vector of a 3D edge.
  *
@@ -128,7 +130,7 @@ __EXPORT zEdge3D *zEdge3DCreate(zEdge3D *e, zVec3D *v1, zVec3D *v2);
  * \return
  * zEdge3DCalcVec() returns the pointer to the path vector.
  */
-__EXPORT zVec3D *zEdge3DCalcVec(zEdge3D *e);
+__EXPORT ZEDGEXD_CALC_VEC_PROTOTYPE( 3D );
 
 /*! \brief distance between a point and a 3D edge.
  *
@@ -149,13 +151,13 @@ __EXPORT zVec3D *zEdge3DCalcVec(zEdge3D *e);
  *
  * zEdge3DClosest() returns the distance between \a p and \a cp.
  */
-__EXPORT zVec3D *zEdge3DProj(zEdge3D *e, zVec3D *p, zVec3D *cp);
-__EXPORT double zEdge3DPointDist(zEdge3D *e, zVec3D *p);
+__EXPORT ZEDGEXD_PROJ_PROTOTYPE( 3D );
+__EXPORT ZEDGEXD_POINT_DIST_PROTOTYPE( 3D );
 
 __EXPORT bool zEdge3DPointIsOn(zEdge3D *e, zVec3D *p);
 
-__EXPORT double zEdge3DLinScale(zEdge3D *e, zVec3D *p, double *l0, double *l1, zVec3D *cp);
-__EXPORT double zEdge3DClosest(zEdge3D *e, zVec3D *p, zVec3D *cp);
+__EXPORT ZEDGEXD_LINSCALE_PROTOTYPE( 3D );
+__EXPORT ZEDGEXD_CLOSEST_PROTOTYPE( 3D );
 
 /*! \brief contiguous vertix of edge to a point.
  *
@@ -226,30 +228,34 @@ __EXPORT zTri3D *zTri3DCreateRev(zTri3D *t, zVec3D *v1, zVec3D *v2, zVec3D *v3);
 __EXPORT zTri3D *zTri3DRev(zTri3D *src, zTri3D *dest);
 #define zTri3DRevDRC(t) zTri3DRev( t, t )
 
-/*! \brief area, normal vector and various centers of a 3D triangle.
+/*! \brief area and normal vector of a 3D triangle.
  *
  * zTri3DArea() calculates the area of a triangle \a t.
  *
  * zTri3DCalcNorm() calculates the normal vector of triangle \a t.
  * The vector is contained by the triangle itself within. One can access
  * the normal vector by calling zTri3DNorm() (see zeo_elem.h).
+ * \return
+ * zTri3DArea() returns the area calculated.
+ * zTri3DCalcNorm() returns a pointer to the normal vector.
+ */
+__EXPORT double zTri3DArea(zTri3D *t);
+__EXPORT zVec3D *zTri3DCalcNorm(zTri3D *t);
+
+/*! \brief various centers of a 3D triangle.
  *
  * zTri3DBarycenter(), zTri3DCircumcenter(), zTri3DIncenter() and
  * zTri3DOrthocenter() calculate barycenter, circumcenter, incenter
  * and orthocenter of \a t, respectively.
  * The result is put into \a c.
  * \return
- * zTri3DArea() returns the area calculated.
- * zTri3DCalcNorm() returns a pointer to the normal vector.
  * zTri3DBarycenter(), zTri3DCircumcenter(), zTri3DIncenter() and
  * zTri3DOrthocenter() return a pointer \a c.
  */
-__EXPORT double zTri3DArea(zTri3D *t);
-__EXPORT zVec3D *zTri3DCalcNorm(zTri3D *t);
-__EXPORT zVec3D *zTri3DBarycenter(zTri3D *t, zVec3D *c);
-__EXPORT zVec3D *zTri3DCircumcenter(zTri3D *t, zVec3D *c);
-__EXPORT zVec3D *zTri3DIncenter(zTri3D *t, zVec3D *c);
-__EXPORT zVec3D *zTri3DOrthocenter(zTri3D *t, zVec3D *c);
+__EXPORT ZTRIXD_BARYCENTER_PROTOTYPE( 3D );
+__EXPORT ZTRIXD_CIRCUMCENTER_PROTOTYPE( 3D );
+__EXPORT ZTRIXD_INCENTER_PROTOTYPE( 3D );
+__EXPORT ZTRIXD_ORTHOCENTER_PROTOTYPE( 3D );
 
 /*! \brief convert a triangle to a plane.
  *

@@ -1,13 +1,15 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_elem2d - 2D element.
+ * zeo_elem2d - 2D shape element.
  */
 
 #ifndef __ZEO_ELEM2D_H__
 #define __ZEO_ELEM2D_H__
 
 #include <zeo/zeo_vec2d.h>
+
+#include <zeo/zeo_elemxd.h>
 
 __BEGIN_DECLS
 
@@ -34,8 +36,8 @@ typedef struct{
  * \return
  * Each of zEdge2DInit() and zEdge2DCreate() returns a pointer \a e.
  */
-__EXPORT zEdge2D *zEdge2DInit(zEdge2D *e);
-__EXPORT zEdge2D *zEdge2DCreate(zEdge2D *e, zVec2D *v1, zVec2D *v2);
+__EXPORT ZEDGEXD_INIT_PROTOTYPE( 2D );
+__EXPORT ZEDGEXD_CREATE_PROTOTYPE( 2D );
 
 /*! \brief path vector of a 2D edge.
  *
@@ -45,7 +47,7 @@ __EXPORT zEdge2D *zEdge2DCreate(zEdge2D *e, zVec2D *v1, zVec2D *v2);
  * \return
  * zEdge2DCalcVec() returns the pointer to the path vector.
  */
-__EXPORT zVec2D *zEdge2DCalcVec(zEdge2D *e);
+__EXPORT ZEDGEXD_CALC_VEC_PROTOTYPE( 2D );
 
 /*! \brief distance between a point and a 2D edge.
  *
@@ -66,8 +68,11 @@ __EXPORT zVec2D *zEdge2DCalcVec(zEdge2D *e);
  *
  * zEdge2DClosest() returns the distance between \a p and \a cp.
  */
-__EXPORT zVec2D *zEdge2DProj(zEdge2D *e, zVec2D *p, zVec2D *cp);
-__EXPORT double zEdge2DPointDist(zEdge2D *e, zVec2D *p);
+__EXPORT ZEDGEXD_PROJ_PROTOTYPE( 2D );
+__EXPORT ZEDGEXD_POINT_DIST_PROTOTYPE( 2D );
+
+__EXPORT ZEDGEXD_LINSCALE_PROTOTYPE( 2D );
+__EXPORT ZEDGEXD_CLOSEST_PROTOTYPE( 2D );
 
 /* ********************************************************** */
 /*! \brief 2D triangle class.
@@ -104,6 +109,21 @@ __EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
  */
 __EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
 
+/*! \brief various centers of a 2D triangle.
+ *
+ * zTri2DBarycenter(), zTri2DCircumcenter(), zTri2DIncenter() and
+ * zTri2DOrthocenter() calculate barycenter, circumcenter, incenter
+ * and orthocenter of \a t, respectively.
+ * The result is put into \a c.
+ * \return
+ * zTri2DBarycenter(), zTri2DCircumcenter(), zTri2DIncenter() and
+ * zTri2DOrthocenter() return a pointer \a c.
+ */
+__EXPORT ZTRIXD_BARYCENTER_PROTOTYPE( 2D );
+__EXPORT ZTRIXD_CIRCUMCENTER_PROTOTYPE( 2D );
+__EXPORT ZTRIXD_INCENTER_PROTOTYPE( 2D );
+__EXPORT ZTRIXD_ORTHOCENTER_PROTOTYPE( 2D );
+
 /*! \brief check if a point is inside of a triangle.
  *
  * zTri2DPointIsInside() checks if a point \a v is inside of a 2D
@@ -115,21 +135,6 @@ __EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
  * value. Otherwise, the false value is returned.
  */
 __EXPORT bool zTri2DPointIsInside(zTri2D *t, zVec2D *v, bool rim);
-
-/*! \brief various centers of a 2D triangle.
- *
- * zTri2DBarycenter(), zTri2DCircumcenter(), zTri2DIncenter() and
- * zTri2DOrthocenter() calculate barycenter, circumcenter, incenter
- * and orthocenter of \a t, respectively.
- * The result is put into \a c.
- * \return
- * zTri2DBarycenter(), zTri2DCircumcenter(), zTri2DIncenter() and
- * zTri2DOrthocenter() return a pointer \a c.
- */
-__EXPORT zVec2D *zTri2DBarycenter(zTri2D *t, zVec2D *c);
-__EXPORT zVec2D *zTri2DCircumcenter(zTri2D *t, zVec2D *c);
-__EXPORT zVec2D *zTri2DIncenter(zTri2D *t, zVec2D *c);
-__EXPORT zVec2D *zTri2DOrthocenter(zTri2D *t, zVec2D *c);
 
 /*! \brief print a 2D triangle.
  *

@@ -1,7 +1,7 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_elem2d - 2D element.
+ * zeo_elem2d - 2D shape element.
  */
 
 #include <zeo/zeo_elem2d.h>
@@ -12,55 +12,28 @@
  * ********************************************************** */
 
 /* initialize a 2D edge. */
-zEdge2D *zEdge2DInit(zEdge2D *e)
-{
-  zEdge2DSetVert( e, 0, NULL );
-  zEdge2DSetVert( e, 1, NULL );
-  zEdge2DSetVec( e, ZVEC2DZERO );
-  return e;
-}
+ZEDGEXD_INIT( 2D )
 
 /* create a 2D edge. */
-zEdge2D *zEdge2DCreate(zEdge2D *e, zVec2D *v1, zVec2D *v2)
-{
-  zEdge2DSetVert( e, 0, v1 );
-  zEdge2DSetVert( e, 1, v2 );
-  zEdge2DCalcVec( e );
-  return e;
-}
+ZEDGEXD_CREATE( 2D )
 
 /* path vector of a 2D edge. */
-zVec2D *zEdge2DCalcVec(zEdge2D *e)
-{
-  return zVec2DSub( zEdge2DVert(e,1), zEdge2DVert(e,0), zEdge2DVec(e) );
-}
+ZEDGEXD_CALC_VEC( 2D )
 
 /* a set of unit edge direction vector and displacement vector. */
-static bool _zEdge2DProjSet(zEdge2D *e, zVec2D *p, zVec2D *v, zVec2D *dp)
-{
-  zVec2DSub( p, zEdge2DVert(e,0), dp );
-  zVec2DNormalize( zEdge2DVec(e), v );
-  return !zVec2DIsTiny( dp );
-}
+_ZEDGEXD_PROJ_SET( 2D )
 
 /* project a point to a 2D edge. */
-zVec2D *zEdge2DProj(zEdge2D *e, zVec2D *p, zVec2D *cp)
-{
-  zVec2D v, dp;
-
-  _zEdge2DProjSet( e, p, &v, &dp );
-  zVec2DMul( &v, zVec2DInnerProd(&dp,&v), cp );
-  return zVec2DAddDRC( cp, zEdge2DVert(e,0) );
-}
+ZEDGEXD_PROJ( 2D )
 
 /* distance between a point and a 2D edge. */
-double zEdge2DPointDist(zEdge2D *e, zVec2D *p)
-{
-  zVec2D v, dp;
+ZEDGEXD_POINT_DIST( 2D )
 
-  _zEdge2DProjSet( e, p, &v, &dp );
-  return zVec2DOuterProd( &dp, &v );
-}
+/* compute a pair of linear scale factors of a point on a 2D edge. */
+ZEDGEXD_LINSCALE( 2D )
+
+/* the closest point from point to a 2D edge. */
+ZEDGEXD_CLOSEST( 2D )
 
 /* ********************************************************** */
 /* CLASS: zTri2D
@@ -76,6 +49,25 @@ zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3)
   return t;
 }
 
+/* barycenter of a triangle. */
+ZTRIXD_BARYCENTER( 2D )
+
+#define _zTri2DWeightedCenter(t,w1,w2,w3,p) do{\
+  double __d;\
+  __d = (w1) + (w2) + (w3);\
+  (p)->c.x = ( (w1)*zTri2DVert(t,0)->c.x + (w2)*zTri2DVert(t,1)->c.x + (w3)*zTri2DVert(t,2)->c.x ) / __d;\
+  (p)->c.y = ( (w1)*zTri2DVert(t,0)->c.y + (w2)*zTri2DVert(t,1)->c.y + (w3)*zTri2DVert(t,2)->c.y ) / __d;\
+} while(0)
+
+/* circumcenter of a triangle */
+ZTRIXD_CIRCUMCENTER( 2D )
+
+/* incenter of a triangle */
+ZTRIXD_INCENTER( 2D )
+
+/* orthocenter of a triangle */
+ZTRIXD_ORTHOCENTER( 2D )
+
 /* check if a point is inside of a triangle. */
 bool zTri2DPointIsInside(zTri2D *t, zVec2D *v, bool rim)
 {
@@ -90,59 +82,6 @@ bool zTri2DPointIsInside(zTri2D *t, zVec2D *v, bool rim)
     d[i] = _zVec2DOuterProd( &e, &tmp );
   }
   return rim ? ( d[0] > -zTOL && d[1] > -zTOL && d[2] > -zTOL ) : ( d[0] > zTOL && d[1] > zTOL && d[2] > zTOL );
-}
-
-/* barycenter of a triangle. */
-zVec2D *zTri2DBarycenter(zTri2D *t, zVec2D *c)
-{
-  zVec2DAdd( zTri2DVert(t,0), zTri2DVert(t,1), c );
-  zVec2DAddDRC( c, zTri2DVert(t,2) );
-  return zVec2DDivDRC( c, 3 );
-}
-
-#define _zTri2DWeightedCenter(t,w1,w2,w3,p) do{\
-  double __d;\
-  __d = (w1) + (w2) + (w3);\
-  (p)->c.x = ( (w1)*zTri2DVert(t,0)->c.x + (w2)*zTri2DVert(t,1)->c.x + (w3)*zTri2DVert(t,2)->c.x ) / __d;\
-  (p)->c.y = ( (w1)*zTri2DVert(t,0)->c.y + (w2)*zTri2DVert(t,1)->c.y + (w3)*zTri2DVert(t,2)->c.y ) / __d;\
-} while(0)
-
-/* circumcenter of a triangle */
-zVec2D *zTri2DCircumcenter(zTri2D *t, zVec2D *c)
-{
-  double r[3], s[3];
-
-  r[0] = zVec2DSqrDist( zTri2DVert(t,2), zTri2DVert(t,1) );
-  r[1] = zVec2DSqrDist( zTri2DVert(t,0), zTri2DVert(t,2) );
-  r[2] = zVec2DSqrDist( zTri2DVert(t,1), zTri2DVert(t,0) );
-  s[0] = r[0] * ( r[1] + r[2] - r[0] );
-  s[1] = r[1] * ( r[2] + r[0] - r[1] );
-  s[2] = r[2] * ( r[0] + r[1] - r[2] );
-  _zTri2DWeightedCenter( t, s[0], s[1], s[2], c );
-  return c;
-}
-
-/* incenter of a triangle */
-zVec2D *zTri2DIncenter(zTri2D *t, zVec2D *c)
-{
-  double s[3];
-
-  s[0] = zVec2DDist( zTri2DVert(t,1), zTri2DVert(t,2) );
-  s[1] = zVec2DDist( zTri2DVert(t,2), zTri2DVert(t,0) );
-  s[2] = zVec2DDist( zTri2DVert(t,0), zTri2DVert(t,1) );
-  _zTri2DWeightedCenter( t, s[0], s[1], s[2], c );
-  return c;
-}
-
-/* orthocenter of a triangle */
-zVec2D *zTri2DOrthocenter(zTri2D *t, zVec2D *c)
-{
-  zVec2D cg, cc;
-
-  zTri2DCircumcenter( t, &cc );
-  zTri2DBarycenter( t, &cg );
-  zVec2DMul( &cg, 3, c );
-  return zVec2DCatDRC( c, -2, &cc );
 }
 
 /* print information of a triangle to a file. */
