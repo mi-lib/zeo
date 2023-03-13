@@ -1,3 +1,5 @@
+2023. 3.13. Added a test case for zGJKPoint. [example, test]
+2023. 3.13. Modified makefile for examples to automatically remove .ztk files in directories other than model/with make clean. [example]
 2023. 3. 9. Added zEdge2DLinScale and zEdge2DClosest by using ZEDGEXD_LINSCALE and ZEDGEXD_CLOSEST macros. [zeo_elemxd, zeo_elem2d, zeo_elem3d]
 2023. 3. 9. Added zeo_elemxd and reimplemented some methods that are common in zeo_elem2d and zeo_elem3d. [zeo_elemxd, zeo_elem2d, zeo_elem3d]
 2023. 3. 4. Added methods to zEP class. [zeo_ep]

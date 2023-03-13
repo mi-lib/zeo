@@ -1,6 +1,8 @@
 #include <zeo/zeo_col.h>
 #include <zeo/zeo_bv3d.h>
 
+#define TEST 3
+
 void vec_create_rand(zVec3D v[], int n, double r)
 {
   register int i;
@@ -11,7 +13,7 @@ void vec_create_rand(zVec3D v[], int n, double r)
   }
 }
 
-void output(char filename[], zVec3D pl[], int n, zVec3D *p, zVec3D *c)
+void output_mshape(char filename[], zVec3D pl[], int n, zVec3D *p, zVec3D *c)
 {
   zPH3D ch;
   FILE *fp;
@@ -45,13 +47,13 @@ void output(char filename[], zVec3D pl[], int n, zVec3D *p, zVec3D *c)
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: yellow\n" );
   fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, p );
-  fprintf( fp, "radius: 0.01\n" );
+  fprintf( fp, "radius: 0.01\n\n" );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: c\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: yellow\n" );
   fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, c );
-  fprintf( fp, "radius: 0.01\n" );
+  fprintf( fp, "radius: 0.01\n\n" );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: rod\n" );
   fprintf( fp, "type: cylinder\n" );
@@ -75,13 +77,36 @@ void output(char filename[], zVec3D pl[], int n, zVec3D *p, zVec3D *c)
 
 int main(int argc, char *argv[])
 {
-  zVec3D a[N];
+  zVec3D pg[N];
   zVec3D p, c;
+  int n = N;
 
+#if TEST == 1
   zRandInit();
-  vec_create_rand( a, N, 0.2 );
+  vec_create_rand( pg, N, 0.2 );
   zVec3DCreate( &p, zRandF(-0.4,0.4), zRandF(-0.4,0.4), 0 );
-  printf( "in collision? %s\n", zBoolStr( zGJKPoint( a, N, &p, &c ) ) );
-  output( "a", a, N, &p, &c );
+#elif TEST == 2
+  zVec3DCreate( &pg[0], 1, 1, 0 );
+  zVec3DCreate( &pg[1],-1, 1, 0 );
+  zVec3DCreate( &pg[2], 1,-1, 0 );
+  zVec3DCreate( &pg[3],-1,-1, 0 );
+  n = 4
+  zVec3DCreate( &p, argc > 1 ? atof(argv[1]) : -2, 0, 0 );
+#else
+  zVec3DCreate( &pg[0], 1, 1, 1 );
+  zVec3DCreate( &pg[1],-1, 1, 1 );
+  zVec3DCreate( &pg[2], 1,-1, 1 );
+  zVec3DCreate( &pg[3],-1,-1, 1 );
+  zVec3DCreate( &pg[4], 1, 1,-1 );
+  zVec3DCreate( &pg[5],-1, 1,-1 );
+  zVec3DCreate( &pg[6], 1,-1,-1 );
+  zVec3DCreate( &pg[7],-1,-1,-1 );
+  n = 8;
+  zVec3DCreate( &p, argc > 1 ? atof(argv[1]) : -2, argc > 2 ? atof(argv[2]) : 0, argc > 3 ? atof(argv[3]) : 0 );
+#endif
+  printf( "in collision? %s\n", zBoolStr( zGJKPoint( pg, n, &p, &c ) ) );
+  printf( "test point: " ); zVec3DPrint( &p );
+  printf( "proximity:  " ); zVec3DPrint( &c );
+  output_mshape( "result.ztk", pg, n, &p, &c );
   return 0;
 }
