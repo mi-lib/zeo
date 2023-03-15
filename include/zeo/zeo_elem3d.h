@@ -306,13 +306,13 @@ __EXPORT double zTri3DProj(zTri3D *t, zVec3D *v, zVec3D *cp);
  * a triangle \a t. "\a v is inside of \a p" means that the projection
  * point of \a v to \a t is inside of \a t.
  *
- * If the true value is given for \a rim, \a v on the edge or the corner
- * of \a t is judged to be inside of \a t.
+ * \a margin is a margin of the inside area outward from the boundary
+ * of \a t.
  * \return
- * zTri3DPointIsInside() returns the true value if \a v is inside of
- * \a t, or the false value otherwise.
+ * zTri3DPointIsInside() returns the true value if \a v is inside of \a t
+ * with a margin \a margin. Otherwise, the false value is returned.
  */
-__EXPORT bool zTri3DPointIsInside(zTri3D *t, zVec3D *v, bool rim);
+__EXPORT bool zTri3DPointIsInside(zTri3D *t, zVec3D *v, double margin);
 
 /*! \brief the closest point from a point to a 3D triangle.
  *

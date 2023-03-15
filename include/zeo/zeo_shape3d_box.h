@@ -55,7 +55,7 @@ __EXPORT zBox3D *zBox3DCreate(zBox3D *box, zVec3D *c, zVec3D *ax, zVec3D *ay, zV
 #define zBox3DCreateAlign(b,c,d,w,h) \
   zBox3DCreate( b, c, ZVEC3DX, ZVEC3DY, ZVEC3DZ, d, w, h )
 __EXPORT zBox3D *zBox3DInit(zBox3D *box);
-__EXPORT zBox3D *zBox3DAlloc(void);
+__EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zBox3D );
 __EXPORT zBox3D *zBox3DCopy(zBox3D *src, zBox3D *dest);
 __EXPORT zBox3D *zBox3DMirror(zBox3D *src, zBox3D *dest, zAxis axis);
 
@@ -82,8 +82,8 @@ __EXPORT zBox3D *zBox3DXformInv(zBox3D *src, zFrame3D *f, zBox3D *dest);
  * a box \a box.
  *
  * zBox3DPointIsInside() checks if a 3D point \a p is inside of a box
- * \a box. The point on the surface of \a box is judged as being
- * inside of \a box if the true value is given for \a rim.
+ * \a box. \a margin is a margin of the inside area outward from the
+ * boundary of \a box.
  * \return
  * zBox3DClosest() and zBox3DPointDist() return the signed distance
  * from \a p to \a box.
@@ -95,7 +95,7 @@ __EXPORT zBox3D *zBox3DXformInv(zBox3D *src, zFrame3D *f, zBox3D *dest);
  */
 __EXPORT double zBox3DClosest(zBox3D *box, zVec3D *p, zVec3D *cp);
 __EXPORT double zBox3DPointDist(zBox3D *box, zVec3D *p);
-__EXPORT bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, bool rim);
+__EXPORT bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, double margin);
 
 /*! \brief volume of a box.
  *

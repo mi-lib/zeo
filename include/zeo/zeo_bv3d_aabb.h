@@ -32,7 +32,7 @@ __EXPORT zAABox3D *zAABox3DCopy(zAABox3D *src, zAABox3D *dst);
 __EXPORT zAABox3D *zAABox3DMerge(zAABox3D *box, zAABox3D *b1, zAABox3D *b2);
 
 /*! \brief check if a point is inside of an axis-aligned box. */
-__EXPORT bool zAABox3DPointIsInside(zAABox3D *box, zVec3D *p, bool rim);
+__EXPORT bool zAABox3DPointIsInside(zAABox3D *box, zVec3D *p, double margin);
 
 /*! \brief compute volume of an axis-aligned box. */
 __EXPORT double zAABox3DVolume(zAABox3D *box);

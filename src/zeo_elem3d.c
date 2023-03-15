@@ -309,20 +309,18 @@ double zTri3DProj(zTri3D *t, zVec3D *v, zVec3D *cp)
 }
 
 /* check if a point is inside of a triangle. */
-bool zTri3DPointIsInside(zTri3D *t, zVec3D *v, bool rim)
+bool zTri3DPointIsInside(zTri3D *t, zVec3D *v, double margin)
 {
   int i;
-  zVec3D e, tmp;
-  double d;
+  zVec3D vp, e, n, d;
 
+  zTri3DProj( t, v, &vp );
   for( i=0; i<3; i++ ){
-    if( zVec3DIsTiny( zVec3DSub( v, zTri3DVert(t,i), &tmp ) ) ) return rim; /* coincide with a vertex */
     zVec3DSub( zTri3DVertNext(t,i), zTri3DVert(t,i), &e );
-    zVec3DNormalizeDRC( &tmp );
-    zVec3DNormalizeDRC( &e );
-    zVec3DOuterProd( &e, &tmp, &tmp );
-    d = zVec3DInnerProd( &tmp, zTri3DNorm(t) );
-    if( ( rim && d <= -zTOL ) || ( !rim && d <= zTOL ) ) return false;
+    zVec3DOuterProd( &e, zTri3DNorm(t), &n );
+    zVec3DNormalizeDRC( &n );
+    zVec3DSub( &vp, zTri3DVert(t,i), &d );
+    if( zVec3DInnerProd( &n, &d ) > margin ) return false;
   }
   return true;
 }

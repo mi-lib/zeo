@@ -37,16 +37,7 @@ zECyl3D *zECyl3DInit(zECyl3D *cyl)
 }
 
 /* allocate memory for a 3D elliptic cylinder. */
-zECyl3D *zECyl3DAlloc(void)
-{
-  zECyl3D *ecyl;
-
-  if( !( ecyl = zAlloc( zECyl3D, 1 ) ) ){
-    ZALLOCERROR();
-    return NULL;
-  }
-   return ecyl;
-}
+ZDEF_ALLOC_FUNCTION( zECyl3D )
 
 /* copy a 3D elliptic cylinder to another. */
 zECyl3D *zECyl3DCopy(zECyl3D *src, zECyl3D *dest)
@@ -118,53 +109,18 @@ zECyl3D *zECyl3DXformInv(zECyl3D *src, zFrame3D *f, zECyl3D *dest)
 /* the closest point to a 3D elliptic cylinder. */
 double zECyl3DClosest(zECyl3D *cyl, zVec3D *p, zVec3D *cp)
 {
-  zVec3D v, axis, vr;
-  double rat[3], r0, r1, r02, r12, x2, y2, l;
-  zPex pex;
-  zCVec ans;
-  uint i;
+  zEllips2D ellips2d;
+  zVec3D v, axis, vs, vc;
 
   zVec3DSub( p, zECyl3DCenter(cyl,0), &v );
   zECyl3DAxis( cyl, &axis );
-  zVec3DCatRatio( zECyl3DRadVec(cyl,0), zECyl3DRadVec(cyl,1), &axis, &v, rat );
-  x2 = zSqr( rat[0] );
-  y2 = zSqr( rat[1] );
-  r02 = zSqr( ( r0 = zECyl3DRadius( cyl, 0 ) ) );
-  r12 = zSqr( ( r1 = zECyl3DRadius( cyl, 1 ) ) );
-
-  if( x2/r02 + y2/r12 > 1 ){
-    ans = zCVecAlloc( 4 );
-    pex = zPexAlloc( 4 );
-    if( !ans || !pex ) return HUGE_VAL;
-    zPexSetCoeff( pex, 4, 1 );
-    zPexSetCoeff( pex, 3, 2 * ( r0 + r1 ) );
-    zPexSetCoeff( pex, 2, r02 + 4*r0*r1 + r12 - x2 - y2 );
-    zPexSetCoeff( pex, 1, 2 * ( r0 * ( r12 - y2 ) + r1 * ( r02 - x2 ) ) );
-    zPexSetCoeff( pex, 0, r02*r12 - x2*r12 - y2*r02 );
-    zPexBH( pex, ans, zTOL, 0 );
-    zPexFree( pex );
-    for( i=0; i<4; i++ )
-      if( ( l = zCVecElemNC(ans,i)->re ) >= 0 ) break;
-    if( i == 4 || !zIsTiny( zCVecElemNC(ans,i)->im ) ){
-      ZRUNERROR( ZEO_ERR_FATAL );
-      return HUGE_VAL;
-    }
-    zCVecFree( ans );
-    rat[0] *= r0 / ( l + r0 );
-    rat[1] *= r1 / ( l + r1 );
-  }
-  zVec3DMul( zECyl3DRadVec(cyl,0), rat[0], &vr );
-  zVec3DCatDRC( &vr, rat[1], zECyl3DRadVec(cyl,1) );
-
-  if( rat[2] < 0 ){
-    zVec3DAdd( zECyl3DCenter(cyl,0), &vr, cp );
-  } else
-  if( rat[2] > 1 ){
-    zVec3DAdd( zECyl3DCenter(cyl,1), &vr, cp );
-  } else{
-    zVec3DCat( zECyl3DCenter(cyl,0), rat[2], &axis, cp );
-    zVec3DAddDRC( cp, &vr );
-  }
+  zVec3DCatRatio( zECyl3DRadVec(cyl,0), zECyl3DRadVec(cyl,1), &axis, &v, vs.e );
+  zEllips2DCreate( &ellips2d, ZVEC2DZERO, zECyl3DRadius(cyl,0), zECyl3DRadius(cyl,1) );
+  zEllips2DClosest( &ellips2d, (zVec2D*)vs.e, (zVec2D*)vc.e );
+  vc.e[zZ] = zLimit( vs.e[zZ], 0, 1 );
+  zVec3DCat( zECyl3DCenter(cyl,0), vc.e[zZ], &axis, cp );
+  zVec3DCatDRC( cp, vc.e[zX], zECyl3DRadVec(cyl,0) );
+  zVec3DCatDRC( cp, vc.e[zY], zECyl3DRadVec(cyl,1) );
   return zVec3DDist( cp, p );
 }
 
@@ -177,9 +133,19 @@ double zECyl3DPointDist(zECyl3D *cyl, zVec3D *p)
 }
 
 /* check if a point is inside of an elliptic cylinder. */
-bool zECyl3DPointIsInside(zECyl3D *cyl, zVec3D *p, bool rim)
+bool zECyl3DPointIsInside(zECyl3D *ecyl, zVec3D *p, double margin)
 {
-  return zECyl3DPointDist( cyl, p ) < ( rim ? zTOL : 0 ) ? true : false;
+  zEllips2D ellips2d;
+  zVec3D v, axis, vs;
+  double l;
+
+  zVec3DSub( p, zECyl3DCenter(ecyl,0), &v );
+  zECyl3DAxis( ecyl, &axis );
+  l = zVec3DNormalizeDRC( &axis );
+  zVec3DCatRatio( zECyl3DRadVec(ecyl,0), zECyl3DRadVec(ecyl,1), &axis, &v, vs.e );
+  if( vs.c.z <= -margin || vs.c.z >= l + margin ) return false;
+  zEllips2DCreate( &ellips2d, ZVEC2DZERO, zECyl3DRadius(ecyl,0), zECyl3DRadius(ecyl,1) );
+  return zEllips2DPointIsInside( &ellips2d, (zVec2D*)vs.e, margin );
 }
 
 /* height of a 3D elliptic cylinder. */
@@ -336,8 +302,8 @@ static double _zShape3DECylClosest(void *body, zVec3D *p, zVec3D *cp){
   return zECyl3DClosest( (zECyl3D*)body, p, cp ); }
 static double _zShape3DECylPointDist(void *body, zVec3D *p){
   return zECyl3DPointDist( (zECyl3D*)body, p ); }
-static bool _zShape3DECylPointIsInside(void *body, zVec3D *p, bool rim){
-  return zECyl3DPointIsInside( (zECyl3D*)body, p, rim ); }
+static bool _zShape3DECylPointIsInside(void *body, zVec3D *p, double margin){
+  return zECyl3DPointIsInside( (zECyl3D*)body, p, margin ); }
 static double _zShape3DECylVolume(void *body){
   return zECyl3DVolume( (zECyl3D*)body ); }
 static zVec3D *_zShape3DECylBarycenter(void *body, zVec3D *c){

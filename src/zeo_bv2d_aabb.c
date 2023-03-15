@@ -27,14 +27,10 @@ zAABox2D *zAABox2DCreate(zAABox2D *box, double x1, double y1, double x2, double 
 }
 
 /* check if a point is inside of a 2D axis-aligned box. */
-bool zAABox2DPointIsInside(zAABox2D *box, zVec2D *p, bool rim)
+bool zAABox2DPointIsInside(zAABox2D *box, zVec2D *p, double margin)
 {
-  double eps;
-
-  eps = rim ? zTOL : 0;
-  return p->e[zX] >= box->min.e[zX] - eps && p->e[zX] <= box->max.e[zX] + eps &&
-         p->e[zY] >= box->min.e[zY] - eps && p->e[zY] <= box->max.e[zY] + eps ?
-    true : false;
+  return p->e[zX] > box->min.e[zX] - margin && p->e[zX] < box->max.e[zX] + margin &&
+         p->e[zY] > box->min.e[zY] - margin && p->e[zY] < box->max.e[zY] + margin ? true : false;
 }
 
 /* print a 2D axis-aligned box out to a file in a format to be plotted. */

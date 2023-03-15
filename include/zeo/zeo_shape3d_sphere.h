@@ -49,7 +49,7 @@ typedef struct{
  */
 __EXPORT zSphere3D *zSphere3DCreate(zSphere3D *sphere, zVec3D *c, double r, int div);
 __EXPORT zSphere3D *zSphere3DInit(zSphere3D *sphere);
-__EXPORT zSphere3D *zSphere3DAlloc(void);
+__EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zSphere3D );
 __EXPORT zSphere3D *zSphere3DCopy(zSphere3D *src, zSphere3D *dest);
 __EXPORT zSphere3D *zSphere3DMirror(zSphere3D *src, zSphere3D *dest, zAxis axis);
 
@@ -76,21 +76,20 @@ __EXPORT zSphere3D *zSphere3DXformInv(zSphere3D *src, zFrame3D *f, zSphere3D *de
  * to a 3D sphere \a sphere.
  *
  * zSphere3DPointIsInside() checks if a 3D point \a p is inside of
- * a 3D sphere \a sphere. The point on the surface of \a sphere is
- * judged to be inside of \a sphere if the true value is given for
- * \a rim.
+ * a 3D sphere \a sphere. \a margin is a margin of the inside area
+ * outward from the boundary of \a sphere.
  * \return
  * zSphere3DClosest() and zSphere3DPointDist() return the signed
  * distance from \a p to \a sphere. The result is
  *  - a positive value when \a p is outside of \a sphere, or
  *  - a negative value when \a p is inside of \a sphere.
  *
- * zSphere3DPointIsInside() returns the true value if \a p is
- * inside of \a sphere, or the false value otherwise.
+ * zSphere3DPointIsInside() returns the true value if \a p is inside
+ * of \a sphere, or the false value otherwise.
  */
 __EXPORT double zSphere3DClosest(zSphere3D *sphere, zVec3D *p, zVec3D *cp);
 __EXPORT double zSphere3DPointDist(zSphere3D *sphere, zVec3D *p);
-__EXPORT bool zSphere3DPointIsInside(zSphere3D *sphere, zVec3D *p, bool rim);
+__EXPORT bool zSphere3DPointIsInside(zSphere3D *sphere, zVec3D *p, double margin);
 
 /*! \brief create a 3D sphere from two points at both ends of diameter. */
 __EXPORT zSphere3D *zSphere3DFrom2(zSphere3D *sphere, zVec3D *v1, zVec3D *v2);

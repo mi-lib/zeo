@@ -58,21 +58,18 @@ __EXPORT zMShape3D *zMShape3DClone(zMShape3D *org);
 
 /*! \brief check if a point is inside of multiple shapes.
  *
- * zMShape3DPointIsInside() checks if a point \a p is
- * inside of the multiple shapes \a ms.
- *
- * \a p on the surface of \a ms is judged to be inside
- * of \a ms if and only if \a rim is the true value.
+ * zMShape3DPointIsInside() checks if a point \a p is inside of the
+ * multiple shapes \a ms. \a margin is a margin of the inside area
+ * outward from the boundary of \a ms.
  * \return
- * zMShape3DPointIsInside() returns the true value
- * when \a p is inside of \a ms, or the false value
- * otherwise.
+ * zMShape3DPointIsInside() returns the true value if \a p is inside
+ * of \a ms, or the false value otherwise.
  * \sa
  * zShape3DPointIsInside, zPH3DPointIsInside
  */
 __EXPORT zVec3D *zMShape3DContigVert(zMShape3D *ms, zVec3D *p, double *d);
 __EXPORT double zMShape3DClosest(zMShape3D *ms, zVec3D *p, zVec3D *cp);
-__EXPORT bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, bool rim);
+__EXPORT bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, double margin);
 
 /*! \brief convert multiple shapes to polyhedra. */
 __EXPORT zMShape3D *zMShape3DToPH(zMShape3D *ms);

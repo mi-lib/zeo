@@ -108,12 +108,12 @@ double zMShape3DClosest(zMShape3D *ms, zVec3D *p, zVec3D *cp)
 }
 
 /* check if a point is inside of multiple shapes. */
-bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, bool rim)
+bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, double margin)
 {
   uint i;
 
   for( i=0; i<zMShape3DShapeNum(ms); i++ )
-    if( zShape3DPointIsInside( zMShape3DShape(ms,i), p, rim ) )
+    if( zShape3DPointIsInside( zMShape3DShape(ms,i), p, margin ) )
       return true;
   return false;
 }

@@ -82,7 +82,7 @@ void assert_inside(void)
     y = zRandF(-2,2);
     z = zRandF(-1,2);
     cyl_cat( &cyl, &d1, &d2, &d3, x, y, z, &p ) ? ni++ : no++;
-    zCyl3DPointIsInside( &cyl, &p, true ) ? nitest++ : notest++;
+    zCyl3DPointIsInside( &cyl, &p, zTOL ) ? nitest++ : notest++;
   }
   zAssert( zCyl3DPointIsInside, nitest == ni && notest == no );
 }

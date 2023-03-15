@@ -26,7 +26,7 @@ __EXPORT zAABox2D *zAABox2DInit(zAABox2D *box);
 __EXPORT zAABox2D *zAABox2DCreate(zAABox2D *box, double xmin, double ymin, double xmax, double ymax);
 
 /*! \brief check if a point is inside ofa 2D axis-aligned box. */
-__EXPORT bool zAABox2DPointIsInside(zAABox2D *box, zVec2D *p, bool rim);
+__EXPORT bool zAABox2DPointIsInside(zAABox2D *box, zVec2D *p, double margin);
 
 /*! \brief printa 2D axis-aligned box out to a file. */
 __EXPORT void zAABox2DDataFPrint(FILE *fp, zAABox2D *box);

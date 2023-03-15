@@ -28,16 +28,7 @@ zCone3D *zCone3DInit(zCone3D *cone)
 }
 
 /* allocate memory for a 3D cone. */
-zCone3D *zCone3DAlloc(void)
-{
-  zCone3D *cone;
-
-  if( !( cone = zAlloc( zCone3D, 1 ) ) ){
-    ZALLOCERROR();
-    return NULL;
-  }
-  return cone;
-}
+ZDEF_ALLOC_FUNCTION( zCone3D )
 
 /* copy a 3D cone to another. */
 zCone3D *zCone3DCopy(zCone3D *src, zCone3D *dest)
@@ -145,18 +136,21 @@ double zCone3DPointDist(zCone3D *cone, zVec3D *p)
 }
 
 /* check if a point is inside of a cone. */
-bool zCone3DPointIsInside(zCone3D *cone, zVec3D *p, bool rim)
+bool zCone3DPointIsInside(zCone3D *cone, zVec3D *p, double margin)
 {
   zVec3D axis, v;
-  double l, d, gl;
+  zVec2D p2d, l2d;
+  double l, d;
 
   zCone3DAxis( cone, &axis );
   zVec3DSub( p, zCone3DVert(cone), &v );
   l = zVec3DNormalizeDRC( &axis );
-  d = zVec3DInnerProd( &axis, &v );
-  gl = sqrt( zSqr(l) + zSqr(zCone3DRadius(cone)) );
-  if( -d / zVec3DNorm(&v) < l / gl ) return false; /* To be debugged */
-  return -d <= l + ( rim ? zTOL : 0 ) ? true : false;
+  d = -zVec3DInnerProd( &axis, &v );
+  if( d <= -margin || d >= l + margin ) return false;
+  zVec2DCreate( &p2d, d, sqrt( zVec3DSqrNorm(&v) - d*d ) );
+  zVec2DCreate( &l2d, -zCone3DRadius(cone), l );
+  zVec2DNormalizeNCDRC( &l2d );
+  return zVec2DInnerProd( &l2d, &p2d ) < margin ? true : false;
 }
 
 /* height of a 3D cone. */
@@ -309,8 +303,8 @@ static double _zShape3DConeClosest(void *body, zVec3D *p, zVec3D *cp){
   return zCone3DClosest( (zCone3D*)body, p, cp ); }
 static double _zShape3DConePointDist(void *body, zVec3D *p){
   return zCone3DPointDist( (zCone3D*)body, p ); }
-static bool _zShape3DConePointIsInside(void *body, zVec3D *p, bool rim){
-  return zCone3DPointIsInside( (zCone3D*)body, p, rim ); }
+static bool _zShape3DConePointIsInside(void *body, zVec3D *p, double margin){
+  return zCone3DPointIsInside( (zCone3D*)body, p, margin ); }
 static double _zShape3DConeVolume(void *body){
   return zCone3DVolume( (zCone3D*)body ); }
 static zVec3D *_zShape3DConeBarycenter(void *body, zVec3D *c){

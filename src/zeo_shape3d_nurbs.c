@@ -37,7 +37,7 @@ static double _zShape3DNURBSPointDist(void *body, zVec3D *p){
   return zNURBS3DClosest( (zNURBS3D*)body, p, &nn, NULL, NULL ); }
 
 /* dummy functions */
-static bool _zShape3DNURBSPointIsInside(void *body, zVec3D *p, bool rim){
+static bool _zShape3DNURBSPointIsInside(void *body, zVec3D *p, double margin){
   return false; }
 static double _zShape3DNURBSVolume(void *body){
   return 0; }

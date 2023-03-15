@@ -31,15 +31,7 @@ zBox3D *zBox3DInit(zBox3D *box)
 }
 
 /* allocate memory for a 3D box. */
-zBox3D *zBox3DAlloc(void)
-{
-  zBox3D *box;
-  if( !( box = zAlloc( zBox3D, 1 ) ) ){
-    ZALLOCERROR();
-    return NULL;
-  }
-  return box;
-}
+ZDEF_ALLOC_FUNCTION( zBox3D )
 
 /* copy a 3D box to another. */
 zBox3D *zBox3DCopy(zBox3D *src, zBox3D *dest)
@@ -111,18 +103,16 @@ double zBox3DPointDist(zBox3D *box, zVec3D *p)
 }
 
 /* check if a point is inside of a box. */
-bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, bool rim)
+bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, double margin)
 {
-  zDir d;
-  zVec3D err;
+  zDir dir;
+  zVec3D pl;
   double l;
 
-  zXform3DInv( &box->f, p, &err );
-  for( d=zX; d<=zZ; d++ ){
-    l = 0.5 * zBox3DDia(box,(int)d);
-    if( rim ) l += zTOL;
-    if( err.e[(int)d] > l || err.e[(int)d] < -l )
-      return false;
+  zXform3DInv( &box->f, p, &pl );
+  for( dir=zX; dir<=zZ; dir++ ){
+    l = 0.5 * zBox3DDia(box,(int)dir) + margin;
+    if( pl.e[(int)dir] >= l || pl.e[(int)dir] <= -l ) return false;
   }
   return true;
 }
@@ -303,8 +293,8 @@ static double _zShape3DBoxClosest(void *body, zVec3D *p, zVec3D *cp){
   return zBox3DClosest( (zBox3D*)body, p, cp ); }
 static double _zShape3DBoxPointDist(void *body, zVec3D *p){
   return zBox3DPointDist( (zBox3D*)body, p ); }
-static bool _zShape3DBoxPointIsInside(void *body, zVec3D *p, bool rim){
-  return zBox3DPointIsInside( (zBox3D*)body, p, rim ); }
+static bool _zShape3DBoxPointIsInside(void *body, zVec3D *p, double margin){
+  return zBox3DPointIsInside( (zBox3D*)body, p, margin ); }
 static double _zShape3DBoxVolume(void *body){
   return zBox3DVolume( (zBox3D*)body ); }
 static zVec3D *_zShape3DBoxBarycenter(void *body, zVec3D *c){

@@ -14,7 +14,7 @@
 static zSphere3D *_zBBall3DTest2(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
 {
   zSphere3DFrom2( bb, v1, v2 );
-  if( !zSphere3DPointIsInside(bb,v3,true) || !zSphere3DPointIsInside(bb,v4,true) ) return NULL;
+  if( !zSphere3DPointIsInside(bb,v3,zTOL) || !zSphere3DPointIsInside(bb,v4,zTOL) ) return NULL;
   if( vp ){
     vp[0] = v1; vp[1] = v2;
   }
@@ -25,7 +25,7 @@ static zSphere3D *_zBBall3DTest2(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *
 static zSphere3D *_zBBall3DTest3(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
 {
   zSphere3DFrom3( bb, v1, v2, v3 );
-  if( !zSphere3DPointIsInside(bb,v4,true) ) return NULL;
+  if( !zSphere3DPointIsInside(bb,v4,zTOL) ) return NULL;
   if( vp ){
     vp[0] = v1; vp[1] = v2; vp[2] = v3;
   }
@@ -101,7 +101,7 @@ static int _zBBall3DInc(zSphere3D *bb, zVec3DList *pl, zVec3DList *shell, zVec3D
     return _zBBall3DPrim( bb, shell, vp );
   zListDeleteTail( pl, &cp );
   num = _zBBall3DInc( bb, pl, shell, vp );
-  if( !zSphere3DPointIsInside( bb, cp->data, true ) ){
+  if( !zSphere3DPointIsInside( bb, cp->data, zTOL ) ){
     zListInsertTail( shell, cp );
     num = _zBBall3DInc( bb, pl, shell, vp );
     zListPurge( shell, cp );
@@ -122,7 +122,7 @@ static int _zBBall3DPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
     return _zBBall3DPrim( bb, pl, vp );
   zListDeleteTail( pl, &cp );
   num = _zBBall3DPL( bb, pl, vp );
-  if( !zSphere3DPointIsInside( bb, cp->data, true ) ){
+  if( !zSphere3DPointIsInside( bb, cp->data, zTOL ) ){
     zListInsertTail( &shell, cp );
     num = _zBBall3DInc( bb, pl, &shell, vp );
     zListPurge( &shell, cp );

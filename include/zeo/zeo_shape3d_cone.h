@@ -49,7 +49,7 @@ typedef struct{
  */
 __EXPORT zCone3D *zCone3DCreate(zCone3D *cone, zVec3D *c, zVec3D *v, double r, int div);
 __EXPORT zCone3D *zCone3DInit(zCone3D *cone);
-__EXPORT zCone3D *zCone3DAlloc(void);
+__EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zCone3D );
 __EXPORT zCone3D *zCone3DCopy(zCone3D *src, zCone3D *dest);
 __EXPORT zCone3D *zCone3DMirror(zCone3D *src, zCone3D *dest, zAxis axis);
 
@@ -68,14 +68,16 @@ __EXPORT zCone3D *zCone3DXformInv(zCone3D *src, zFrame3D *f, zCone3D *dest);
 
 /*! \brief check if a point is inside of a cone.
  *
- * zCone3DPointIsInside() checks if a 3D point \a p is inside of a 3D cone \a cone.
+ * zCone3DPointIsInside() checks if a 3D point \a p is inside of a 3D cone
+ * \a cone. \a margin is a margin of the inside area outward from the
+ * boundary of \a cone.
  * \return
  * zCone3DPointIsInside() returns the true value when \a p is inside of \a cone,
  * or the false value otherwise.
  */
 __EXPORT double zCone3DClosest(zCone3D *cone, zVec3D *p, zVec3D *cp);
 __EXPORT double zCone3DPointDist(zCone3D *cone, zVec3D *p);
-__EXPORT bool zCone3DPointIsInside(zCone3D *cone, zVec3D *p, bool rim);
+__EXPORT bool zCone3DPointIsInside(zCone3D *cone, zVec3D *p, double margin);
 
 /*! \brief axis vector and height of a 3D cone.
  *

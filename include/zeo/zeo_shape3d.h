@@ -26,7 +26,7 @@ typedef struct{
   void *(*_xforminv)(void*,zFrame3D*,void*);
   double (*_closest)(void*,zVec3D*,zVec3D*);
   double (*_pointdist)(void*,zVec3D*);
-  bool (*_pointisinside)(void*,zVec3D*,bool);
+  bool (*_pointisinside)(void*,zVec3D*,double);
   double (*_volume)(void*);
   zVec3D *(*_barycenter)(void*,zVec3D*);
   zMat3D *(*_baryinertia_m)(void*,double,zMat3D*);
@@ -93,19 +93,17 @@ __EXPORT zShape3D *zShape3DXformInv(zShape3D *src, zFrame3D *f, zShape3D *dest);
 /*! \brief check if a point is inside of a shape.
  *
  * zShape3DPointIsInside() checks if a point \a p is inside of
- * a shape \a shape.
- *
- * \a p on the surface of \a shape is judged to be inside of
- * \a shape if the true value is given for \a rim.
+ * a shape \a shape. \a margin is a margin of the inside area outward
+ * from the boundary of \a shape.
  * \return
- * zShape3DPointIsInside() returns the true value if \a p is
- * inside of \a shape, or the false value otherwise.
+ * zShape3DPointIsInside() returns the true value if \a p is inside of
+ * \a shape, or the false value otherwise.
  * \sa
  * zPH3DPointIsInside
  */
 __EXPORT double zShape3DClosest(zShape3D *shape, zVec3D *p, zVec3D *cp);
 __EXPORT double zShape3DPointDist(zShape3D *shape, zVec3D *p);
-__EXPORT bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, bool rim);
+__EXPORT bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, double margin);
 
 /*! \brief volume of a 3D shape. */
 __EXPORT double zShape3DVolume(zShape3D *shape);

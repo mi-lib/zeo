@@ -139,7 +139,12 @@ zVec3D *zPH3DContigVert(zPH3D *ph, zVec3D *p, double *d)
   return v;
 }
 
-/* the closest point to a 3D polyhedron. */
+/* the closest point to a 3D polyhedron.
+ * note: this is not an exact computation because it supposes that
+ *  - the polyhedron is convex
+ *  - the polyhedron is closed
+ *  - normal vectors of all facets of the polyhedron direct outward.
+ */
 double zPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp)
 {
   uint i;
@@ -168,15 +173,12 @@ double zPH3DPointDist(zPH3D *ph, zVec3D *p)
 }
 
 /* check if a point is inside of a polyhedron. */
-bool zPH3DPointIsInside(zPH3D *ph, zVec3D *p, bool rim)
+bool zPH3DPointIsInside(zPH3D *ph, zVec3D *p, double margin)
 {
-  uint i;
-  double tol;
+  int i;
 
-  tol = rim ? zTOL : 0;
   for( i=0; i<zPH3DFaceNum(ph); i++ )
-    if( zTri3DPointDist( zPH3DFace(ph,i), p ) >= tol )
-      return false;
+    if( zTri3DPointDist( zPH3DFace(ph,i), p ) >= margin ) return false;
   return true;
 }
 
@@ -275,7 +277,7 @@ static int _zPH3DSweepBottom(zVec3DArray *va, zTri3D f[], zVec3D *ref)
 }
 
 /* create a prism by extrusion from the bottom loop. */
-zPH3D *zPH3DPrism(zPH3D *prism, zVec3D bottom[], uint n, zVec3D *shift)
+zPH3D *zPH3DCreatePrism(zPH3D *prism, zVec3D bottom[], uint n, zVec3D *shift)
 {
   uint i, i1, nf;
   zTri3D *(*_tri)(zTri3D*,zVec3D*,zVec3D*,zVec3D*) = zTri3DCreate;
@@ -326,7 +328,7 @@ zPH3D *zPH3DPrism(zPH3D *prism, zVec3D bottom[], uint n, zVec3D *shift)
 }
 
 /* create a pyramid from the bottom loop and a vertex. */
-zPH3D *zPH3DPyramid(zPH3D *pyr, zVec3D bottom[], uint n, zVec3D *vert)
+zPH3D *zPH3DCreatePyramid(zPH3D *pyr, zVec3D bottom[], uint n, zVec3D *vert)
 {
   uint i, i1, nf;
   zTri3D *(*_tri)(zTri3D*,zVec3D*,zVec3D*,zVec3D*) = zTri3DCreate;
@@ -370,7 +372,7 @@ zPH3D *zPH3DPyramid(zPH3D *pyr, zVec3D bottom[], uint n, zVec3D *vert)
 }
 
 /* create a torus from a section loop. */
-zPH3D *zPH3DTorus(zPH3D *torus, zVec3D loop[], uint n, uint div, zVec3D *center, zVec3D *axis)
+zPH3D *zPH3DCreateTorus(zPH3D *torus, zVec3D loop[], uint n, uint div, zVec3D *center, zVec3D *axis)
 {
   uint i, i0, j, j0, k;
   zVec3D d, a, *v;
@@ -399,7 +401,7 @@ zPH3D *zPH3DTorus(zPH3D *torus, zVec3D loop[], uint n, uint div, zVec3D *center,
 }
 
 /* create a solid revolution by lathe. */
-zPH3D *zPH3DLathe(zPH3D *lathe, zVec3D rim[], uint n, uint div, zVec3D *center, zVec3D *axis)
+zPH3D *zPH3DCreateLathe(zPH3D *lathe, zVec3D rim[], uint n, uint div, zVec3D *center, zVec3D *axis)
 {
   uint i, i0, j, j0, k;
   zVec3D d, a, *v;
@@ -568,7 +570,7 @@ static void *_zPH3DLoopFromZTK(void *obj, int i, void *arg, ZTK *ztk)
   return obj;
 }
 
-static void *_zPH3DPrismFromZTK(void *obj, int i, void *arg, ZTK *ztk)
+static void *_zPH3DCreatePrismFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 {
   zVec3D shift;
 
@@ -576,13 +578,13 @@ static void *_zPH3DPrismFromZTK(void *obj, int i, void *arg, ZTK *ztk)
     ZRUNWARN( ZEO_WARN_PH_DUPDEF );
   } else{
     zVec3DFromZTK( &shift, ztk );
-    obj = zPH3DPrism( (zPH3D*)obj, zArrayBuf((zVec3DArray*)arg), zArraySize((zVec3DArray*)arg), &shift );
+    obj = zPH3DCreatePrism( (zPH3D*)obj, zArrayBuf((zVec3DArray*)arg), zArraySize((zVec3DArray*)arg), &shift );
     zArrayFree( (zVec3DArray*)arg );
   }
   return obj;
 }
 
-static void *_zPH3DPyramidFromZTK(void *obj, int i, void *arg, ZTK *ztk)
+static void *_zPH3DCreatePyramidFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 {
   zVec3D shift;
 
@@ -590,7 +592,7 @@ static void *_zPH3DPyramidFromZTK(void *obj, int i, void *arg, ZTK *ztk)
     ZRUNWARN( ZEO_WARN_PH_DUPDEF );
   } else{
     zVec3DFromZTK( &shift, ztk );
-    obj = zPH3DPyramid( (zPH3D*)obj, zArrayBuf((zVec3DArray*)arg), zArraySize((zVec3DArray*)arg), &shift );
+    obj = zPH3DCreatePyramid( (zPH3D*)obj, zArrayBuf((zVec3DArray*)arg), zArraySize((zVec3DArray*)arg), &shift );
     zArrayFree( (zVec3DArray*)arg );
   }
   return obj;
@@ -606,8 +608,8 @@ static ZTKPrp __ztk_prp_ph[] = {
   { ZEO_PH_KEY_VERT,   -1, _zPH3DVertFromZTK,    NULL },
   { ZEO_PH_KEY_FACE,   -1, _zPH3DFaceFromZTK,    NULL },
   { ZEO_PH_KEY_LOOP,    1, _zPH3DLoopFromZTK,    NULL },
-  { ZEO_PH_KEY_PRISM,   1, _zPH3DPrismFromZTK,   NULL },
-  { ZEO_PH_KEY_PYRAMID, 1, _zPH3DPyramidFromZTK, NULL },
+  { ZEO_PH_KEY_PRISM,   1, _zPH3DCreatePrismFromZTK,   NULL },
+  { ZEO_PH_KEY_PYRAMID, 1, _zPH3DCreatePyramidFromZTK, NULL },
 };
 
 /* read a 3D polyhedron from a ZTK format processor. */

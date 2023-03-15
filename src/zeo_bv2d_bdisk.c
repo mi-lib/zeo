@@ -14,7 +14,7 @@
 static zDisk2D *_zBDisk2DTest2(zDisk2D *bd, zVec2D *v1, zVec2D *v2, zVec2D *v3, zVec2D **vp)
 {
   zDisk2DFrom2( bd, v1, v2 );
-  if( !zDisk2DPointIsInside( bd, v3, true ) ) return NULL;
+  if( !zDisk2DPointIsInside( bd, v3, zTOL ) ) return NULL;
   if( vp ){
     vp[0] = v1; vp[1] = v2;
   }
@@ -83,7 +83,7 @@ static int _zBDisk2DInc(zDisk2D *bd, zVec2DList *pl, zVec2DList *shell, zVec2D *
     return _zBDisk2DPrim( bd, shell, vp );
   zListDeleteTail( pl, &cp );
   num = _zBDisk2DInc( bd, pl, shell, vp );
-  if( !zDisk2DPointIsInside( bd, cp->data, true ) ){
+  if( !zDisk2DPointIsInside( bd, cp->data, zTOL ) ){
     zListInsertTail( shell, cp );
     num = _zBDisk2DInc( bd, pl, shell, vp );
     zListPurge( shell, cp );
@@ -104,7 +104,7 @@ static int _zBDisk2DPL(zDisk2D *bd, zVec2DList *pl, zVec2D **vp)
     return _zBDisk2DPrim( bd, pl, vp );
   zListDeleteTail( pl, &cp );
   num = _zBDisk2DPL( bd, pl, vp );
-  if( !zDisk2DPointIsInside( bd, cp->data, true ) ){
+  if( !zDisk2DPointIsInside( bd, cp->data, zTOL ) ){
     zListInsertTail( &shell, cp );
     num = _zBDisk2DInc( bd, pl, &shell, vp );
     zListPurge( &shell, cp );

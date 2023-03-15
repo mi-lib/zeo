@@ -127,14 +127,13 @@ __EXPORT ZTRIXD_ORTHOCENTER_PROTOTYPE( 2D );
 /*! \brief check if a point is inside of a triangle.
  *
  * zTri2DPointIsInside() checks if a point \a v is inside of a 2D
- * triangle \a t. If the true value for \a rim is given, the function
- * returns the true value if \a v is on the rim of or in \a t.
+ * triangle \a t. \a margin is a margin of the inside area outward from
+ * the boundary of \a t.
  * \return
- * zTri2DPointIsInside() returns the true value if \a v is inside of \a t.
- * If \a v is on the rim of \a t and \a rim is true, it returns the true
- * value. Otherwise, the false value is returned.
+ * zTri2DPointIsInside() returns the true value if \a v is inside of \a t
+ * with a margin \a margin. Otherwise, the false value is returned.
  */
-__EXPORT bool zTri2DPointIsInside(zTri2D *t, zVec2D *v, bool rim);
+__EXPORT bool zTri2DPointIsInside(zTri2D *t, zVec2D *v, double margin);
 
 /*! \brief print a 2D triangle.
  *
@@ -158,7 +157,7 @@ __EXPORT void zTri2DFPrint(FILE *fp, zTri2D *t);
  */
 zArrayClass( zTri2DArray, zTri2D );
 
-/* NOTE: is the following to be moved to zeo_shape2d? */
+/* NOTE: are the following classes to be moved to zeo_shape2d? */
 
 /* ********************************************************** */
 /*! \brief 2D disk class.
@@ -182,13 +181,40 @@ __EXPORT zDisk2D *zDisk2DCreate(zDisk2D *d, zVec2D *c, double r);
 __EXPORT double zDisk2DPointDist(zDisk2D *d, zVec2D *p);
 
 /*! \brief check if a 2D point is inside of a disk. */
-__EXPORT bool zDisk2DPointIsInside(zDisk2D *d, zVec2D *p, bool rim);
+__EXPORT bool zDisk2DPointIsInside(zDisk2D *d, zVec2D *v, double margin);
 
 /*! \brief create a 2D disk from two points at both ends of diameter. */
 __EXPORT zDisk2D *zDisk2DFrom2(zDisk2D *d, zVec2D *v1, zVec2D *v2);
 
 /*! \brief create a 2D disk from three points as a circumcircle of them. */
 __EXPORT zDisk2D *zDisk2DFrom3(zDisk2D *d, zVec2D *v1, zVec2D *v2, zVec2D *v3);
+
+/* ********************************************************** */
+/*! \brief 2D ellipse class.
+ *//********************************************************* */
+
+typedef struct{
+  zVec2D center;
+  double radius[2];
+} zEllips2D;
+
+#define zEllips2DCenter(e)        ( &(e)->center )
+#define zEllips2DRadius(e,i)      (e)->radius[(i)]
+
+#define zEllips2DSetCenter(e,c)   zVec2DCopy( c, zEllips2DCenter(e) )
+#define zEllips2DSetRadius(e,i,r) ( zEllips2DRadius(e,i) = (r) )
+
+/*! \brief create an ellipse. */
+__EXPORT zEllips2D *zEllips2DCreate(zEllips2D *e, zVec2D *c, double r1, double r2);
+
+/*! \brief closest point to a 2D point on an ellipse. */
+__EXPORT zVec2D *zEllips2DClosest(zEllips2D *e, zVec2D *p, zVec2D *cp);
+
+/*! \brief signed distance from a 2D point to an ellipse. */
+__EXPORT double zEllips2DPointDist(zEllips2D *e, zVec2D *p);
+
+/*! \brief check if a 2D point is inside of an ellipse. */
+__EXPORT bool zEllips2DPointIsInside(zEllips2D *e, zVec2D *p, double margin);
 
 __END_DECLS
 

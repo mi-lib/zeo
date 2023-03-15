@@ -82,7 +82,7 @@ static bool _zLoop3DTriangulateCheck(zLoop3D *loop, zTri3D *t, zLoop3DCell *pre,
 
   vp = pst == zListHead(loop) ? zListTail(loop) : zListCellNext(pst);
   while( vp != pre ){
-    if( zTri3DPointIsInside( t, vp->data, true ) )
+    if( zTri3DPointIsInside( t, vp->data, zTOL ) )
       return false;
     vp = vp == zListHead(loop) ? zListTail(loop) : zListCellNext(vp);
   }

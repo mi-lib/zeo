@@ -48,7 +48,7 @@ int main(void)
   zVec3D vert = { { 0, 0.1, 0.5 } };
   zPH3D pyr;
 
-  zPH3DPyramid( &pyr, v, sizeof(v)/sizeof(zVec3D), &vert );
+  zPH3DCreatePyramid( &pyr, v, sizeof(v)/sizeof(zVec3D), &vert );
   output( &pyr );
   zPH3DDestroy( &pyr );
   return 0;

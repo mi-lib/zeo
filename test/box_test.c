@@ -108,7 +108,7 @@ void assert_inside(void)
     w = zRandF(-1.0,1.0);
     h = zRandF(-1.0,1.0);
     box_cat( &box, d, w, h, &p ) ? ni++ : no++;
-    zBox3DPointIsInside( &box, &p, true ) ? nitest++ : notest++;
+    zBox3DPointIsInside( &box, &p, zTOL ) ? nitest++ : notest++;
   }
   zAssert( zBox3DPointIsInside, nitest == ni && notest == no );
 }

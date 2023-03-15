@@ -105,9 +105,9 @@ double zShape3DPointDist(zShape3D *shape, zVec3D *p)
 }
 
 /* check if a point is inside of a 3D shape. */
-bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, bool rim)
+bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, double margin)
 {
-  return shape->com->_pointisinside( shape->body, p, rim );
+  return shape->com->_pointisinside( shape->body, p, margin );
 }
 
 /* volume of a 3D shape. */

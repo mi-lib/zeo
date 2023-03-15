@@ -38,7 +38,7 @@ __EXPORT zECyl3D *zECyl3DCreate(zECyl3D *cyl, zVec3D *c1, zVec3D *c2, double r1,
 /*! \brief initialize a 3D elliptic cylinder. */
 __EXPORT zECyl3D *zECyl3DInit(zECyl3D *cyl);
 /*! \brief allocate memory for a 3D elliptic cylinder. */
-__EXPORT zECyl3D *zECyl3DAlloc(void);
+__EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zECyl3D );
 /*! \brief copy a 3D elliptic cylinder to another. */
 __EXPORT zECyl3D *zECyl3DCopy(zECyl3D *src, zECyl3D *dest);
 /*! \brief mirror a 3D elliptic cylinder. */
@@ -57,7 +57,7 @@ __EXPORT double zECyl3DClosest(zECyl3D *cyl, zVec3D *p, zVec3D *cp);
 /*! \brief distance from a point to a 3D elliptic cylinder. */
 __EXPORT double zECyl3DPointDist(zECyl3D *cyl, zVec3D *p);
 /*! \brief check if a point is inside of an elliptic cylinder. */
-__EXPORT bool zECyl3DPointIsInside(zECyl3D *cyl, zVec3D *p, bool rim);
+__EXPORT bool zECyl3DPointIsInside(zECyl3D *ecyl, zVec3D *p, double margin);
 
 /*! \brief axis vector a 3D elliptic cylinder. */
 #define zECyl3DAxis(c,a) \

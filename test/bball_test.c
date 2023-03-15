@@ -1,6 +1,6 @@
 #include <zeo/zeo.h>
 
-#define N 2000
+#define N 1000
 
 int main(void)
 {

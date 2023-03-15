@@ -288,6 +288,20 @@ zVec2D *zVec2DRot(zVec2D *v, double angle, zVec2D *rv)
   return rv;
 }
 
+/* rotate a 2D vector at 90 degree clockwize. */
+zVec2D *zVec2DRot90CW(zVec2D *src, zVec2D *dst)
+{
+  _zVec2DRot90CW( src, dst );
+  return dst;
+}
+
+/* rotate a 2D vector at 90 degree counterclockwize. */
+zVec2D *zVec2DRot90CCW(zVec2D *src, zVec2D *dst)
+{
+  _zVec2DRot90CCW( src, dst );
+  return dst;
+}
+
 /* ********************************************************** */
 /* I/O
  * ********************************************************** */

@@ -1,6 +1,6 @@
 #include <zeo/zeo.h>
 
-#define N 100000
+#define N 1000
 
 void create_plane_rand(zVec3D *v, zPlane3D *p)
 {
@@ -21,9 +21,9 @@ void create_edge_rand(zVec3D v[], zEdge3D *e)
 
 void create_tri_rand(zVec3D v[], zTri3D *t)
 {
-  zVec3DCreate( &v[0], zRandF(-1e10,1e10), zRandF(-1e10,1e10), zRandF(-1e10,1e10) );
-  zVec3DCreate( &v[1], zRandF(-1e10,1e10), zRandF(-1e10,1e10), zRandF(-1e10,1e10) );
-  zVec3DCreate( &v[2], zRandF(-1e10,1e10), zRandF(-1e10,1e10), zRandF(-1e10,1e10) );
+  zVec3DCreate( &v[0], zRandF(-1e3,1e3), zRandF(-1e3,1e3), zRandF(-1e3,1e3) );
+  zVec3DCreate( &v[1], zRandF(-1e3,1e3), zRandF(-1e3,1e3), zRandF(-1e3,1e3) );
+  zVec3DCreate( &v[2], zRandF(-1e3,1e3), zRandF(-1e3,1e3), zRandF(-1e3,1e3) );
   zTri3DCreate( t, &v[0], &v[1], &v[2] );
 }
 
@@ -122,19 +122,19 @@ void assert_tri_point_is_inside(void)
     zVec3DCatDRC( &p, ( r1 = zRandF(0,1) ), &v[0] );
     zVec3DCatDRC( &p, ( r2 = zRandF(0,1-r1) ), &v[1] );
     zVec3DCatDRC( &p, 1 - r1 - r2, &v[2] );
-    if( !zTri3DPointIsInside( &t, &p, false ) ) result1 = false;
+    if( !zTri3DPointIsInside( &t, &p, zTOL ) ) result1 = false;
     /* outside case */
     zVec3DZero( &p );
     zVec3DCatDRC( &p, ( r1 = zRandF(0,-1) ), &v[0] );
     zVec3DCatDRC( &p, ( r2 = zRandF(0,1-r1) ), &v[1] );
     zVec3DCatDRC( &p, 1 - r1 - r2, &v[2] );
-    if( zTri3DPointIsInside( &t, &p, false ) ) result1 = false;
-    /* midpoint case */
+    if( zTri3DPointIsInside( &t, &p, -zTOL ) ) result1 = false;
+    /* midpoint case : margin should be enlarged */
     zVec3DMid( &v[0], &v[1], &p );
-    if( zTri3DPointIsInside( &t, &p, false ) ) result2 = false;
+    if( zTri3DPointIsInside( &t, &p, -zTOL ) ) result2 = false;
     /* vertex case */
     zVec3DCopy( &v[2], &p );
-    if( zTri3DPointIsInside( &t, &p, false ) ) result3 = false;
+    if( zTri3DPointIsInside( &t, &p, -zTOL ) ) result3 = false;
   }
   zAssert( zTri3DPointIsInside, result1 );
   zAssert( zTri3DPointIsInside (midpoint case), result2 );

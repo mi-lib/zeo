@@ -374,6 +374,12 @@ __EXPORT double zVec2DAngle(zVec2D *v1, zVec2D *v2);
 __EXPORT zVec2D *zVec2DProj(zVec2D *v, zVec2D *n, zVec2D *pv);
 __EXPORT zVec2D *zVec2DRot(zVec2D *v, double angle, zVec2D *rv);
 
+/*! \brief rotate a 2D vector at 90 degree clockwize/counterclockwize. */
+#define _zVec2DRot90CW(s,d)  _zVec2DCreate( d, (s)->c.y, -(s)->c.x )
+#define _zVec2DRot90CCW(s,d) _zVec2DCreate( d, -(s)->c.y, (s)->c.x )
+__EXPORT zVec2D *zVec2DRot90CW(zVec2D *src, zVec2D *dst);
+__EXPORT zVec2D *zVec2DRot90CCW(zVec2D *src, zVec2D *dst);
+
 /* ********************************************************** */
 /* I/O
  * ********************************************************** */

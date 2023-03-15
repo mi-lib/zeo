@@ -48,7 +48,7 @@ typedef struct{
  */
 __EXPORT zCyl3D *zCyl3DCreate(zCyl3D *cyl, zVec3D *c1, zVec3D *c2, double r, int div);
 __EXPORT zCyl3D *zCyl3DInit(zCyl3D *cyl);
-__EXPORT zCyl3D *zCyl3DAlloc(void);
+__EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zCyl3D );
 __EXPORT zCyl3D *zCyl3DCopy(zCyl3D *src, zCyl3D *dest);
 __EXPORT zCyl3D *zCyl3DMirror(zCyl3D *src, zCyl3D *dest, zAxis axis);
 
@@ -68,14 +68,15 @@ __EXPORT zCyl3D *zCyl3DXformInv(zCyl3D *src, zFrame3D *f, zCyl3D *dest);
 /*! \brief check if a point is inside of a 3D cylinder.
  *
  * zCyl3DPointIsInside() checks if a 3D point \a p is inside of a 3D
- * cylinder \a cyl.
+ * cylinder \a cyl. \a margin is a margin of the inside area outward
+ * from the boundary of \a box.
  * \return
  * zCyl3DPointIsInside() returns the true value if \a p is inside of \a cyl,
  * or the false value otherwise.
  */
 __EXPORT double zCyl3DClosest(zCyl3D *cyl, zVec3D *p, zVec3D *cp);
 __EXPORT double zCyl3DPointDist(zCyl3D *cyl, zVec3D *p);
-__EXPORT bool zCyl3DPointIsInside(zCyl3D *cyl, zVec3D *p, bool rim);
+__EXPORT bool zCyl3DPointIsInside(zCyl3D *cyl, zVec3D *p, double margin);
 
 /*! \brief axis vector and height of a 3D cylinder.
  *

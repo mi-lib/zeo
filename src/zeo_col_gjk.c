@@ -312,7 +312,7 @@ static bool _zGJKPDInit(zVec3D p1[], int n1, zVec3D p2[], int n2, zGJKSimplex *s
     if( !_zGJKPDInitAddPoint( p1, n1, p2, n2, slist, vlist, zVec3DRevDRC( &v2 ), &edge, NULL ) )
       goto FAILURE;
     zCH3DPL( &ph, vlist );
-    if( !zPH3DPointIsInside( &ph, ZVEC3DZERO, false ) ){
+    if( !zPH3DPointIsInside( &ph, ZVEC3DZERO, -zTOL ) ){
       zPH3DDestroy( &ph );
       goto FAILURE;
     }
