@@ -11,7 +11,7 @@ static void _zNURBS3DKnotInit(zNURBS3D *nurbs, int i)
 {
   uint j;
 
-  for( j=0; j<=nurbs->dim[i]; j++ )
+  for( j=0; j<=nurbs->order[i]; j++ )
     zNURBS3DSetKnot( nurbs, i, j, 0 );
   for( ; j<=zNURBS3DCPNum(nurbs,i); j++ )
     zNURBS3DSetKnot( nurbs, i, j, zNURBS3DKnot(nurbs,i,j-1) + 1 );
@@ -20,18 +20,18 @@ static void _zNURBS3DKnotInit(zNURBS3D *nurbs, int i)
 }
 
 /* allocate a NURBS curve / surface. */
-bool zNURBS3DAlloc(zNURBS3D *nurbs, uint size1, uint size2, uint dim1, uint dim2)
+bool zNURBS3DAlloc(zNURBS3D *nurbs, uint size1, uint size2, uint order1, uint order2)
 {
   uint i, j;
 
-  if( size1 <= dim1 || size2 <= dim2 ){
-    ZRUNERROR( ZEO_ERR_NURBS_INVDIM );
+  if( size1 <= order1 || size2 <= order2 ){
+    ZRUNERROR( ZEO_ERR_NURBS_INVORDER );
     return false;
   }
-  nurbs->dim[0] = dim1;
-  nurbs->dim[1] = dim2;
-  nurbs->knot[0] = zVecAlloc( size1+dim1+1 );
-  nurbs->knot[1] = zVecAlloc( size2+dim2+1 );
+  nurbs->order[0] = order1;
+  nurbs->order[1] = order2;
+  nurbs->knot[0] = zVecAlloc( size1+order1+1 );
+  nurbs->knot[1] = zVecAlloc( size2+order2+1 );
 
   zArray2Alloc( &nurbs->cpnet, zNURBS3DCPCell, size1, size2 );
   if( !nurbs->knot[0] || !nurbs->knot[1] || zArray2Buf(&nurbs->cpnet) == NULL ){
@@ -53,7 +53,7 @@ bool zNURBS3DAlloc(zNURBS3D *nurbs, uint size1, uint size2, uint dim1, uint dim2
 /* initialize a NURBS curve / surface. */
 zNURBS3D *zNURBS3DInit(zNURBS3D *nurbs)
 {
-  nurbs->dim[0] = nurbs->dim[1] = 0;
+  nurbs->order[0] = nurbs->order[1] = 0;
   zNURBS3DSetSliceNum( nurbs, 0, 0 );
   nurbs->knot[0] = nurbs->knot[1] = NULL;
   zArray2Init( &nurbs->cpnet );
@@ -72,7 +72,7 @@ void zNURBS3DDestroy(zNURBS3D *nurbs)
 /* copy a NURBS curve / surface. */
 zNURBS3D *zNURBS3DCopy(zNURBS3D *src, zNURBS3D *dest)
 {
-  if( src->dim[0] != dest->dim[0] || src->dim[1] != dest->dim[1] ||
+  if( src->order[0] != dest->order[0] || src->order[1] != dest->order[1] ||
       !zVecSizeIsEqual( src->knot[0], dest->knot[0] ) ||
       !zVecSizeIsEqual( src->knot[1], dest->knot[1] ) ||
       zNURBS3DCPNum(src,0) != zNURBS3DCPNum(dest,0) ||
@@ -90,7 +90,7 @@ zNURBS3D *zNURBS3DCopy(zNURBS3D *src, zNURBS3D *dest)
 /* clone a NURBS curve / surface. */
 zNURBS3D *zNURBS3DClone(zNURBS3D *src, zNURBS3D *dest)
 {
-  if( !zNURBS3DAlloc( dest, zNURBS3DCPNum(src,0), zNURBS3DCPNum(src,1), src->dim[0], src->dim[1] ) )
+  if( !zNURBS3DAlloc( dest, zNURBS3DCPNum(src,0), zNURBS3DCPNum(src,1), src->order[0], src->order[1] ) )
     return NULL;
   return zNURBS3DCopy( src, dest );
 }
@@ -145,7 +145,7 @@ static int _zNURBS3DSeg(zNURBS3D *nurbs, int i, double t)
 {
   uint j, k, l;
 
-  for( j=nurbs->dim[i], k=zNURBS3DCPNum(nurbs,i); ; ){
+  for( j=nurbs->order[i], k=zNURBS3DCPNum(nurbs,i); ; ){
     while( zNURBS3DKnot(nurbs,i,j+1) == zNURBS3DKnot(nurbs,i,j) ) j++;
     while( zNURBS3DKnot(nurbs,i,k-1) == zNURBS3DKnot(nurbs,i,k) ) k--;
     if( k <= j + 1 ) break;
@@ -190,11 +190,11 @@ zVec3D *zNURBS3DVec(zNURBS3D *nurbs, double u, double v, zVec3D *p)
   su = _zNURBS3DSeg( nurbs, 0, u );
   sv = _zNURBS3DSeg( nurbs, 1, v );
   zVec3DZero( p );
-  for( den=0, i=su-nurbs->dim[0]; i<=su; i++ ){
-    bu = _zNURBS3DBasis(nurbs,0,u,i,nurbs->dim[0],su);
+  for( den=0, i=su-nurbs->order[0]; i<=su; i++ ){
+    bu = _zNURBS3DBasis(nurbs,0,u,i,nurbs->order[0],su);
     zVec3DZero( &tmp );
-    for( dv=0, j=sv-nurbs->dim[1]; j<=sv; j++ ){
-      dv += bv = zNURBS3DWeight(nurbs,i,j) * _zNURBS3DBasis(nurbs,1,v,j,nurbs->dim[1],sv);
+    for( dv=0, j=sv-nurbs->order[1]; j<=sv; j++ ){
+      dv += bv = zNURBS3DWeight(nurbs,i,j) * _zNURBS3DBasis(nurbs,1,v,j,nurbs->order[1],sv);
       zVec3DCatDRC( &tmp, bv, zNURBS3DCP(nurbs,i,j) );
     }
     zVec3DCatDRC( p, bu, &tmp );
@@ -216,7 +216,7 @@ static double _zNURBS3DBasisDiff(zNURBS3D *nurbs, int i, double t, int j, int r,
 }
 
 /* compute a position and normal vectors on NURBS surface. */
-zVec3D *zNURBS3DVecNorm(zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *n, zVec3D *t1, zVec3D *t2)
+zVec3D *zNURBS3DVecTSpace(zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *n, zVec3D *t1, zVec3D *t2)
 {
   uint su, sv, i, j;
   double bu, bv, dbu, dbv, dv, ddv, dubv, budv, den;
@@ -229,14 +229,14 @@ zVec3D *zNURBS3DVecNorm(zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *
   zVec3DZero( p );
   zVec3DZero( tu );
   zVec3DZero( tv );
-  for( den=dubv=budv=0, i=su-nurbs->dim[0]; i<=su; i++ ){
-    bu = _zNURBS3DBasis(nurbs,0,u,i,nurbs->dim[0],su);
-    dbu = _zNURBS3DBasisDiff(nurbs,0,u,i,nurbs->dim[0],su);
+  for( den=dubv=budv=0, i=su-nurbs->order[0]; i<=su; i++ ){
+    bu = _zNURBS3DBasis(nurbs,0,u,i,nurbs->order[0],su);
+    dbu = _zNURBS3DBasisDiff(nurbs,0,u,i,nurbs->order[0],su);
     zVec3DZero( &pv_tmp );
     zVec3DZero( &dpv_tmp );
-    for( dv=ddv=0, j=sv-nurbs->dim[1]; j<=sv; j++ ){
-      dv += bv = zNURBS3DWeight(nurbs,i,j) * _zNURBS3DBasis(nurbs,1,v,j,nurbs->dim[1],sv);
-      ddv += dbv = zNURBS3DWeight(nurbs,i,j) * _zNURBS3DBasisDiff(nurbs,1,v,j,nurbs->dim[1],sv);
+    for( dv=ddv=0, j=sv-nurbs->order[1]; j<=sv; j++ ){
+      dv += bv = zNURBS3DWeight(nurbs,i,j) * _zNURBS3DBasis(nurbs,1,v,j,nurbs->order[1],sv);
+      ddv += dbv = zNURBS3DWeight(nurbs,i,j) * _zNURBS3DBasisDiff(nurbs,1,v,j,nurbs->order[1],sv);
       zVec3DCatDRC( &pv_tmp, bv, zNURBS3DCP(nurbs,i,j) );
       zVec3DCatDRC( &dpv_tmp, dbv, zNURBS3DCP(nurbs,i,j) );
     }
@@ -277,7 +277,7 @@ double zNURBS3DClosest(zNURBS3D *nurbs, zVec3D *p, zVec3D *nn, double *u, double
   *v = v_prev = 0.5 * ( zNURBS3DKnotS(nurbs,1) + zNURBS3DKnotE(nurbs,1) );
   ZITERINIT( iter );
   for( eval_prev=HUGE_VAL, i=0; i<iter; i++ ){
-    zNURBS3DVecNorm( nurbs, *u, *v, nn, NULL, &du, &dv );
+    zNURBS3DVecTan( nurbs, *u, *v, nn, &du, &dv );
     zVec3DSub( p, nn, &e );
     eval = zVec3DNorm(&e);
     duu = zVec3DInnerProd( &du, &du );
@@ -346,9 +346,9 @@ static zVec _zNURBS3DKnotFromZTK(zNURBS3D *nurbs, int id, ZTK *ztk)
   return nurbs->knot[id];
 }
 
-static void *_zNURBS3DDimFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  ((zNURBS3D*)obj)->dim[0] = ZTKInt( ztk );
-  ((zNURBS3D*)obj)->dim[1] = ZTKInt( ztk );
+static void *_zNURBS3DOrderFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((zNURBS3D*)obj)->order[0] = ZTKInt( ztk );
+  ((zNURBS3D*)obj)->order[1] = ZTKInt( ztk );
   return obj;
 }
 static void *_zNURBS3DUKnotFromZTK(void *obj, int i, void *arg, ZTK *ztk){
@@ -387,8 +387,8 @@ static void *_zNURBS3DCPFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 
-static void _zNURBS3DDimFPrint(FILE *fp, int i, void *obj){
-  fprintf( fp, "%d %d\n", ((zNURBS3D*)obj)->dim[0], ((zNURBS3D*)obj)->dim[1] );
+static void _zNURBS3DOrderFPrint(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d %d\n", ((zNURBS3D*)obj)->order[0], ((zNURBS3D*)obj)->order[1] );
 }
 static void _zNURBS3DUKnotFPrint(FILE *fp, int i, void *obj){
   if( zVecSizeNC(((zNURBS3D*)obj)->knot[0]) > 0 ) zVecFPrint( fp, ((zNURBS3D*)obj)->knot[0] );
@@ -404,7 +404,7 @@ static void _zNURBS3DSizeFPrint(FILE *fp, int i, void *obj){
 }
 
 static ZTKPrp __ztk_prp_nurbs[] = {
-  { "dim", 1, _zNURBS3DDimFromZTK, _zNURBS3DDimFPrint },
+  { "order", 1, _zNURBS3DOrderFromZTK, _zNURBS3DOrderFPrint },
   { "uknot", 1, _zNURBS3DUKnotFromZTK, _zNURBS3DUKnotFPrint },
   { "vknot", 1, _zNURBS3DVKnotFromZTK, _zNURBS3DVKnotFPrint },
   { "size", 1, _zNURBS3DSizeFromZTK, _zNURBS3DSizeFPrint },
