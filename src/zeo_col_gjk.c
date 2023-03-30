@@ -234,7 +234,7 @@ static void _zGJKPair(zGJKSimplex *s, zVec3D *c1, zVec3D *c2)
 
 static double _zGJKPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp, int *id)
 {
-  uint i;
+  int i;
   zVec3D ncp;
   double d, dmin;
 

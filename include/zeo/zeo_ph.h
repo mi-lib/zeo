@@ -16,10 +16,10 @@ __BEGIN_DECLS
  * 3D polyhedron class
  * ********************************************************** */
 
-typedef struct{
+ZDEF_STRUCT( zPH3D ){
   zVec3DArray vert;
   zTri3DArray face;
-} zPH3D;
+};
 
 #define zPH3DVertNum(ph)      zArraySize(&(ph)->vert)
 #define zPH3DVertBuf(ph)      zArrayBuf(&(ph)->vert)
@@ -172,8 +172,8 @@ __EXPORT zMat3D *zPH3DBaryInertiaMass(zPH3D *ph, double mass, zMat3D *inertia);
  * zPH3DCreatePrism() returns a pointer \a prism.
  * zPH3DCreatePyramid() returns a pointer \a pyr.
  */
-__EXPORT zPH3D *zPH3DCreatePrism(zPH3D *prism, zVec3D bottom[], uint n, zVec3D *shift);
-__EXPORT zPH3D *zPH3DCreatePyramid(zPH3D *pyr, zVec3D bottom[], uint n, zVec3D *vert);
+__EXPORT zPH3D *zPH3DCreatePrism(zPH3D *prism, zVec3D bottom[], int n, zVec3D *shift);
+__EXPORT zPH3D *zPH3DCreatePyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3D *vert);
 
 /*! \brief create solid revolution.
  *
@@ -197,8 +197,8 @@ __EXPORT zPH3D *zPH3DCreatePyramid(zPH3D *pyr, zVec3D bottom[], uint n, zVec3D *
  * These functions do not check the validity of the shape
  * of cross-sections.
  */
-__EXPORT zPH3D *zPH3DCreateTorus(zPH3D *torus, zVec3D loop[], uint n, uint div, zVec3D *center, zVec3D *axis);
-__EXPORT zPH3D *zPH3DCreateLathe(zPH3D *lathe, zVec3D rim[], uint n, uint div, zVec3D *center, zVec3D *axis);
+__EXPORT zPH3D *zPH3DCreateTorus(zPH3D *torus, zVec3D loop[], int n, int div, zVec3D *center, zVec3D *axis);
+__EXPORT zPH3D *zPH3DCreateLathe(zPH3D *lathe, zVec3D rim[], int n, int div, zVec3D *center, zVec3D *axis);
 
 /*! \brief read a 3D polyhedron from a ZTK format processor. */
 __EXPORT zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk);

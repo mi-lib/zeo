@@ -189,7 +189,7 @@ zPH3D* zEllips3DToPH(zEllips3D *ellips, zPH3D *ph)
   zVec3D *vert, tmp;
   zTri3D *face;
   double theta;
-  uint i, j, k, l, n;
+  int i, j, k, l, n;
 
   if( !zPH3DAlloc( ph,
       zEllips3DDiv(ellips)*(zEllips3DDiv(ellips)-1)+2,

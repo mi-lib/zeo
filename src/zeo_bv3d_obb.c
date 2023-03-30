@@ -12,7 +12,7 @@ static void _zOBB3DMinDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
 {
   zTri3D *bot;
   double l, ls;
-  uint i, j;
+  int i, j;
 
   zBox3DSetHeight( obb, HUGE_VAL );
   for( bot=NULL, i=0; i<zPH3DFaceNum(ch); i++ ){
@@ -62,7 +62,7 @@ static bool _zOBB3DMaxDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
   zVec3D e1, e2, c, dc;
   double l1, l2;
   double area, area_min;
-  uint i;
+  int i;
 
   for( i=0; i<zPH3DVertNum(ch); i++ ){
     zPlane3DProj( pl, zPH3DVert(ch,i), zPH3DVert(ch,i) );

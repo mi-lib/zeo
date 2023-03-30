@@ -34,7 +34,7 @@ ZDEF_UNION( zEP ){
   zVec3D &rot(zVec3D &from, zVec3D &to);
   friend zEP operator+(zEP &ep1, zEP &ep2);
   friend zEP operator-(zEP &ep1, zEP &ep2);
-  friend zEP operator*(zEP &ep1, double k);
+  zEP operator*(double k);
   zEP &sub(zEP &e);
   zEP &rev();
   zEP &mul(double k);
@@ -235,9 +235,9 @@ inline zEP operator-(zEP &ep1, zEP &ep2){
   zEPSub( &ep1, &ep2, &e );
   return e;
 }
-inline zEP operator*(zEP &ep1, double k){
+inline zEP zEP::operator*(double k){
   zEP e;
-  zEPMul( &ep1, k, &e );
+  zEPMul( this, k, &e );
   return e;
 }
 inline zEP &zEP::sub(zEP &e){ return *zEPSubDRC( this, &e ); }

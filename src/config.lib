@@ -19,7 +19,6 @@ OBJ=zeo_misc.o\
 	zeo_mshape3d.o\
 	zeo_map.o zeo_map_terra.o\
 	zeo_mapnet.o
-DLIB=libzeo.so
 
 ifeq ($(CONFIG_USE_DAE),y)
 	OBJ += zeo_ph_dae.o

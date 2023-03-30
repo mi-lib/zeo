@@ -1,3 +1,6 @@
+2023. 3.30. Redefined operator* for zEP as a member function. [zeo_ep]
+2023. 3.29. Reflected new specification of zArrayClass and zArray2Class. [zeo_render_texture, zeo_vec2d_list, zeo_vec3d_list, zeo_vec3d_tree, zeo_ph, zeo_ph_stl, zeo_ph_ply, zeo_ph_obj, zeo_nurbs, zeo_shape3d_sphere, zeo_shape3d_cyl, zeo_shape3d_cone, zeo_shape3d_ellips, zeo_shape3d_ecyl, zeo_bv3d_obb, zeo_brep, zeo_brep_trunc, zeo_col_gjk, zeo_col_ph, zeo_mshape3d, zeo_map_terra, zeo_mapnet]
+2023. 3.29. Modified config.lib and config.tools for C++ compilation. [src, tools]
 2023. 3.26. Defined zNURBS3DVecTan, zNURBS3DVecNorm, and zNURBS3D1VecTan. [zeo_nurbs]
 2023. 3.26. Renamed zNURBS3DVecNorm to zNURBS3DVecTSpace. [zeo_nurbs]
 2023. 3.25. Renamed dim member of zNURBS3D to order. [zeo_nurbs]

@@ -164,7 +164,7 @@ typedef struct{
 
 static void _zPLYInit(zPLY *ply)
 {
-  uint i;
+  int i;
 
   ply->format = ZEO_PLY_FORMAT_NONE;
   strcpy( ply->version, "\0\0\0\0" );
@@ -526,7 +526,7 @@ static void _zPH3DFWritePLYHeader(FILE *fp, zPH3D *ph, const char *format)
 
 static void _zPH3DFWritePLYDataASCII(FILE *fp, zPH3D *ph)
 {
-  uint i;
+  int i;
 
   for( i=0; i<zPH3DVertNum(ph); i++ )
     zVec3DDataNLFPrint( fp, zPH3DVert(ph,i) );
@@ -539,7 +539,7 @@ static void _zPH3DFWritePLYDataASCII(FILE *fp, zPH3D *ph)
 
 static void _zPH3DFWritePLYDataBin(FILE *fp, zPH3D *ph)
 {
-  uint i;
+  int i;
 
   for( i=0; i<zPH3DVertNum(ph); i++ ){
     fwrite_float( fp, zPH3DVert(ph,i)->e[0] );

@@ -24,7 +24,7 @@ zMShape3D *zMShape3DInit(zMShape3D *ms)
 /* destroy multiple shapes. */
 void zMShape3DDestroy(zMShape3D *ms)
 {
-  uint i;
+  int i;
 
   if( !ms ) return;
   for( i=0; i<zMShape3DShapeNum(ms); i++ )
@@ -42,7 +42,7 @@ void zMShape3DDestroy(zMShape3D *ms)
 zMShape3D *zMShape3DClone(zMShape3D *org)
 {
   zMShape3D *cln;
-  uint i;
+  int i;
 
   if( !( cln = zAlloc( zMShape3D, 1 ) ) ){
     ZALLOCERROR();
@@ -73,7 +73,7 @@ zMShape3D *zMShape3DClone(zMShape3D *org)
 /* find contiguous vertex of multiple shapes to a point. */
 zVec3D *zMShape3DContigVert(zMShape3D *ms, zVec3D *p, double *d)
 {
-  uint i;
+  int i;
   zVec3D *v, *nv;
   double _d, dmin;
 
@@ -94,7 +94,7 @@ zVec3D *zMShape3DContigVert(zMShape3D *ms, zVec3D *p, double *d)
 /* find the closest point on multiple shapes from a point. */
 double zMShape3DClosest(zMShape3D *ms, zVec3D *p, zVec3D *cp)
 {
-  uint i;
+  int i;
   zVec3D ncp;
   double d, dmin;
 
@@ -110,7 +110,7 @@ double zMShape3DClosest(zMShape3D *ms, zVec3D *p, zVec3D *cp)
 /* check if a point is inside of multiple shapes. */
 bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, double margin)
 {
-  uint i;
+  int i;
 
   for( i=0; i<zMShape3DShapeNum(ms); i++ )
     if( zShape3DPointIsInside( zMShape3DShape(ms,i), p, margin ) )
@@ -121,7 +121,7 @@ bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, double margin)
 /* convert multiple shapes to polyhedra. */
 zMShape3D *zMShape3DToPH(zMShape3D *ms)
 {
-  uint i;
+  int i;
 
   for( i=0; i<zMShape3DShapeNum(ms); i++ )
     if( !zShape3DToPH( zMShape3DShape(ms,i) ) ) return NULL;
@@ -132,7 +132,7 @@ zMShape3D *zMShape3DToPH(zMShape3D *ms)
 zVec3DList *zMShape3DVertList(zMShape3D *ms, zVec3DList *vl)
 {
   zShape3D *sp, s;
-  uint i, j;
+  int i, j;
 
   zListInit( vl );
   for( i=0; i<zMShape3DShapeNum(ms); i++ ){
@@ -187,7 +187,7 @@ static ZTKPrp __ztk_prp_mshape[] = {
 /* read multiple 3D shapes from a ZTK format processor. */
 zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk)
 {
-  uint num_optic, num_texture, num_shape;
+  int num_optic, num_texture, num_shape;
 
   zMShape3DInit( ms );
   num_optic = ZTKCountTag( ztk, ZTK_TAG_OPTIC );
@@ -210,7 +210,7 @@ zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk)
 /* print multiple 3D shapes out to a file. */
 void zMShape3DFPrintZTK(FILE *fp, zMShape3D *ms)
 {
-  uint i;
+  int i;
 
   for( i=0; i<zMShape3DOpticNum(ms); i++ ){
     fprintf( fp, "[%s]\n", ZTK_TAG_OPTIC );

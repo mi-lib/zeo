@@ -158,7 +158,7 @@ double zVec3DTreeNN(zVec3DTree *tree, zVec3D *v, zVec3DTree **nn)
 /* convert an array of 3D vectors to a 3D vector tree. */
 zVec3DTree *zVec3DArray2Tree(zVec3DArray *array, zVec3DTree *tree)
 {
-  uint i;
+  int i;
 
   zVec3DTreeInit( tree );
   for( i=0; i<zArraySize(array); i++ )
@@ -172,7 +172,7 @@ static zVec3DArray *_zVec3DTree2Array(zVec3DTree *tree, zVec3DArray *array)
   bool ret0, ret1;
 
   ret0 = ret1 = true;
-  if( !zArraySetElem( array, (uint)tree->data.id, &tree->data.v ) ) return NULL;
+  if( !zArraySetElem( array, tree->data.id, &tree->data.v ) ) return NULL;
   if( tree->child[0] )
     ret0 = _zVec3DTree2Array( tree->child[0], array ) ? true : false;
   if( tree->child[1] )

@@ -202,7 +202,7 @@ zPH3D *zECyl3DToPH(zECyl3D *cyl, zPH3D *ph)
   zVec3D *vert, d, r;
   zTri3D *face;
   double s, c;
-  uint i, j, n;
+  int i, j, n;
 
   if( !zPH3DAlloc( ph, zECyl3DDiv(cyl)*2, (zECyl3DDiv(cyl)-1)*4 ) )
     return NULL;

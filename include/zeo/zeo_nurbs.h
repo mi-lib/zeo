@@ -39,9 +39,9 @@ zArray2Class( zNURBS3DCPNet, zNURBS3DCPCell );
  * zNURBS3D is a 3D NURBS that represents curve and surface.
  *//* ******************************************************* */
 ZDEF_STRUCT( zNURBS3D ){
-  uint order[2];   /*!< \brief orders of a curve in two axes */
+  int order[2];   /*!< \brief orders of a curve in two axes */
   zVec knot[2]; /*!< \brief knot vectors */
-  uint ns[2];    /*!< \brief number of slices in each axis */
+  int ns[2];    /*!< \brief number of slices in each axis */
   /*! \cond */
   zNURBS3DCPNet cpnet; /* a net of control points */
   /*! \endcond */
@@ -100,7 +100,7 @@ ZDEF_STRUCT( zNURBS3D ){
  * points in corresponding axis plus one or they fail to allocate
  * memory, the false value is returned.
  */
-__EXPORT bool zNURBS3DAlloc(zNURBS3D *nurbs, uint size1, uint size2, uint order1, uint order2);
+__EXPORT bool zNURBS3DAlloc(zNURBS3D *nurbs, int size1, int size2, int order1, int order2);
 #define zNURBS3D1Alloc(nurbs,size,order) zNURBS3DAlloc( nurbs, 1, size, 0, order )
 
 /*! \brief set numbers of slices of a NURBS curve / surface. */

@@ -43,7 +43,7 @@ zPH3D *zPH3DAlloc(zPH3D *ph, int vn, int fn)
 /* clone a 3D polyhedron. */
 zPH3D *zPH3DClone(zPH3D *src, zPH3D *dest)
 {
-  uint i;
+  int i;
 
   if( !zPH3DAlloc( dest, zPH3DVertNum(src), zPH3DFaceNum(src) ) )
     return NULL;
@@ -60,7 +60,7 @@ zPH3D *zPH3DClone(zPH3D *src, zPH3D *dest)
 /* mirror a 3D polyhedron. */
 zPH3D *zPH3DMirror(zPH3D *src, zPH3D *dest, zAxis axis)
 {
-  uint i;
+  int i;
 
   if( !zPH3DClone( src, dest ) ) return NULL;
   for( i=0; i<zPH3DVertNum(dest); i++ )
@@ -76,7 +76,7 @@ zPH3D *zPH3DMirror(zPH3D *src, zPH3D *dest, zAxis axis)
 /* scale a 3D polyhedron. */
 zPH3D *zPH3DScale(zPH3D *ph, double scale)
 {
-  uint i;
+  int i;
 
   for( i=0; i<zPH3DVertNum(ph); i++ )
     zVec3DMulDRC( zPH3DVert(ph,i), scale );
@@ -96,7 +96,7 @@ void zPH3DDestroy(zPH3D *ph)
  * NOTE: it assumes that 'src' is already cloned to 'dest'. */
 zPH3D *zPH3DXform(zPH3D *src, zFrame3D *f, zPH3D *dest)
 {
-  uint i;
+  int i;
 
   for( i=0; i<zPH3DVertNum(dest); i++ )
     zXform3D( f, zPH3DVert(src,i), zPH3DVert(dest,i) );
@@ -109,7 +109,7 @@ zPH3D *zPH3DXform(zPH3D *src, zFrame3D *f, zPH3D *dest)
  * NOTE: it assumes that src is already cloned to dest. */
 zPH3D *zPH3DXformInv(zPH3D *src, zFrame3D *f, zPH3D *dest)
 {
-  uint i;
+  int i;
 
   for( i=0; i<zPH3DVertNum(dest); i++ )
     zXform3DInv( f, zPH3DVert(src,i), zPH3DVert(dest,i) );
@@ -121,7 +121,7 @@ zPH3D *zPH3DXformInv(zPH3D *src, zFrame3D *f, zPH3D *dest)
 /* contiguous vertix of a 3D polyhedron to a point. */
 zVec3D *zPH3DContigVert(zPH3D *ph, zVec3D *p, double *d)
 {
-  uint i;
+  int i;
   zVec3D *v, *nv;
   double _d, dmin;
 
@@ -147,7 +147,7 @@ zVec3D *zPH3DContigVert(zPH3D *ph, zVec3D *p, double *d)
  */
 double zPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp)
 {
-  uint i;
+  int i;
   zVec3D ncp;
   double d, dmin;
 
@@ -185,7 +185,7 @@ bool zPH3DPointIsInside(zPH3D *ph, zVec3D *p, double margin)
 /* volume of a 3D polyhedron. */
 double zPH3DVolume(zPH3D *ph)
 {
-  uint i;
+  int i;
   double v;
 
   for( v=0, i=0; i<zPH3DFaceNum(ph); i++ )
@@ -196,7 +196,7 @@ double zPH3DVolume(zPH3D *ph)
 /* barycenter of a 3D polyhedron. */
 zVec3D *zPH3DBarycenter(zPH3D *ph, zVec3D *c)
 {
-  uint i;
+  int i;
   zVec3D bc;
   double v, vol;
 
@@ -215,7 +215,7 @@ zVec3D *zPH3DBarycenter(zPH3D *ph, zVec3D *c)
 /* inertia tensor of a 3D polyhedron. */
 zMat3D *zPH3DInertia(zPH3D *ph, double density, zMat3D *inertia)
 {
-  uint j;
+  int j;
   zMat3D i;
 
   zMat3DZero( inertia );
@@ -277,9 +277,9 @@ static int _zPH3DSweepBottom(zVec3DArray *va, zTri3D f[], zVec3D *ref)
 }
 
 /* create a prism by extrusion from the bottom loop. */
-zPH3D *zPH3DCreatePrism(zPH3D *prism, zVec3D bottom[], uint n, zVec3D *shift)
+zPH3D *zPH3DCreatePrism(zPH3D *prism, zVec3D bottom[], int n, zVec3D *shift)
 {
-  uint i, i1, nf;
+  int i, i1, nf;
   zTri3D *(*_tri)(zTri3D*,zVec3D*,zVec3D*,zVec3D*) = zTri3DCreate;
   zTri3D *fbuf;
   zVec3D ref;
@@ -328,9 +328,9 @@ zPH3D *zPH3DCreatePrism(zPH3D *prism, zVec3D bottom[], uint n, zVec3D *shift)
 }
 
 /* create a pyramid from the bottom loop and a vertex. */
-zPH3D *zPH3DCreatePyramid(zPH3D *pyr, zVec3D bottom[], uint n, zVec3D *vert)
+zPH3D *zPH3DCreatePyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3D *vert)
 {
-  uint i, i1, nf;
+  int i, i1, nf;
   zTri3D *(*_tri)(zTri3D*,zVec3D*,zVec3D*,zVec3D*) = zTri3DCreate;
   zTri3D *fbuf;
   zVec3D ref;
@@ -372,9 +372,9 @@ zPH3D *zPH3DCreatePyramid(zPH3D *pyr, zVec3D bottom[], uint n, zVec3D *vert)
 }
 
 /* create a torus from a section loop. */
-zPH3D *zPH3DCreateTorus(zPH3D *torus, zVec3D loop[], uint n, uint div, zVec3D *center, zVec3D *axis)
+zPH3D *zPH3DCreateTorus(zPH3D *torus, zVec3D loop[], int n, int div, zVec3D *center, zVec3D *axis)
 {
-  uint i, i0, j, j0, k;
+  int i, i0, j, j0, k;
   zVec3D d, a, *v;
 
   if( !zPH3DAlloc( torus, n*div, 2*n*div ) ) return NULL;
@@ -401,9 +401,9 @@ zPH3D *zPH3DCreateTorus(zPH3D *torus, zVec3D loop[], uint n, uint div, zVec3D *c
 }
 
 /* create a solid revolution by lathe. */
-zPH3D *zPH3DCreateLathe(zPH3D *lathe, zVec3D rim[], uint n, uint div, zVec3D *center, zVec3D *axis)
+zPH3D *zPH3DCreateLathe(zPH3D *lathe, zVec3D rim[], int n, int div, zVec3D *center, zVec3D *axis)
 {
-  uint i, i0, j, j0, k;
+  int i, i0, j, j0, k;
   zVec3D d, a, *v;
 
   if( !zPH3DAlloc( lathe, n*div, 2*(n-1)*div+2*(div-2) ) ) return NULL;
@@ -456,7 +456,7 @@ static void *_zPH3DVertFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 
 static void *_zPH3DFaceFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 {
-  uint i0, i1, i2;
+  int i0, i1, i2;
 
   if( ( i0 = ZTKInt(ztk) ) >= zPH3DVertNum((zPH3D*)obj) ){
     ZRUNERROR( ZEO_ERR_PH_INVALID_VERT_ID, i0 );
@@ -615,7 +615,7 @@ static ZTKPrp __ztk_prp_ph[] = {
 /* read a 3D polyhedron from a ZTK format processor. */
 zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk)
 {
-  uint num_vert, num_face;
+  int num_vert, num_face;
   zVec3DArray varray;
 
   zPH3DInit( ph );
@@ -646,7 +646,7 @@ zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk)
 /* print a 3D polyhedron to a file. */
 void zPH3DFPrintZTK(FILE *fp, zPH3D *ph)
 {
-  uint i;
+  int i;
 
   if( !ph || zPH3DVertNum(ph) == 0 ) return;
   for( i=0; i<zPH3DVertNum(ph); i++ ){

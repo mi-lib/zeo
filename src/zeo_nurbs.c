@@ -9,7 +9,7 @@
 /* set knots & assign control points & initialize weight uniformly. */
 static void _zNURBS3DKnotInit(zNURBS3D *nurbs, int i)
 {
-  uint j;
+  int j;
 
   for( j=0; j<=nurbs->order[i]; j++ )
     zNURBS3DSetKnot( nurbs, i, j, 0 );
@@ -20,9 +20,9 @@ static void _zNURBS3DKnotInit(zNURBS3D *nurbs, int i)
 }
 
 /* allocate a NURBS curve / surface. */
-bool zNURBS3DAlloc(zNURBS3D *nurbs, uint size1, uint size2, uint order1, uint order2)
+bool zNURBS3DAlloc(zNURBS3D *nurbs, int size1, int size2, int order1, int order2)
 {
-  uint i, j;
+  int i, j;
 
   if( size1 <= order1 || size2 <= order2 ){
     ZRUNERROR( ZEO_ERR_NURBS_INVORDER );
@@ -98,7 +98,7 @@ zNURBS3D *zNURBS3DClone(zNURBS3D *src, zNURBS3D *dest)
 /* mirror a NURBS curve / surface about specified axis. */
 zNURBS3D *zNURBS3DMirror(zNURBS3D *src, zNURBS3D *dest, zAxis axis)
 {
-  uint i, j;
+  int i, j;
 
   if( !zNURBS3DCopy( src, dest ) ) return NULL;
   for( i=0; i<zNURBS3DCPNum(dest,0); i++ )
@@ -110,7 +110,7 @@ zNURBS3D *zNURBS3DMirror(zNURBS3D *src, zNURBS3D *dest, zAxis axis)
 /* transform control points of a NURBS curve / surface. */
 zNURBS3D *zNURBS3DXform(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest)
 {
-  uint i, j;
+  int i, j;
 
   if( !zNURBS3DCopy( src, dest ) ) return NULL;
   for( i=0; i<zNURBS3DCPNum(dest,0); i++ )
@@ -122,7 +122,7 @@ zNURBS3D *zNURBS3DXform(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest)
 /* inversely transform control points of a NURBS curve / surface. */
 zNURBS3D *zNURBS3DXformInv(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest)
 {
-  uint i, j;
+  int i, j;
 
   if( !zNURBS3DCopy( src, dest ) ) return NULL;
   for( i=0; i<zNURBS3DCPNum(dest,0); i++ )
@@ -143,7 +143,7 @@ void zNURBS3DKnotNormalize(zNURBS3D *nurbs)
 /* find a knot segment that includes the given parameter. */
 static int _zNURBS3DSeg(zNURBS3D *nurbs, int i, double t)
 {
-  uint j, k, l;
+  int j, k, l;
 
   for( j=nurbs->order[i], k=zNURBS3DCPNum(nurbs,i); ; ){
     while( zNURBS3DKnot(nurbs,i,j+1) == zNURBS3DKnot(nurbs,i,j) ) j++;
@@ -183,7 +183,7 @@ static double _zNURBS3DBasis(zNURBS3D *nurbs, int i, double t, int j, int r, int
 /* compute a vector on a NURBS curve / surface. */
 zVec3D *zNURBS3DVec(zNURBS3D *nurbs, double u, double v, zVec3D *p)
 {
-  uint su, sv, i, j;
+  int su, sv, i, j;
   double bu, bv, dv, den;
   zVec3D tmp;
 
@@ -218,7 +218,7 @@ static double _zNURBS3DBasisDiff(zNURBS3D *nurbs, int i, double t, int j, int r,
 /* compute a position and normal vectors on NURBS surface. */
 zVec3D *zNURBS3DVecTSpace(zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *n, zVec3D *t1, zVec3D *t2)
 {
-  uint su, sv, i, j;
+  int su, sv, i, j;
   double bu, bv, dbu, dbv, dv, ddv, dubv, budv, den;
   zVec3D *tu, *tv, tu_tmp, tv_tmp, pv_tmp, dpv_tmp;
 
@@ -303,7 +303,7 @@ zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph)
 {
   zVec3D *vert, *vert2;
   zTri3D *face;
-  uint i, j;
+  int i, j;
   double u, v;
 
   if( !zPH3DAlloc( ph,
@@ -333,7 +333,7 @@ zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph)
 
 static zVec _zNURBS3DKnotFromZTK(zNURBS3D *nurbs, int id, ZTK *ztk)
 {
-  uint i;
+  int i;
 
   if( !ZTKValRewind(ztk) ) return NULL;
   if( nurbs->knot[id] ){
@@ -363,7 +363,7 @@ static void *_zNURBS3DSliceFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 static void *_zNURBS3DSizeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  uint size1, size2;
+  int size1, size2;
   if( zNURBS3DCPNum((zNURBS3D*)obj,0) > 0 || zNURBS3DCPNum((zNURBS3D*)obj,1) > 0 ){
     ZRUNWARN( ZEO_ERR_NURBS_CPALREADY );
     zArray2Free( &((zNURBS3D*)obj)->cpnet );
@@ -375,7 +375,7 @@ static void *_zNURBS3DSizeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
          zArray2ColSize(&((zNURBS3D*)obj)->cpnet) == size2 ? obj : NULL;
 }
 static void *_zNURBS3DCPFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  uint j, k;
+  int j, k;
   j = ZTKInt( ztk );
   k = ZTKInt( ztk );
   if( !zArray2PosIsValid( &((zNURBS3D*)obj)->cpnet, j, k ) ){
@@ -422,7 +422,7 @@ zNURBS3D *zNURBS3DFromZTK(zNURBS3D *nurbs, ZTK *ztk)
 /* print out a 3D NURBS to a file. */
 void zNURBS3DFPrintZTK(FILE *fp, zNURBS3D *nurbs)
 {
-  uint i, j;
+  int i, j;
 
   ZTKPrpKeyFPrint( fp, nurbs, __ztk_prp_nurbs );
   for( i=0; i<zNURBS3DCPNum(nurbs,0); i++ )

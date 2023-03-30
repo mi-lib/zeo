@@ -20,7 +20,7 @@ typedef struct{
   zVec3D center[2];
   double radius[2];
   zVec3D rv[2];
-  uint div;
+  int div;
 } zECyl3D;
 
 #define zECyl3DCenter(c,i)     ( &(c)->center[(i)] )
