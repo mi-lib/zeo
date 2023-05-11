@@ -62,9 +62,9 @@ static zRGB *_zRGBHex(zRGB *rgb, char *hex)
     ZRUNWARN( ZEO_ERR_RGB, hex, len );
   len /= 3;
   for( r=g=b=d=0, i=0; i<len; i++ ){
-    r <<= 4; r |= atox_c( hex[i] );
-    g <<= 4; g |= atox_c( hex[i+len] );
-    b <<= 4; b |= atox_c( hex[i+len*2] );
+    r <<= 4; r |= zA2X_c( hex[i] );
+    g <<= 4; g |= zA2X_c( hex[i+len] );
+    b <<= 4; b |= zA2X_c( hex[i+len*2] );
     d <<= 4; d |= 0xf;
   }
   return zRGBSet( rgb, (float)r/d, (float)g/d, (float)b/d );
