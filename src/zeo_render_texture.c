@@ -63,11 +63,11 @@ zTexture *zTextureClone(zTexture *org, zTexture *cln)
   cln->filename = zStrClone( org->filename );
   zArrayAlloc( &cln->coord, zVec2D, zTextureCoordNum(org) );
   zArrayAlloc( &cln->face, zTri2D, zTextureFaceNum(org) );
-  cln->buf = (ubyte *)zClone( org->buf, sizeof(ubyte)*org->width*org->height*3 );
+  cln->buf = (ubyte *)zClone( org->buf, sizeof(ubyte)*org->width*org->height*4 );
   wh = ( cln->width = org->width ) / 2;
   hh = ( cln->height = org->height ) / 2;
   for( res=true, i=0; i<6; i++ )
-    if( org->lbuf[i] && !( cln->lbuf[i] = (ubyte *)zClone( org->lbuf[i], sizeof(ubyte)*wh*hh*3 ) ) ) res = false;
+    if( org->lbuf[i] && !( cln->lbuf[i] = (ubyte *)zClone( org->lbuf[i], sizeof(ubyte)*wh*hh*4 ) ) ) res = false;
   if( !cln->filename || !cln->coord.buf || !cln->face.buf || !cln->buf || !res ) goto FAILURE;
   return cln;
 
@@ -89,9 +89,9 @@ bool zTextureBumpAlloc(zTexture *bump, int width, int height)
 
   wh = ( bump->width = width ) / 2;
   hh = ( bump->height = height ) / 2;
-  bump->buf = zAlloc( ubyte, width * height * 3 );
+  bump->buf = zAlloc( ubyte, width * height * 4 );
   for( i=0; i<6; i++ )
-    if( !( bump->lbuf[i] = zAlloc( ubyte, wh * hh * 3 ) ) ) ret = false;
+    if( !( bump->lbuf[i] = zAlloc( ubyte, wh * hh * 4 ) ) ) ret = false;
   if( !bump->buf || !ret ){
     zTextureDestroy( bump );
     return false;

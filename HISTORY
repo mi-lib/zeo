@@ -1,3 +1,4 @@
+2023. 5.15. Modified zTextureClone and zTextureBumpAlloc to allocate 4 bytes for each pixel of a texture. [zeo_render_texture]
 2023. 5.12. Added a note in comments of zGJK and zGJKPL. [zeo_col_gjk]
 2023. 5.12. Reflected renaming of atox_c to zA2X_c to _zRGBHex. [zeo_render_color]
 2023. 3.30. Redefined operator* for zEP as a member function. [zeo_ep]
