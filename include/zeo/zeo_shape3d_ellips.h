@@ -56,13 +56,13 @@ typedef struct{
  * zEllips3DInit() and zEllips3DCreate() return a pointer \a ellips.
  * zEllips3DCopy() returns a pointer \a dest.
  */
-__EXPORT zEllips3D *zEllips3DCreate(zEllips3D *ellips, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double rx, double ry, double rz, int div);
+__ZEO_EXPORT zEllips3D *zEllips3DCreate(zEllips3D *ellips, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double rx, double ry, double rz, int div);
 #define zEllips3DCreateAlign(e,c,rx,ry,rz,d) \
   zEllips3DCreate( e, c, ZVEC3DX, ZVEC3DY, ZVEC3DZ, rx, ry, rz, d )
-__EXPORT zEllips3D *zEllips3DInit(zEllips3D *ellips);
-__EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zEllips3D );
-__EXPORT zEllips3D *zEllips3DCopy(zEllips3D *src, zEllips3D *dest);
-__EXPORT zEllips3D *zEllips3DMirror(zEllips3D *src, zEllips3D *dest, zAxis axis);
+__ZEO_EXPORT zEllips3D *zEllips3DInit(zEllips3D *ellips);
+__ZEO_EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zEllips3D );
+__ZEO_EXPORT zEllips3D *zEllips3DCopy(zEllips3D *src, zEllips3D *dest);
+__ZEO_EXPORT zEllips3D *zEllips3DMirror(zEllips3D *src, zEllips3D *dest, zAxis axis);
 
 /*! \brief transform coordinates of a 3D ellipsoid.
  *
@@ -74,8 +74,8 @@ __EXPORT zEllips3D *zEllips3DMirror(zEllips3D *src, zEllips3D *dest, zAxis axis)
  * \return
  * zEllips3DXform() and zEllips3DXformInv() return a pointer \a dest.
  */
-__EXPORT zEllips3D *zEllips3DXform(zEllips3D *src, zFrame3D *f, zEllips3D *dest);
-__EXPORT zEllips3D *zEllips3DXformInv(zEllips3D *src, zFrame3D *f, zEllips3D *dest);
+__ZEO_EXPORT zEllips3D *zEllips3DXform(zEllips3D *src, zFrame3D *f, zEllips3D *dest);
+__ZEO_EXPORT zEllips3D *zEllips3DXformInv(zEllips3D *src, zFrame3D *f, zEllips3D *dest);
 
 /*! \brief distance from a 3D point to a 3D ellipsoid.
  *
@@ -98,9 +98,9 @@ __EXPORT zEllips3D *zEllips3DXformInv(zEllips3D *src, zFrame3D *f, zEllips3D *de
  * zEllips3DPointIsInside() returns the true value if \a p is
  * inside of \a ellips, or the false value otherwise.
  */
-__EXPORT double zEllips3DClosest(zEllips3D *ellips, zVec3D *p, zVec3D *cp);
-__EXPORT double zEllips3DPointDist(zEllips3D *ellips, zVec3D *p);
-__EXPORT bool zEllips3DPointIsInside(zEllips3D *ellips, zVec3D *p, double margin);
+__ZEO_EXPORT double zEllips3DClosest(zEllips3D *ellips, zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT double zEllips3DPointDist(zEllips3D *ellips, zVec3D *p);
+__ZEO_EXPORT bool zEllips3DPointIsInside(zEllips3D *ellips, zVec3D *p, double margin);
 
 /*! \brief calculate volume a 3D ellipsoid.
  *
@@ -109,7 +109,7 @@ __EXPORT bool zEllips3DPointIsInside(zEllips3D *ellips, zVec3D *p, double margin
  * \return
  * zEllips3DVolume() returns the calculated volume.
  */
-__EXPORT double zEllips3DVolume(zEllips3D *ellips);
+__ZEO_EXPORT double zEllips3DVolume(zEllips3D *ellips);
 
 /*! \brief inertia tensor of a 3D ellipsoid.
  *
@@ -125,8 +125,8 @@ __EXPORT double zEllips3DVolume(zEllips3D *ellips);
  * \sa
  * zEllips3DVolume()
  */
-__EXPORT zMat3D *zEllips3DBaryInertiaMass(zEllips3D *ellips, double mass, zMat3D *inertia);
-__EXPORT zMat3D *zEllips3DBaryInertia(zEllips3D *ellips, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zEllips3DBaryInertiaMass(zEllips3D *ellips, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zEllips3DBaryInertia(zEllips3D *ellips, double density, zMat3D *inertia);
 
 /*! \brief convert an ellipsoid to a polyhedron.
  *
@@ -141,19 +141,19 @@ __EXPORT zMat3D *zEllips3DBaryInertia(zEllips3D *ellips, double density, zMat3D 
  * zCyl3DToPH(), zCyl3DToPHDRC(), zCone3DToPH(), zCone3DToPHDRC()
  */
 /* default longitudinal & latitudinal division number are the same. */
-__EXPORT zPH3D *zEllips3DToPH(zEllips3D *ellips, zPH3D *ph);
+__ZEO_EXPORT zPH3D *zEllips3DToPH(zEllips3D *ellips, zPH3D *ph);
 
 /*! \brief print a 3D ellipsoid out to a file in a ZTK format. */
-__EXPORT void zEllips3DFPrintZTK(FILE *fp, zEllips3D *ellips);
+__ZEO_EXPORT void zEllips3DFPrintZTK(FILE *fp, zEllips3D *ellips);
 
 /* methods for abstraction */
-__EXPORT zShape3DCom zeo_shape3d_ellips_com;
+__ZEO_EXPORT zShape3DCom zeo_shape3d_ellips_com;
 
 #define zShape3DEllips(s) ( (zEllips3D*)(s)->body )
 
-__EXPORT zShape3D *zShape3DEllipsCreate(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double rx, double ry, double rz, int div);
+__ZEO_EXPORT zShape3D *zShape3DEllipsCreate(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double rx, double ry, double rz, int div);
 
-__EXPORT zShape3D *zShape3DEllipsCreateAlign(zShape3D *shape, zVec3D *c, double rx, double ry, double rz, int div);
+__ZEO_EXPORT zShape3D *zShape3DEllipsCreateAlign(zShape3D *shape, zVec3D *c, double rx, double ry, double rz, int div);
 
 __END_DECLS
 

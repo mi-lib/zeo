@@ -32,7 +32,7 @@
 #include <zeo/zeo_mshape3d.h>
 #include <zeo/zeo_bv3d.h>
 #include <zeo/zeo_voronoi2d.h>
-#include <zeo/zeo_col.h>
+#include <zeo/zeo_brep.h>
 #include <zeo/zeo_map.h>
 
 #endif /* __ZEO_H__ */

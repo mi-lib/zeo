@@ -42,7 +42,7 @@ typedef struct{
  * \return
  * zPlane3DInit() and zPlane3DCreate() return a pointer \a p.
  */
-__EXPORT zPlane3D *zPlane3DCreate(zPlane3D *p, zVec3D *v, zVec3D *n);
+__ZEO_EXPORT zPlane3D *zPlane3DCreate(zPlane3D *p, zVec3D *v, zVec3D *n);
 #define zPlane3DInit(p) zPlane3DCreate( (p), ZVEC3DZERO, ZVEC3DZ )
 
 /*! \brief distance between a 3D point and a 3D plane, and projection of
@@ -63,9 +63,9 @@ __EXPORT zPlane3D *zPlane3DCreate(zPlane3D *p, zVec3D *v, zVec3D *n);
  *
  * zPlane3DProj() returns the distance between \a p and \a v.
  */
-__EXPORT double zPlane3DPointDist(zPlane3D *p, zVec3D *v);
-__EXPORT bool zPlane3DPointIsOn(zPlane3D *p, zVec3D *v);
-__EXPORT double zPlane3DProj(zPlane3D *p, zVec3D *v, zVec3D *cp);
+__ZEO_EXPORT double zPlane3DPointDist(zPlane3D *p, zVec3D *v);
+__ZEO_EXPORT bool zPlane3DPointIsOn(zPlane3D *p, zVec3D *v);
+__ZEO_EXPORT double zPlane3DProj(zPlane3D *p, zVec3D *v, zVec3D *cp);
 
 /*! \brief mean plane of set of points.
  *
@@ -78,7 +78,7 @@ __EXPORT double zPlane3DProj(zPlane3D *p, zVec3D *v, zVec3D *cp);
  * \return
  * zPlane3DMean() returns a pointer \a pl.
  */
-__EXPORT zPlane3D *zPlane3DMean(zPlane3D *pl, zVec3D *pc, zVec3D v[], int n);
+__ZEO_EXPORT zPlane3D *zPlane3DMean(zPlane3D *pl, zVec3D *pc, zVec3D v[], int n);
 
 /*! \brief print a 3D plane.
  *
@@ -93,7 +93,7 @@ __EXPORT zPlane3D *zPlane3DMean(zPlane3D *pl, zVec3D *pc, zVec3D v[], int n);
  * \return
  * Neither zPlane3DFPrint() nor zPlane3DPrint() return any values.
  */
-__EXPORT void zPlane3DFPrint(FILE *fp, zPlane3D *p);
+__ZEO_EXPORT void zPlane3DFPrint(FILE *fp, zPlane3D *p);
 #define zPlane3DPrint(p) zPlane3DFPrint( stdout, (p) )
 
 /* ********************************************************** */
@@ -119,8 +119,8 @@ typedef struct{
  * \return
  * Each of zEdge3DInit() and zEdge3DCreate() returns a pointer \a e.
  */
-__EXPORT ZEDGEXD_INIT_PROTOTYPE( 3D );
-__EXPORT ZEDGEXD_CREATE_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEDGEXD_INIT_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEDGEXD_CREATE_PROTOTYPE( 3D );
 
 /*! \brief path vector of a 3D edge.
  *
@@ -130,7 +130,7 @@ __EXPORT ZEDGEXD_CREATE_PROTOTYPE( 3D );
  * \return
  * zEdge3DCalcVec() returns the pointer to the path vector.
  */
-__EXPORT ZEDGEXD_CALC_VEC_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEDGEXD_CALC_VEC_PROTOTYPE( 3D );
 
 /*! \brief distance between a point and a 3D edge.
  *
@@ -151,13 +151,13 @@ __EXPORT ZEDGEXD_CALC_VEC_PROTOTYPE( 3D );
  *
  * zEdge3DClosest() returns the distance between \a p and \a cp.
  */
-__EXPORT ZEDGEXD_PROJ_PROTOTYPE( 3D );
-__EXPORT ZEDGEXD_POINT_DIST_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEDGEXD_PROJ_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEDGEXD_POINT_DIST_PROTOTYPE( 3D );
 
-__EXPORT bool zEdge3DPointIsOn(zEdge3D *e, zVec3D *p);
+__ZEO_EXPORT bool zEdge3DPointIsOn(zEdge3D *e, zVec3D *p);
 
-__EXPORT ZEDGEXD_LINSCALE_PROTOTYPE( 3D );
-__EXPORT ZEDGEXD_CLOSEST_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEDGEXD_LINSCALE_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEDGEXD_CLOSEST_PROTOTYPE( 3D );
 
 /*! \brief contiguous vertix of edge to a point.
  *
@@ -167,7 +167,7 @@ __EXPORT ZEDGEXD_CLOSEST_PROTOTYPE( 3D );
  * \return
  * zEdge3DContigVert() returns a pointer to the found vertix.
  */
-__EXPORT zVec3D *zEdge3DContigVert(zEdge3D *e, zVec3D *p, double *d);
+__ZEO_EXPORT zVec3D *zEdge3DContigVert(zEdge3D *e, zVec3D *p, double *d);
 
 /*! \brief print a 3D edge.
  *
@@ -183,7 +183,7 @@ __EXPORT zVec3D *zEdge3DContigVert(zEdge3D *e, zVec3D *p, double *d);
  * \return
  * zEdge3DFPrint() and zEdge3DPrint() return no values.
  */
-__EXPORT void zEdge3DFPrint(FILE *fp, zEdge3D *e);
+__ZEO_EXPORT void zEdge3DFPrint(FILE *fp, zEdge3D *e);
 #define zEdge3DPrint(e) zEdge3DFPrint( stdout, (e) )
 
 /* ********************************************************** */
@@ -222,10 +222,10 @@ typedef struct{
  *
  * zTri3DRev() returns a pointer \a dest.
  */
-__EXPORT zTri3D *zTri3DInit(zTri3D *t);
-__EXPORT zTri3D *zTri3DCreate(zTri3D *t, zVec3D *v1, zVec3D *v2, zVec3D *v3);
-__EXPORT zTri3D *zTri3DCreateRev(zTri3D *t, zVec3D *v1, zVec3D *v2, zVec3D *v3);
-__EXPORT zTri3D *zTri3DRev(zTri3D *src, zTri3D *dest);
+__ZEO_EXPORT zTri3D *zTri3DInit(zTri3D *t);
+__ZEO_EXPORT zTri3D *zTri3DCreate(zTri3D *t, zVec3D *v1, zVec3D *v2, zVec3D *v3);
+__ZEO_EXPORT zTri3D *zTri3DCreateRev(zTri3D *t, zVec3D *v1, zVec3D *v2, zVec3D *v3);
+__ZEO_EXPORT zTri3D *zTri3DRev(zTri3D *src, zTri3D *dest);
 #define zTri3DRevDRC(t) zTri3DRev( t, t )
 
 /*! \brief area and normal vector of a 3D triangle.
@@ -239,8 +239,8 @@ __EXPORT zTri3D *zTri3DRev(zTri3D *src, zTri3D *dest);
  * zTri3DArea() returns the area calculated.
  * zTri3DCalcNorm() returns a pointer to the normal vector.
  */
-__EXPORT double zTri3DArea(zTri3D *t);
-__EXPORT zVec3D *zTri3DCalcNorm(zTri3D *t);
+__ZEO_EXPORT double zTri3DArea(zTri3D *t);
+__ZEO_EXPORT zVec3D *zTri3DCalcNorm(zTri3D *t);
 
 /*! \brief various centers of a 3D triangle.
  *
@@ -252,10 +252,10 @@ __EXPORT zVec3D *zTri3DCalcNorm(zTri3D *t);
  * zTri3DBarycenter(), zTri3DCircumcenter(), zTri3DIncenter() and
  * zTri3DOrthocenter() return a pointer \a c.
  */
-__EXPORT ZTRIXD_BARYCENTER_PROTOTYPE( 3D );
-__EXPORT ZTRIXD_CIRCUMCENTER_PROTOTYPE( 3D );
-__EXPORT ZTRIXD_INCENTER_PROTOTYPE( 3D );
-__EXPORT ZTRIXD_ORTHOCENTER_PROTOTYPE( 3D );
+__ZEO_EXPORT ZTRIXD_BARYCENTER_PROTOTYPE( 3D );
+__ZEO_EXPORT ZTRIXD_CIRCUMCENTER_PROTOTYPE( 3D );
+__ZEO_EXPORT ZTRIXD_INCENTER_PROTOTYPE( 3D );
+__ZEO_EXPORT ZTRIXD_ORTHOCENTER_PROTOTYPE( 3D );
 
 /*! \brief convert a triangle to a plane.
  *
@@ -274,7 +274,7 @@ __EXPORT ZTRIXD_ORTHOCENTER_PROTOTYPE( 3D );
  * \return
  * zTri3DContigVert() returns a pointer to the found vertix.
  */
-__EXPORT zVec3D *zTri3DContigVert(zTri3D *t, zVec3D *p, double *d);
+__ZEO_EXPORT zVec3D *zTri3DContigVert(zTri3D *t, zVec3D *p, double *d);
 
 /*! \brief distance between a point and a triangle.
  *
@@ -296,9 +296,9 @@ __EXPORT zVec3D *zTri3DContigVert(zTri3D *t, zVec3D *p, double *d);
  * zTri3DPointDist() and zTri3DProj() return the distance between \a v
  * and \a t.
  */
-__EXPORT double zTri3DPointDist(zTri3D *t, zVec3D *v);
-__EXPORT bool zTri3DPointIsOn(zTri3D *t, zVec3D *v);
-__EXPORT double zTri3DProj(zTri3D *t, zVec3D *v, zVec3D *cp);
+__ZEO_EXPORT double zTri3DPointDist(zTri3D *t, zVec3D *v);
+__ZEO_EXPORT bool zTri3DPointIsOn(zTri3D *t, zVec3D *v);
+__ZEO_EXPORT double zTri3DProj(zTri3D *t, zVec3D *v, zVec3D *cp);
 
 /*! \brief check if a point is inside of a triangle.
  *
@@ -312,7 +312,7 @@ __EXPORT double zTri3DProj(zTri3D *t, zVec3D *v, zVec3D *cp);
  * zTri3DPointIsInside() returns the true value if \a v is inside of \a t
  * with a margin \a margin. Otherwise, the false value is returned.
  */
-__EXPORT bool zTri3DPointIsInside(zTri3D *t, zVec3D *v, double margin);
+__ZEO_EXPORT bool zTri3DPointIsInside(zTri3D *t, zVec3D *v, double margin);
 
 /*! \brief the closest point from a point to a 3D triangle.
  *
@@ -323,8 +323,8 @@ __EXPORT bool zTri3DPointIsInside(zTri3D *t, zVec3D *v, double margin);
  * zTri3DClosest() returns the distance from \a v to the closest point
  * calculated.
  */
-__EXPORT double zTri3DLinScale(zTri3D *t, zVec3D *p, double *l0, double *l1, double *l2, zVec3D *cp);
-__EXPORT double zTri3DClosest(zTri3D *t, zVec3D *v, zVec3D *cp);
+__ZEO_EXPORT double zTri3DLinScale(zTri3D *t, zVec3D *p, double *l0, double *l1, double *l2, zVec3D *cp);
+__ZEO_EXPORT double zTri3DClosest(zTri3D *t, zVec3D *v, zVec3D *cp);
 
 /*! \brief volume, inertia, barycenter and circumcenter of cone.
  *
@@ -349,10 +349,10 @@ __EXPORT double zTri3DClosest(zTri3D *t, zVec3D *v, zVec3D *cp);
  *
  * zTri3DConeCircumcenter() returns a pointer \a c.
  */
-__EXPORT double zTri3DConeVolume(zTri3D *t, zVec3D *v);
-__EXPORT zMat3D *zTri3DConeInertia(zTri3D *t, double density, zMat3D *i);
-__EXPORT zVec3D *zTri3DConeBarycenter(zTri3D *t, zVec3D *v, zVec3D *c);
-__EXPORT zVec3D *zTri3DConeCircumcenter(zTri3D *t, zVec3D *c);
+__ZEO_EXPORT double zTri3DConeVolume(zTri3D *t, zVec3D *v);
+__ZEO_EXPORT zMat3D *zTri3DConeInertia(zTri3D *t, double density, zMat3D *i);
+__ZEO_EXPORT zVec3D *zTri3DConeBarycenter(zTri3D *t, zVec3D *v, zVec3D *c);
+__ZEO_EXPORT zVec3D *zTri3DConeCircumcenter(zTri3D *t, zVec3D *c);
 
 /*! \brief print a 3D triangle.
  *
@@ -371,7 +371,7 @@ __EXPORT zVec3D *zTri3DConeCircumcenter(zTri3D *t, zVec3D *c);
  * \return
  * zTri3DFPrint() and zTri3DPrint() do not return any values.
  */
-__EXPORT void zTri3DFPrint(FILE *fp, zTri3D *t);
+__ZEO_EXPORT void zTri3DFPrint(FILE *fp, zTri3D *t);
 #define zTri3DPrint(t) zTri3DFPrint( stdout, (t) )
 
 /*! \struct zTri3DArray

@@ -12,7 +12,7 @@
 __BEGIN_DECLS
 
 /*! \brief read a 3D polyhedron in DAE format. */
-__EXPORT zPH3D *zPH3DFReadDAE(zPH3D *ph, char *filename);
+__ZEO_EXPORT zPH3D *zPH3DFReadDAE(zPH3D *ph, char *filename);
 
 __END_DECLS
 

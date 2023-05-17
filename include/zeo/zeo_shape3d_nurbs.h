@@ -12,11 +12,11 @@
 __BEGIN_DECLS
 
 /* methods for abstraction */
-__EXPORT zShape3DCom zeo_shape3d_nurbs_com;
+__ZEO_EXPORT zShape3DCom zeo_shape3d_nurbs_com;
 
 #define zShape3DNURBS(s) ( (zNURBS3D*)(s)->body )
 
-__EXPORT zShape3D *zShape3DNURBSAlloc(zShape3D *shape, int size1, int size2, int dim1, int dim2);
+__ZEO_EXPORT zShape3D *zShape3DNURBSAlloc(zShape3D *shape, int size1, int size2, int dim1, int dim2);
 
 __END_DECLS
 

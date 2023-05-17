@@ -36,8 +36,8 @@ typedef struct{
  * \return
  * Each of zEdge2DInit() and zEdge2DCreate() returns a pointer \a e.
  */
-__EXPORT ZEDGEXD_INIT_PROTOTYPE( 2D );
-__EXPORT ZEDGEXD_CREATE_PROTOTYPE( 2D );
+__ZEO_EXPORT ZEDGEXD_INIT_PROTOTYPE( 2D );
+__ZEO_EXPORT ZEDGEXD_CREATE_PROTOTYPE( 2D );
 
 /*! \brief path vector of a 2D edge.
  *
@@ -47,7 +47,7 @@ __EXPORT ZEDGEXD_CREATE_PROTOTYPE( 2D );
  * \return
  * zEdge2DCalcVec() returns the pointer to the path vector.
  */
-__EXPORT ZEDGEXD_CALC_VEC_PROTOTYPE( 2D );
+__ZEO_EXPORT ZEDGEXD_CALC_VEC_PROTOTYPE( 2D );
 
 /*! \brief distance between a point and a 2D edge.
  *
@@ -68,11 +68,11 @@ __EXPORT ZEDGEXD_CALC_VEC_PROTOTYPE( 2D );
  *
  * zEdge2DClosest() returns the distance between \a p and \a cp.
  */
-__EXPORT ZEDGEXD_PROJ_PROTOTYPE( 2D );
-__EXPORT ZEDGEXD_POINT_DIST_PROTOTYPE( 2D );
+__ZEO_EXPORT ZEDGEXD_PROJ_PROTOTYPE( 2D );
+__ZEO_EXPORT ZEDGEXD_POINT_DIST_PROTOTYPE( 2D );
 
-__EXPORT ZEDGEXD_LINSCALE_PROTOTYPE( 2D );
-__EXPORT ZEDGEXD_CLOSEST_PROTOTYPE( 2D );
+__ZEO_EXPORT ZEDGEXD_LINSCALE_PROTOTYPE( 2D );
+__ZEO_EXPORT ZEDGEXD_CLOSEST_PROTOTYPE( 2D );
 
 /* ********************************************************** */
 /*! \brief 2D triangle class.
@@ -97,7 +97,7 @@ typedef struct{
  * \return
  * zTri2DInit() and zTri2DCreate() return a pointer \a t.
  */
-__EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
+__ZEO_EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
 #define zTri2DInit(t) zTri2DCreate( t, NULL, NULL, NULL )
 
 /*! \brief initialize and create a 2D triangle.
@@ -107,7 +107,7 @@ __EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
  * \return
  * zTri2DCreate() returns a pointer \a t.
  */
-__EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
+__ZEO_EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
 
 /*! \brief various centers of a 2D triangle.
  *
@@ -119,10 +119,10 @@ __EXPORT zTri2D *zTri2DCreate(zTri2D *t, zVec2D *v1, zVec2D *v2, zVec2D *v3);
  * zTri2DBarycenter(), zTri2DCircumcenter(), zTri2DIncenter() and
  * zTri2DOrthocenter() return a pointer \a c.
  */
-__EXPORT ZTRIXD_BARYCENTER_PROTOTYPE( 2D );
-__EXPORT ZTRIXD_CIRCUMCENTER_PROTOTYPE( 2D );
-__EXPORT ZTRIXD_INCENTER_PROTOTYPE( 2D );
-__EXPORT ZTRIXD_ORTHOCENTER_PROTOTYPE( 2D );
+__ZEO_EXPORT ZTRIXD_BARYCENTER_PROTOTYPE( 2D );
+__ZEO_EXPORT ZTRIXD_CIRCUMCENTER_PROTOTYPE( 2D );
+__ZEO_EXPORT ZTRIXD_INCENTER_PROTOTYPE( 2D );
+__ZEO_EXPORT ZTRIXD_ORTHOCENTER_PROTOTYPE( 2D );
 
 /*! \brief check if a point is inside of a triangle.
  *
@@ -133,7 +133,7 @@ __EXPORT ZTRIXD_ORTHOCENTER_PROTOTYPE( 2D );
  * zTri2DPointIsInside() returns the true value if \a v is inside of \a t
  * with a margin \a margin. Otherwise, the false value is returned.
  */
-__EXPORT bool zTri2DPointIsInside(zTri2D *t, zVec2D *v, double margin);
+__ZEO_EXPORT bool zTri2DPointIsInside(zTri2D *t, zVec2D *v, double margin);
 
 /*! \brief print a 2D triangle.
  *
@@ -149,7 +149,7 @@ __EXPORT bool zTri2DPointIsInside(zTri2D *t, zVec2D *v, double margin);
  * \return
  * zTri2DFPrint() and zTri2DPrint() do not return any values.
  */
-__EXPORT void zTri2DFPrint(FILE *fp, zTri2D *t);
+__ZEO_EXPORT void zTri2DFPrint(FILE *fp, zTri2D *t);
 #define zTri2DPrint(t) zTri2DFPrint( stdout, (t) )
 
 /*! \struct zTri2DArray
@@ -175,19 +175,19 @@ typedef struct{
 #define zDisk2DSetRadius(d,r) ( zDisk2DRadius(d) = (r) )
 
 /*! \brief create a 2D disk. */
-__EXPORT zDisk2D *zDisk2DCreate(zDisk2D *d, zVec2D *c, double r);
+__ZEO_EXPORT zDisk2D *zDisk2DCreate(zDisk2D *d, zVec2D *c, double r);
 
 /*! \brief signed distance from a 2D point to a disk. */
-__EXPORT double zDisk2DPointDist(zDisk2D *d, zVec2D *p);
+__ZEO_EXPORT double zDisk2DPointDist(zDisk2D *d, zVec2D *p);
 
 /*! \brief check if a 2D point is inside of a disk. */
-__EXPORT bool zDisk2DPointIsInside(zDisk2D *d, zVec2D *v, double margin);
+__ZEO_EXPORT bool zDisk2DPointIsInside(zDisk2D *d, zVec2D *v, double margin);
 
 /*! \brief create a 2D disk from two points at both ends of diameter. */
-__EXPORT zDisk2D *zDisk2DFrom2(zDisk2D *d, zVec2D *v1, zVec2D *v2);
+__ZEO_EXPORT zDisk2D *zDisk2DFrom2(zDisk2D *d, zVec2D *v1, zVec2D *v2);
 
 /*! \brief create a 2D disk from three points as a circumcircle of them. */
-__EXPORT zDisk2D *zDisk2DFrom3(zDisk2D *d, zVec2D *v1, zVec2D *v2, zVec2D *v3);
+__ZEO_EXPORT zDisk2D *zDisk2DFrom3(zDisk2D *d, zVec2D *v1, zVec2D *v2, zVec2D *v3);
 
 /* ********************************************************** */
 /*! \brief 2D ellipse class.
@@ -205,16 +205,16 @@ typedef struct{
 #define zEllips2DSetRadius(e,i,r) ( zEllips2DRadius(e,i) = (r) )
 
 /*! \brief create an ellipse. */
-__EXPORT zEllips2D *zEllips2DCreate(zEllips2D *e, zVec2D *c, double r1, double r2);
+__ZEO_EXPORT zEllips2D *zEllips2DCreate(zEllips2D *e, zVec2D *c, double r1, double r2);
 
 /*! \brief closest point to a 2D point on an ellipse. */
-__EXPORT zVec2D *zEllips2DClosest(zEllips2D *e, zVec2D *p, zVec2D *cp);
+__ZEO_EXPORT zVec2D *zEllips2DClosest(zEllips2D *e, zVec2D *p, zVec2D *cp);
 
 /*! \brief signed distance from a 2D point to an ellipse. */
-__EXPORT double zEllips2DPointDist(zEllips2D *e, zVec2D *p);
+__ZEO_EXPORT double zEllips2DPointDist(zEllips2D *e, zVec2D *p);
 
 /*! \brief check if a 2D point is inside of an ellipse. */
-__EXPORT bool zEllips2DPointIsInside(zEllips2D *e, zVec2D *p, double margin);
+__ZEO_EXPORT bool zEllips2DPointIsInside(zEllips2D *e, zVec2D *p, double margin);
 
 __END_DECLS
 

@@ -40,8 +40,8 @@ __BEGIN_DECLS
  * zIntersectEdgePlane3D() returns the number of intersection
  * points, 0, 1, or 2.
  */
-__EXPORT bool zColChkEdgePlane3D(zEdge3D *e, zPlane3D *p);
-__EXPORT int zIntersectEdgePlane3D(zEdge3D *e, zPlane3D *p, zVec3D ip[]);
+__ZEO_EXPORT bool zColChkEdgePlane3D(zEdge3D *e, zPlane3D *p);
+__ZEO_EXPORT int zIntersectEdgePlane3D(zEdge3D *e, zPlane3D *p, zVec3D ip[]);
 
 /*! \brief collision and intersection of plane, edge and triangle.
  *
@@ -87,12 +87,12 @@ __EXPORT int zIntersectEdgePlane3D(zEdge3D *e, zPlane3D *p, zVec3D ip[]);
  * zIntersectTriPlane3D(), zIntersectEdgeTri3D() and
  * zIntersectTri3D() return the number of intersection points.
  */
-__EXPORT bool zColChkTriPlane3D(zTri3D *t, zPlane3D *p);
-__EXPORT int zIntersectTriPlane3D(zTri3D *t, zPlane3D *p, zVec3D ip[]);
-__EXPORT bool zColChkEdgeTri3D(zEdge3D *e, zTri3D *t);
-__EXPORT int zIntersectEdgeTri3D(zEdge3D *e, zTri3D *t, zVec3D ip[]);
-__EXPORT bool zColChkTri3D(zTri3D *t1, zTri3D *t2);
-__EXPORT int zIntersectTri3D(zTri3D *t1, zTri3D *t2, zVec3D ip[]);
+__ZEO_EXPORT bool zColChkTriPlane3D(zTri3D *t, zPlane3D *p);
+__ZEO_EXPORT int zIntersectTriPlane3D(zTri3D *t, zPlane3D *p, zVec3D ip[]);
+__ZEO_EXPORT bool zColChkEdgeTri3D(zEdge3D *e, zTri3D *t);
+__ZEO_EXPORT int zIntersectEdgeTri3D(zEdge3D *e, zTri3D *t, zVec3D ip[]);
+__ZEO_EXPORT bool zColChkTri3D(zTri3D *t1, zTri3D *t2);
+__ZEO_EXPORT int zIntersectTri3D(zTri3D *t1, zTri3D *t2, zVec3D ip[]);
 
 /*! \brief intersection between a loop of vertices and 3D plane.
  *
@@ -103,7 +103,7 @@ __EXPORT int zIntersectTri3D(zTri3D *t1, zTri3D *t2, zVec3D ip[]);
  * \notes the size of \a ip has to be larger than the valued returned
  * by the function.
  */
-__EXPORT int zIntersectVecListPlane3D(zVec3DList *vl, zPlane3D *p, zVec3D ip[]);
+__ZEO_EXPORT int zIntersectVecListPlane3D(zVec3DList *vl, zPlane3D *p, zVec3D ip[]);
 
 __END_DECLS
 

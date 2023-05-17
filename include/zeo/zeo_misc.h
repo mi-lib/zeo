@@ -9,6 +9,7 @@
 
 #include <zm/zm.h>
 
+#include <zeo/zeo_export.h>
 #include <zeo/zeo_errmsg.h>
 
 __BEGIN_DECLS
@@ -35,8 +36,8 @@ enum{
  * the name of \a axis.
  * zAxisFromStr() returns the corresponding axis identifier.
  */
-__EXPORT char *zAxisStr(zAxis axis);
-__EXPORT zAxis zAxisFromStr(char *str);
+__ZEO_EXPORT char *zAxisStr(zAxis axis);
+__ZEO_EXPORT zAxis zAxisFromStr(char *str);
 
 /*! \brief direction identifiers */
 typedef byte zDir;
@@ -62,8 +63,8 @@ enum{
  * zDirStr() returns a pointer to the string which expresses the name of \a dir.
  * zDirFromStr() returns the corresponding direction identifier.
  */
-__EXPORT char *zDirStr(zDir dir);
-__EXPORT zDir zDirFromStr(char *str);
+__ZEO_EXPORT char *zDirStr(zDir dir);
+__ZEO_EXPORT zDir zDirFromStr(char *str);
 
 /*! \brief reverse a direction.
  *
@@ -74,7 +75,7 @@ __EXPORT zDir zDirFromStr(char *str);
  * and ZEO_DIR_CCW for ZEO_DIR_CW and ZEO_DIR_CW for ZEO_DIR_CCW.
  * When \a dir is ZEO_DIR_NONE, ZEO_DIR_NONE is returned.
  */
-__EXPORT zDir zDirRev(zDir dir);
+__ZEO_EXPORT zDir zDirRev(zDir dir);
 
 __END_DECLS
 

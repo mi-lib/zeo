@@ -38,7 +38,7 @@ zListClass( zBREPVertList, zBREPVertListCell, zBREPVert );
  * zBREPVertListFind() returns a pointer to the found
  * cell. Otherwise, the null pointer is returned.
  */
-__EXPORT zBREPVertListCell *zBREPVertListFind(zBREPVertList *vlist, zVec3D *v);
+__ZEO_EXPORT zBREPVertListCell *zBREPVertListFind(zBREPVertList *vlist, zVec3D *v);
 
 typedef struct{
   zBREPVertListCell *v[2];
@@ -60,7 +60,7 @@ zListClass( zBREPEdgeList, zBREPEdgeListCell, zBREPEdge );
  * zBREPEdgeListFind() returns a pointer to the found
  * cell. Otherwise, the null pointer is returned.
  */
-__EXPORT zBREPEdgeListCell *zBREPEdgeListFind(zBREPEdgeList *elist, zBREPVertListCell *v1, zBREPVertListCell *v2);
+__ZEO_EXPORT zBREPEdgeListCell *zBREPEdgeListFind(zBREPEdgeList *elist, zBREPVertListCell *v1, zBREPVertListCell *v2);
 
 typedef struct{
   zBREPVertListCell *v[3];
@@ -92,7 +92,7 @@ typedef struct{
  * \retval
  * zPH3D2BREP() returns a pointer \a brep.
  */
-__EXPORT zBREP *zPH3D2BREP(zPH3D *ph, zBREP *brep);
+__ZEO_EXPORT zBREP *zPH3D2BREP(zPH3D *ph, zBREP *brep);
 
 /*! \brief convert polyhedron restricted in a box to B-Rep solid.
  *
@@ -103,7 +103,7 @@ __EXPORT zBREP *zPH3D2BREP(zPH3D *ph, zBREP *brep);
  * \retval
  * zPH3D2BREPInBox() returns a pointer \a brep.
  */
-__EXPORT zBREP *zPH3D2BREPInBox(zPH3D *ph, zAABox3D *box, zBREP *brep);
+__ZEO_EXPORT zBREP *zPH3D2BREPInBox(zPH3D *ph, zAABox3D *box, zBREP *brep);
 
 /*! \brief convert a B-Rep solid to a polyhedron.
  *
@@ -114,7 +114,7 @@ __EXPORT zBREP *zPH3D2BREPInBox(zPH3D *ph, zAABox3D *box, zBREP *brep);
  * \retval
  * zBREP2PH3D() returns a pointer \a ph.
  */
-__EXPORT zPH3D *zBREP2PH3D(zBREP *brep, zPH3D *ph);
+__ZEO_EXPORT zPH3D *zBREP2PH3D(zBREP *brep, zPH3D *ph);
 
 /*! \brief destroy a B-Rep solid.
  *
@@ -123,7 +123,7 @@ __EXPORT zPH3D *zBREP2PH3D(zBREP *brep, zPH3D *ph);
  * \retval
  * zBREPDestroy() returns no value.
  */
-__EXPORT void zBREPDestroy(zBREP *brep);
+__ZEO_EXPORT void zBREPDestroy(zBREP *brep);
 
 __END_DECLS
 

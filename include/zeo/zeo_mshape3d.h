@@ -52,9 +52,9 @@ typedef struct{
  *
  * zMShape3DDestroy() returns no value.
  */
-__EXPORT zMShape3D *zMShape3DInit(zMShape3D *ms);
-__EXPORT void zMShape3DDestroy(zMShape3D *ms);
-__EXPORT zMShape3D *zMShape3DClone(zMShape3D *org);
+__ZEO_EXPORT zMShape3D *zMShape3DInit(zMShape3D *ms);
+__ZEO_EXPORT void zMShape3DDestroy(zMShape3D *ms);
+__ZEO_EXPORT zMShape3D *zMShape3DClone(zMShape3D *org);
 
 /*! \brief check if a point is inside of multiple shapes.
  *
@@ -67,30 +67,30 @@ __EXPORT zMShape3D *zMShape3DClone(zMShape3D *org);
  * \sa
  * zShape3DPointIsInside, zPH3DPointIsInside
  */
-__EXPORT zVec3D *zMShape3DContigVert(zMShape3D *ms, zVec3D *p, double *d);
-__EXPORT double zMShape3DClosest(zMShape3D *ms, zVec3D *p, zVec3D *cp);
-__EXPORT bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, double margin);
+__ZEO_EXPORT zVec3D *zMShape3DContigVert(zMShape3D *ms, zVec3D *p, double *d);
+__ZEO_EXPORT double zMShape3DClosest(zMShape3D *ms, zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, double margin);
 
 /*! \brief convert multiple shapes to polyhedra. */
-__EXPORT zMShape3D *zMShape3DToPH(zMShape3D *ms);
+__ZEO_EXPORT zMShape3D *zMShape3DToPH(zMShape3D *ms);
 
 /*! \brief make a list of vertices of multiple 3D shapes. */
-__EXPORT zVec3DList *zMShape3DVertList(zMShape3D *ms, zVec3DList *vl);
+__ZEO_EXPORT zVec3DList *zMShape3DVertList(zMShape3D *ms, zVec3DList *vl);
 
 /*! \brief generate the bounding ball of multiple 3D shapes. */
-__EXPORT zSphere3D *zMShape3DBBall(zMShape3D *ms, zSphere3D *bb);
+__ZEO_EXPORT zSphere3D *zMShape3DBBall(zMShape3D *ms, zSphere3D *bb);
 
 /*! \brief read multiple 3D shapes from a ZTK format processor. */
-__EXPORT zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk);
+__ZEO_EXPORT zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk);
 
 /*! \brief print multiple 3D shapes to the current position of a file in ZTK format. */
-__EXPORT void zMShape3DFPrintZTK(FILE *fp, zMShape3D *ms);
+__ZEO_EXPORT void zMShape3DFPrintZTK(FILE *fp, zMShape3D *ms);
 
 /*! \brief scan multiple 3D shapes from a ZTK format file. */
-__EXPORT zMShape3D *zMShape3DReadZTK(zMShape3D *ms, char filename[]);
+__ZEO_EXPORT zMShape3D *zMShape3DReadZTK(zMShape3D *ms, char filename[]);
 
 /*! \brief write multiple 3D shapes to a ZTK format file. */
-__EXPORT bool zMShape3DWriteZTK(zMShape3D *ms, char filename[]);
+__ZEO_EXPORT bool zMShape3DWriteZTK(zMShape3D *ms, char filename[]);
 
 __END_DECLS
 

@@ -16,7 +16,7 @@ __BEGIN_DECLS
  * zColChkPH3D() checks if two polyhedra \a ph1 and \a ph2
  * intersect with each other.
  */
-__EXPORT bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, zVec3D *p1, zVec3D *p2);
+__ZEO_EXPORT bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, zVec3D *p1, zVec3D *p2);
 
 /*! \brief intersect of two polyhedra by Muller-Preparata's algorithm.
  *
@@ -28,7 +28,7 @@ __EXPORT bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, zVec3D *p1, zVec3D *p2);
  *
  * \return a pointer \a phcol.
  */
-__EXPORT zPH3D *zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol);
+__ZEO_EXPORT zPH3D *zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol);
 
 /*! \brief intersect of two polyhedra by Muller-Preparata's algorithm
  * with a focusing-acceleration.
@@ -45,7 +45,7 @@ __EXPORT zPH3D *zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol);
  *
  * \return a pointer \a phcol.
  */
-__EXPORT zPH3D *zIntersectPH3DFast(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol);
+__ZEO_EXPORT zPH3D *zIntersectPH3DFast(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol);
 
 __END_DECLS
 

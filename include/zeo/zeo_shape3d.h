@@ -42,7 +42,7 @@ typedef struct{
  * ********************************************************** */
 
 typedef struct{
-  Z_NAMED_CLASS
+  Z_NAMED_CLASS;
   void *body;
   zOpticalInfo *optic;
   zTexture *texture;
@@ -60,20 +60,20 @@ typedef struct{
  * non-shaped instance.
  * \ret a pointer \a shape
  */
-__EXPORT zShape3D *zShape3DInit(zShape3D *shape);
+__ZEO_EXPORT zShape3D *zShape3DInit(zShape3D *shape);
 
 /*! \brief assign a method of a 3D shape by referring a string. */
-__EXPORT zShape3D *zShape3DQueryAssign(zShape3D *shape, const char *str);
+__ZEO_EXPORT zShape3D *zShape3DQueryAssign(zShape3D *shape, const char *str);
 
 /*! \brief destroy a 3D shape instance.
  *
  * zShape3DDestroy() destroys \a shape, freeing its
  * inner parameters.
  */
-__EXPORT void zShape3DDestroy(zShape3D *shape);
+__ZEO_EXPORT void zShape3DDestroy(zShape3D *shape);
 
-__EXPORT zShape3D *zShape3DClone(zShape3D *org, zShape3D *cln, zOpticalInfo *oi);
-__EXPORT zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis);
+__ZEO_EXPORT zShape3D *zShape3DClone(zShape3D *org, zShape3D *cln, zOpticalInfo *oi);
+__ZEO_EXPORT zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis);
 
 /*! \brief transform coordinates of a 3D shape.
  *
@@ -85,8 +85,8 @@ __EXPORT zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis);
  * \return
  * zShape3DXform() and zShape3DXformInv() return a pointer to \a dest.
  */
-__EXPORT zShape3D *zShape3DXform(zShape3D *src, zFrame3D *f, zShape3D *dest);
-__EXPORT zShape3D *zShape3DXformInv(zShape3D *src, zFrame3D *f, zShape3D *dest);
+__ZEO_EXPORT zShape3D *zShape3DXform(zShape3D *src, zFrame3D *f, zShape3D *dest);
+__ZEO_EXPORT zShape3D *zShape3DXformInv(zShape3D *src, zFrame3D *f, zShape3D *dest);
 
 #define zShape3DContigVert(s,p,d) zPH3DContigVert( zShape3DPH(s), p, d )
 
@@ -101,36 +101,36 @@ __EXPORT zShape3D *zShape3DXformInv(zShape3D *src, zFrame3D *f, zShape3D *dest);
  * \sa
  * zPH3DPointIsInside
  */
-__EXPORT double zShape3DClosest(zShape3D *shape, zVec3D *p, zVec3D *cp);
-__EXPORT double zShape3DPointDist(zShape3D *shape, zVec3D *p);
-__EXPORT bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, double margin);
+__ZEO_EXPORT double zShape3DClosest(zShape3D *shape, zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT double zShape3DPointDist(zShape3D *shape, zVec3D *p);
+__ZEO_EXPORT bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, double margin);
 
 /*! \brief volume of a 3D shape. */
-__EXPORT double zShape3DVolume(zShape3D *shape);
+__ZEO_EXPORT double zShape3DVolume(zShape3D *shape);
 /*! \brief barycenter of a 3D shape. */
-__EXPORT zVec3D *zShape3DBarycenter(zShape3D *shape, zVec3D *c);
+__ZEO_EXPORT zVec3D *zShape3DBarycenter(zShape3D *shape, zVec3D *c);
 
 /*! \brief inertia tensor about barycenter of a 3D shape from mass. */
-__EXPORT zMat3D *zShape3DBaryInertiaMass(zShape3D *shape, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zShape3DBaryInertiaMass(zShape3D *shape, double mass, zMat3D *inertia);
 /*! \brief inertia tensor about barycenter of a 3D shape. */
-__EXPORT zMat3D *zShape3DBaryInertia(zShape3D *shape, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zShape3DBaryInertia(zShape3D *shape, double density, zMat3D *inertia);
 /*! \brief inertia tensor about origin of a 3D shape from mass. */
-__EXPORT zMat3D *zShape3DInertiaMass(zShape3D *shape, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zShape3DInertiaMass(zShape3D *shape, double mass, zMat3D *inertia);
 /*! \brief inertia tensor about origin of a 3D shape. */
-__EXPORT zMat3D *zShape3DInertia(zShape3D *shape, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zShape3DInertia(zShape3D *shape, double density, zMat3D *inertia);
 
 /*! \brief convert a shape to a polyhedron. */
-__EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
+__ZEO_EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
 
 /*! \brief read a shape from a STL file. */
-__EXPORT zShape3D *zShape3DFReadSTL(FILE *fp, zShape3D *shape);
+__ZEO_EXPORT zShape3D *zShape3DFReadSTL(FILE *fp, zShape3D *shape);
 /*! \brief read a shape from a PLY file. */
-__EXPORT zShape3D *zShape3DFReadPLY(FILE *fp, zShape3D *shape);
+__ZEO_EXPORT zShape3D *zShape3DFReadPLY(FILE *fp, zShape3D *shape);
 /*! \brief read a shape from a OBJ file. */
-__EXPORT zShape3D *zShape3DFReadOBJ(FILE *fp, zShape3D *shape);
+__ZEO_EXPORT zShape3D *zShape3DFReadOBJ(FILE *fp, zShape3D *shape);
 #ifdef __ZEO_USE_DAE
 /*! \brief read a shape from a DAE file. */
-__EXPORT zShape3D *zShape3DFReadDAE(zShape3D *shape, char *filename);
+__ZEO_EXPORT zShape3D *zShape3DFReadDAE(zShape3D *shape, char *filename);
 #endif /* __ZEO_USE_DAE */
 
 /*! \struct zShape3DArray
@@ -144,7 +144,7 @@ zArrayClass( zShape3DArray, zShape3D );
 #define ZEO_SHAPE_DEFAULT_DIV 32
 
 /*! \brief scan the number of division for smooth primitives from a ZTK format processor. */
-__EXPORT int zShape3DDivFromZTK(ZTK *ztk);
+__ZEO_EXPORT int zShape3DDivFromZTK(ZTK *ztk);
 
 /*! \brief scan a 3D shape from a ZTK format processor.
  *
@@ -173,7 +173,7 @@ __EXPORT int zShape3DDivFromZTK(ZTK *ztk);
  * \return
  * zShape3DFromZTK() returns a pointer \a shape.
  */
-__EXPORT zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoArray *oarray, zTextureArray *tarray, ZTK *ztk);
+__ZEO_EXPORT zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoArray *oarray, zTextureArray *tarray, ZTK *ztk);
 
 /*! \brief print a 3D shape to a file stream.
  *
@@ -182,13 +182,13 @@ __EXPORT zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpti
  * \return
  * zShape3DFPrintZTK() returns no value.
  */
-__EXPORT void zShape3DFPrintZTK(FILE *fp, zShape3D *shape);
+__ZEO_EXPORT void zShape3DFPrintZTK(FILE *fp, zShape3D *shape);
 
 /*! \brief read a 3D shape from a ZTK format file. */
-__EXPORT zShape3D *zShape3DReadZTK(zShape3D *shape, char filename[]);
+__ZEO_EXPORT zShape3D *zShape3DReadZTK(zShape3D *shape, char filename[]);
 
 /*! \brief write a 3D shape to a ZTK format file. */
-__EXPORT bool zShape3DWriteZTK(zShape3D *shape, char filename[]);
+__ZEO_EXPORT bool zShape3DWriteZTK(zShape3D *shape, char filename[]);
 
 __END_DECLS
 

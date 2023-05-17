@@ -1,3 +1,6 @@
+2023. 5.17. Reflected modification of Z_NAMED_CLASS. [zeo_render_optic, zeo_render_texure, zeo_shape3d, zeo_map]
+2023. 5.16. Modified zeo.h to include zeo_brep.h. [zeo]
+2023. 5.16. Replaced __EXPORT to __ZEO_EXPORT. [all]
 2023. 5.15. Modified zTextureClone and zTextureBumpAlloc to allocate 4 bytes for each pixel of a texture. [zeo_render_texture]
 2023. 5.12. Added a note in comments of zGJK and zGJKPL. [zeo_col_gjk]
 2023. 5.12. Reflected renaming of atox_c to zA2X_c to _zRGBHex. [zeo_render_color]

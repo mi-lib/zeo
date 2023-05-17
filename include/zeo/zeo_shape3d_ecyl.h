@@ -34,43 +34,43 @@ typedef struct{
 #define zECyl3DSetDiv(c,d)      ( zECyl3DDiv(c) = (d) )
 
 /*! \brief create a 3D elliptic cylinder. */
-__EXPORT zECyl3D *zECyl3DCreate(zECyl3D *cyl, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div);
+__ZEO_EXPORT zECyl3D *zECyl3DCreate(zECyl3D *cyl, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div);
 /*! \brief initialize a 3D elliptic cylinder. */
-__EXPORT zECyl3D *zECyl3DInit(zECyl3D *cyl);
+__ZEO_EXPORT zECyl3D *zECyl3DInit(zECyl3D *cyl);
 /*! \brief allocate memory for a 3D elliptic cylinder. */
-__EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zECyl3D );
+__ZEO_EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zECyl3D );
 /*! \brief copy a 3D elliptic cylinder to another. */
-__EXPORT zECyl3D *zECyl3DCopy(zECyl3D *src, zECyl3D *dest);
+__ZEO_EXPORT zECyl3D *zECyl3DCopy(zECyl3D *src, zECyl3D *dest);
 /*! \brief mirror a 3D elliptic cylinder. */
-__EXPORT zECyl3D *zECyl3DMirror(zECyl3D *src, zECyl3D *dest, zAxis axis);
+__ZEO_EXPORT zECyl3D *zECyl3DMirror(zECyl3D *src, zECyl3D *dest, zAxis axis);
 
 /*! \brief define orthonormal axes of the bottom face of a 3D elliptic cylinder. */
-__EXPORT void zECyl3DDefAxis(zECyl3D *cyl, zVec3D *ref);
+__ZEO_EXPORT void zECyl3DDefAxis(zECyl3D *cyl, zVec3D *ref);
 
 /*! \brief transform coordinates of a 3D elliptic cylinder. */
-__EXPORT zECyl3D *zECyl3DXform(zECyl3D *src, zFrame3D *f, zECyl3D *dest);
+__ZEO_EXPORT zECyl3D *zECyl3DXform(zECyl3D *src, zFrame3D *f, zECyl3D *dest);
 /*! \brief inversely transform coordinates of a 3D elliptic cylinder. */
-__EXPORT zECyl3D *zECyl3DXformInv(zECyl3D *src, zFrame3D *f, zECyl3D *dest);
+__ZEO_EXPORT zECyl3D *zECyl3DXformInv(zECyl3D *src, zFrame3D *f, zECyl3D *dest);
 
 /*! \brief the closest point to a 3D elliptic cylinder. */
-__EXPORT double zECyl3DClosest(zECyl3D *cyl, zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT double zECyl3DClosest(zECyl3D *cyl, zVec3D *p, zVec3D *cp);
 /*! \brief distance from a point to a 3D elliptic cylinder. */
-__EXPORT double zECyl3DPointDist(zECyl3D *cyl, zVec3D *p);
+__ZEO_EXPORT double zECyl3DPointDist(zECyl3D *cyl, zVec3D *p);
 /*! \brief check if a point is inside of an elliptic cylinder. */
-__EXPORT bool zECyl3DPointIsInside(zECyl3D *ecyl, zVec3D *p, double margin);
+__ZEO_EXPORT bool zECyl3DPointIsInside(zECyl3D *ecyl, zVec3D *p, double margin);
 
 /*! \brief axis vector a 3D elliptic cylinder. */
 #define zECyl3DAxis(c,a) \
   zVec3DSub( zECyl3DCenter(c,1), zECyl3DCenter(c,0), a )
 
 /*! \brief height of a 3D elliptic cylinder. */
-__EXPORT double zECyl3DHeight(zECyl3D *cyl);
+__ZEO_EXPORT double zECyl3DHeight(zECyl3D *cyl);
 
 /*! \brief volume of a 3D elliptic cylinder. */
-__EXPORT double zECyl3DVolume(zECyl3D *cyl);
+__ZEO_EXPORT double zECyl3DVolume(zECyl3D *cyl);
 
 /*! \brief barycenter of a 3D elliptic cylinder. */
-__EXPORT zVec3D *zECyl3DBarycenter(zECyl3D *cyl, zVec3D *c);
+__ZEO_EXPORT zVec3D *zECyl3DBarycenter(zECyl3D *cyl, zVec3D *c);
 
 /*! \brief inertia tensor of a 3D elliptic cylinder.
  *
@@ -85,21 +85,21 @@ __EXPORT zVec3D *zECyl3DBarycenter(zECyl3D *cyl, zVec3D *c);
  * \sa
  * zECyl3DVolume(), zECyl3DBarycenter()
  */
-__EXPORT zMat3D *zECyl3DBaryInertiaMass(zECyl3D *cyl, double mass, zMat3D *inertia);
-__EXPORT zMat3D *zECyl3DBaryInertia(zECyl3D *cyl, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zECyl3DBaryInertiaMass(zECyl3D *cyl, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zECyl3DBaryInertia(zECyl3D *cyl, double density, zMat3D *inertia);
 
 /*! \brief convert an elliptic cylinder to a polyhedron. */
-__EXPORT zPH3D *zECyl3DToPH(zECyl3D *cyl, zPH3D *ph);
+__ZEO_EXPORT zPH3D *zECyl3DToPH(zECyl3D *cyl, zPH3D *ph);
 
 /*! \brief print a 3D elliptic cylinder out to a file in a ZTK format. */
-__EXPORT void zECyl3DFPrintZTK(FILE *fp, zECyl3D *ecyl);
+__ZEO_EXPORT void zECyl3DFPrintZTK(FILE *fp, zECyl3D *ecyl);
 
 /*! \brief methods for abstraction */
-__EXPORT zShape3DCom zeo_shape3d_ecyl_com;
+__ZEO_EXPORT zShape3DCom zeo_shape3d_ecyl_com;
 
 #define zShape3DECyl(s) ( (zECyl3D*)(s)->body )
 
-__EXPORT zShape3D *zShape3DECylCreate(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div);
+__ZEO_EXPORT zShape3D *zShape3DECylCreate(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r1, double r2, zVec3D *ref, int div);
 
 __END_DECLS
 

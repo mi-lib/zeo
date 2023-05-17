@@ -51,13 +51,13 @@ typedef struct{
  * \a box.
  * zBox3DCopy() returns a pointer the copied \a dest.
  */
-__EXPORT zBox3D *zBox3DCreate(zBox3D *box, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double d, double w, double h);
+__ZEO_EXPORT zBox3D *zBox3DCreate(zBox3D *box, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double d, double w, double h);
 #define zBox3DCreateAlign(b,c,d,w,h) \
   zBox3DCreate( b, c, ZVEC3DX, ZVEC3DY, ZVEC3DZ, d, w, h )
-__EXPORT zBox3D *zBox3DInit(zBox3D *box);
-__EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zBox3D );
-__EXPORT zBox3D *zBox3DCopy(zBox3D *src, zBox3D *dest);
-__EXPORT zBox3D *zBox3DMirror(zBox3D *src, zBox3D *dest, zAxis axis);
+__ZEO_EXPORT zBox3D *zBox3DInit(zBox3D *box);
+__ZEO_EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zBox3D );
+__ZEO_EXPORT zBox3D *zBox3DCopy(zBox3D *src, zBox3D *dest);
+__ZEO_EXPORT zBox3D *zBox3DMirror(zBox3D *src, zBox3D *dest, zAxis axis);
 
 /*! \brief transform coordinates of a 3D box.
  *
@@ -69,8 +69,8 @@ __EXPORT zBox3D *zBox3DMirror(zBox3D *src, zBox3D *dest, zAxis axis);
  * \return
  * zBox3DXform() and zBox3DXformInv() return a pointer \a dest.
  */
-__EXPORT zBox3D *zBox3DXform(zBox3D *src, zFrame3D *f, zBox3D *dest);
-__EXPORT zBox3D *zBox3DXformInv(zBox3D *src, zFrame3D *f, zBox3D *dest);
+__ZEO_EXPORT zBox3D *zBox3DXform(zBox3D *src, zFrame3D *f, zBox3D *dest);
+__ZEO_EXPORT zBox3D *zBox3DXformInv(zBox3D *src, zFrame3D *f, zBox3D *dest);
 
 /*! \brief distance from a 3D point to a box.
  *
@@ -93,9 +93,9 @@ __EXPORT zBox3D *zBox3DXformInv(zBox3D *src, zFrame3D *f, zBox3D *dest);
  * zBox3DPointIsInside() returns the true value if \a p is inside of
  * \a box, or the false value otherwise.
  */
-__EXPORT double zBox3DClosest(zBox3D *box, zVec3D *p, zVec3D *cp);
-__EXPORT double zBox3DPointDist(zBox3D *box, zVec3D *p);
-__EXPORT bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, double margin);
+__ZEO_EXPORT double zBox3DClosest(zBox3D *box, zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT double zBox3DPointDist(zBox3D *box, zVec3D *p);
+__ZEO_EXPORT bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, double margin);
 
 /*! \brief volume of a box.
  *
@@ -103,7 +103,7 @@ __EXPORT bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, double margin);
  * \return
  * zBox3DVolume() returns the calculated volume.
  */
-__EXPORT double zBox3DVolume(zBox3D *box);
+__ZEO_EXPORT double zBox3DVolume(zBox3D *box);
 
 /*! \brief inertia tensor of a box.
  *
@@ -119,8 +119,8 @@ __EXPORT double zBox3DVolume(zBox3D *box);
  * \sa
  * zBox3DVolume()
  */
-__EXPORT zMat3D *zBox3DBaryInertiaMass(zBox3D *box, double mass, zMat3D *inertia);
-__EXPORT zMat3D *zBox3DBaryInertia(zBox3D *box, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zBox3DBaryInertiaMass(zBox3D *box, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zBox3DBaryInertia(zBox3D *box, double density, zMat3D *inertia);
 
 /*! \brief pick up a vertex of a box.
  *
@@ -135,7 +135,7 @@ __EXPORT zMat3D *zBox3DBaryInertia(zBox3D *box, double density, zMat3D *inertia)
  * \return
  * zBox3DVert() returns a pointer \a v.
  */
-__EXPORT zVec3D *zBox3DVert(zBox3D *box, int i, zVec3D *v);
+__ZEO_EXPORT zVec3D *zBox3DVert(zBox3D *box, int i, zVec3D *v);
 
 /*! \brief convert a box to a polyhedron.
  *
@@ -149,22 +149,22 @@ __EXPORT zVec3D *zBox3DVert(zBox3D *box, int i, zVec3D *v);
  * \sa
  * zBox3DVert
  */
-__EXPORT zPH3D *zBox3DToPH(zBox3D *box, zPH3D *ph);
+__ZEO_EXPORT zPH3D *zBox3DToPH(zBox3D *box, zPH3D *ph);
 
 /*! \brief print a 3D box out to a file in a ZTK format. */
-__EXPORT void zBox3DFPrintZTK(FILE *fp, zBox3D *box);
+__ZEO_EXPORT void zBox3DFPrintZTK(FILE *fp, zBox3D *box);
 
 /*! \brief print a box out to a file in a plottable format. */
-__EXPORT void zBox3DDataFPrint(FILE *fp, zBox3D *box);
+__ZEO_EXPORT void zBox3DDataFPrint(FILE *fp, zBox3D *box);
 
 /* methods for abstraction */
-__EXPORT zShape3DCom zeo_shape3d_box_com;
+__ZEO_EXPORT zShape3DCom zeo_shape3d_box_com;
 
 #define zShape3DBox(s) ( (zBox3D*)(s)->body )
 
-__EXPORT zShape3D *zShape3DBoxCreate(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double d, double w, double h);
+__ZEO_EXPORT zShape3D *zShape3DBoxCreate(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double d, double w, double h);
 
-__EXPORT zShape3D *zShape3DBoxCreateAlign(zShape3D *shape, zVec3D *c, double d, double w, double h);
+__ZEO_EXPORT zShape3D *zShape3DBoxCreateAlign(zShape3D *shape, zVec3D *c, double d, double w, double h);
 
 __END_DECLS
 

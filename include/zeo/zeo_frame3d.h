@@ -56,7 +56,7 @@ ZDEF_STRUCT( zFrame3D ){
 #ifdef __cplusplus
 #define ZFRAME3DIDENT ( (zFrame3D *)&zFrame3D::zframe3Dident )
 #else
-__EXPORT const zFrame3D zframe3Dident;
+__ZEO_EXPORT const zFrame3D zframe3Dident;
 #define ZFRAME3DIDENT ( (zFrame3D *)&zframe3Dident )
 #endif /* __cplusplus */
 
@@ -81,17 +81,17 @@ __EXPORT const zFrame3D zframe3Dident;
  *
  * zFrame3DCopy() and zFrame3DIdent() return no value.
  */
-__EXPORT zFrame3D *zFrame3DCreate(zFrame3D *f, zVec3D *p, zMat3D *m);
+__ZEO_EXPORT zFrame3D *zFrame3DCreate(zFrame3D *f, zVec3D *p, zMat3D *m);
 #define zFrame3DCopy(src,dest) ( *(dest) = *(src) )
 #define zFrame3DIdent(f) zFrame3DCopy( ZFRAME3DIDENT, f )
 
 /*! \brief check if two 3D frames are equal. */
 #define _zFrame3DEqual(f1,f2) ( _zVec3DEqual( zFrame3DPos(f1), zFrame3DPos(f2) ) && _zMat3DEqual( zFrame3DAtt(f1), zFrame3DAtt(f2) ) )
-__EXPORT bool zFrame3DEqual(zFrame3D *f1, zFrame3D *f2);
+__ZEO_EXPORT bool zFrame3DEqual(zFrame3D *f1, zFrame3D *f2);
 
 /*! \brief check if a 3D frame is the identity frame. */
 #define _zFrame3DIsIdent(f) _zFrame3DEqual( f, ZFRAME3DIDENT )
-__EXPORT bool zFrame3DIsIdent(zFrame3D *f);
+__ZEO_EXPORT bool zFrame3DIsIdent(zFrame3D *f);
 
 /*! \brief transform coordinates of a 3D vector.
  *
@@ -120,13 +120,13 @@ __EXPORT bool zFrame3DIsIdent(zFrame3D *f);
   _zMulMat3DVec3D( zFrame3DAtt(f), v, tv );\
   _zVec3DAddDRC( tv, zFrame3DPos(f) );\
 } while(0)
-__EXPORT zVec3D *zXform3D(zFrame3D *f, zVec3D *v, zVec3D *tv);
+__ZEO_EXPORT zVec3D *zXform3D(zFrame3D *f, zVec3D *v, zVec3D *tv);
 
 #define _zXform3DInv( f, v, tv ) do{\
   _zVec3DSub( v, zFrame3DPos(f), tv );\
   _zMulMat3DTVec3DDRC( zFrame3DAtt(f), tv );\
 } while(0)
-__EXPORT zVec3D *zXform3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv);
+__ZEO_EXPORT zVec3D *zXform3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv);
 
 #define zXform3DDRC(f,v)    zXform3D(f,v,v)
 #define zXform3DInvDRC(f,v) zXform3DInv(f,v,v)
@@ -162,29 +162,29 @@ __EXPORT zVec3D *zXform3DInv(zFrame3D *f, zVec3D *v, zVec3D *tv);
   _zMulMat3DVec3D( zFrame3DAtt(fi), zFrame3DPos(f), zFrame3DPos(fi) );\
   zVec3DRevDRC( zFrame3DPos(fi) );\
 } while(0)
-__EXPORT zFrame3D *zFrame3DInv(zFrame3D *f, zFrame3D *fi);
+__ZEO_EXPORT zFrame3D *zFrame3DInv(zFrame3D *f, zFrame3D *fi);
 
 #define _zFrame3DCascade( f1, f2, f ) do{\
   zMulMat3DMat3D( zFrame3DAtt(f1), zFrame3DAtt(f2), zFrame3DAtt(f) );\
   _zXform3D( f1, zFrame3DPos(f2), zFrame3DPos(f) );\
 } while(0)
-__EXPORT zFrame3D *zFrame3DCascade(zFrame3D *f1, zFrame3D *f2, zFrame3D *f);
+__ZEO_EXPORT zFrame3D *zFrame3DCascade(zFrame3D *f1, zFrame3D *f2, zFrame3D *f);
 
 #define _zFrame3DXform( f1, f2, f ) do{\
   zMulMat3DTMat3D( zFrame3DAtt(f1), zFrame3DAtt(f2), zFrame3DAtt(f) );\
   _zXform3DInv( f1, zFrame3DPos(f2), zFrame3DPos(f) );\
 } while(0)
-__EXPORT zFrame3D *zFrame3DXform(zFrame3D *f1, zFrame3D *f2, zFrame3D *f);
+__ZEO_EXPORT zFrame3D *zFrame3DXform(zFrame3D *f1, zFrame3D *f2, zFrame3D *f);
 
 /*! \brief transform a 6D vector.
  */
-__EXPORT zVec6D *zXform6DLin(zFrame3D *f, zVec6D *v, zVec6D *vc);
-__EXPORT zVec6D *zXform6DAng(zFrame3D *f, zVec6D *v, zVec6D *vc);
+__ZEO_EXPORT zVec6D *zXform6DLin(zFrame3D *f, zVec6D *v, zVec6D *vc);
+__ZEO_EXPORT zVec6D *zXform6DAng(zFrame3D *f, zVec6D *v, zVec6D *vc);
 
 /*! \brief twist a frame by a torsion vector
  *   (position offset & angle-axis rotation).
  */
-__EXPORT zFrame3D *zFrame3DTwist(zFrame3D *f1, zVec6D *t, zFrame3D *f2);
+__ZEO_EXPORT zFrame3D *zFrame3DTwist(zFrame3D *f1, zVec6D *t, zFrame3D *f2);
 
 /*! \brief error between two frames.
  *
@@ -195,7 +195,7 @@ __EXPORT zFrame3D *zFrame3DTwist(zFrame3D *f1, zVec6D *t, zFrame3D *f2);
  * \retval \a err
  * \sa zMat3DError
  */
-__EXPORT zVec6D *zFrame3DError(zFrame3D *f1, zFrame3D *f2, zVec6D *err);
+__ZEO_EXPORT zVec6D *zFrame3DError(zFrame3D *f1, zFrame3D *f2, zVec6D *err);
 
 /*! \brief create a frame from a handy expression.
  *
@@ -220,10 +220,10 @@ __EXPORT zVec6D *zFrame3DError(zFrame3D *f1, zFrame3D *f2, zVec6D *err);
  * \sa
  * zMat3DFromZYX, zMat3DFromZYZ, zMat3DFromAA
  */
-__EXPORT zFrame3D *zFrame3DFromZYX(zFrame3D *f, double x, double y, double z, double azim, double elev, double tilt);
-__EXPORT zFrame3D *zFrame3DFromZYZ(zFrame3D *f, double x, double y, double z, double heading, double pitch, double bank);
-__EXPORT zFrame3D *zFrame3DFromAA(zFrame3D *f, double x, double y, double z, double xa, double ya, double za);
-__EXPORT zFrame3D *zFrame3DFromDH(zFrame3D *f, double a, double alpha, double d, double theta);
+__ZEO_EXPORT zFrame3D *zFrame3DFromZYX(zFrame3D *f, double x, double y, double z, double azim, double elev, double tilt);
+__ZEO_EXPORT zFrame3D *zFrame3DFromZYZ(zFrame3D *f, double x, double y, double z, double heading, double pitch, double bank);
+__ZEO_EXPORT zFrame3D *zFrame3DFromAA(zFrame3D *f, double x, double y, double z, double xa, double ya, double za);
+__ZEO_EXPORT zFrame3D *zFrame3DFromDH(zFrame3D *f, double a, double alpha, double d, double theta);
 
 /*! \brief convert a 3D frame to an array or a 6D vector.
  *
@@ -287,29 +287,29 @@ __EXPORT zFrame3D *zFrame3DFromDH(zFrame3D *f, double a, double alpha, double d,
  * pointed by \a array must have enough size more than or equal to
  * six. If not, anything may happen.
  */
-__EXPORT zFrame3D *zArrayToFrame3DZYX(double *array, zFrame3D *f);
-__EXPORT double *zFrame3DToArrayZYX(zFrame3D *f, double *array);
-__EXPORT zFrame3D *zVec6DToFrame3DZYX(zVec6D *v, zFrame3D *f);
-__EXPORT zVec6D *zFrame3DToVec6DZYX(zFrame3D *f, zVec6D *v);
+__ZEO_EXPORT zFrame3D *zArrayToFrame3DZYX(double *array, zFrame3D *f);
+__ZEO_EXPORT double *zFrame3DToArrayZYX(zFrame3D *f, double *array);
+__ZEO_EXPORT zFrame3D *zVec6DToFrame3DZYX(zVec6D *v, zFrame3D *f);
+__ZEO_EXPORT zVec6D *zFrame3DToVec6DZYX(zFrame3D *f, zVec6D *v);
 
-__EXPORT zFrame3D *zArrayToFrame3DZYZ(double *array, zFrame3D *f);
-__EXPORT double *zFrame3DToArrayZYZ(zFrame3D *f, double *array);
-__EXPORT zFrame3D *zVec6DToFrame3DZYZ(zVec6D *v, zFrame3D *f);
-__EXPORT zVec6D *zFrame3DToVec6DZYZ(zFrame3D *f, zVec6D *v);
+__ZEO_EXPORT zFrame3D *zArrayToFrame3DZYZ(double *array, zFrame3D *f);
+__ZEO_EXPORT double *zFrame3DToArrayZYZ(zFrame3D *f, double *array);
+__ZEO_EXPORT zFrame3D *zVec6DToFrame3DZYZ(zVec6D *v, zFrame3D *f);
+__ZEO_EXPORT zVec6D *zFrame3DToVec6DZYZ(zFrame3D *f, zVec6D *v);
 
-__EXPORT zFrame3D *zArrayToFrame3DAA(double *array, zFrame3D *f);
-__EXPORT double *zFrame3DToArrayAA(zFrame3D *f, double *array);
-__EXPORT zFrame3D *zVec6DToFrame3DAA(zVec6D *v, zFrame3D *f);
-__EXPORT zVec6D *zFrame3DToVec6DAA(zFrame3D *f, zVec6D *v);
+__ZEO_EXPORT zFrame3D *zArrayToFrame3DAA(double *array, zFrame3D *f);
+__ZEO_EXPORT double *zFrame3DToArrayAA(zFrame3D *f, double *array);
+__ZEO_EXPORT zFrame3D *zVec6DToFrame3DAA(zVec6D *v, zFrame3D *f);
+__ZEO_EXPORT zVec6D *zFrame3DToVec6DAA(zFrame3D *f, zVec6D *v);
 
 /* ********************************************************** */
 /* I/O
  * ********************************************************** */
 
 /* read a 3D frame from a ZTK format processor. */
-__EXPORT zFrame3D *zFrame3DFromZTK(zFrame3D *f, ZTK *ztk);
+__ZEO_EXPORT zFrame3D *zFrame3DFromZTK(zFrame3D *f, ZTK *ztk);
 /* read DH parameters from a ZTK format processor. */
-__EXPORT zFrame3D *zFrame3DDHFromZTK(zFrame3D *f, ZTK *ztk);
+__ZEO_EXPORT zFrame3D *zFrame3DDHFromZTK(zFrame3D *f, ZTK *ztk);
 
 /*! \brief scan and print a 3D frame.
  *
@@ -343,10 +343,10 @@ __EXPORT zFrame3D *zFrame3DDHFromZTK(zFrame3D *f, ZTK *ztk);
  *
  * zFrame3DFPrint() and zFrame3DPrint() return no value.
  */
-__EXPORT zFrame3D *zFrame3DFScan(FILE *fp, zFrame3D *f);
+__ZEO_EXPORT zFrame3D *zFrame3DFScan(FILE *fp, zFrame3D *f);
 #define zFrame3DScan(f) zFrame3DFScan( stdin, (f) )
 
-__EXPORT void zFrame3DFPrint(FILE *fp, zFrame3D *f);
+__ZEO_EXPORT void zFrame3DFPrint(FILE *fp, zFrame3D *f);
 #define zFrame3DPrint(f) zFrame3DFPrint( stdout, (f) )
 
 #ifdef __cplusplus

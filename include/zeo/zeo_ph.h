@@ -58,12 +58,12 @@ ZDEF_STRUCT( zPH3D ){
  * zPH3DInit() and zPH3DAlloc() return a pointer \a ph.
  * zPH3DDestroy() returns no value.
  */
-__EXPORT zPH3D *zPH3DInit(zPH3D *ph);
-__EXPORT zPH3D *zPH3DAlloc(zPH3D *ph, int vn, int fn);
-__EXPORT zPH3D *zPH3DClone(zPH3D *src, zPH3D *dest);
-__EXPORT zPH3D *zPH3DMirror(zPH3D *src, zPH3D *dest, zAxis axis);
-__EXPORT zPH3D *zPH3DScale(zPH3D *ph, double scale);
-__EXPORT void zPH3DDestroy(zPH3D *ph);
+__ZEO_EXPORT zPH3D *zPH3DInit(zPH3D *ph);
+__ZEO_EXPORT zPH3D *zPH3DAlloc(zPH3D *ph, int vn, int fn);
+__ZEO_EXPORT zPH3D *zPH3DClone(zPH3D *src, zPH3D *dest);
+__ZEO_EXPORT zPH3D *zPH3DMirror(zPH3D *src, zPH3D *dest, zAxis axis);
+__ZEO_EXPORT zPH3D *zPH3DScale(zPH3D *ph, double scale);
+__ZEO_EXPORT void zPH3DDestroy(zPH3D *ph);
 
 /*! \brief transform coordinates of a 3D polyhedron.
  *
@@ -82,8 +82,8 @@ __EXPORT void zPH3DDestroy(zPH3D *ph);
  * \return
  * zPH3DXform() and zPH3DXformInv() return a pointer \a dest.
  */
-__EXPORT zPH3D *zPH3DXform(zPH3D *src, zFrame3D *f, zPH3D *dest);
-__EXPORT zPH3D *zPH3DXformInv(zPH3D *src, zFrame3D *f, zPH3D *dest);
+__ZEO_EXPORT zPH3D *zPH3DXform(zPH3D *src, zFrame3D *f, zPH3D *dest);
+__ZEO_EXPORT zPH3D *zPH3DXformInv(zPH3D *src, zFrame3D *f, zPH3D *dest);
 
 /*! \brief return the contiguous vertex to another on a 3D polyhedron.
  *
@@ -95,7 +95,7 @@ __EXPORT zPH3D *zPH3DXformInv(zPH3D *src, zFrame3D *f, zPH3D *dest);
  * \return
  * zPH3DClosest() returns the distance between \a p and \a cp.
  */
-__EXPORT zVec3D *zPH3DContigVert(zPH3D *ph, zVec3D *p, double *d);
+__ZEO_EXPORT zVec3D *zPH3DContigVert(zPH3D *ph, zVec3D *p, double *d);
 
 /*! \brief check if a point is inside of a 3D polyhedron.
  *
@@ -111,9 +111,9 @@ __EXPORT zVec3D *zPH3DContigVert(zPH3D *ph, zVec3D *p, double *d);
  *  - \a ph is closed
  *  - normal vectors of all facets of \a ph direct outward.
  */
-__EXPORT double zPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp);
-__EXPORT double zPH3DPointDist(zPH3D *ph, zVec3D *p);
-__EXPORT bool zPH3DPointIsInside(zPH3D *ph, zVec3D *p, double margin);
+__ZEO_EXPORT double zPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT double zPH3DPointDist(zPH3D *ph, zVec3D *p);
+__ZEO_EXPORT bool zPH3DPointIsInside(zPH3D *ph, zVec3D *p, double margin);
 
 /*! \brief volume of a 3D polyhedron.
  *
@@ -121,7 +121,7 @@ __EXPORT bool zPH3DPointIsInside(zPH3D *ph, zVec3D *p, double margin);
  * \return
  * zPH3DVolume() returns the calculated volume.
  */
-__EXPORT double zPH3DVolume(zPH3D *ph);
+__ZEO_EXPORT double zPH3DVolume(zPH3D *ph);
 
 /*! \brief barycenter of a 3D polyhedron.
  *
@@ -130,7 +130,7 @@ __EXPORT double zPH3DVolume(zPH3D *ph);
  * \return
  * zPH3DBarycenter() returns a pointer to \a c.
  */
-__EXPORT zVec3D *zPH3DBarycenter(zPH3D *ph, zVec3D *c);
+__ZEO_EXPORT zVec3D *zPH3DBarycenter(zPH3D *ph, zVec3D *c);
 
 /*! \brief inertia tensor of a 3D polyhedron.
  *
@@ -146,10 +146,10 @@ __EXPORT zVec3D *zPH3DBarycenter(zPH3D *ph, zVec3D *c);
  * zPH3DInertia(), zPH3DInertiaMass(), zPH3DBaryInertia() and zPH3DBaryInertiaMass()
  * return a pointer \a inertia.
  */
-__EXPORT zMat3D *zPH3DInertia(zPH3D *ph, double density, zMat3D *inertia);
-__EXPORT zMat3D *zPH3DInertiaMass(zPH3D *ph, double mass, zMat3D *inertia);
-__EXPORT zMat3D *zPH3DBaryInertia(zPH3D *ph, double density, zMat3D *inertia);
-__EXPORT zMat3D *zPH3DBaryInertiaMass(zPH3D *ph, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zPH3DInertia(zPH3D *ph, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zPH3DInertiaMass(zPH3D *ph, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zPH3DBaryInertia(zPH3D *ph, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zPH3DBaryInertiaMass(zPH3D *ph, double mass, zMat3D *inertia);
 
 /* solid modeling */
 
@@ -172,8 +172,8 @@ __EXPORT zMat3D *zPH3DBaryInertiaMass(zPH3D *ph, double mass, zMat3D *inertia);
  * zPH3DCreatePrism() returns a pointer \a prism.
  * zPH3DCreatePyramid() returns a pointer \a pyr.
  */
-__EXPORT zPH3D *zPH3DCreatePrism(zPH3D *prism, zVec3D bottom[], int n, zVec3D *shift);
-__EXPORT zPH3D *zPH3DCreatePyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3D *vert);
+__ZEO_EXPORT zPH3D *zPH3DCreatePrism(zPH3D *prism, zVec3D bottom[], int n, zVec3D *shift);
+__ZEO_EXPORT zPH3D *zPH3DCreatePyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3D *vert);
 
 /*! \brief create solid revolution.
  *
@@ -197,13 +197,13 @@ __EXPORT zPH3D *zPH3DCreatePyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3D *v
  * These functions do not check the validity of the shape
  * of cross-sections.
  */
-__EXPORT zPH3D *zPH3DCreateTorus(zPH3D *torus, zVec3D loop[], int n, int div, zVec3D *center, zVec3D *axis);
-__EXPORT zPH3D *zPH3DCreateLathe(zPH3D *lathe, zVec3D rim[], int n, int div, zVec3D *center, zVec3D *axis);
+__ZEO_EXPORT zPH3D *zPH3DCreateTorus(zPH3D *torus, zVec3D loop[], int n, int div, zVec3D *center, zVec3D *axis);
+__ZEO_EXPORT zPH3D *zPH3DCreateLathe(zPH3D *lathe, zVec3D rim[], int n, int div, zVec3D *center, zVec3D *axis);
 
 /*! \brief read a 3D polyhedron from a ZTK format processor. */
-__EXPORT zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk);
+__ZEO_EXPORT zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk);
 
-__EXPORT void zPH3DFPrintZTK(FILE *fp, zPH3D *ph);
+__ZEO_EXPORT void zPH3DFPrintZTK(FILE *fp, zPH3D *ph);
 
 __END_DECLS
 

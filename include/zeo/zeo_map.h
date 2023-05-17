@@ -26,20 +26,20 @@ typedef struct{
  * \brief map class.
  */
 typedef struct{
-  Z_NAMED_CLASS
+  Z_NAMED_CLASS;
   void *body;
   zMapCom *com;
 } zMap;
 
 /* initialize a map. */
-__EXPORT zMap *zMapInit(zMap *map);
+__ZEO_EXPORT zMap *zMapInit(zMap *map);
 /* destroy a map. */
-__EXPORT void zMapDestroy(zMap *map);
+__ZEO_EXPORT void zMapDestroy(zMap *map);
 
 #define ZTK_TAG_MAP "map"
 
-__EXPORT zMap *zMapFromZTK(zMap *map, ZTK *ztk);
-__EXPORT void zMapFPrintZTK(FILE *fp, zMap *map);
+__ZEO_EXPORT zMap *zMapFromZTK(zMap *map, ZTK *ztk);
+__ZEO_EXPORT void zMapFPrintZTK(FILE *fp, zMap *map);
 
 /*! \struct zMapArray
  * \brief array class of maps.

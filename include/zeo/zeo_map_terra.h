@@ -63,16 +63,16 @@ typedef struct{
 #define ZTERRA_TRAVS_TH_RES ( 1.0e-1 )
 
 /*! \brief retrieve a grid of an elevation map. */
-__EXPORT zTerraCell *zTerraGrid(zTerra *terra, int i, int j);
+__ZEO_EXPORT zTerraCell *zTerraGrid(zTerra *terra, int i, int j);
 
 /*! \brief initialize an elevation map. */
-__EXPORT zTerra *zTerraInit(zTerra *terra);
+__ZEO_EXPORT zTerra *zTerraInit(zTerra *terra);
 
 /*! \brief level an elevation map into flat. */
-__EXPORT zTerra *zTerraLevel(zTerra *terra);
+__ZEO_EXPORT zTerra *zTerraLevel(zTerra *terra);
 
 /*! \brief allocate the internal grid array of an elevation map. */
-__EXPORT zTerra *zTerraAlloc(zTerra *terra, int xsize, int ysize);
+__ZEO_EXPORT zTerra *zTerraAlloc(zTerra *terra, int xsize, int ysize);
 
 /*! \brief set thresholds of an elevation map for traversability check. */
 #define zTerraSetTravsThreshold(terra,tv,tg,tr) do{\
@@ -88,49 +88,49 @@ __EXPORT zTerra *zTerraAlloc(zTerra *terra, int xsize, int ysize);
 } while(0)
 
 /*! \brief set the region of an elevation map based on resolution. */
-__EXPORT void zTerraSetRegion(zTerra *terra, double xmin, double ymin, double zmin, double zmax, double dx, double dy);
+__ZEO_EXPORT void zTerraSetRegion(zTerra *terra, double xmin, double ymin, double zmin, double zmax, double dx, double dy);
 
 /*! \brief allocate the internal grid array of an elevation map based on resolution. */
-__EXPORT zTerra *zTerraAllocRegion(zTerra *terra, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, double dx, double dy);
+__ZEO_EXPORT zTerra *zTerraAllocRegion(zTerra *terra, double xmin, double xmax, double ymin, double ymax, double zmin, double zmax, double dx, double dy);
 
 /*! \brief allocate the internal grid array of an elevation map based on size. */
-__EXPORT zTerra *zTerraAllocGrid(zTerra *terra, double xmin, double ymin, double dx, double dy, int xsize, int ysize, double zmin, double zmax);
+__ZEO_EXPORT zTerra *zTerraAllocGrid(zTerra *terra, double xmin, double ymin, double dx, double dy, int xsize, int ysize, double zmin, double zmax);
 
 /*! \brief destroy the internal grid array of an elevation map. */
-__EXPORT void zTerraDestroy(zTerra *terra);
+__ZEO_EXPORT void zTerraDestroy(zTerra *terra);
 
 /*! \brief update an elevation map from a point. */
-__EXPORT zTerra *zTerraUpdate(zTerra *terra, zVec3D *p);
+__ZEO_EXPORT zTerra *zTerraUpdate(zTerra *terra, zVec3D *p);
 
 /*! \brief form terrain profile of an elevation map. */
-__EXPORT zTerra *zTerraForm(zTerra *terra);
+__ZEO_EXPORT zTerra *zTerraForm(zTerra *terra);
 
 /*! \brief identify an elevation map from point cloud. */
-__EXPORT zTerra *zTerraIdent(zTerra *terra, zVec3DList *pl);
+__ZEO_EXPORT zTerra *zTerraIdent(zTerra *terra, zVec3DList *pl);
 
 /*! \brief check traversability of each grid of an elevation map. */
-__EXPORT void zTerraCheckTravs(zTerra *terra);
+__ZEO_EXPORT void zTerraCheckTravs(zTerra *terra);
 
 /*! \brief acquire the actual z-range of an elevation map. */
-__EXPORT void zTerraZRange(zTerra *terra, double *zmin, double *zmax);
+__ZEO_EXPORT void zTerraZRange(zTerra *terra, double *zmin, double *zmax);
 
 /*! \brief adjust z-range of an elevation map. */
 #define zTerraAdjustZRange(terra) zTerraZRange( (terra), &(terra)->zmin, &(terra)->zmax )
 
 /*! \brief estimate z-value at a given horizontal place of an elevation map. */
-__EXPORT double zTerraZ(zTerra *terra, double x, double y);
+__ZEO_EXPORT double zTerraZ(zTerra *terra, double x, double y);
 
 /*! \brief read a terrain elevation map from a ZTK format processor. */
-__EXPORT zTerra *zTerraFromZTK(zTerra *terra, ZTK *ztk);
+__ZEO_EXPORT zTerra *zTerraFromZTK(zTerra *terra, ZTK *ztk);
 
 /*! \brief print an elevation map out to a file in ZTK format. */
-__EXPORT void zTerraFPrintZTK(FILE *fp, zTerra *terra);
+__ZEO_EXPORT void zTerraFPrintZTK(FILE *fp, zTerra *terra);
 
 /*! \brief print an elevation map out to a file in a plot-friendly format. */
-__EXPORT void zTerraDataFPrint(FILE *fp, zTerra *terra);
+__ZEO_EXPORT void zTerraDataFPrint(FILE *fp, zTerra *terra);
 
 /* methods for abstraction */
-__EXPORT zMapCom zeo_map_terra_com;
+__ZEO_EXPORT zMapCom zeo_map_terra_com;
 
 #define zMapTerra(m) ((zTerra*)(m)->body)
 

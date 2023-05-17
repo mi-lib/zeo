@@ -34,8 +34,8 @@ __BEGIN_DECLS
  * memory necessitated in computation, the null pointer is
  * returned.
  */
-__EXPORT zPH3D *zCH3D(zPH3D *ch, zVec3D p[], int num);
-__EXPORT zPH3D *zCH3DPL(zPH3D *ch, zVec3DList *pl);
+__ZEO_EXPORT zPH3D *zCH3D(zPH3D *ch, zVec3D p[], int num);
+__ZEO_EXPORT zPH3D *zCH3DPL(zPH3D *ch, zVec3DList *pl);
 
 __END_DECLS
 

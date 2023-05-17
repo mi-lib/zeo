@@ -31,13 +31,13 @@ zListClass( zDTTri2DList, zDTTri2DListCell, zDTTri2D );
  * zDelaunay2D() returns the true value if it succeeds. It returns the
  * false value if it fails due to any reason.
  */
-__EXPORT bool zDelaunay2D(zVec2DList *pl, zDTTri2DList *tl);
+__ZEO_EXPORT bool zDelaunay2D(zVec2DList *pl, zDTTri2DList *tl);
 
 /*! \brief print out 2D triangles of a list to the current position of a file (for debug) */
-__EXPORT void zDTTri2DListFPrint(FILE *fp, zDTTri2DList *tl);
+__ZEO_EXPORT void zDTTri2DListFPrint(FILE *fp, zDTTri2DList *tl);
 
 /*! \brief print 2D Voronoi diagram from a set of 2D Delaunay triangles */
-__EXPORT void zDTTri2DListVD2DFPrint(FILE *fp, zDTTri2DList *tl);
+__ZEO_EXPORT void zDTTri2DListVD2DFPrint(FILE *fp, zDTTri2DList *tl);
 
 /* *** 2D Voronoi diagram *** */
 
@@ -56,7 +56,7 @@ typedef struct{
 zListClass( zVD2DList, zVD2DCell, zVD2DData );
 
 /*! \brief destroy a list of 2D Voronoi cell */
-__EXPORT void zVD2DListDestroy(zVD2DList *vl);
+__ZEO_EXPORT void zVD2DListDestroy(zVD2DList *vl);
 
 /*! \brief 2D Voronoi diagram
  *
@@ -67,10 +67,10 @@ __EXPORT void zVD2DListDestroy(zVD2DList *vl);
  * zVoronoi2D() returns the true value if it succeeds. It returns the
  * false value if it fails due to any reason.
  */
-__EXPORT bool zVoronoi2D(zVec2DList *pl, zVD2DList *vl);
+__ZEO_EXPORT bool zVoronoi2D(zVec2DList *pl, zVD2DList *vl);
 
 /*! \brief print a list of 2D Voronoi cells */
-__EXPORT void zVD2DListFPrint(FILE *fp, zVD2DList *vl);
+__ZEO_EXPORT void zVD2DListFPrint(FILE *fp, zVD2DList *vl);
 
 __END_DECLS
 

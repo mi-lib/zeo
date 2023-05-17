@@ -26,7 +26,7 @@ zListClass( zVec2DList, zVec2DListCell, zVec2D* );
  * zVec2DListFind() returns a pointer to the 2D vector in \a list,
  * if found. Otherwise, it returns the null pointer.
  */
-__EXPORT zVec2DListCell *zVec2DListFind(zVec2DList *list, zVec2D *v);
+__ZEO_EXPORT zVec2DListCell *zVec2DListFind(zVec2DList *list, zVec2D *v);
 
 /*! \brief add a 2D vector to a vector list.
  *
@@ -35,10 +35,10 @@ __EXPORT zVec2DListCell *zVec2DListFind(zVec2DList *list, zVec2D *v);
  * \return
  * zVec2DListAdd() returns a pointer to the newly added cell.
  */
-__EXPORT zVec2DListCell *zVec2DListAdd(zVec2DList *list, zVec2D *v);
+__ZEO_EXPORT zVec2DListCell *zVec2DListAdd(zVec2DList *list, zVec2D *v);
 
 /*! \brief destroy a list of 2D vectors. */
-__EXPORT void zVec2DListDestroy(zVec2DList *list);
+__ZEO_EXPORT void zVec2DListDestroy(zVec2DList *list);
 
 /* ********************************************************** */
 /* CLASS: zVec2DAddrList
@@ -55,7 +55,7 @@ typedef zVec2DListCell zVec2DAddr;
  * \return
  * zVec2DAddrListAdd() returns a pointer to the newly added cell.
  */
-__EXPORT zVec2DAddr *zVec2DAddrListAdd(zVec2DAddrList *list, zVec2D *v);
+__ZEO_EXPORT zVec2DAddr *zVec2DAddrListAdd(zVec2DAddrList *list, zVec2D *v);
 
 /*! \brief create a list of pointers to 2D vectors from an array of 2D vectors.
  *
@@ -65,7 +65,7 @@ __EXPORT zVec2DAddr *zVec2DAddrListAdd(zVec2DAddrList *list, zVec2D *v);
  * \return
  * zVec2DAddrListCreate() returns a pointer \a list.
  */
-__EXPORT zVec2DAddrList *zVec2DAddrListCreate(zVec2DAddrList *list, zVec2DArray *va);
+__ZEO_EXPORT zVec2DAddrList *zVec2DAddrListCreate(zVec2DAddrList *list, zVec2DArray *va);
 
 /*! \brief destroy a list of 2D vectors.
  *

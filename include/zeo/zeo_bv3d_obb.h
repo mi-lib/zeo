@@ -24,8 +24,8 @@ __BEGIN_DECLS
  * \return
  * zOBB3D() returns a pointer \a obb.
  */
-__EXPORT zBox3D *zOBB3D(zBox3D *obb, zVec3D p[], int n);
-__EXPORT zBox3D *zOBB3DPL(zBox3D *obb, zVec3DList *pl);
+__ZEO_EXPORT zBox3D *zOBB3D(zBox3D *obb, zVec3D p[], int n);
+__ZEO_EXPORT zBox3D *zOBB3DPL(zBox3D *obb, zVec3DList *pl);
 
 __END_DECLS
 

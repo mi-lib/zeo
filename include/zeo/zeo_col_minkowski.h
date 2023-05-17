@@ -13,7 +13,7 @@ __BEGIN_DECLS
 
 /*! \brief Minkowski subtract.
  */
-__EXPORT zPH3D *zPH3DMinkowskiSub(zPH3D *ph, zVec3D p1[], int n1, zVec3D p2[], int n2);
+__ZEO_EXPORT zPH3D *zPH3DMinkowskiSub(zPH3D *ph, zVec3D p1[], int n1, zVec3D p2[], int n2);
 
 __END_DECLS
 
