@@ -26,15 +26,15 @@ zPH3D *zPH3DAlloc(zPH3D *ph, int vn, int fn)
   zPH3DInit( ph );
   if( vn > 0 ){ /* vertices */
     zArrayAlloc( &ph->vert, zVec3D, vn );
-    if( !zPH3DVertBuf(ph) ) goto ERROR;
+    if( !zPH3DVertBuf(ph) ) goto ZPH3DALLOC_ERROR;
   }
   if( fn > 0 ){ /* faces */
     zArrayAlloc( &ph->face, zTri3D, fn );
-    if( !zPH3DFaceBuf(ph) ) goto ERROR;
+    if( !zPH3DFaceBuf(ph) ) goto ZPH3DALLOC_ERROR;
   }
   return ph;
 
- ERROR:
+ ZPH3DALLOC_ERROR:
   ZALLOCERROR();
   zPH3DDestroy( ph );
   return NULL;
@@ -300,14 +300,14 @@ zPH3D *zPH3DCreatePrism(zPH3D *prism, zVec3D bottom[], int n, zVec3D *shift)
   zArrayBuf(&va) = zPH3DVert(prism,n);
   nf+= _zPH3DSweepBottom( &va, zPH3DFace(prism,nf), &ref );
 
-  if( nf > 2*(n-2) ) goto FATAL_ERROR;
+  if( nf > 2*(n-2) ) goto ZPH3DPRISM_FATAL_ERROR;
   /* side faces */
   i = zPH3DFaceVert(prism,0,0) - zPH3DVertBuf(prism);
   i1 = _zPH3DLoopNext( n, i );
   if( zPH3DFaceVert(prism,0,1)-zPH3DVertBuf(prism) == i1 )
     _tri = zTri3DCreateRev; /* direct faces outwards */
   else if( zPH3DFaceVert(prism,0,2)-zPH3DVertBuf(prism) != i1 )
-    goto FATAL_ERROR;
+    goto ZPH3DPRISM_FATAL_ERROR;
   for( i=0; i<n; i++, nf+=2 ){
     i1 = _zPH3DLoopNext(n,i);
     _tri( zPH3DFace(prism,nf),
@@ -321,7 +321,7 @@ zPH3D *zPH3DCreatePrism(zPH3D *prism, zVec3D bottom[], int n, zVec3D *shift)
       zPH3DSetFaceNum( prism, nf );
     }
   return prism;
- FATAL_ERROR:
+ ZPH3DPRISM_FATAL_ERROR:
   ZRUNERROR( ZEO_ERR_FATAL );
   zPH3DDestroy( prism );
   return NULL;
@@ -347,14 +347,14 @@ zPH3D *zPH3DCreatePyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3D *vert)
   zArrayBuf(&va) = zPH3DVert(pyr,0);
   nf = _zPH3DSweepBottom( &va, zPH3DFace(pyr,0), &ref );
 
-  if( nf > n-2 ) goto FATAL_ERROR;
+  if( nf > n-2 ) goto ZPH3DPYRAMID_FATAL_ERROR;
   /* side faces */
   i = zPH3DFaceVert(pyr,0,0) - zPH3DVertBuf(pyr);
   i1 = _zPH3DLoopNext( n, i );
   if( zPH3DFaceVert(pyr,0,1)-zPH3DVertBuf(pyr) == i1 )
     _tri = zTri3DCreateRev; /* direct faces outwards */
   else if( zPH3DFaceVert(pyr,0,2)-zPH3DVertBuf(pyr) != i1 )
-    goto FATAL_ERROR;
+    goto ZPH3DPYRAMID_FATAL_ERROR;
   for( i=0; i<n; i++, nf++ )
     _tri( zPH3DFace(pyr,nf),
       zPH3DVert(pyr,i), zPH3DVert(pyr,_zPH3DLoopNext(n,i)), zPH3DVert(pyr,n) );
@@ -365,7 +365,7 @@ zPH3D *zPH3DCreatePyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3D *vert)
     }
 
   return pyr;
- FATAL_ERROR:
+ ZPH3DPYRAMID_FATAL_ERROR:
   ZRUNERROR( ZEO_ERR_FATAL );
   zPH3DDestroy( pyr );
   return NULL;
