@@ -1,3 +1,4 @@
+2023. 5.20. Reflected new specification of zeda-makefile-gen, and modified src/makefile. [src]
 2023. 5.19. Added __zeo_stl_echo, and modified _zPH3DFReadSTL_ASCIIsolid and zPH3DFReadSTL_Bin to switch echo mode. [zeo_ph_stl]
 2023. 5.17. Reflected modification of Z_NAMED_CLASS. [zeo_render_optic, zeo_render_texure, zeo_shape3d, zeo_map]
 2023. 5.16. Modified zeo.h to include zeo_brep.h. [zeo]
