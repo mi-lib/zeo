@@ -14,7 +14,7 @@ __BEGIN_DECLS
 /*! \struct zVec6D
  * \brief 6D spatial vector for linear/angular quantities.
  */
-ZDEF_UNION( zVec6D ){
+ZDEF_UNION( __ZEO_CLASS_EXPORT, zVec6D ){
   double e[6];
   zVec3D v[2];
   struct{

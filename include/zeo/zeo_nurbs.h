@@ -17,7 +17,7 @@ __BEGIN_DECLS
  * zNURBS3DCPCell is a cell of 3D NURBS that contains a control
  * point and associated weight.
  *//* ******************************************************* */
-ZDEF_STRUCT( zNURBS3DCPCell ){
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zNURBS3DCPCell ){
   zVec3D cp; /*!< control point */
   double w;  /*!< weight */
 };
@@ -38,7 +38,7 @@ zArray2Class( zNURBS3DCPNet, zNURBS3DCPCell );
  *
  * zNURBS3D is a 3D NURBS that represents curve and surface.
  *//* ******************************************************* */
-ZDEF_STRUCT( zNURBS3D ){
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zNURBS3D ){
   int order[2];   /*!< \brief orders of a curve in two axes */
   zVec knot[2]; /*!< \brief knot vectors */
   int ns[2];    /*!< \brief number of slices in each axis */

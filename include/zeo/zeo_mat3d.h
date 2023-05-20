@@ -19,7 +19,7 @@ __BEGIN_DECLS
  * |  e[0][1]  e[1][1]  e[2][1]  | = |  c.xy  c.yy  c.zy  | = [ v[0]  v[1]  v[2] ] = [ b.x  b.y  b.z ]
  * |_ e[0][2]  e[1][2]  e[2][2] _|   |_ c.xz  c.yz  c.zz _|
  */
-ZDEF_UNION( zMat3D ){
+ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat3D ){
   double e[3][3];   /*!< 3x3 matrix */
   zVec3D v[3];      /*!< 3 column vectors */
   struct{

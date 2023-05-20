@@ -16,7 +16,7 @@ __BEGIN_DECLS
  * 3D frame class
  * ********************************************************** */
 
-ZDEF_STRUCT( zFrame3D ){
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zFrame3D ){
   zVec3D pos;
   zMat3D att;
 #ifdef __cplusplus

@@ -14,7 +14,7 @@ __BEGIN_DECLS
 /*! \struct zEP
  * \brief Euler parameter.
  */
-ZDEF_UNION( zEP ){
+ZDEF_UNION( __ZEO_CLASS_EXPORT, zEP ){
   struct{
     double w;
     zVec3D v;

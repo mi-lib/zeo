@@ -14,7 +14,7 @@ __BEGIN_DECLS
 /*! \struct zVec2D
  * \brief 2D vector.
  */
-ZDEF_UNION( zVec2D ){
+ZDEF_UNION( __ZEO_CLASS_EXPORT, zVec2D ){
   struct{
     double x, y;
   } c;

@@ -1,3 +1,4 @@
+2023. 5.20. Reflected new specification of ZDEF_STRUCT and ZDEF_UNION. [zeo_vec2d, zeo_vec3d, zeo_vec6d, zeo_mat3d, zeo_mat6d, zeo_ep, zeo_frame3d, zeo_ph, zeo_nurbs]
 2023. 5.20. Reflected new specification of zeda-makefile-gen, and modified src/makefile. [src]
 2023. 5.19. Added __zeo_stl_echo, and modified _zPH3DFReadSTL_ASCIIsolid and zPH3DFReadSTL_Bin to switch echo mode. [zeo_ph_stl]
 2023. 5.17. Reflected modification of Z_NAMED_CLASS. [zeo_render_optic, zeo_render_texure, zeo_shape3d, zeo_map]
