@@ -840,6 +840,8 @@ __ZEO_EXPORT void zMat3DFPrint(FILE *fp, zMat3D *m);
  */
 __ZEO_EXPORT zVec3D *zAAFromZTK(zVec3D *aa, ZTK *ztk);
 
+__END_DECLS
+
 #ifdef __cplusplus
 inline zMat3D &zMat3D::create(double a11, double a12, double a13, double a21, double a22, double a23, double a31, double a32, double a33){
   _zMat3DCreate( this, a11, a12, a13, a21, a22, a23, a31, a32, a33 );
@@ -892,8 +894,6 @@ inline zMat3D &zMat3D::rot(zMat3D &r){ return *zRotMat3DDRC( &r, this ); }
 inline zMat3D &zMat3D::rotInv(zMat3D &r){ return *zRotMat3DInvDRC( &r, this ); }
 inline zMat3D &zMat3D::rot(zVec3D &aa){ return *zMat3DRotDRC( this, &aa ); }
 #endif /* __cplusplus */
-
-__END_DECLS
 
 #include <zeo/zeo_vec3d_pca.h> /* principal component analysis */
 

@@ -16,7 +16,7 @@ void usage(char *arg)
 
 void mshape2vlist(zMShape3D *ms, zVec3DAddrList *vl)
 {
-  register int i, j;
+  int i, j;
   zShape3D *s;
 
   zListInit( vl );

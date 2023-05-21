@@ -349,6 +349,8 @@ __ZEO_EXPORT zFrame3D *zFrame3DFScan(FILE *fp, zFrame3D *f);
 __ZEO_EXPORT void zFrame3DFPrint(FILE *fp, zFrame3D *f);
 #define zFrame3DPrint(f) zFrame3DFPrint( stdout, (f) )
 
+__END_DECLS
+
 #ifdef __cplusplus
 inline zFrame3D &zFrame3D::create(zVec3D &p, zMat3D &m){ return *zFrame3DCreate( this, &p, &m ); }
 inline zFrame3D &zFrame3D::createZYX(double x, double y, double z, double azim, double elev, double tilt){ return *zFrame3DFromZYX( this, x, y, z, azim, elev, tilt ); }
@@ -377,7 +379,5 @@ inline zVec6D zFrame3D::toZYX(){ zVec6D v; zFrame3DToVec6DZYX( this, &v ); retur
 inline zVec6D zFrame3D::toZYZ(){ zVec6D v; zFrame3DToVec6DZYZ( this, &v ); return v; }
 inline zVec6D zFrame3D::toAA(){ zVec6D v; zFrame3DToVec6DAA( this, &v ); return v; }
 #endif /* __cplusplus */
-
-__END_DECLS
 
 #endif /* __ZEO_FRAME3D_H__ */

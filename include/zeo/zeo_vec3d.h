@@ -614,6 +614,8 @@ __ZEO_EXPORT zVec3D *zVec3DDataNLFPrint(FILE *fp, zVec3D *v);
 __ZEO_EXPORT zVec3D *zVec3DFPrint(FILE *fp, zVec3D *v);
 #define zVec3DPrint(v) zVec3DFPrint( stdout, (v) )
 
+__END_DECLS
+
 #ifdef __cplusplus
 inline zVec3D &zVec3D::create(double x, double y, double z){ _zVec3DCreate( this, x, y, z ); return *this; }
 inline zVec3D &zVec3D::createPolar(double r, double theta, double phi){ zVec3DCreatePolar( this, r, theta, phi ); return *this; }
@@ -648,8 +650,6 @@ inline zVec3D &zVec3D::normalize(){ zVec3DNormalizeNCDRC( this ); return *this; 
  * \brief array class of 3D vectors.
  */
 zArrayClass( zVec3DArray, zVec3D );
-
-__END_DECLS
 
 #include <zeo/zeo_vec3d_list.h>  /* 3D vector list */
 #include <zeo/zeo_vec3d_tree.h>  /* 3D vector tree */

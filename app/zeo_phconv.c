@@ -16,9 +16,9 @@ zOption option[] = {
   { "o", "out",   "<output file>", "output STL/PLY/ZTK file", NULL, false },
   { "a", "ascii", NULL,            "output ASCII STL/PLY file", NULL, false },
   { "b", "bin",   NULL,            "output binary STL/PLY file", NULL, false },
-  { "t", "translate", "<x> <y> <z>",   "translate geometry", "0.0 0.0 0.0", false },
-  { "r", "rotate", "<rxx> <rxy> <rxz> <ryz> <ryy> <ryz> <rzx> <rzy> <rzz>", "rotate geometry", "1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0", false },
-  { "s", "scale", "<factor>",      "scale geometry", "1.0", false },
+  { "t", "translate", "<x> <y> <z>",   "translate geometry", (char *)"0.0 0.0 0.0", false },
+  { "r", "rotate", "<rxx> <rxy> <rxz> <ryz> <ryy> <ryz> <rzx> <rzy> <rzz>", "rotate geometry", (char *)"1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0", false },
+  { "s", "scale", "<factor>",      "scale geometry", (char *)"1.0", false },
   { "h", "help",  NULL,            "show this message", NULL, false },
   { NULL, NULL, NULL, NULL, NULL, false },
 };

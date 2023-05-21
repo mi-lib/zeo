@@ -421,6 +421,8 @@ __ZEO_EXPORT void zVec2DDataNLFPrint(FILE *fp, zVec2D *v);
 __ZEO_EXPORT void zVec2DFPrint(FILE *fp, zVec2D *v);
 #define zVec2DPrint(v) zVec2DFPrint( stdout, (v) )
 
+__END_DECLS
+
 #ifdef __cplusplus
 inline zVec2D &zVec2D::create(double x, double y){ _zVec2DCreate( this, x, y ); return *this; }
 inline zVec2D &zVec2D::createPolar(double r, double theta){ zVec2DCreatePolar( this, r, theta ); return *this; }
@@ -455,8 +457,6 @@ inline zVec2D &zVec2D::normalize(){ zVec2DNormalizeNCDRC( this ); return *this; 
  * \brief array class of 2D vectors.
  */
 zArrayClass( zVec2DArray, zVec2D );
-
-__END_DECLS
 
 #include <zeo/zeo_vec2d_list.h>  /* 2D vector list */
 

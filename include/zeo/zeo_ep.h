@@ -214,6 +214,8 @@ __ZEO_EXPORT zMat3D *zMat3DInterDiv(zMat3D *m1, zMat3D *m2, double t, zMat3D *m)
 __ZEO_EXPORT void zEPFPrint(FILE *fp, zEP *ep);
 #define zEPPrint(e) zEPFPrint( stdout, e )
 
+__END_DECLS
+
 #ifdef __cplusplus
 inline zEP &zEP::create(double w, double x, double y, double z){ return *zEPCreate( this, w, x, y, z ); }
 inline zEP &zEP::createAA(double theta, zVec3D *axis){ return *zEPCreateAA( this, theta, axis ); }
@@ -247,7 +249,5 @@ inline zEP &zEP::cat(double k, zEP &e){ return *zEPCatDRC( this, k, &e ); }
 inline double zEP::norm(){ return zEPNorm( this ); }
 inline zEP &zEP::normalize(){ return *zEPNormalize( this ); }
 #endif /* __cplusplus */
-
-__END_DECLS
 
 #endif /* __ZEO_EP_H__ */

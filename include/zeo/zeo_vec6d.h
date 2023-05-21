@@ -342,6 +342,8 @@ __ZEO_EXPORT zVec6D *zVec6DDataNLFPrint(FILE *fp, zVec6D *v);
 __ZEO_EXPORT zVec6D *zVec6DFPrint(FILE *fp, zVec6D *v);
 #define zVec6DPrint(v) zVec6DFPrint( stdout, (v) )
 
+__END_DECLS
+
 #ifdef __cplusplus
 /*! \brief 6D zero vector and unit vectors */
 inline zVec6D &zVec6D::create(double x, double y, double z, double xa, double ya, double za){ _zVec6DCreate( this, x, y, z, xa, ya, za ); return *this; }
@@ -363,7 +365,5 @@ inline zVec6D zVec6D::rev(){ _zVec6DRevDRC( this ); return *this; }
 inline zVec6D zVec6D::mul(double k){ _zVec6DMulDRC( this, k ); return *this; }
 inline zVec6D zVec6D::div(double k){ return *zVec6DDivDRC( this, k ); }
 #endif /* __cplusplus */
-
-__END_DECLS
 
 #endif /* __ZEO_VEC6D_H__ */
