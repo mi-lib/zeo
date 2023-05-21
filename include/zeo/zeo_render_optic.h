@@ -28,6 +28,10 @@ typedef struct{
 #define zOpticalInfoSetDif(o,d) zRGBCopy( d, &(o)->dif )
 #define zOpticalInfoSetSpc(o,s) zRGBCopy( s, &(o)->spc )
 
+#define zOpticalInfoSetESR(o,e)       ( (o)->esr = (e) )
+#define zOpticalInfoSetShininess(o,s) ( (o)->sns = (s) )
+#define zOpticalInfoSetAlpha(o,a)     ( (o)->alpha = (a) )
+
 /*! \brief create, initialize, copy and destroy a set of optical parameters.
  *
  * zOpticalInfoCreate() creates a set of optical parameters \a oi.
