@@ -32,14 +32,13 @@ typedef struct{
 
 /*! \brief initialize, create and copy a 3D cylinder.
  *
- * zCyl3DInit() initializes a 3D cylinder \a cyl, setting both of its
- * centers on the bases for the original point and radius for zero.
+ * zCyl3DInit() initializes a 3D cylinder \a cyl, setting both centers
+ * on the bases for the original point and radius for zero.
  *
- * zCyl3DCreate() creates a 3D cylinder whose two centers point on the
+ * zCyl3DCreate() creates a 3D cylinder whose two center points on the
  * bases are \a c1 and \a c2, and radius is \a r.
  * \a div is the number of division for polyhedral approximation.
- * When zero is given for \a div, ZEO_SHAPE_DEFAULT_DIV is
- * set instead.
+ * When zero is given for \a div, ZEO_SHAPE_DEFAULT_DIV is set instead.
  *
  * zCyl3DCopy() copies a 3D cylinder \a src to the other \a dest.
  * \return
@@ -52,7 +51,7 @@ __ZEO_EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zCyl3D );
 __ZEO_EXPORT zCyl3D *zCyl3DCopy(zCyl3D *src, zCyl3D *dest);
 __ZEO_EXPORT zCyl3D *zCyl3DMirror(zCyl3D *src, zCyl3D *dest, zAxis axis);
 
-/*! \brief transfer a 3D cylinder.
+/*! \brief transform a 3D cylinder.
  *
  * zCyl3DXform() transforms a 3D cylinder \a src by a frame \a f and
  * puts it into \a dest.
@@ -69,7 +68,7 @@ __ZEO_EXPORT zCyl3D *zCyl3DXformInv(zCyl3D *src, zFrame3D *f, zCyl3D *dest);
  *
  * zCyl3DPointIsInside() checks if a 3D point \a p is inside of a 3D
  * cylinder \a cyl. \a margin is a margin of the inside area outward
- * from the boundary of \a box.
+ * from the boundary of \a cyl.
  * \return
  * zCyl3DPointIsInside() returns the true value if \a p is inside of \a cyl,
  * or the false value otherwise.
@@ -82,7 +81,7 @@ __ZEO_EXPORT bool zCyl3DPointIsInside(zCyl3D *cyl, zVec3D *p, double margin);
  *
  * zCyl3DAxis() calculates the axis vector of a 3D cylinder \a cyl;
  * the axis from the center point on the bottom base to the center point
- * on thetop base.
+ * on the top base.
  *
  * zCyl3DHeight() calculates the height from the bottom base to the top
  * base of a 3D cylinder \a cyl.

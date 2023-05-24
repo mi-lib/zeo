@@ -340,6 +340,15 @@ zVec3D *zVec3DProj(zVec3D *v, zVec3D *n, zVec3D *pv)
   return pv;
 }
 
+/* create an orthonormal 3D vector. */
+/* TODO: modify zVec3DOrthoSpace by using this function. */
+zVec3D *zVec3DOrthoNormal(zVec3D *v, zVec3D *ov)
+{
+  _zVec3DCreate( ov, v->c.y - v->c.z, v->c.z - v->c.x, v->c.x - v->c.y );
+  zVec3DNormalizeDRC( ov );
+  return ov;
+}
+
 /* orthogonalize a 3D vector. */
 zVec3D *zVec3DOrthogonalize(zVec3D *v, zVec3D *n, zVec3D *ov)
 {

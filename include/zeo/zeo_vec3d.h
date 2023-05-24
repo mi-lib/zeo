@@ -469,14 +469,18 @@ __ZEO_EXPORT zVec3D *zVec3DAAError(zVec3D *v1, zVec3D *v2, zVec3D *aa);
  * \a n and the subtraction vector from \a pv to \a v is
  * orthogonal to \a n.
  *
+ * zVec3DOrthoNormal() creates a 3D vector \a ov that is orthonormal
+ * to \a v. The direction of \a ov is uniquely determined based on
+ * \a v but cannot be specified.
+ *
  * zVec3DOrthogonalize() orthogonalizes \a v with respect to \a n,
- * and put it into \a ov; \a ov is orthogonal to \a n.
+ * and put it into \a ov. Namely, \a ov is orthogonal to \a n.
  *
  * zVec3DOrthoSpace() creates the orthogonal space to \a v, and
- * put them into \a sv1 and \a sv2; \a v, \a sv1 and \a sv2 are
- * orthogonal with each other, and are normalized.
- * Note that the orthogonal is not unique in nature. This
- * function only creates "one of" them.
+ * put them into \a sv1 and \a sv2. Namely, \a v, \a sv1 and \a sv2
+ * are orthogonal with each other, and are normalized.
+ * Note that the orthogonal is not unique in nature. This function
+ * only creates "one of" them.
  *
  * zVec3DRot() rotates \a v by angle-axis vector \a aa, whose
  * direction is that of the rotation axis and norm is the
@@ -492,6 +496,7 @@ __ZEO_EXPORT zVec3D *zVec3DAAError(zVec3D *v1, zVec3D *v2, zVec3D *aa);
  * zVec3DRot() returns a pointer to \a rv.
  */
 __ZEO_EXPORT zVec3D *zVec3DProj(zVec3D *v, zVec3D *n, zVec3D *pv);
+__ZEO_EXPORT zVec3D *zVec3DOrthoNormal(zVec3D *v, zVec3D *ov);
 __ZEO_EXPORT zVec3D *zVec3DOrthogonalize(zVec3D *v, zVec3D *n, zVec3D *ov);
 __ZEO_EXPORT bool zVec3DOrthoSpace(zVec3D *v, zVec3D *sv1, zVec3D *sv2);
 __ZEO_EXPORT bool zVec3DOrthoNormalSpace(zVec3D *v, zVec3D *sv1, zVec3D *sv2);

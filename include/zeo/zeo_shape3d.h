@@ -192,14 +192,15 @@ __ZEO_EXPORT bool zShape3DWriteZTK(zShape3D *shape, char filename[]);
 
 __END_DECLS
 
-#include <zeo/zeo_shape3d_box.h>    /* box */
-#include <zeo/zeo_shape3d_sphere.h> /* sphere */
-#include <zeo/zeo_shape3d_ellips.h> /* ellipsoid */
-#include <zeo/zeo_shape3d_cyl.h>    /* cylinder */
-#include <zeo/zeo_shape3d_ecyl.h>   /* elliptic cylinder */
-#include <zeo/zeo_shape3d_cone.h>   /* cone */
-#include <zeo/zeo_shape3d_ph.h>     /* polyhedron (for class abstraction) */
-#include <zeo/zeo_shape3d_nurbs.h>  /* NURBS (for class abstraction) */
+#include <zeo/zeo_shape3d_box.h>     /* box */
+#include <zeo/zeo_shape3d_sphere.h>  /* sphere */
+#include <zeo/zeo_shape3d_ellips.h>  /* ellipsoid */
+#include <zeo/zeo_shape3d_cyl.h>     /* cylinder */
+#include <zeo/zeo_shape3d_capsule.h> /* capsule */
+#include <zeo/zeo_shape3d_ecyl.h>    /* elliptic cylinder */
+#include <zeo/zeo_shape3d_cone.h>    /* cone */
+#include <zeo/zeo_shape3d_ph.h>      /* polyhedron (for class abstraction) */
+#include <zeo/zeo_shape3d_nurbs.h>   /* NURBS (for class abstraction) */
 
 __BEGIN_DECLS
 
@@ -208,7 +209,7 @@ __BEGIN_DECLS
   zShape3DCom *_zeo_shape_com[] = {\
     &zeo_shape3d_ph_com, &zeo_shape3d_box_com,\
     &zeo_shape3d_sphere_com, &zeo_shape3d_ellips_com,\
-    &zeo_shape3d_cyl_com, &zeo_shape3d_ecyl_com, &zeo_shape3d_cone_com,\
+    &zeo_shape3d_cyl_com, &zeo_shape3d_capsule_com, &zeo_shape3d_ecyl_com, &zeo_shape3d_cone_com,\
     &zeo_shape3d_nurbs_com,\
     NULL,\
   }

@@ -196,11 +196,7 @@ zPH3D *zCyl3DToPH(zCyl3D *cyl, zPH3D *ph)
   }
   zVec3DNormalizeDRC( &d );
   /* one radial vector */
-  if( !zIsTiny( d.c.x ) && !zIsTiny( d.c.y ) )
-    _zVec3DCreate( &s, d.c.y,-d.c.x, 0 );
-  else
-    _zVec3DCreate( &s, d.c.y-d.c.z, d.c.z-d.c.x, d.c.x-d.c.y );
-  zVec3DNormalizeDRC( &s );
+  zVec3DOrthoNormal( &d, &s );
   zVec3DMulDRC( &s, zCyl3DRadius(cyl) );
   /* create vertices */
   for( i=0; i<zCyl3DDiv(cyl); i++ ){

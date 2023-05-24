@@ -217,11 +217,7 @@ zPH3D *zCone3DToPH(zCone3D *cone, zPH3D *ph)
   }
   zVec3DNormalizeDRC( &d );
   /* one radial vector */
-  if( !zIsTiny( d.e[zX] ) && !zIsTiny( d.e[zY] ) )
-    zVec3DCreate( &s, d.e[zY],-d.e[zX], 0 );
-  else
-    zVec3DCreate( &s, d.e[zY]-d.e[zZ], d.e[zZ]-d.e[zX], d.e[zX]-d.e[zY] );
-  zVec3DNormalizeDRC( &s );
+  zVec3DOrthoNormal( &d, &s );
   zVec3DMulDRC( &s, zCone3DRadius(cone) );
   /* create vertices */
   zVec3DCopy( zCone3DVert(cone), &vert[0] );
