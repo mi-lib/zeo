@@ -1,3 +1,4 @@
+2023. 6. 1. Reflected modification of zeda-makefile-gen to keep zeo_export.h. [zeo_export]
 2023. 5.25. Modified zCyl3DToPH, zCapsule3DToPH, and zCone3DToPH by using zVec3DOrthoNormal. [zeo_shape3d_cyl, zeo_shape3d_capsule, zeo_shape3d_cone]
 2023. 5.25. Added zVec3DOrthoNormal. [zeo_vec3d]
 2023. 5.25. Added zCapsule3D class. [zeo_shape3d_capsule, zeo_shape3d]
