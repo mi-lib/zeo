@@ -15,7 +15,7 @@ void create_src(zPH3D *ph)
   };
   zVec3D shift = { { 0, 0.1, 0.4 } };
 
-  zPH3DPrism( ph, v, sizeof(v)/sizeof(zVec3D), &shift );
+  zPH3DCreatePrism( ph, v, sizeof(v)/sizeof(zVec3D), &shift );
 }
 
 void output(zPH3D *ph, char name[])
