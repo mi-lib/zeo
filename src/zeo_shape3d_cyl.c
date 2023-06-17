@@ -28,16 +28,7 @@ zCyl3D *zCyl3DInit(zCyl3D *cyl)
 }
 
 /* allocate memory for a 3D cylinder. */
-zCyl3D *zCyl3DAlloc(void)
-{
-  zCyl3D *cyl;
-
-  if( !( cyl = zAlloc( zCyl3D, 1 ) ) ){
-    ZALLOCERROR();
-    return NULL;
-  }
-  return cyl;
-}
+ZDEF_ALLOC_FUNCTION( zCyl3D )
 
 /* copy a 3D cylinder to another. */
 zCyl3D *zCyl3DCopy(zCyl3D *src, zCyl3D *dest)
@@ -76,11 +67,10 @@ zCyl3D *zCyl3DXformInv(zCyl3D *src, zFrame3D *f, zCyl3D *dest)
   return dest;
 }
 
-static void _zCyl3DClosestPrep(zCyl3D *cyl, zVec3D *p, zVec3D *axis, zVec3D *v, double *l, double *r, double *d);
-void _zCyl3DClosestPrep(zCyl3D *cyl, zVec3D *p, zVec3D *axis, zVec3D *v, double *l, double *r, double *d)
+static void _zCyl3DClosestPrep(zCyl3D *cyl, zVec3D *p, zVec3D *axis, zVec3D *v, double *l, double *r, double *d)
 {
   zCyl3DAxis( cyl, axis );
-  zVec3DSub( p, zCyl3DCenter(cyl,0), v );
+  _zVec3DSub( p, zCyl3DCenter(cyl,0), v );
   *l = zVec3DNormalizeDRC( axis );
   *r = zVec3DOuterProdNorm( v, axis );
   *d = zVec3DInnerProd( axis, v ) ;
@@ -132,14 +122,14 @@ double zCyl3DPointDist(zCyl3D *cyl, zVec3D *p)
 }
 
 /* check if a point is inside of a cylinder. */
-bool zCyl3DPointIsInside(zCyl3D *cyl, zVec3D *p, bool rim)
+bool zCyl3DPointIsInside(zCyl3D *cyl, zVec3D *p, double margin)
 {
   zVec3D axis, v;
   double l, r, d;
 
   _zCyl3DClosestPrep( cyl, p, &axis, &v, &l, &r, &d );
-  if( r - zCyl3DRadius(cyl) > ( rim ? zTOL : 0 ) ) return false;
-  return d >= ( rim ? -zTOL : 0 ) && d <= ( rim ? l+zTOL : l ) ? true : false;
+  if( r - zCyl3DRadius(cyl) >= margin ) return false;
+  return d > -margin && d < l + margin ? true : false;
 }
 
 /* height of a 3D cylinder. */
@@ -192,7 +182,7 @@ zPH3D *zCyl3DToPH(zCyl3D *cyl, zPH3D *ph)
 {
   zVec3D *vert, d, s, r, aa;
   zTri3D *face;
-  uint i, j, n;
+  int i, j, n;
 
   if( !zPH3DAlloc( ph, zCyl3DDiv(cyl)*2, (zCyl3DDiv(cyl)-1)*4 ) )
     return NULL;
@@ -206,11 +196,7 @@ zPH3D *zCyl3DToPH(zCyl3D *cyl, zPH3D *ph)
   }
   zVec3DNormalizeDRC( &d );
   /* one radial vector */
-  if( !zIsTiny( d.c.x ) && !zIsTiny( d.c.y ) )
-    _zVec3DCreate( &s, d.c.y,-d.c.x, 0 );
-  else
-    _zVec3DCreate( &s, d.c.y-d.c.z, d.c.z-d.c.x, d.c.x-d.c.y );
-  zVec3DNormalizeDRC( &s );
+  zVec3DOrthoNormal( &d, &s );
   zVec3DMulDRC( &s, zCyl3DRadius(cyl) );
   /* create vertices */
   for( i=0; i<zCyl3DDiv(cyl); i++ ){
@@ -292,8 +278,8 @@ static double _zShape3DCylClosest(void *body, zVec3D *p, zVec3D *cp){
   return zCyl3DClosest( (zCyl3D*)body, p, cp ); }
 static double _zShape3DCylPointDist(void *body, zVec3D *p){
   return zCyl3DPointDist( (zCyl3D*)body, p ); }
-static bool _zShape3DCylPointIsInside(void *body, zVec3D *p, bool rim){
-  return zCyl3DPointIsInside( (zCyl3D*)body, p, rim ); }
+static bool _zShape3DCylPointIsInside(void *body, zVec3D *p, double margin){
+  return zCyl3DPointIsInside( (zCyl3D*)body, p, margin ); }
 static double _zShape3DCylVolume(void *body){
   return zCyl3DVolume( (zCyl3D*)body ); }
 static zVec3D *_zShape3DCylBarycenter(void *body, zVec3D *c){

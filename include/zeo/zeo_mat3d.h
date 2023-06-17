@@ -19,7 +19,7 @@ __BEGIN_DECLS
  * |  e[0][1]  e[1][1]  e[2][1]  | = |  c.xy  c.yy  c.zy  | = [ v[0]  v[1]  v[2] ] = [ b.x  b.y  b.z ]
  * |_ e[0][2]  e[1][2]  e[2][2] _|   |_ c.xz  c.yz  c.zz _|
  */
-typedef union{
+ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat3D ){
   double e[3][3];   /*!< 3x3 matrix */
   zVec3D v[3];      /*!< 3 column vectors */
   struct{
@@ -28,13 +28,70 @@ typedef union{
   struct{
     double xx, xy, xz, yx, yy, yz, zx, zy, zz;
   } c;             /*!< 9 components */
-} zMat3D;
+#ifdef __cplusplus
+  zMat3D &create(double a11, double a12, double a13, double a21, double a22, double a23, double a31, double a32, double a33);
+  zMat3D &copy(zMat3D &m);
+  zMat3D &zero();
+  zMat3D &ident();
+  bool operator==(zMat3D &m);
+  bool isEqual(zMat3D &m);
+  bool isIdent();
+  bool isTol(double tol);
+  bool isTiny();
+  zVec3D &row(int i, zVec3D &v);
+  zVec3D &col(int i, zVec3D &v);
+  zMat3D &transpose(zMat3D &m);
+  zMat3D transpose();
+  zMat3D operator+(zMat3D &m);
+  zMat3D operator-(zMat3D &m);
+  zMat3D operator-();
+  zMat3D operator*(double k);
+  zMat3D operator/(double k);
+  zMat3D &operator+=(zMat3D &m);
+  zMat3D &operator-=(zMat3D &m);
+  zMat3D &operator*=(double k);
+  zMat3D &operator/=(double k);
+  zMat3D &createDyad(zVec3D &v1, zVec3D &v2);
+  zMat3D &createOuterprod(zVec3D &v);
+  zMat3D &createTripleprod(zVec3D &v1, zVec3D &v2);
+  zMat3D &createDoubleOuterprod(zVec3D &v);
+  double squareNorm();
+  double norm();
+  double det();
+  zMat3D &inv(zMat3D &m);
+  zVec3D operator*(zVec3D &v);
+  zVec3D mulT(zVec3D &v);
+  zVec3D mulInv(zVec3D &v);
+  zMat3D operator*(zMat3D &m);
+  zMat3D mulT(zMat3D &m);
+  zMat3D mulInv(zMat3D &m);
+  zVec6D operator*(zVec6D &v);
+  zVec6D mulT(zVec6D &v);
+  zMat3D &rotRoll(double angle);
+  zMat3D &rotPitch(double angle);
+  zMat3D &rotYaw(double angle);
+  zMat3D &createZYX(double azim, double elev, double tilt);
+  zMat3D &createZYZ(double heading, double pitch, double bank);
+  zMat3D &createAA(zVec3D &aa);
+  zMat3D &rot(zMat3D &r);
+  zMat3D &rotInv(zMat3D &r);
+  zMat3D &rot(zVec3D &aa);
+
+  static const zMat3D zmat3Dzero;
+  static const zMat3D zmat3Dident;
+#endif /* __cplusplus */
+};
 
 /*! \brief 3D zero matrix and identity matrix */
-extern const zMat3D zmat3Dzero;
-extern const zMat3D zmat3Dident;
+#ifdef __cplusplus
+#define ZMAT3DZERO  ( (zMat3D *)&zMat3D::zmat3Dzero )
+#define ZMAT3DIDENT ( (zMat3D *)&zMat3D::zmat3Dident )
+#else
+__ZEO_EXPORT const zMat3D zmat3Dzero;
+__ZEO_EXPORT const zMat3D zmat3Dident;
 #define ZMAT3DZERO  ( (zMat3D *)&zmat3Dzero )
 #define ZMAT3DIDENT ( (zMat3D *)&zmat3Dident )
+#endif /* __cplusplus */
 
 /*! \brief create, copy and cleanup a 3x3 matrix.
  *
@@ -58,7 +115,7 @@ extern const zMat3D zmat3Dident;
   _zVec3DCreate( &(m)->b.y, a12, a22, a32 );\
   _zVec3DCreate( &(m)->b.z, a13, a23, a33 );\
 } while(0)
-__EXPORT zMat3D *zMat3DCreate(zMat3D *m,
+__ZEO_EXPORT zMat3D *zMat3DCreate(zMat3D *m,
   double a11, double a12, double a13,
   double a21, double a22, double a23,
   double a31, double a32, double a33);
@@ -79,13 +136,13 @@ __EXPORT zMat3D *zMat3DCreate(zMat3D *m,
  * \a m1 and \a m2 are equal, or false otherwise.
  */
 #define _zMat3DMatch(m1,m2) ( _zVec3DMatch(&(m1)->b.x,&(m2)->b.x) && _zVec3DMatch(&(m1)->b.y,&(m2)->b.y) && _zVec3DMatch(&(m1)->b.z,&(m2)->b.z) )
-__EXPORT bool zMat3DMatch(zMat3D *m1, zMat3D *m2);
+__ZEO_EXPORT bool zMat3DMatch(zMat3D *m1, zMat3D *m2);
 #define _zMat3DEqual(m1,m2) ( _zVec3DEqual(&(m1)->b.x,&(m2)->b.x) && _zVec3DEqual(&(m1)->b.y,&(m2)->b.y) && _zVec3DEqual(&(m1)->b.z,&(m2)->b.z) )
-__EXPORT bool zMat3DEqual(zMat3D *m1, zMat3D *m2);
+__ZEO_EXPORT bool zMat3DEqual(zMat3D *m1, zMat3D *m2);
 
 /*! \brief check if a 3x3 matrix is the identity matrix. */
 #define _zMat3DIsIdent(m) _zMat3DEqual( m, ZMAT3DIDENT )
-__EXPORT bool zMat3DIsIdent(zMat3D *m);
+__ZEO_EXPORT bool zMat3DIsIdent(zMat3D *m);
 
 /*! \brief check if a 3D matrix is tiny.
  *
@@ -105,7 +162,7 @@ __EXPORT bool zMat3DIsIdent(zMat3D *m);
  * zIsTol, zIsTiny
  */
 #define _zMat3DIsTol(m,tol) ( _zVec3DIsTol( &(m)->b.x, tol ) && _zVec3DIsTol( &(m)->b.y, tol ) && _zVec3DIsTol( &(m)->b.z, tol ) )
-__EXPORT bool zMat3DIsTol(zMat3D *m, double tol);
+__ZEO_EXPORT bool zMat3DIsTol(zMat3D *m, double tol);
 #define _zMat3DIsTiny(m) _zMat3DIsTol( m, zTOL )
 #define zMat3DIsTiny(m)  zMat3DIsTol( m, zTOL )
 
@@ -120,7 +177,7 @@ __EXPORT bool zMat3DIsTol(zMat3D *m, double tol);
  * zMat3DRow() and zMat3DCol() return a pointer \a v.
  */
 #define _zMat3DRow(m,i,r) _zVec3DCreate( (r), (m)->e[0][(i)], (m)->e[1][(i)], (m)->e[2][(i)] )
-__EXPORT zVec3D *zMat3DRow(zMat3D *m, int i, zVec3D *v);
+__ZEO_EXPORT zVec3D *zMat3DRow(zMat3D *m, int i, zVec3D *v);
 #define zMat3DCol(m,i,c)  zVec3DCopy( (&(m)->v[(i)]), c )
 
 /*! \brief transpose of a 3x3 matrix.
@@ -143,8 +200,8 @@ __EXPORT zVec3D *zMat3DRow(zMat3D *m, int i, zVec3D *v);
   __tmp = (m)->e[2][0]; (m)->e[2][0] = (m)->e[0][2]; (m)->e[0][2] = __tmp;\
   __tmp = (m)->e[2][1]; (m)->e[2][1] = (m)->e[1][2]; (m)->e[1][2] = __tmp;\
 } while(0)
-__EXPORT zMat3D *zMat3DT(zMat3D *m, zMat3D *tm);
-__EXPORT zMat3D *zMat3DTDRC(zMat3D *m);
+__ZEO_EXPORT zMat3D *zMat3DT(zMat3D *m, zMat3D *tm);
+__ZEO_EXPORT zMat3D *zMat3DTDRC(zMat3D *m);
 
 /* ********************************************************** */
 /* arithmetics
@@ -190,32 +247,32 @@ __EXPORT zMat3D *zMat3DTDRC(zMat3D *m);
   _zVec3DAdd( &(m1)->b.y, &(m2)->b.y, &(m)->b.y );\
   _zVec3DAdd( &(m1)->b.z, &(m2)->b.z, &(m)->b.z );\
 } while(0)
-__EXPORT zMat3D *zMat3DAdd(zMat3D *m1, zMat3D *m2, zMat3D *m);
+__ZEO_EXPORT zMat3D *zMat3DAdd(zMat3D *m1, zMat3D *m2, zMat3D *m);
 #define _zMat3DSub(m1,m2,m) do{\
   _zVec3DSub( &(m1)->b.x, &(m2)->b.x, &(m)->b.x );\
   _zVec3DSub( &(m1)->b.y, &(m2)->b.y, &(m)->b.y );\
   _zVec3DSub( &(m1)->b.z, &(m2)->b.z, &(m)->b.z );\
 } while(0)
-__EXPORT zMat3D *zMat3DSub(zMat3D *m1, zMat3D *m2, zMat3D *m);
+__ZEO_EXPORT zMat3D *zMat3DSub(zMat3D *m1, zMat3D *m2, zMat3D *m);
 #define _zMat3DRev(m,rm) do{\
   _zVec3DRev( &(m)->b.x, &(rm)->b.x );\
   _zVec3DRev( &(m)->b.y, &(rm)->b.y );\
   _zVec3DRev( &(m)->b.z, &(rm)->b.z );\
 } while(0)
-__EXPORT zMat3D *zMat3DRev(zMat3D *m, zMat3D *rm);
+__ZEO_EXPORT zMat3D *zMat3DRev(zMat3D *m, zMat3D *rm);
 #define _zMat3DMul(m,k,mm) do{\
   _zVec3DMul( &(m)->b.x, k, &(mm)->b.x );\
   _zVec3DMul( &(m)->b.y, k, &(mm)->b.y );\
   _zVec3DMul( &(m)->b.z, k, &(mm)->b.z );\
 } while(0)
-__EXPORT zMat3D *zMat3DMul(zMat3D *m, double k, zMat3D *mm);
-__EXPORT zMat3D *zMat3DDiv(zMat3D *m, double k, zMat3D *dm);
+__ZEO_EXPORT zMat3D *zMat3DMul(zMat3D *m, double k, zMat3D *mm);
+__ZEO_EXPORT zMat3D *zMat3DDiv(zMat3D *m, double k, zMat3D *dm);
 #define _zMat3DCat(m1,k,m2,m) do{\
   _zVec3DCat( &(m1)->b.x, k, &(m2)->b.x, &(m)->b.x );\
   _zVec3DCat( &(m1)->b.y, k, &(m2)->b.y, &(m)->b.y );\
   _zVec3DCat( &(m1)->b.z, k, &(m2)->b.z, &(m)->b.z );\
 } while(0)
-__EXPORT zMat3D *zMat3DCat(zMat3D *m1, double k, zMat3D *m2, zMat3D *m);
+__ZEO_EXPORT zMat3D *zMat3DCat(zMat3D *m1, double k, zMat3D *m2, zMat3D *m);
 
 #define _zMat3DAddDRC(m1,m2) do{\
   _zVec3DAddDRC( &(m1)->b.x, &(m2)->b.x );\
@@ -262,7 +319,7 @@ __EXPORT zMat3D *zMat3DCat(zMat3D *m1, double k, zMat3D *m2, zMat3D *m);
   _zVec3DMul( v1, (v2)->c.y, &(m)->b.y );\
   _zVec3DMul( v1, (v2)->c.z, &(m)->b.z );\
 } while(0)
-__EXPORT zMat3D *zMat3DDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
+__ZEO_EXPORT zMat3D *zMat3DDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
 
 /*! \brief add dyadic product of two 3D vectors to a 3x3 matrix.
  *
@@ -277,7 +334,7 @@ __EXPORT zMat3D *zMat3DDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
   _zVec3DCatDRC( &(m)->b.y, (v2)->c.y, v1 );\
   _zVec3DCatDRC( &(m)->b.z, (v2)->c.z, v1 );\
 } while(0)
-__EXPORT zMat3D *zMat3DAddDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
+__ZEO_EXPORT zMat3D *zMat3DAddDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
 
 /*! \brief subtract dyadic product of two 3D vectors to a 3x3 matrix.
  *
@@ -292,7 +349,7 @@ __EXPORT zMat3D *zMat3DAddDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
   _zVec3DCatDRC( &(m)->b.y, -(v2)->c.y, v1 );\
   _zVec3DCatDRC( &(m)->b.z, -(v2)->c.z, v1 );\
 } while(0)
-__EXPORT zMat3D *zMat3DSubDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
+__ZEO_EXPORT zMat3D *zMat3DSubDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
 
 /*! \brief create a 3x3 matrix equivalent to outer product of 3D vectors.
  *
@@ -316,13 +373,13 @@ __EXPORT zMat3D *zMat3DSubDyad(zMat3D *m, zVec3D *v1, zVec3D *v2);
     0.0,-(vo)->c.z, (vo)->c.y,\
     (vo)->c.z, 0.0,-(vo)->c.x,\
    -(vo)->c.y, (vo)->c.x, 0.0 )
-__EXPORT zMat3D *zVec3DOuterProd2Mat3D(zVec3D *v, zMat3D *m);
+__ZEO_EXPORT zMat3D *zVec3DOuterProd2Mat3D(zVec3D *v, zMat3D *m);
 #define _zVec3DTripleProd2Mat3D(v1,v2,m) \
   _zMat3DCreate( m,\
     -(v1)->c.y*(v2)->c.y-(v1)->c.z*(v2)->c.z, (v1)->c.y*(v2)->c.x, (v1)->c.z*(v2)->c.x,\
      (v1)->c.x*(v2)->c.y,-(v1)->c.z*(v2)->c.z-(v1)->c.x*(v2)->c.x, (v1)->c.z*(v2)->c.y,\
      (v1)->c.x*(v2)->c.z, (v1)->c.y*(v2)->c.z,-(v1)->c.x*(v2)->c.x-(v1)->c.y*(v2)->c.y )
-__EXPORT zMat3D *zVec3DTripleProd2Mat3D(zVec3D *v1, zVec3D *v2, zMat3D *m);
+__ZEO_EXPORT zMat3D *zVec3DTripleProd2Mat3D(zVec3D *v1, zVec3D *v2, zMat3D *m);
 #define _zVec3DDoubleOuterProd2Mat3D(v,m) do{\
   double __xx, __yy, __zz;\
   __xx = (v)->c.x * (v)->c.x;\
@@ -335,7 +392,7 @@ __EXPORT zMat3D *zVec3DTripleProd2Mat3D(zVec3D *v1, zVec3D *v2, zMat3D *m);
   (m)->c.yz = (m)->c.zy = (v)->c.y*(v)->c.z;\
   (m)->c.zx = (m)->c.xz = (v)->c.z*(v)->c.x;\
 } while(0)
-__EXPORT zMat3D *zVec3DDoubleOuterProd2Mat3D(zVec3D *v, zMat3D *m);
+__ZEO_EXPORT zMat3D *zVec3DDoubleOuterProd2Mat3D(zVec3D *v, zMat3D *m);
 
 /*! \brief concatenate a double outer-product matrix of a 3D vector to another matrix. */
 #define _zMat3DCatVec3DDoubleOuterProd(m,k,v,dm) do{\
@@ -356,7 +413,7 @@ __EXPORT zMat3D *zVec3DDoubleOuterProd2Mat3D(zVec3D *v, zMat3D *m);
   (dm)->c.zx = (m)->c.zx + __kzx;\
   (dm)->c.xz = (m)->c.xz + __kzx;\
 } while(0)
-__EXPORT zMat3D *zMat3DCatVec3DDoubleOuterProd(zMat3D *m, double k, zVec3D *v, zMat3D *dm);
+__ZEO_EXPORT zMat3D *zMat3DCatVec3DDoubleOuterProd(zMat3D *m, double k, zVec3D *v, zMat3D *dm);
 #define _zMat3DCatVec3DDoubleOuterProdDRC(m,k,v) _zMat3DCatVec3DDoubleOuterProd(m,k,v,m)
 #define zMat3DCatVec3DDoubleOuterProdDRC(m,k,v) zMat3DCatVec3DDoubleOuterProd(m,k,v,m)
 
@@ -372,7 +429,7 @@ __EXPORT zMat3D *zMat3DCatVec3DDoubleOuterProd(zMat3D *m, double k, zVec3D *v, z
  * zMulVec3DOuterProdMat3D() returns a pointer \a mv.
  * zMulVec3DOuterProdMat3DDRC() returns a pointer \a m.
  */
-__EXPORT zMat3D *zMulVec3DOuterProdMat3D(zVec3D *ohm, zMat3D *m, zMat3D *mv);
+__ZEO_EXPORT zMat3D *zMulVec3DOuterProdMat3D(zVec3D *ohm, zMat3D *m, zMat3D *mv);
 #define zMulVec3DOuterProdMat3DDRC(o,m) zMulVec3DOuterProdMat3D( o, m, m )
 
 /*! \brief calculate norm of a 3D matrix.
@@ -384,7 +441,7 @@ __EXPORT zMat3D *zMulVec3DOuterProdMat3D(zVec3D *ohm, zMat3D *m, zMat3D *mv);
  * zMat3DSqrNorm() returns a squared norm of \a m.
  */
 #define _zMat3DSqrNorm(m) ( _zVec3DSqrNorm(&(m)->b.x) + _zVec3DSqrNorm(&(m)->b.y) + _zVec3DSqrNorm(&(m)->b.z) )
-__EXPORT double zMat3DSqrNorm(zMat3D *m);
+__ZEO_EXPORT double zMat3DSqrNorm(zMat3D *m);
 #define _zMat3DNorm(m) sqrt( _zMat3DSqrNorm(m) )
 #define zMat3DNorm(m) sqrt( zMat3DSqrNorm(m) )
 
@@ -400,7 +457,7 @@ __EXPORT double zMat3DSqrNorm(zMat3D *m);
 #define _zMat3DDet(m) ( ( m->c.yy*m->c.zz - m->c.yz*m->c.zy ) * m->c.xx \
                       + ( m->c.xz*m->c.zy - m->c.xy*m->c.zz ) * m->c.yx \
                       + ( m->c.xy*m->c.yz - m->c.xz*m->c.yy ) * m->c.zx )
-__EXPORT double zMat3DDet(zMat3D *m);
+__ZEO_EXPORT double zMat3DDet(zMat3D *m);
 
 /*! \brief inverse of a 3x3 matrix.
  *
@@ -414,7 +471,7 @@ __EXPORT double zMat3DDet(zMat3D *m);
  * \a im has to point to a different address from \a m. If \a im is the
  * same with \a m, anything might happen.
  */
-__EXPORT zMat3D *zMat3DInv(zMat3D *m, zMat3D *im);
+__ZEO_EXPORT zMat3D *zMat3DInv(zMat3D *m, zMat3D *im);
 
 /* ********************************************************** */
 /* multiplication of a 3D vector by a 3x3 matrix
@@ -445,7 +502,7 @@ __EXPORT zMat3D *zMat3DInv(zMat3D *m, zMat3D *im);
   __z = (m)->c.xz*(v)->c.x + (m)->c.yz*(v)->c.y + (m)->c.zz*(v)->c.z;\
   _zVec3DCreate( mv, __x, __y, __z );\
 } while(0)
-__EXPORT zVec3D *zMulMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *mv);
+__ZEO_EXPORT zVec3D *zMulMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *mv);
 #define _zMulMat3DTVec3D(m,v,mv) do{\
   double __x, __y, __z;\
   __x = _zVec3DInnerProd( &(m)->b.x, v );\
@@ -453,21 +510,21 @@ __EXPORT zVec3D *zMulMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *mv);
   __z = _zVec3DInnerProd( &(m)->b.z, v );\
   _zVec3DCreate( mv, __x, __y, __z );\
 } while(0)
-__EXPORT zVec3D *zMulMat3DTVec3D(zMat3D *m, zVec3D *v, zVec3D *mv);
+__ZEO_EXPORT zVec3D *zMulMat3DTVec3D(zMat3D *m, zVec3D *v, zVec3D *mv);
 
 /*! \brief directly multiply a 3D vector by a 3x3 matrix.
  */
 #define _zMulMat3DVec3DDRC(m,v) _zMulMat3DVec3D(m,v,v)
-__EXPORT zVec3D *zMulMat3DVec3DDRC(zMat3D *m, zVec3D *v);
+__ZEO_EXPORT zVec3D *zMulMat3DVec3DDRC(zMat3D *m, zVec3D *v);
 
 /*! \brief directly multiply a 3D vector by transpose of a 3x3 matrix.
  */
 #define _zMulMat3DTVec3DDRC(m,v) _zMulMat3DTVec3D(m,v,v)
-__EXPORT zVec3D *zMulMat3DTVec3DDRC(zMat3D *m, zVec3D *v);
+__ZEO_EXPORT zVec3D *zMulMat3DTVec3DDRC(zMat3D *m, zVec3D *v);
 
 /*! \brief multiply a 3D vector by inverse of a 3x3 matrix.
  */
-__EXPORT zVec3D *zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *imv);
+__ZEO_EXPORT zVec3D *zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *imv);
 
 /*! \brief inversely compute the concatenate ratio of a 3D vector.
  *
@@ -487,7 +544,7 @@ __EXPORT zVec3D *zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *imv);
  * \return
  * zVec3DCatRatio() returns a pointer \a ratio.
  */
-__EXPORT double *zVec3DCatRatio(zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v, double ratio[]);
+__ZEO_EXPORT double *zVec3DCatRatio(zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v, double ratio[]);
 
 /* ********************************************************** */
 /* multiplication of a 3x3 matrix by another 3x3 matrix
@@ -518,15 +575,15 @@ __EXPORT double *zVec3DCatRatio(zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v, d
  * \return
  * Each function returns a pointer to the result.
  */
-__EXPORT zMat3D *zMulMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
-__EXPORT zMat3D *zMulMat3DTMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
-__EXPORT zMat3D *zMulMat3DMat3DT(zMat3D *m1, zMat3D *m2, zMat3D *m);
+__ZEO_EXPORT zMat3D *zMulMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
+__ZEO_EXPORT zMat3D *zMulMat3DTMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
+__ZEO_EXPORT zMat3D *zMulMat3DMat3DT(zMat3D *m1, zMat3D *m2, zMat3D *m);
 
 #define zMulMat3DMat3DDRC(m1,m2)  zMulMat3DMat3D(m1,m2,m2)
 #define zMulMat3DTMat3DDRC(m1,m2) zMulMat3DTMat3D(m1,m2,m2)
 #define zMulMat3DMat3DTDRC(m1,m2) zMulMat3DMat3DT(m1,m2,m1)
 
-__EXPORT zMat3D *zMulInvMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
+__ZEO_EXPORT zMat3D *zMulInvMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
 
 /* ********************************************************** */
 /* multiplication of a 6D spatial vector by a 3x3 matrix
@@ -548,8 +605,8 @@ __EXPORT zMat3D *zMulInvMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
  * \return
  * Each function returns the pointer to the result vector.
  */
-__EXPORT zVec6D *zMulMat3DVec6D(zMat3D *m, zVec6D *v, zVec6D *mv);
-__EXPORT zVec6D *zMulMat3DTVec6D(zMat3D *m, zVec6D *v, zVec6D *mv);
+__ZEO_EXPORT zVec6D *zMulMat3DVec6D(zMat3D *m, zVec6D *v, zVec6D *mv);
+__ZEO_EXPORT zVec6D *zMulMat3DTVec6D(zMat3D *m, zVec6D *v, zVec6D *mv);
 
 #define zMulMat3DVec6DDRC(m,v)  zMulMat3DVec6D(m,v,v)
 #define zMulMat3DTVec6DDRC(m,v) zMulMat3DTVec6D(m,v,v)
@@ -580,18 +637,18 @@ __EXPORT zVec6D *zMulMat3DTVec6D(zMat3D *m, zVec6D *v, zVec6D *mv);
  * zMat3DRotRollSCDRC(), zMat3DRotPitchSCDRC() and zMat3DRotYawSCDRC()
  * return a pointer \a m.
  */
-__EXPORT zMat3D *zMat3DRotRoll(zMat3D *m, double angle, zMat3D *rm);
-__EXPORT zMat3D *zMat3DRotPitch(zMat3D *m, double angle, zMat3D *rm);
-__EXPORT zMat3D *zMat3DRotYaw(zMat3D *m, double angle, zMat3D *rm);
-__EXPORT zMat3D *zMat3DRotRollSC(zMat3D *m, double s, double c, zMat3D *rm);
-__EXPORT zMat3D *zMat3DRotPitchSC(zMat3D *m, double s, double c, zMat3D *rm);
-__EXPORT zMat3D *zMat3DRotYawSC(zMat3D *m, double s, double c, zMat3D *rm);
-__EXPORT zMat3D *zMat3DRotRollDRC(zMat3D *m, double theta);
-__EXPORT zMat3D *zMat3DRotPitchDRC(zMat3D *m, double theta);
-__EXPORT zMat3D *zMat3DRotYawDRC(zMat3D *m, double theta);
-__EXPORT zMat3D *zMat3DRotRollSCDRC(zMat3D *m, double s, double c);
-__EXPORT zMat3D *zMat3DRotPitchSCDRC(zMat3D *m, double s, double c);
-__EXPORT zMat3D *zMat3DRotYawSCDRC(zMat3D *m, double s, double c);
+__ZEO_EXPORT zMat3D *zMat3DRotRoll(zMat3D *m, double angle, zMat3D *rm);
+__ZEO_EXPORT zMat3D *zMat3DRotPitch(zMat3D *m, double angle, zMat3D *rm);
+__ZEO_EXPORT zMat3D *zMat3DRotYaw(zMat3D *m, double angle, zMat3D *rm);
+__ZEO_EXPORT zMat3D *zMat3DRotRollSC(zMat3D *m, double s, double c, zMat3D *rm);
+__ZEO_EXPORT zMat3D *zMat3DRotPitchSC(zMat3D *m, double s, double c, zMat3D *rm);
+__ZEO_EXPORT zMat3D *zMat3DRotYawSC(zMat3D *m, double s, double c, zMat3D *rm);
+__ZEO_EXPORT zMat3D *zMat3DRotRollDRC(zMat3D *m, double theta);
+__ZEO_EXPORT zMat3D *zMat3DRotPitchDRC(zMat3D *m, double theta);
+__ZEO_EXPORT zMat3D *zMat3DRotYawDRC(zMat3D *m, double theta);
+__ZEO_EXPORT zMat3D *zMat3DRotRollSCDRC(zMat3D *m, double s, double c);
+__ZEO_EXPORT zMat3D *zMat3DRotPitchSCDRC(zMat3D *m, double s, double c);
+__ZEO_EXPORT zMat3D *zMat3DRotYawSCDRC(zMat3D *m, double s, double c);
 
 /*! \brief 3D attitude alternation with matrix.
  *
@@ -639,14 +696,14 @@ __EXPORT zMat3D *zMat3DRotYawSCDRC(zMat3D *m, double s, double c);
  *
  * zMat3DToAA() returns a pointer \a aa.
  */
-__EXPORT zMat3D *zMat3DFromZYX(zMat3D *m, double azim, double elev, double tilt);
-__EXPORT zMat3D *zMat3DFromZYXSC(zMat3D *m, double sa, double ca, double se, double ce, double st, double ct);
-__EXPORT zVec3D *zMat3DToZYX(zMat3D *m, zVec3D *angle);
-__EXPORT zMat3D *zMat3DFromZYZ(zMat3D *m, double heading, double pitch, double bank);
-__EXPORT zMat3D *zMat3DFromZYZSC(zMat3D *m, double sh, double ch, double sp, double cp, double sb, double cb);
-__EXPORT zVec3D *zMat3DToZYZ(zMat3D *m, zVec3D *angle);
-__EXPORT zMat3D *zMat3DFromAA(zMat3D *m, zVec3D *aa);
-__EXPORT zVec3D *zMat3DToAA(zMat3D *m, zVec3D *aa);
+__ZEO_EXPORT zMat3D *zMat3DFromZYX(zMat3D *m, double azim, double elev, double tilt);
+__ZEO_EXPORT zMat3D *zMat3DFromZYXSC(zMat3D *m, double sa, double ca, double se, double ce, double st, double ct);
+__ZEO_EXPORT zVec3D *zMat3DToZYX(zMat3D *m, zVec3D *angle);
+__ZEO_EXPORT zMat3D *zMat3DFromZYZ(zMat3D *m, double heading, double pitch, double bank);
+__ZEO_EXPORT zMat3D *zMat3DFromZYZSC(zMat3D *m, double sh, double ch, double sp, double cp, double sb, double cb);
+__ZEO_EXPORT zVec3D *zMat3DToZYZ(zMat3D *m, zVec3D *angle);
+__ZEO_EXPORT zMat3D *zMat3DFromAA(zMat3D *m, zVec3D *aa);
+__ZEO_EXPORT zVec3D *zMat3DToAA(zMat3D *m, zVec3D *aa);
 
 /*! \brief rotational multiplication of a 3D attitude matrix.
  *
@@ -665,8 +722,8 @@ __EXPORT zVec3D *zMat3DToAA(zMat3D *m, zVec3D *aa);
  * \return
  * Each function returns the pointer to the result.
  */
-__EXPORT zMat3D *zRotMat3D(zMat3D *r, zMat3D *m, zMat3D *rm);
-__EXPORT zMat3D *zRotMat3DInv(zMat3D *r, zMat3D *m, zMat3D *rm);
+__ZEO_EXPORT zMat3D *zRotMat3D(zMat3D *r, zMat3D *m, zMat3D *rm);
+__ZEO_EXPORT zMat3D *zRotMat3DInv(zMat3D *r, zMat3D *m, zMat3D *rm);
 
 #define zRotMat3DDRC(r,m)    zRotMat3D(r,m,m)
 #define zRotMat3DInvDRC(r,m) zRotMat3DInv(r,m,m)
@@ -684,15 +741,15 @@ __EXPORT zMat3D *zRotMat3DInv(zMat3D *r, zMat3D *m, zMat3D *rm);
  * zMat3DRot() returns a pointer \a rm.
  * zMat3DRotDRC() returns a pointer \a m.
  */
-__EXPORT zMat3D *zMat3DRot(zMat3D *m, zVec3D *aa, zMat3D *rm);
+__ZEO_EXPORT zMat3D *zMat3DRot(zMat3D *m, zVec3D *aa, zMat3D *rm);
 
 #define zMat3DRotDRC(m,aa) zMat3DRot( m, aa, m )
 
-__EXPORT zMat3D *zMat3DRotCat(zMat3D *m, zVec3D *omega, double dt, zMat3D *rm);
+__ZEO_EXPORT zMat3D *zMat3DRotCat(zMat3D *m, zVec3D *omega, double dt, zMat3D *rm);
 
 /*! \brief cascade an angle-axis vector to another.
  */
-__EXPORT zVec3D *zAACascade(zVec3D *aa1, zVec3D *aa2, zVec3D *aa);
+__ZEO_EXPORT zVec3D *zAACascade(zVec3D *aa1, zVec3D *aa2, zVec3D *aa);
 
 /*! \brief error vector between two 3D attitude matrices.
  *
@@ -703,7 +760,7 @@ __EXPORT zVec3D *zAACascade(zVec3D *aa1, zVec3D *aa2, zVec3D *aa);
  * \return
  * zMat3DError() returns a pointer \a err.
  */
-__EXPORT zVec3D *zMat3DError(zMat3D *m1, zMat3D *m2, zVec3D *err);
+__ZEO_EXPORT zVec3D *zMat3DError(zMat3D *m1, zMat3D *m2, zVec3D *err);
 
 /*! \brief error between two angle-axis vectors.
  *
@@ -713,13 +770,13 @@ __EXPORT zVec3D *zMat3DError(zMat3D *m1, zMat3D *m2, zVec3D *err);
  * \return
  * zAAError() returns a pointer \a err.
  */
-__EXPORT zVec3D *zAAError(zVec3D *a1, zVec3D *a2, zVec3D *err);
+__ZEO_EXPORT zVec3D *zAAError(zVec3D *a1, zVec3D *a2, zVec3D *err);
 
 /* ********************************************************** */
 /* differential kinematics
  * ********************************************************** */
 
-__EXPORT zVec3D *zMat3DDif(zMat3D *m, zMat3D *mnew, double dt, zVec3D *omega);
+__ZEO_EXPORT zVec3D *zMat3DDif(zMat3D *m, zMat3D *mnew, double dt, zVec3D *omega);
 
 /* ********************************************************** */
 /* eigensystem
@@ -735,14 +792,14 @@ __EXPORT zVec3D *zMat3DDif(zMat3D *m, zMat3D *mnew, double dt, zVec3D *omega);
  * \notes
  * \a m must be symmetric. Otherwise, the correct result will not be expected.
  */
-__EXPORT void zMat3DSymEig(zMat3D *m, double eval[], zVec3D evec[]);
+__ZEO_EXPORT void zMat3DSymEig(zMat3D *m, double eval[], zVec3D evec[]);
 
 /* ********************************************************** */
 /* I/O
  * ********************************************************** */
 
 /* read a 3x3 matrix from a ZTK format processor. */
-__EXPORT zMat3D *zMat3DFromZTK(zMat3D *m, ZTK *ztk);
+__ZEO_EXPORT zMat3D *zMat3DFromZTK(zMat3D *m, ZTK *ztk);
 
 /*! \brief scan and print a 3x3 matrix.
  *
@@ -765,9 +822,9 @@ __EXPORT zMat3D *zMat3DFromZTK(zMat3D *m, ZTK *ztk);
  *
  * zMat3DFPrint() and zMat3DPrint() return no value.
  */
-__EXPORT zMat3D *zMat3DFScan(FILE *fp, zMat3D *m);
+__ZEO_EXPORT zMat3D *zMat3DFScan(FILE *fp, zMat3D *m);
 #define zMat3DScan(m) zMat3DFScan( stdin, (m) )
-__EXPORT void zMat3DFPrint(FILE *fp, zMat3D *m);
+__ZEO_EXPORT void zMat3DFPrint(FILE *fp, zMat3D *m);
 #define zMat3DPrint(m) zMat3DFPrint( stdout, (m) )
 
 /*! \brief read a rotation axis and angle from a ZTK format processor and make a 3x3 matrix.
@@ -781,9 +838,62 @@ __EXPORT void zMat3DFPrint(FILE *fp, zMat3D *m);
  * \sa
  * zMat3DFromZTK
  */
-__EXPORT zVec3D *zAAFromZTK(zVec3D *aa, ZTK *ztk);
+__ZEO_EXPORT zVec3D *zAAFromZTK(zVec3D *aa, ZTK *ztk);
 
 __END_DECLS
+
+#ifdef __cplusplus
+inline zMat3D &zMat3D::create(double a11, double a12, double a13, double a21, double a22, double a23, double a31, double a32, double a33){
+  _zMat3DCreate( this, a11, a12, a13, a21, a22, a23, a31, a32, a33 );
+  return *this;
+}
+inline zMat3D &zMat3D::copy(zMat3D &m){ zMat3DCopy( &m, this ); return *this; }
+inline zMat3D &zMat3D::zero(){ zMat3DZero( this ); return *this; }
+inline zMat3D &zMat3D::ident(){ zMat3DIdent( this ); return *this; }
+inline bool zMat3D::operator==(zMat3D &m){ return _zMat3DMatch( this, &m ); }
+inline bool zMat3D::isEqual(zMat3D &m){ return _zMat3DEqual( this, &m ); }
+inline bool zMat3D::isIdent(){ return _zMat3DIsIdent( this ); }
+inline bool zMat3D::isTol(double tol){ return _zMat3DIsTol( this, tol ); }
+inline bool zMat3D::isTiny(){ return _zMat3DIsTiny( this ); }
+inline zVec3D &zMat3D::row(int i, zVec3D &v){ _zMat3DRow( this, i, &v ); return v; }
+inline zVec3D &zMat3D::col(int i, zVec3D &v){ zMat3DCol( this, i, &v ); return v; }
+inline zMat3D &zMat3D::transpose(zMat3D &m){ _zMat3DT( this, &m ); return m; }
+inline zMat3D zMat3D::transpose(){ _zMat3DTDRC( this ); return *this; }
+inline zMat3D zMat3D::operator+(zMat3D &m){ zMat3D ret; _zMat3DAdd( this, &m, &ret ); return ret; }
+inline zMat3D zMat3D::operator-(zMat3D &m){ zMat3D ret; _zMat3DSub( this, &m, &ret ); return ret; }
+inline zMat3D zMat3D::operator-(){ zMat3D ret; _zMat3DRev( this, &ret ); return ret; }
+inline zMat3D zMat3D::operator*(double k){ zMat3D ret; _zMat3DMul( this, k, &ret ); return ret; }
+inline zMat3D zMat3D::operator/(double k){ zMat3D ret; zMat3DDiv( this, k, &ret ); return ret; }
+inline zMat3D &zMat3D::operator+=(zMat3D &m){ _zMat3DAddDRC( this, &m ); return *this; }
+inline zMat3D &zMat3D::operator-=(zMat3D &m){ _zMat3DSubDRC( this, &m ); return *this; }
+inline zMat3D &zMat3D::operator*=(double k){ _zMat3DMulDRC( this, k ); return *this; }
+inline zMat3D &zMat3D::operator/=(double k){ zMat3DDivDRC( this, k ); return *this; }
+inline zMat3D &zMat3D::createDyad(zVec3D &v1, zVec3D &v2){ _zMat3DDyad( this, &v1, &v2 ); return *this; }
+inline zMat3D &zMat3D::createOuterprod(zVec3D &v){ _zVec3DOuterProd2Mat3D( &v, this ); return *this; }
+inline zMat3D &zMat3D::createTripleprod(zVec3D &v1, zVec3D &v2){ _zVec3DTripleProd2Mat3D( &v1, &v2, this ); return *this; }
+inline zMat3D &zMat3D::createDoubleOuterprod(zVec3D &v){ _zVec3DDoubleOuterProd2Mat3D( &v, this ); return *this; }
+inline double zMat3D::squareNorm(){ return _zMat3DSqrNorm( this ); }
+inline double zMat3D::norm(){ return _zMat3DNorm( this ); }
+inline double zMat3D::det(){ return _zMat3DDet( this ); }
+inline zMat3D &zMat3D::inv(zMat3D &m){ zMat3DInv( &m, this ); return *this; }
+inline zVec3D zMat3D::operator*(zVec3D &v){ zVec3D mv; _zMulMat3DVec3D( this, &v, &mv ); return mv; }
+inline zVec3D zMat3D::mulT(zVec3D &v){ zVec3D mv; _zMulMat3DTVec3D( this, &v, &mv ); return mv; }
+inline zVec3D zMat3D::mulInv(zVec3D &v){ zVec3D mv; zMulInvMat3DVec3D( this, &v, &mv ); return mv; }
+inline zMat3D zMat3D::operator*(zMat3D &m){ zMat3D mm; zMulMat3DMat3D( this, &m, &mm ); return mm; }
+inline zMat3D zMat3D::mulT(zMat3D &m){ zMat3D mm; zMulMat3DTMat3D( this, &m, &mm ); return mm; }
+inline zMat3D zMat3D::mulInv(zMat3D &m){ zMat3D mm; zMulInvMat3DMat3D( this, &m, &mm ); return mm; }
+inline zVec6D zMat3D::operator*(zVec6D &v){ zVec6D mv; zMulMat3DVec6D( this, &v, &mv ); return mv; }
+inline zVec6D zMat3D::mulT(zVec6D &v){ zVec6D mv; zMulMat3DVec6D( this, &v, &mv ); return mv; }
+inline zMat3D &zMat3D::rotRoll(double angle){ return *zMat3DRotRollDRC( this, angle ); }
+inline zMat3D &zMat3D::rotPitch(double angle){ return *zMat3DRotPitchDRC( this, angle ); }
+inline zMat3D &zMat3D::rotYaw(double angle){ return *zMat3DRotYawDRC( this, angle ); }
+inline zMat3D &zMat3D::createZYX(double azim, double elev, double tilt){ return *zMat3DFromZYX( this, azim, elev, tilt ); }
+inline zMat3D &zMat3D::createZYZ(double heading, double pitch, double bank){ return *zMat3DFromZYZ( this, heading, pitch, bank ); }
+inline zMat3D &zMat3D::createAA(zVec3D &aa){ return *zMat3DFromAA( this, &aa ); }
+inline zMat3D &zMat3D::rot(zMat3D &r){ return *zRotMat3DDRC( &r, this ); }
+inline zMat3D &zMat3D::rotInv(zMat3D &r){ return *zRotMat3DInvDRC( &r, this ); }
+inline zMat3D &zMat3D::rot(zVec3D &aa){ return *zMat3DRotDRC( this, &aa ); }
+#endif /* __cplusplus */
 
 #include <zeo/zeo_vec3d_pca.h> /* principal component analysis */
 

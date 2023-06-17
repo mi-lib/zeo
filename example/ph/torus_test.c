@@ -36,7 +36,7 @@ int main(void)
   zVec3D axis   = { { 0, 0, 1 } };
   zPH3D torus;
 
-  zPH3DTorus( &torus, v, sizeof(v)/sizeof(zVec3D), DIV, &center, &axis );
+  zPH3DCreateTorus( &torus, v, sizeof(v)/sizeof(zVec3D), DIV, &center, &axis );
   output( &torus );
   zPH3DDestroy( &torus );
   return 0;

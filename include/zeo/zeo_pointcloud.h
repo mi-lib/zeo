@@ -22,8 +22,8 @@ __BEGIN_DECLS
  * given PCD file in any reason such as invalid format of memory allocation
  * failure, the false value is returned.
  */
-__EXPORT bool zVec3DListPCDFRead(FILE *fp, zVec3DList *pc);
-__EXPORT bool zVec3DListReadPCDFile(zVec3DList *pc, char filename[]);
+__ZEO_EXPORT bool zVec3DListPCDFRead(FILE *fp, zVec3DList *pc);
+__ZEO_EXPORT bool zVec3DListReadPCDFile(zVec3DList *pc, char filename[]);
 
 #define ZEO_PCD_SUFFIX "pcd"
 

@@ -98,7 +98,7 @@ static bool _zQHFacetOn(zQHFacet *f, zVec3D *v)
   zTri3D t;
 
   _zQHFacet2Tri3D( f, &t );
-  return zTri3DPointIsInside( &t, v, true );
+  return zTri3DPointIsInside( &t, v, zTOL );
 }
 
 /* destroy facet list. */

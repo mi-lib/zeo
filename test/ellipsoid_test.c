@@ -85,7 +85,7 @@ void assert_inside(void)
     y = zRandF(-2,2);
     z = zRandF(-1,2);
     ellips_cat( &ellips, x, y, z, &p ) ? ni++ : no++;
-    zEllips3DPointIsInside( &ellips, &p, true ) ? nitest++ : notest++;
+    zEllips3DPointIsInside( &ellips, &p, zTOL ) ? nitest++ : notest++;
   }
   zAssert( zEllips3DPointIsInside, nitest == ni && notest == no );
 }

@@ -63,6 +63,14 @@ zShape3D *zShape3DClone(zShape3D *org, zShape3D *cln, zOpticalInfo *oi)
 /* mirror a 3D shape. */
 zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis)
 {
+  if( dest->com ){
+    ZRUNWARN( ZEO_WARN_SHAPE_MIRROR_INV_TYPE, dest->com->typestr );
+    zShape3DDestroy( dest );
+  }
+  if( axis < zX || axis > zZ ){
+    ZRUNERROR( ZEO_ERR_SHAPE_MIRROR_INV_AXIS, zAxisStr(axis) );
+    return NULL;
+  }
   if( !( dest->body = ( dest->com = src->com )->_mirror( src->body, axis ) ) )
     return NULL;
   zShape3DSetOptic( dest, zShape3DOptic(src) );
@@ -97,9 +105,9 @@ double zShape3DPointDist(zShape3D *shape, zVec3D *p)
 }
 
 /* check if a point is inside of a 3D shape. */
-bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, bool rim)
+bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, double margin)
 {
-  return shape->com->_pointisinside( shape->body, p, rim );
+  return shape->com->_pointisinside( shape->body, p, margin );
 }
 
 /* volume of a 3D shape. */
@@ -159,6 +167,8 @@ zShape3D *zShape3DToPH(zShape3D *shape)
     return NULL;
   }
   if( shape->com->_toph( shape->body, ph ) ){
+    shape->com->_destroy( shape->body );
+    free( shape->body );
     shape->body = ph;
     shape->com = &zeo_shape3d_ph_com;
     return shape;
@@ -340,18 +350,12 @@ static void _zShape3DNameFPrint(FILE *fp, int i, void *obj){
 static void _zShape3DTypeFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%s\n", ((zShape3D*)obj)->com->typestr );
 }
-static void _zShape3DOpticFPrint(FILE *fp, int i, void *obj){
-  fprintf( fp, "%s\n", zName(zShape3DOptic((zShape3D*)obj)) );
-}
-static void _zShape3DTextureFPrint(FILE *fp, int i, void *obj){
-  fprintf( fp, "%s\n", zName(zShape3DTexture((zShape3D*)obj)) );
-}
 
 static ZTKPrp __ztk_prp_shape[] = {
   { "name", 1, _zShape3DNameFromZTK, _zShape3DNameFPrint },
   { "type", 1, _zShape3DTypeFromZTK, _zShape3DTypeFPrint },
-  { "optic", 1, _zShape3DOpticFromZTK, _zShape3DOpticFPrint },
-  { "texture", 1, _zShape3DTextureFromZTK, _zShape3DTextureFPrint },
+  { "optic", 1, _zShape3DOpticFromZTK, NULL },
+  { "texture", 1, _zShape3DTextureFromZTK, NULL },
   { "mirror", 1, _zShape3DMirrorFromZTK, NULL },
   { "import", 1, _zShape3DImportFromZTK, NULL },
   { "pos", 1, _zShape3DPosFromZTK, NULL },
@@ -392,6 +396,10 @@ void zShape3DFPrintZTK(FILE *fp, zShape3D *shape)
 {
   if( !shape ) return;
   ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape );
+  if( zShape3DOptic(shape) )
+    fprintf( fp, "optic: %s\n", zName(zShape3DOptic(shape)) );
+  if( zShape3DTexture(shape) )
+    fprintf( fp, "texture: %s\n", zName(zShape3DTexture(shape)) );
   shape->com->_fprintZTK( fp, shape->body );
   fprintf( fp, "\n" );
 }

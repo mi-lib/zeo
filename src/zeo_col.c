@@ -89,7 +89,7 @@ int zIntersectEdgeTri3D(zEdge3D *e, zTri3D *t, zVec3D ip[])
   if( zTri3DToPlane3D( t, &p ) ){
     ne = zIntersectEdgePlane3D( e, &p, v );
     for( i=0; i<ne; i++ )
-      if( zTri3DPointIsInside( t, &v[i], true ) )
+      if( zTri3DPointIsInside( t, &v[i], zTOL ) )
         zVec3DCopy( &v[i], &ip[n++] );
   }
   return n;
@@ -116,7 +116,7 @@ int zIntersectTri3D(zTri3D *t1, zTri3D *t2, zVec3D ip[])
   zTri3DToPlane3D( t1, &p );
   np[1] = zIntersectTriPlane3D( t2, &p, v[1] );
   for( i=0; i<np[0]; i++ ){
-    if( !zTri3DPointIsInside( t2, &v[0][i], true ) )
+    if( !zTri3DPointIsInside( t2, &v[0][i], zTOL ) )
       continue;
     for( j=0; j<n; j++ )
       if( zVec3DEqual( &v[0][i], &ip[j] ) ) break;
@@ -124,7 +124,7 @@ int zIntersectTri3D(zTri3D *t1, zTri3D *t2, zVec3D ip[])
       zVec3DCopy( &v[0][i], &ip[n++] );
   }
   for( i=0; i<np[1]; i++ ){
-    if( !zTri3DPointIsInside( t1, &v[1][i], true ) )
+    if( !zTri3DPointIsInside( t1, &v[1][i], zTOL ) )
       continue;
     for( j=0; j<n; j++ )
       if( zVec3DEqual( &v[1][i], &ip[j] ) ) break;

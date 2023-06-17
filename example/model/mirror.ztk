@@ -24,5 +24,6 @@ radius: 0.08
 
 [shape]
 name : cone2
+% type: polyhedron % this will cause a warning if uncommented.
 optic: cyan % this will be ignored.
 mirror: cone y

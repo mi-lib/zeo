@@ -74,7 +74,7 @@ zVec2DAddr *zVec2DAddrListAdd(zVec2DAddrList *list, zVec2D *v)
 /* create a list of pointers to 2D vectors from an array of 2D vectors. */
 zVec2DAddrList *zVec2DAddrListCreate(zVec2DAddrList *list, zVec2DArray *va)
 {
-  uint i;
+  int i;
 
   zListInit( list );
   for( i=0; i<zArraySize(va); i++ )

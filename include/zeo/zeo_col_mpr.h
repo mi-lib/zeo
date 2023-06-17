@@ -31,8 +31,8 @@ __BEGIN_DECLS
  * specified objects are in collisiond. Otherwise, the false
  * value is returned.
  */
-__EXPORT bool zMPR(zVec3D p1[], int n1, zVec3D p2[], int n2);
-__EXPORT bool zMPRDepth(zVec3D p1[], int n1, zVec3D p2[], int n2, double *depth, zVec3D *pos, zVec3D *dir);
+__ZEO_EXPORT bool zMPR(zVec3D p1[], int n1, zVec3D p2[], int n2);
+__ZEO_EXPORT bool zMPRDepth(zVec3D p1[], int n1, zVec3D p2[], int n2, double *depth, zVec3D *pos, zVec3D *dir);
 
 __END_DECLS
 

@@ -12,10 +12,17 @@
  * ********************************************************** */
 
 /* the identity frame. */
+#ifdef __cplusplus
+const zFrame3D zFrame3D::zframe3Dident = {
+  { { 0, 0, 0 } },
+  { { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } } }
+};
+#else
 const zFrame3D zframe3Dident = {
   { { 0, 0, 0 } },
   { { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } } }
 };
+#endif /* __cplusplus */
 
 /* create a 3D frame from a position vector and an attitude matrix. */
 zFrame3D *zFrame3DCreate(zFrame3D *f, zVec3D *p, zMat3D *m)

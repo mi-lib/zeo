@@ -16,13 +16,13 @@
 __BEGIN_DECLS
 
 /*! \brief read a 3D polyhedron in PLY format. */
-__EXPORT zPH3D *zPH3DFReadPLY(FILE *fp, zPH3D *ph);
+__ZEO_EXPORT zPH3D *zPH3DFReadPLY(FILE *fp, zPH3D *ph);
 
 /*! \brief write a 3D polyhedron in PLY format (ASCII) */
-__EXPORT void zPH3DFWritePLY_ASCII(FILE *fp, zPH3D *ph);
+__ZEO_EXPORT void zPH3DFWritePLY_ASCII(FILE *fp, zPH3D *ph);
 
 /*! \brief write a 3D polyhedron in PLY format (binary) */
-__EXPORT void zPH3DFWritePLY_Bin(FILE *fp, zPH3D *ph);
+__ZEO_EXPORT void zPH3DFWritePLY_Bin(FILE *fp, zPH3D *ph);
 
 #define zPH3DFWritePLY zPH3DFWritePLY_ASCII
 

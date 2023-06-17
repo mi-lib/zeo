@@ -228,7 +228,7 @@ zBREP *zBREPTrunc(zBREP *brep, zPlane3D *pl)
 /* truncate B-Rep by a polyhedron. */
 zBREP *zBREPTruncPH3D(zBREP *brep, zPH3D *ph)
 {
-  uint i;
+  int i;
   zPlane3D pl;
 
   for( i=0; i<zPH3DFaceNum(ph); i++ ){

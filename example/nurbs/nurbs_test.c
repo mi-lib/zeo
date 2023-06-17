@@ -68,7 +68,7 @@ int main(void)
  RETRY:
   u = zRandF( zNURBS3DKnotS(&nurbs,0), zNURBS3DKnotE(&nurbs,0) );
   v = zRandF( zNURBS3DKnotS(&nurbs,1), zNURBS3DKnotE(&nurbs,1) );
-  if( zNURBS3DVecNorm( &nurbs, u, v, &p, &n, &t1, &t2 ) ){
+  if( zNURBS3DVecTSpace( &nurbs, u, v, &p, &n, &t1, &t2 ) ){
     if( zVec3DIsTiny( &n ) ) goto RETRY;
     zVec3DDataFPrint( fp, &p );
     fprintf( fp, "\n" );
@@ -88,6 +88,8 @@ int main(void)
   fclose( fp );
 
   fp = fopen( "test_nurbs.ztk", "w" );
+  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "type: nurbs\n" );
   zNURBS3DFPrintZTK( fp, &nurbs );
   fclose( fp );
 

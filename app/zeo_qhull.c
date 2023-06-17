@@ -5,14 +5,18 @@
 
 void usage(char *arg)
 {
-  eprintf( "Usage: %s <vlist file>\n", arg );
-  eprintf( "       %s <.z3d file>\n", arg );
+  eprintf( "Usage: %s <vector list file>\n", arg );
+  eprintf( "       %s <.ztk file>\n", arg );
+  eprintf( "<vector list file>\n" );
+  eprintf( " x1, y1, z1\n" );
+  eprintf( " x2, y2, z2\n" );
+  eprintf( " ...\n" );
   exit( EXIT_SUCCESS );
 }
 
 void mshape2vlist(zMShape3D *ms, zVec3DAddrList *vl)
 {
-  register int i, j;
+  int i, j;
   zShape3D *s;
 
   zListInit( vl );

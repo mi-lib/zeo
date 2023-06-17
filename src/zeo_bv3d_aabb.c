@@ -47,15 +47,11 @@ zAABox3D *zAABox3DMerge(zAABox3D *dst, zAABox3D *src1, zAABox3D *src2)
 }
 
 /* check if a point is inside of an 3D axis-aligned box. */
-bool zAABox3DPointIsInside(zAABox3D *box, zVec3D *p, bool rim)
+bool zAABox3DPointIsInside(zAABox3D *box, zVec3D *p, double margin)
 {
-  double eps;
-
-  eps = rim ? zTOL : 0;
-  return p->e[zX] >= box->min.e[zX] - eps && p->e[zX] <= box->max.e[zX] + eps &&
-         p->e[zY] >= box->min.e[zY] - eps && p->e[zY] <= box->max.e[zY] + eps &&
-         p->e[zZ] >= box->min.e[zZ] - eps && p->e[zZ] <= box->max.e[zZ] + eps ?
-    true : false;
+  return p->e[zX] > box->min.e[zX] - margin && p->e[zX] <= box->max.e[zX] + margin &&
+         p->e[zY] > box->min.e[zY] - margin && p->e[zY] <= box->max.e[zY] + margin &&
+         p->e[zZ] > box->min.e[zZ] - margin && p->e[zZ] <= box->max.e[zZ] + margin ? true : false;
 }
 
 /* compute volume of an 3D axis-aligned box. */

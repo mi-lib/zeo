@@ -23,7 +23,7 @@ __BEGIN_DECLS
  * create a new merged B-Rep. If it fails to allocate memory
  * for newly added edges, the null pointer is returned.
  */
-__EXPORT zBREP *zBREPMerge(zBREP *target, zBREP *sub);
+__ZEO_EXPORT zBREP *zBREPMerge(zBREP *target, zBREP *sub);
 
 /* ********************************************************** */
 /* CATEGOLY: intersection of polyhedra
@@ -39,7 +39,7 @@ __EXPORT zBREP *zBREPMerge(zBREP *target, zBREP *sub);
  * Otherwise, the null pointer is returned. The reason of
  * failure is the lack of memory.
  */
-__EXPORT zPH3D *zPH3DTruncBREP(zPH3D *src, zPH3D *cut, zPH3D *dest);
+__ZEO_EXPORT zPH3D *zPH3DTruncBREP(zPH3D *src, zPH3D *cut, zPH3D *dest);
 
 /*! \brief intersect of polyhedra.
  *
@@ -51,7 +51,7 @@ __EXPORT zPH3D *zPH3DTruncBREP(zPH3D *src, zPH3D *cut, zPH3D *dest);
  * zIntersectPH3DBREP() returns a pointer \a dest if succeeding.
  * Otherwise, the null pointer is returned.
  */
-__EXPORT zPH3D *zIntersectPH3DBREP(zPH3D *src1, zPH3D *src2, zPH3D *dest);
+__ZEO_EXPORT zPH3D *zIntersectPH3DBREP(zPH3D *src1, zPH3D *src2, zPH3D *dest);
 
 /*! \brief intersect of polyhedra.
  *
@@ -68,7 +68,7 @@ __EXPORT zPH3D *zIntersectPH3DBREP(zPH3D *src1, zPH3D *src2, zPH3D *dest);
  * zIntersectPH3DBREPFast() returns a pointer \a dest if
  * succeeding. Otherwise, the null pointer is returned.
  */
-__EXPORT zPH3D *zIntersectPH3DBREPFast(zPH3D *src1, zPH3D *src2, zPH3D *dest);
+__ZEO_EXPORT zPH3D *zIntersectPH3DBREPFast(zPH3D *src1, zPH3D *src2, zPH3D *dest);
 
 __END_DECLS
 

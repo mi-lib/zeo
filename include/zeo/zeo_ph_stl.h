@@ -11,19 +11,23 @@
 
 __BEGIN_DECLS
 
+__ZEO_EXPORT bool __zeo_stl_echo;
+#define zSTLEchoOn()  ( __zeo_stl_echo = true )
+#define zSTLEchoOff() ( __zeo_stl_echo = false )
+
 /*! \brief read and write a 3D polyhedron in ASCII STL format. */
-__EXPORT zPH3D *zPH3DFReadSTL_ASCII(FILE *fp, zPH3D *ph, char name[], size_t namesize);
-__EXPORT void zPH3DFWriteSTL_ASCII(FILE *fp, zPH3D *ph, char name[]);
+__ZEO_EXPORT zPH3D *zPH3DFReadSTL_ASCII(FILE *fp, zPH3D *ph, char name[], size_t namesize);
+__ZEO_EXPORT void zPH3DFWriteSTL_ASCII(FILE *fp, zPH3D *ph, char name[]);
 
 /*! \brief check if STL format is binary. */
-__EXPORT bool zSTLIsBin(FILE *fp);
+__ZEO_EXPORT bool zSTLIsBin(FILE *fp);
 
 /*! \brief read and write a 3D polyhedron in binary STL format. */
-__EXPORT zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[]);
-__EXPORT void zPH3DFWriteSTL_Bin(FILE *fp, zPH3D *ph, char name[]);
+__ZEO_EXPORT zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[]);
+__ZEO_EXPORT void zPH3DFWriteSTL_Bin(FILE *fp, zPH3D *ph, char name[]);
 
 /*! \brief read and write a 3D polyhedron in STL format. */
-__EXPORT zPH3D *zPH3DFReadSTL(FILE *fp, zPH3D *ph, char name[], size_t namesize);
+__ZEO_EXPORT zPH3D *zPH3DFReadSTL(FILE *fp, zPH3D *ph, char name[], size_t namesize);
 #define zPH3DFWriteSTL zPH3DFWriteSTL_ASCII
 
 __END_DECLS

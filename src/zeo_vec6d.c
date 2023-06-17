@@ -12,6 +12,15 @@
  * ********************************************************** */
 
 /* 6D zero vector and unit vectors along (x,y,z) axes. */
+#ifdef __cplusplus
+const zVec6D zVec6D::zvec6Dzero = { { 0, 0, 0, 0, 0, 0 } };
+const zVec6D zVec6D::zvec6Dlinx = { { 1, 0, 0, 0, 0, 0 } };
+const zVec6D zVec6D::zvec6Dliny = { { 0, 1, 0, 0, 0, 0 } };
+const zVec6D zVec6D::zvec6Dlinz = { { 0, 0, 1, 0, 0, 0 } };
+const zVec6D zVec6D::zvec6Dangx = { { 0, 0, 0, 1, 0, 0 } };
+const zVec6D zVec6D::zvec6Dangy = { { 0, 0, 0, 0, 1, 0 } };
+const zVec6D zVec6D::zvec6Dangz = { { 0, 0, 0, 0, 0, 1 } };
+#else
 const zVec6D zvec6Dzero = { { 0, 0, 0, 0, 0, 0 } };
 const zVec6D zvec6Dlinx = { { 1, 0, 0, 0, 0, 0 } };
 const zVec6D zvec6Dliny = { { 0, 1, 0, 0, 0, 0 } };
@@ -19,6 +28,7 @@ const zVec6D zvec6Dlinz = { { 0, 0, 1, 0, 0, 0 } };
 const zVec6D zvec6Dangx = { { 0, 0, 0, 1, 0, 0 } };
 const zVec6D zvec6Dangy = { { 0, 0, 0, 0, 1, 0 } };
 const zVec6D zvec6Dangz = { { 0, 0, 0, 0, 0, 1 } };
+#endif /* __cplusplus */
 
 /* create a 6D vector. */
 zVec6D *zVec6DCreate(zVec6D *v, double x, double y, double z, double xa, double ya, double za)

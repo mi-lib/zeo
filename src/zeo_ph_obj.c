@@ -22,7 +22,7 @@ static int _zOBJCountKey(FILE *fp, const char *key)
 static zPH3D *_zOBJFReadPH3D(FILE *fp, zPH3D *ph)
 {
   char buf[BUFSIZ], tkn[BUFSIZ], *sp;
-  uint vi, fi, i[3], j;
+  int vi, fi, i[3], j;
 
   vi = fi = 0;
   rewind( fp );

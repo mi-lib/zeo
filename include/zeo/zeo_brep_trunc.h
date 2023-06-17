@@ -27,8 +27,8 @@ __BEGIN_DECLS
  * The null pointer is returned according to the same condition
  * with zBREPTrunc().
  */
-__EXPORT zBREP *zBREPTrunc(zBREP *brep, zPlane3D *pl);
-__EXPORT zBREP *zBREPTruncPH3D(zBREP *brep, zPH3D *ph);
+__ZEO_EXPORT zBREP *zBREPTrunc(zBREP *brep, zPlane3D *pl);
+__ZEO_EXPORT zBREP *zBREPTruncPH3D(zBREP *brep, zPH3D *ph);
 
 __END_DECLS
 

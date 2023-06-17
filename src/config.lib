@@ -10,7 +10,7 @@ OBJ=zeo_misc.o\
 	zeo_ph.o zeo_ph_stl.o zeo_ph_ply.o zeo_ph_obj.o\
 	zeo_nurbs.o\
 	zeo_shape3d.o zeo_shape3d_list.o\
-	zeo_shape3d_box.o zeo_shape3d_sphere.o zeo_shape3d_ellips.o zeo_shape3d_cyl.o zeo_shape3d_ecyl.o zeo_shape3d_cone.o zeo_shape3d_ph.o zeo_shape3d_nurbs.o\
+	zeo_shape3d_box.o zeo_shape3d_sphere.o zeo_shape3d_ellips.o zeo_shape3d_cyl.o zeo_shape3d_capsule.o zeo_shape3d_ecyl.o zeo_shape3d_cone.o zeo_shape3d_ph.o zeo_shape3d_nurbs.o\
 	zeo_bv2d_aabb.o zeo_bv2d_bdisk.o zeo_bv2d_ch.o\
 	zeo_bv3d_aabb.o zeo_bv3d_obb.o zeo_bv3d_bball.o zeo_bv3d_ch.o\
 	zeo_voronoi2d.o\
@@ -19,7 +19,6 @@ OBJ=zeo_misc.o\
 	zeo_mshape3d.o\
 	zeo_map.o zeo_map_terra.o\
 	zeo_mapnet.o
-DLIB=libzeo.so
 
 ifeq ($(CONFIG_USE_DAE),y)
 	OBJ += zeo_ph_dae.o

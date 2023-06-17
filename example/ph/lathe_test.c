@@ -34,7 +34,7 @@ int main(void)
   zVec3D axis   = { { 0, 0, 1 } };
   zPH3D lathe;
 
-  zPH3DLathe( &lathe, v, sizeof(v)/sizeof(zVec3D), DIV, &center, &axis );
+  zPH3DCreateLathe( &lathe, v, sizeof(v)/sizeof(zVec3D), DIV, &center, &axis );
   output( &lathe );
   zPH3DDestroy( &lathe );
   return 0;

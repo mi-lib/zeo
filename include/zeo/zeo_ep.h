@@ -14,13 +14,35 @@ __BEGIN_DECLS
 /*! \struct zEP
  * \brief Euler parameter.
  */
-typedef union{
+ZDEF_UNION( __ZEO_CLASS_EXPORT, zEP ){
   struct{
     double w;
     zVec3D v;
   } ex;
   double e[4];
-} zEP;
+#ifdef __cplusplus
+  zEP() : e{ 1, 0, 0, 0 } {}
+  zEP &create(double w, double x, double y, double z);
+  zEP &createAA(double theta, zVec3D *axis);
+  zEP &ident();
+  zEP &copy(zEP &src);
+  bool isIdent();
+  zVec3D &toAA(zVec3D &aa);
+  zEP &fromAA(zVec3D &aa);
+  zMat3D &toMat3D(zMat3D &m);
+  zEP &fromMat3D(zMat3D &m);
+  zVec3D &rot(zVec3D &from, zVec3D &to);
+  friend zEP operator+(zEP &ep1, zEP &ep2);
+  friend zEP operator-(zEP &ep1, zEP &ep2);
+  zEP operator*(double k);
+  zEP &sub(zEP &e);
+  zEP &rev();
+  zEP &mul(double k);
+  zEP &cat(double k, zEP &e);
+  double norm();
+  zEP &normalize();
+#endif /* __cplusplus */
+};
 
 /*! \brief create and copy Euler parameter.
  *
@@ -37,12 +59,12 @@ typedef union{
  * zEPCreate(), zEPCreateAA() and zEPIdent() return a pointer \a ep.
  * zEPCopy() returns a pointer \a dest.
  */
-__EXPORT zEP *zEPCreate(zEP *ep, double w, double x, double y, double z);
-__EXPORT zEP *zEPCreateAA(zEP *ep, double theta, zVec3D *axis);
+__ZEO_EXPORT zEP *zEPCreate(zEP *ep, double w, double x, double y, double z);
+__ZEO_EXPORT zEP *zEPCreateAA(zEP *ep, double theta, zVec3D *axis);
 #define zEPIdent(e)  zEPCreate( e, 1, 0, 0, 0 );
 #define zEPCopy(s,d) zCopy( zEP, (s), (d) )
 
-__EXPORT bool zEPIsIdent(zEP *ep);
+__ZEO_EXPORT bool zEPIsIdent(zEP *ep);
 
 /*! \brief alternate angle-axis vector, attitude matrix and Euler parameter.
  *
@@ -63,10 +85,10 @@ __EXPORT bool zEPIsIdent(zEP *ep);
  * zMat3DFromEP() returns a pointer \a m.
  * zMat3DToEP() returns a pointer \a ep.
  */
-__EXPORT zVec3D *zEP2AA(zEP *ep, zVec3D *aa);
-__EXPORT zEP *zAA2EP(zVec3D *aa, zEP *ep);
-__EXPORT zMat3D *zMat3DFromEP(zMat3D *m, zEP *ep);
-__EXPORT zEP *zMat3DToEP(zMat3D *m, zEP *ep);
+__ZEO_EXPORT zVec3D *zEP2AA(zEP *ep, zVec3D *aa);
+__ZEO_EXPORT zEP *zAA2EP(zVec3D *aa, zEP *ep);
+__ZEO_EXPORT zMat3D *zMat3DFromEP(zMat3D *m, zEP *ep);
+__ZEO_EXPORT zEP *zMat3DToEP(zMat3D *m, zEP *ep);
 
 /*! \brief rotate a 3D vector by Euler parameter.
  *
@@ -77,7 +99,7 @@ __EXPORT zEP *zMat3DToEP(zMat3D *m, zEP *ep);
  * \sa
  * zMat3DFromEP
  */
-__EXPORT zVec3D *zEPRotVec3D(zEP *ep, zVec3D *v, zVec3D *rv);
+__ZEO_EXPORT zVec3D *zEPRotVec3D(zEP *ep, zVec3D *v, zVec3D *rv);
 
 /*! \brief convert rotation velocity to Euler parameter derivative.
  *
@@ -92,10 +114,13 @@ __EXPORT zVec3D *zEPRotVec3D(zEP *ep, zVec3D *v, zVec3D *rv);
  * zEPVel2AngVel() returns a pointer \a angvel.
  * zAngVel2EPVel() returns a pointer \a epvel.
  */
-__EXPORT zVec3D *zEPVel2AngVel(zEP *epvel, zEP *ep, zVec3D *angvel);
-__EXPORT zEP *zAngVel2EPVel(zVec3D *angvel, zEP *ep, zEP *epvel);
+__ZEO_EXPORT zVec3D *zEPVel2AngVel(zEP *epvel, zEP *ep, zVec3D *angvel);
+__ZEO_EXPORT zEP *zAngVel2EPVel(zVec3D *angvel, zEP *ep, zEP *epvel);
 
 /*! \brief Euler parameter arithmetics.
+ *
+ * zEPAdd() add two Euler parameters \a ep1 and \a ep2 and puts it into \a ep.
+ * zEPSub() subtracts an Euler parameter \a ep2 from another \a ep1 and puts it into \a ep.
  *
  * zEPRev() reverses Euler parameter \a ep1 and puts it into \a ep.
  * zEPRevDRC() directly reverses Euler parameter \a ep.
@@ -125,24 +150,25 @@ __EXPORT zEP *zAngVel2EPVel(zVec3D *angvel, zEP *ep, zEP *epvel);
  *
  * zEPInnerProd() and zEPNorm() return the result value.
  */
-__EXPORT zEP *zEPSub(zEP *ep1, zEP *ep2, zEP *ep);
-__EXPORT zEP *zEPRev(zEP *ep1, zEP *ep);
-__EXPORT zEP *zEPMul(zEP *ep1, double k, zEP *ep);
-__EXPORT zEP *zEPCat(zEP *ep1, double k, zEP *ep2, zEP *ep);
+__ZEO_EXPORT zEP *zEPAdd(zEP *ep1, zEP *ep2, zEP *ep);
+__ZEO_EXPORT zEP *zEPSub(zEP *ep1, zEP *ep2, zEP *ep);
+__ZEO_EXPORT zEP *zEPRev(zEP *ep1, zEP *ep);
+__ZEO_EXPORT zEP *zEPMul(zEP *ep1, double k, zEP *ep);
+__ZEO_EXPORT zEP *zEPCat(zEP *ep1, double k, zEP *ep2, zEP *ep);
 #define zEPSubDRC(e1,e)      zEPSub( e1, e, e1 )
 #define zEPRevDRC(e)         zEPRev( e, e )
 #define zEPMulDRC(e,k)       zEPMul( e, k, e )
 #define zEPCatDRC(ep1,k,ep2) zEPCat( ep1, k, ep2, ep1 )
 
-__EXPORT zEP *zEPDif(zEP *ep1, zEP *ep2, double dt, zEP *ep_vel);
+__ZEO_EXPORT zEP *zEPDif(zEP *ep1, zEP *ep2, double dt, zEP *ep_vel);
 
-__EXPORT double zEPInnerProd(zEP *ep1, zEP *ep2);
-__EXPORT double zEPNorm(zEP *ep);
-__EXPORT zEP *zEPNormalize(zEP *ep);
+__ZEO_EXPORT double zEPInnerProd(zEP *ep1, zEP *ep2);
+__ZEO_EXPORT double zEPNorm(zEP *ep);
+__ZEO_EXPORT zEP *zEPNormalize(zEP *ep);
 
 /*! \brief cascade a Euler parameter to another.
  */
-__EXPORT zEP *zEPCascade(zEP *e1, zEP *e2, zEP *e);
+__ZEO_EXPORT zEP *zEPCascade(zEP *e1, zEP *e2, zEP *e);
 
 /*! \brief interior division of Euler parameter.
  *
@@ -159,7 +185,7 @@ __EXPORT zEP *zEPCascade(zEP *e1, zEP *e2, zEP *e);
  * \sa
  * zMat3DInterDiv
  */
-__EXPORT zEP *zEPInterDiv(zEP *ep1, zEP *ep2, double t, zEP *ep);
+__ZEO_EXPORT zEP *zEPInterDiv(zEP *ep1, zEP *ep2, double t, zEP *ep);
 
 /*! \brief interior division of two attitude matrices for SLERP.
  *
@@ -174,7 +200,7 @@ __EXPORT zEP *zEPInterDiv(zEP *ep1, zEP *ep2, double t, zEP *ep);
  * \sa
  * zEPInterDiv
  */
-__EXPORT zMat3D *zMat3DInterDiv(zMat3D *m1, zMat3D *m2, double t, zMat3D *m);
+__ZEO_EXPORT zMat3D *zMat3DInterDiv(zMat3D *m1, zMat3D *m2, double t, zMat3D *m);
 
 /*! \brief print Euler parameter.
  *
@@ -185,9 +211,43 @@ __EXPORT zMat3D *zMat3DInterDiv(zMat3D *m1, zMat3D *m2, double t, zMat3D *m);
  * \return
  * zEPFPrint() and zEPPrint() return no value.
  */
-__EXPORT void zEPFPrint(FILE *fp, zEP *ep);
+__ZEO_EXPORT void zEPFPrint(FILE *fp, zEP *ep);
 #define zEPPrint(e) zEPFPrint( stdout, e )
 
 __END_DECLS
+
+#ifdef __cplusplus
+inline zEP &zEP::create(double w, double x, double y, double z){ return *zEPCreate( this, w, x, y, z ); }
+inline zEP &zEP::createAA(double theta, zVec3D *axis){ return *zEPCreateAA( this, theta, axis ); }
+inline zEP &zEP::ident(){ return *zEPIdent( this ); }
+inline zEP &zEP::copy(zEP &src){ zEPCopy( &src, this ); return *this; }
+inline bool zEP::isIdent(){ return zEPIsIdent( this ); }
+inline zVec3D &zEP::toAA(zVec3D &aa){ return *zEP2AA( this, &aa ); }
+inline zEP &zEP::fromAA(zVec3D &aa){ return *zAA2EP( &aa, this ); }
+inline zMat3D &zEP::toMat3D(zMat3D &m){ return *zMat3DFromEP( &m, this ); }
+inline zEP &zEP::fromMat3D(zMat3D &m){ return *zMat3DToEP( &m, this ); }
+inline zVec3D &zEP::rot(zVec3D &from, zVec3D &to){ return *zEPRotVec3D( this, &from, &to ); }
+inline zEP operator+(zEP &ep1, zEP &ep2){
+  zEP e;
+  zEPAdd( &ep1, &ep2, &e );
+  return e;
+}
+inline zEP operator-(zEP &ep1, zEP &ep2){
+  zEP e;
+  zEPSub( &ep1, &ep2, &e );
+  return e;
+}
+inline zEP zEP::operator*(double k){
+  zEP e;
+  zEPMul( this, k, &e );
+  return e;
+}
+inline zEP &zEP::sub(zEP &e){ return *zEPSubDRC( this, &e ); }
+inline zEP &zEP::rev(){ return *zEPRevDRC( this ); }
+inline zEP &zEP::mul(double k){ return *zEPMulDRC( this, k ); }
+inline zEP &zEP::cat(double k, zEP &e){ return *zEPCatDRC( this, k, &e ); }
+inline double zEP::norm(){ return zEPNorm( this ); }
+inline zEP &zEP::normalize(){ return *zEPNormalize( this ); }
+#endif /* __cplusplus */
 
 #endif /* __ZEO_EP_H__ */

@@ -31,19 +31,19 @@ typedef struct{
   zVec3D vmax;   /*!< maximum corner of bounding box */
 } zVec3DTreeData;
 
-__EXPORT zVec3DTreeData *zVec3DTreeDataInit(zVec3DTreeData *data);
+__ZEO_EXPORT zVec3DTreeData *zVec3DTreeDataInit(zVec3DTreeData *data);
 
-zTreeClass( zVec3DTree, zVec3DTreeData );
+zTreeClass( __ZEO_EXPORT, zVec3DTree, zVec3DTreeData );
 
 /*! \brief add a new 3D vector to a tree.
  *
  * zVec3DTreeAdd() adds a 3D vector \a v to a tree \a tree.
  * \a v is copied to a node of \a tree.
  */
-__EXPORT zVec3DTree *zVec3DTreeAdd(zVec3DTree *tree, zVec3D *v);
+__ZEO_EXPORT zVec3DTree *zVec3DTreeAdd(zVec3DTree *tree, zVec3D *v);
 
 /*! \brief add a new 3D vector to a tree with an identifier. */
-__EXPORT zVec3DTree *zVec3DTreeAddID(zVec3DTree *tree, zVec3D *v, int id);
+__ZEO_EXPORT zVec3DTree *zVec3DTreeAddID(zVec3DTree *tree, zVec3D *v, int id);
 
 /*! \brief find the partition in which a 3D vector is contained.
  *
@@ -52,7 +52,7 @@ __EXPORT zVec3DTree *zVec3DTreeAddID(zVec3DTree *tree, zVec3D *v, int id);
  * This function is mainly for debug.
  * \return a pointer to the node found in the tree is returned.
  */
-__EXPORT zVec3DTree *zVec3DTreePart(zVec3DTree *tree, zVec3D *v);
+__ZEO_EXPORT zVec3DTree *zVec3DTreePart(zVec3DTree *tree, zVec3D *v);
 
 /*! \brief find the nearest neighbor to a 3D vector in a tree.
  *
@@ -61,22 +61,22 @@ __EXPORT zVec3DTree *zVec3DTreePart(zVec3DTree *tree, zVec3D *v);
  * node found is stored into \a nn.
  * \return the distance from \a v to the nearest neighbor.
  */
-__EXPORT double zVec3DTreeNN(zVec3DTree *tree, zVec3D *v, zVec3DTree **nn);
+__ZEO_EXPORT double zVec3DTreeNN(zVec3DTree *tree, zVec3D *v, zVec3DTree **nn);
 
 /*! \brief convert an array of 3D vectors to a 3D vector tree. */
-__EXPORT zVec3DTree *zVec3DArray2Tree(zVec3DArray *array, zVec3DTree *tree);
+__ZEO_EXPORT zVec3DTree *zVec3DArray2Tree(zVec3DArray *array, zVec3DTree *tree);
 
 /*! \brief convert a 3D vector tree to an array of 3D vectors. */
-__EXPORT zVec3DArray *zVec3DTree2Array(zVec3DTree *tree, zVec3DArray *array);
+__ZEO_EXPORT zVec3DArray *zVec3DTree2Array(zVec3DTree *tree, zVec3DArray *array);
 
 /*! \brief convert a 3D vector tree to a 3D vector list. */
-__EXPORT zVec3DList *zVec3DTree2List(zVec3DTree *tree, zVec3DList *list);
+__ZEO_EXPORT zVec3DList *zVec3DTree2List(zVec3DTree *tree, zVec3DList *list);
 
 /*! \brief convert a 3D vector list to a 3D vector tree. */
-__EXPORT zVec3DTree *zVec3DList2Tree(zVec3DList *list, zVec3DTree *tree);
+__ZEO_EXPORT zVec3DTree *zVec3DList2Tree(zVec3DList *list, zVec3DTree *tree);
 
 /*! \brief print out a 3D vector tree (for debug). */
-__EXPORT void zVec3DTreeFPrint(FILE *fp, zVec3DTree *tree);
+__ZEO_EXPORT void zVec3DTreeFPrint(FILE *fp, zVec3DTree *tree);
 
 __END_DECLS
 

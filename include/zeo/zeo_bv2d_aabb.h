@@ -20,16 +20,16 @@ typedef struct{
 } zAABox2D;
 
 /*! \brief initializea 2D axis-aligned box */
-__EXPORT zAABox2D *zAABox2DInit(zAABox2D *box);
+__ZEO_EXPORT zAABox2D *zAABox2DInit(zAABox2D *box);
 
 /*! \brief createa 2D axis-aligned box */
-__EXPORT zAABox2D *zAABox2DCreate(zAABox2D *box, double xmin, double ymin, double xmax, double ymax);
+__ZEO_EXPORT zAABox2D *zAABox2DCreate(zAABox2D *box, double xmin, double ymin, double xmax, double ymax);
 
 /*! \brief check if a point is inside ofa 2D axis-aligned box. */
-__EXPORT bool zAABox2DPointIsInside(zAABox2D *box, zVec2D *p, bool rim);
+__ZEO_EXPORT bool zAABox2DPointIsInside(zAABox2D *box, zVec2D *p, double margin);
 
 /*! \brief printa 2D axis-aligned box out to a file. */
-__EXPORT void zAABox2DDataFPrint(FILE *fp, zAABox2D *box);
+__ZEO_EXPORT void zAABox2DDataFPrint(FILE *fp, zAABox2D *box);
 
 /* ********************************************************** */
 /* AABB2D - 2D axis-aligned bounding box
@@ -65,8 +65,8 @@ __EXPORT void zAABox2DDataFPrint(FILE *fp, zAABox2D *box);
  * corners of \a bb, some of the elements in \a vp and \a vc
  * could point the same points.
  */
-__EXPORT zAABox2D *zAABB2D(zAABox2D *bb, zVec2D p[], int num, zVec2D **vp);
-__EXPORT zAABox2D *zAABB2DPL(zAABox2D *bb, zVec2DList *pl, zVec2DListCell **vc);
+__ZEO_EXPORT zAABox2D *zAABB2D(zAABox2D *bb, zVec2D p[], int num, zVec2D **vp);
+__ZEO_EXPORT zAABox2D *zAABB2DPL(zAABox2D *bb, zVec2DList *pl, zVec2DListCell **vc);
 
 __END_DECLS
 

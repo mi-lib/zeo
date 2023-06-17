@@ -14,7 +14,7 @@ zMapNet *zMapNetInit(zMapNet *mn)
 }
 
 /* allocate memory of map net. */
-zMapNet *zMapNetAlloc(zMapNet *mn, uint size)
+zMapNet *zMapNetAlloc(zMapNet *mn, int size)
 {
   zArrayAlloc( &mn->maparray, zMap, size );
   if( zArraySize(&mn->maparray) != size ) return NULL;
@@ -28,7 +28,7 @@ zMapNet *zMapNetAlloc(zMapNet *mn, uint size)
 /* destroy map net. */
 void zMapNetDestroy(zMapNet *mn)
 {
-  uint i;
+  int i;
 
   for( i=0; i<zArraySize(&mn->maparray); i++ )
     zMapDestroy( zMapNetMap(mn,i) );
@@ -38,7 +38,7 @@ void zMapNetDestroy(zMapNet *mn)
 /* parse ZTK format */
 
 static void *_zMapNetMapFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  return zMapFromZTK( zMapNetMap((zMapNet*)obj,(uint)i), ztk ) ? obj : NULL;
+  return zMapFromZTK( zMapNetMap((zMapNet*)obj,i), ztk ) ? obj : NULL;
 }
 
 static ZTKPrp __ztk_prp_mapnet[] = {
@@ -48,7 +48,7 @@ static ZTKPrp __ztk_prp_mapnet[] = {
 /* read multiple 3D shapes from a ZTK format processor. */
 zMapNet *zMapNetFromZTK(zMapNet *mn, ZTK *ztk)
 {
-  uint num_map;
+  int num_map;
 
   zMapNetInit( mn );
   num_map = ZTKCountTag( ztk, ZTK_TAG_MAP );
@@ -60,7 +60,7 @@ zMapNet *zMapNetFromZTK(zMapNet *mn, ZTK *ztk)
 /* print information of map net out to a file. */
 void zMapNetFPrintZTK(FILE *fp, zMapNet *mn)
 {
-  uint i;
+  int i;
 
   for( i=0; i<zArraySize(&mn->maparray); i++ ){
     fprintf( fp, "[%s]\n", ZTK_TAG_MAP );

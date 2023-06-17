@@ -5,6 +5,7 @@
  */
 
 #include <zeo/zeo_ph.h>
+#include <zeo/zeo_vec2d.h>
 
 /* ********************************************************** */
 /* CLASS: zPH3D
@@ -42,7 +43,7 @@ zPH3D *zPH3DAlloc(zPH3D *ph, int vn, int fn)
 /* clone a 3D polyhedron. */
 zPH3D *zPH3DClone(zPH3D *src, zPH3D *dest)
 {
-  uint i;
+  int i;
 
   if( !zPH3DAlloc( dest, zPH3DVertNum(src), zPH3DFaceNum(src) ) )
     return NULL;
@@ -59,7 +60,7 @@ zPH3D *zPH3DClone(zPH3D *src, zPH3D *dest)
 /* mirror a 3D polyhedron. */
 zPH3D *zPH3DMirror(zPH3D *src, zPH3D *dest, zAxis axis)
 {
-  uint i;
+  int i;
 
   if( !zPH3DClone( src, dest ) ) return NULL;
   for( i=0; i<zPH3DVertNum(dest); i++ )
@@ -75,7 +76,7 @@ zPH3D *zPH3DMirror(zPH3D *src, zPH3D *dest, zAxis axis)
 /* scale a 3D polyhedron. */
 zPH3D *zPH3DScale(zPH3D *ph, double scale)
 {
-  uint i;
+  int i;
 
   for( i=0; i<zPH3DVertNum(ph); i++ )
     zVec3DMulDRC( zPH3DVert(ph,i), scale );
@@ -95,7 +96,7 @@ void zPH3DDestroy(zPH3D *ph)
  * NOTE: it assumes that 'src' is already cloned to 'dest'. */
 zPH3D *zPH3DXform(zPH3D *src, zFrame3D *f, zPH3D *dest)
 {
-  uint i;
+  int i;
 
   for( i=0; i<zPH3DVertNum(dest); i++ )
     zXform3D( f, zPH3DVert(src,i), zPH3DVert(dest,i) );
@@ -108,7 +109,7 @@ zPH3D *zPH3DXform(zPH3D *src, zFrame3D *f, zPH3D *dest)
  * NOTE: it assumes that src is already cloned to dest. */
 zPH3D *zPH3DXformInv(zPH3D *src, zFrame3D *f, zPH3D *dest)
 {
-  uint i;
+  int i;
 
   for( i=0; i<zPH3DVertNum(dest); i++ )
     zXform3DInv( f, zPH3DVert(src,i), zPH3DVert(dest,i) );
@@ -120,7 +121,7 @@ zPH3D *zPH3DXformInv(zPH3D *src, zFrame3D *f, zPH3D *dest)
 /* contiguous vertix of a 3D polyhedron to a point. */
 zVec3D *zPH3DContigVert(zPH3D *ph, zVec3D *p, double *d)
 {
-  uint i;
+  int i;
   zVec3D *v, *nv;
   double _d, dmin;
 
@@ -138,10 +139,15 @@ zVec3D *zPH3DContigVert(zPH3D *ph, zVec3D *p, double *d)
   return v;
 }
 
-/* the closest point to a 3D polyhedron. */
+/* the closest point to a 3D polyhedron.
+ * note: this is not an exact computation because it supposes that
+ *  - the polyhedron is convex
+ *  - the polyhedron is closed
+ *  - normal vectors of all facets of the polyhedron direct outward.
+ */
 double zPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp)
 {
-  uint i;
+  int i;
   zVec3D ncp;
   double d, dmin;
 
@@ -167,22 +173,19 @@ double zPH3DPointDist(zPH3D *ph, zVec3D *p)
 }
 
 /* check if a point is inside of a polyhedron. */
-bool zPH3DPointIsInside(zPH3D *ph, zVec3D *p, bool rim)
+bool zPH3DPointIsInside(zPH3D *ph, zVec3D *p, double margin)
 {
-  uint i;
-  double tol;
+  int i;
 
-  tol = rim ? zTOL : 0;
   for( i=0; i<zPH3DFaceNum(ph); i++ )
-    if( zTri3DPointDist( zPH3DFace(ph,i), p ) >= tol )
-      return false;
+    if( zTri3DPointDist( zPH3DFace(ph,i), p ) >= margin ) return false;
   return true;
 }
 
 /* volume of a 3D polyhedron. */
 double zPH3DVolume(zPH3D *ph)
 {
-  uint i;
+  int i;
   double v;
 
   for( v=0, i=0; i<zPH3DFaceNum(ph); i++ )
@@ -193,7 +196,7 @@ double zPH3DVolume(zPH3D *ph)
 /* barycenter of a 3D polyhedron. */
 zVec3D *zPH3DBarycenter(zPH3D *ph, zVec3D *c)
 {
-  uint i;
+  int i;
   zVec3D bc;
   double v, vol;
 
@@ -212,7 +215,7 @@ zVec3D *zPH3DBarycenter(zPH3D *ph, zVec3D *c)
 /* inertia tensor of a 3D polyhedron. */
 zMat3D *zPH3DInertia(zPH3D *ph, double density, zMat3D *inertia)
 {
-  uint j;
+  int j;
   zMat3D i;
 
   zMat3DZero( inertia );
@@ -274,9 +277,9 @@ static int _zPH3DSweepBottom(zVec3DArray *va, zTri3D f[], zVec3D *ref)
 }
 
 /* create a prism by extrusion from the bottom loop. */
-zPH3D *zPH3DPrism(zPH3D *prism, zVec3D bottom[], uint n, zVec3D *shift)
+zPH3D *zPH3DCreatePrism(zPH3D *prism, zVec3D bottom[], int n, zVec3D *shift)
 {
-  uint i, i1, nf;
+  int i, i1, nf;
   zTri3D *(*_tri)(zTri3D*,zVec3D*,zVec3D*,zVec3D*) = zTri3DCreate;
   zTri3D *fbuf;
   zVec3D ref;
@@ -297,14 +300,14 @@ zPH3D *zPH3DPrism(zPH3D *prism, zVec3D bottom[], uint n, zVec3D *shift)
   zArrayBuf(&va) = zPH3DVert(prism,n);
   nf+= _zPH3DSweepBottom( &va, zPH3DFace(prism,nf), &ref );
 
-  if( nf > 2*(n-2) ) goto FATAL_ERROR;
+  if( nf > 2*(n-2) ) goto ZPH3DPRISM_FATAL_ERROR;
   /* side faces */
   i = zPH3DFaceVert(prism,0,0) - zPH3DVertBuf(prism);
   i1 = _zPH3DLoopNext( n, i );
   if( zPH3DFaceVert(prism,0,1)-zPH3DVertBuf(prism) == i1 )
     _tri = zTri3DCreateRev; /* direct faces outwards */
   else if( zPH3DFaceVert(prism,0,2)-zPH3DVertBuf(prism) != i1 )
-    goto FATAL_ERROR;
+    goto ZPH3DPRISM_FATAL_ERROR;
   for( i=0; i<n; i++, nf+=2 ){
     i1 = _zPH3DLoopNext(n,i);
     _tri( zPH3DFace(prism,nf),
@@ -318,16 +321,16 @@ zPH3D *zPH3DPrism(zPH3D *prism, zVec3D bottom[], uint n, zVec3D *shift)
       zPH3DSetFaceNum( prism, nf );
     }
   return prism;
- FATAL_ERROR:
+ ZPH3DPRISM_FATAL_ERROR:
   ZRUNERROR( ZEO_ERR_FATAL );
   zPH3DDestroy( prism );
   return NULL;
 }
 
 /* create a pyramid from the bottom loop and a vertex. */
-zPH3D *zPH3DPyramid(zPH3D *pyr, zVec3D bottom[], uint n, zVec3D *vert)
+zPH3D *zPH3DCreatePyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3D *vert)
 {
-  uint i, i1, nf;
+  int i, i1, nf;
   zTri3D *(*_tri)(zTri3D*,zVec3D*,zVec3D*,zVec3D*) = zTri3DCreate;
   zTri3D *fbuf;
   zVec3D ref;
@@ -344,14 +347,14 @@ zPH3D *zPH3DPyramid(zPH3D *pyr, zVec3D bottom[], uint n, zVec3D *vert)
   zArrayBuf(&va) = zPH3DVert(pyr,0);
   nf = _zPH3DSweepBottom( &va, zPH3DFace(pyr,0), &ref );
 
-  if( nf > n-2 ) goto FATAL_ERROR;
+  if( nf > n-2 ) goto ZPH3DPYRAMID_FATAL_ERROR;
   /* side faces */
   i = zPH3DFaceVert(pyr,0,0) - zPH3DVertBuf(pyr);
   i1 = _zPH3DLoopNext( n, i );
   if( zPH3DFaceVert(pyr,0,1)-zPH3DVertBuf(pyr) == i1 )
     _tri = zTri3DCreateRev; /* direct faces outwards */
   else if( zPH3DFaceVert(pyr,0,2)-zPH3DVertBuf(pyr) != i1 )
-    goto FATAL_ERROR;
+    goto ZPH3DPYRAMID_FATAL_ERROR;
   for( i=0; i<n; i++, nf++ )
     _tri( zPH3DFace(pyr,nf),
       zPH3DVert(pyr,i), zPH3DVert(pyr,_zPH3DLoopNext(n,i)), zPH3DVert(pyr,n) );
@@ -362,16 +365,16 @@ zPH3D *zPH3DPyramid(zPH3D *pyr, zVec3D bottom[], uint n, zVec3D *vert)
     }
 
   return pyr;
- FATAL_ERROR:
+ ZPH3DPYRAMID_FATAL_ERROR:
   ZRUNERROR( ZEO_ERR_FATAL );
   zPH3DDestroy( pyr );
   return NULL;
 }
 
 /* create a torus from a section loop. */
-zPH3D *zPH3DTorus(zPH3D *torus, zVec3D loop[], uint n, uint div, zVec3D *center, zVec3D *axis)
+zPH3D *zPH3DCreateTorus(zPH3D *torus, zVec3D loop[], int n, int div, zVec3D *center, zVec3D *axis)
 {
-  uint i, i0, j, j0, k;
+  int i, i0, j, j0, k;
   zVec3D d, a, *v;
 
   if( !zPH3DAlloc( torus, n*div, 2*n*div ) ) return NULL;
@@ -398,9 +401,9 @@ zPH3D *zPH3DTorus(zPH3D *torus, zVec3D loop[], uint n, uint div, zVec3D *center,
 }
 
 /* create a solid revolution by lathe. */
-zPH3D *zPH3DLathe(zPH3D *lathe, zVec3D rim[], uint n, uint div, zVec3D *center, zVec3D *axis)
+zPH3D *zPH3DCreateLathe(zPH3D *lathe, zVec3D rim[], int n, int div, zVec3D *center, zVec3D *axis)
 {
-  uint i, i0, j, j0, k;
+  int i, i0, j, j0, k;
   zVec3D d, a, *v;
 
   if( !zPH3DAlloc( lathe, n*div, 2*(n-1)*div+2*(div-2) ) ) return NULL;
@@ -442,16 +445,18 @@ zPH3D *zPH3DLathe(zPH3D *lathe, zVec3D rim[], uint n, uint div, zVec3D *center, 
 static void *_zPH3DVertFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 {
   int vi;
+  zVec3D *v;
 
   if( ( vi = ZTKInt(ztk) ) != i )
     ZRUNWARN( ZEO_WARN_PH_VERT_UNMATCH, vi );
-  zVec3DFromZTK( zPH3DVert((zPH3D*)obj,i), ztk );
+  v = zArraySize((zVec3DArray*)arg) > 0 ? zArrayElemNC((zVec3DArray*)arg,i) : zPH3DVert((zPH3D*)obj,i);
+  zVec3DFromZTK( v, ztk );
   return obj;
 }
 
 static void *_zPH3DFaceFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 {
-  uint i0, i1, i2;
+  int i0, i1, i2;
 
   if( ( i0 = ZTKInt(ztk) ) >= zPH3DVertNum((zPH3D*)obj) ){
     ZRUNERROR( ZEO_ERR_PH_INVALID_VERT_ID, i0 );
@@ -470,43 +475,186 @@ static void *_zPH3DFaceFromZTK(void *obj, int i, void *arg, ZTK *ztk)
   return obj;
 }
 
+static bool _zPH3DLoopArcFromZTK(ZTK *ztk, zVec2DList *vlist)
+{
+  zVec2D *v1, v2, d1, d2, c, d;
+  zDir dir;
+  double r, angle, cr;
+  int div, n, i;
+
+  dir = zDirFromStr( ZTKVal(ztk) );
+  if( dir != ZEO_DIR_CW && dir != ZEO_DIR_CCW ){
+    ZRUNERROR( ZEO_ERR_DIR_INVNAME, ZTKVal(ztk) );
+    return false;
+  }
+  ZTKValNext(ztk);
+  r = ZTKDouble(ztk);
+  if( ( n = div = ZTKInt(ztk) ) == 0 ){
+    ZRUNERROR( ZEO_ERR_ZERODIV );
+    return false;
+  }
+  if( ZTKValPtr(ztk) ){
+    v2.e[0] = ZTKDouble(ztk);
+    v2.e[1] = ZTKDouble(ztk);
+  } else{
+    zVec2DCopy( zListTail(vlist)->data, &v2 );
+    n--;
+  }
+  v1 = zListHead(vlist)->data;
+  /* center */
+  zVec2DSub( &v2, v1, &d1 );
+  zVec2DRot( &d1, dir == ZEO_DIR_CW ? -zPI_2 : zPI_2, &c );
+  if( ( cr = zSqr(r) / zVec2DSqrNorm(&d1) - 0.25 ) < 0 ){
+    ZRUNERROR( ZEO_ERR_PH_ARC_INV_RADIUS, r );
+    return false;
+  }
+  zVec2DMulDRC( &c, sqrt( cr ) );
+  zVec2DCatDRC( &c, 0.5, &d1 );
+  zVec2DAddDRC( &c, v1 );
+  /* radius vector */
+  zVec2DSub( v1, &c, &d1 );
+  zVec2DSub( &v2, &c, &d2 );
+  angle = zVec2DAngle( &d1, &d2 );
+  /* vertices list */
+  for( i=1; i<=n; i++ ){
+    zVec2DRot( &d1, angle * i / div, &d );
+    zVec2DAddDRC( &d, &c );
+    if( !zVec2DListAdd( vlist, &d ) ) return false;
+  }
+  return true;
+}
+static void *_zPH3DLoopFromZTK(void *obj, int i, void *arg, ZTK *ztk)
+{
+  zAxis plane_axis, vert1_axis, vert2_axis;
+  double plane_val;
+  zVec2DList vlist;
+  zVec2DListCell *cp;
+  zVec2D v;
+  int j;
+
+  plane_axis = zAxisFromStr( ZTKVal(ztk) );
+  if( plane_axis != zX && plane_axis != zY && plane_axis != zZ ){
+    ZRUNERROR( ZEO_ERR_AXIS_INVNAME, ZTKVal(ztk) );
+    return NULL;
+  }
+  if( !ZTKValNext( ztk ) ){
+    ZRUNERROR( ZEO_ERR_PH_LOOP_INVALID );
+    return NULL;
+  }
+  plane_val = ZTKDouble(ztk);
+  vert1_axis = ( plane_axis + 1 ) % 3;
+  vert2_axis = ( plane_axis + 2 ) % 3;
+  /* loop */
+  zListInit( &vlist );
+  while( ZTKValPtr(ztk) ){
+    if( ZTKValCmp( ztk, "arc" ) ){
+      ZTKValNext( ztk );
+      if( !_zPH3DLoopArcFromZTK( ztk, &vlist ) ) break;
+    } else{
+      v.e[0] = ZTKDouble(ztk);
+      v.e[1] = ZTKDouble(ztk);
+      if( !zVec2DListAdd( &vlist, &v ) ) break;
+    }
+  }
+  /* vertices */
+  zArrayAlloc( (zVec3DArray*)arg, zVec3D, zListSize(&vlist) );
+  if( zArraySize((zVec3DArray*)arg) != zListSize(&vlist) ) return NULL;
+  j = 0;
+  zListForEach( &vlist, cp ){
+    ((zVec3D*)zArrayElemNC((zVec3DArray*)arg,j))->e[vert1_axis] = cp->data->e[0];
+    ((zVec3D*)zArrayElemNC((zVec3DArray*)arg,j))->e[vert2_axis] = cp->data->e[1];
+    ((zVec3D*)zArrayElemNC((zVec3DArray*)arg,j))->e[plane_axis] = plane_val;
+    j++;
+  }
+  zVec2DListDestroy( &vlist );
+  return obj;
+}
+
+static void *_zPH3DCreatePrismFromZTK(void *obj, int i, void *arg, ZTK *ztk)
+{
+  zVec3D shift;
+
+  if( zPH3DVertNum((zPH3D*)obj) > 0 || zPH3DFaceNum((zPH3D*)obj) > 0 ){
+    ZRUNWARN( ZEO_WARN_PH_DUPDEF );
+  } else{
+    zVec3DFromZTK( &shift, ztk );
+    obj = zPH3DCreatePrism( (zPH3D*)obj, zArrayBuf((zVec3DArray*)arg), zArraySize((zVec3DArray*)arg), &shift );
+    zArrayFree( (zVec3DArray*)arg );
+  }
+  return obj;
+}
+
+static void *_zPH3DCreatePyramidFromZTK(void *obj, int i, void *arg, ZTK *ztk)
+{
+  zVec3D shift;
+
+  if( zPH3DVertNum((zPH3D*)obj) > 0 || zPH3DFaceNum((zPH3D*)obj) > 0 ){
+    ZRUNWARN( ZEO_WARN_PH_DUPDEF );
+  } else{
+    zVec3DFromZTK( &shift, ztk );
+    obj = zPH3DCreatePyramid( (zPH3D*)obj, zArrayBuf((zVec3DArray*)arg), zArraySize((zVec3DArray*)arg), &shift );
+    zArrayFree( (zVec3DArray*)arg );
+  }
+  return obj;
+}
+
+#define ZEO_PH_KEY_VERT    "vert"
+#define ZEO_PH_KEY_FACE    "face"
+#define ZEO_PH_KEY_LOOP    "loop"
+#define ZEO_PH_KEY_PRISM   "prism"
+#define ZEO_PH_KEY_PYRAMID "pyramid"
+
 static ZTKPrp __ztk_prp_ph[] = {
-  { "vert", -1, _zPH3DVertFromZTK, NULL },
-  { "face", -1, _zPH3DFaceFromZTK, NULL },
+  { ZEO_PH_KEY_VERT,   -1, _zPH3DVertFromZTK,    NULL },
+  { ZEO_PH_KEY_FACE,   -1, _zPH3DFaceFromZTK,    NULL },
+  { ZEO_PH_KEY_LOOP,    1, _zPH3DLoopFromZTK,    NULL },
+  { ZEO_PH_KEY_PRISM,   1, _zPH3DCreatePrismFromZTK,   NULL },
+  { ZEO_PH_KEY_PYRAMID, 1, _zPH3DCreatePyramidFromZTK, NULL },
 };
 
 /* read a 3D polyhedron from a ZTK format processor. */
 zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk)
 {
-  uint num_vert, num_face;
+  int num_vert, num_face;
+  zVec3DArray varray;
 
   zPH3DInit( ph );
+  zArrayInit( &varray );
   if( !ZTKKeyRewind( ztk ) ) return NULL;
-  if( ( num_vert = ZTKCountKey( ztk, "vert" ) ) == 0 ){
-    ZRUNWARN( ZEO_WARN_PH_EMPTY );
-    return NULL;
+  num_vert = ZTKCountKey( ztk, ZEO_PH_KEY_VERT );
+  num_face = ZTKCountKey( ztk, ZEO_PH_KEY_FACE );
+  if( ZTKCountKey( ztk, ZEO_PH_KEY_PRISM ) > 0 ||
+      ZTKCountKey( ztk, ZEO_PH_KEY_PYRAMID ) > 0 ){
+    if( num_face > 0 ){
+      ZRUNERROR( ZEO_ERR_PH_INV_FACE, num_face );
+      return NULL;
+    }
+    if( num_vert > 0 ){
+      zArrayAlloc( &varray, zVec3D, num_vert );
+      if( zArraySize(&varray) != num_vert ) return NULL;
+    }
+  } else{
+    zArrayAlloc( &ph->vert, zVec3D, num_vert );
+    zArrayAlloc( &ph->face, zTri3D, num_face );
+    if( zPH3DVertNum(ph) != num_vert ||
+        zPH3DFaceNum(ph) != num_face ) return NULL;
   }
-  num_face = ZTKCountKey( ztk, "face" );
-  zArrayAlloc( &ph->vert, zVec3D, num_vert );
-  zArrayAlloc( &ph->face, zTri3D, num_face );
-  if( zPH3DVertNum(ph) != num_vert ||
-      zPH3DFaceNum(ph) != num_face ) return NULL;
   /* vertices & faces */
-  return (zPH3D *)ZTKEvalKey( ph, NULL, ztk, __ztk_prp_ph );
+  return (zPH3D *)ZTKEvalKey( ph, &varray, ztk, __ztk_prp_ph );
 }
 
 /* print a 3D polyhedron to a file. */
 void zPH3DFPrintZTK(FILE *fp, zPH3D *ph)
 {
-  uint i;
+  int i;
 
   if( !ph || zPH3DVertNum(ph) == 0 ) return;
   for( i=0; i<zPH3DVertNum(ph); i++ ){
-    fprintf( fp, "vert: %d ", i );
+    fprintf( fp, "%s: %d ", ZEO_PH_KEY_VERT, i );
     zVec3DFPrint( fp, zPH3DVert(ph,i) );
   }
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
-    fprintf( fp, "face: %d %d %d\n",
+    fprintf( fp, "%s: %d %d %d\n", ZEO_PH_KEY_FACE,
       (int)( zPH3DFaceVert(ph,i,0)-zPH3DVertBuf(ph) ),
       (int)( zPH3DFaceVert(ph,i,1)-zPH3DVertBuf(ph) ),
       (int)( zPH3DFaceVert(ph,i,2)-zPH3DVertBuf(ph) ) );

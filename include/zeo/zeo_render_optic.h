@@ -15,7 +15,7 @@ __BEGIN_DECLS
 /*! \brief optical characteristic parameters
  *//********************************************************* */
 typedef struct{
-  Z_NAMED_CLASS
+  Z_NAMED_CLASS;
   zRGB amb;     /*!< \brief coefficients of reflection for ambient */
   zRGB dif;     /*!< \brief coefficients of diffuse reflection */
   zRGB spc;     /*!< \brief coefficients of specular reflection */
@@ -27,6 +27,10 @@ typedef struct{
 #define zOpticalInfoSetAmb(o,a) zRGBCopy( a, &(o)->amb )
 #define zOpticalInfoSetDif(o,d) zRGBCopy( d, &(o)->dif )
 #define zOpticalInfoSetSpc(o,s) zRGBCopy( s, &(o)->spc )
+
+#define zOpticalInfoSetESR(o,e)       ( (o)->esr = (e) )
+#define zOpticalInfoSetShininess(o,s) ( (o)->sns = (s) )
+#define zOpticalInfoSetAlpha(o,a)     ( (o)->alpha = (a) )
 
 /*! \brief create, initialize, copy and destroy a set of optical parameters.
  *
@@ -53,32 +57,32 @@ typedef struct{
  *
  * zOpticalInfoDestroy() returns no value.
  */
-__EXPORT zOpticalInfo *zOpticalInfoCreate(zOpticalInfo *oi, float ar, float ag, float ab, float dr, float dg, float db, float sr, float sg, float sb, double esr, double sns, double alpha, char *name);
+__ZEO_EXPORT zOpticalInfo *zOpticalInfoCreate(zOpticalInfo *oi, float ar, float ag, float ab, float dr, float dg, float db, float sr, float sg, float sb, double esr, double sns, double alpha, char *name);
 #define zOpticalInfoCreateSimple(o,r,g,b,n) \
   zOpticalInfoCreate( (o), 0.5*r, 0.5*g, 0.5*b, r, g, b, 0, 0, 0, 0, 0, 1, (n) )
 #define zOpticalInfoInit(o) \
   zOpticalInfoCreate( (o), 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, NULL )
-__EXPORT zOpticalInfo *zOpticalInfoCopy(zOpticalInfo *src, zOpticalInfo *dest);
-__EXPORT zOpticalInfo *zOpticalInfoClone(zOpticalInfo *src, zOpticalInfo *dest);
+__ZEO_EXPORT zOpticalInfo *zOpticalInfoCopy(zOpticalInfo *src, zOpticalInfo *dest);
+__ZEO_EXPORT zOpticalInfo *zOpticalInfoClone(zOpticalInfo *src, zOpticalInfo *dest);
 #define zOpticalInfoDestroy(o) do{\
   zNameFree(o);\
   zOpticalInfoInit(o);\
 } while(0)
 
 /*! \brief multiply a set of optical parameters to another. */
-__EXPORT zOpticalInfo *zOpticalInfoMul(zOpticalInfo *oi1, zOpticalInfo *oi2, zOpticalInfo *oi);
+__ZEO_EXPORT zOpticalInfo *zOpticalInfoMul(zOpticalInfo *oi1, zOpticalInfo *oi2, zOpticalInfo *oi);
 
 /*! \brief blend a pair of sets of optical parameters at a given ratio. */
-__EXPORT zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, double ratio, zOpticalInfo *oi, char *name);
+__ZEO_EXPORT zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, double ratio, zOpticalInfo *oi, char *name);
 
 /* tag to identify optical info. */
 #define ZTK_TAG_OPTIC "optic"
 
 /* decode an optical info from a ZTK format processor. */
-__EXPORT zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk);
+__ZEO_EXPORT zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk);
 
 /* print out an optical info to the current stream of a file. */
-__EXPORT void zOpticalInfoFPrintZTK(FILE *fp, zOpticalInfo *oi);
+__ZEO_EXPORT void zOpticalInfoFPrintZTK(FILE *fp, zOpticalInfo *oi);
 
 /*! \struct zOpticalInfoArray
  * \brief array class of a set of optical parameters.

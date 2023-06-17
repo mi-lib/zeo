@@ -26,7 +26,7 @@ typedef struct{
   void *(*_xforminv)(void*,zFrame3D*,void*);
   double (*_closest)(void*,zVec3D*,zVec3D*);
   double (*_pointdist)(void*,zVec3D*);
-  bool (*_pointisinside)(void*,zVec3D*,bool);
+  bool (*_pointisinside)(void*,zVec3D*,double);
   double (*_volume)(void*);
   zVec3D *(*_barycenter)(void*,zVec3D*);
   zMat3D *(*_baryinertia_m)(void*,double,zMat3D*);
@@ -42,7 +42,7 @@ typedef struct{
  * ********************************************************** */
 
 typedef struct{
-  Z_NAMED_CLASS
+  Z_NAMED_CLASS;
   void *body;
   zOpticalInfo *optic;
   zTexture *texture;
@@ -60,20 +60,20 @@ typedef struct{
  * non-shaped instance.
  * \ret a pointer \a shape
  */
-__EXPORT zShape3D *zShape3DInit(zShape3D *shape);
+__ZEO_EXPORT zShape3D *zShape3DInit(zShape3D *shape);
 
 /*! \brief assign a method of a 3D shape by referring a string. */
-__EXPORT zShape3D *zShape3DQueryAssign(zShape3D *shape, const char *str);
+__ZEO_EXPORT zShape3D *zShape3DQueryAssign(zShape3D *shape, const char *str);
 
 /*! \brief destroy a 3D shape instance.
  *
  * zShape3DDestroy() destroys \a shape, freeing its
  * inner parameters.
  */
-__EXPORT void zShape3DDestroy(zShape3D *shape);
+__ZEO_EXPORT void zShape3DDestroy(zShape3D *shape);
 
-__EXPORT zShape3D *zShape3DClone(zShape3D *org, zShape3D *cln, zOpticalInfo *oi);
-__EXPORT zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis);
+__ZEO_EXPORT zShape3D *zShape3DClone(zShape3D *org, zShape3D *cln, zOpticalInfo *oi);
+__ZEO_EXPORT zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis);
 
 /*! \brief transform coordinates of a 3D shape.
  *
@@ -85,54 +85,52 @@ __EXPORT zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis);
  * \return
  * zShape3DXform() and zShape3DXformInv() return a pointer to \a dest.
  */
-__EXPORT zShape3D *zShape3DXform(zShape3D *src, zFrame3D *f, zShape3D *dest);
-__EXPORT zShape3D *zShape3DXformInv(zShape3D *src, zFrame3D *f, zShape3D *dest);
+__ZEO_EXPORT zShape3D *zShape3DXform(zShape3D *src, zFrame3D *f, zShape3D *dest);
+__ZEO_EXPORT zShape3D *zShape3DXformInv(zShape3D *src, zFrame3D *f, zShape3D *dest);
 
 #define zShape3DContigVert(s,p,d) zPH3DContigVert( zShape3DPH(s), p, d )
 
 /*! \brief check if a point is inside of a shape.
  *
  * zShape3DPointIsInside() checks if a point \a p is inside of
- * a shape \a shape.
- *
- * \a p on the surface of \a shape is judged to be inside of
- * \a shape if the true value is given for \a rim.
+ * a shape \a shape. \a margin is a margin of the inside area outward
+ * from the boundary of \a shape.
  * \return
- * zShape3DPointIsInside() returns the true value if \a p is
- * inside of \a shape, or the false value otherwise.
+ * zShape3DPointIsInside() returns the true value if \a p is inside of
+ * \a shape, or the false value otherwise.
  * \sa
  * zPH3DPointIsInside
  */
-__EXPORT double zShape3DClosest(zShape3D *shape, zVec3D *p, zVec3D *cp);
-__EXPORT double zShape3DPointDist(zShape3D *shape, zVec3D *p);
-__EXPORT bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, bool rim);
+__ZEO_EXPORT double zShape3DClosest(zShape3D *shape, zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT double zShape3DPointDist(zShape3D *shape, zVec3D *p);
+__ZEO_EXPORT bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, double margin);
 
 /*! \brief volume of a 3D shape. */
-__EXPORT double zShape3DVolume(zShape3D *shape);
+__ZEO_EXPORT double zShape3DVolume(zShape3D *shape);
 /*! \brief barycenter of a 3D shape. */
-__EXPORT zVec3D *zShape3DBarycenter(zShape3D *shape, zVec3D *c);
+__ZEO_EXPORT zVec3D *zShape3DBarycenter(zShape3D *shape, zVec3D *c);
 
 /*! \brief inertia tensor about barycenter of a 3D shape from mass. */
-__EXPORT zMat3D *zShape3DBaryInertiaMass(zShape3D *shape, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zShape3DBaryInertiaMass(zShape3D *shape, double mass, zMat3D *inertia);
 /*! \brief inertia tensor about barycenter of a 3D shape. */
-__EXPORT zMat3D *zShape3DBaryInertia(zShape3D *shape, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zShape3DBaryInertia(zShape3D *shape, double density, zMat3D *inertia);
 /*! \brief inertia tensor about origin of a 3D shape from mass. */
-__EXPORT zMat3D *zShape3DInertiaMass(zShape3D *shape, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zShape3DInertiaMass(zShape3D *shape, double mass, zMat3D *inertia);
 /*! \brief inertia tensor about origin of a 3D shape. */
-__EXPORT zMat3D *zShape3DInertia(zShape3D *shape, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zShape3DInertia(zShape3D *shape, double density, zMat3D *inertia);
 
 /*! \brief convert a shape to a polyhedron. */
-__EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
+__ZEO_EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
 
 /*! \brief read a shape from a STL file. */
-__EXPORT zShape3D *zShape3DFReadSTL(FILE *fp, zShape3D *shape);
+__ZEO_EXPORT zShape3D *zShape3DFReadSTL(FILE *fp, zShape3D *shape);
 /*! \brief read a shape from a PLY file. */
-__EXPORT zShape3D *zShape3DFReadPLY(FILE *fp, zShape3D *shape);
+__ZEO_EXPORT zShape3D *zShape3DFReadPLY(FILE *fp, zShape3D *shape);
 /*! \brief read a shape from a OBJ file. */
-__EXPORT zShape3D *zShape3DFReadOBJ(FILE *fp, zShape3D *shape);
+__ZEO_EXPORT zShape3D *zShape3DFReadOBJ(FILE *fp, zShape3D *shape);
 #ifdef __ZEO_USE_DAE
 /*! \brief read a shape from a DAE file. */
-__EXPORT zShape3D *zShape3DFReadDAE(zShape3D *shape, char *filename);
+__ZEO_EXPORT zShape3D *zShape3DFReadDAE(zShape3D *shape, char *filename);
 #endif /* __ZEO_USE_DAE */
 
 /*! \struct zShape3DArray
@@ -146,7 +144,7 @@ zArrayClass( zShape3DArray, zShape3D );
 #define ZEO_SHAPE_DEFAULT_DIV 32
 
 /*! \brief scan the number of division for smooth primitives from a ZTK format processor. */
-__EXPORT int zShape3DDivFromZTK(ZTK *ztk);
+__ZEO_EXPORT int zShape3DDivFromZTK(ZTK *ztk);
 
 /*! \brief scan a 3D shape from a ZTK format processor.
  *
@@ -175,7 +173,7 @@ __EXPORT int zShape3DDivFromZTK(ZTK *ztk);
  * \return
  * zShape3DFromZTK() returns a pointer \a shape.
  */
-__EXPORT zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoArray *oarray, zTextureArray *tarray, ZTK *ztk);
+__ZEO_EXPORT zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoArray *oarray, zTextureArray *tarray, ZTK *ztk);
 
 /*! \brief print a 3D shape to a file stream.
  *
@@ -184,24 +182,25 @@ __EXPORT zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpti
  * \return
  * zShape3DFPrintZTK() returns no value.
  */
-__EXPORT void zShape3DFPrintZTK(FILE *fp, zShape3D *shape);
+__ZEO_EXPORT void zShape3DFPrintZTK(FILE *fp, zShape3D *shape);
 
 /*! \brief read a 3D shape from a ZTK format file. */
-__EXPORT zShape3D *zShape3DReadZTK(zShape3D *shape, char filename[]);
+__ZEO_EXPORT zShape3D *zShape3DReadZTK(zShape3D *shape, char filename[]);
 
 /*! \brief write a 3D shape to a ZTK format file. */
-__EXPORT bool zShape3DWriteZTK(zShape3D *shape, char filename[]);
+__ZEO_EXPORT bool zShape3DWriteZTK(zShape3D *shape, char filename[]);
 
 __END_DECLS
 
-#include <zeo/zeo_shape3d_box.h>    /* box */
-#include <zeo/zeo_shape3d_sphere.h> /* sphere */
-#include <zeo/zeo_shape3d_ellips.h> /* ellipsoid */
-#include <zeo/zeo_shape3d_cyl.h>    /* cylinder */
-#include <zeo/zeo_shape3d_ecyl.h>   /* elliptic cylinder */
-#include <zeo/zeo_shape3d_cone.h>   /* cone */
-#include <zeo/zeo_shape3d_ph.h>     /* polyhedron (for class abstraction) */
-#include <zeo/zeo_shape3d_nurbs.h>  /* NURBS (for class abstraction) */
+#include <zeo/zeo_shape3d_box.h>     /* box */
+#include <zeo/zeo_shape3d_sphere.h>  /* sphere */
+#include <zeo/zeo_shape3d_ellips.h>  /* ellipsoid */
+#include <zeo/zeo_shape3d_cyl.h>     /* cylinder */
+#include <zeo/zeo_shape3d_capsule.h> /* capsule */
+#include <zeo/zeo_shape3d_ecyl.h>    /* elliptic cylinder */
+#include <zeo/zeo_shape3d_cone.h>    /* cone */
+#include <zeo/zeo_shape3d_ph.h>      /* polyhedron (for class abstraction) */
+#include <zeo/zeo_shape3d_nurbs.h>   /* NURBS (for class abstraction) */
 
 __BEGIN_DECLS
 
@@ -210,7 +209,7 @@ __BEGIN_DECLS
   zShape3DCom *_zeo_shape_com[] = {\
     &zeo_shape3d_ph_com, &zeo_shape3d_box_com,\
     &zeo_shape3d_sphere_com, &zeo_shape3d_ellips_com,\
-    &zeo_shape3d_cyl_com, &zeo_shape3d_ecyl_com, &zeo_shape3d_cone_com,\
+    &zeo_shape3d_cyl_com, &zeo_shape3d_capsule_com, &zeo_shape3d_ecyl_com, &zeo_shape3d_cone_com,\
     &zeo_shape3d_nurbs_com,\
     NULL,\
   }

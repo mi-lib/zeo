@@ -134,16 +134,16 @@ static bool _zColChkTriAABox3DPlane(zTri3D *t, zAABox3D *box)
   zTri3DToPlane3D( t, &p );
   n = zIntersectPlaneAABox3D( &p, box, ip );
   for( i=0; i<n; i++ )
-    if( zTri3DPointIsInside( t, &ip[i], false ) ) return true;
+    if( zTri3DPointIsInside( t, &ip[i], -zTOL ) ) return true;
   return false;
 }
 
 /* check if a triangle intersects with an axis-aligned box. */
 bool zColChkTriAABox3D(zTri3D *t, zAABox3D *box)
 {
-  if( zAABox3DPointIsInside( box, zTri3DVert(t,0), false ) ||
-      zAABox3DPointIsInside( box, zTri3DVert(t,1), false ) ||
-      zAABox3DPointIsInside( box, zTri3DVert(t,2), false ) )
+  if( zAABox3DPointIsInside( box, zTri3DVert(t,0), -zTOL ) ||
+      zAABox3DPointIsInside( box, zTri3DVert(t,1), -zTOL ) ||
+      zAABox3DPointIsInside( box, zTri3DVert(t,2), -zTOL ) )
     return true;
   if( _zColChkTriAABox3DEdge( zTri3DVert(t,0), zTri3DVert(t,1), box ) ||
       _zColChkTriAABox3DEdge( zTri3DVert(t,1), zTri3DVert(t,2), box ) ||
@@ -186,7 +186,7 @@ static int _zIntersectTriAABox3DPlane(zTri3D *t, zAABox3D *box, zVec3D ip[], int
   zTri3DToPlane3D( t, &p );
   np = zIntersectPlaneAABox3D( &p, box, pip );
   for( i=0; i<np; i++ )
-    if( zTri3DPointIsInside( t, &pip[i], false ) )
+    if( zTri3DPointIsInside( t, &pip[i], -zTOL ) )
       zVec3DCopy( &pip[i], &ip[n++] );
   return n;
 }

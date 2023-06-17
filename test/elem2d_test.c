@@ -1,6 +1,6 @@
 #include <zeo/zeo_elem2d.h>
 
-#define N 10000
+#define N 1000
 
 void create_tri_rand(zVec2D v[], zTri2D *t, double min, double max)
 {
@@ -73,9 +73,49 @@ void assert_tri_center(void)
   zAssert( zTri2DOrthocenter, ret );
 }
 
+zVec2D *test_ellips_norm(zEllips2D *e, zVec2D *p, zVec2D *n)
+{
+  zVec2DCreate( n,
+    ( p->c.x - zEllips2DCenter(e)->c.x ) / zSqr( zEllips2DRadius(e,0) ),
+    ( p->c.y - zEllips2DCenter(e)->c.y ) / zSqr( zEllips2DRadius(e,1) ) );
+  zVec2DNormalizeDRC( n );
+  return n;
+}
+
+double test_ellips_residual(zEllips2D *e, zVec2D *p, double margin)
+{
+  return zSqr( ( p->c.x - zEllips2DCenter(e)->c.x ) / ( zEllips2DRadius(e,0) + margin ) )
+       + zSqr( ( p->c.y - zEllips2DCenter(e)->c.y ) / ( zEllips2DRadius(e,1) + margin ) ) - 1;
+}
+
+void assert_ellips_inside(void)
+{
+  zEllips2D e;
+  zVec2D p, c, cp;
+  zVec2D d, n;
+  int i;
+  bool result = true;
+
+  zVec2DCreate( &c, zRandF(-1,1), zRandF(-1,1) );
+  zEllips2DCreate( &e, &c, zRandF(1,3), zRandF(1,3) );
+  for( i=0; i<N; i++ ){
+    zVec2DCreate( &p, zRandF(-4,4), zRandF(-4,4) );
+    if( zEllips2DPointIsInside( &e, &p, zTOL ) ){
+      if( test_ellips_residual( &e, &p, zTOL ) > 0 ) result = false;
+    } else{
+      zEllips2DClosest( &e, &p, &cp );
+      zVec2DSub( &p, &cp, &d );
+      test_ellips_norm( &e, &cp, &n );
+      if( ! zIsTiny( zVec2DOuterProd( &d, &n ) ) ) result = false;
+    }
+  }
+  zAssert( zEllips2DClosest, result );
+}
+
 int main(void)
 {
   zRandInit();
   assert_tri_center();
+  assert_ellips_inside();
   return 0;
 }

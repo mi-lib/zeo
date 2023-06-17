@@ -86,14 +86,14 @@ static void *_zOpticalInfoDifFromZTK(void *obj, int i, void *arg, ZTK *ztk){
 static void *_zOpticalInfoSpcFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zRGBFromZTK( &((zOpticalInfo*)obj)->spc, ztk );
   return obj; }
-static void *_zOpticalInfoEsrFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  ((zOpticalInfo*)obj)->esr = ZTKDouble(ztk);
+static void *_zOpticalInfoESRFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zOpticalInfoSetESR( (zOpticalInfo*)obj, ZTKDouble(ztk) );
   return obj; }
 static void *_zOpticalInfoSnsFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  ((zOpticalInfo*)obj)->sns = ZTKDouble(ztk);
+  zOpticalInfoSetShininess( (zOpticalInfo*)obj, ZTKDouble(ztk) );
   return obj; }
 static void *_zOpticalInfoAlphaFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  ((zOpticalInfo*)obj)->alpha = ZTKDouble(ztk);
+  zOpticalInfoSetAlpha( (zOpticalInfo*)obj, ZTKDouble(ztk) );
   return obj; }
 
 static void _zOpticalInfoNameFPrintZTK(FILE *fp, int i, void *obj){
@@ -104,7 +104,7 @@ static void _zOpticalInfoDifFPrintZTK(FILE *fp, int i, void *obj){
   zRGBFPrint( fp, &((zOpticalInfo*)obj)->dif ); }
 static void _zOpticalInfoSpcFPrintZTK(FILE *fp, int i, void *obj){
   zRGBFPrint( fp, &((zOpticalInfo*)obj)->spc ); }
-static void _zOpticalInfoEsrFPrintZTK(FILE *fp, int i, void *obj){
+static void _zOpticalInfoESRFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->esr ); }
 static void _zOpticalInfoSnsFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->sns ); }
@@ -116,7 +116,7 @@ static ZTKPrp __ztk_prp_optic[] = {
   { "ambient", 1, _zOpticalInfoAmbFromZTK, _zOpticalInfoAmbFPrintZTK },
   { "diffuse", 1, _zOpticalInfoDifFromZTK, _zOpticalInfoDifFPrintZTK },
   { "specular", 1, _zOpticalInfoSpcFromZTK, _zOpticalInfoSpcFPrintZTK },
-  { "esr", 1, _zOpticalInfoEsrFromZTK, _zOpticalInfoEsrFPrintZTK },
+  { "esr", 1, _zOpticalInfoESRFromZTK, _zOpticalInfoESRFPrintZTK },
   { "shininess", 1, _zOpticalInfoSnsFromZTK, _zOpticalInfoSnsFPrintZTK },
   { "alpha", 1, _zOpticalInfoAlphaFromZTK, _zOpticalInfoAlphaFPrintZTK },
 };

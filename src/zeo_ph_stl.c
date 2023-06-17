@@ -6,13 +6,16 @@
 
 #include <zeo/zeo_ph.h>
 
+/* echo-on/off flag for STL reader. */
+bool __zeo_stl_echo = false;
+
 /* register a vector to a STL vertex tree. */
 static zVec3DTree *_zSTLVertReg(zVec3DTree *tree, zVec3D *v)
 {
   zVec3DTree *node;
 
   zVec3DTreeNN( tree, v, &node );
-  if( zVec3DEqual( v, &node->data.v ) ) return node;
+  if( node && zVec3DEqual( v, &node->data.v ) ) return node;
   return zVec3DTreeAdd( tree, v );
 }
 
@@ -146,6 +149,7 @@ static zPH3D *_zPH3DFReadSTL_ASCIIsolid(FILE *fp, zPH3D *ph, char name[], size_t
   char buf[BUFSIZ];
   zVec3DTree vert_tree;
   _zSTLFacetList facet_list;
+  int i = 0;
 
   zVec3DTreeInit( &vert_tree );
   zListInit( &facet_list );
@@ -155,9 +159,12 @@ static zPH3D *_zPH3DFReadSTL_ASCIIsolid(FILE *fp, zPH3D *ph, char name[], size_t
       ZRUNERROR( ZEO_ERR_STL_INCOMPLETE );
       break;
     }
-    if( strcmp( buf, "endsolid" ) == 0 )
+    if( strcmp( buf, "endsolid" ) == 0 ){
+      __zeo_stl_echo ? eprintf( "\n" ) : 0;
       return _zSTLToPH3D( &vert_tree, &facet_list, ph );
+    }
     if( strcmp( buf, "facet" ) != 0 ) continue; /* skip as a comment */
+    __zeo_stl_echo ? eprintf( "\r%d facets", ++i ) : 0;
     if( !_zPH3DFReadSTL_ASCIIfacet( fp, buf, ph, &vert_tree, &facet_list ) ) break; /* read a facet */
   }
   return NULL;
@@ -180,7 +187,7 @@ zPH3D *zPH3DFReadSTL_ASCII(FILE *fp, zPH3D *ph, char name[], size_t namesize)
 /* print a 3D polyhedron to ASCII STL format */
 void zPH3DFWriteSTL_ASCII(FILE *fp, zPH3D *ph, char name[])
 {
-  uint i;
+  int i;
 
   fprintf( fp, "solid %s\n", name );
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
@@ -253,7 +260,7 @@ zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[])
   zVec3D normal, v[3];
   zVec3DTree vert_tree;
   _zSTLFacetList facet_list;
-  uint i;
+  int i;
 
   zVec3DTreeInit( &vert_tree );
   zListInit( &facet_list );
@@ -262,8 +269,8 @@ zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[])
     ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
   if( fread( &nf, sizeof(uint32_t), 1, fp ) < 1 ) ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
   if( nf <= 0 ) return NULL;
-  for( i=0; i<nf; i++ ){
-    eprintf( "\r%d/%d", i+1, nf );
+  for( i=0; i<(int)nf; i++ ){
+    __zeo_stl_echo ? eprintf( "\r%d/%d", i+1, nf ) : 0;
     _zPH3DFReadSTL_BinVec( fp, &normal );
     _zPH3DFReadSTL_BinVec( fp, &v[0] );
     _zPH3DFReadSTL_BinVec( fp, &v[1] );
@@ -272,7 +279,7 @@ zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[])
       ZRUNWARN( ZEO_WARN_STL_MISSINGDATA ); /* two empty bytes */
     if( !_zSTLFacetListReg( &facet_list, &vert_tree, &normal, v ) ) break;
   }
-  eprintf( "\n" );
+  __zeo_stl_echo ? eprintf( "\n" ) : 0;
   return _zSTLToPH3D( &vert_tree, &facet_list, ph );
 }
 
@@ -281,13 +288,13 @@ void zPH3DFWriteSTL_Bin(FILE *fp, zPH3D *ph, char name[])
 {
   uint32_t nf;
   uint16_t dummy = 0;
-  uint i;
+  int i;
 
   if( fwrite( name, sizeof(char), ZEO_STL_HEADSIZ, fp ) < ZEO_STL_HEADSIZ )
     ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
   nf = zPH3DFaceNum(ph);
   if( fwrite( &nf, sizeof(uint32_t), 1, fp ) < 1 ) ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
-  for( i=0; i<(uint)nf; i++ ){
+  for( i=0; i<(int)nf; i++ ){
     _zPH3DFWriteSTL_BinVec( fp, zTri3DNorm(zPH3DFace(ph,i)) );
     _zPH3DFWriteSTL_BinVec( fp, zTri3DVert(zPH3DFace(ph,i),0) );
     _zPH3DFWriteSTL_BinVec( fp, zTri3DVert(zPH3DFace(ph,i),1) );

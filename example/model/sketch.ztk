@@ -1,0 +1,9 @@
+[shape]
+name: prism
+type: polyhedron
+loop: z 1
+  0 0
+  2 0
+  arc ccw 1 24
+  1 1
+prism: 0 0 1

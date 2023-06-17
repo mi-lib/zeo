@@ -17,10 +17,10 @@ __BEGIN_DECLS
  * zNURBS3DCPCell is a cell of 3D NURBS that contains a control
  * point and associated weight.
  *//* ******************************************************* */
-typedef struct{
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zNURBS3DCPCell ){
   zVec3D cp; /*!< control point */
   double w;  /*!< weight */
-} zNURBS3DCPCell;
+};
 
 /* ********************************************************** */
 /*! \struct zNURBS3DCPNet
@@ -38,19 +38,19 @@ zArray2Class( zNURBS3DCPNet, zNURBS3DCPCell );
  *
  * zNURBS3D is a 3D NURBS that represents curve and surface.
  *//* ******************************************************* */
-typedef struct{
-  uint dim[2];   /*!< \brief dimensions of a curve in two axes */
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zNURBS3D ){
+  int order[2];   /*!< \brief orders of a curve in two axes */
   zVec knot[2]; /*!< \brief knot vectors */
-  uint ns[2];    /*!< \brief number of slices in each axis */
+  int ns[2];    /*!< \brief number of slices in each axis */
   /*! \cond */
   zNURBS3DCPNet cpnet; /* a net of control points */
   /*! \endcond */
-} zNURBS3D;
+};
 
 #define zNURBS3DKnotNum(n,i)       zVecSizeNC((n)->knot[i])
 #define zNURBS3DKnot(n,i,j)        zVecElemNC((n)->knot[i],j)
 #define zNURBS3DSetKnot(n,i,j,v)   ( zNURBS3DKnot(n,i,j) = (v) )
-#define zNURBS3DKnotS(n,i)         zNURBS3DKnot(n,i,(n)->dim[i])
+#define zNURBS3DKnotS(n,i)         zNURBS3DKnot(n,i,(n)->order[i])
 #define zNURBS3DKnotE(n,i)         zNURBS3DKnot(n,i,zNURBS3DCPNum(n,i))
 #define zNURBS3DKnotSlice(n,i,k)   ( ( zNURBS3DKnotE(n,i) - zNURBS3DKnotS(n,i) ) * k / (n)->ns[i] + zNURBS3DKnotS(n,i) )
 
@@ -78,30 +78,30 @@ typedef struct{
 /*! \brief allocate a NURBS curve / surface.
  *
  * zNURBS3D1Alloc() allocates a NURBS curve \a nurbs from a given
- * number of control points and the dimension in the axis. The
- * control points and associated weights can be assigned afterward.
- * \a dim is the dimension of parameter for the curve, which has to
- * satisfy \a dim < \a size.
+ * number of control points and the order in the axis. The control
+ * points and associated weights can be assigned afterward.
+ * \a order is the order of parameter for the curve, which has to
+ * satisfy \a order < \a size.
  * Knots are initialized as a uniform Bezier spline curve with fixed
  * boundary points. The knot vector can be modified later.
  *
  * zNURBS3DAlloc() allocates a NURBS surface \a nurbs from given
- * two numbers for a net of control points and two dimensions in
- * each axis. The control points and associated weights can be
- * assigned afterward.
- * \a dim1 and \a dim2 are the dimensions of each parameter for the
- * surface, which have to satisfy \a dim1 < \a size1 and \a dim2 < \a size2.
+ * two numbers for a net of control points and two orders in each
+ * axis. The control points and associated weights can be assigned
+ * afterward.
+ * \a order1 and \a order2 are the orders of each parameter for the
+ * surface, which have to satisfy \a order1 < \a size1 and \a order2 < \a size2.
  * Knots are initialized as a uniform Bezier spline surface with
  * fixed boundary points. The knot vectors can be modified later.
  * \return
  * zNURBS3D1Alloc() and zNURBS3D2Alloc() return the true value if
  * they succeed to allocate memory of the NURBS3D curve / surface.
- * If the dimension is larger than or equal to the number of control
+ * If the order is larger than or equal to the number of control
  * points in corresponding axis plus one or they fail to allocate
  * memory, the false value is returned.
  */
-__EXPORT bool zNURBS3DAlloc(zNURBS3D *nurbs, uint size1, uint size2, uint dim1, uint dim2);
-#define zNURBS3D1Alloc(nurbs,size,dim) zNURBS3DAlloc( nurbs, 1, size, 0, dim )
+__ZEO_EXPORT bool zNURBS3DAlloc(zNURBS3D *nurbs, int size1, int size2, int order1, int order2);
+#define zNURBS3D1Alloc(nurbs,size,order) zNURBS3DAlloc( nurbs, 1, size, 0, order )
 
 /*! \brief set numbers of slices of a NURBS curve / surface. */
 #define zNURBS3DSetSliceNum(nurbs,nu,nv) do{\
@@ -114,31 +114,31 @@ __EXPORT bool zNURBS3DAlloc(zNURBS3D *nurbs, uint size1, uint size2, uint dim1, 
  * zNURBS3DInit() initializes a NURBS curve / surface \a nurbs
  * by reseting properties.
  */
-__EXPORT zNURBS3D *zNURBS3DInit(zNURBS3D *nurbs);
+__ZEO_EXPORT zNURBS3D *zNURBS3DInit(zNURBS3D *nurbs);
 
 /*! \brief destroy a NURBS curve / surface.
  *
  * zNURBS3DDestroy() destroys a NURBS curve / surface \a nurbs.
  */
-__EXPORT void zNURBS3DDestroy(zNURBS3D *nurbs);
+__ZEO_EXPORT void zNURBS3DDestroy(zNURBS3D *nurbs);
 
 /*! \brief copy a NURBS curve / surface. */
-__EXPORT zNURBS3D *zNURBS3DCopy(zNURBS3D *src, zNURBS3D *dest);
+__ZEO_EXPORT zNURBS3D *zNURBS3DCopy(zNURBS3D *src, zNURBS3D *dest);
 /*! \brief clone a NURBS curve / surface. */
-__EXPORT zNURBS3D *zNURBS3DClone(zNURBS3D *src, zNURBS3D *dest);
+__ZEO_EXPORT zNURBS3D *zNURBS3DClone(zNURBS3D *src, zNURBS3D *dest);
 /*! \brief mirror a NURBS curve / surface about specified axis. */
-__EXPORT zNURBS3D *zNURBS3DMirror(zNURBS3D *src, zNURBS3D *dest, zAxis axis);
+__ZEO_EXPORT zNURBS3D *zNURBS3DMirror(zNURBS3D *src, zNURBS3D *dest, zAxis axis);
 /*! \brief transform control points of a NURBS curve / surface. */
-__EXPORT zNURBS3D *zNURBS3DXform(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest);
+__ZEO_EXPORT zNURBS3D *zNURBS3DXform(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest);
 /*! \brief inversely transform control points of a NURBS curve / surface. */
-__EXPORT zNURBS3D *zNURBS3DXformInv(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest);
+__ZEO_EXPORT zNURBS3D *zNURBS3DXformInv(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest);
 
 /*! \brief normalize the knot vectors of a NURBS curve / surface.
  *
  * zNURBS3DKnotNormalize() normalizes knot vectors of a NURBS
  * curve / surface \a nurbs so that it starts from 0 and ends to 1.
  */
-__EXPORT void zNURBS3DKnotNormalize(zNURBS3D *nurbs);
+__ZEO_EXPORT void zNURBS3DKnotNormalize(zNURBS3D *nurbs);
 
 /*! \brief compute a vector on NURBS curve / surface.
  *
@@ -154,7 +154,7 @@ __EXPORT void zNURBS3DKnotNormalize(zNURBS3D *nurbs);
  * zNURBS3DVec() returns a pointer \a v if \a u and \a v are valid.
  * Otherwise, the null vector is returned.
  */
-__EXPORT zVec3D *zNURBS3DVec(zNURBS3D *nurbs, double u, double v, zVec3D *p);
+__ZEO_EXPORT zVec3D *zNURBS3DVec(zNURBS3D *nurbs, double u, double v, zVec3D *p);
 #define zNURBS3D1Vec(nurbs,t,p) zNURBS3DVec( nurbs, 0, t, p )
 
 /*! \brief compute a position and normal vectors on NURBS surface.
@@ -168,7 +168,11 @@ __EXPORT zVec3D *zNURBS3DVec(zNURBS3D *nurbs, double u, double v, zVec3D *p);
  * \return
  * zNURBS3DVecNorm() returns a pointer \a p.
  */
-__EXPORT zVec3D *zNURBS3DVecNorm(zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *n, zVec3D *t1, zVec3D *t2);
+__ZEO_EXPORT zVec3D *zNURBS3DVecTSpace(zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *n, zVec3D *t1, zVec3D *t2);
+
+#define zNURBS3DVecTan(nurbs,u,v,p,t1,t2) zNURBS3DVecTSpace( nurbs, u, v, p, NULL, t1, t2 )
+#define zNURBS3DVecNorm(nurbs,u,v,p,n)    zNURBS3DVecTSpace( nurbs, u, v, p, n, NULL, NULL )
+#define zNURBS3D1VecTan(nurbs,u,v,p,t)    zNURBS3DVecTan( nurbs, u, v, p, NULL, t )
 
 /*! \brief closest point of a 3D point on a NURBS surface.
  *
@@ -180,7 +184,7 @@ __EXPORT zVec3D *zNURBS3DVecNorm(zNURBS3D *nurbs, double u, double v, zVec3D *p,
  * \return
  * zNURBS3DClosest() returns the distance between \a p and \a cp.
  */
-__EXPORT double zNURBS3DClosest(zNURBS3D *nurbs, zVec3D *p, zVec3D *cp, double *u, double *v);
+__ZEO_EXPORT double zNURBS3DClosest(zNURBS3D *nurbs, zVec3D *p, zVec3D *cp, double *u, double *v);
 
 /*! \brief convert NURBS surface to a polyhedron.
  *
@@ -192,15 +196,15 @@ __EXPORT double zNURBS3DClosest(zNURBS3D *nurbs, zVec3D *p, zVec3D *cp, double *
  * convert the polyhedron. If it fails to allocate memory for
  * the polyhedron, the null pointer is returned.
  */
-__EXPORT zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph);
+__ZEO_EXPORT zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph);
 
 /* I/O */
 
 /*! \brief read a 3D NURBS from a ZTK format processor. */
-__EXPORT zNURBS3D *zNURBS3DFromZTK(zNURBS3D *nurbs, ZTK *ztk);
+__ZEO_EXPORT zNURBS3D *zNURBS3DFromZTK(zNURBS3D *nurbs, ZTK *ztk);
 
 /*! \brief print information of a 3D NURBS surface out to a file. */
-__EXPORT void zNURBS3DFPrintZTK(FILE *fp, zNURBS3D *nurbs);
+__ZEO_EXPORT void zNURBS3DFPrintZTK(FILE *fp, zNURBS3D *nurbs);
 
 __END_DECLS
 

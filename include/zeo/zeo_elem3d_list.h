@@ -37,7 +37,7 @@ zListClass( zTri3DList, zTri3DListCell, zTri3D );
  * \return
  * zTri3DListAdd() returns a pointer to the newly added cell.
  */
-__EXPORT zTri3DListCell *zTri3DListAdd(zTri3DList *list, zTri3D *t);
+__ZEO_EXPORT zTri3DListCell *zTri3DListAdd(zTri3DList *list, zTri3D *t);
 
 /*! destroy a list of 3D triangles.
  *
@@ -56,7 +56,7 @@ __EXPORT zTri3DListCell *zTri3DListAdd(zTri3DList *list, zTri3D *t);
  * \return
  * zTri3DListAlign() returns no value.
  */
-__EXPORT void zTri3DListAlign(zTri3DList *list, zVec3D *ref);
+__ZEO_EXPORT void zTri3DListAlign(zTri3DList *list, zVec3D *ref);
 
 /*! \brief copy triangles of a list to an array.
  *
@@ -66,14 +66,14 @@ __EXPORT void zTri3DListAlign(zTri3DList *list, zVec3D *ref);
  * \return
  * zTri3DListCopyArray() returns no value.
  */
-__EXPORT void zTri3DListCopyArray(zTri3DList *list, zTri3D t[], int n);
+__ZEO_EXPORT void zTri3DListCopyArray(zTri3DList *list, zTri3D t[], int n);
 
 /* ********************************************************** *
  * trianglation of non-convex.
  * ********************************************************** */
 
 /*! \brief triangulate a simple loop of vertices. */
-__EXPORT int zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist);
+__ZEO_EXPORT int zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist);
 
 /*! \brief trianglate a looped series of vertices of a non-convex.
  *
@@ -84,7 +84,7 @@ __EXPORT int zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist);
  * \return
  * zTriangulate() returns the number of the generated triangles.
  */
-__EXPORT int zTriangulate(zVec3DArray *array, zTri3DList *tlist);
+__ZEO_EXPORT int zTriangulate(zVec3DArray *array, zTri3DList *tlist);
 
 __END_DECLS
 

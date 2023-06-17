@@ -43,12 +43,12 @@ __BEGIN_DECLS
  * zVec3DPCA_PL() and zVec3DPCA() return a pointer to the head of
  * \a evec.
  */
-__EXPORT zVec3D *zVec3DBarycenterPL(zVec3DList *vl, zVec3D *c);
-__EXPORT zVec3D *zVec3DBarycenter(zVec3D v[], int num, zVec3D *c);
-__EXPORT zVec3D *zVec3DPCA_PL(zVec3DList *vl, zVec3D evec[]);
-__EXPORT zVec3D *zVec3DPCA(zVec3D v[], int num, zVec3D evec[]);
-__EXPORT zVec3D *zVec3DBaryPCA_PL(zVec3DList *vl, zVec3D *c, zVec3D evec[]);
-__EXPORT zVec3D *zVec3DBaryPCA(zVec3D v[], int num, zVec3D *c, zVec3D evec[]);
+__ZEO_EXPORT zVec3D *zVec3DBarycenterPL(zVec3DList *vl, zVec3D *c);
+__ZEO_EXPORT zVec3D *zVec3DBarycenter(zVec3D v[], int num, zVec3D *c);
+__ZEO_EXPORT zVec3D *zVec3DPCA_PL(zVec3DList *vl, zVec3D evec[]);
+__ZEO_EXPORT zVec3D *zVec3DPCA(zVec3D v[], int num, zVec3D evec[]);
+__ZEO_EXPORT zVec3D *zVec3DBaryPCA_PL(zVec3DList *vl, zVec3D *c, zVec3D evec[]);
+__ZEO_EXPORT zVec3D *zVec3DBaryPCA(zVec3D v[], int num, zVec3D *c, zVec3D evec[]);
 
 __END_DECLS
 

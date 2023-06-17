@@ -32,16 +32,7 @@ zEllips3D *zEllips3DInit(zEllips3D *ellips)
 }
 
 /* allocate memory for a 3D ellipsoid. */
-zEllips3D *zEllips3DAlloc(void)
-{
-  zEllips3D *ellips;
-
-  if( !( ellips = zAlloc( zEllips3D, 1 ) ) ){
-    ZALLOCERROR();
-    return NULL;
-  }
-  return ellips;
-}
+ZDEF_ALLOC_FUNCTION( zEllips3D )
 
 /* copy a 3D ellipsoid to another. */
 zEllips3D *zEllips3DCopy(zEllips3D *src, zEllips3D *dest)
@@ -134,7 +125,7 @@ double zEllips3DClosest(zEllips3D *ellips, zVec3D *p, zVec3D *cp)
 {
   zVec3D pi;
 
-  if( zEllips3DPointIsInside( ellips, p, true ) ){
+  if( zEllips3DPointIsInside( ellips, p, zTOL ) ){
     zVec3DCopy( p, cp );
     return 0;
   }
@@ -153,17 +144,14 @@ double zEllips3DPointDist(zEllips3D *ellips, zVec3D *p)
 }
 
 /* check if a point is in an ellipsoid. */
-bool zEllips3DPointIsInside(zEllips3D *ellips, zVec3D *p, bool rim)
+bool zEllips3DPointIsInside(zEllips3D *ellips, zVec3D *p, double margin)
 {
   zVec3D _p;
-  double l;
 
   zXform3DInv( &ellips->f, p, &_p );
-  l = zSqr(_p.e[zX]/zEllips3DRadiusX(ellips))
-    + zSqr(_p.e[zY]/zEllips3DRadiusY(ellips))
-    + zSqr(_p.e[zZ]/zEllips3DRadiusZ(ellips));
-  if( rim ) l += zTOL;
-  return l < 1.0 ? true : false;
+  return zSqr(_p.c.x / ( zEllips3DRadiusX(ellips) + margin ) )
+       + zSqr(_p.c.y / ( zEllips3DRadiusY(ellips) + margin ) )
+       + zSqr(_p.c.z / ( zEllips3DRadiusZ(ellips) + margin ) ) < 1 ? true : false;
 }
 
 /* volume of a 3D ellipsoid. */
@@ -201,7 +189,7 @@ zPH3D* zEllips3DToPH(zEllips3D *ellips, zPH3D *ph)
   zVec3D *vert, tmp;
   zTri3D *face;
   double theta;
-  uint i, j, k, l, n;
+  int i, j, k, l, n;
 
   if( !zPH3DAlloc( ph,
       zEllips3DDiv(ellips)*(zEllips3DDiv(ellips)-1)+2,
@@ -340,8 +328,8 @@ static double _zShape3DEllipsClosest(void *body, zVec3D *p, zVec3D *cp){
   return zEllips3DClosest( (zEllips3D*)body, p, cp ); }
 static double _zShape3DEllipsPointDist(void *body, zVec3D *p){
   return zEllips3DPointDist( (zEllips3D*)body, p ); }
-static bool _zShape3DEllipsPointIsInside(void *body, zVec3D *p, bool rim){
-  return zEllips3DPointIsInside( (zEllips3D*)body, p, rim ); }
+static bool _zShape3DEllipsPointIsInside(void *body, zVec3D *p, double margin){
+  return zEllips3DPointIsInside( (zEllips3D*)body, p, margin ); }
 static double _zShape3DEllipsVolume(void *body){
   return zEllips3DVolume( (zEllips3D*)body ); }
 static zVec3D *_zShape3DEllipsBarycenter(void *body, zVec3D *c){

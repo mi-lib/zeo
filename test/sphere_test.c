@@ -78,7 +78,7 @@ void assert_inside(void)
     y = zRandF(-2,2);
     z = zRandF(-2,2);
     sphere_cat( &sphere, x, y, z, &p ) ? ni++ : no++;
-    zSphere3DPointIsInside( &sphere, &p, true ) ? nitest++ : notest++;
+    zSphere3DPointIsInside( &sphere, &p, zTOL ) ? nitest++ : notest++;
   }
   zAssert( zSphere3DPointIsInside, nitest == ni && notest == no );
 }

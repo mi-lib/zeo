@@ -151,7 +151,15 @@ zEP *zAngVel2EPVel(zVec3D *angvel, zEP *ep, zEP *epvel)
   return epvel;
 }
 
-/* subtract Euler parameter. */
+/* add Euler parameters. */
+zEP *zEPAdd(zEP *ep1, zEP *ep2, zEP *ep)
+{
+  ep->ex.w = ep1->ex.w + ep2->ex.w;
+  _zVec3DAdd( &ep1->ex.v, &ep2->ex.v, &ep->ex.v );
+  return ep;
+}
+
+/* subtract an Euler parameter from another. */
 zEP *zEPSub(zEP *ep1, zEP *ep2, zEP *ep)
 {
   ep->ex.w = ep1->ex.w - ep2->ex.w;
@@ -159,7 +167,7 @@ zEP *zEPSub(zEP *ep1, zEP *ep2, zEP *ep)
   return ep;
 }
 
-/* reverse Euler parameter. */
+/* reverse an Euler parameter. */
 zEP *zEPRev(zEP *ep1, zEP *ep)
 {
   ep->ex.w = -ep1->ex.w;
@@ -167,7 +175,7 @@ zEP *zEPRev(zEP *ep1, zEP *ep)
   return ep;
 }
 
-/* multiply Euler parameter by a scalar value. */
+/* multiply an Euler parameter by a scalar value. */
 zEP *zEPMul(zEP *ep1, double k, zEP *ep)
 {
   ep->ex.w = k * ep1->ex.w;
@@ -175,7 +183,7 @@ zEP *zEPMul(zEP *ep1, double k, zEP *ep)
   return ep;
 }
 
-/* concatenate Euler parameter multiplied by a scalar value. */
+/* concatenate an Euler parameter multiplied by a scalar value. */
 zEP *zEPCat(zEP *ep1, double k, zEP *ep2, zEP *ep)
 {
   ep->ex.w = ep1->ex.w + k * ep2->ex.w;

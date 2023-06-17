@@ -34,8 +34,8 @@ static double _zShape3DPHClosest(void *body, zVec3D *p, zVec3D *cp){
   return zPH3DClosest( (zPH3D*)body, p, cp ); }
 static double _zShape3DPHPointDist(void *body, zVec3D *p){
   return zPH3DPointDist( (zPH3D*)body, p ); }
-static bool _zShape3DPHPointIsInside(void *body, zVec3D *p, bool rim){
-  return zPH3DPointIsInside( (zPH3D*)body, p, rim ); }
+static bool _zShape3DPHPointIsInside(void *body, zVec3D *p, double margin){
+  return zPH3DPointIsInside( (zPH3D*)body, p, margin ); }
 static double _zShape3DPHVolume(void *body){
   return zPH3DVolume( (zPH3D*)body ); }
 static zVec3D *_zShape3DPHBarycenter(void *body, zVec3D *c){

@@ -38,7 +38,7 @@ int main(void)
   zVec3D shift = { { 0, 0.05, 0.25 } };
   zPH3D prism;
 
-  zPH3DPrism( &prism, v, sizeof(v)/sizeof(zVec3D), &shift );
+  zPH3DCreatePrism( &prism, v, sizeof(v)/sizeof(zVec3D), &shift );
   output( &prism );
   zPH3DDestroy( &prism );
   return 0;

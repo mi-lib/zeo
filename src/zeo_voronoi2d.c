@@ -65,7 +65,7 @@ static zDTTri2DListCell *_zDTTri2DListFind(zDTTri2DList *tl, zVec2D *p)
   zDTTri2DListCell *tc;
 
   zListForEach( tl, tc )
-    if( zTri2DPointIsInside( &tc->data.t, p, true ) ) return tc;
+    if( zTri2DPointIsInside( &tc->data.t, p, zTOL ) ) return tc;
   return NULL;
 }
 

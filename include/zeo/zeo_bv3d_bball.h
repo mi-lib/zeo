@@ -32,8 +32,8 @@ __BEGIN_DECLS
  * zBBall3D() and zBBall3DPL() return the number of points on the
  * sphere of \a bb.
  */
-__EXPORT int zBBall3D(zSphere3D *bb, zVec3DArray *pa, zVec3D **vp);
-__EXPORT int zBBall3DPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp);
+__ZEO_EXPORT int zBBall3D(zSphere3D *bb, zVec3DArray *pa, zVec3D **vp);
+__ZEO_EXPORT int zBBall3DPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp);
 
 __END_DECLS
 

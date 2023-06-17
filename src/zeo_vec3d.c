@@ -12,10 +12,17 @@
  * ********************************************************** */
 
 /* 3D zero vector and unit vectors along (x,y,z) axis. */
+#ifdef __cplusplus
+const zVec3D zVec3D::zvec3Dzero = { { 0, 0, 0 } };
+const zVec3D zVec3D::zvec3Dx = { { 1, 0, 0 } };
+const zVec3D zVec3D::zvec3Dy = { { 0, 1, 0 } };
+const zVec3D zVec3D::zvec3Dz = { { 0, 0, 1 } };
+#else
 const zVec3D zvec3Dzero = { { 0, 0, 0 } };
 const zVec3D zvec3Dx    = { { 1, 0, 0 } };
 const zVec3D zvec3Dy    = { { 0, 1, 0 } };
 const zVec3D zvec3Dz    = { { 0, 0, 1 } };
+#endif /* __cplusplus */
 
 /* create a 3D vector. */
 zVec3D *zVec3DCreate(zVec3D *v, double x, double y, double z)
@@ -331,6 +338,15 @@ zVec3D *zVec3DProj(zVec3D *v, zVec3D *n, zVec3D *pv)
   l = _zVec3DInnerProd( n, v ) / _zVec3DSqrNorm( n );
   _zVec3DMul( n, l, pv );
   return pv;
+}
+
+/* create an orthonormal 3D vector. */
+/* TODO: modify zVec3DOrthoSpace by using this function. */
+zVec3D *zVec3DOrthoNormal(zVec3D *v, zVec3D *ov)
+{
+  _zVec3DCreate( ov, v->c.y - v->c.z, v->c.z - v->c.x, v->c.x - v->c.y );
+  zVec3DNormalizeDRC( ov );
+  return ov;
 }
 
 /* orthogonalize a 3D vector. */

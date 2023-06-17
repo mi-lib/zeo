@@ -39,10 +39,10 @@ __BEGIN_DECLS
  * zCH2D2PH3D() and zCH2DPL2PH3D() return a pointer to \a ch created.
  * If they fail to create it, the null pointer is returned.
  */
-__EXPORT zLoop3D *zCH2D(zLoop3D *ch, zVec3D vert[], int n);
-__EXPORT zLoop3D *zCH2DPL(zLoop3D *ch, zVec3DList *pl);
-__EXPORT zPH3D *zCH2D2PH3D(zPH3D *ch, zVec3D vert[], int n);
-__EXPORT zPH3D *zCH2DPL2PH3D(zPH3D *ch, zVec3DList *pl);
+__ZEO_EXPORT zLoop3D *zCH2D(zLoop3D *ch, zVec3D vert[], int n);
+__ZEO_EXPORT zLoop3D *zCH2DPL(zLoop3D *ch, zVec3DList *pl);
+__ZEO_EXPORT zPH3D *zCH2D2PH3D(zPH3D *ch, zVec3D vert[], int n);
+__ZEO_EXPORT zPH3D *zCH2DPL2PH3D(zPH3D *ch, zVec3DList *pl);
 
 /*! \brief the closest point in a convex hull to a point.
  *
@@ -57,7 +57,7 @@ __EXPORT zPH3D *zCH2DPL2PH3D(zPH3D *ch, zVec3DList *pl);
  * \notes
  * If \a ch is a non-convex hull, anything might happen.
  */
-__EXPORT double zCH2DClosest(zLoop3D *ch, zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT double zCH2DClosest(zLoop3D *ch, zVec3D *p, zVec3D *cp);
 
 __END_DECLS
 

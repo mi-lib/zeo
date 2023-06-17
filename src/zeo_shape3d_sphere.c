@@ -27,16 +27,7 @@ zSphere3D *zSphere3DInit(zSphere3D *sphere)
 }
 
 /* allocate memory for a 3D sphere. */
-zSphere3D *zSphere3DAlloc(void)
-{
-  zSphere3D *sphere;
-
-  if( !( sphere = zAlloc( zSphere3D, 1 ) ) ){
-    ZALLOCERROR();
-    return NULL;
-  }
-  return sphere;
-}
+ZDEF_ALLOC_FUNCTION( zSphere3D )
 
 /* copy a 3D sphere. */
 zSphere3D *zSphere3DCopy(zSphere3D *src, zSphere3D *dest)
@@ -97,9 +88,9 @@ double zSphere3DPointDist(zSphere3D *sphere, zVec3D *p)
 }
 
 /* judge if a point is inside of a 3D sphere. */
-bool zSphere3DPointIsInside(zSphere3D *sphere, zVec3D *p, bool rim)
+bool zSphere3DPointIsInside(zSphere3D *sphere, zVec3D *p, double margin)
 {
-  return zSphere3DPointDist( sphere, p ) < ( rim ? zTOL : 0 ) ? true : false;
+  return zSphere3DPointDist( sphere, p ) < margin ? true : false;
 }
 
 /* create a 3D sphere from two points at both ends of diameter. */
@@ -168,7 +159,7 @@ zPH3D *zSphere3DToPH(zSphere3D *sphere, zPH3D *ph)
   zVec3D *vert;
   zTri3D *face;
   double theta;
-  uint i, j, k, l, n;
+  int i, j, k, l, n;
 
   if( !zPH3DAlloc( ph,
       zSphere3DDiv(sphere)*(zSphere3DDiv(sphere)-1)+2,
@@ -308,8 +299,8 @@ static double _zShape3DSphereClosest(void *body, zVec3D *p, zVec3D *cp){
   return zSphere3DClosest( (zSphere3D*)body, p, cp ); }
 static double _zShape3DSpherePointDist(void *body, zVec3D *p){
   return zSphere3DPointDist( (zSphere3D*)body, p ); }
-static bool _zShape3DSpherePointIsInside(void *body, zVec3D *p, bool rim){
-  return zSphere3DPointIsInside( (zSphere3D*)body, p, rim ); }
+static bool _zShape3DSpherePointIsInside(void *body, zVec3D *p, double margin){
+  return zSphere3DPointIsInside( (zSphere3D*)body, p, margin ); }
 static double _zShape3DSphereVolume(void *body){
   return zSphere3DVolume( (zSphere3D*)body ); }
 static zVec3D *_zShape3DSphereBarycenter(void *body, zVec3D *c){

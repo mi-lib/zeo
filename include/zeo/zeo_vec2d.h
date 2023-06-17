@@ -14,20 +14,58 @@ __BEGIN_DECLS
 /*! \struct zVec2D
  * \brief 2D vector.
  */
-typedef union{
+ZDEF_UNION( __ZEO_CLASS_EXPORT, zVec2D ){
   struct{
     double x, y;
   } c;
   double e[2];
-} zVec2D;
+#ifdef __cplusplus
+  zVec2D &create(double x, double y);
+  zVec2D &createPolar(double r, double theta);
+  zVec2D &copy(zVec2D &src);
+  zVec2D &zero();
+  bool operator==(zVec2D &v);
+  bool isEqual(zVec2D &v);
+  bool isTol(double tol);
+  bool isTiny();
+  bool isNan();
+  zVec2D operator+(zVec2D &v);
+  zVec2D operator-(zVec2D &v);
+  zVec2D operator-();
+  zVec2D operator*(double k);
+  zVec2D operator*(zVec2D &v);
+  zVec2D operator/(double k);
+  zVec2D operator/(zVec2D &v);
+  zVec2D &add(zVec2D &v);
+  zVec2D &sub(zVec2D &v);
+  zVec2D &rev();
+  zVec2D &mul(double k);
+  zVec2D &div(double k);
+  zVec2D &amp(zVec2D &v);
+  zVec2D &dem(zVec2D &v);
+  zVec2D &cat(double k, zVec2D &v);
+  double sqrNorm();
+  double norm();
+  zVec2D &normalize();
+  static const zVec2D zvec2Dzero;
+  static const zVec2D zvec2Dx;
+  static const zVec2D zvec2Dy;
+#endif /* __cplusplus */
+};
 
 /*! \brief 2D zero vector and unit vectors */
-extern const zVec2D zvec2Dzero;
-extern const zVec2D zvec2Dx;
-extern const zVec2D zvec2Dy;
+#ifdef __cplusplus
+#define ZVEC2DZERO ( (zVec2D *)&zVec2D::zvec2Dzero )
+#define ZVEC2DX    ( (zVec2D *)&zVec2D::zvec2Dx )
+#define ZVEC2DY    ( (zVec2D *)&zVec2D::zvec2Dy )
+#else
+__ZEO_EXPORT const zVec2D zvec2Dzero;
+__ZEO_EXPORT const zVec2D zvec2Dx;
+__ZEO_EXPORT const zVec2D zvec2Dy;
 #define ZVEC2DZERO ( (zVec2D *)&zvec2Dzero )
 #define ZVEC2DX    ( (zVec2D *)&zvec2Dx )
 #define ZVEC2DY    ( (zVec2D *)&zvec2Dy )
+#endif /* __cplusplus */
 
 /*! \brief create, copy and zero a 2D vector.
  *
@@ -46,10 +84,11 @@ extern const zVec2D zvec2Dy;
   (v)->c.x = (a1);\
   (v)->c.y = (a2);\
 } while(0)
-__EXPORT zVec2D *zVec2DCreate(zVec2D *v, double a1, double a2);
+__ZEO_EXPORT zVec2D *zVec2DCreate(zVec2D *v, double a1, double a2);
 #define _zVec2DCopy(s,d) _zVec2DCreate( d, (s)->c.x, (s)->c.y )
-__EXPORT zVec2D *zVec2DCopy(zVec2D *src, zVec2D *dest);
-#define zVec2DZero(v) _zVec2DCreate( v, 0, 0 )
+__ZEO_EXPORT zVec2D *zVec2DCopy(zVec2D *src, zVec2D *dest);
+#define _zVec2DZero(v) _zVec2DCreate( v, 0, 0 )
+#define zVec2DZero(v)  zVec2DCreate( v, 0, 0 )
 
 /*! \brief create a 2D vector by the set of value for a polar expression.
  *
@@ -61,7 +100,7 @@ __EXPORT zVec2D *zVec2DCopy(zVec2D *src, zVec2D *dest);
  * zVec2DCreatePolar() returns a pointer \a v.
  */
 #define _zVec2DCreatePolar(v,r,t) _zVec2DCreate( (v), (r)*cos((t)), (r)*sin((t)) )
-__EXPORT zVec2D *zVec2DCreatePolar(zVec2D *v, double r, double theta);
+__ZEO_EXPORT zVec2D *zVec2DCreatePolar(zVec2D *v, double r, double theta);
 
 /*! \brief check if two 2D vectors are equal.
  *
@@ -77,9 +116,9 @@ __EXPORT zVec2D *zVec2DCreatePolar(zVec2D *v, double r, double theta);
  * Otherwise, the false value is returned.
  */
 #define _zVec2DMatch(v1,v2) ( (v1)->c.x == (v2)->c.x && (v1)->c.y == (v2)->c.y )
-__EXPORT bool zVec2DMatch(zVec2D *v1, zVec2D *v2);
+__ZEO_EXPORT bool zVec2DMatch(zVec2D *v1, zVec2D *v2);
 #define _zVec2DEqual(v1,v2) ( zIsTiny( (v1)->c.x - (v2)->c.x ) && zIsTiny( (v1)->c.y - (v2)->c.y ) )
-__EXPORT bool zVec2DEqual(zVec2D *v1, zVec2D *v2);
+__ZEO_EXPORT bool zVec2DEqual(zVec2D *v1, zVec2D *v2);
 
 /*! \brief check if a 2D vector is negligibly small.
  *
@@ -98,8 +137,12 @@ __EXPORT bool zVec2DEqual(zVec2D *v1, zVec2D *v2);
  * zIsTol, zIsTiny
  */
 #define _zVec2DIsTol(v,tol) ( zIsTol( (v)->c.x, tol ) && zIsTol( (v)->c.y, tol ) )
-__EXPORT bool zVec2DIsTol(zVec2D *v, double tol);
-#define zVec2DIsTiny(v) zVec2DIsTol( v, zTOL )
+__ZEO_EXPORT bool zVec2DIsTol(zVec2D *v, double tol);
+#define _zVec2DIsTiny(v) _zVec2DIsTol( v, zTOL )
+#define zVec2DIsTiny(v)  zVec2DIsTol( v, zTOL )
+
+/*! \brief check if a 2D vector includes NaN or Inf components. */
+__ZEO_EXPORT bool zVec2DIsNan(zVec2D *v);
 
 /* ********************************************************** */
 /* arithmetics
@@ -139,25 +182,94 @@ __EXPORT bool zVec2DIsTol(zVec2D *v, double tol);
  *
  * zVec2DDiv() and zVec2DDivDRC() return the null pointer if \a k is zero.
  */
-#define _zVec2DAdd(v1,v2,v)   _zVec2DCreate( v, (v1)->c.x + (v2)->c.x, (v1)->c.y + (v2)->c.y )
-#define _zVec2DSub(v1,v2,v)   _zVec2DCreate( v, (v1)->c.x - (v2)->c.x, (v1)->c.y - (v2)->c.y )
-#define _zVec2DRev(v,rv)      _zVec2DCreate( rv, -(v)->c.x, -(v)->c.y )
-#define _zVec2DMul(v,k,mv)    _zVec2DCreate( mv, (k) * (v)->c.x, (k) * (v)->c.y )
-#define _zVec2DCat(v1,k,v2,v) _zVec2DCreate( v, (v1)->c.x + (k) * (v2)->c.x, (v1)->c.y + (k) * (v2)->c.y )
+#define _zVec2DAdd(v1,v2,v) do{\
+  (v)->c.x = (v1)->c.x + (v2)->c.x;\
+  (v)->c.y = (v1)->c.y + (v2)->c.y;\
+} while(0)
+__ZEO_EXPORT zVec2D *zVec2DAdd(zVec2D *v1, zVec2D *v2, zVec2D *v);
 
-__EXPORT zVec2D *zVec2DAdd(zVec2D *v1, zVec2D *v2, zVec2D *v);
-__EXPORT zVec2D *zVec2DSub(zVec2D *v1, zVec2D *v2, zVec2D *v);
-__EXPORT zVec2D *zVec2DRev(zVec2D *v, zVec2D *rv);
-__EXPORT zVec2D *zVec2DMul(zVec2D *v, double k, zVec2D *mv);
-__EXPORT zVec2D *zVec2DDiv(zVec2D *v, double k, zVec2D *dv);
-__EXPORT zVec2D *zVec2DCat(zVec2D *v1, double k, zVec2D *v2, zVec2D *v);
+#define _zVec2DSub(v1,v2,v) do{\
+  (v)->c.x = (v1)->c.x - (v2)->c.x;\
+  (v)->c.y = (v1)->c.y - (v2)->c.y;\
+} while(0)
+__ZEO_EXPORT zVec2D *zVec2DSub(zVec2D *v1, zVec2D *v2, zVec2D *v);
 
-#define zVec2DAddDRC(v1,v2)   zVec2DAdd(v1,v2,v1)
-#define zVec2DSubDRC(v1,v2)   zVec2DSub(v1,v2,v1)
-#define zVec2DRevDRC(v)       zVec2DRev(v,v)
-#define zVec2DMulDRC(v,k)     zVec2DMul(v,k,v)
-#define zVec2DDivDRC(v,k)     zVec2DDiv(v,k,v)
-#define zVec2DCatDRC(v1,k,v2) zVec2DCat(v1,k,v2,v1)
+#define _zVec2DRev(v,rv) do{\
+  (rv)->c.x = -(v)->c.x;\
+  (rv)->c.y = -(v)->c.y;\
+} while(0)
+__ZEO_EXPORT zVec2D *zVec2DRev(zVec2D *v, zVec2D *rv);
+
+#define _zVec2DMul(v,k,mv) do{\
+  (mv)->c.x = (k) * (v)->c.x;\
+  (mv)->c.y = (k) * (v)->c.y;\
+} while(0)
+__ZEO_EXPORT zVec2D *zVec2DMul(zVec2D *v, double k, zVec2D *mv);
+
+__ZEO_EXPORT zVec2D *zVec2DDiv(zVec2D *v, double k, zVec2D *dv);
+
+#define _zVec2DAmp(v,a,av) do{\
+  (av)->c.x = (a)->c.x * (v)->c.x;\
+  (av)->c.y = (a)->c.y * (v)->c.y;\
+} while(0)
+__ZEO_EXPORT zVec2D *zVec2DAmp(zVec2D *v1, zVec2D *v2, zVec2D *v);
+
+#define _zVec2DDem(v,d,dv) do{\
+  (dv)->c.x = (v)->c.x / (d)->c.x;\
+  (dv)->c.y = (v)->c.y / (d)->c.y;\
+} while(0)
+__ZEO_EXPORT zVec2D *zVec2DDem(zVec2D *v1, zVec2D *v2, zVec2D *v);
+
+#define _zVec2DCat(v1,k,v2,v) do{\
+  (v)->c.x = (v1)->c.x + (k) * (v2)->c.x;\
+  (v)->c.y = (v1)->c.y + (k) * (v2)->c.y;\
+} while(0)
+__ZEO_EXPORT zVec2D *zVec2DCat(zVec2D *v1, double k, zVec2D *v2, zVec2D *v);
+
+/*! \brief directly add a 2D vector to another. */
+#define _zVec2DAddDRC(v1,v2) do{\
+  (v1)->c.x += (v2)->c.x;\
+  (v1)->c.y += (v2)->c.y;\
+} while(0)
+__ZEO_EXPORT zVec2D *zVec2DAddDRC(zVec2D *v1, zVec2D *v2);
+/*! \brief directly subtract a 2D vector from another. */
+#define _zVec2DSubDRC(v1,v2) do{\
+  (v1)->c.x -= (v2)->c.x;\
+  (v1)->c.y -= (v2)->c.y;\
+} while(0)
+__ZEO_EXPORT zVec2D *zVec2DSubDRC(zVec2D *v1, zVec2D *v2);
+/*! \brief directly reverse a 2D vector. */
+#define _zVec2DRevDRC(v) do{\
+  (v)->c.x = -(v)->c.x;\
+  (v)->c.y = -(v)->c.y;\
+} while(0)
+__ZEO_EXPORT zVec2D *zVec2DRevDRC(zVec2D *v);
+/*! \brief directly multiply a 2D vector by a scalar value. */
+#define _zVec2DMulDRC(v,k) do{\
+  (v)->c.x *= (k);\
+  (v)->c.y *= (k);\
+} while(0)
+__ZEO_EXPORT zVec2D *zVec2DMulDRC(zVec2D *v, double k);
+/*! \brief directly divide a 2D vector by a scalar value. */
+__ZEO_EXPORT zVec2D *zVec2DDivDRC(zVec2D *v, double k);
+/*! \brief directly amplify a 2D vector by another. */
+#define _zVec2DAmpDRC(v,a) do{\
+  (v)->c.x *= (a)->c.x;\
+  (v)->c.y *= (a)->c.y;\
+} while(0)
+__ZEO_EXPORT zVec2D *zVec2DAmpDRC(zVec2D *v1, zVec2D *v2);
+/*! \brief directly demagnify a 2D vector by another. */
+#define _zVec2DDemDRC(v,d) do{\
+  (v)->c.x /= (d)->c.x;\
+  (v)->c.y /= (d)->c.y;\
+} while(0)
+__ZEO_EXPORT zVec2D *zVec2DDemDRC(zVec2D *v1, zVec2D *v2);
+/*! \brief directly concatenate a 2D vector multiplied by a scalar to another. */
+#define _zVec2DCatDRC(v1,k,v2) do{\
+  (v1)->c.x += (k) * (v2)->c.x;\
+  (v1)->c.y += (k) * (v2)->c.y;\
+} while(0)
+__ZEO_EXPORT zVec2D *zVec2DCatDRC(zVec2D *v1, double k, zVec2D *v2);
 
 /*! \brief inner andouter products.
  *
@@ -172,9 +284,10 @@ __EXPORT zVec2D *zVec2DCat(zVec2D *v1, double k, zVec2D *v2, zVec2D *v);
  * values.
  */
 #define _zVec2DInnerProd(v1,v2) ( (v1)->c.x * (v2)->c.x + (v1)->c.y * (v2)->c.y )
-__EXPORT double zVec2DInnerProd(zVec2D *v1, zVec2D *v2);
+__ZEO_EXPORT double zVec2DInnerProd(zVec2D *v1, zVec2D *v2);
 #define _zVec2DOuterProd(v1,v2) ( (v1)->c.x * (v2)->c.y - (v1)->c.y * (v2)->c.x )
-__EXPORT double zVec2DOuterProd(zVec2D *v1, zVec2D *v2);
+__ZEO_EXPORT double zVec2DOuterProd(zVec2D *v1, zVec2D *v2);
+#define zVec2DOuterProdNorm(v1,v2) zVec2DOuterProd( v1, v2 )
 
 /*! \brief norm of a 2D vector.
  *
@@ -197,9 +310,9 @@ __EXPORT double zVec2DOuterProd(zVec2D *v1, zVec2D *v2);
  * zVec2DSqrDist() returns the squared distance between \a v1 and \a v2.
  */
 #define _zVec2DSqrNorm(v) _zVec2DInnerProd( v, v )
-__EXPORT double zVec2DSqrNorm(zVec2D *v);
+__ZEO_EXPORT double zVec2DSqrNorm(zVec2D *v);
 #define zVec2DNorm(v) sqrt( zVec2DSqrNorm( (v) ) )
-__EXPORT double zVec2DSqrDist(zVec2D *v1, zVec2D *v2);
+__ZEO_EXPORT double zVec2DSqrDist(zVec2D *v1, zVec2D *v2);
 #define zVec2DDist(v1,v2) sqrt( zVec2DSqrDist( (v1), (v2) ) )
 
 /*! \brief normalize a 2D vector.
@@ -208,12 +321,13 @@ __EXPORT double zVec2DSqrDist(zVec2D *v1, zVec2D *v2);
  *
  * zVec2DNormalizeDRC() directly normalizes a 2D vector \a v.
  * \return
- * zVec2DNormalize() returns a pointer \a nv.
- * zVec2DNormalizeDRC() returns a pointer \a v.
- * If the norm of \a v is zero, the null pointer is returned.
+ * zVec2DNormalizeNC() and zVec2DNormalize() return the norm of \a v.
+ * If the norm of \a v is zero, -1 is returned.
  */
-__EXPORT zVec2D *zVec2DNormalize(zVec2D *v, zVec2D *nv);
-#define zVec2DNormalizeDRC(v) zVec2DNormalize( (v), (v) )
+__ZEO_EXPORT double zVec2DNormalizeNC(zVec2D *v, zVec2D *nv);
+__ZEO_EXPORT double zVec2DNormalize(zVec2D *v, zVec2D *nv);
+#define zVec2DNormalizeNCDRC(v) zVec2DNormalizeNC(v,v)
+#define zVec2DNormalizeDRC(v)   zVec2DNormalize(v,v)
 
 /* ********************************************************** */
 /* geometry
@@ -232,8 +346,8 @@ __EXPORT zVec2D *zVec2DNormalize(zVec2D *v, zVec2D *nv);
  * \return
  * zVec2DInterDiv() and zVec2DMid() return a pointer \a v.
  */
-__EXPORT zVec2D *zVec2DInterDiv(zVec2D *v1, zVec2D *v2, double ratio, zVec2D *v);
-__EXPORT zVec2D *zVec2DMid(zVec2D *v1, zVec2D *v2, zVec2D *v);
+__ZEO_EXPORT zVec2D *zVec2DInterDiv(zVec2D *v1, zVec2D *v2, double ratio, zVec2D *v);
+__ZEO_EXPORT zVec2D *zVec2DMid(zVec2D *v1, zVec2D *v2, zVec2D *v);
 
 /*! \brief angle between two 2D vectors.
  *
@@ -241,7 +355,7 @@ __EXPORT zVec2D *zVec2DMid(zVec2D *v1, zVec2D *v2, zVec2D *v);
  * \return
  * The angle between \a v1 and \a v2 is returned.
  */
-__EXPORT double zVec2DAngle(zVec2D *v1, zVec2D *v2);
+__ZEO_EXPORT double zVec2DAngle(zVec2D *v1, zVec2D *v2);
 
 /*! \brief projection and rotation of a 2D vector.
  *
@@ -257,15 +371,21 @@ __EXPORT double zVec2DAngle(zVec2D *v1, zVec2D *v2);
  *
  * zVec2DRot() returns a pointer \a rv.
  */
-__EXPORT zVec2D *zVec2DProj(zVec2D *v, zVec2D *n, zVec2D *pv);
-__EXPORT zVec2D *zVec2DRot(zVec2D *v, double angle, zVec2D *rv);
+__ZEO_EXPORT zVec2D *zVec2DProj(zVec2D *v, zVec2D *n, zVec2D *pv);
+__ZEO_EXPORT zVec2D *zVec2DRot(zVec2D *v, double angle, zVec2D *rv);
+
+/*! \brief rotate a 2D vector at 90 degree clockwize/counterclockwize. */
+#define _zVec2DRot90CW(s,d)  _zVec2DCreate( d, (s)->c.y, -(s)->c.x )
+#define _zVec2DRot90CCW(s,d) _zVec2DCreate( d, -(s)->c.y, (s)->c.x )
+__ZEO_EXPORT zVec2D *zVec2DRot90CW(zVec2D *src, zVec2D *dst);
+__ZEO_EXPORT zVec2D *zVec2DRot90CCW(zVec2D *src, zVec2D *dst);
 
 /* ********************************************************** */
 /* I/O
  * ********************************************************** */
 
 /*! \brief read a 2D vector from a ZTK format processor. */
-__EXPORT zVec2D *zVec2DFromZTK(zVec2D *v, ZTK *ztk);
+__ZEO_EXPORT zVec2D *zVec2DFromZTK(zVec2D *v, ZTK *ztk);
 
 /*! \brief input and output of a 2D vector.
  *
@@ -292,21 +412,51 @@ __EXPORT zVec2D *zVec2DFromZTK(zVec2D *v, ZTK *ztk);
  * zVec2DFPrint(), zVec2DPrint(), zVec2DDataFPrint() and zVec2DDataPrint()
  * return no value.
  */
-__EXPORT zVec2D *zVec2DFScan(FILE *fp, zVec2D *v);
+__ZEO_EXPORT zVec2D *zVec2DFScan(FILE *fp, zVec2D *v);
 #define zVec2DScan(v) zVec2DFScan( stdin, (v) )
-__EXPORT void zVec2DDataFPrint(FILE *fp, zVec2D *v);
+__ZEO_EXPORT void zVec2DDataFPrint(FILE *fp, zVec2D *v);
 #define zVec2DDataPrint(v) zVec2DDataFPrint( stdout, (v) )
-__EXPORT void zVec2DDataNLFPrint(FILE *fp, zVec2D *v);
+__ZEO_EXPORT void zVec2DDataNLFPrint(FILE *fp, zVec2D *v);
 #define zVec2DDataNLPrint(v) zVec2DDataNLFPrint( stdout, (v) )
-__EXPORT void zVec2DFPrint(FILE *fp, zVec2D *v);
+__ZEO_EXPORT void zVec2DFPrint(FILE *fp, zVec2D *v);
 #define zVec2DPrint(v) zVec2DFPrint( stdout, (v) )
+
+__END_DECLS
+
+#ifdef __cplusplus
+inline zVec2D &zVec2D::create(double x, double y){ _zVec2DCreate( this, x, y ); return *this; }
+inline zVec2D &zVec2D::createPolar(double r, double theta){ zVec2DCreatePolar( this, r, theta ); return *this; }
+inline zVec2D &zVec2D::copy(zVec2D &src){ zVec2DCopy( &src, this ); return *this; }
+inline zVec2D &zVec2D::zero(){ _zVec2DZero( this ); return *this; }
+inline bool zVec2D::operator==(zVec2D &v){ return _zVec2DMatch( this, &v ); }
+inline bool zVec2D::isEqual(zVec2D &v){ return _zVec2DEqual( this, &v ); }
+inline bool zVec2D::isTol(double tol){ return _zVec2DIsTol( this, tol ); }
+inline bool zVec2D::isTiny(){ return _zVec2DIsTiny( this ); }
+inline bool zVec2D::isNan(){ return zVec2DIsNan( this ); }
+inline zVec2D zVec2D::operator+(zVec2D &v){ zVec2D ret; _zVec2DAdd( this, &v, &ret ); return ret; }
+inline zVec2D zVec2D::operator-(zVec2D &v){ zVec2D ret; _zVec2DSub( this, &v, &ret ); return ret; }
+inline zVec2D zVec2D::operator-(){ zVec2D ret; _zVec2DRev( this, &ret ); return ret; }
+inline zVec2D zVec2D::operator*(double k){ zVec2D ret; _zVec2DMul( this, k, &ret ); return ret; }
+inline zVec2D zVec2D::operator*(zVec2D &v){ zVec2D ret; _zVec2DAmp( this, &v, &ret ); return ret; }
+inline zVec2D zVec2D::operator/(double k){ zVec2D ret; zVec2DDiv( this, k, &ret ); return ret; }
+inline zVec2D zVec2D::operator/(zVec2D &v){ zVec2D ret; _zVec2DDem( this, &v, &ret ); return ret; }
+inline zVec2D &zVec2D::add(zVec2D &v){ _zVec2DAddDRC( this, &v ); return *this; }
+inline zVec2D &zVec2D::sub(zVec2D &v){ _zVec2DSubDRC( this, &v ); return *this; }
+inline zVec2D &zVec2D::rev(){ _zVec2DRevDRC( this ); return *this; }
+inline zVec2D &zVec2D::mul(double k){ _zVec2DMulDRC( this, k ); return *this; }
+inline zVec2D &zVec2D::div(double k){ zVec2DDivDRC( this, k ); return *this; }
+inline zVec2D &zVec2D::amp(zVec2D &v){ _zVec2DAmpDRC( this, &v ); return *this; }
+inline zVec2D &zVec2D::dem(zVec2D &v){ _zVec2DDemDRC( this, &v ); return *this; }
+inline zVec2D &zVec2D::cat(double k, zVec2D &v){ _zVec2DCatDRC( this, k, &v ); return *this; }
+inline double zVec2D::sqrNorm(){ return _zVec2DSqrNorm( this ); }
+inline double zVec2D::norm(){ return sqrt( sqrNorm() ); }
+inline zVec2D &zVec2D::normalize(){ zVec2DNormalizeNCDRC( this ); return *this; }
+#endif /* __cplusplus */
 
 /*! \struct zVec2DArray
  * \brief array class of 2D vectors.
  */
 zArrayClass( zVec2DArray, zVec2D );
-
-__END_DECLS
 
 #include <zeo/zeo_vec2d_list.h>  /* 2D vector list */
 

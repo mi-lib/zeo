@@ -12,7 +12,7 @@
 __BEGIN_DECLS
 
 /*! \brief  read a 3D polyhedron from OBJ format */
-__EXPORT zPH3D *zPH3DFReadOBJ(FILE *fp, zPH3D *ph);
+__ZEO_EXPORT zPH3D *zPH3DFReadOBJ(FILE *fp, zPH3D *ph);
 
 __END_DECLS
 

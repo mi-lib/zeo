@@ -28,8 +28,8 @@ __BEGIN_DECLS
  * zBDisk2D() and zBDisk2DPL() return the number of points on the
  * outer rim circle of \a bd.
  */
-__EXPORT int zBDisk2D(zDisk2D *bd, zVec2DArray *pa, zVec2D **vp);
-__EXPORT int zBDisk2DPL(zDisk2D *bd, zVec2DList *pl, zVec2D **vp);
+__ZEO_EXPORT int zBDisk2D(zDisk2D *bd, zVec2DArray *pa, zVec2D **vp);
+__ZEO_EXPORT int zBDisk2DPL(zDisk2D *bd, zVec2DList *pl, zVec2D **vp);
 
 __END_DECLS
 
