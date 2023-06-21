@@ -1,5 +1,3 @@
-include ../config
-
 INCLUDE=`zeo-config -I`
 LIB=`zeo-config -L`
 LINK=`zeo-config -l`
