@@ -349,7 +349,7 @@ void assert_rot(void)
 {
   register int i, testnum = 100;
   zMat3D m1, m2, m3, m4, m5;
-  zVec3D r, aa;
+  zVec3D r, aa, aa1, aa2;
   bool result_zyx, result_zyz, result_aa;
 
   result_zyx = result_zyz = result_aa = true;
@@ -425,6 +425,15 @@ void assert_rot(void)
     if( !zMat3DEqual( &m1, &m3 ) ) result_aa = false;
   }
   zAssert( zMat3DError, result_aa );
+
+  for( result_aa=true, i=0; i<testnum; i++ ){
+    vec_create_aa_rand( &aa1 );
+    vec_create_aa_rand( &aa2 );
+    zAAError( &aa2, &aa1, &r );
+    zAACascade( &aa1, &r, &aa );
+    if( !zVec3DIsTiny( zAAError( &aa2, &aa, &r ) ) ) result_aa = false;
+  }
+  zAssert( zAAError + zAACascade, result_aa );
 }
 
 void assert_sym_eig(void)

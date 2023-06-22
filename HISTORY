@@ -1,3 +1,4 @@
+2023. 6.22. Added a test for zAAError and zAACascade. [test]
 2023. 6.21. Separated config and libinfo. [all]
 2023. 6. 2. Abolished _zShape3DOpticFPrint and _zShape3DTextureFPrint, and modified zShape3DFPrintZTK. [zeo_shape3d]
 2023. 6. 1. Reflected modification of zeda-makefile-gen to keep zeo_export.h. [zeo_export]
