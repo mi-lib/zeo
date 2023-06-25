@@ -1,7 +1,7 @@
-#include <zeo/zeo_map.h>
-#ifndef __WINDOWS__
+#ifndef _MSC_VER
 #include <unistd.h>
 #endif
+#include <zeo/zeo_map.h>
 
 #define XMIN -5.0
 #define XMAX  5.0
