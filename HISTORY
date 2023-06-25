@@ -1,3 +1,7 @@
+2023. 6.24. Debugged zeo.h to include zeo_mapnet.h. [zeo]
+2023. 6.24. Debugged zVec3DOrthoNormal. [zeo_vec3d]
+2023. 6.22. Added a test for zAAError and zAACascade. [test]
+2023. 6.21. Separated config and libinfo. [all]
 2023. 6. 2. Abolished _zShape3DOpticFPrint and _zShape3DTextureFPrint, and modified zShape3DFPrintZTK. [zeo_shape3d]
 2023. 6. 1. Reflected modification of zeda-makefile-gen to keep zeo_export.h. [zeo_export]
 2023. 5.25. Modified zCyl3DToPH, zCapsule3DToPH, and zCone3DToPH by using zVec3DOrthoNormal. [zeo_shape3d_cyl, zeo_shape3d_capsule, zeo_shape3d_cone]

@@ -344,7 +344,10 @@ zVec3D *zVec3DProj(zVec3D *v, zVec3D *n, zVec3D *pv)
 /* TODO: modify zVec3DOrthoSpace by using this function. */
 zVec3D *zVec3DOrthoNormal(zVec3D *v, zVec3D *ov)
 {
-  _zVec3DCreate( ov, v->c.y - v->c.z, v->c.z - v->c.x, v->c.x - v->c.y );
+  if( !zIsTiny( v->c.x ) || !zIsTiny( v->c.y ) )
+    _zVec3DCreate( ov, v->c.y, -v->c.x, 0 );
+  else
+    _zVec3DCreate( ov, v->c.y - v->c.z, v->c.z - v->c.x, v->c.x - v->c.y );
   zVec3DNormalizeDRC( ov );
   return ov;
 }

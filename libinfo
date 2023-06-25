@@ -1,0 +1,3 @@
+PROJNAME=zeo
+VERSION=1.14.2
+DEPENDENCY="zeda=1.8.0;zm=1.8.0"
