@@ -40,8 +40,8 @@ void create_ph(shape_t *shape, int ns, int nv)
     for( j=0; j<nv; j++ )
       zVec3DCreate( &v[j], x0+zRandF(-0.05,0.05), y0+zRandF(-0.05,0.05), z0+zRandF(-0.05,0.05) );
     zCH3D( &shape[i].ph, v, nv );
-    zOBB( &shape[i].obb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph) );
-    zAABB( &shape[i].aabb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph), NULL );
+    zOBB3D( &shape[i].obb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph) );
+    zAABB3D( &shape[i].aabb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph), NULL );
     output_ph( fp, &shape[i].ph, i );
   }
   fclose( fp );
@@ -100,7 +100,7 @@ void colchk_aabb_gjk(shape_t *shape, int ns)
   FILE *fp;
 
   for( i=0; i<ns; i++ )
-    zAABB( &shape[i].aabb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph), NULL );
+    zAABB3D( &shape[i].aabb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph), NULL );
 
   fp = fopen( "vast_AABB", "w" );
   for( i=0; i<ns; i++ ){
@@ -195,7 +195,7 @@ void colchk_aabb_mpr(shape_t *shape, int ns)
   FILE *fp;
 
   for( i=0; i<ns; i++ )
-    zAABB( &shape[i].aabb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph), NULL );
+    zAABB3D( &shape[i].aabb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph), NULL );
 
   fp = fopen( "vast_AABB", "w" );
   for( i=0; i<ns; i++ ){

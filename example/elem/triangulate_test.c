@@ -1,7 +1,19 @@
 #include <zeo/zeo_elem3d.h>
 
+#define TEST 0
+
 zVec3D test_loop[] = {
-#if 0
+#if TEST == 0
+  { { 0, 0, 0 } },
+  { { 0, 0, 0 } },
+  { { 0, 0, 0 } },
+  { { 0, 0, 0 } },
+  { { 0, 0, 0 } },
+  { { 0, 0, 0 } },
+  { { 0, 0, 0 } },
+  { { 0, 0, 0 } },
+  { { 0, 0, 0 } },
+#elif TEST == 1
   { { 0.0, 0.0, 0 } },
   { {-0.1, 0.1, 0 } },
   { {-0.1, 0.2, 0 } },
@@ -11,21 +23,21 @@ zVec3D test_loop[] = {
   { { 0.1, 0.6, 0 } },
   { { 0.3, 0.6, 0 } },
   { { 0.3, 0.0, 0 } },
-#elif 0
+#elif TEST == 2
   { { 0.0, 0.0, 0 } },
   { { 0.0, 0.1, 0 } },
   { { 0.1, 0.1, 0 } },
   { { 0.1, 0.2, 0 } },
   { { 0.2, 0.2, 0 } },
   { { 0.2, 0.0, 0 } },
-#elif 0
+#elif TEST == 3
   { { 0.2, 0.0, 0 } },
   { { 0.2, 0.2, 0 } },
   { { 0.1, 0.2, 0 } },
   { { 0.1, 0.1, 0 } },
   { { 0.0, 0.1, 0 } },
   { { 0.0, 0.0, 0 } },
-#elif 1
+#elif TEST == 4
   { { 0,-3, 0 } },
   { {-4, 0, 0 } },
   { {-2, 1, 0 } },
@@ -41,7 +53,7 @@ zVec3D test_loop[] = {
   { { 0, 5, 0 } },
   { { 4, 0, 0 } },
   { { 2,-2, 0 } },
-#elif 0
+#elif TEST == 5
   { {-3, 0, 0 } },
   { { 0, 2, 0 } },
   { { 3, 1, 0 } },
@@ -49,7 +61,7 @@ zVec3D test_loop[] = {
   { {-1,-1, 0 } },
   { { 3,-1, 0 } },
   { { 0,-2, 0 } },
-#elif 0
+#elif TEST ==  6
   { { 0, 0, 0 } },
   { {-1, 1, 0 } },
   { {-1, 2, 0 } },
@@ -59,7 +71,7 @@ zVec3D test_loop[] = {
   { { 1, 6, 0 } },
   { { 3, 6, 0 } },
   { { 3, 0, 0 } },
-#else
+#elif TEST == 7
   { { 0, 0, 0 } },
   { { 0, 1, 0 } },
   { { 1, 1, 0 } },
@@ -68,30 +80,33 @@ zVec3D test_loop[] = {
   { { 2, 1, 0 } },
   { { 3, 1, 0 } },
   { { 3, 0, 0 } },
+#else
+#warning "This example doesn't work correctly."
 #endif
 };
 
-void generate_loop(zLoop3D *loop, zVec3D v[], int num, double xmin, double ymin, double xmax, double ymax)
+void generate_loop(zLoop3D *loop, double xmin, double ymin, double xmax, double ymax)
 {
-#if 0
+  zVec3DArray va;
+#if TEST == 0
   double s, c, x0, y0, rx, ry, r;
-  register int i;
+  int i, n;
 
-  zListInit( loop );
   x0 = 0.5 * ( xmin + xmax );
   y0 = 0.5 * ( ymin + ymax );
   rx = 0.5 * fabs( xmax - xmin );
   ry = 0.5 * fabs( ymax - ymin );
-  for( i=0; i<num; i++ ){
-    zSinCos( zPIx2*i/num, &s, &c );
+  n = sizeof(test_loop)/sizeof(zVec3D);
+  for( i=0; i<n; i++ ){
+    zSinCos( zPIx2*i/n, &s, &c );
     r = zRandF( 0, 1 );
-    zVec3DCreate( &v[i], r*rx*c+x0, r*ry*s+y0, 0 );
+    zVec3DCreate( &test_loop[i], r*rx*c+x0, r*ry*s+y0, 0 );
   }
-  zVec3DAddrListCreate( loop, v, num );
-#else
-  zListInit( loop );
-  zVec3DAddrListCreate( loop, test_loop, sizeof(test_loop)/sizeof(zVec3D) );
 #endif
+  zListInit( loop );
+  zArraySize(&va) = sizeof(test_loop)/sizeof(zVec3D);
+  zArrayBuf(&va) = test_loop;
+  zVec3DAddrListCreate( loop, &va );
 }
 
 void output_loop(zLoop3D *loop, char filename[])
@@ -123,7 +138,6 @@ void output_triangles(zTri3DList *tlist, char filename[])
   fclose( fp );
 }
 
-#define N 9
 #define XMIN 0
 #define YMIN 0
 #define XMAX 10
@@ -131,17 +145,16 @@ void output_triangles(zTri3DList *tlist, char filename[])
 
 int main(void)
 {
-  zVec3D v[N];
   zLoop3D loop;
   zTri3DList tlist;
 
   zRandInit();
   /* source vertices */
-  generate_loop( &loop, v, N, XMIN, YMIN, XMAX, YMAX );
+  generate_loop( &loop, XMIN, YMIN, XMAX, YMAX );
   output_loop( &loop, "org.dat" );
 
   /* triangulation of a loop */
-  printf( "vert.num=%d, tri.num=%d\n", N, zLoop3DTriangulate( &loop, &tlist ) );
+  printf( "vert.num=%d, tri.num=%d\n", zListSize(&loop), zLoop3DTriangulate( &loop, &tlist ) );
   output_triangles( &tlist, "tri.dat" );
 
   zTri3DListDestroy( &tlist );

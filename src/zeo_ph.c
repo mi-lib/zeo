@@ -1,4 +1,4 @@
-/* Zeo - Z/Geometry and optics computation library.
+﻿/* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
  * zeo_ph - polyhedron
