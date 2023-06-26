@@ -1,6 +1,6 @@
-#ifndef _MSC_VER
+#ifndef __unix__
 #include <unistd.h>
-#endif
+#endif /* __unix__ */
 #include <zeo/zeo_map.h>
 
 #define XMIN -5.0
