@@ -1,3 +1,4 @@
+2023. 6.28. Abolished buf and lbuf members of zTexture and accordingly zTextureBumpAlloc. [zeo_render_texture]
 2023. 6.26. Modified some examples to conform with the latest version (thanks to Daishi Kaneta). [example]
 2023. 6.26. Modified labels in _zPH3DFReadSTL_BinVec (thanks to Daishi Kaneta). [zeo_ph_stl]
 2023. 6.24. Debugged zeo.h to include zeo_mapnet.h. [zeo]

@@ -38,24 +38,16 @@ zTri2D *zTextureSetFace(zTexture *texture, int i, zVec2D *v1, zVec2D *v2, zVec2D
 /* destroy a texture */
 void zTextureDestroy(zTexture *texture)
 {
-  int i;
-
   zNameFree( texture );
   if( texture->filename ) free( texture->filename );
   zArrayFree( &texture->coord );
   zArrayFree( &texture->face );
-  if( texture->buf ) free( texture->buf );
-  for( i=0; i<6; i++ )
-    if( texture->lbuf[i] ) free( texture->lbuf[i] );
   zTextureInit( texture );
 }
 
 /* clone a texture */
 zTexture *zTextureClone(zTexture *org, zTexture *cln)
 {
-  int i, wh, hh;
-  bool res;
-
   zTextureInit( cln );
   if( zNamePtr(org) && !zNameSet( cln, zNamePtr(org) ) ) goto FAILURE;
   cln->id = org->id;
@@ -63,12 +55,7 @@ zTexture *zTextureClone(zTexture *org, zTexture *cln)
   cln->filename = zStrClone( org->filename );
   zArrayAlloc( &cln->coord, zVec2D, zTextureCoordNum(org) );
   zArrayAlloc( &cln->face, zTri2D, zTextureFaceNum(org) );
-  cln->buf = (ubyte *)zClone( org->buf, sizeof(ubyte)*org->width*org->height*4 );
-  wh = ( cln->width = org->width ) / 2;
-  hh = ( cln->height = org->height ) / 2;
-  for( res=true, i=0; i<6; i++ )
-    if( org->lbuf[i] && !( cln->lbuf[i] = (ubyte *)zClone( org->lbuf[i], sizeof(ubyte)*wh*hh*4 ) ) ) res = false;
-  if( !cln->filename || !cln->coord.buf || !cln->face.buf || !cln->buf || !res ) goto FAILURE;
+  if( !cln->filename || !cln->coord.buf || !cln->face.buf ) goto FAILURE;
   return cln;
 
  FAILURE:
@@ -80,24 +67,6 @@ zTexture *zTextureClone(zTexture *org, zTexture *cln)
 
 /* bump map file reader */
 bool (* __z_texture_bump_read_file)(zTexture *, char *) = NULL;
-
-/* allocate workspace for bump mapping */
-bool zTextureBumpAlloc(zTexture *bump, int width, int height)
-{
-  int i, wh, hh;
-  bool ret = true;
-
-  wh = ( bump->width = width ) / 2;
-  hh = ( bump->height = height ) / 2;
-  bump->buf = zAlloc( ubyte, width * height * 4 );
-  for( i=0; i<6; i++ )
-    if( !( bump->lbuf[i] = zAlloc( ubyte, wh * hh * 4 ) ) ) ret = false;
-  if( !bump->buf || !ret ){
-    zTextureDestroy( bump );
-    return false;
-  }
-  return true;
-}
 
 /* parsing a ZTK format. */
 

@@ -28,8 +28,6 @@ typedef struct{
   int width;         /*!< \brief width of the texture image */
   int height;        /*!< \brief height of the texture image */
   double depth;      /*!< \brief depth of bumps (for bump mapping only) */
-  ubyte *buf;        /*!< \brief buffer for texture data */
-  ubyte *lbuf[6];    /*!< \brief buffer for normalized light map */
 } zTexture;
 
 #define zTextureCoordNum(t)      zArraySize(&(t)->coord)
@@ -50,8 +48,6 @@ typedef struct{
   zArrayInit( &(tex)->face );\
   (tex)->width = (tex)->height = 0;\
   (tex)->depth = 1.0;\
-  (tex)->buf = NULL;\
-  (tex)->lbuf[0] = (tex)->lbuf[1] = (tex)->lbuf[2] = (tex)->lbuf[3] = (tex)->lbuf[4] = (tex)->lbuf[5] = NULL;\
 } while(0)
 
 /*! \brief texture file reader */
@@ -94,9 +90,6 @@ __ZEO_EXPORT bool (* __z_texture_bump_read_file)(zTexture *, char *);
 
 /*! \brief read a bump map image file */
 #define zTextureBumpReadFile(t,f) ( __z_texture_bump_read_file ? __z_texture_bump_read_file( (t), (f) ) : false )
-
-/*! \brief allocate workspace for bump mapping */
-__ZEO_EXPORT bool zTextureBumpAlloc(zTexture *bump, int width, int height);
 
 /* tag to identify a texture */
 #define ZTK_TAG_TEXTURE "texture"
