@@ -295,7 +295,7 @@ static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
     obj = NULL;
 #endif
   } else{
-    if( !( fp = fopen( ZTKVal(ztk), "r" ) ) ){
+    if( !( fp = fopen( ZTKVal(ztk), "rb" ) ) ){
       ZOPENERROR( ZTKVal(ztk) );
       return NULL;
     }
