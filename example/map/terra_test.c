@@ -1,4 +1,4 @@
-#ifndef __unix__
+#ifdef __unix__
 #include <unistd.h>
 #endif /* __unix__ */
 #include <zeo/zeo_map.h>
