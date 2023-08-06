@@ -1,3 +1,6 @@
+2023. 8. 7. Modified _zShape3DImportFromZTK to open external geometry files with binary mode (thanks to Daishi Kaneta). [zeo_shape3d]
+2023. 8. 7. Redefined zAxis and zDir as int8_t (thanks to Daishi Kaneta). [zeo_misc]
+2023. 8. 7. Modified terra_test in example/map (thanks to Daishi Kaneta). [example]
 2023. 6.28. Abolished buf and lbuf members of zTexture and accordingly zTextureBumpAlloc. [zeo_render_texture]
 2023. 6.26. Modified some examples to conform with the latest version (thanks to Daishi Kaneta). [example]
 2023. 6.26. Modified labels in _zPH3DFReadSTL_BinVec (thanks to Daishi Kaneta). [zeo_ph_stl]

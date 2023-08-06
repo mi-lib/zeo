@@ -15,7 +15,7 @@
 __BEGIN_DECLS
 
 /*! \brief axis identifiers */
-typedef signed char zAxis;
+typedef int8_t zAxis;
 enum{
   zAxisInvalid=-1, zX=0, zY, zZ, zXA, zYA, zZA,
 };
@@ -40,7 +40,7 @@ __ZEO_EXPORT char *zAxisStr(zAxis axis);
 __ZEO_EXPORT zAxis zAxisFromStr(char *str);
 
 /*! \brief direction identifiers */
-typedef byte zDir;
+typedef int8_t zDir;
 enum{
   ZEO_DIR_NONE=0, ZEO_DIR_RIGHT, ZEO_DIR_LEFT, ZEO_DIR_FORWARD, ZEO_DIR_BACKWARD, ZEO_DIR_UP, ZEO_DIR_DOWN, ZEO_DIR_CW, ZEO_DIR_CCW,
 };
