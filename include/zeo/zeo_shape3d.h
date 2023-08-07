@@ -123,14 +123,14 @@ __ZEO_EXPORT zMat3D *zShape3DInertia(zShape3D *shape, double density, zMat3D *in
 __ZEO_EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
 
 /*! \brief read a shape from a STL file. */
-__ZEO_EXPORT zShape3D *zShape3DFReadSTL(FILE *fp, zShape3D *shape);
+__ZEO_EXPORT zShape3D *zShape3DReadFileSTL(zShape3D *shape, const char *filename);
 /*! \brief read a shape from a PLY file. */
 __ZEO_EXPORT zShape3D *zShape3DFReadPLY(FILE *fp, zShape3D *shape);
 /*! \brief read a shape from a OBJ file. */
-__ZEO_EXPORT zShape3D *zShape3DFReadOBJ(FILE *fp, zShape3D *shape);
+__ZEO_EXPORT zShape3D *zShape3DReadFileOBJ(zShape3D *shape, const char *filename);
 #ifdef __ZEO_USE_DAE
 /*! \brief read a shape from a DAE file. */
-__ZEO_EXPORT zShape3D *zShape3DFReadDAE(zShape3D *shape, char *filename);
+__ZEO_EXPORT zShape3D *zShape3DReadFileDAE(zShape3D *shape, const char *filename);
 #endif /* __ZEO_USE_DAE */
 
 /*! \struct zShape3DArray

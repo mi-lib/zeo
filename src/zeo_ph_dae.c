@@ -512,7 +512,7 @@ static zPH3D *_zDAEMeshList2PH3D(zPH3D *ph, zDAEMeshList *mlist)
 }
 
 /* read a 3D polyhedron in DAE format. */
-zPH3D *zPH3DFReadDAE(zPH3D *ph, char *filename)
+zPH3D *zPH3DReadFileDAE(zPH3D *ph, const char *filename)
 {
   xmlDoc *doc;
   zDAEMeshList mlist;

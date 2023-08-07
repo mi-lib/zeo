@@ -10,17 +10,11 @@ void zeo_stl2ztk_usage(char *arg)
 int main(int argc, char *argv[])
 {
   zShape3D shape;
-  FILE *fp;
 
   if( argc < 2 ) zeo_stl2ztk_usage( argv[0] );
-  if( !( fp = fopen( argv[1], "r" ) ) ){
-    ZOPENERROR( argv[1] );
-    return EXIT_FAILURE;
-  }
   zShape3DInit( &shape );
-  if( zShape3DFReadSTL( fp, &shape ) )
+  if( zShape3DReadFileSTL( &shape, argv[1] ) )
     zShape3DFPrintZTK( stdout, &shape );
-  fclose( fp );
   zShape3DDestroy( &shape );
   return EXIT_SUCCESS;
 }

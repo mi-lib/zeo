@@ -62,20 +62,14 @@ bool phconv_cmdarg(int argc, char *argv[])
 
 bool phconv_read_stl(zShape3D *shape)
 {
-  FILE *fin;
   bool ret = true;
 
-  if( !( fin = fopen( option[PHCONV_INPUTFILE].arg, "r" ) ) ){
-    ZOPENERROR( option[PHCONV_INPUTFILE].arg );
-    return false;
-  }
   eprintf( "read STL file.\n" );
   zShape3DInit( shape );
-  if( !zShape3DFReadSTL( fin, shape ) ){
+  if( !zShape3DReadFileSTL( shape, option[PHCONV_INPUTFILE].arg ) ){
     eprintf( "read failure.\n" );
     ret = false;
   }
-  fclose( fin );
   return ret;
 }
 

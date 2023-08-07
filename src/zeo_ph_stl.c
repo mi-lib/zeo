@@ -144,7 +144,7 @@ static zPH3D *_zPH3DFReadSTL_ASCIIfacet(FILE *fp, char buf[], zPH3D *ph, zVec3DT
 }
 
 /* scan a solid object of a 3D polyhedron from ASCII STL format */
-static zPH3D *_zPH3DFReadSTL_ASCIIsolid(FILE *fp, zPH3D *ph, char name[], size_t namesize)
+static zPH3D *_zPH3DFReadSTL_ASCIIsolid(FILE *fp, zPH3D *ph, char shapenamebuf[], size_t bufsize)
 {
   char buf[BUFSIZ];
   zVec3DTree vert_tree;
@@ -153,7 +153,7 @@ static zPH3D *_zPH3DFReadSTL_ASCIIsolid(FILE *fp, zPH3D *ph, char name[], size_t
 
   zVec3DTreeInit( &vert_tree );
   zListInit( &facet_list );
-  if( !zFToken( fp, name, namesize ) ) return NULL; /* no name */
+  if( !zFToken( fp, shapenamebuf, bufsize ) ) return NULL; /* no name */
   while( !feof( fp ) ){
     if( !zFToken( fp, buf, BUFSIZ ) ){
       ZRUNERROR( ZEO_ERR_STL_INCOMPLETE );
@@ -171,7 +171,7 @@ static zPH3D *_zPH3DFReadSTL_ASCIIsolid(FILE *fp, zPH3D *ph, char name[], size_t
 }
 
 /* scan a 3D polyhedron from ASCII STL format */
-zPH3D *zPH3DFReadSTL_ASCII(FILE *fp, zPH3D *ph, char name[], size_t namesize)
+zPH3D *zPH3DFReadSTL_ASCII(FILE *fp, zPH3D *ph, char shapenamebuf[], size_t bufsize)
 {
   char buf[BUFSIZ];
 
@@ -179,17 +179,17 @@ zPH3D *zPH3DFReadSTL_ASCII(FILE *fp, zPH3D *ph, char name[], size_t namesize)
   while( !feof( fp ) ){
     if( !zFToken( fp, buf, BUFSIZ ) ) break; /* early EOF */
     if( strcmp( buf, "solid" ) != 0 ) continue; /* skip as a comment */
-    return _zPH3DFReadSTL_ASCIIsolid( fp, ph, name, namesize ); /* succeed to scan */
+    return _zPH3DFReadSTL_ASCIIsolid( fp, ph, shapenamebuf, bufsize ); /* succeed to scan */
   }
   return NULL; /* fail to scan */
 }
 
 /* print a 3D polyhedron to ASCII STL format */
-void zPH3DFWriteSTL_ASCII(FILE *fp, zPH3D *ph, char name[])
+void zPH3DFWriteSTL_ASCII(FILE *fp, zPH3D *ph, const char shapename[])
 {
   int i;
 
-  fprintf( fp, "solid %s\n", name );
+  fprintf( fp, "solid %s\n", shapename );
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
     fprintf( fp, "\tfacet normal\t" );
     zVec3DDataFPrint( fp, zTri3DNorm(zPH3DFace(ph,i)) );
@@ -253,7 +253,7 @@ bool zSTLIsBin(FILE *fp)
 }
 
 /* read a 3D polyhedron from binary STL format */
-zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[])
+zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char shapenamebuf[])
 {
   uint32_t nf; /* number of facets */
   uint16_t dummy;
@@ -265,7 +265,7 @@ zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[])
   zVec3DTreeInit( &vert_tree );
   zListInit( &facet_list );
   zPH3DInit( ph );
-  if( fread( name, sizeof(char), ZEO_STL_HEADSIZ, fp ) < ZEO_STL_HEADSIZ )
+  if( fread( shapenamebuf, sizeof(char), ZEO_STL_HEADSIZ, fp ) < ZEO_STL_HEADSIZ )
     ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
   if( fread( &nf, sizeof(uint32_t), 1, fp ) < 1 ) ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
   if( nf <= 0 ) return NULL;
@@ -284,13 +284,13 @@ zPH3D *zPH3DFReadSTL_Bin(FILE *fp, zPH3D *ph, char name[])
 }
 
 /* write a 3D polyhedron to binary STL format */
-void zPH3DFWriteSTL_Bin(FILE *fp, zPH3D *ph, char name[])
+void zPH3DFWriteSTL_Bin(FILE *fp, zPH3D *ph, const char shapename[])
 {
   uint32_t nf;
   uint16_t dummy = 0;
   int i;
 
-  if( fwrite( name, sizeof(char), ZEO_STL_HEADSIZ, fp ) < ZEO_STL_HEADSIZ )
+  if( fwrite( shapename, sizeof(char), ZEO_STL_HEADSIZ, fp ) < ZEO_STL_HEADSIZ )
     ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
   nf = zPH3DFaceNum(ph);
   if( fwrite( &nf, sizeof(uint32_t), 1, fp ) < 1 ) ZRUNWARN( ZEO_WARN_STL_MISSINGDATA );
@@ -305,9 +305,37 @@ void zPH3DFWriteSTL_Bin(FILE *fp, zPH3D *ph, char name[])
 }
 
 /* read a 3D polyhedron from either ASCII/binary STL format */
-zPH3D *zPH3DFReadSTL(FILE *fp, zPH3D *ph, char name[], size_t namesize)
+zPH3D *zPH3DReadFileSTL(zPH3D *ph, const char *filename, char shapenamebuf[], size_t bufsize)
 {
-  return zSTLIsBin( fp ) ?
-    zPH3DFReadSTL_Bin( fp, ph, name ) :
-    zPH3DFReadSTL_ASCII( fp, ph, name, namesize );
+  FILE *fp;
+  zPH3D *ret;
+
+  if( !( fp = fopen( filename, "rb" ) ) ){ /* "rb" mode specifier is required for Windows. */
+    ZOPENERROR( filename );
+    return NULL;
+  }
+  if( zSTLIsBin( fp ) )
+    ret = zPH3DFReadSTL_Bin( fp, ph, shapenamebuf );
+  else{
+    fclose( fp );
+    if( !( fp = fopen( filename, "rt" ) ) ){ /* reopen as a text file */
+      ZOPENERROR( filename );
+      return NULL;
+    }
+    ret = zPH3DFReadSTL_ASCII( fp, ph, shapenamebuf, bufsize );
+  }
+  fclose( fp );
+  return ret;
+}
+
+void zPH3DWriteFileSTL(zPH3D *ph, const char *filename, const char shapename[])
+{
+  FILE *fp;
+
+  if( !( fp = fopen( filename, "wt" ) ) ){
+    ZOPENERROR( filename );
+    return;
+  }
+  zPH3DFWriteSTL_ASCII( fp, ph, shapename );
+  fclose( fp );
 }

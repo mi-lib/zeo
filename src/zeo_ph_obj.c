@@ -70,3 +70,17 @@ zPH3D *zPH3DFReadOBJ(FILE *fp, zPH3D *ph)
   _zOBJFReadPH3D( fp, ph );
   return ph;
 }
+
+/* read a 3D polyhedron from OBJ format */
+zPH3D *zPH3DReadFileOBJ(zPH3D *ph, const char *filename)
+{
+  FILE *fp;
+
+  if( !( fp = fopen( filename, "rt" ) ) ){
+    ZOPENERROR( filename );
+    return NULL;
+  }
+  ph = zPH3DFReadOBJ( fp, ph );
+  fclose( fp );
+  return ph;
+}
