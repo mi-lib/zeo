@@ -199,10 +199,10 @@ zShape3D *zShape3DReadFileSTL(zShape3D *shape, const char *filename)
 }
 
 /* read a shape from a PLY file. */
-zShape3D *zShape3DFReadPLY(FILE *fp, zShape3D *shape)
+zShape3D *zShape3DReadFilePLY(zShape3D *shape, const char *filename)
 {
   _zShape3DAssignPH( shape );
-  if( !zPH3DFReadPLY( fp, zShape3DPH(shape) ) ) return NULL;
+  if( !zPH3DReadFilePLY( zShape3DPH(shape), filename ) ) return NULL;
   return shape;
 }
 
@@ -284,9 +284,17 @@ static void *_zShape3DMirrorFromZTK(void *obj, int i, void *arg, ZTK *ztk){
 }
 static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   char *suffix;
-  FILE *fp;
 
   suffix = zGetSuffix( ZTKVal(ztk) );
+  if( strcmp( suffix, "stl" ) == 0 || strcmp( suffix, "STL" ) == 0 ){
+    if( !zShape3DReadFileSTL( (zShape3D *)obj, ZTKVal(ztk) ) ) obj = NULL;
+  } else
+  if( strcmp( suffix, "obj" ) == 0 || strcmp( suffix, "OBJ" ) == 0 ){
+    if( !zShape3DReadFileOBJ( (zShape3D *)obj, ZTKVal(ztk) ) ) obj = NULL;
+  } else
+  if( strcmp( suffix, "ply" ) == 0 || strcmp( suffix, "PLY" ) == 0 ){
+    if( !zShape3DReadFilePLY( (zShape3D *)obj, ZTKVal(ztk) ) ) obj = NULL;
+  } else
   if( strcmp( suffix, "dae" ) == 0 || strcmp( suffix, "DAE" ) == 0 ){
 #ifdef __ZEO_USE_DAE
     if( !zShape3DReadFileDAE( (zShape3D *)obj, ZTKVal(ztk) ) ) obj = NULL;
@@ -294,24 +302,9 @@ static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
     ZRUNWARN( ZEO_ERR_DAE_UNSUPPORTED );
     obj = NULL;
 #endif
-  } else
-  if( strcmp( suffix, "stl" ) == 0 || strcmp( suffix, "STL" ) == 0 ){
-    if( !zShape3DReadFileSTL( (zShape3D *)obj, ZTKVal(ztk) ) ) obj = NULL;
-  } else
-  if( strcmp( suffix, "obj" ) == 0 || strcmp( suffix, "OBJ" ) == 0 ){
-    if( !zShape3DReadFileOBJ( (zShape3D *)obj, ZTKVal(ztk) ) ) obj = NULL;
   } else{
-    if( !( fp = fopen( ZTKVal(ztk), "r" ) ) ){
-      ZOPENERROR( ZTKVal(ztk) );
-      return NULL;
-    }
-    if( strcmp( suffix, "ply" ) == 0 || strcmp( suffix, "PLY" ) == 0 ){
-      if( !zShape3DFReadPLY( fp, (zShape3D *)obj ) ) obj = NULL;
-    } else{
-      ZRUNERROR( ZEO_WARN_SHAPE_UNKNOWNFORMAT, suffix );
-      obj = NULL;
-    }
-    fclose( fp );
+    ZRUNERROR( ZEO_WARN_SHAPE_UNKNOWNFORMAT, suffix );
+    obj = NULL;
   }
   if( obj ){
     ((_zShape3DRefPrp*)arg)->imported = true;

@@ -75,20 +75,13 @@ bool phconv_read_stl(zShape3D *shape)
 
 bool phconv_read_ply(zShape3D *shape)
 {
-  FILE *fin;
   bool ret = true;
-
-  if( !( fin = fopen( option[PHCONV_INPUTFILE].arg, "r" ) ) ){
-    ZOPENERROR( option[PHCONV_INPUTFILE].arg );
-    return false;
-  }
   eprintf( "read PLY file.\n" );
   zShape3DInit( shape );
-  if( !zShape3DFReadPLY( fin, shape ) ){
+  if( !zShape3DReadFilePLY( shape, option[PHCONV_INPUTFILE].arg ) ){
     eprintf( "read failure.\n" );
     ret = false;
   }
-  fclose( fin );
   return ret;
 }
 
@@ -134,20 +127,13 @@ bool phconv_write_stl(zShape3D *shape)
 
 bool phconv_write_ply(zShape3D *shape)
 {
-  FILE *fout;
-
-  if( !( fout = fopen( option[PHCONV_OUTPUTFILE].arg, "w" ) ) ){
-    ZOPENERROR( option[PHCONV_OUTPUTFILE].arg );
-    return false;
-  }
   if( option[PHCONV_BINARY].flag ){
     eprintf( "write binary PLY file.\n" );
-    zPH3DFWritePLY_Bin( fout, zShape3DPH(shape) );
+    zPH3DWriteFilePLY_Bin( zShape3DPH(shape), option[PHCONV_OUTPUTFILE].arg );
   } else{
     eprintf( "write ASCII PLY file.\n" );
-    zPH3DFWritePLY_ASCII( fout, zShape3DPH(shape) );
+    zPH3DWriteFilePLY_ASCII( zShape3DPH(shape), option[PHCONV_OUTPUTFILE].arg );
   }
-  fclose( fout );
   return true;
 }
 

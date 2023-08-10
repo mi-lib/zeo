@@ -125,7 +125,7 @@ __ZEO_EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
 /*! \brief read a shape from a STL file. */
 __ZEO_EXPORT zShape3D *zShape3DReadFileSTL(zShape3D *shape, const char *filename);
 /*! \brief read a shape from a PLY file. */
-__ZEO_EXPORT zShape3D *zShape3DFReadPLY(FILE *fp, zShape3D *shape);
+__ZEO_EXPORT zShape3D *zShape3DReadFilePLY(zShape3D *shape, const char *filename);
 /*! \brief read a shape from a OBJ file. */
 __ZEO_EXPORT zShape3D *zShape3DReadFileOBJ(zShape3D *shape, const char *filename);
 #ifdef __ZEO_USE_DAE

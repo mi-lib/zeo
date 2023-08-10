@@ -1,3 +1,5 @@
+2023. 8.10. Modified _zShape3DImportFromZTK. [zeo_shape3d]
+2023. 8.10. Abolished zPH3DFReadPLY, zPH3DFWritePLY_ASCII, zPH3DFWritePLY_Bin, zPH3DFWritePLY, and zShape3DFReadPLY, and defined zPH3DReadFilePLY, zPH3DWriteFilePLY_ASCII, zPH3DWriteFilePLY_Bin, zPH3DWriteFilePLY, and zShape3DReadFilePLY instead. [zeo_ph_ply, zeo_shape3d, app]
 2023. 8. 7. Abolished zShape3DFReadOBJ, and defined zShape3DReadFileOBJ instead. [zeo_shape3d]
 2023. 8. 7. Added zPH3DReadFileOBJ. [zeo_ph_obj]
 2023. 8. 7. Modified specifications of zPH3DFWriteSTL_ASCII and zPH3DFWriteSTL_Bin. [zeo_ph_stl]

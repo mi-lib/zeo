@@ -494,20 +494,36 @@ static bool _zPH3DFReadPLYData(FILE *fp, zPH3D *ph, zPLY *ply)
 }
 
 /* read a 3D polyhedron from PLY format */
-zPH3D *zPH3DFReadPLY(FILE *fp, zPH3D *ph)
+zPH3D *zPH3DReadFilePLY(zPH3D *ph, const char *filename)
 {
+  FILE *fp;
   zPLY ply;
+  long pos;
 
+  if( !( fp = fopen( filename, "rt" ) ) ){
+    ZOPENERROR( filename );
+    return NULL;
+  }
   if( !_zPLYIsValid( fp ) ) return NULL;
   if( !_zPLYFReadHeader( fp, &ply ) ){
     ZRUNERROR( ZEO_ERR_PLY_INCOMPLETE );
     return NULL;
+  }
+  if( ply.format == ZEO_PLY_FORMAT_BIN || ply.format == ZEO_PLY_FORMAT_BIN_REV ){
+    pos = ftell ( fp );
+    fclose( fp );
+    if( !( fp = fopen( filename, "rb" ) ) ){
+      ZOPENERROR( filename );
+      return NULL;
+    }
+    fseek( fp, pos, SEEK_SET );
   }
   zPH3DInit( ph );
   if( !_zPH3DFReadPLYData( fp, ph, &ply ) ){
     ZRUNERROR( ZEO_ERR_PLY_INCOMPLETE );
     return NULL;
   }
+  fclose( fp );
   return ph;
 }
 
@@ -555,16 +571,37 @@ static void _zPH3DFWritePLYDataBin(FILE *fp, zPH3D *ph)
 }
 
 /* write a 3D polyhedron in PLY format (ASCII) */
-void zPH3DFWritePLY_ASCII(FILE *fp, zPH3D *ph)
+bool zPH3DWriteFilePLY_ASCII(zPH3D *ph, const char *filename)
 {
+  FILE *fp;
+
+  if( !( fp = fopen( filename, "wt" ) ) ){
+    ZOPENERROR( filename );
+    return false;
+  }
   _zPH3DFWritePLYHeader( fp, ph, "ascii" );
   _zPH3DFWritePLYDataASCII( fp, ph );
+  fclose( fp );
+  return true;
 }
 
 /* write a 3D polyhedron in PLY format (binary) */
-void zPH3DFWritePLY_Bin(FILE *fp, zPH3D *ph)
+bool zPH3DWriteFilePLY_Bin(zPH3D *ph, const char *filename)
 {
+  FILE *fp;
+
+  if( !( fp = fopen( filename, "wt" ) ) ){
+    ZOPENERROR( filename );
+    return false;
+  }
   _zPH3DFWritePLYHeader( fp, ph,
     endian_check() == Z_ENDIAN_BIG ? "binary_big_endian" : "binary_little_endian" );
+  fclose( fp );
+  if( !( fp = fopen( filename, "ab" ) ) ){
+    ZOPENERROR( filename );
+    return false;
+  }
   _zPH3DFWritePLYDataBin( fp, ph );
+  fclose( fp );
+  return true;
 }
