@@ -395,14 +395,23 @@ __ZEO_EXPORT double zVec3DSqrDist(zVec3D *v1, zVec3D *v2);
 
 /*! \brief normalize a 3D vector.
  *
- * zVec3DNormalize() normalizes a 3D vector \a v and put it into \a nv.
- * zVec3DNormalizeDRC() normalizes the vector \a v directly.
+ * zVec3DNormalizeNC() and zVec3DNormalize() normalize a 3D vector
+ * \a v. The result is put into \a nv. Namely, \a nv is in parallel
+ * to \a v, and its norm is 1.
  *
- * As a result of nomalization, the norm of \a nv will be 1.
+ * zVec3DNormalize() checks if all components of \a v are larger than
+ * zTOL. If not, nothing happens on \a nv, and 0 is returned.
+ * zVec3DNormalizeNC() does not check the components of \a v. Thus,
+ * it should be used only when it is guaranteed that \a v is not tiny.
+ *
+ * zVec3DNormalizeNCDRC() and zVec3DNormalizeDRC() directly normalizes
+ * the vector \a v. Namely, it is magnified so that its norm is 1.
+ * As well as zVec3DNormalizeNC(), zVec3DNormalizeNCDRC() does not
+ * check components of \a v.
  * \return
- * zVec3DNormalize() and zVec3DNormalizeNC() return the norm of the
- * originala pointer \a v.
- * If the norm of \a v is less than zTOL, -1is returned.
+ * All these functions return the norm of the original vector \a v.
+ * If all components of \a v are less than zTOL, zVec3DNormalize() and
+ * zVec3DNormalizeDRC() return 0.
  */
 __ZEO_EXPORT double zVec3DNormalizeNC(zVec3D *v, zVec3D *nv);
 __ZEO_EXPORT double zVec3DNormalize(zVec3D *v, zVec3D *nv);

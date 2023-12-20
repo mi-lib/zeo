@@ -1,3 +1,4 @@
+2023.12.20. Modified specifications of zVec3DNormalize and zVec3DNormalizeDRC to return 1 if the given vector is tiny. [zeo_vec3d]
 2023. 8.10. Modified _zShape3DImportFromZTK. [zeo_shape3d]
 2023. 8.10. Abolished zPH3DFReadPLY, zPH3DFWritePLY_ASCII, zPH3DFWritePLY_Bin, zPH3DFWritePLY, and zShape3DFReadPLY, and defined zPH3DReadFilePLY, zPH3DWriteFilePLY_ASCII, zPH3DWriteFilePLY_Bin, zPH3DWriteFilePLY, and zShape3DReadFilePLY instead. [zeo_ph_ply, zeo_shape3d, app]
 2023. 8. 7. Abolished zShape3DFReadOBJ, and defined zShape3DReadFileOBJ instead. [zeo_shape3d]

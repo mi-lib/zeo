@@ -254,28 +254,27 @@ double zVec3DSqrDist(zVec3D *v1, zVec3D *v2)
   return _zVec3DSqrNorm( &dv );
 }
 
+#define __zVec3DNormalize(v,nv) do{\
+  double __l, __k;\
+  __k = 1.0 / ( __l = zVec3DNorm(v) );\
+  _zVec3DMul( v, __k, nv );\
+  return __l;\
+} while(0)
+
 /* normalize a 3D vector without checking vector size. */
 double zVec3DNormalizeNC(zVec3D *v, zVec3D *nv)
 {
-  double l, k;
-
-  k = 1.0 / ( l = zVec3DNorm(v) );
-  _zVec3DMul( v, k, nv );
-  return l;
+  __zVec3DNormalize( v, nv );
 }
 
 /* normalize a 3D vector. */
 double zVec3DNormalize(zVec3D *v, zVec3D *nv)
 {
-  double l, k;
-
   if( zVec3DIsTiny( v ) ){
     ZRUNWARN( ZEO_ERR_ZERONORM );
-    return -1;
+    return 0;
   }
-  k = 1.0 / ( l = zVec3DNorm(v) );
-  _zVec3DMul( v, k, nv );
-  return l;
+  __zVec3DNormalize( v, nv );
 }
 
 /* ********************************************************** */

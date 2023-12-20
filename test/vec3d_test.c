@@ -100,6 +100,10 @@ void assert_vecprod(void)
   zAssert( zVec3DNormalize, zIsTiny(v2.e[0]*v2.e[0]+v2.e[1]*v2.e[1]+v2.e[2]*v2.e[2]-1) );
   zVec3DNormalizeDRC( &v1 );
   zAssert( zVec3DNormalizeDRC, zIsTiny(v1.e[0]*v1.e[0]+v1.e[1]*v1.e[1]+v1.e[2]*v1.e[2]-1) );
+  zVec3DZero( &v1 );
+  zAssert( zVec3DNormalize (zero vector), zVec3DNormalize( &v1, &v2 ) == 0 );
+  zVec3DZero( &v1 );
+  zAssert( zVec3DNormalizeDRC (zero vector), zVec3DNormalizeDRC( &v1 ) == 0 );
 }
 
 void assert_geometry(void)
