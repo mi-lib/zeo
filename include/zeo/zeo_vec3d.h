@@ -471,6 +471,9 @@ __ZEO_EXPORT double zVec3DAngle(zVec3D *v1, zVec3D *v2, zVec3D *n);
  */
 __ZEO_EXPORT zVec3D *zVec3DAAError(zVec3D *v1, zVec3D *v2, zVec3D *aa);
 
+/*! \brief extract angle and unit axis vector from an angle-axis vector. */
+#define zAA2AngleAndAxis(aa,angle,axis) ( *(angle) = zVec3DNormalize( (aa), axis ) )
+
 /*! \brief projection, orthogonalization and rotation of a 3D vector.
  *
  * zVec3DProj() projects vector \a v onto the line directed by
