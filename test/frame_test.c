@@ -12,6 +12,19 @@ zVec3D *vec_gen_rand(zVec3D *v)
 
 #define N 1000
 
+void assert_frame_misc(void)
+{
+  zFrame3D f;
+
+  frame_gen_rand( &f );
+  zAssert( zFrame3DPos, zVec3DEqual( zFrame3DPos(&f), &f.pos ) );
+  zAssert( zFrame3DAtt, zMat3DEqual( zFrame3DAtt(&f), &f.att ) );
+  zAssert( zFrame3DVec,
+    zVec3DEqual( zFrame3DVec(&f,zX), &f.att.b.x ) &&
+    zVec3DEqual( zFrame3DVec(&f,zY), &f.att.b.y ) &&
+    zVec3DEqual( zFrame3DVec(&f,zZ), &f.att.b.z ) );
+}
+
 void assert_xform(void)
 {
   zFrame3D f;
@@ -118,6 +131,7 @@ void assert_frame_xform(void)
 int main(void)
 {
   zRandInit();
+  assert_frame_misc();
   assert_xform();
   assert_frame_inv();
   assert_frame_cascade();

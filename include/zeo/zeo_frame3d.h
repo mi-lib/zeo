@@ -20,6 +20,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zFrame3D ){
   zVec3D pos;
   zMat3D att;
 #ifdef __cplusplus
+  zVec3D &vec(zAxis a);
   zVec3D &setPos(zVec3D &p){ zVec3DCopy( &p, &pos ); return pos; }
   zMat3D &setAtt(zMat3D &a){ zMat3DCopy( &a, &att ); return att; }
   zFrame3D &create(zVec3D &p, zMat3D &m);
@@ -62,6 +63,8 @@ __ZEO_EXPORT const zFrame3D zframe3Dident;
 
 #define zFrame3DPos(f) ( &(f)->pos )
 #define zFrame3DAtt(f) ( &(f)->att )
+
+#define zFrame3DVec(f,a) zMat3DVec( zFrame3DAtt(f), a )
 
 #define zFrame3DSetPos(f,p) zVec3DCopy( p, zFrame3DPos(f) )
 #define zFrame3DSetAtt(f,r) zMat3DCopy( r, zFrame3DAtt(f) )
@@ -352,6 +355,7 @@ __ZEO_EXPORT void zFrame3DFPrint(FILE *fp, zFrame3D *f);
 __END_DECLS
 
 #ifdef __cplusplus
+inline zVec3D &zFrame3D::vec(zAxis a){ return *zFrame3DVec( this, a ); }
 inline zFrame3D &zFrame3D::create(zVec3D &p, zMat3D &m){ return *zFrame3DCreate( this, &p, &m ); }
 inline zFrame3D &zFrame3D::createZYX(double x, double y, double z, double azim, double elev, double tilt){ return *zFrame3DFromZYX( this, x, y, z, azim, elev, tilt ); }
 inline zFrame3D &zFrame3D::createZYX(double array[6]){ return *zArrayToFrame3DZYX( array, this ); }

@@ -29,6 +29,7 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat3D ){
     double xx, xy, xz, yx, yy, yz, zx, zy, zz;
   } c;             /*!< 9 components */
 #ifdef __cplusplus
+  zVec3D &vec(zAxis a);
   zMat3D &create(double a11, double a12, double a13, double a21, double a22, double a23, double a31, double a32, double a33);
   zMat3D &copy(zMat3D &m);
   zMat3D &zero();
@@ -81,6 +82,9 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat3D ){
   static const zMat3D zmat3Dident;
 #endif /* __cplusplus */
 };
+
+/*! \brief a column vector of a 3x3 matrix. */
+#define zMat3DVec(m,a) ( &(m)->v[(a)] )
 
 /*! \brief 3D zero matrix and identity matrix */
 #ifdef __cplusplus
@@ -843,6 +847,7 @@ __ZEO_EXPORT zVec3D *zAAFromZTK(zVec3D *aa, ZTK *ztk);
 __END_DECLS
 
 #ifdef __cplusplus
+inline zVec3D &zMat3D::vec(zAxis a){ return *zMat3DVec( this, a ); }
 inline zMat3D &zMat3D::create(double a11, double a12, double a13, double a21, double a22, double a23, double a31, double a32, double a33){
   _zMat3DCreate( this, a11, a12, a13, a21, a22, a23, a31, a32, a33 );
   return *this;
