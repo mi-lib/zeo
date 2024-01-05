@@ -80,7 +80,7 @@ zNURBS3D *zNURBS3DCopy(zNURBS3D *src, zNURBS3D *dest)
     ZRUNERROR( ZEO_ERR_NURBS_SIZMIS );
     return NULL;
   }
-  zNURBS3DSetSliceNum( dest, src->ns[0], src->ns[1] );
+  zNURBS3DSetSliceNum( dest, zNURBS3DSliceNum(src,0), zNURBS3DSliceNum(src,1) );
   zVecCopyNC( src->knot[0], dest->knot[0] );
   zVecCopyNC( src->knot[1], dest->knot[1] );
   memcpy( zArray2Buf(&dest->cpnet), zArray2Buf(&src->cpnet), zNURBS3DCPNum(src,0)*zNURBS3DCPNum(src,1)*sizeof(zNURBS3DCPCell) );
@@ -307,22 +307,22 @@ zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph)
   double u, v;
 
   if( !zPH3DAlloc( ph,
-      ( nurbs->ns[0] + 1 ) * ( nurbs->ns[1] + 1 ), nurbs->ns[0] * nurbs->ns[1] * 2 ) )
+      ( zNURBS3DSliceNum(nurbs,0) + 1 ) * ( zNURBS3DSliceNum(nurbs,1) + 1 ), zNURBS3DSliceNum(nurbs,0) * zNURBS3DSliceNum(nurbs,1) * 2 ) )
     return NULL;
 
   vert = zPH3DVertBuf( ph );
-  for( i=0; i<=nurbs->ns[0]; i++ ){
+  for( i=0; i<=zNURBS3DSliceNum(nurbs,0); i++ ){
     u = zNURBS3DKnotSlice( nurbs, 0, i );
-    for( j=0; j<=nurbs->ns[1]; j++ ){
+    for( j=0; j<=zNURBS3DSliceNum(nurbs,1); j++ ){
       v = zNURBS3DKnotSlice( nurbs, 1, j );
       if( zNURBS3DVec( nurbs, u, v, vert ) ) vert++;
     }
   }
   face = zPH3DFaceBuf( ph );
   vert = zPH3DVertBuf( ph );
-  vert2 = vert + nurbs->ns[1] + 1;
-  for( i=0; i<nurbs->ns[0]; i++, vert+=nurbs->ns[1]+1, vert2+=nurbs->ns[1]+1 )
-    for( j=0; j<nurbs->ns[1]; j++ ){
+  vert2 = vert + zNURBS3DSliceNum(nurbs,1) + 1;
+  for( i=0; i<zNURBS3DSliceNum(nurbs,0); i++, vert+=zNURBS3DSliceNum(nurbs,1)+1, vert2+=zNURBS3DSliceNum(nurbs,1)+1 )
+    for( j=0; j<zNURBS3DSliceNum(nurbs,1); j++ ){
       zTri3DCreate( face++, &vert[j], &vert2[j], &vert2[j+1] );
       zTri3DCreate( face++, &vert[j], &vert2[j+1], &vert[j+1] );
     }
@@ -358,8 +358,8 @@ static void *_zNURBS3DVKnotFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return _zNURBS3DKnotFromZTK( (zNURBS3D *)obj, 1, ztk ) ? obj : NULL;
 }
 static void *_zNURBS3DSliceFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  ((zNURBS3D*)obj)->ns[0] = ZTKInt( ztk );
-  ((zNURBS3D*)obj)->ns[1] = ZTKInt( ztk );
+  zNURBS3DSliceNum((zNURBS3D*)obj,0) = ZTKInt( ztk );
+  zNURBS3DSliceNum((zNURBS3D*)obj,1) = ZTKInt( ztk );
   return obj;
 }
 static void *_zNURBS3DSizeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
@@ -397,7 +397,7 @@ static void _zNURBS3DVKnotFPrint(FILE *fp, int i, void *obj){
   if( zVecSizeNC(((zNURBS3D*)obj)->knot[1]) > 0 ) zVecFPrint( fp, ((zNURBS3D*)obj)->knot[1] );
 }
 static void _zNURBS3DSliceFPrint(FILE *fp, int i, void *obj){
-  fprintf( fp, "%d %d\n", ((zNURBS3D*)obj)->ns[0], ((zNURBS3D*)obj)->ns[1] );
+  fprintf( fp, "%d %d\n", zNURBS3DSliceNum((zNURBS3D*)obj,0), zNURBS3DSliceNum((zNURBS3D*)obj,1) );
 }
 static void _zNURBS3DSizeFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%d %d\n", zNURBS3DCPNum((zNURBS3D*)obj,0), zNURBS3DCPNum((zNURBS3D*)obj,1) );

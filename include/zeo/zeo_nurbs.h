@@ -53,6 +53,13 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zNURBS3D ){
 #define zNURBS3DKnotS(n,i)         zNURBS3DKnot(n,i,(n)->order[i])
 #define zNURBS3DKnotE(n,i)         zNURBS3DKnot(n,i,zNURBS3DCPNum(n,i))
 #define zNURBS3DKnotSlice(n,i,k)   ( ( zNURBS3DKnotE(n,i) - zNURBS3DKnotS(n,i) ) * k / (n)->ns[i] + zNURBS3DKnotS(n,i) )
+#define zNURBS3DSliceNum(n,i)      (n)->ns[i]
+
+/*! \brief set numbers of slices of a NURBS curve / surface. */
+#define zNURBS3DSetSliceNum(n,nu,nv) do{\
+  (n)->ns[0] = (nu);\
+  (n)->ns[1] = (nv);\
+} while(0)
 
 #define zNURBS3DCPNum(n,i)         zArray2Size(&(n)->cpnet,i)
 #define zNURBS3DWeight(n,i,j)      ( zArray2ElemNC(&(n)->cpnet,i,j)->w )
@@ -66,6 +73,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zNURBS3D ){
 #define zNURBS3D1KnotS(n)          zNURBS3DKnotS(n,1)
 #define zNURBS3D1KnotE(n)          zNURBS3DKnotE(n,1)
 #define zNURBS3D1KnotSlice(n,k)    zNURBS3DKnotSlice(n,1,k)
+#define zNURBS3D1SliceNum(n)       zNURBS3DSliceNum(n,1)
+#define zNURBS3D1SetSliceNum(n,k)  zNURBS3DSetSliceNum(n,0,k)
 
 #define zNURBS3D1CPNum(n)          zNURBS3DCPNum(n,1)
 #define zNURBS3D1Weight(n,j)       zNURBS3DWeight(n,0,j)
@@ -102,12 +111,6 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zNURBS3D ){
  */
 __ZEO_EXPORT bool zNURBS3DAlloc(zNURBS3D *nurbs, int size1, int size2, int order1, int order2);
 #define zNURBS3D1Alloc(nurbs,size,order) zNURBS3DAlloc( nurbs, 1, size, 0, order )
-
-/*! \brief set numbers of slices of a NURBS curve / surface. */
-#define zNURBS3DSetSliceNum(nurbs,nu,nv) do{\
-  (nurbs)->ns[0] = (nu);\
-  (nurbs)->ns[1] = (nv);\
-} while(0)
 
 /*! \brief initialize a NURBS curve / surface.
  *
