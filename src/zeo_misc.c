@@ -19,7 +19,7 @@ char *zAxisStr(zAxis axis)
 }
 
 /* identify axis from a string. */
-zAxis zAxisFromStr(char *str)
+zAxis zAxisFromStr(const char *str)
 {
   char **jp;
   zAxis axis;
@@ -46,7 +46,7 @@ char *zDirStr(zDir dir)
 }
 
 /* identify direction from a string. */
-zDir zDirFromStr(char *str)
+zDir zDirFromStr(const char *str)
 {
   char **jp;
   zDir dir;

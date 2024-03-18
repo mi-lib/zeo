@@ -37,7 +37,7 @@ enum{
  * zAxisFromStr() returns the corresponding axis identifier.
  */
 __ZEO_EXPORT char *zAxisStr(zAxis axis);
-__ZEO_EXPORT zAxis zAxisFromStr(char *str);
+__ZEO_EXPORT zAxis zAxisFromStr(const char *str);
 
 /*! \brief direction identifiers */
 typedef int8_t zDir;
@@ -64,7 +64,7 @@ enum{
  * zDirFromStr() returns the corresponding direction identifier.
  */
 __ZEO_EXPORT char *zDirStr(zDir dir);
-__ZEO_EXPORT zDir zDirFromStr(char *str);
+__ZEO_EXPORT zDir zDirFromStr(const char *str);
 
 /*! \brief reverse a direction.
  *

@@ -43,7 +43,7 @@ zRGB *zRGBBlend(zRGB *rgb1, zRGB *rgb2, double ratio, zRGB *rgb)
 }
 
 /* decode a string of sequential floating-point values to RGB. */
-static zRGB *_zRGBRatio(zRGB *rgb, char *ratio)
+static zRGB *_zRGBRatio(zRGB *rgb, const char *ratio)
 {
   float r, g, b;
 
@@ -52,7 +52,7 @@ static zRGB *_zRGBRatio(zRGB *rgb, char *ratio)
 }
 
 /* decode a hexadecimal string to RGB. */
-static zRGB *_zRGBHex(zRGB *rgb, char *hex)
+static zRGB *_zRGBHex(zRGB *rgb, const char *hex)
 {
   int len, i;
   uint r, g, b, d;
@@ -71,7 +71,7 @@ static zRGB *_zRGBHex(zRGB *rgb, char *hex)
 }
 
 /* decode a string to RGB. */
-zRGB *zRGBDec(zRGB *rgb, char *str)
+zRGB *zRGBDec(zRGB *rgb, const char *str)
 {
   return str[0] == '#' ? _zRGBHex( rgb, str+1 ) : _zRGBRatio( rgb, str );
 }

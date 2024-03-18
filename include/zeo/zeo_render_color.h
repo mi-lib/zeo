@@ -81,7 +81,7 @@ __ZEO_EXPORT zRGB *zRGBBlend(zRGB *rgb1, zRGB *rgb2, double ratio, zRGB *rgb);
  * \return
  * zRGBDec() returns a pointer \a rgb.
  */
-__ZEO_EXPORT zRGB *zRGBDec(zRGB *rgb, char *str);
+__ZEO_EXPORT zRGB *zRGBDec(zRGB *rgb, const char *str);
 
 /* \brief read a set of RGB from a ZTK format processor. */
 __ZEO_EXPORT zRGB *zRGBFromZTK(zRGB *rgb, ZTK *ztk);
