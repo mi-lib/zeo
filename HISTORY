@@ -1,3 +1,4 @@
+2024. 5.13. Added STD in config.org. [config]
 2024. 5.13. Put config.app in app. [app]
 2024. 3.19. Modified specifications of zAxisFromStr, zDirFromStr, _zRGBRatio, _zRGBHex, and zRGBDec to accept const pointers to strings. [zeo_misc, zeo_render_color]
 2024. 1. 5. Added zNURBS3DSliceNum, zNURBS3D1SliceNum, and zNURBS3D1SetSliceNum. [zeo_nurbs]
