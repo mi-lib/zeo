@@ -11,13 +11,19 @@
  * list of 3D vectors
  * ********************************************************** */
 
-/* find an identical 3D vector in a list. */
-zVec3DListCell *zVec3DListFind(zVec3DList *list, zVec3D *v)
+/* allocate a 3D vector list cell and copy a vector. */
+zVec3DListCell *zVec3DListNew(zVec3D *v)
 {
-  zVec3DListCell *cp;
+  zVec3DListCell *cell;
 
-  zListForEach( list, cp )
-    if( zVec3DEqual( cp->data, v ) ) return cp;
+  if( ( cell = zAlloc( zVec3DListCell, 1 ) ) ){
+    if( ( cell->data = zAlloc( zVec3D, 1 ) ) ){
+      zVec3DCopy( v, cell->data );
+      return cell;
+    }
+    free( cell );
+  }
+  ZALLOCERROR();
   return NULL;
 }
 
@@ -26,17 +32,8 @@ zVec3DListCell *zVec3DListAdd(zVec3DList *list, zVec3D *v)
 {
   zVec3DListCell *cell;
 
-  if( !( cell = zAlloc( zVec3DListCell, 1 ) ) ){
-    ZALLOCERROR();
-    return NULL;
-  }
-  if( !( cell->data = zAlloc( zVec3D, 1 ) ) ){
-    ZALLOCERROR();
-    free( cell );
-    return NULL;
-  }
-  zVec3DCopy( v, cell->data );
-  zListInsertHead( list, cell );
+  if( ( cell = zVec3DListNew( v ) ) )
+    zListInsertHead( list, cell );
   return cell;
 }
 
@@ -48,6 +45,21 @@ zVec3DList *zVec3DListAppendArray(zVec3DList *list, zVec3DArray *array)
   for( i=0; i<zArraySize(array); i++ )
     if( !zVec3DListAdd( list, zArrayElemNC(array,i) ) ) break;
   return list;
+}
+
+/* clone an array of 3D vectors. */
+zVec3DList *zVec3DListClone(zVec3DList *src, zVec3DList *dest)
+{
+  zVec3DListCell *cp;
+
+  zListInit( dest );
+  zListForEach( src, cp ){
+    if( !zVec3DListAdd( dest, cp->data ) ){
+      zVec3DListDestroy( dest );
+      return NULL;
+    }
+  }
+  return dest;
 }
 
 /* converts an array of 3D vectors to a list. */
@@ -67,6 +79,16 @@ void zVec3DListDestroy(zVec3DList *list)
     zFree( vc->data );
     zFree( vc );
   }
+}
+
+/* find an identical 3D vector in a list. */
+zVec3DListCell *zVec3DListFind(zVec3DList *list, zVec3D *v)
+{
+  zVec3DListCell *cp;
+
+  zListForEach( list, cp )
+    if( zVec3DEqual( cp->data, v ) ) return cp;
+  return NULL;
 }
 
 /* quick sort of a list of 3D vectors. */
@@ -130,16 +152,14 @@ zVec3DAddrList *zVec3DAddrListCreate(zVec3DAddrList *list, zVec3DArray *array)
 /* clone a list of pointers to 3D vectors. */
 zVec3DAddrList *zVec3DAddrListClone(zVec3DAddrList *src, zVec3DAddrList *dest)
 {
-  zVec3DAddr *scp, *cp;
+  zVec3DAddr *scp;
 
   zListInit( dest );
   zListForEach( src, scp ){
-    if( !( cp = zAlloc( zVec3DAddr, 1 ) ) ){
-      ZALLOCERROR();
+    if( !zVec3DAddrListAdd( dest, scp->data ) ){
+      zVec3DAddrListDestroy( dest );
       return NULL;
     }
-    cp->data = scp->data;
-    zListInsertHead( dest, cp );
   }
   return dest;
 }

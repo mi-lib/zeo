@@ -4,7 +4,7 @@
 
 void test_vert(zVec3DList *vl)
 {
-  register int i;
+  int i;
   zVec3D v;
 
   zRandInit();

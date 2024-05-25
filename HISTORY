@@ -1,3 +1,6 @@
+2024. 5.25. Reimplemented zVec3DAddrListClone. [zeo_vec3d_list]
+2024. 5.25. Added zVec3DListClone. [zeo_vec3d_list]
+2024. 5.25. Added zVec3DListNew and reimplemented zVec3DListAdd. [zeo_vec3d_list]
 2024. 5.13. Added DEPENDENCY in config.app. [app]
 2024. 5.13. Added STD in config.org. [config]
 2024. 5.13. Put config.app in app. [app]
