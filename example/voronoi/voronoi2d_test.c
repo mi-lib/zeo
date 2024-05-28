@@ -23,8 +23,8 @@ void generate_points(FILE *fp, zVec2DList *pl, int n)
 int main(int argc, char *argv[])
 {
   zVec2DList pl;
-  zDTTri2DList tl;
-  zVD2DList vl;
+  zDelaunayTri2DList tl;
+  zVoronoi2DList vl;
   FILE *fp;
   int n;
 
@@ -34,18 +34,18 @@ int main(int argc, char *argv[])
   generate_points( fp, &pl, n );
   fclose( fp );
 
-  zDelaunay2D( &pl, &tl );
+  zDelaunayTriangulate2D( &pl, &tl );
   fp = fopen( "t", "w" );
-  zDTTri2DListFPrint( fp, &tl );
+  zDelaunayTri2DListFPrint( fp, &tl );
   fclose( fp );
 
-  zVoronoi2D( &pl, &vl );
+  zVoronoiDiagram2D( &pl, &vl );
   fp = fopen( "c", "w" );
-  zVD2DListFPrint( fp, &vl );
+  zVoronoi2DListFPrint( fp, &vl );
   fclose( fp );
 
   zVec2DListDestroy( &pl );
-  zDTTri2DListDestroy( &tl );
-  zVD2DListDestroy( &vl );
+  zDelaunayTri2DListDestroy( &tl );
+  zVoronoi2DListDestroy( &vl );
   return 0;
 }

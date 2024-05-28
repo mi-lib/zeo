@@ -1,3 +1,6 @@
+2024. 5.28. Changed the license from LGPL-3 to MIT license. [all]
+2024. 5.28. Renamed zVD2DLoop to zVoronoi2DLoop, and zVoronoi2D to zVoronoiDiagram2D. [zeo_voronoi2d]
+2024. 5.28. Renamed zDTTri2D to zDelaunayTri2D, and zDelaunay2D to zDelaunayTriangulate2D. [zeo_voronoi2d]
 2024. 5.25. Reimplemented zVec3DAddrListClone. [zeo_vec3d_list]
 2024. 5.25. Added zVec3DListClone. [zeo_vec3d_list]
 2024. 5.25. Added zVec3DListNew and reimplemented zVec3DListAdd. [zeo_vec3d_list]
