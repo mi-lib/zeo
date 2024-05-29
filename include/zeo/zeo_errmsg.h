@@ -46,6 +46,23 @@
 #define ZEO_ERR_OPT_INV      "invalid description for optical-info"
 #define ZEO_ERR_OPT_UNNAME   "unnamed optical-info exists"
 
+#define ZEO_ERR_PCD_INVALID_VERSION       "invalid string for version: %s"
+#define ZEO_ERR_PCD_UNKNOWN_FIELDID       "unknown field identifier: %s"
+#define ZEO_ERR_PCD_MISMATCH_NUMOFFIELDS  "mismatch number of fields: %d"
+#define ZEO_ERR_PCD_INVALID_FIELDSIZE     "invalid field size: %d"
+#define ZEO_ERR_PCD_UNKNOWN_FIELDTYPE     "unknown field type identifier: %s"
+#define ZEO_ERR_PCD_INVALID_COUNT         "can only handle 3D point cloud"
+#define ZEO_ERR_PCD_UNSPEC_WIDTH          "width not specified"
+#define ZEO_ERR_PCD_UNSPEC_HEIGHT         "height not specified"
+#define ZEO_ERR_PCD_INVALID_VIEWPOINT     "invalid specification of viewpoint"
+#define ZEO_ERR_PCD_UNSPEC_NUMOFPOINTS    "number of points not specified"
+#define ZEO_ERR_PCD_INVALID_NUMOFPOINTS   "inconsistent number of points: %d VS %d x %d"
+#define ZEO_ERR_PCD_UNSPEC_DATATYPE       "data type not specified"
+#define ZEO_ERR_PCD_UNKNOWN_DATATYPE      "unknown data type identifier: %s"
+#define ZEO_ERR_PCD_INVALID_HEADER        "invalid PCD file header"
+#define ZEO_ERR_PCD_INVALID_DATATYPE      "invalid data type"
+#define ZEO_ERR_PCD_INVALID_FORMAT        "unknown point clound format %s"
+
 #define ZEO_ERR_STL_UNREADABLE "File unreadable. Probably not a STL file."
 #define ZEO_ERR_STL_INCOMPLETE "incomplete STL file"
 
@@ -111,6 +128,8 @@
 #define ZEO_WARN_TEXTURE_COORD_UNMATCH "%d: unmatched identifier of a coordinate"
 #define ZEO_WARN_TEXTURE_UNKNOWN_TYPE  "unknown texture type: %s"
 #define ZEO_WARN_TEXTURE_EMPTY         "empty set of coordinates assigned for a texture."
+
+#define ZEO_WARN_PCD_LACKOFDATA           "short of data"
 
 #define ZEO_WARN_PH_VERT_UNMATCH  "%d: unmatched identifier of a vertex"
 #define ZEO_WARN_PH_DUPDEF        "duplicate definition of polyhedron, ignored"

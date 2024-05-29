@@ -1,7 +1,7 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_bv2d_ch - 2D bounding volume: planar convex hull.
+ * zeo_bv2d_convexhull - 2D bounding volume: planar convex hull.
  */
 
 #include <zeo/zeo_bv2d.h>
@@ -11,7 +11,7 @@
  * ********************************************************** */
 
 /* find two independent base vectors on a plane. */
-static zVec3D *_zCH2DBasePL(zVec3DList *pl, zVec3D s[])
+static zVec3D *_zConvexHull2DBasePL(zVec3DList *pl, zVec3D s[])
 {
   zVec3DListCell *pc;
   zVec3D n;
@@ -58,14 +58,14 @@ static int __z_ch2d_pl_cmp(void *v1, void *v2, void *priv)
 }
 
 /* planar convex hull of a list of vertices. */
-zLoop3D *zCH2DPL(zLoop3D *ch, zVec3DList *pl)
+zLoop3D *zConvexHull2DPL(zLoop3D *ch, zVec3DList *pl)
 {
   zVec3D s[2], d;
   zVec3DListCell *p0, *p1, *p;
   double t, t_max;
 
   zListInit( ch );
-  if( !_zCH2DBasePL( pl, s ) ){
+  if( !_zConvexHull2DBasePL( pl, s ) ){
     ZRUNERROR( ZEO_ERR_CH_DEG1 );
     return NULL;
   }
@@ -97,7 +97,7 @@ zLoop3D *zCH2DPL(zLoop3D *ch, zVec3DList *pl)
  * ********************************************************** */
 
 /* find two independent base vectors on a plane. */
-static zVec3D *_zCH2DBase(zVec3D p[], int num, zVec3D s[])
+static zVec3D *_zConvexHull2DBase(zVec3D p[], int num, zVec3D s[])
 {
   int i;
   zVec3D n;
@@ -142,14 +142,14 @@ static int __z_ch2d_cmp(void *v1, void *v2, void *priv)
 }
 
 /* planar convex hull of an array of vertices. */
-zLoop3D *zCH2D(zLoop3D *ch, zVec3D p[], int num)
+zLoop3D *zConvexHull2D(zLoop3D *ch, zVec3D p[], int num)
 {
   zVec3D s[2], d;
   int i, j, k;
   double t, t_max;
 
   zListInit( ch );
-  if( !_zCH2DBase( p, num, s ) ){
+  if( !_zConvexHull2DBase( p, num, s ) ){
     ZRUNERROR( ZEO_ERR_CH_DEG1 );
     return NULL;
   }
@@ -178,7 +178,7 @@ zLoop3D *zCH2D(zLoop3D *ch, zVec3D p[], int num)
 }
 
 /* convert a planar convex hull to a polyhedron. */
-static zPH3D *_zCH2D2PH3D(zPH3D *ch, zLoop3D *vl)
+static zPH3D *_zConvexHull2D2PH3D(zPH3D *ch, zLoop3D *vl)
 {
   zLoop3DCell *vc;
   int vn, i;
@@ -200,27 +200,27 @@ static zPH3D *_zCH2D2PH3D(zPH3D *ch, zLoop3D *vl)
 }
 
 /* a planar convex hull to a polyhedron. */
-zPH3D *zCH2D2PH3D(zPH3D *ch, zVec3D vert[], int n)
+zPH3D *zConvexHull2D2PH3D(zPH3D *ch, zVec3D vert[], int n)
 {
   zLoop3D vl;
 
-  if( !zCH2D( &vl, vert, n ) || !_zCH2D2PH3D( ch, &vl ) ) return NULL;
+  if( !zConvexHull2D( &vl, vert, n ) || !_zConvexHull2D2PH3D( ch, &vl ) ) return NULL;
   zLoop3DDestroy( &vl );
   return ch;
 }
 
 /* a planar convex hull of a list of vertices to a polyhedron. */
-zPH3D *zCH2DPL2PH3D(zPH3D *ch, zVec3DList *pl)
+zPH3D *zConvexHull2DPL2PH3D(zPH3D *ch, zVec3DList *pl)
 {
   zLoop3D vl;
 
-  if( !zCH2DPL( &vl, pl ) || !_zCH2D2PH3D( ch, &vl ) ) return NULL;
+  if( !zConvexHull2DPL( &vl, pl ) || !_zConvexHull2D2PH3D( ch, &vl ) ) return NULL;
   zLoop3DDestroy( &vl );
   return ch;
 }
 
 /* the closest point in a convex hull to a point. */
-double zCH2DClosest(zLoop3D *ch, zVec3D *p, zVec3D *cp)
+double zConvexHull2DClosest(zLoop3D *ch, zVec3D *p, zVec3D *cp)
 {
   zLoop3DCell *vc, *vcp;
   zVec3D norm, v1, v2, tmp;

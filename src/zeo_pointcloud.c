@@ -6,6 +6,13 @@
 
 #include <zeo/zeo_pointcloud.h>
 
+typedef enum{
+  ZEO_PCD_DATATYPE_INVALID = -1,
+  ZEO_PCD_DATATYPE_ASCII,
+  ZEO_PCD_DATATYPE_BINARY,
+} _zPCDDataType;
+static const char *__z_pcd_datatype[] = { "ascii", "binary", NULL };
+
 /* ********************************************************** */
 /* PCD format decoder
  * ********************************************************** */
@@ -32,13 +39,6 @@ typedef enum{
   ZEO_PCD_TYPE_FP,
 } _zPCDType;
 static const char *__z_pcd_type[] = { "I", "U", "F", NULL };
-
-typedef enum{
-  ZEO_PCD_DATATYPE_INVALID = -1,
-  ZEO_PCD_DATATYPE_ASCII,
-  ZEO_PCD_DATATYPE_BINARY,
-} _zPCDDataType;
-static const char *__z_pcd_datatype[] = { "ascii", "binary", NULL };
 
 typedef struct _zPCDField{
   _zPCDDef def;
@@ -195,7 +195,7 @@ static void _zPCDInit(_zPCD *pcd)
   pcd->datatype = ZEO_PCD_DATATYPE_INVALID;
 }
 
-static int _zPCDFieldAttrFind(char *tkn, const char *attrlist[])
+static int _zPCDFieldAttrFind(const char *tkn, const char *attrlist[])
 {
   int i;
 
@@ -209,7 +209,7 @@ static bool _zPCDVersionFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
   char *cp;
 
   if( ( cp = strchr( buf, '.' ) ) == NULL ){
-    ZRUNERROR( "invalid string for version: %s", buf );
+    ZRUNERROR( ZEO_ERR_PCD_INVALID_VERSION, buf );
     return false;
   }
   if( cp == buf ){
@@ -226,9 +226,9 @@ static bool _zPCDFieldsFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   int i;
 
-  for( i=0; zSToken( buf, tkn, BUFSIZ ) && i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
+  for( i=0; *zSToken( buf, tkn, BUFSIZ ) && i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
     if( ( pcd->field[i].def = (_zPCDDef)_zPCDFieldAttrFind( tkn, __z_pcd_def ) ) < 0 ){
-      ZRUNERROR( "unknown field identifier: %s", tkn );
+      ZRUNERROR( ZEO_ERR_PCD_UNKNOWN_FIELDID, tkn );
       return false;
     }
   }
@@ -238,25 +238,23 @@ static bool _zPCDFieldsFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 
 static bool _zPCDCheckFieldNum(_zPCD *pcd, int n)
 {
-  if( n != pcd->fieldnum ){
-    ZRUNERROR( "mismatch number of fields: %d", n );
-    return false;
-  }
-  return true;
+  if( n == pcd->fieldnum ) return true;
+  ZRUNERROR( ZEO_ERR_PCD_MISMATCH_NUMOFFIELDS, n );
+  return false;
 }
 
 static bool _zPCDSizeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   int i;
 
-  for( i=0; zSToken( buf, tkn, BUFSIZ ) && i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
+  for( i=0; *zSToken( buf, tkn, BUFSIZ ) && i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
     switch( ( pcd->field[i].size = atoi( tkn ) ) ){
     case 1: pcd->field[i].bitsize = 0; break;
     case 2: pcd->field[i].bitsize = 1; break;
     case 4: pcd->field[i].bitsize = 2; break;
     case 8: pcd->field[i].bitsize = 3; break;
     default:
-      ZRUNERROR( "invalid field size: %d", pcd->field[i].size );
+      ZRUNERROR( ZEO_ERR_PCD_INVALID_FIELDSIZE, pcd->field[i].size );
       return false;
     }
   }
@@ -267,9 +265,9 @@ static bool _zPCDTypeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   int i;
 
-  for( i=0; zSToken( buf, tkn, BUFSIZ ) && i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
+  for( i=0; *zSToken( buf, tkn, BUFSIZ ) && i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
     if( ( pcd->field[i].type = (_zPCDType)_zPCDFieldAttrFind( tkn, __z_pcd_type ) ) < 0 ){
-      ZRUNERROR( "unknown field type identifier: %s", tkn );
+      ZRUNERROR( ZEO_ERR_PCD_UNKNOWN_FIELDTYPE, tkn );
       return false;
     }
   }
@@ -280,9 +278,9 @@ static bool _zPCDCountFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   int i;
 
-  for( i=0; zSToken( buf, tkn, BUFSIZ ) && i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
+  for( i=0; *zSToken( buf, tkn, BUFSIZ ) && i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
     if( ( pcd->field[i].count = atoi( tkn ) ) != 1 ){
-      ZRUNERROR( "can only handle 3D point cloud" );
+      ZRUNERROR( ZEO_ERR_PCD_INVALID_COUNT );
       return false;
     }
   }
@@ -291,8 +289,8 @@ static bool _zPCDCountFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 
 static bool _zPCDWidthFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
-  if( zSToken( buf, tkn, BUFSIZ ) == NULL ){
-    ZRUNERROR( "width not specified" );
+  if( !*zSToken( buf, tkn, BUFSIZ ) ){
+    ZRUNERROR( ZEO_ERR_PCD_UNSPEC_WIDTH );
     return false;
   }
   pcd->width = atoi( tkn );
@@ -301,8 +299,8 @@ static bool _zPCDWidthFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 
 static bool _zPCDHeightFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
-  if( zSToken( buf, tkn, BUFSIZ ) == NULL ){
-    ZRUNERROR( "height not specified" );
+  if( !*zSToken( buf, tkn, BUFSIZ ) ){
+    ZRUNERROR( ZEO_ERR_PCD_UNSPEC_HEIGHT );
     return false;
   }
   pcd->height = atoi( tkn );
@@ -316,8 +314,8 @@ static bool _zPCDViewpointFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
   zEP ep;
 
   for( i=0; i<7; i++ ){
-    if( zSToken( buf, tkn, BUFSIZ ) == NULL ){
-      ZRUNERROR( "short of data to specify viewpoint" );
+    if( !*zSToken( buf, tkn, BUFSIZ ) ){
+      ZRUNERROR( ZEO_ERR_PCD_INVALID_VIEWPOINT );
       return false;
     }
     val[i] = atof( tkn );
@@ -333,13 +331,13 @@ static bool _zPCDPointsFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   int points;
 
-  if( zSToken( buf, tkn, BUFSIZ ) == NULL ){
-    ZRUNERROR( "number of points not specified" );
+  if( !*zSToken( buf, tkn, BUFSIZ ) ){
+    ZRUNERROR( ZEO_ERR_PCD_UNSPEC_NUMOFPOINTS );
     return false;
   }
   points = atoi( tkn );
   if( points != pcd->width * pcd->height ){
-    ZRUNERROR( "inconsistent number of points: %d VS %d x %d",
+    ZRUNERROR( ZEO_ERR_PCD_INVALID_NUMOFPOINTS,
       points, pcd->width, pcd->height );
     return false;
   }
@@ -348,12 +346,12 @@ static bool _zPCDPointsFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 
 static bool _zPCDDataTypeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
-  if( zSToken( buf, tkn, BUFSIZ ) == NULL ){
-    ZRUNERROR( "data type not specified" );
+  if( !*zSToken( buf, tkn, BUFSIZ ) ){
+    ZRUNERROR( ZEO_ERR_PCD_UNSPEC_DATATYPE );
     return false;
   }
   if( ( pcd->datatype = (_zPCDDataType)_zPCDFieldAttrFind( tkn, __z_pcd_datatype ) ) < 0 ){
-    ZRUNERROR( "unknown data type identifier: %s", tkn );
+    ZRUNERROR( ZEO_ERR_PCD_UNKNOWN_DATATYPE, tkn );
     return false;
   }
   return true;
@@ -384,13 +382,13 @@ static bool _zPCDHeaderFRead(FILE *fp, _zPCD *pcd)
   for( property=(struct _zPCDProperty *)__z_pcd_property; property->key; ){
     if( fgets( buf, BUFSIZ, fp ) == NULL ) break;
     if( buf[0] == '#' ) continue; /* comment */
-    if( zSToken( buf, tkn, BUFSIZ ) == NULL ) break;
+    if( !*zSToken( buf, tkn, BUFSIZ ) ) break;
     if( strcmp( tkn, property->key ) != 0 ) continue;
     if( !property->read( fp, pcd, buf, tkn ) ) return false;
     if( strcmp( property->key, "DATA" ) == 0 ) return true;
     property++;
   }
-  ZRUNERROR( "invalid PCD file header" );
+  ZRUNERROR( ZEO_ERR_PCD_INVALID_HEADER );
   return false;
 }
 
@@ -403,8 +401,8 @@ static bool _zPCDDataASCIIFRead(FILE *fp, _zPCD *pcd, zVec3DList *pc)
   while( fgets( buf, BUFSIZ, fp ) ){
     zVec3DZero( &v );
     for( i=0; i<pcd->fieldnum; i++ ){
-      if( !zSToken( buf, tkn, BUFSIZ ) ){
-        ZRUNWARN( "short of data" );
+      if( !*zSToken( buf, tkn, BUFSIZ ) ){
+        ZRUNWARN( ZEO_WARN_PCD_LACKOFDATA );
         break;
       }
       if( pcd->field[i].read_ascii )
@@ -456,13 +454,13 @@ bool zVec3DListPCDFRead(FILE *fp, zVec3DList *pc)
       _zPCDFieldAssignReadBIN( &pcd.field[i] );
     _zPCDDataBINFRead( fp, &pcd, pc );
   } else{
-    ZRUNERROR( "invalid data type" );
+    ZRUNERROR( ZEO_ERR_PCD_INVALID_DATATYPE );
     return false;
   }
   return true;
 }
 
-/* read point cloud from PCD file. */
+/* read point cloud from a PCD file. */
 bool zVec3DListReadPCDFile(zVec3DList *pc, char filename[])
 {
   FILE *fp;
@@ -471,6 +469,73 @@ bool zVec3DListReadPCDFile(zVec3DList *pc, char filename[])
   if( !( fp = zOpenFile( filename, (char *)ZEO_PCD_SUFFIX, (char *)"r" ) ) )
     return false;
   ret = zVec3DListPCDFRead( fp, pc );
+  fclose( fp );
+  return ret;
+}
+
+/* ********************************************************** */
+/* PCD format encoder
+ * ********************************************************** */
+
+static void _zPCDHeaderFWrite(FILE *fp, zVec3DList *pc)
+{
+  fprintf( fp, "# Point Cloud Data generated by %s\n", __FUNCTION__ );
+  fprintf( fp, "VERSION .7\n" );
+  fprintf( fp, "FIELDS x y z\n" );
+  fprintf( fp, "SIZE 8 8 8\n" );
+  fprintf( fp, "TYPE F F F\n" );
+  fprintf( fp, "COUNT 1 1 1\n" );
+  fprintf( fp, "WIDTH %d\n", zListSize(pc) );
+  fprintf( fp, "HEIGHT 1\n" );
+  fprintf( fp, "VIEWPOINT 0 0 0 1 0 0 0\n" );
+  fprintf( fp, "POINTS %d\n", zListSize(pc) );
+}
+
+static void _zPCDDataASCIIFWrite(FILE *fp, zVec3DList *pc)
+{
+  zVec3DListCell *cp;
+
+  fprintf( fp, "DATA ascii\n" );
+  zListForEach( pc, cp )
+    fprintf( fp, "%.10g %.10g %.10g\n", cp->data->c.x, cp->data->c.y, cp->data->c.z );
+}
+
+static void _zPCDDataBinFWrite(FILE *fp, zVec3DList *pc)
+{
+  zVec3DListCell *cp;
+
+  fprintf( fp, "DATA binary\n" );
+  zListForEach( pc, cp )
+    fwrite( cp->data->e, sizeof(double), 3, fp );
+}
+
+/* write point cloud to a stream of PCD file. */
+bool zVec3DListPCDFWrite(FILE *fp, zVec3DList *pc, const char *format)
+{
+  _zPCDDataType type;
+
+  _zPCDHeaderFWrite( fp, pc );
+  type = (_zPCDDataType)_zPCDFieldAttrFind( format, __z_pcd_datatype );
+
+  switch( ( type = (_zPCDDataType)_zPCDFieldAttrFind( format, __z_pcd_datatype ) ) ){
+  case ZEO_PCD_DATATYPE_ASCII:  _zPCDDataASCIIFWrite( fp, pc ); break;
+  case ZEO_PCD_DATATYPE_BINARY: _zPCDDataBinFWrite( fp, pc ); break;
+  default: ZRUNERROR( ZEO_ERR_PCD_INVALID_FORMAT, format ); return false;
+  }
+  return true;
+}
+
+/* write point cloud to a PCD file. */
+bool zVec3DListWritePCDFile(zVec3DList *pc, char filename[], const char *format)
+{
+  FILE *fp;
+  char filename_full[BUFSIZ];
+  bool ret;
+
+  zAddSuffix( filename, ZEO_PCD_SUFFIX, filename_full, BUFSIZ );
+  if( !( fp = fopen( filename_full, "w" ) ) )
+    return false;
+  ret = zVec3DListPCDFWrite( fp, pc, format );
   fclose( fp );
   return ret;
 }

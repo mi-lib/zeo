@@ -101,7 +101,7 @@ static zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib
       if(!_zTri3DDualXform_a( zPH3DFace(ph2,i), &p1, &v[n++] )) return NULL;
   }
   /* convex hull in dual space */
-  if( !zCH3D( &ch, v, n ) ){
+  if( !zConvexHull3D( &ch, v, n ) ){
     phcol = NULL;
     goto TERMINATE;
   }
@@ -115,7 +115,7 @@ static zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib
     if(!_zTri3DDualXform_b( zPH3DFace(&ch,i), &v[i] )) return NULL;
     zVec3DAddDRC( &v[i], &p1 );
   }
-  if( !zCH3D( phcol, v, zPH3DFaceNum(&ch) ) ) phcol = NULL;
+  if( !zConvexHull3D( phcol, v, zPH3DFaceNum(&ch) ) ) phcol = NULL;
 
  TERMINATE:
   zPH3DDestroy( &ch );

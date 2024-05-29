@@ -11,7 +11,7 @@
 
 #include <zeo/zeo_bv3d_aabb.h>
 #include <zeo/zeo_bv3d_obb.h>
-#include <zeo/zeo_bv3d_bball.h>
-#include <zeo/zeo_bv3d_ch.h>
+#include <zeo/zeo_bv3d_boundingball.h>
+#include <zeo/zeo_bv3d_convexhull.h>
 
 #endif /* __ZEO_BV3D_H__ */

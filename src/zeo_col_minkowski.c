@@ -19,6 +19,6 @@ zPH3D *zPH3DMinkowskiSub(zPH3D *ph, zVec3D p1[], int n1, zVec3D p2[], int n2)
   for( i=0; i<n1; i++ )
     for( j=0; j<n2; j++ )
       zVec3DSub( &p1[i], &p2[j], &v[n2*i+j] );
-  zCH3D( ph, v, n1*n2 );
+  zConvexHull3D( ph, v, n1*n2 );
   return ph;
 }

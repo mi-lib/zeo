@@ -16,7 +16,7 @@ int main(void)
   zArrayAlloc( &arr, zVec3D, N );
   for( i=0; i<N; i++ )
     zVec3DCreatePolar( zArrayElem(&arr,i), zRandF(-5,5), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
-  n = zBBall3D( &bb, &arr, vp );
+  n = zBoundingBall3D( &bb, &arr, vp );
   r = zSphere3DRadius(&bb);
 
   for( count=0, i=0; i<N; i++ ){
@@ -44,6 +44,6 @@ int main(void)
     }
   }
   printf( "error code = %d\n", errcode );
-  zAssert( zBBall3D, errcode == 0 );
+  zAssert( zBoundingBall3D, errcode == 0 );
   return 0;
 }

@@ -69,7 +69,7 @@ static bool _zOBB3DMaxDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
     /* shift to the plane passing the original point */
     zVec3DSubDRC( zPH3DVert(ch,i), zBox3DCenter(obb) );
   }
-  if( !zCH2D( &rim, zPH3DVertBuf(ch), zPH3DVertNum(ch) ) ) return false;
+  if( !zConvexHull2D( &rim, zPH3DVertBuf(ch), zPH3DVertNum(ch) ) ) return false;
   /* minimum rectangle on minimum-eigenvalue plane */
   vp1 = zListTail(&rim);
   vp2 = zListHead(&rim);
@@ -102,7 +102,7 @@ zBox3D *zOBB3D(zBox3D *obb, zVec3D p[], int n)
   zPH3D ch;
   zPlane3D pln;
 
-  if( !zCH3D( &ch, p, n ) ) return NULL;
+  if( !zConvexHull3D( &ch, p, n ) ) return NULL;
   _zOBB3DMinDir( obb, &ch, &pln );
   if( !_zOBB3DMaxDir( obb, &ch, &pln ) ) obb = NULL;
   zPH3DDestroy( &ch );
@@ -115,7 +115,7 @@ zBox3D *zOBB3DPL(zBox3D *obb, zVec3DList *pl)
   zPH3D ch;
   zPlane3D pln;
 
-  if( !zCH3DPL( &ch, pl ) ) return NULL;
+  if( !zConvexHull3DPL( &ch, pl ) ) return NULL;
   _zOBB3DMinDir( obb, &ch, &pln );
   if( !_zOBB3DMaxDir( obb, &ch, &pln ) ) obb = NULL;
   zPH3DDestroy( &ch );

@@ -12,10 +12,11 @@
 
 __BEGIN_DECLS
 
-/*! \brief read point cloud from PCD file.
+/*! \brief read point cloud from a PCD file.
  *
- * zVec3DListPCDFRead() reads a point cloud from a stream of PCD file.
- * zVec3DListReadPCDFile() reads a point cloud from a PCD file.
+ * zVec3DListPCDFRead() reads a point cloud from a stream of PCD file pointed by \a fp.
+ * zVec3DListReadPCDFile() reads a point cloud from a PCD file \a filename.
+ * The points are stored in a list pointed by \a pc.
  * \return
  * zVec3DListPCDFRead() and zVec3DListReadPCDFile() return the true value
  * if they succeed to read a PCD file. In the case it fails to read the
@@ -24,6 +25,20 @@ __BEGIN_DECLS
  */
 __ZEO_EXPORT bool zVec3DListPCDFRead(FILE *fp, zVec3DList *pc);
 __ZEO_EXPORT bool zVec3DListReadPCDFile(zVec3DList *pc, char filename[]);
+
+/*! \brief write point cloud to a PCD file.
+ *
+ * zVec3DListPCDFWrite() writes a point cloud to a stream of PCD file pointed by \a fp.
+ * zVec3DListWritePCDFile() writes a point cloud to a PCD file \a filename.
+ * \a pc is the list of points.
+ * \a format is either "ascii" or "binary", which defines the data format of the file.
+ * \return
+ * zVec3DListPCDFWrite() and zVec3DListWritePCDFile() return the true value
+ * if they succeed to write a PCD file. In the case it fails to write the
+ * given PCD file in any reason, the false value is returned.
+ */
+__ZEO_EXPORT bool zVec3DListPCDFWrite(FILE *fp, zVec3DList *pc, const char *format);
+__ZEO_EXPORT bool zVec3DListWritePCDFile(zVec3DList *pc, char filename[], const char *format);
 
 #define ZEO_PCD_SUFFIX "pcd"
 

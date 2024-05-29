@@ -281,8 +281,7 @@ static bool _zPLYFReadFormat(zPLY *ply, char *buf)
     return false;
   }
   _zPLYPrpInit( ply );
-  zSToken( buf, ply->version, 4 );
-  return true;
+  return *zSToken( buf, ply->version, 4 ) ? true : false;
 }
 
 static bool _zPLYFReadElement(zPLY *ply, char *buf)
@@ -295,7 +294,6 @@ static bool _zPLYFReadElement(zPLY *ply, char *buf)
     return false;
   }
   zSToken( buf, tkn, BUFSIZ );
-  zSInt( buf, &num );
   if( strcmp( tkn, "vertex" ) == 0 ){
     ply->elem[ply->elemnum].type = ZEO_PLY_ELEM_VERTEX;
   } else
@@ -311,6 +309,7 @@ static bool _zPLYFReadElement(zPLY *ply, char *buf)
     ZRUNERROR( ZEO_ERR_PLY_UNKNOWNELEM, tkn );
     ply->elem[ply->elemnum].type = ZEO_PLY_ELEM_NONE;
   }
+  if( !zSInt( buf, &num ) ) return false;
   ply->elem[ply->elemnum].num = num;
   return true;
 }
@@ -341,8 +340,10 @@ static bool _zPLYFReadProperty(zPLY *ply, char *buf)
     if( ply->elem[ply->elemnum].type == ZEO_PLY_ELEM_VERTEX ){
       if( strcmp( tkn, "x" ) == 0 )
         ply->vertidx[0] = ply->elem[ply->elemnum].prpnum;
+      else
       if( strcmp( tkn, "y" ) == 0 )
         ply->vertidx[1] = ply->elem[ply->elemnum].prpnum;
+      else
       if( strcmp( tkn, "z" ) == 0 )
         ply->vertidx[2] = ply->elem[ply->elemnum].prpnum;
     }

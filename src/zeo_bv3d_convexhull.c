@@ -497,7 +497,7 @@ static zPH3D *_zQH2PH3D(zQH *qh, zPH3D *ph)
 }
 
 /* convex hull from list of 3D points. */
-zPH3D *zCH3DPL(zPH3D *ch, zVec3DList *vl)
+zPH3D *zConvexHull3DPL(zPH3D *ch, zVec3DList *vl)
 {
   zVec3DListCell *vc;
   zQHPointListCell *pc;
@@ -516,7 +516,7 @@ zPH3D *zCH3DPL(zPH3D *ch, zVec3DList *vl)
   if( ( ret = _zQHCreate( &qh, &pl ) ) < 4 ){
     zListDestroy( zQHPointListCell, &pl );
     if( ret == 3 ) /* planar convex hull */
-      return zCH2DPL2PH3D( ch, vl );
+      return zConvexHull2DPL2PH3D( ch, vl );
     return NULL;
   }
   /* convert to a polyhedron */
@@ -526,7 +526,7 @@ zPH3D *zCH3DPL(zPH3D *ch, zVec3DList *vl)
 }
 
 /* convex hull of 3D points. */
-zPH3D *zCH3D(zPH3D *ch, zVec3D p[], int num)
+zPH3D *zConvexHull3D(zPH3D *ch, zVec3D p[], int num)
 {
   zQHPointListCell *pc;
   zQHPointList pl;
@@ -545,7 +545,7 @@ zPH3D *zCH3D(zPH3D *ch, zVec3D p[], int num)
   if( ( ret = _zQHCreate( &qh, &pl ) ) < 4 ){
     zListDestroy( zQHPointListCell, &pl );
     if( ret == 3 ) /* planar convex hull */
-      return zCH2D2PH3D( ch, p, num );
+      return zConvexHull2D2PH3D( ch, p, num );
     return NULL;
   }
   /* convert to a polyhedron */

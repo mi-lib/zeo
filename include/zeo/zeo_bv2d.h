@@ -13,7 +13,7 @@
 #include <zeo/zeo_ph.h>
 
 #include <zeo/zeo_bv2d_aabb.h>
-#include <zeo/zeo_bv2d_bdisk.h>
-#include <zeo/zeo_bv2d_ch.h>
+#include <zeo/zeo_bv2d_boundingdisk.h>
+#include <zeo/zeo_bv2d_convexhull.h>
 
 #endif /* __ZEO_BV2D_H__ */

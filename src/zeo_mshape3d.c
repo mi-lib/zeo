@@ -158,7 +158,7 @@ zSphere3D *zMShape3DBBall(zMShape3D *ms, zSphere3D *bb)
   zVec3DList pl;
 
   if( zMShape3DVertList( ms, &pl ) )
-    zBBall3DPL( bb, &pl, NULL );
+    zBoundingBall3DPL( bb, &pl, NULL );
   else
     bb = NULL;
   zVec3DListDestroy( &pl );
@@ -227,7 +227,7 @@ void zMShape3DFPrintZTK(FILE *fp, zMShape3D *ms)
 }
 
 /* read multiple 3D shapes from a ZTK format file. */
-zMShape3D *zMShape3DReadZTK(zMShape3D *ms, char filename[])
+zMShape3D *zMShape3DReadZTK(zMShape3D *ms, const char filename[])
 {
   ZTK ztk;
 
@@ -239,7 +239,7 @@ zMShape3D *zMShape3DReadZTK(zMShape3D *ms, char filename[])
 }
 
 /* write multiple 3D shapes to a ZTK format file. */
-bool zMShape3DWriteZTK(zMShape3D *ms, char filename[])
+bool zMShape3DWriteZTK(zMShape3D *ms, const char filename[])
 {
   FILE *fp;
 

@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     read_vlist( argv[1], &vl );
   }
 
-  zCH3DPL( &ch, &vl );
+  zConvexHull3DPL( &ch, &vl );
   output( &ch );
   zPH3DDestroy( &ch );
   zVec3DAddrListDestroy( &vl );

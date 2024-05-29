@@ -87,10 +87,10 @@ __ZEO_EXPORT zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk);
 __ZEO_EXPORT void zMShape3DFPrintZTK(FILE *fp, zMShape3D *ms);
 
 /*! \brief scan multiple 3D shapes from a ZTK format file. */
-__ZEO_EXPORT zMShape3D *zMShape3DReadZTK(zMShape3D *ms, char filename[]);
+__ZEO_EXPORT zMShape3D *zMShape3DReadZTK(zMShape3D *ms, const char filename[]);
 
 /*! \brief write multiple 3D shapes to a ZTK format file. */
-__ZEO_EXPORT bool zMShape3DWriteZTK(zMShape3D *ms, char filename[]);
+__ZEO_EXPORT bool zMShape3DWriteZTK(zMShape3D *ms, const char filename[]);
 
 __END_DECLS
 

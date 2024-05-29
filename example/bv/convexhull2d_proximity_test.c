@@ -1,34 +1,38 @@
 #include <zeo/zeo_bv2d.h>
 
-#define N 1000
-zVec3D v[N];
+#define N 100
 
 int main(void)
 {
-  register int i;
+  zVec3D p, cp;
+  zVec3D v[N];
   zLoop3D ch;
   zLoop3DCell *vc;
   FILE *fp;
+  int i;
 
   zRandInit();
-  fp = fopen( "src", "w" );
+  fp = fopen( "v", "w" );
   for( i=0; i<N; i++ ){
-#if 0
-    zVec3DCreate( &v[i], zRandF(-10,10), zRandF(-10,10), 0 );
-#else
     zVec3DCreatePolar( &v[i], zRandF(-10,10), 0.5*zPI, zRandF(-zPI,zPI) );
-#endif
     zVec3DDataNLFPrint( fp, &v[i] );
   }
   fclose( fp );
+  zConvexHull2D( &ch, v, N );
 
-  zCH2D( &ch, v, N );
-
-  fp = fopen( "dest", "w" );
+  fp = fopen( "c", "w" );
   zListForEach( &ch, vc )
     zVec3DDataNLFPrint( fp, vc->data );
   zVec3DDataNLFPrint( fp, zListTail(&ch)->data );
   fclose( fp );
+
+  zVec3DCreate( &p, zRandF(-12,12), zRandF(-12,12), 0 );
+  zConvexHull2DClosest( &ch, &p, &cp );
+  fp = fopen( "e", "w" );
+  zVec3DDataNLFPrint( fp, &p );
+  zVec3DDataNLFPrint( fp, &cp );
+  fclose( fp );
+
   zLoop3DDestroy( &ch );
   return 0;
 }

@@ -164,7 +164,7 @@ static zDelaunayTri2D *_zDelaunay2DCreateOuter(zDelaunayTri2DList *tl, zVec2DLis
   zDisk2D d;
   zDelaunayTri2DListCell *tc;
 
-  if( !zBDisk2DPL( &d, pl, NULL ) ) return NULL;
+  if( !zBoundingDisk2DPL( &d, pl, NULL ) ) return NULL;
   if( !( tc = zAlloc( zDelaunayTri2DListCell, 1 ) ) ){
     ZALLOCERROR();
     return NULL;
