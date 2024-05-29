@@ -10,14 +10,14 @@ void test_ph(zPH3D *a, zPH3D *b)
   zRandInit();
   for( i=0; i<N; i++ )
     zVec3DCreatePolar( &v[i], zRandF(-0.2,0.2), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
-  zCH3D( a, v, N );
+  zConvexHull3D( a, v, N );
   for( i=0; i<N; i++ ){
     zVec3DCreatePolar( &v[i], zRandF(-0.2,0.2), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
     v[i].e[zX] += 0.05;
     v[i].e[zY] += 0.05;
     v[i].e[zZ] += 0.05;
   }
-  zCH3D( b, v, N );
+  zConvexHull3D( b, v, N );
 }
 
 void output_blue(FILE *fp)

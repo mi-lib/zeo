@@ -74,7 +74,7 @@ void output(char filename[], zVec3DList *pl1, zVec3DList *pl2, zVec3D *c1, zVec3
   fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, c2 );
   fprintf( fp, "radius: 0.005\n" );
   /* convex set 1 */
-  zCH3DPL( &ch, pl1 );
+  zConvexHull3DPL( &ch, pl1 );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: ch1\n" );
   fprintf( fp, "type: polyhedron\n" );
@@ -82,7 +82,7 @@ void output(char filename[], zVec3DList *pl1, zVec3DList *pl2, zVec3D *c1, zVec3
   zPH3DFPrintZTK( fp, &ch );
   zPH3DDestroy( &ch );
   /* convex set 2 */
-  zCH3DPL( &ch, pl2 );
+  zConvexHull3DPL( &ch, pl2 );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: ch2\n" );
   fprintf( fp, "type: polyhedron\n" );

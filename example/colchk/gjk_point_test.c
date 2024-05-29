@@ -62,7 +62,7 @@ void output_mshape(char filename[], zVec3D pl[], int n, zVec3D *p, zVec3D *c)
   fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, c );
   fprintf( fp, "radius: 0.005\n" );
   /* convex set */
-  zCH3D( &ch, pl, n );
+  zConvexHull3D( &ch, pl, n );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: ch\n" );
   fprintf( fp, "type: polyhedron\n" );

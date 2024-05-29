@@ -63,7 +63,7 @@ void test_ph(zPH3D *a, zPH3D *b, int n)
   zRandInit();
   for( i=0; i<n; i++ )
     zVec3DCreatePolar( &v[i], zRandF(-0.1,0.1), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
-  zCH3D( a, v, n );
+  zConvexHull3D( a, v, n );
 
   for( i=0; i<n; i++ ){
     zVec3DCreatePolar( &v[i], zRandF(-0.1,0.1), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
@@ -71,7 +71,7 @@ void test_ph(zPH3D *a, zPH3D *b, int n)
     v[i].e[zY] += 0.08;
     v[i].e[zZ] += 0.08;
   }
-  zCH3D( b, v, n );
+  zConvexHull3D( b, v, n );
 }
 
 int main(int argc, char *argv[])

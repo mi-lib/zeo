@@ -48,7 +48,7 @@ int main(void)
     zVec3DDataNLFPrint( fp, &ip[i] );
   fclose( fp );
 
-  zCH2DPL( &ch, &vlist );
+  zConvexHull2DPL( &ch, &vlist );
   fp = fopen( "ch", "w" );
   zListForEach( &ch, vp )
     zVec3DDataNLFPrint( fp, vp->data );

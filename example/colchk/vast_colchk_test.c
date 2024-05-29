@@ -39,7 +39,7 @@ void create_ph(shape_t *shape, int ns, int nv)
     z0 = zRandF(-0.4,0.4);
     for( j=0; j<nv; j++ )
       zVec3DCreate( &v[j], x0+zRandF(-0.05,0.05), y0+zRandF(-0.05,0.05), z0+zRandF(-0.05,0.05) );
-    zCH3D( &shape[i].ph, v, nv );
+    zConvexHull3D( &shape[i].ph, v, nv );
     zOBB3D( &shape[i].obb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph) );
     zAABB3D( &shape[i].aabb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph), NULL );
     output_ph( fp, &shape[i].ph, i );

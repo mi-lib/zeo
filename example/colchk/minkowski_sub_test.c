@@ -22,7 +22,7 @@ void output_src(zVec3D p1[], int n1, zVec3D p2[], int n2)
   fprintf( fp, "alpha: 0.6\n" );
   fprintf( fp, "esr: 1.0\n\n" );
   /* convex set 1 */
-  zCH3D( &ch, p1, n1 );
+  zConvexHull3D( &ch, p1, n1 );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: ch1\n" );
   fprintf( fp, "type: polyhedron\n" );
@@ -30,7 +30,7 @@ void output_src(zVec3D p1[], int n1, zVec3D p2[], int n2)
   zPH3DFPrintZTK( fp, &ch );
   zPH3DDestroy( &ch );
   /* convex set 2 */
-  zCH3D( &ch, p2, n2 );
+  zConvexHull3D( &ch, p2, n2 );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: ch2\n" );
   fprintf( fp, "type: polyhedron\n" );

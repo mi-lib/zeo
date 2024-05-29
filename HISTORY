@@ -1,3 +1,4 @@
+2024. 5.29. Reflected renaming of zCH2/3D* to zConvexHull2/3D*. [example]
 2024. 5.29. Changed prototypes of zMShape3DReadZTK and zMShape3DWriteZTK. [zeo_mshape3d]
 2024. 5.29. Defined macros for error and warning messages in zeo_pointcloud. [zeo_errmsg, zeo_pointcloud]
 2024. 5.29. Modified implementation of _zPCDCheckFieldNum. [zeo_pointcloud]
