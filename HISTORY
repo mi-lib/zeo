@@ -1,3 +1,4 @@
+2024. 5.31. Removed test.sh. [test]
 2024. 5.29. Renamed zMShape3DBBall to zMShape3DBoundingBall. [zeo_mshape3d]
 2024. 5.29. Reflected renaming of zCH2/3D* to zConvexHull2/3D*. [example]
 2024. 5.29. Changed prototypes of zMShape3DReadZTK and zMShape3DWriteZTK. [zeo_mshape3d]
