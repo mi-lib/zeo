@@ -18,7 +18,7 @@ __BEGIN_DECLS
  * |~ e[0][0]  e[1][0] ~| = |~ c.xx  c.yx ~| = [ v[0] v[1] ] = [ b.x b.y ]
  * |_ e[0][1]  e[1][1] _|   |_ c.xy  c.yy _|
  */
-typedef union{
+ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat2D ){
   double e[2][2]; /*!< 2x2 matrix */
   zVec2D v[2];    /*!< 2 column vectors */
   struct{
@@ -27,7 +27,25 @@ typedef union{
   struct{
     double xx, xy, yx, yy;
   } c;            /*!< 4 components */
-} zMat2D;
+#ifdef __cplusplus
+  static const zMat2D zmat2Dzero;
+  static const zMat2D zmat2Dident;
+#endif /* __cplusplus */
+};
+
+/*! \brief a column vector of a 2x2 matrix. */
+#define zMat2DVec(mat,axis) ( &(mat)->v[(axis)] )
+
+/*! \brief 2D zero matrix and identity matrix */
+#ifdef __cplusplus
+#define ZMAT2DZERO  ( (zMat2D *)&zMat2D::zmat2Dzero )
+#define ZMAT2DIDENT ( (zMat2D *)&zMat2D::zmat2Dident )
+#else
+__ZEO_EXPORT const zMat2D zmat2Dzero;
+__ZEO_EXPORT const zMat2D zmat2Dident;
+#define ZMAT2DZERO  ( (zMat2D *)&zmat2Dzero )
+#define ZMAT2DIDENT ( (zMat2D *)&zmat2Dident )
+#endif /* __cplusplus */
 
 /*! \brief create, copy and zero a 2x2 matrix.
  *
@@ -50,10 +68,26 @@ typedef union{
   _zVec2DCreate( &(m)->b.y, a12, a22 );\
 } while(0)
 __ZEO_EXPORT zMat2D *zMat2DCreate(zMat2D *m, double a11, double a12, double a21, double a22);
+__ZEO_EXPORT zMat2D *zMat2DCreateAngle(zMat2D *m, double angle);
 #define _zMat2DCopy(s,d) zCopy( zMat2D, s, d )
 __ZEO_EXPORT zMat2D *zMat2DCopy(zMat2D *src, zMat2D *dest);
-#define zMat2DZero(m)  zMat2DCreate( (m), 0, 0, 0, 0 )
-#define zMat2DIdent(m) zMat2DCreate( (m), 1, 0, 0, 1 )
+#define zMat2DZero(m)  zMat2DCopy( ZMAT2DZERO, (m) )
+#define zMat2DIdent(m) zMat2DCopy( ZMAT2DIDENT, (m) )
+
+/*! \brief check if two 2x2 matrices are equal.
+ *
+ * zMat2DMatch() and zMat2DEqual() check if two 2x2 matrices \a m1 and \a m2 are equal.
+ * They return a boolean value.
+ *
+ * zMat2DMatch() strictly compares the two matrices, while zMat2DEqual() checks if the error between
+ * \a m1 and \a m2 are sufficiently small.
+ * \return
+ * zMat2DMatch() and zMat2DEqual() return the true value if \a m1 and \a m2 are equal, or false otherwise.
+ */
+#define _zMat2DMatch(m1,m2) ( _zVec2DMatch(&(m1)->b.x,&(m2)->b.x) && _zVec2DMatch(&(m1)->b.y,&(m2)->b.y) )
+__ZEO_EXPORT bool zMat2DMatch(zMat2D *m1, zMat2D *m2);
+#define _zMat2DEqual(m1,m2) ( _zVec2DEqual(&(m1)->b.x,&(m2)->b.x) && _zVec2DEqual(&(m1)->b.y,&(m2)->b.y) )
+__ZEO_EXPORT bool zMat2DEqual(zMat2D *m1, zMat2D *m2);
 
 /*! \brief abstract row/column vector of a 2x2 matrix.
  *
@@ -187,73 +221,100 @@ __ZEO_EXPORT zMat2D *zMat2DInv(zMat2D *m, zMat2D *im);
 
 /*! \brief multiply a 2D vector and a 2x2 matrix.
  *
- * zMulMat2DVec2D() multiplies a 2D vector \a v by a 2x2 matrix \a m and
- * puts it into \a mv.
+ * zMulMat2DVec2D() multiplies a 2D vector \a v by a 2x2 matrix \a m and puts it into \a mv.
+ * zMulMat2DVec2DDRC() directly multiplies a 2D vector \a v by a 2x2 matrix \a m.
  *
- * zMulMat2DTVec2D() multiplies \a v by the transpose matrix of a 2x2 matrix
- * \a m and puts it into \a mv.
- *
- * zMulInvMat2DVec2D() multiplies \a v by the inverse matrix of a 2x2 matrix
- * \a m and puts it into \a mv.
+ * zMulMat2DTVec2D() multiplies \a v by the transpose matrix of a 2x2 matrix \a m and puts it into \a mv.
+ * zMulMat2DTVec2DDRC() directly multiplies a 2D vector \a v by the transpose of a 2x2 matrix \a m.
  * \return
- * Each function returns the pointer to the result.
+ * zMulMat2DVec2D() and zMulMat2DTVec2D() return the pointer \a mv.
+ * zMulMat2DVec2DDRC() and zMulMat2DTVec2DDRC() return the pointer \a v.
  */
-#define _zMulMat2DVec2D(m,v,mv) \
-  _zVec2DCreate( mv, (m)->c.xx*(v)->c.x+(m)->c.yx*(v)->c.y, (m)->c.xy*(v)->c.x+(m)->c.yy*(v)->c.y )
-#define _zMulMat2DTVec2D(m,v,mv) \
-  _zVec2DCreate( mv, (m)->c.xx*(v)->c.x+(m)->c.xy*(v)->c.y, (m)->c.yx*(v)->c.x+(m)->c.yy*(v)->c.y )
-
+#define _zMulMat2DVec2D(m,v,mv) do{\
+  double __x, __y;\
+  __x = (m)->c.xx*(v)->c.x + (m)->c.yx*(v)->c.y;\
+  __y = (m)->c.xy*(v)->c.x + (m)->c.yy*(v)->c.y;\
+  _zVec2DCreate( mv, __x, __y );\
+} while(0)
 __ZEO_EXPORT zVec2D *zMulMat2DVec2D(zMat2D *m, zVec2D *v, zVec2D *mv);
+#define _zMulMat2DVec2DDRC(m,v) _zMulMat2DVec2D(m,v,v)
+__ZEO_EXPORT zVec2D *zMulMat2DVec2DDRC(zMat2D *m, zVec2D *v);
+#define _zMulMat2DTVec2D(m,v,mv) do{\
+  double __x, __y;\
+  __x = _zVec2DInnerProd( &(m)->b.x, v );\
+  __y = _zVec2DInnerProd( &(m)->b.y, v );\
+  _zVec2DCreate( mv, __x, __y );\
+} while(0)
 __ZEO_EXPORT zVec2D *zMulMat2DTVec2D(zMat2D *m, zVec2D *v, zVec2D *mv);
+#define _zMulMat2DTVec2DDRC(m,v) _zMulMat2DTVec2D(m,v,v)
+__ZEO_EXPORT zVec2D *zMulMat2DTVec2DDRC(zMat2D *m, zVec2D *v);
+
+/*! \brief multiply a 2D vector and the inverse of a 2x2 matrix.
+ *
+ * zMulInvMat2DVec2D() multiplies \a v by the inverse matrix of a 2x2 matrix \a m and puts it into \a mv.
+ * \return
+ * zMulInvMat2DVec2D() returns a pointer \a mv.
+ */
 __ZEO_EXPORT zVec2D *zMulInvMat2DVec2D(zMat2D *m, zVec2D *v, zVec2D *mv);
 
 /* ********************************************************** */
 /* multiplication of a 2x2 matrix by another 2x2 matrix
  * ********************************************************** */
 
-/*! \brief multiply two 2x2 matrices.
+/*! \brief multiply 2x2 matrices.
  *
- * zMulMat2DMat2D() multiplies a 2x2 matrix \a m2 by the other \a m1 from
- * the leftside and puts it into \a m.
+ * zMulMat2DMat2D() multiplies a 2x2 matrix \a m2 by the other \a m1 from the leftside and puts it into \a m.
  *
- * zMulMat2DTMat2D() multiplies a 2x2 matrix \a m2 by the transpose matrix
- * of the other \a m1 from the leftside and puts it into \a m.
+ * zMulMat2DTMat2D() multiplies a 2x2 matrix m2 by the transpose of a 2x2 matrix \a m1 from the leftside,
+ * and puts it into \a m.
  *
- * zMulMat2DMat2DT() multiplies a 2x2 matrix \a m1 by the transpose of the
- * other \a m2 from the rightside and puts it into \a m.
+ * zMulMat2DMat2DT() multiplies a 2x2 matrix \a m1 by the transpose of a 2x2 matrix \a m2 from the rightside,
+ * and puts it into \a m.
  *
- * zMulInvMat2DMat2D() multiplies a 2x2 matrix \a m2 by the inverse of the
- * other \a m1 from the leftside and puts it into \a m.
+ * zMulMat2DMat2DDRC() directly multiplies a 2x2 matrix \a m2 by the other \a m1 from the leftside.
+ *
+ * zMulMat2DTMat2DDRC() directly multiplies a 2x2 matrix \a m2 by the transpose of the other \a m1 from the
+ * leftside.
+ *
+ * zMulMat2DMat2DTDRC() directly multiplies a 2x2 matrix \a m1 by the transpose of the other \a m2 from the
+ * rightside.
  * \return
- * Each function returns the pointer to the result.
+ * zMulMat2DMat2D(), zMulMat2DTMat2D(), and zMulMat2DMat2DT() return the pointer \a m.
+ *
+ * zMulMat2DMat2DDRC() and zMulMat2DTMat2DDRC() return the pointer \a m2.
+ * zMulMat2DMat2DTDRC() returns the pointer \a m1.
  */
-#define _zMulMat2DMat2D(m1,m2,m) \
-  _zMat2DCreate( m,\
-    (m1)->c.xx*(m2)->c.xx+(m1)->c.yx*(m2)->c.xy,\
-    (m1)->c.xx*(m2)->c.yx+(m1)->c.yx*(m2)->c.yy,\
-    (m1)->c.xy*(m2)->c.xx+(m1)->c.yy*(m2)->c.xy,\
-    (m1)->c.xy*(m2)->c.yx+(m1)->c.yy*(m2)->c.yy )
-#define _zMulMat2DTMat2D(m1,m2,m) \
-  _zMat2DCreate( m,\
-    (m1)->c.xx*(m2)->c.xx+(m1)->c.xy*(m2)->c.xy,\
-    (m1)->c.xx*(m2)->c.yx+(m1)->c.xy*(m2)->c.yy,\
-    (m1)->c.yx*(m2)->c.xx+(m1)->c.yy*(m2)->c.xy,\
-    (m1)->c.yx*(m2)->c.yx+(m1)->c.yy*(m2)->c.yy )
-#define _zMulMat2DMat2DT(m1,m2,m) \
-  _zMat2DCreate( m,\
-    (m1)->c.xx*(m2)->c.xx+(m1)->c.yx*(m2)->c.yx,\
-    (m1)->c.xx*(m2)->c.xy+(m1)->c.yx*(m2)->c.yy,\
-    (m1)->c.xy*(m2)->c.xx+(m1)->c.yy*(m2)->c.yx,\
-    (m1)->c.xy*(m2)->c.xy+(m1)->c.yy*(m2)->c.yy )
-
 __ZEO_EXPORT zMat2D *zMulMat2DMat2D(zMat2D *m1, zMat2D *m2, zMat2D *m);
 __ZEO_EXPORT zMat2D *zMulMat2DTMat2D(zMat2D *m1, zMat2D *m2, zMat2D *m);
 __ZEO_EXPORT zMat2D *zMulMat2DMat2DT(zMat2D *m1, zMat2D *m2, zMat2D *m);
+
+#define zMulMat2DMat2DDRC(m1,m2)  zMulMat2DMat2D(m1,m2,m2)
+#define zMulMat2DTMat2DDRC(m1,m2) zMulMat2DTMat2D(m1,m2,m2)
+#define zMulMat2DMat2DTDRC(m1,m2) zMulMat2DMat2DT(m1,m2,m1)
+
+/*! \brief multiply the inverse of a 2x2 matrix to another.
+ *
+ * zMulInvMat2DMat2D() multiplies a 2x2 matrix \a m2 by the inverse of the other 2x2 matrix \a m1
+ * from the leftside, and puts it into \a m.
+ * \return
+ * zMulInvMat2DMat2D() returns the pointer \a m.
+ */
 __ZEO_EXPORT zMat2D *zMulInvMat2DMat2D(zMat2D *m1, zMat2D *m2, zMat2D *m);
 
 /* ********************************************************** */
 /* rotation
  * ********************************************************** */
+
+/*! \brief equivalent rotation angle of a 2x2 matrix.
+ *
+ * zMat2DAngle() finds the angle that is equivalent with a 2x2 matrix \a mat.
+ * It assumes that \a mat is an orthonormal matrix; if not, the result does not make sense.
+ * \return
+ * zMat2DAngle() returns the counterclockwise angle between the x/y-axis of the original coordinate frame
+ * and that of \a mat.
+ */
+#define _zMat2DAngle(mat) atan2( (mat)->c.xy - (mat)->c.yx, (mat)->c.xx + (mat)->c.yy )
+__ZEO_EXPORT double zMat2DAngle(zMat2D *mat);
 
 /*! \brief rotate matrix.
  *
@@ -277,8 +338,7 @@ __ZEO_EXPORT zMat2D *zMat2DRot(zMat2D *m, double angle, zMat2D *rm);
 
 /*! \brief error vector between two attitude matrices.
  *
- * zMat2DError() calculates the error angle from \a m2 to \a m1
- * (note the order).
+ * zMat2DError() calculates the error angle from \a m2 to \a m1 (note the order).
  * \return
  * zMat2DError() returns the error angle computed.
  */

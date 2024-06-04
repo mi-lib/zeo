@@ -127,17 +127,15 @@ __ZEO_EXPORT zMat3D *zMat3DCreate(zMat3D *m,
 #define zMat3DZero(m)   zMat3DCopy( ZMAT3DZERO, m )
 #define zMat3DIdent(m)  zMat3DCopy( ZMAT3DIDENT, m )
 
-/*! \brief check if the two 3x3 matrices are equal.
+/*! \brief check if two 3x3 matrices are equal.
  *
- * zMat3DMatch() and zMat3DEqual() check if the two 3x3 matrices
- * \a m1 and \a m2 are equal. They return a boolean value.
+ * zMat3DMatch() and zMat3DEqual() check if two 3x3 matrices \a m1 and \a m2 are equal.
+ * They return a boolean value.
  *
- * zMat3DMatch() strictly compares the two matrices, while
- * zMat3DEqual() checks if the error between \a m1 and \a m2
- * are sufficiently small.
+ * zMat3DMatch() strictly compares the two matrices, while zMat3DEqual() checks if the error between
+ * \a m1 and \a m2 are sufficiently small.
  * \return
- * zMat3DMatch() and zMat3DEqual() return the true value if
- * \a m1 and \a m2 are equal, or false otherwise.
+ * zMat3DMatch() and zMat3DEqual() return the true value if \a m1 and \a m2 are equal, or false otherwise.
  */
 #define _zMat3DMatch(m1,m2) ( _zVec3DMatch(&(m1)->b.x,&(m2)->b.x) && _zVec3DMatch(&(m1)->b.y,&(m2)->b.y) && _zVec3DMatch(&(m1)->b.z,&(m2)->b.z) )
 __ZEO_EXPORT bool zMat3DMatch(zMat3D *m1, zMat3D *m2);
@@ -573,9 +571,6 @@ __ZEO_EXPORT double *zVec3DCatRatio(zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *
  *
  * zMulMat3DMat3DTDRC() directly multiplies a 3x3 matrix \a m1 by the
  * transpose of the other \a m2 from the rightside.
- *
- * zMulInvMat3DMat3D() multiplies \a m2 by the inverse of a 3x3 matrix
- * \a m1 from the leftside and puts it into \a m.
  * \return
  * Each function returns a pointer to the result.
  */
@@ -587,6 +582,13 @@ __ZEO_EXPORT zMat3D *zMulMat3DMat3DT(zMat3D *m1, zMat3D *m2, zMat3D *m);
 #define zMulMat3DTMat3DDRC(m1,m2) zMulMat3DTMat3D(m1,m2,m2)
 #define zMulMat3DMat3DTDRC(m1,m2) zMulMat3DMat3DT(m1,m2,m1)
 
+/*! \brief multiply the inverse of a 3x3 matrix to another.
+ *
+ * zMulInvMat3DMat3D() multiplies a 3x3 matrix \a m2 by the inverse of the other 3x3 matrix \a m1
+ * from the leftside, and puts it into \a m.
+ * \return
+ * zMulInvMat3DMat3D() returns the pointer \a m.
+ */
 __ZEO_EXPORT zMat3D *zMulInvMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
 
 /* ********************************************************** */

@@ -317,9 +317,6 @@ zMat3D *zMat3DInv(zMat3D *m, zMat3D *im)
 /* multiplication of a 3D vector by a 3x3 matrix
  * ********************************************************** */
 
-static double _zMulInvMat3DVec3DRow(zMat3D *m, zVec3D *v, int i, int j, int k, double idet);
-static zVec3D *_zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *imv);
-
 /* multiply a 3D vector by a 3x3 matrix. */
 zVec3D *zMulMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *mv)
 {
@@ -349,7 +346,7 @@ zVec3D *zMulMat3DTVec3DDRC(zMat3D *m, zVec3D *v)
 }
 
 /* misc for multiplication of a vector by real inverse of 3x3 matrix. */
-double _zMulInvMat3DVec3DRow(zMat3D *m, zVec3D *v, int i, int j, int k, double idet)
+static double _zMulInvMat3DVec3DRow(zMat3D *m, zVec3D *v, int i, int j, int k, double idet)
 {
   return idet *
     ( ( m->e[j][j]*m->e[k][k] - m->e[k][j]*m->e[j][k] ) * v->e[i]
@@ -363,7 +360,7 @@ double _zMulInvMat3DVec3DRow(zMat3D *m, zVec3D *v, int i, int j, int k, double i
   _zMulInvMat3DVec3DRow( m, v, 2, 0, 1, idet ) )
 
 /* multiply a 3D vector by inverse of a 3x3 matrix. */
-zVec3D *_zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *imv)
+static zVec3D *_zMulInvMat3DVec3D(zMat3D *m, zVec3D *v, zVec3D *imv)
 {
   double val;
 
@@ -414,8 +411,6 @@ double *zVec3DCatRatio(zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v, double rat
 /* multiplication of a 3x3 matrix by another 3x3 matrix
  * ********************************************************** */
 
-static zMat3D *_zMulInvMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m);
-
 /* multiply two 3D matrices. */
 zMat3D *zMulMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m)
 {
@@ -458,7 +453,7 @@ zMat3D *zMulMat3DMat3DT(zMat3D *m1, zMat3D *m2, zMat3D *m)
 }
 
 /* multiply 3x3 matrix by inverse of another 3x3 matrix. */
-zMat3D *_zMulInvMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m)
+static zMat3D *_zMulInvMat3DMat3D(zMat3D *m1, zMat3D *m2, zMat3D *m)
 {
   double val;
 
@@ -519,8 +514,7 @@ zVec6D *zMulMat3DTVec6D(zMat3D *m, zVec6D *v, zVec6D *mv)
  * ********************************************************** */
 
 /* rotate matrix along a base axis. */
-static zMat3D *_zMat3DRotRPYSC(zMat3D *m, int a0, int a1, int a2, double s, double c, zMat3D *rm);
-zMat3D *_zMat3DRotRPYSC(zMat3D *m, int a0, int a1, int a2, double s, double c, zMat3D *rm)
+static zMat3D *_zMat3DRotRPYSC(zMat3D *m, int a0, int a1, int a2, double s, double c, zMat3D *rm)
 {
   rm->e[a0][a0] = m->e[a0][a0]*c - m->e[a0][a1]*s;
   rm->e[a1][a0] = m->e[a1][a0]*c - m->e[a1][a1]*s;
@@ -535,8 +529,7 @@ zMat3D *_zMat3DRotRPYSC(zMat3D *m, int a0, int a1, int a2, double s, double c, z
 }
 
 /* rotate matrix directly along a base axis. */
-static zMat3D *_zMat3DRotRPYSCDRC(zMat3D *m, int a0, int a1, int a2, double s, double c);
-zMat3D *_zMat3DRotRPYSCDRC(zMat3D *m, int a0, int a1, int a2, double s, double c)
+static zMat3D *_zMat3DRotRPYSCDRC(zMat3D *m, int a0, int a1, int a2, double s, double c)
 {
   double r00, r01, r02, r10, r11, r12;
 

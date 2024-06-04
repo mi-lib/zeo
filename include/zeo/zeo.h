@@ -6,7 +6,7 @@
  - color and optics computations
  - 2D/3D vectors and matrices
  - 6D spatial vectors and matrices
- - 3D frame and coordinate transportation
+ - 2D/3D frame and coordinate transformation
  - Euler parameter (unit quaternion)
  - 3D shape elements (plane, edge and triangle)
  - 3D shape primitives (box, sphere, cylinder, cone, ellipsoid,
@@ -26,7 +26,7 @@
 #ifndef __ZEO_H__
 #define __ZEO_H__
 
-#include <zeo/zeo_mat2d.h>
+#include <zeo/zeo_frame2d.h>
 #include <zeo/zeo_mat6d.h>
 #include <zeo/zeo_pointcloud.h>
 #include <zeo/zeo_mshape3d.h>

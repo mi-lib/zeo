@@ -333,7 +333,7 @@ __ZEO_EXPORT double zVec2DNormalize(zVec2D *v, zVec2D *nv);
 /* geometry
  * ********************************************************** */
 
-/*! \brief interior division.
+/*! \brief interior division of two 2D vectors.
  *
  * zVec2DInterDiv() calculates the interior division vector of
  * \a v1 and \a v2 with a division ratio \a ratio. The result is

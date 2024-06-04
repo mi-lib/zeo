@@ -11,6 +11,15 @@
  * 2x2 matrix class
  * ********************************************************** */
 
+/* 2x2 zero matrix and identity matrix. */
+#ifdef __cplusplus
+const zMat2D zMat2D::zmat2Dzero  = { { { 0, 0 }, { 0, 0 } } };
+const zMat2D zMat2D::zmat2Dident = { { { 1, 0 }, { 0, 1 } } };
+#else
+const zMat2D zmat2Dzero  = { { { 0, 0 }, { 0, 0 } } };
+const zMat2D zmat2Dident = { { { 1, 0 }, { 0, 1 } } };
+#endif /* __cplusplus */
+
 /* create a 2x2 matrix. */
 zMat2D *zMat2DCreate(zMat2D *m, double a11, double a12, double a21, double a22)
 {
@@ -18,11 +27,32 @@ zMat2D *zMat2DCreate(zMat2D *m, double a11, double a12, double a21, double a22)
   return m;
 }
 
+/* create a 2x2 rotation matrix. */
+zMat2D *zMat2DCreateAngle(zMat2D *m, double angle)
+{
+  double s, c;
+
+  _zSinCos( angle, &s, &c );
+  return zMat2DCreate( m, c, -s, s, c );
+}
+
 /* copy a 2x2 matrix to the other. */
 zMat2D *zMat2DCopy(zMat2D *src, zMat2D *dest)
 {
   _zMat2DCopy( src, dest );
   return dest;
+}
+
+/* check if two 2x2 matrices are strictly equal. */
+bool zMat2DMatch(zMat2D *m1, zMat2D *m2)
+{
+  return _zMat2DMatch( m1, m2 );
+}
+
+/* check if two 2x2 matrices are equal. */
+bool zMat2DEqual(zMat2D *m1, zMat2D *m2)
+{
+  return _zMat2DEqual( m1, m2 );
 }
 
 /* abstract row vector from a 2x2 matrix. */
@@ -146,6 +176,20 @@ zVec2D *zMulMat2DTVec2D(zMat2D *m, zVec2D *v, zVec2D *mv)
   return mv;
 }
 
+/* directly multiply a 2D vector by a 3x3 matrix. */
+zVec2D *zMulMat2DVec2DDRC(zMat2D *m, zVec2D *v)
+{
+  _zMulMat2DVec2DDRC( m, v );
+  return v;
+}
+
+/* directly multiply a 2D vector by transpose of a 3x3 matrix. */
+zVec2D *zMulMat2DTVec2DDRC(zMat2D *m, zVec2D *v)
+{
+  _zMulMat2DTVec2DDRC( m, v );
+  return v;
+}
+
 /* multiply a 2D vector by the inverse of a 2x2 matrix. */
 zVec2D *zMulInvMat2DVec2D(zMat2D *m, zVec2D *v, zVec2D *mv)
 {
@@ -163,25 +207,38 @@ zVec2D *zMulInvMat2DVec2D(zMat2D *m, zVec2D *v, zVec2D *mv)
 /* multiplication of a 2x2 matrix by another 2x2 matrix
  * ********************************************************** */
 
-/* multiply two 2x2 matrices. */
+/* multiply two 2D matrices. */
 zMat2D *zMulMat2DMat2D(zMat2D *m1, zMat2D *m2, zMat2D *m)
 {
-  _zMulMat2DMat2D( m1, m2, m );
-  return m;
+  zMat2D tmp;
+
+  _zMulMat2DVec2D( m1, &m2->b.x, &tmp.b.x );
+  _zMulMat2DVec2D( m1, &m2->b.y, &tmp.b.y );
+  return zMat2DCopy( &tmp, m );
 }
 
-/* multiply a 2x2 matrix by transpose of another matrix from leftside. */
+/* multiply a matrix by transpose matrix from leftside. */
 zMat2D *zMulMat2DTMat2D(zMat2D *m1, zMat2D *m2, zMat2D *m)
 {
-  _zMulMat2DTMat2D( m1, m2, m );
-  return m;
+  zMat2D tmp;
+
+  _zMulMat2DTVec2D( m1, &m2->b.x, &tmp.b.x );
+  _zMulMat2DTVec2D( m1, &m2->b.y, &tmp.b.y );
+  return zMat2DCopy( &tmp, m );
 }
 
-/* multiply a 2x2 matrix by transpose of another from rightside. */
+/* multiply a matrix by transpose matrix from rightside. */
+#define __zMulMat2DMat2DTElem(m1,m2,i,j,m) \
+  ( (m)->e[i][j] = (m1)->e[0][j]*(m2)->e[0][i] + (m1)->e[1][j]*(m2)->e[1][i] )
 zMat2D *zMulMat2DMat2DT(zMat2D *m1, zMat2D *m2, zMat2D *m)
 {
-  _zMulMat2DMat2DT( m1, m2, m );
-  return m;
+  zMat2D tmp;
+
+  __zMulMat2DMat2DTElem( m1, m2, 0, 0, &tmp );
+  __zMulMat2DMat2DTElem( m1, m2, 0, 1, &tmp );
+  __zMulMat2DMat2DTElem( m1, m2, 1, 0, &tmp );
+  __zMulMat2DMat2DTElem( m1, m2, 1, 1, &tmp );
+  return zMat2DCopy( &tmp, m );
 }
 
 /* multiply a 2x2 matrix by the inverse of another matrix from leftside. */
@@ -202,6 +259,12 @@ zMat2D *zMulInvMat2DMat2D(zMat2D *m1, zMat2D *m2, zMat2D *m)
 /* ********************************************************** */
 /* rotation
  * ********************************************************** */
+
+/* equivalent rotation angle of a 2x2 matrix. */
+double zMat2DAngle(zMat2D *mat)
+{
+  return _zMat2DAngle( mat );
+}
 
 /* rotate a 2x2 matrix with sine and cosine values. */
 zMat2D *zMat2DRotSC(zMat2D *m, double s, double c, zMat2D *rm)
