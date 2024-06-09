@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 
   if( argc < 2 ) return 1;
   if( !zMShape3DReadZTK( &ms, argv[1] ) ) return 1;
-  zMShape3DBBall( &ms, &bball );
+  zMShape3DBoundingBall( &ms, &bball );
   output( &ms, &bball );
   zMShape3DDestroy( &ms );
   return 0;
