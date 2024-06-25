@@ -96,7 +96,7 @@ double zBox3DClosest(zBox3D *box, zVec3D *p, zVec3D *cp)
 }
 
 /* distance from a point to a 3D box. */
-double zBox3DPointDist(zBox3D *box, zVec3D *p)
+double zBox3DDistFromPoint(zBox3D *box, zVec3D *p)
 {
   zVec3D cp;
   return zBox3DClosest( box, p, &cp );
@@ -291,8 +291,8 @@ static void *_zShape3DBoxXformInv(void *src, zFrame3D *f, void *dest){
   return zBox3DXformInv( (zBox3D*)src, f, (zBox3D*)dest ); }
 static double _zShape3DBoxClosest(void *body, zVec3D *p, zVec3D *cp){
   return zBox3DClosest( (zBox3D*)body, p, cp ); }
-static double _zShape3DBoxPointDist(void *body, zVec3D *p){
-  return zBox3DPointDist( (zBox3D*)body, p ); }
+static double _zShape3DBoxDistFromPoint(void *body, zVec3D *p){
+  return zBox3DDistFromPoint( (zBox3D*)body, p ); }
 static bool _zShape3DBoxPointIsInside(void *body, zVec3D *p, double margin){
   return zBox3DPointIsInside( (zBox3D*)body, p, margin ); }
 static double _zShape3DBoxVolume(void *body){
@@ -321,7 +321,7 @@ zShape3DCom zeo_shape3d_box_com = {
   _zShape3DBoxXform,
   _zShape3DBoxXformInv,
   _zShape3DBoxClosest,
-  _zShape3DBoxPointDist,
+  _zShape3DBoxDistFromPoint,
   _zShape3DBoxPointIsInside,
   _zShape3DBoxVolume,
   _zShape3DBoxBarycenter,

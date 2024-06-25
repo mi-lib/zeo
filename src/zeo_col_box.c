@@ -17,7 +17,7 @@ static int _zIntersectPlaneAABox3DEdge(zPlane3D *p, zAxis axis, double w1min, do
   if( zIsTiny( zPlane3DNorm(p)->e[(int)axis] ) ) return 0;
   a2 = ( axis + 1 ) % 3;
   a3 = ( axis + 2 ) % 3;
-  w1 = ( zVec3DInnerProd(zPlane3DNorm(p),zPlane3DVert(p))
+  w1 = ( zVec3DInnerProd(zPlane3DNorm(p),zPlane3DOrg(p))
        - zPlane3DNorm(p)->e[(int)a2]*w2
        - zPlane3DNorm(p)->e[(int)a3]*w3 ) / zPlane3DNorm(p)->e[(int)axis];
   if( w1 > w1min && w1 < w1max ){

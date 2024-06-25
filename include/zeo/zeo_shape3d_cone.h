@@ -76,7 +76,7 @@ __ZEO_EXPORT zCone3D *zCone3DXformInv(zCone3D *src, zFrame3D *f, zCone3D *dest);
  * or the false value otherwise.
  */
 __ZEO_EXPORT double zCone3DClosest(zCone3D *cone, zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zCone3DPointDist(zCone3D *cone, zVec3D *p);
+__ZEO_EXPORT double zCone3DDistFromPoint(zCone3D *cone, zVec3D *p);
 __ZEO_EXPORT bool zCone3DPointIsInside(zCone3D *cone, zVec3D *p, double margin);
 
 /*! \brief axis vector and height of a 3D cone.

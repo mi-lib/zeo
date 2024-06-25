@@ -55,7 +55,7 @@ __ZEO_EXPORT zECyl3D *zECyl3DXformInv(zECyl3D *src, zFrame3D *f, zECyl3D *dest);
 /*! \brief the closest point to a 3D elliptic cylinder. */
 __ZEO_EXPORT double zECyl3DClosest(zECyl3D *cyl, zVec3D *p, zVec3D *cp);
 /*! \brief distance from a point to a 3D elliptic cylinder. */
-__ZEO_EXPORT double zECyl3DPointDist(zECyl3D *cyl, zVec3D *p);
+__ZEO_EXPORT double zECyl3DDistFromPoint(zECyl3D *cyl, zVec3D *p);
 /*! \brief check if a point is inside of an elliptic cylinder. */
 __ZEO_EXPORT bool zECyl3DPointIsInside(zECyl3D *ecyl, zVec3D *p, double margin);
 

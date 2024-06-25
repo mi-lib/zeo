@@ -99,9 +99,9 @@ double zShape3DClosest(zShape3D *shape, zVec3D *p, zVec3D *cp)
 }
 
 /* distance from a point to a 3D shape. */
-double zShape3DPointDist(zShape3D *shape, zVec3D *p)
+double zShape3DDistFromPoint(zShape3D *shape, zVec3D *p)
 {
-  return shape->com->_pointdist( shape->body, p );
+  return shape->com->_distfrompoint( shape->body, p );
 }
 
 /* check if a point is inside of a 3D shape. */

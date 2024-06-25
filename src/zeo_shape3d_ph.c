@@ -32,8 +32,8 @@ static void *_zShape3DPHXformInv(void *src, zFrame3D *f, void *dest){
   return zPH3DXformInv( (zPH3D*)src, f, (zPH3D*)dest ); }
 static double _zShape3DPHClosest(void *body, zVec3D *p, zVec3D *cp){
   return zPH3DClosest( (zPH3D*)body, p, cp ); }
-static double _zShape3DPHPointDist(void *body, zVec3D *p){
-  return zPH3DPointDist( (zPH3D*)body, p ); }
+static double _zShape3DPHDistFromPoint(void *body, zVec3D *p){
+  return zPH3DDistFromPoint( (zPH3D*)body, p ); }
 static bool _zShape3DPHPointIsInside(void *body, zVec3D *p, double margin){
   return zPH3DPointIsInside( (zPH3D*)body, p, margin ); }
 static double _zShape3DPHVolume(void *body){
@@ -61,7 +61,7 @@ zShape3DCom zeo_shape3d_ph_com = {
   _zShape3DPHXform,
   _zShape3DPHXformInv,
   _zShape3DPHClosest,
-  _zShape3DPHPointDist,
+  _zShape3DPHDistFromPoint,
   _zShape3DPHPointIsInside,
   _zShape3DPHVolume,
   _zShape3DPHBarycenter,

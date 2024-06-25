@@ -1,12 +1,13 @@
 #include <zeo/zeo_elem3d.h>
 
-void vec_create_rand(FILE *fp, zVec3D *v, int n, double x, double y, double z, double r)
-{
-  register int i;
+#define N 1000
 
-  zRandInit();
+void create_point3D_rand(FILE *fp, zVec3D v[], int n)
+{
+  int i;
+
   for( i=0; i<n; i++ ){
-    zVec3DCreate( &v[i], x+zRandF(-100,100), y+zRandF(-100,100), z+zRandF(-10,10) );
+    zVec3DCreate( &v[i], zRandF(-100,100), zRandF(-50,50), zRandF(-10,10) );
     zVec3DDataNLFPrint( fp, &v[i] );
   }
 }
@@ -17,22 +18,23 @@ void verify(FILE *fp, zVec3D v[], int n, zPlane3D *pl)
   zVec3D p;
 
   for( i=0; i<n; i++ ){
-    zPlane3DProj( pl, &v[i], &p );
+    zPlane3DProjPoint( pl, &v[i], &p );
     zVec3DDataNLFPrint( fp, &p );
   }
 }
 
-#define N 1000
 int main(void)
 {
   zVec3D v[N], pc;
   zPlane3D pl;
   FILE *fp[2];
 
+  zRandInit();
+
   fp[0] = fopen( "a", "w" );
   fp[1] = fopen( "b", "w" );
 
-  vec_create_rand( fp[0], v, N, -2, 1,-1, 3 );
+  create_point3D_rand( fp[0], v, N );
   zPlane3DMean( &pl, &pc, v, N );
   verify( fp[1], v, N, &pl );
 

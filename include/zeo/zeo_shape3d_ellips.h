@@ -83,14 +83,14 @@ __ZEO_EXPORT zEllips3D *zEllips3DXformInv(zEllips3D *src, zFrame3D *f, zEllips3D
  * point \a p to a 3D ellipsoid \a ellips, and puts it into \a cp.
  * When \a p is inside of \a ellips, it copies \a p to \a cp.
  *
- * zEllips3DPointDist() calculates the distance from a 3D point
+ * zEllips3DDistFromPoint() calculates the distance from a 3D point
  * \a p to a 3D ellipsoid \a ellips.
  *
  * zEllips3DPointIsInside() checks if a 3D point \a p is inside
  * of a 3D ellipsoid \a ellips. \a margin is a margin of the inside
  * area outward from the boundary of \a ellips.
  * \return
- * zEllips3DClosest() and zEllips3DPointDist() return the signed
+ * zEllips3DClosest() and zEllips3DDistFromPoint() return the signed
  * distance from \a p to \a ellips. The result is
  *  - a positive value when \a p is outside of \a ellips, or
  *  - a negative value when \a p is inside of \a ellips.
@@ -99,7 +99,7 @@ __ZEO_EXPORT zEllips3D *zEllips3DXformInv(zEllips3D *src, zFrame3D *f, zEllips3D
  * inside of \a ellips, or the false value otherwise.
  */
 __ZEO_EXPORT double zEllips3DClosest(zEllips3D *ellips, zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zEllips3DPointDist(zEllips3D *ellips, zVec3D *p);
+__ZEO_EXPORT double zEllips3DDistFromPoint(zEllips3D *ellips, zVec3D *p);
 __ZEO_EXPORT bool zEllips3DPointIsInside(zEllips3D *ellips, zVec3D *p, double margin);
 
 /*! \brief calculate volume a 3D ellipsoid.

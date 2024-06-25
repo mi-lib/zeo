@@ -72,7 +72,7 @@ typedef zCyl3D zCapsule3D;
  * or the false value otherwise.
  */
 __ZEO_EXPORT double zCapsule3DClosest(zCapsule3D *capsule, zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zCapsule3DPointDist(zCapsule3D *capsule, zVec3D *p);
+__ZEO_EXPORT double zCapsule3DDistFromPoint(zCapsule3D *capsule, zVec3D *p);
 __ZEO_EXPORT bool zCapsule3DPointIsInside(zCapsule3D *capsule, zVec3D *p, double margin);
 
 /*! \brief axis vector and height of a 3D capsule.

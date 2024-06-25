@@ -74,7 +74,7 @@ __ZEO_EXPORT zCyl3D *zCyl3DXformInv(zCyl3D *src, zFrame3D *f, zCyl3D *dest);
  * or the false value otherwise.
  */
 __ZEO_EXPORT double zCyl3DClosest(zCyl3D *cyl, zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zCyl3DPointDist(zCyl3D *cyl, zVec3D *p);
+__ZEO_EXPORT double zCyl3DDistFromPoint(zCyl3D *cyl, zVec3D *p);
 __ZEO_EXPORT bool zCyl3DPointIsInside(zCyl3D *cyl, zVec3D *p, double margin);
 
 /*! \brief axis vector and height of a 3D cylinder.

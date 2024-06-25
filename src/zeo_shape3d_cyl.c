@@ -108,7 +108,7 @@ double zCyl3DClosest(zCyl3D *cyl, zVec3D *p, zVec3D *cp)
 }
 
 /* distance from a point to a 3D cylinder. */
-double zCyl3DPointDist(zCyl3D *cyl, zVec3D *p)
+double zCyl3DDistFromPoint(zCyl3D *cyl, zVec3D *p)
 {
   zVec3D axis, v;
   double l, r, d;
@@ -276,8 +276,8 @@ static void *_zShape3DCylXformInv(void *src, zFrame3D *f, void *dest){
   return zCyl3DXformInv( (zCyl3D*)src, f, (zCyl3D*)dest ); }
 static double _zShape3DCylClosest(void *body, zVec3D *p, zVec3D *cp){
   return zCyl3DClosest( (zCyl3D*)body, p, cp ); }
-static double _zShape3DCylPointDist(void *body, zVec3D *p){
-  return zCyl3DPointDist( (zCyl3D*)body, p ); }
+static double _zShape3DCylDistFromPoint(void *body, zVec3D *p){
+  return zCyl3DDistFromPoint( (zCyl3D*)body, p ); }
 static bool _zShape3DCylPointIsInside(void *body, zVec3D *p, double margin){
   return zCyl3DPointIsInside( (zCyl3D*)body, p, margin ); }
 static double _zShape3DCylVolume(void *body){
@@ -306,7 +306,7 @@ zShape3DCom zeo_shape3d_cyl_com = {
   _zShape3DCylXform,
   _zShape3DCylXformInv,
   _zShape3DCylClosest,
-  _zShape3DCylPointDist,
+  _zShape3DCylDistFromPoint,
   _zShape3DCylPointIsInside,
   _zShape3DCylVolume,
   _zShape3DCylBarycenter,

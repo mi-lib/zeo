@@ -106,7 +106,7 @@ double zCone3DClosest(zCone3D *cone, zVec3D *p, zVec3D *cp)
 }
 
 /* distance from a point to a 3D cone. */
-double zCone3DPointDist(zCone3D *cone, zVec3D *p)
+double zCone3DDistFromPoint(zCone3D *cone, zVec3D *p)
 {
   zVec3D axis, v, s, g;
   double l, r, d;
@@ -297,8 +297,8 @@ static void *_zShape3DConeXformInv(void *src, zFrame3D *f, void *dest){
   return zCone3DXformInv( (zCone3D*)src, f, (zCone3D*)dest ); }
 static double _zShape3DConeClosest(void *body, zVec3D *p, zVec3D *cp){
   return zCone3DClosest( (zCone3D*)body, p, cp ); }
-static double _zShape3DConePointDist(void *body, zVec3D *p){
-  return zCone3DPointDist( (zCone3D*)body, p ); }
+static double _zShape3DConeDistFromPoint(void *body, zVec3D *p){
+  return zCone3DDistFromPoint( (zCone3D*)body, p ); }
 static bool _zShape3DConePointIsInside(void *body, zVec3D *p, double margin){
   return zCone3DPointIsInside( (zCone3D*)body, p, margin ); }
 static double _zShape3DConeVolume(void *body){
@@ -327,7 +327,7 @@ zShape3DCom zeo_shape3d_cone_com = {
   _zShape3DConeXform,
   _zShape3DConeXformInv,
   _zShape3DConeClosest,
-  _zShape3DConePointDist,
+  _zShape3DConeDistFromPoint,
   _zShape3DConePointIsInside,
   _zShape3DConeVolume,
   _zShape3DConeBarycenter,

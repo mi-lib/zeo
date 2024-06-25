@@ -112,7 +112,7 @@ __ZEO_EXPORT zVec3D *zPH3DContigVert(zPH3D *ph, zVec3D *p, double *d);
  *  - normal vectors of all facets of \a ph direct outward.
  */
 __ZEO_EXPORT double zPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zPH3DPointDist(zPH3D *ph, zVec3D *p);
+__ZEO_EXPORT double zPH3DDistFromPoint(zPH3D *ph, zVec3D *p);
 __ZEO_EXPORT bool zPH3DPointIsInside(zPH3D *ph, zVec3D *p, double margin);
 
 /*! \brief volume of a 3D polyhedron.

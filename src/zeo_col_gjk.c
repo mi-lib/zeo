@@ -276,8 +276,8 @@ static bool _zGJKPDInitAddPoint(zVec3D p1[], int n1, zVec3D p2[], int n2, zGJKSl
   zGJKSlot  ns;
 
   _zGJKSupportMap( &ns, p1, n1, p2, n2, v );
-  if( ( edge != NULL && zIsTiny( zEdge3DPointDist( edge, &ns.w ) ) ) ||
-      ( tri != NULL && zIsTiny( zTri3DPointDist( tri, &ns.w ) ) ) )
+  if( ( edge != NULL && zIsTiny( zEdge3DDistFromPoint( edge, &ns.w ) ) ) ||
+      ( tri != NULL && zIsTiny( zTri3DDistFromPoint( tri, &ns.w ) ) ) )
     return false;
   _zGJKSlotListInsert( slist, &ns );
   zVec3DListAdd( vlist, &ns.w );
@@ -392,7 +392,8 @@ static bool _zGJKCheck(zGJKSimplex *s)
   case 3: zTri3DCreate( &t, &s->slot[0].w, &s->slot[1].w, &s->slot[2].w );
           return zTri3DPointIsOn( &t, ZVEC3DZERO ) ? true : false;
   case 2: zEdge3DCreate( &e, &s->slot[0].w, &s->slot[1].w );
-          return zEdge3DPointIsOn( &e, ZVEC3DZERO ) ? true : false;
+          return zEdge3DPointIsOn( &e, ZVEC3DZERO, zTOL ) ? true : false;
+  case 1: return zVec3DEqual( &s->slot[0].w, ZVEC3DZERO );
   default: ;
   }
   return false;

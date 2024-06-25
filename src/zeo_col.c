@@ -11,8 +11,8 @@ bool zColChkEdgePlane3D(zEdge3D *e, zPlane3D *p)
 {
   zVec3D v[2];
 
-  zVec3DSub( zEdge3DVert(e,0), zPlane3DVert(p), &v[0] );
-  zVec3DSub( zEdge3DVert(e,1), zPlane3DVert(p), &v[1] );
+  zVec3DSub( zEdge3DVert(e,0), zPlane3DOrg(p), &v[0] );
+  zVec3DSub( zEdge3DVert(e,1), zPlane3DOrg(p), &v[1] );
   return zVec3DInnerProd( &v[0], zPlane3DNorm(p) )
        * zVec3DInnerProd( &v[1], zPlane3DNorm(p) ) <= 0 ? true : false;
 }
@@ -24,7 +24,7 @@ int zIntersectEdgePlane3D(zEdge3D *e, zPlane3D *p, zVec3D ip[])
   zVec3D v;
 
   if( !zColChkEdgePlane3D( e, p ) ) return 0;
-  zVec3DSub( zPlane3DVert(p), zEdge3DVert(e,0), &v );
+  zVec3DSub( zPlane3DOrg(p), zEdge3DVert(e,0), &v );
   d = zVec3DInnerProd( zEdge3DVec(e), zPlane3DNorm(p) );
   if( zIsTiny( d ) ){
     zVec3DCopy( zEdge3DVert(e,0), &ip[0] );

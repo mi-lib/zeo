@@ -25,7 +25,7 @@ typedef struct{
   void *(*_xform)(void*,zFrame3D*,void*);
   void *(*_xforminv)(void*,zFrame3D*,void*);
   double (*_closest)(void*,zVec3D*,zVec3D*);
-  double (*_pointdist)(void*,zVec3D*);
+  double (*_distfrompoint)(void*,zVec3D*);
   bool (*_pointisinside)(void*,zVec3D*,double);
   double (*_volume)(void*);
   zVec3D *(*_barycenter)(void*,zVec3D*);
@@ -102,7 +102,7 @@ __ZEO_EXPORT zShape3D *zShape3DXformInv(zShape3D *src, zFrame3D *f, zShape3D *de
  * zPH3DPointIsInside
  */
 __ZEO_EXPORT double zShape3DClosest(zShape3D *shape, zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zShape3DPointDist(zShape3D *shape, zVec3D *p);
+__ZEO_EXPORT double zShape3DDistFromPoint(zShape3D *shape, zVec3D *p);
 __ZEO_EXPORT bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, double margin);
 
 /*! \brief volume of a 3D shape. */

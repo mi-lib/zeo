@@ -31,6 +31,11 @@
 #define ZEO_ERR_ELEM_DEGE    "edge degenerated"
 #define ZEO_ERR_ELEM_DEGT    "triangle degenerated"
 
+#define ZEO_ERR_ELEM_NPTR_SPECIFIED(XD) "null pointer specified for position / direction vector of a " #XD " line"
+#define ZEO_ERR_ELEM_ZERO_DIRVEC(XD)    "cannot create a " #XD " line from a zero direction vector"
+
+#define ZEO_WARN_LINE3D_NOT_UNIQUE_COMMONPERP "cannot find a unique common parpendicular of parallel 3D lines, choose a nominal one"
+
 #define ZEO_ERR_NOFACE       "polyhedron has no face"
 #define ZEO_ERR_CENTER_MANY  "too many center points"
 #define ZEO_ERR_RADIUS_MANY  "too many radii"

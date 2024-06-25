@@ -14,101 +14,49 @@
 __BEGIN_DECLS
 
 /* ********************************************************** */
-/*! \brief classifier for tight/strict/loose in/out check
- *//* ******************************************************* */
-typedef enum{
-  ZEO_RIM_TIGHT, ZEO_RIM_STRICT, ZEO_RIM_LOOSE,
-} zRimType;
-
-/* ********************************************************** */
-/*! \brief 3D plane class.
+/*! \brief 3D line class.
  *//********************************************************* */
-typedef struct{
-  zVec3D *vert, norm;
-} zPlane3D;
+ZEO_ELEM_LINEXD_DEF_STRUCT( 3D );
 
-#define zPlane3DVert(p)      ( (p)->vert )
-#define zPlane3DNorm(p)      ( &(p)->norm )
+#define zLine3DOrg(line)       zLineXDOrg( 3D, line )
+#define zLine3DDir(line)       zLineXDDir( 3D, line )
+#define zLine3DSetOrg(line,p)  zLineXDSetOrg( 3D, line, p )
+#define zLine3DSetDir(line,d)  zLineXDSetDir( 3D, line, d )
 
-#define zPlane3DSetVert(p,v) ( zPlane3DVert(p) = (v) )
-#define zPlane3DSetNorm(p,n) zVec3DNormalize( (n), zPlane3DNorm(p) )
+/*! \brief initialize a 3D line. */
+__ZEO_EXPORT ZEO_ELEM_LINEXD_INIT_PROTOTYPE( 3D );
+/*! \brief create a 3D line from a point and a direction vector. */
+__ZEO_EXPORT ZEO_ELEM_LINEXD_CREATE_PROTOTYPE( 3D );
+/*! \brief create a 3D line from two passing points. */
+__ZEO_EXPORT ZEO_ELEM_LINEXD_CREATE_TWOPOINT_PROTOTYPE( 3D );
+/*! \brief a 3D point on a line. */
+__ZEO_EXPORT ZEO_ELEM_LINEXD_POINT_PROTOTYPE( 3D );
+/*! \brief projection of a 3D point onto a line. */
+__ZEO_EXPORT ZEO_ELEM_LINEXD_PROJ_POINT_PROTOTYPE( 3D );
+/*! \brief distance from a 3D point to a line. */
+__ZEO_EXPORT ZEO_ELEM_LINEXD_DIST_FROM_POINT_PROTOTYPE( 3D );
+/*! \brief check if a 3D point is on a line. */
+__ZEO_EXPORT ZEO_ELEM_LINEXD_POINT_IS_ON_PROTOTYPE( 3D );
 
-/*! \brief initialize and create a 3D plane.
- *
- * zPlane3DInit() initializes a 3D plane \a p as the x-y plane.
- *
- * zPlane3DCreate() creates a 3D plane which is defined by the pass
- * point \a v and the normal vector \a n.
- * \return
- * zPlane3DInit() and zPlane3DCreate() return a pointer \a p.
- */
-__ZEO_EXPORT zPlane3D *zPlane3DCreate(zPlane3D *p, zVec3D *v, zVec3D *n);
-#define zPlane3DInit(p) zPlane3DCreate( (p), ZVEC3DZERO, ZVEC3DZ )
+/*! \brief find two end points of the common perpendicular of two 3D lines. */
+__ZEO_EXPORT void zLine3DCommonPerpEnd(zLine3D *line1, zLine3D *line2, zVec3D *p1, zVec3D *p2);
 
-/*! \brief distance between a 3D point and a 3D plane, and projection of
- *   a point to a 3D plane.
- *
- * zPlane3DPointDist() calculates the distance between a 3D point \a v
- * and a 3D plane \a p.
- *
- * zPlane3DPointIsOn() checks if a point \a v is on a plane \a p.
- *
- * zPlane3DProj() calculates the projection point of a 3D point \a v
- * to a 3D plane \a p. The result is put into the vector pointed by \a cp.
- * \return
- * zPlane3DPointDist() returns the distance calculated.
- *
- * zPlane3DPointIsOn() returns the true value if \a v is on \a p,
- * or the false value otherwise.
- *
- * zPlane3DProj() returns the distance between \a p and \a v.
- */
-__ZEO_EXPORT double zPlane3DPointDist(zPlane3D *p, zVec3D *v);
-__ZEO_EXPORT bool zPlane3DPointIsOn(zPlane3D *p, zVec3D *v);
-__ZEO_EXPORT double zPlane3DProj(zPlane3D *p, zVec3D *v, zVec3D *cp);
+/*! \brief create the common perpendicular of two 3D lines. */
+__ZEO_EXPORT zLine3D *zLine3DCommonPerp(zLine3D *line1, zLine3D *line2, zVec3D *origin, zLine3D *commonperp);
 
-/*! \brief mean plane of set of points.
- *
- * zPlane3DMean() calculates the mean plane \a pl of a set of points \a v.
- * \a n is the number of points. Namely, \a pl is the plane to which the
- * mean distance from every points is minimized.
- *
- * the mean point of \a v, which is also on \a pl, is stored where \a pc
- * points.
- * \return
- * zPlane3DMean() returns a pointer \a pl.
- */
-__ZEO_EXPORT zPlane3D *zPlane3DMean(zPlane3D *pl, zVec3D *pc, zVec3D v[], int n);
-
-/*! \brief print a 3D plane.
- *
- * zPlane3DFPrint() prints information of a 3D plane \a p out
- * to the current position of the file \a fp in the following format:
- *
- * vert: ( x, y, z ) <- the passing point
- * norm: ( x, y, z ) <- the normal vector
- *
- * zPlane3DPrint() prints information of the plane \a p out to
- * the standard out.
- * \return
- * Neither zPlane3DFPrint() nor zPlane3DPrint() return any values.
- */
-__ZEO_EXPORT void zPlane3DFPrint(FILE *fp, zPlane3D *p);
-#define zPlane3DPrint(p) zPlane3DFPrint( stdout, (p) )
+/*! \brief distance between two 3D lines. */
+__ZEO_EXPORT double zDistLine3DLine3D(zLine3D *line1, zLine3D *line2);
 
 /* ********************************************************** */
 /*! \brief 3D edge class.
  *//********************************************************* */
-typedef struct{
-  zVec3D *vert[2]; /*!< \brief two vertices */
-  zVec3D vec;      /*!< \brief edge vector */
-} zEdge3D;
+ZEO_ELEM_EDGEXD_DEF_STRUCT( 3D );
 
-#define zEdge3DVert(e,i)      (e)->vert[(i)]
-#define zEdge3DVec(e)         ( &(e)->vec )
+#define zEdge3DVert(edge,i)        zEdgeXDVert( 3D, edge, i )
+#define zEdge3DVec(edge)           zEdgeXDVec( 3D, edge )
 
-#define zEdge3DSetVert(e,i,p) ( (e)->vert[(i)] = (p) )
-#define zEdge3DSetVec(e,v)    zVec3DCopy( v, zEdge3DVec(e) )
+#define zEdge3DSetVert(edge,i,ptr) zEdgeXDSetVert( 3D, edge, i, ptr )
+#define zEdge3DSetVec(edge,v)      zEdgeXDSetVec( 3D, edge, v )
 
 /*! \brief initialize and create of a 3D edge.
  *
@@ -119,8 +67,8 @@ typedef struct{
  * \return
  * Each of zEdge3DInit() and zEdge3DCreate() returns a pointer \a e.
  */
-__ZEO_EXPORT ZEDGEXD_INIT_PROTOTYPE( 3D );
-__ZEO_EXPORT ZEDGEXD_CREATE_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEO_ELEM_EDGEXD_INIT_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEO_ELEM_EDGEXD_CREATE_PROTOTYPE( 3D );
 
 /*! \brief path vector of a 3D edge.
  *
@@ -130,80 +78,175 @@ __ZEO_EXPORT ZEDGEXD_CREATE_PROTOTYPE( 3D );
  * \return
  * zEdge3DCalcVec() returns the pointer to the path vector.
  */
-__ZEO_EXPORT ZEDGEXD_CALC_VEC_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEO_ELEM_EDGEXD_CALC_VEC_PROTOTYPE( 3D );
+
+/*! \brief length of a 3D edge. */
+#define zEdge3DLen(edge) ZEO_ELEM_EDGEXD_LEN( 3D, edge )
+/*! \brief unit direction vector of a 3D edge. */
+#define zEdge3DDir(edge,dir) ZEO_ELEM_EDGEXD_DIR( 3D, edge, dir )
 
 /*! \brief distance between a point and a 3D edge.
  *
- * zEdge3DProj() finds the projection of a given 3D point \a p onto
+ * zEdge3DProjPoint() finds the projection of a given 3D point \a p onto
  * a 3D edge \a e. The result is put into \a cp.
  *
- * zEdge3DPointDist() calculates a distance between an edge \a e and a
+ * zEdge3DDistFromPoint() calculates a distance between an edge \a e and a
  * point \a p. \a e is regarded as an infinite-length edge, namely, it
  * returns the length of the perpendicular from \a p to \a e.
- *
- * zEdge3DClosest(), on the contrary, calculates the actual closest point
- * on \a e from \a p and sets it into \a cp. When the perpendicular from
- * \a p to \a e does not cross with \a e, it returns the closest endpoint
- * of \a e from \a p.
  * \return
- * zEdge3DPointDist() returns the distance calculated, nameyl, the length
+ * zEdge3DDistFromPoint() returns the distance calculated, nameyl, the length
  * of the perpendicular from \a p to \a e.
- *
- * zEdge3DClosest() returns the distance between \a p and \a cp.
  */
-__ZEO_EXPORT ZEDGEXD_PROJ_PROTOTYPE( 3D );
-__ZEO_EXPORT ZEDGEXD_POINT_DIST_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEO_ELEM_EDGEXD_PROJ_POINT_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEO_ELEM_EDGEXD_DIST_FROM_POINT_PROTOTYPE( 3D );
 
-__ZEO_EXPORT bool zEdge3DPointIsOn(zEdge3D *e, zVec3D *p);
+/*! \brief check if a point is on the identical line with a 3D edge. */
+__ZEO_EXPORT ZEO_ELEM_EDGEXD_POINT_IS_ON_LINE_PROTOTYPE( 3D );
 
-__ZEO_EXPORT ZEDGEXD_LINSCALE_PROTOTYPE( 3D );
-__ZEO_EXPORT ZEDGEXD_CLOSEST_PROTOTYPE( 3D );
+/*! \brief check if a point is on a 3D edge. */
+__ZEO_EXPORT ZEO_ELEM_EDGEXD_POINT_IS_ON_PROTOTYPE( 3D );
 
-/*! \brief contiguous vertix of edge to a point.
+#if 0
+__ZEO_EXPORT ZEO_ELEM_EDGEXD_LINSCALE_PROTOTYPE( 3D );
+#endif
+
+/*! \brief closest point to a 3D edge.
  *
- * zEdge3DContigVert() returns the contiguous vertix of an edge \a e
- * to a given point \a p (namely, the value returned has to be either
- * the first or the second vertix of \a e).
+ * zEdge3DClosest() finds the closest point on \a edge from \a point and sets it into \a cp.
+ * When the perpendicular from \a point to \a edge is not on \a edge, it returns the closest
+ * endpoint of \a edge from \a point.
+ * \return
+ * zEdge3DClosest() returns the distance between \a point and \a cp.
+ */
+__ZEO_EXPORT ZEO_ELEM_EDGEXD_CLOSEST_PROTOTYPE( 3D );
+
+/*! \brief contiguous vertix of a 3D edge to a 3D point.
+ *
+ * zEdge3DContigVert() returns the contiguous vertix of an edge \a edge to a given point \a point.
+ * Namely, the value returned has to be either the first or the second vertix of \a edge.
+ * If \a distance is not the null pointer, the distance between \a point and the detected contiguous
+ * vertex is stored where \a distance points.
  * \return
  * zEdge3DContigVert() returns a pointer to the found vertix.
  */
-__ZEO_EXPORT zVec3D *zEdge3DContigVert(zEdge3D *e, zVec3D *p, double *d);
+__ZEO_EXPORT ZEO_ELEM_EDGEXD_CONTIG_VERT_PROTOTYPE( 3D );
 
 /*! \brief print a 3D edge.
  *
- * zEdge3DFPrint() prints coordinates of the endpoints of a 3D
- * edge to the current position of a file \a fp in the following format.
+ * zEdge3DFPrint() prints coordinates of the endpoints of a 3D edge \a edge to the current position
+ * of a file \a fp in the following format.
  *
  *  vert: 0 ( x0, y0, z0 )
  *  vert: 1 ( x1, y1, z1 )
  *  vec: ( vx, vy, vz )
  *
- * where vert 0 is the first endpoint, vert 1 is the second and
- * vec is for the path vector.
+ * where vert 0 is the first endpoint, vert 1 is the second and vec is for the path vector.
  * \return
  * zEdge3DFPrint() and zEdge3DPrint() return no values.
  */
-__ZEO_EXPORT void zEdge3DFPrint(FILE *fp, zEdge3D *e);
-#define zEdge3DPrint(e) zEdge3DFPrint( stdout, (e) )
+__ZEO_EXPORT ZEO_ELEM_EDGEXD_FPRINT_PROTOTYPE( 3D );
+#define zEdge3DPrint(edge) zEdge3DFPrint( stdout, (edge) )
+
+/* ********************************************************** */
+/*! \brief 3D plane class.
+ *//********************************************************* */
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPlane3D ){
+  zVec3D *origin; /*!< original point */
+  zVec3D norm;    /*!< normal vector */
+};
+
+#define zPlane3DOrg(plane)        ( (plane)->origin )
+#define zPlane3DNorm(plane)       ( &(plane)->norm )
+
+#define zPlane3DSetOrg(plane,org) ( zPlane3DOrg(plane) = (org) )
+#define zPlane3DSetNorm(plane,n)  zVec3DNormalize( (n), zPlane3DNorm(plane) )
+
+/*! \brief initialize and create a 3D plane.
+ *
+ * zPlane3DInit() initializes a 3D plane \a plane as the x-y plane.
+ *
+ * zPlane3DCreate() creates a 3D plane which is defined by the pass
+ * point \a v and the normal vector \a n.
+ * \return
+ * zPlane3DInit() and zPlane3DCreate() return a pointer \a plane.
+ */
+__ZEO_EXPORT zPlane3D *zPlane3DCreate(zPlane3D *plane, zVec3D *v, zVec3D *n);
+#define zPlane3DInit(plane) zPlane3DCreate( (plane), ZVEC3DZERO, ZVEC3DZ )
+
+/*! \brief distance between a 3D point and a 3D plane.
+ *
+ * zPlane3DDistFromPoint() calculates the distance between a 3D point \a point and a 3D plane \a plane.
+ * \return
+ * zPlane3DDistFromPoint() returns the distance between a 3D point \a point and a 3D plane \a plane.
+ */
+__ZEO_EXPORT double zPlane3DDistFromPoint(zPlane3D *plane, zVec3D *point);
+
+/*! \brief check if a 3D point is on a 3D plane.
+ *
+ * zPlane3DPointIsOn() checks if a point \a point is on a plane \a plane.
+ * \a margin is the margin from the exact surface of \a plane. Namely, the distance from \a point
+ * to \a plane is shorter than \a margin, zPlane3DPointIsOn() judges \a point as a point on \a plane.
+ * \return
+ * zPlane3DPointIsOn() returns the true value if \a point is on \a plane, or the false value otherwise.
+ */
+__ZEO_EXPORT bool zPlane3DPointIsOn(zPlane3D *plane, zVec3D *point, double margin);
+
+/*! \brief projection of a 3D point to a 3D plane.
+ *
+ * zPlane3DProjPoint() calculates the projection point of a 3D point \a v to a 3D plane \a plane.
+ * The result is put into the vector pointed by \a cp.
+ * \return
+ * zPlane3DProjPoint() returns the distance between \a plane and \a v.
+ */
+__ZEO_EXPORT double zPlane3DProjPoint(zPlane3D *plane, zVec3D *v, zVec3D *cp);
+
+/*! \brief mean plane of set of points.
+ *
+ * zPlane3DMean() calculates the mean plane \a plane of a set of points \a v.
+ * \a n is the number of points. Namely, \a plane is the plane to which the
+ * mean distance from every points is minimized.
+ *
+ * the mean point of \a v, which is also on \a plane, is stored where \a pc
+ * points.
+ * \return
+ * zPlane3DMean() returns a pointer \a plane.
+ */
+__ZEO_EXPORT zPlane3D *zPlane3DMean(zPlane3D *plane, zVec3D *pc, zVec3D v[], int n);
+
+/*! \brief print a 3D plane.
+ *
+ * zPlane3DFPrint() prints information of a 3D plane \a plane out
+ * to the current position of the file \a fp in the following format:
+ *
+ * origin: ( x, y, z )
+ * norm:   ( x, y, z )
+ *
+ * zPlane3DPrint() prints information of the plane \a plane out to
+ * the standard out.
+ * \return
+ * Neither zPlane3DFPrint() nor zPlane3DPrint() return any values.
+ */
+__ZEO_EXPORT void zPlane3DFPrint(FILE *fp, zPlane3D *plane);
+#define zPlane3DPrint(plane) zPlane3DFPrint( stdout, (plane) )
 
 /* ********************************************************** */
 /*! \brief 3D triangle class.
  *//********************************************************* */
-typedef struct{
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zTri3D ){
   zVec3D *v[3]; /*!< vertices */
   zVec3D norm;  /*!< normal vector */
-} zTri3D;
+};
 
-#define zTri3DNorm(t)        ( &(t)->norm )
-#define zTri3DVert(t,i)      (t)->v[i]
-#define zTri3DVertNext(t,i)  zTri3DVert( t, ( (i)+1 ) % 3 )
+#define zTri3DNorm(tri)        ( &(tri)->norm )
+#define zTri3DVert(tri,i)      (tri)->v[(i)]
+#define zTri3DVertNext(tri,i)  zTri3DVert( tri, ( (i)+1 ) % 3 )
 
-#define zTri3DSetNorm(t,n)   zVec3DCopy( n, zTri3DNorm(t) )
-#define zTri3DSetVert(t,i,v) ( zTri3DVert(t,i) = (v) )
+#define zTri3DSetNorm(tri,n)   zVec3DCopy( n, zTri3DNorm(tri) )
+#define zTri3DSetVert(tri,i,v) ( zTri3DVert(tri,i) = (v) )
 
 /*! \brief initialize and create a 3D triangle.
  *
- * zTri3DInit() initializes a 3D triangle instance \a t, setting three
+ * zTri3DInit() initializes a 3D triangle instance \a tri, setting three
  * vertices for the null vector.
  *
  * zTri3DCreate() creates a 3D triangle from three vertices \a v1, \a v2
@@ -218,128 +261,128 @@ typedef struct{
  * the destructive version of zTri3DRev() is defined as so.
  * \return
  * zTri3DInit(), zTri3DCreate(), zTri3DCreateRev() and zTri3DRevDRC()
- * return a pointer \a t.
+ * return a pointer \a tri.
  *
  * zTri3DRev() returns a pointer \a dest.
  */
-__ZEO_EXPORT zTri3D *zTri3DInit(zTri3D *t);
-__ZEO_EXPORT zTri3D *zTri3DCreate(zTri3D *t, zVec3D *v1, zVec3D *v2, zVec3D *v3);
-__ZEO_EXPORT zTri3D *zTri3DCreateRev(zTri3D *t, zVec3D *v1, zVec3D *v2, zVec3D *v3);
+__ZEO_EXPORT zTri3D *zTri3DInit(zTri3D *tri);
+__ZEO_EXPORT zTri3D *zTri3DCreate(zTri3D *tri, zVec3D *v1, zVec3D *v2, zVec3D *v3);
+__ZEO_EXPORT zTri3D *zTri3DCreateRev(zTri3D *tri, zVec3D *v1, zVec3D *v2, zVec3D *v3);
 __ZEO_EXPORT zTri3D *zTri3DRev(zTri3D *src, zTri3D *dest);
-#define zTri3DRevDRC(t) zTri3DRev( t, t )
+#define zTri3DRevDRC(tri) zTri3DRev( tri, tri )
 
 /*! \brief area and normal vector of a 3D triangle.
  *
- * zTri3DArea() calculates the area of a triangle \a t.
+ * zTri3DArea() calculates the area of a triangle \a tri.
  *
- * zTri3DCalcNorm() calculates the normal vector of triangle \a t.
+ * zTri3DCalcNorm() calculates the normal vector of triangle \a tri.
  * The vector is contained by the triangle itself within. One can access
  * the normal vector by calling zTri3DNorm() (see zeo_elem.h).
  * \return
  * zTri3DArea() returns the area calculated.
  * zTri3DCalcNorm() returns a pointer to the normal vector.
  */
-__ZEO_EXPORT double zTri3DArea(zTri3D *t);
-__ZEO_EXPORT zVec3D *zTri3DCalcNorm(zTri3D *t);
+__ZEO_EXPORT double zTri3DArea(zTri3D *tri);
+__ZEO_EXPORT zVec3D *zTri3DCalcNorm(zTri3D *tri);
 
 /*! \brief various centers of a 3D triangle.
  *
  * zTri3DBarycenter(), zTri3DCircumcenter(), zTri3DIncenter() and
  * zTri3DOrthocenter() calculate barycenter, circumcenter, incenter
- * and orthocenter of \a t, respectively.
+ * and orthocenter of \a tri, respectively.
  * The result is put into \a c.
  * \return
  * zTri3DBarycenter(), zTri3DCircumcenter(), zTri3DIncenter() and
  * zTri3DOrthocenter() return a pointer \a c.
  */
-__ZEO_EXPORT ZTRIXD_BARYCENTER_PROTOTYPE( 3D );
-__ZEO_EXPORT ZTRIXD_CIRCUMCENTER_PROTOTYPE( 3D );
-__ZEO_EXPORT ZTRIXD_INCENTER_PROTOTYPE( 3D );
-__ZEO_EXPORT ZTRIXD_ORTHOCENTER_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEO_ELEM_TRIXD_BARYCENTER_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEO_ELEM_TRIXD_CIRCUMCENTER_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEO_ELEM_TRIXD_INCENTER_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEO_ELEM_TRIXD_ORTHOCENTER_PROTOTYPE( 3D );
 
 /*! \brief convert a triangle to a plane.
  *
- * zTri3DToPlane3D() converts a given 3D triangle \a t to an infinite
- * 3D plane \a p which \a t is on.
+ * zTri3DToPlane3D() converts a given 3D triangle \a tri to an infinite
+ * 3D plane \a plane which \a tri is on.
  * \return
- * zTri3DToPlane3D() returns a pointer \a t.
+ * zTri3DToPlane3D() returns a pointer \a tri.
  */
-#define zTri3DToPlane3D(t,p) zPlane3DCreate( p, zTri3DVert(t,0), zTri3DNorm(t) )
+#define zTri3DToPlane3D(tri,plane) zPlane3DCreate( plane, zTri3DVert(tri,0), zTri3DNorm(tri) )
 
 /*! \brief contiguous vertix of triangle to a point.
  *
- * zTri3DContigVert() returns the contiguous vertix of a triangle \a t
+ * zTri3DContigVert() returns the contiguous vertix of a triangle \a tri
  * to a given point \a p. Namely, the value returned has to be any of
- * three vertices of \a t.
+ * three vertices of \a tri.
  * \return
  * zTri3DContigVert() returns a pointer to the found vertix.
  */
-__ZEO_EXPORT zVec3D *zTri3DContigVert(zTri3D *t, zVec3D *p, double *d);
+__ZEO_EXPORT zVec3D *zTri3DContigVert(zTri3D *tri, zVec3D *p, double *d);
 
 /*! \brief distance between a point and a triangle.
  *
- * zTri3DPointDist() calculates the signed distance between a triangle
- * \a t and a point \a v. The result is
- *  - a positive value when \a v is above \a t (\a v exists in
- *    the direction of the normal vector of \a t),
- *  - a negative value when \a v is below \a t (\a v exists in
- *    the opposite direction of the normal vector of \a t),
- *  - zero when \a v is on \a t.
+ * zTri3DDistFromPoint() calculates the signed distance between a triangle
+ * \a tri and a point \a v. The result is
+ *  - a positive value when \a v is above \a tri (\a v exists in
+ *    the direction of the normal vector of \a tri),
+ *  - a negative value when \a v is below \a tri (\a v exists in
+ *    the opposite direction of the normal vector of \a tri),
+ *  - zero when \a v is on \a tri.
  * The funciton does not care if the projection point of \a v is
- * inside of \a t or not, but only calculates the length of the
- * perpendicular from \a v to \a t.
+ * inside of \a tri or not, but only calculates the length of the
+ * perpendicular from \a v to \a tri.
  *
- * zTri3DProj() calculates the projection point of \a v into a triangle
- * \a t - the footpoint of the perpendicular from \a v to \a t, and sets
+ * zTri3DProjPoint() calculates the projection point of \a v into a triangle
+ * \a tri - the footpoint of the perpendicular from \a v to \a tri, and sets
  * it into \a cp.
  * \return
- * zTri3DPointDist() and zTri3DProj() return the distance between \a v
- * and \a t.
+ * zTri3DDistFromPoint() and zTri3DProjPoint() return the distance between \a v
+ * and \a tri.
  */
-__ZEO_EXPORT double zTri3DPointDist(zTri3D *t, zVec3D *v);
-__ZEO_EXPORT bool zTri3DPointIsOn(zTri3D *t, zVec3D *v);
-__ZEO_EXPORT double zTri3DProj(zTri3D *t, zVec3D *v, zVec3D *cp);
+__ZEO_EXPORT double zTri3DDistFromPoint(zTri3D *tri, zVec3D *v);
+__ZEO_EXPORT bool zTri3DPointIsOn(zTri3D *tri, zVec3D *v);
+__ZEO_EXPORT double zTri3DProjPoint(zTri3D *tri, zVec3D *v, zVec3D *cp);
 
 /*! \brief check if a point is inside of a triangle.
  *
  * zTri3DPointIsInside() checks if the given point \a v is inside of
- * a triangle \a t. "\a v is inside of \a p" means that the projection
- * point of \a v to \a t is inside of \a t.
+ * a triangle \a tri. "\a v is inside of \a p" means that the projection
+ * point of \a v to \a tri is inside of \a tri.
  *
  * \a margin is a margin of the inside area outward from the boundary
- * of \a t.
+ * of \a tri.
  * \return
- * zTri3DPointIsInside() returns the true value if \a v is inside of \a t
+ * zTri3DPointIsInside() returns the true value if \a v is inside of \a tri
  * with a margin \a margin. Otherwise, the false value is returned.
  */
-__ZEO_EXPORT bool zTri3DPointIsInside(zTri3D *t, zVec3D *v, double margin);
+__ZEO_EXPORT bool zTri3DPointIsInside(zTri3D *tri, zVec3D *v, double margin);
 
 /*! \brief the closest point from a point to a 3D triangle.
  *
- * zTri3DClosest() calculates the closest point on a triangle \a t from
+ * zTri3DClosest() calculates the closest point on a triangle \a tri from
  * the given point \a v.
  * It sets the point calculated into \a cp.
  * \return
  * zTri3DClosest() returns the distance from \a v to the closest point
  * calculated.
  */
-__ZEO_EXPORT double zTri3DLinScale(zTri3D *t, zVec3D *p, double *l0, double *l1, double *l2, zVec3D *cp);
-__ZEO_EXPORT double zTri3DClosest(zTri3D *t, zVec3D *v, zVec3D *cp);
+__ZEO_EXPORT double zTri3DLinScale(zTri3D *tri, zVec3D *p, double *l0, double *l1, double *l2, zVec3D *cp);
+__ZEO_EXPORT double zTri3DClosest(zTri3D *tri, zVec3D *v, zVec3D *cp);
 
 /*! \brief volume, inertia, barycenter and circumcenter of cone.
  *
  * zTri3DConeVolume() calculates the volume of a cone which consists
- * of a triangle \a t as the base and a vector \a v as the vertex.
+ * of a triangle \a tri as the base and a vector \a v as the vertex.
  *
  * zTri3DConeInertia() calculates the inertia tensor of a cone which
- * consists of \a t and the original point, given its density by
+ * consists of \a tri and the original point, given its density by
  * \a density. The result is put into a 3x3 matrix \a i.
  *
  * zTri3DConeBarycenter() calculates the barycenter of a cone which
- * consists of \a t and \a v and sets it into \a c.
+ * consists of \a tri and \a v and sets it into \a c.
  *
  * zTri3DConeCircumcenter() calculates the circumcenter of a cone which
- * consists of \a t and the original point and puts it into \a c.
+ * consists of \a tri and the original point and puts it into \a c.
  * \return
  * zTri3DConeVolume() returns the volum calculated.
  *
@@ -349,15 +392,15 @@ __ZEO_EXPORT double zTri3DClosest(zTri3D *t, zVec3D *v, zVec3D *cp);
  *
  * zTri3DConeCircumcenter() returns a pointer \a c.
  */
-__ZEO_EXPORT double zTri3DConeVolume(zTri3D *t, zVec3D *v);
-__ZEO_EXPORT zMat3D *zTri3DConeInertia(zTri3D *t, double density, zMat3D *i);
-__ZEO_EXPORT zVec3D *zTri3DConeBarycenter(zTri3D *t, zVec3D *v, zVec3D *c);
-__ZEO_EXPORT zVec3D *zTri3DConeCircumcenter(zTri3D *t, zVec3D *c);
+__ZEO_EXPORT double zTri3DConeVolume(zTri3D *tri, zVec3D *v);
+__ZEO_EXPORT zMat3D *zTri3DConeInertia(zTri3D *tri, double density, zMat3D *i);
+__ZEO_EXPORT zVec3D *zTri3DConeBarycenter(zTri3D *tri, zVec3D *v, zVec3D *c);
+__ZEO_EXPORT zVec3D *zTri3DConeCircumcenter(zTri3D *tri, zVec3D *c);
 
 /*! \brief print a 3D triangle.
  *
  * zTri3DFPrint() prints coordinates of the vertices of a 3D triangle
- * \a t to the current position of a file \a fp in the following format.
+ * \a tri to the current position of a file \a fp in the following format.
  *
  *  vert: 0 ( x0, y0, z0 )
  *  vert: 1 ( x1, y1, z1 )
@@ -366,13 +409,13 @@ __ZEO_EXPORT zVec3D *zTri3DConeCircumcenter(zTri3D *t, zVec3D *c);
  *
  * where vert 0 is the first vertex, vert 1 is the second, vert 2 is
  * the third and norm is for the normal vector.
- * zTri3DPrint() prints the same information of \a t out to the
+ * zTri3DPrint() prints the same information of \a tri out to the
  * standard output.
  * \return
  * zTri3DFPrint() and zTri3DPrint() do not return any values.
  */
-__ZEO_EXPORT void zTri3DFPrint(FILE *fp, zTri3D *t);
-#define zTri3DPrint(t) zTri3DFPrint( stdout, (t) )
+__ZEO_EXPORT void zTri3DFPrint(FILE *fp, zTri3D *tri);
+#define zTri3DPrint(tri) zTri3DFPrint( stdout, (tri) )
 
 /*! \struct zTri3DArray
  * \brief array class of 3D triangles.

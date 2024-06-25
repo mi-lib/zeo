@@ -32,7 +32,7 @@ static void *_zShape3DNURBSXformInv(void *src, zFrame3D *f, void *dest){
   return zNURBS3DXformInv( (zNURBS3D*)src, f, (zNURBS3D*)dest ); }
 static double _zShape3DNURBSClosest(void *body, zVec3D *p, zVec3D *cp){
   return zNURBS3DClosest( (zNURBS3D*)body, p, cp, NULL, NULL ); }
-static double _zShape3DNURBSPointDist(void *body, zVec3D *p){
+static double _zShape3DNURBSDistFromPoint(void *body, zVec3D *p){
   zVec3D nn;
   return zNURBS3DClosest( (zNURBS3D*)body, p, &nn, NULL, NULL ); }
 
@@ -65,7 +65,7 @@ zShape3DCom zeo_shape3d_nurbs_com = {
   _zShape3DNURBSXform,
   _zShape3DNURBSXformInv,
   _zShape3DNURBSClosest,
-  _zShape3DNURBSPointDist,
+  _zShape3DNURBSDistFromPoint,
   _zShape3DNURBSPointIsInside,
   _zShape3DNURBSVolume,
   _zShape3DNURBSBarycenter,

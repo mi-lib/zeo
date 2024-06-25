@@ -51,7 +51,7 @@ double zCapsule3DClosest(zCapsule3D *capsule, zVec3D *p, zVec3D *cp)
 }
 
 /* distance from a point to a 3D capsule. */
-double zCapsule3DPointDist(zCapsule3D *capsule, zVec3D *p)
+double zCapsule3DDistFromPoint(zCapsule3D *capsule, zVec3D *p)
 {
   zVec3D axis, v;
   double l, r, d;
@@ -67,7 +67,7 @@ double zCapsule3DPointDist(zCapsule3D *capsule, zVec3D *p)
 /* check if a point is inside of a capsule. */
 bool zCapsule3DPointIsInside(zCapsule3D *capsule, zVec3D *p, double margin)
 {
-  return zCapsule3DPointDist( capsule, p ) < margin ? true : false;
+  return zCapsule3DDistFromPoint( capsule, p ) < margin ? true : false;
 }
 
 /* height of a 3D capsule. */
@@ -234,8 +234,8 @@ static void *_zShape3DCapsuleXformInv(void *src, zFrame3D *f, void *dest){
   return zCapsule3DXformInv( (zCapsule3D*)src, f, (zCapsule3D*)dest ); }
 static double _zShape3DCapsuleClosest(void *body, zVec3D *p, zVec3D *cp){
   return zCapsule3DClosest( (zCapsule3D*)body, p, cp ); }
-static double _zShape3DCapsulePointDist(void *body, zVec3D *p){
-  return zCapsule3DPointDist( (zCapsule3D*)body, p ); }
+static double _zShape3DCapsuleDistFromPoint(void *body, zVec3D *p){
+  return zCapsule3DDistFromPoint( (zCapsule3D*)body, p ); }
 static bool _zShape3DCapsulePointIsInside(void *body, zVec3D *p, double margin){
   return zCapsule3DPointIsInside( (zCapsule3D*)body, p, margin ); }
 static double _zShape3DCapsuleVolume(void *body){
@@ -264,7 +264,7 @@ zShape3DCom zeo_shape3d_capsule_com = {
   _zShape3DCapsuleXform,
   _zShape3DCapsuleXformInv,
   _zShape3DCapsuleClosest,
-  _zShape3DCapsulePointDist,
+  _zShape3DCapsuleDistFromPoint,
   _zShape3DCapsulePointIsInside,
   _zShape3DCapsuleVolume,
   _zShape3DCapsuleBarycenter,

@@ -72,14 +72,14 @@ __ZEO_EXPORT zSphere3D *zSphere3DXformInv(zSphere3D *src, zFrame3D *f, zSphere3D
  * \a p to a 3D sphere \a sphere and puts it into \a cp. When \a p
  * is inside of \a sphere, it copies \a p to \a cp.
  *
- * zSphere3DPointDist() calculates the distance from a 3D point \a p
+ * zSphere3DDistFromPoint() calculates the distance from a 3D point \a p
  * to a 3D sphere \a sphere.
  *
  * zSphere3DPointIsInside() checks if a 3D point \a p is inside of
  * a 3D sphere \a sphere. \a margin is a margin of the inside area
  * outward from the boundary of \a sphere.
  * \return
- * zSphere3DClosest() and zSphere3DPointDist() return the signed
+ * zSphere3DClosest() and zSphere3DDistFromPoint() return the signed
  * distance from \a p to \a sphere. The result is
  *  - a positive value when \a p is outside of \a sphere, or
  *  - a negative value when \a p is inside of \a sphere.
@@ -88,7 +88,7 @@ __ZEO_EXPORT zSphere3D *zSphere3DXformInv(zSphere3D *src, zFrame3D *f, zSphere3D
  * of \a sphere, or the false value otherwise.
  */
 __ZEO_EXPORT double zSphere3DClosest(zSphere3D *sphere, zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zSphere3DPointDist(zSphere3D *sphere, zVec3D *p);
+__ZEO_EXPORT double zSphere3DDistFromPoint(zSphere3D *sphere, zVec3D *p);
 __ZEO_EXPORT bool zSphere3DPointIsInside(zSphere3D *sphere, zVec3D *p, double margin);
 
 /*! \brief create a 3D sphere from two points at both ends of diameter. */

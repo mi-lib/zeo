@@ -166,7 +166,7 @@ double zPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp)
 }
 
 /* distance from a point to a 3D polyhedron. */
-double zPH3DPointDist(zPH3D *ph, zVec3D *p)
+double zPH3DDistFromPoint(zPH3D *ph, zVec3D *p)
 {
   zVec3D cp;
   return zPH3DClosest( ph, p, &cp );
@@ -178,7 +178,7 @@ bool zPH3DPointIsInside(zPH3D *ph, zVec3D *p, double margin)
   int i;
 
   for( i=0; i<zPH3DFaceNum(ph); i++ )
-    if( zTri3DPointDist( zPH3DFace(ph,i), p ) >= margin ) return false;
+    if( zTri3DDistFromPoint( zPH3DFace(ph,i), p ) >= margin ) return false;
   return true;
 }
 

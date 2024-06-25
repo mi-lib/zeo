@@ -78,14 +78,14 @@ __ZEO_EXPORT zBox3D *zBox3DXformInv(zBox3D *src, zFrame3D *f, zBox3D *dest);
  * to a box \a box, and puts it into \a cp. When \a p is inside of
  * \a box, it copies \a p to \a cp.
  *
- * zBox3DPointDist() calculates the distance from a 3D point \a p to
+ * zBox3DDistFromPoint() calculates the distance from a 3D point \a p to
  * a box \a box.
  *
  * zBox3DPointIsInside() checks if a 3D point \a p is inside of a box
  * \a box. \a margin is a margin of the inside area outward from the
  * boundary of \a box.
  * \return
- * zBox3DClosest() and zBox3DPointDist() return the signed distance
+ * zBox3DClosest() and zBox3DDistFromPoint() return the signed distance
  * from \a p to \a box.
  * The result is a positive value when \a p is outside of \a box, or
  * a negative value when \a p is inside of \a box.
@@ -94,7 +94,7 @@ __ZEO_EXPORT zBox3D *zBox3DXformInv(zBox3D *src, zFrame3D *f, zBox3D *dest);
  * \a box, or the false value otherwise.
  */
 __ZEO_EXPORT double zBox3DClosest(zBox3D *box, zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zBox3DPointDist(zBox3D *box, zVec3D *p);
+__ZEO_EXPORT double zBox3DDistFromPoint(zBox3D *box, zVec3D *p);
 __ZEO_EXPORT bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, double margin);
 
 /*! \brief volume of a box.

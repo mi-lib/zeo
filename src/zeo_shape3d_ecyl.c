@@ -125,7 +125,7 @@ double zECyl3DClosest(zECyl3D *cyl, zVec3D *p, zVec3D *cp)
 }
 
 /* distance from a point to a 3D elliptic cylinder. */
-double zECyl3DPointDist(zECyl3D *cyl, zVec3D *p)
+double zECyl3DDistFromPoint(zECyl3D *cyl, zVec3D *p)
 {
   zVec3D cp;
 
@@ -300,8 +300,8 @@ static void *_zShape3DECylXformInv(void *src, zFrame3D *f, void *dest){
   return zECyl3DXformInv( (zECyl3D*)src, f, (zECyl3D*)dest ); }
 static double _zShape3DECylClosest(void *body, zVec3D *p, zVec3D *cp){
   return zECyl3DClosest( (zECyl3D*)body, p, cp ); }
-static double _zShape3DECylPointDist(void *body, zVec3D *p){
-  return zECyl3DPointDist( (zECyl3D*)body, p ); }
+static double _zShape3DECylDistFromPoint(void *body, zVec3D *p){
+  return zECyl3DDistFromPoint( (zECyl3D*)body, p ); }
 static bool _zShape3DECylPointIsInside(void *body, zVec3D *p, double margin){
   return zECyl3DPointIsInside( (zECyl3D*)body, p, margin ); }
 static double _zShape3DECylVolume(void *body){
@@ -330,7 +330,7 @@ zShape3DCom zeo_shape3d_ecyl_com = {
   _zShape3DECylXform,
   _zShape3DECylXformInv,
   _zShape3DECylClosest,
-  _zShape3DECylPointDist,
+  _zShape3DECylDistFromPoint,
   _zShape3DECylPointIsInside,
   _zShape3DECylVolume,
   _zShape3DECylBarycenter,

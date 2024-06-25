@@ -137,7 +137,7 @@ double zEllips3DClosest(zEllips3D *ellips, zVec3D *p, zVec3D *cp)
 }
 
 /* distance from a point to a 3D ellipsoid. */
-double zEllips3DPointDist(zEllips3D *ellips, zVec3D *p)
+double zEllips3DDistFromPoint(zEllips3D *ellips, zVec3D *p)
 {
   zVec3D cp;
   return zEllips3DClosest( ellips, p, &cp );
@@ -326,8 +326,8 @@ static void *_zShape3DEllipsXformInv(void *src, zFrame3D *f, void *dest){
   return zEllips3DXformInv( (zEllips3D*)src, f, (zEllips3D*)dest ); }
 static double _zShape3DEllipsClosest(void *body, zVec3D *p, zVec3D *cp){
   return zEllips3DClosest( (zEllips3D*)body, p, cp ); }
-static double _zShape3DEllipsPointDist(void *body, zVec3D *p){
-  return zEllips3DPointDist( (zEllips3D*)body, p ); }
+static double _zShape3DEllipsDistFromPoint(void *body, zVec3D *p){
+  return zEllips3DDistFromPoint( (zEllips3D*)body, p ); }
 static bool _zShape3DEllipsPointIsInside(void *body, zVec3D *p, double margin){
   return zEllips3DPointIsInside( (zEllips3D*)body, p, margin ); }
 static double _zShape3DEllipsVolume(void *body){
@@ -356,7 +356,7 @@ zShape3DCom zeo_shape3d_ellips_com = {
   _zShape3DEllipsXform,
   _zShape3DEllipsXformInv,
   _zShape3DEllipsClosest,
-  _zShape3DEllipsPointDist,
+  _zShape3DEllipsDistFromPoint,
   _zShape3DEllipsPointIsInside,
   _zShape3DEllipsVolume,
   _zShape3DEllipsBarycenter,

@@ -33,7 +33,7 @@ int main(void)
     if( zEdge3DPointIsOn( &e, &p ) )
       zVec3DDataNLFPrint( fp[1], &p );
     zEdge3DClosest( &e, &p, &v );
-    p.e[zZ] = zEdge3DPointDist( &e, &p );
+    p.e[zZ] = zEdge3DDistFromPoint( &e, &p );
     zVec3DDataNLFPrint( fp[0], &p );
     print_arrow( fp[2], &p, &v );
   }
@@ -43,7 +43,7 @@ int main(void)
     if( zEdge3DPointIsOn( &e, &p ) )
       zVec3DDataNLFPrint( fp[1], &p );
     zEdge3DClosest( &e, &p, &v );
-    p.e[zZ] = zEdge3DPointDist( &e, &p );
+    p.e[zZ] = zEdge3DDistFromPoint( &e, &p );
     zVec3DDataNLFPrint( fp[0], &p );
     print_arrow( fp[2], &p, &v );
   }

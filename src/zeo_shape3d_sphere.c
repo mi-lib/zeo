@@ -79,7 +79,7 @@ double zSphere3DClosest(zSphere3D *sphere, zVec3D *p, zVec3D *cp)
 }
 
 /* distance between a 3D sphere and a point. */
-double zSphere3DPointDist(zSphere3D *sphere, zVec3D *p)
+double zSphere3DDistFromPoint(zSphere3D *sphere, zVec3D *p)
 {
   zVec3D d;
 
@@ -90,7 +90,7 @@ double zSphere3DPointDist(zSphere3D *sphere, zVec3D *p)
 /* judge if a point is inside of a 3D sphere. */
 bool zSphere3DPointIsInside(zSphere3D *sphere, zVec3D *p, double margin)
 {
-  return zSphere3DPointDist( sphere, p ) < margin ? true : false;
+  return zSphere3DDistFromPoint( sphere, p ) < margin ? true : false;
 }
 
 /* create a 3D sphere from two points at both ends of diameter. */
@@ -297,8 +297,8 @@ static void *_zShape3DSphereXformInv(void *src, zFrame3D *f, void *dest){
   return zSphere3DXformInv( (zSphere3D*)src, f, (zSphere3D*)dest ); }
 static double _zShape3DSphereClosest(void *body, zVec3D *p, zVec3D *cp){
   return zSphere3DClosest( (zSphere3D*)body, p, cp ); }
-static double _zShape3DSpherePointDist(void *body, zVec3D *p){
-  return zSphere3DPointDist( (zSphere3D*)body, p ); }
+static double _zShape3DSphereDistFromPoint(void *body, zVec3D *p){
+  return zSphere3DDistFromPoint( (zSphere3D*)body, p ); }
 static bool _zShape3DSpherePointIsInside(void *body, zVec3D *p, double margin){
   return zSphere3DPointIsInside( (zSphere3D*)body, p, margin ); }
 static double _zShape3DSphereVolume(void *body){
@@ -327,7 +327,7 @@ zShape3DCom zeo_shape3d_sphere_com = {
   _zShape3DSphereXform,
   _zShape3DSphereXformInv,
   _zShape3DSphereClosest,
-  _zShape3DSpherePointDist,
+  _zShape3DSphereDistFromPoint,
   _zShape3DSpherePointIsInside,
   _zShape3DSphereVolume,
   _zShape3DSphereBarycenter,

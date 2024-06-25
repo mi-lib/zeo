@@ -340,13 +340,16 @@ zVec3D *zVec3DProj(zVec3D *v, zVec3D *n, zVec3D *pv)
 }
 
 /* create an orthonormal 3D vector. */
-/* TODO: modify zVec3DOrthoSpace by using this function. */
 zVec3D *zVec3DOrthoNormal(zVec3D *v, zVec3D *ov)
 {
   if( !zIsTiny( v->c.x ) || !zIsTiny( v->c.y ) )
     _zVec3DCreate( ov, v->c.y, -v->c.x, 0 );
   else
     _zVec3DCreate( ov, v->c.y - v->c.z, v->c.z - v->c.x, v->c.x - v->c.y );
+  if( zVec3DIsTiny( ov ) ){
+    ZRUNWARN( ZEO_ERR_ZERONORM );
+    return NULL;
+  }
   zVec3DNormalizeDRC( ov );
   return ov;
 }
@@ -368,19 +371,7 @@ zVec3D *zVec3DOrthogonalize(zVec3D *v, zVec3D *n, zVec3D *ov)
 /* create the orthogonal space of a 3D vector. */
 bool zVec3DOrthoSpace(zVec3D *v, zVec3D *sv1, zVec3D *sv2)
 {
-  double l;
-
-  zVec3DCopy( v, sv1 );
-  if( v->c.y != 0 || v->c.z != 0 )
-    sv1->c.x += 1.0;
-  else
-    sv1->c.y = 1.0;
-  if( _zVec3DIsTiny( v ) ){
-    ZRUNWARN( ZEO_ERR_ZERONORM );
-    return false;
-  }
-  l = -_zVec3DInnerProd( v, sv1 ) / _zVec3DSqrNorm( v );
-  _zVec3DCatDRC( sv1, l, v );
+  if( !zVec3DOrthoNormal( v, sv1 ) ) return false;
   _zVec3DOuterProd( v, sv1, sv2 );
   return true;
 }

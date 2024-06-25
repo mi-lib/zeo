@@ -17,7 +17,7 @@ static void _zOBB3DMinDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
   zBox3DSetHeight( obb, HUGE_VAL );
   for( bot=NULL, i=0; i<zPH3DFaceNum(ch); i++ ){
     for( l=0, j=0; j<zPH3DVertNum(ch); j++ )
-      if( ( ls = -zTri3DPointDist( zPH3DFace(ch,i), zPH3DVert(ch,j) ) ) > l )
+      if( ( ls = -zTri3DDistFromPoint( zPH3DFace(ch,i), zPH3DVert(ch,j) ) ) > l )
         l = ls;
     if( l < zBox3DHeight(obb) ){
       bot = zPH3DFace(ch,i);
@@ -65,7 +65,7 @@ static bool _zOBB3DMaxDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
   int i;
 
   for( i=0; i<zPH3DVertNum(ch); i++ ){
-    zPlane3DProj( pl, zPH3DVert(ch,i), zPH3DVert(ch,i) );
+    zPlane3DProjPoint( pl, zPH3DVert(ch,i), zPH3DVert(ch,i) );
     /* shift to the plane passing the original point */
     zVec3DSubDRC( zPH3DVert(ch,i), zBox3DCenter(obb) );
   }
