@@ -69,7 +69,7 @@ void assert_inside(void)
   zCyl3D cyl;
   zVec3D d1, d2, d3, p;
   double x, y, z;
-  register int i;
+  int i;
   int n = 1000, ni, no, nitest, notest;
 
   generate_cyl_rand( &cyl );

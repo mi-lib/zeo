@@ -21,7 +21,7 @@ void assert_vert(void)
   zBox3D box;
   zVec3D ax, ay, az, tmp;
   zVec3D v[8], e[12];
-  register int i;
+  int i;
 
   generate_box_rand( &box, &ax, &ay, &az );
   for( i=0; i<8; i++ )
@@ -99,7 +99,7 @@ void assert_inside(void)
   zBox3D box;
   zVec3D ax, ay, az, p;
   double d, w, h;
-  register int i;
+  int i;
   int n = 1000, ni, no, nitest, notest;
 
   generate_box_rand( &box, &ax, &ay, &az );

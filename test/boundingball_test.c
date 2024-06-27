@@ -6,7 +6,7 @@ int main(void)
 {
   zSphere3D bb;
   zVec3D *vp[4]; /* vertices on the sphere up to four. */
-  register int i, n;
+  int i, n;
   double r1, r;
   int count;
   int errcode = 0;

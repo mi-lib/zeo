@@ -75,7 +75,7 @@ void assert_inside(void)
   zECyl3D ecyl;
   zVec3D p;
   double x, y, z;
-  register int i;
+  int i;
   int n = 1000, ni, no, nitest, notest;
 
   generate_ecyl_rand( &ecyl );

@@ -76,8 +76,7 @@ void assert_inside(void)
   zEllips3D ellips;
   zVec3D p;
   double x, y, z;
-  register int i;
-  int n = 1000, ni, no, nitest, notest;
+  int i, n = 1000, ni, no, nitest, notest;
 
   generate_ellips_rand( &ellips );
   for( ni=no=nitest=notest=0, i=0; i<n; i++ ){

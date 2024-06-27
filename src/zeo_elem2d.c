@@ -117,6 +117,9 @@ ZEO_ELEM_TRIXD_INCENTER( 2D )
 /* orthocenter of a triangle */
 ZEO_ELEM_TRIXD_ORTHOCENTER( 2D )
 
+/* contiguous vertix of a 2D triangle to a 2D point. */
+ZEO_ELEM_TRIXD_CONTIG_VERT( 2D )
+
 /* check if a point is inside of a triangle. */
 bool zTri2DPointIsInside(zTri2D *tri, zVec2D *v, double margin)
 {
@@ -132,6 +135,13 @@ bool zTri2DPointIsInside(zTri2D *tri, zVec2D *v, double margin)
   }
   return true;
 }
+
+/* the closest point from a 2D point to a 2D triangle. */
+#define zTri2DProjPoint(tri,v,cp) zVec2DCopy( v, cp )
+ZEO_ELEM_TRIXD_CLOSEST( 2D )
+
+/* distance from a 2D point to a 2D triangle. */
+ZEO_ELEM_TRIXD_DIST_FROM_POINT( 2D )
 
 /* print information of a triangle to a file. */
 void zTri2DFPrint(FILE *fp, zTri2D *tri)

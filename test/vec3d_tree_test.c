@@ -33,7 +33,7 @@ bool assert_nn_one(void)
 
 void assert_nn(void)
 {
-  register int i;
+  int i;
   bool ret = true;
 
   for( i=0; i<N; i++ )

@@ -178,7 +178,7 @@ bool zPH3DPointIsInside(zPH3D *ph, zVec3D *p, double margin)
   int i;
 
   for( i=0; i<zPH3DFaceNum(ph); i++ )
-    if( zTri3DDistFromPoint( zPH3DFace(ph,i), p ) >= margin ) return false;
+    if( zTri3DDistFromPointToPlane( zPH3DFace(ph,i), p ) >= margin ) return false;
   return true;
 }
 

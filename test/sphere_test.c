@@ -69,8 +69,7 @@ void assert_inside(void)
   zSphere3D sphere;
   zVec3D p;
   double x, y, z;
-  register int i;
-  int n = 1000, ni, no, nitest, notest;
+  int i, n = 1000, ni, no, nitest, notest;
 
   generate_sphere_rand( &sphere );
   for( ni=no=nitest=notest=0, i=0; i<n; i++ ){

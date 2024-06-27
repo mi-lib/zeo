@@ -5,7 +5,7 @@ void assert_create(void)
   zMat3D m1, m2, m3, m4;
   zMat6D m61, m62;
   zVec6D v1, v2, v3, v4, v5, v6;
-  register int i, j, k, l;
+  int i, j, k, l;
   bool result;
 
   zMat3DCreate( &m1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
@@ -58,7 +58,7 @@ void assert_arith(void)
   zMat3D m1, m2, m3, m4, m5, m6, m7, m8;
   zMat6D m61, m62, m63, m64;
   double s;
-  register int i, j, k, l;
+  int i, j, k, l;
   bool result;
 
   zMat3DCreate( &m1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );

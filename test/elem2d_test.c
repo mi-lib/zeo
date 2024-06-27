@@ -79,6 +79,48 @@ void assert_edge2D(void)
   zAssert( zEdge2DContigVert (case 2), zEdge2DContigVert( &edge, &p, NULL ) == zEdge2DVert(&edge,1) );
 }
 
+void assert_edge2D_closest(void)
+{
+  zEdge2D edge;
+  zVec2D p1, p2, ov, p_test, cp_test, cp;
+  bool result;
+  int i;
+
+  for( result=true, i=0; i<N; i++ ){
+    zVec2DCreate( &p1, zRandF(-10,10), zRandF(-10,10) );
+    zVec2DCreate( &p2, zRandF(-10,10), zRandF(-10,10) );
+    zEdge2DCreate( &edge, &p1, &p2 );
+    zVec2DRot90CW( zEdge2DVec(&edge), &ov );
+    zVec2DCat( zEdge2DVert(&edge,0), zRandF(0.1,0.9), zEdge2DVec(&edge), &cp );
+    zVec2DCat( &cp, zRandF(-10,10), &ov, &p_test );
+    zEdge2DClosest( &edge, &p_test, &cp_test );
+    if( !zVec2DEqual( &cp_test, &cp ) ) result = false;
+  }
+  zAssert( zEdge2DClosest (on-edge case), result );
+  for( result=true, i=0; i<N; i++ ){
+    zVec2DCreate( &p1, zRandF(-10,10), zRandF(-10,10) );
+    zVec2DCreate( &p2, zRandF(-10,10), zRandF(-10,10) );
+    zEdge2DCreate( &edge, &p1, &p2 );
+    zVec2DRot90CW( zEdge2DVec(&edge), &ov );
+    zVec2DCat( zEdge2DVert(&edge,0), zRandF(1.1,10), zEdge2DVec(&edge), &cp );
+    zVec2DCat( &cp, zRandF(-10,10), &ov, &p_test );
+    zEdge2DClosest( &edge, &p_test, &cp_test );
+    if( !zVec2DEqual( &cp_test, zEdge2DVert(&edge,1) ) ) result = false;
+  }
+  zAssert( zEdge2DClosest (beyond-vertex-1 case), result );
+  for( result=true, i=0; i<N; i++ ){
+    zVec2DCreate( &p1, zRandF(-10,10), zRandF(-10,10) );
+    zVec2DCreate( &p2, zRandF(-10,10), zRandF(-10,10) );
+    zEdge2DCreate( &edge, &p1, &p2 );
+    zVec2DRot90CW( zEdge2DVec(&edge), &ov );
+    zVec2DCat( zEdge2DVert(&edge,0), zRandF(-10,-0.1), zEdge2DVec(&edge), &cp );
+    zVec2DCat( &cp, zRandF(-10,10), &ov, &p_test );
+    zEdge2DClosest( &edge, &p_test, &cp_test );
+    if( !zVec2DEqual( &cp_test, zEdge2DVert(&edge,0) ) ) result = false;
+  }
+  zAssert( zEdge2DClosest (beyond-vertex-0 case), result );
+}
+
 void create_tri2D_rand(zVec2D v[], zTri2D *t, double min, double max)
 {
   zVec2DCreate( &v[0], zRandF(min,max), zRandF(min,max) );
@@ -89,12 +131,32 @@ void create_tri2D_rand(zVec2D v[], zTri2D *t, double min, double max)
 
 #define TOL (1.0e-5)
 
+void assert_tri2D_contig(void)
+{
+  zVec2D v[3], p;
+  zTri2D t;
+  double d[3], dc;
+  int i;
+  bool result = true;
+
+  for( i=0; i<N; i++ ){
+    create_tri2D_rand( v, &t, -1e10, 1e10 );
+    zVec2DCreate( &p, zRandF(-1e10,1e10), zRandF(-1e10,1e10) );
+    zTri2DContigVert( &t, &p, &dc );
+    d[0] = zVec2DDist( &v[0], &p );
+    d[1] = zVec2DDist( &v[1], &p );
+    d[2] = zVec2DDist( &v[2], &p );
+    if( dc != zMin( d[0], zMin( d[1], d[2] ) ) ) result = false;
+  }
+  zAssert( zTri2DContigVert, result );
+}
+
 void assert_tri2D_center(void)
 {
   zVec2D v[3], c, h[2], tmp;
   zTri2D t;
   zEdge2D e;
-  register int i, j;
+  int i, j;
   double r;
   bool ret;
 
@@ -195,6 +257,7 @@ int main(void)
   assert_line2D_point();
   assert_line2D_intersection();
   assert_edge2D();
+  assert_tri2D_contig();
   assert_tri2D_center();
   assert_ellips2D_inside();
   return 0;

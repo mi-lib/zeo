@@ -45,7 +45,7 @@ static zTri3D *_zIntersectPH3DPointIsInside(zPH3D *ph, zVec3D *p, double *dis)
   int i;
 
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
-    *dis = zTri3DDistFromPoint( zPH3DFace(ph,i), p );
+    *dis = zTri3DDistFromPointToPlane( zPH3DFace(ph,i), p );
     if( *dis >= -zTOL ){
       *dis += zTOL;
       return zPH3DFace(ph,i);

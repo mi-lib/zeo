@@ -106,10 +106,6 @@ __ZEO_EXPORT ZEO_ELEM_EDGEXD_POINT_IS_ON_PROTOTYPE( 2D );
 __ZEO_EXPORT ZEO_ELEM_EDGEXD_PROJ_POINT_PROTOTYPE( 2D );
 __ZEO_EXPORT ZEO_ELEM_EDGEXD_DIST_FROM_POINT_PROTOTYPE( 2D );
 
-#if 0
-__ZEO_EXPORT ZEO_ELEM_EDGEXD_LINSCALE_PROTOTYPE( 2D );
-#endif
-
 /*! \brief closest point to a 2D edge.
  *
  * zEdge2DClosest() finds the closest point on \a edge from \a point and sets it into \a cp.
@@ -196,6 +192,16 @@ __ZEO_EXPORT ZEO_ELEM_TRIXD_CIRCUMCENTER_PROTOTYPE( 2D );
 __ZEO_EXPORT ZEO_ELEM_TRIXD_INCENTER_PROTOTYPE( 2D );
 __ZEO_EXPORT ZEO_ELEM_TRIXD_ORTHOCENTER_PROTOTYPE( 2D );
 
+/*! \brief contiguous vertix of triangle to a point.
+ *
+ * zTri2DContigVert() returns the contiguous vertix of a triangle \a tri
+ * to a given point \a p. Namely, the value returned has to be any of
+ * three vertices of \a tri.
+ * \return
+ * zTri2DContigVert() returns a pointer to the found vertix.
+ */
+__ZEO_EXPORT ZEO_ELEM_TRIXD_CONTIG_VERT_PROTOTYPE( 2D );
+
 /*! \brief check if a point is inside of a triangle.
  *
  * zTri2DPointIsInside() checks if a point \a v is inside of a 2D
@@ -206,6 +212,26 @@ __ZEO_EXPORT ZEO_ELEM_TRIXD_ORTHOCENTER_PROTOTYPE( 2D );
  * with a margin \a margin. Otherwise, the false value is returned.
  */
 __ZEO_EXPORT bool zTri2DPointIsInside(zTri2D *tri, zVec2D *v, double margin);
+
+/*! \brief the closest point from a point to a 2D triangle.
+ *
+ * zTri2DClosest() calculates the closest point on a triangle \a tri from
+ * the given point \a v.
+ * It sets the point calculated into \a cp.
+ * \return
+ * zTri2DClosest() returns the distance from \a v to the closest point
+ * calculated.
+ */
+__ZEO_EXPORT ZEO_ELEM_TRIXD_CLOSEST_PROTOTYPE( 2D );
+
+/*! \brief destance between a 2D point and a 2D triangle.
+ *
+ * zTri2DDistFromPoint() calculates the distance from a 2D point \a v to a 2D triangle \a tri, namely
+ * the distance between the closest point on \a tri to \a v.
+ * \return
+ * zTri2DDistFromPoint() returns the distance between \a v and \a tri.
+ */
+__ZEO_EXPORT ZEO_ELEM_TRIXD_DIST_FROM_POINT_PROTOTYPE( 2D );
 
 /*! \brief print a 2D triangle.
  *

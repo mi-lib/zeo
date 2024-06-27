@@ -390,9 +390,9 @@ static bool _zGJKCheck(zGJKSimplex *s)
   switch( s->n ){
   case 4: return true;
   case 3: zTri3DCreate( &t, &s->slot[0].w, &s->slot[1].w, &s->slot[2].w );
-          return zTri3DPointIsOn( &t, ZVEC3DZERO ) ? true : false;
+          return zTri3DPointIsOnPlane( &t, ZVEC3DZERO, zTOL ) ? true : false;
   case 2: zEdge3DCreate( &e, &s->slot[0].w, &s->slot[1].w );
-          return zEdge3DPointIsOn( &e, ZVEC3DZERO, zTOL ) ? true : false;
+          return zEdge3DPointIsOnLine( &e, ZVEC3DZERO, zTOL ) ? true : false;
   case 1: return zVec3DEqual( &s->slot[0].w, ZVEC3DZERO );
   default: ;
   }

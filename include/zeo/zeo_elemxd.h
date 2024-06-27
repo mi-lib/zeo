@@ -326,4 +326,61 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
     return zTri##XD##Circumcenter( &circum_tri, c ); \
   }
 
+#define ZEO_ELEM_TRIXD_CONTIG_VERT_PROTOTYPE(XD) \
+  zVec##XD *zTri##XD##ContigVert(zTri##XD *tri, zVec##XD *p, double *d)
+#define ZEO_ELEM_TRIXD_CONTIG_VERT(XD) \
+  ZEO_ELEM_TRIXD_CONTIG_VERT_PROTOTYPE( XD ){ \
+    double d0, d1, d2; \
+    d0 = zVec##XD##SqrDist( p, zTri##XD##Vert(tri,0) ); \
+    d1 = zVec##XD##SqrDist( p, zTri##XD##Vert(tri,1) ); \
+    d2 = zVec##XD##SqrDist( p, zTri##XD##Vert(tri,2) ); \
+    if( d0 <= d1 ){ \
+      if( d0 <= d2 ){ \
+        if( d ) *d = sqrt( d0 ); \
+        return zTri##XD##Vert(tri,0); \
+      }{ \
+        if( d ) *d = sqrt( d2 ); \
+        return zTri##XD##Vert(tri,2); \
+      } \
+    }{ \
+      if( d1 <= d2 ){ \
+        if( d ) *d = sqrt( d1 ); \
+        return zTri##XD##Vert(tri,1); \
+      }{ \
+        if( d ) *d = sqrt( d2 ); \
+        return zTri##XD##Vert(tri,2); \
+      } \
+    } \
+  }
+
+#define ZEO_ELEM_TRIXD_CLOSEST_PROTOTYPE(XD) \
+  double zTri##XD##Closest(zTri##XD *tri, zVec##XD *v, zVec##XD *cp)
+#define ZEO_ELEM_TRIXD_CLOSEST(XD) \
+  ZEO_ELEM_TRIXD_CLOSEST_PROTOTYPE( XD ){ \
+    zEdge##XD edge; \
+    zVec##XD cp_tmp; \
+    double d, d_tmp; \
+    int i; \
+    zTri##XD##ProjPoint( tri, v, cp ); \
+    if( zTri##XD##PointIsInside( tri, cp, zTOL ) ) return 0; \
+    zEdge##XD##Create( &edge, zTri##XD##Vert(tri,0), zTri##XD##Vert(tri,1) ); \
+    d = zEdge##XD##Closest( &edge, v, cp ); \
+    for( i=1; i<=2; i++ ){ \
+      zEdge##XD##Create( &edge, zTri##XD##Vert(tri,i), zTri##XD##Vert(tri,(i+1)%3) ); \
+      if( ( d_tmp = zEdge##XD##Closest( &edge, v, &cp_tmp ) ) < d ){ \
+        zVec##XD##Copy( &cp_tmp, cp ); \
+        d = d_tmp; \
+      } \
+    } \
+    return d; \
+  }
+
+#define ZEO_ELEM_TRIXD_DIST_FROM_POINT_PROTOTYPE(XD) \
+  double zTri##XD##DistFromPoint(zTri##XD *tri, zVec##XD *v)
+#define ZEO_ELEM_TRIXD_DIST_FROM_POINT(XD) \
+  ZEO_ELEM_TRIXD_DIST_FROM_POINT_PROTOTYPE( XD ){ \
+    zVec##XD cp; \
+    return zTri##XD##Closest( tri, v, &cp ); \
+  }
+
 #endif /* __ZEO_ELEMXD_H__ */

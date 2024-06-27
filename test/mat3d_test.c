@@ -308,7 +308,7 @@ void assert_mul(void)
 
 void assert_mat_inv(void)
 {
-  register int i, testnum = 100;
+  int i, testnum = 100;
   zMat3D m, im, m2, m3, m2_test, me;
   zVec3D v1, v2, v1_test, e;
   double mag1 = 1.0e-6, mag2 = 1.0e-6;
@@ -347,7 +347,7 @@ void assert_mat_inv(void)
 
 void assert_rot(void)
 {
-  register int i, testnum = 100;
+  int i, testnum = 100;
   zMat3D m1, m2, m3, m4, m5;
   zVec3D r, aa, aa1, aa2;
   bool result_zyx, result_zyz, result_aa;
@@ -438,8 +438,7 @@ void assert_rot(void)
 
 void assert_sym_eig(void)
 {
-  register int testnum = 100;
-  register int i;
+  int i, testnum = 100;
   zMat3D m;
   double xx, yy, zz, xy, yz, zx;
   double eval[3];

@@ -151,7 +151,7 @@ void assert_angvel_zyx_intg(void)
 {
   zVec3D zyxvel, angvel, zyx, err;
   zMat3D m1, m2, tmp;
-  register int i;
+  int i;
   bool res = true;
 
   zVec3DZero( &zyx );
@@ -180,7 +180,7 @@ void assert_angvel_zyz_intg(void)
 {
   zVec3D zyzvel, angvel, zyz, err;
   zMat3D m1, m2, tmp;
-  register int i;
+  int i;
   bool res = true;
 
   zVec3DZero( &zyz );
