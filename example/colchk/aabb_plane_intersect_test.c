@@ -59,13 +59,13 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
   fprintf( fp, "name: plane\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: yellow\n" );
-  zVec3DCat( zPlane3DVert(p), 1.0, &sv1, &v[0] );
+  zVec3DCat( zPlane3DOrg(p), 1.0, &sv1, &v[0] );
   zVec3DCatDRC( &v[0], 1.0, &sv2 );
-  zVec3DCat( zPlane3DVert(p), 1.0, &sv1, &v[1] );
+  zVec3DCat( zPlane3DOrg(p), 1.0, &sv1, &v[1] );
   zVec3DCatDRC( &v[1],-1.0, &sv2 );
-  zVec3DCat( zPlane3DVert(p),-1.0, &sv1, &v[2] );
+  zVec3DCat( zPlane3DOrg(p),-1.0, &sv1, &v[2] );
   zVec3DCatDRC( &v[2],-1.0, &sv2 );
-  zVec3DCat( zPlane3DVert(p),-1.0, &sv1, &v[3] );
+  zVec3DCat( zPlane3DOrg(p),-1.0, &sv1, &v[3] );
   zVec3DCatDRC( &v[3], 1.0, &sv2 );
   fprintf( fp, "vert: 0 " ); zVec3DDataNLFPrint( fp, &v[0] );
   fprintf( fp, "vert: 1 " ); zVec3DDataNLFPrint( fp, &v[1] );

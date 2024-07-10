@@ -25,7 +25,7 @@ void verify(zVec3D v[], int n, zAABox3D *bb, zVec3D **vp)
   for( i=0; i<n; i++ ){
     if( ( ret = zBox3DPointIsInside(&box,&v[i],true) ) == false ){
       zVec3DDataNLFPrint( stderr, &v[i] );
-      eprintf( "D=%.15g\n", zBox3DPointDist(&box,&v[i]) );
+      eprintf( "D=%.15g\n", zBox3DDistFromPoint(&box,&v[i]) );
     }
   }
   /* points on the walls */
@@ -80,7 +80,7 @@ void verify_list(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vp)
   zListForEach( pl, pc ){
     if( ( ret = zBox3DPointIsInside(&box,pc->data,true) ) == false ){
       zVec3DDataNLFPrint( stderr, pc->data );
-      eprintf( "D=%.15g\n", zBox3DPointDist(&box,pc->data) );
+      eprintf( "D=%.15g\n", zBox3DDistFromPoint(&box,pc->data) );
     }
   }
   /* points on the walls */

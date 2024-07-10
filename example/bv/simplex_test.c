@@ -26,7 +26,7 @@ int zTetra(zVec3D p[], int n, zVec3D *v[])
   }
   d_max = 0;
   for( i=0; i<n; i++ )
-    if( ( d = zEdge3DPointDist( &e, &p[i] ) ) > d_max ){
+    if( ( d = zEdge3DPointIsOn( &e, &p[i], zTOL ) ) > d_max ){
       d_max = d;
       v[2] = &p[i];
     }
@@ -36,7 +36,7 @@ int zTetra(zVec3D p[], int n, zVec3D *v[])
   }
   d_max = 0;
   for( i=0; i<n; i++ )
-    if( ( d = zTri3DPointDist( &t, &p[i] ) ) > d_max ){
+    if( ( d = zTri3DPointIsOnPlane( &t, &p[i], zTOL ) ) > d_max ){
       d_max = d;
       v[3] = &p[i];
     }

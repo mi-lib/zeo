@@ -30,7 +30,7 @@ int main(void)
   fp[2] = fopen( "a", "w" );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &p,  zRandF(0,1), zRandF(0,1), 0 );
-    if( zEdge3DPointIsOn( &e, &p ) )
+    if( zEdge3DPointIsOn( &e, &p, zTOL ) )
       zVec3DDataNLFPrint( fp[1], &p );
     zEdge3DClosest( &e, &p, &v );
     p.e[zZ] = zEdge3DDistFromPoint( &e, &p );
@@ -40,7 +40,7 @@ int main(void)
   for( i=0; i<NN; i++ ){
     zVec3DMul( zEdge3DVec(&e), zRandF(-1.5,1.5), &p );
     zVec3DAddDRC( &p, zEdge3DVert(&e,0) );
-    if( zEdge3DPointIsOn( &e, &p ) )
+    if( zEdge3DPointIsOn( &e, &p, zTOL ) )
       zVec3DDataNLFPrint( fp[1], &p );
     zEdge3DClosest( &e, &p, &v );
     p.e[zZ] = zEdge3DDistFromPoint( &e, &p );

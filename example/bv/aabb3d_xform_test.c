@@ -40,7 +40,7 @@ void verify(zAABox3D *bb, zFrame3D *f)
     zXform3D( f, &v[i], &vert );
     if( ( ret = zBox3DPointIsInside(&box,&vert,true) ) == false ){
       zVec3DDataNLFPrint( stderr, &vert );
-      eprintf( "D=%.15g\n", zBox3DPointDist(&box,&vert) );
+      eprintf( "D=%.15g\n", zBox3DDistFromPoint(&box,&vert) );
     }
   }
   /* AABB */
