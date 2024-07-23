@@ -305,7 +305,7 @@ bool zTri3DPointIsOnPlane(zTri3D *tri, zVec3D *v, double margin)
   zVec3DSub( v, zTri3DVert(tri,0), &tmp );
   if( zVec3DIsTiny( &tmp ) ) return true;
   zVec3DNormalizeDRC( &tmp );
-  return zIsTiny( zVec3DInnerProd( &tmp, zTri3DNorm(tri) ) );
+  return zIsTol( zVec3DInnerProd( &tmp, zTri3DNorm(tri) ), margin );
 }
 
 /* project a 3D point to a 3D triangle. */

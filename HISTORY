@@ -1,3 +1,4 @@
+2024. 7.23. Debugged zTri3DPointIsOnPlane (thanks to Daishi Kaneta). [zeo_elem3d]
 2024. 6.27. Added zTri2DDistFromPoint. [zeo_elem2d]
 2024. 6.27. Added ZEO_ELEM_TRIXD_DIST_FROM_POINT_PROTOTYPE and ZEO_ELEM_TRIXD_DIST_FROM_POINT, and reimplemented zTri3DDistFromPoint. [zeo_elemxd, zeo_elem3d]
 2024. 6.27. Added zTri2DProjPoint and zTri2DClosest. [zeo_elem2d]
