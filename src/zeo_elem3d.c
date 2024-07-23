@@ -298,7 +298,7 @@ double zTri3DDistFromPointToPlane(zTri3D *tri, zVec3D *v)
 }
 
 /* check if a 3D point is on the identical plane of a 3D triangle. */
-bool zTri3DPointIsOnPlane(zTri3D *tri, zVec3D *v, double)
+bool zTri3DPointIsOnPlane(zTri3D *tri, zVec3D *v, double margin)
 {
   zVec3D tmp;
 
