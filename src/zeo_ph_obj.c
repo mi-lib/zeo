@@ -38,6 +38,10 @@ static zPH3D *_zOBJFReadPH3D(FILE *fp, zPH3D *ph)
         ph = NULL;
         break;
       }
+      if( zeo_ph_echo_while_reading ){
+        eprintf( "\r%d/%d", vi, zPH3DVertNum(ph) );
+        if( vi == zPH3DVertNum(ph) ) eprintf( "\n" );
+      }
     } else
     if( strncmp( buf, "f ", 2 ) == 0 ){ /* face */
       sp = buf + 2;
@@ -52,6 +56,10 @@ static zPH3D *_zOBJFReadPH3D(FILE *fp, zPH3D *ph)
         ZRUNERROR( "fatal error" );
         ph = NULL;
         break;
+      }
+      if( zeo_ph_echo_while_reading ){
+        eprintf( "\r%d/%d", fi, zPH3DFaceNum(ph) );
+        if( fi == zPH3DFaceNum(ph) ) eprintf( "\n" );
       }
     }
     /* only vertices and faces are picked up. */

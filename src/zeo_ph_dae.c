@@ -480,7 +480,9 @@ static zPH3D *_zDAEMeshList2PH3D(zPH3D *ph, zDAEMeshList *mlist)
       zXform3DDRC( &mc->data.f, zPH3DVert(ph,vo+i) );
     }
     vo += mc->data.vert->vcount;
+    zeo_ph_echo_while_reading ? eprintf( "\r%d/%d vertex", i, mc->data.vert->vcount ) : 0;
   }
+  zeo_ph_echo_while_reading ? eprintf( "\n" ) : 0;
   /* read faces */
   vo = fo = 0;
   zListForEach( mlist, mc ){
@@ -503,8 +505,10 @@ static zPH3D *_zDAEMeshList2PH3D(zPH3D *ph, zDAEMeshList *mlist)
           }
         }
         zTri3DCreate( zPH3DFace(ph,fo+i), zPH3DVert(ph,vo+vi[0]), zPH3DVert(ph,vo+vi[1]), zPH3DVert(ph,vo+vi[2]) );
+        zeo_ph_echo_while_reading ? eprintf( "\r%d/%d face", i, pc->data.pcount ) : 0;
       }
       fo += pc->data.pcount;
+      zeo_ph_echo_while_reading ? eprintf( "\n" ) : 0;
     }
     vo += mc->data.vert->vcount;
   }

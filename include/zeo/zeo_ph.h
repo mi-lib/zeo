@@ -200,6 +200,11 @@ __ZEO_EXPORT zPH3D *zPH3DCreatePyramid(zPH3D *pyr, zVec3D bottom[], int n, zVec3
 __ZEO_EXPORT zPH3D *zPH3DCreateTorus(zPH3D *torus, zVec3D loop[], int n, int div, zVec3D *center, zVec3D *axis);
 __ZEO_EXPORT zPH3D *zPH3DCreateLathe(zPH3D *lathe, zVec3D rim[], int n, int div, zVec3D *center, zVec3D *axis);
 
+/*! \brief flag to print status while reading polyhedral model from a file. */
+__ZEO_EXPORT bool zeo_ph_echo_while_reading;
+#define zPH3DEchoOn()  ( zeo_ph_echo_while_reading = true )
+#define zPH3DEchoOff() ( zeo_ph_echo_while_reading = false )
+
 /*! \brief read a 3D polyhedron from a ZTK format processor. */
 __ZEO_EXPORT zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk);
 

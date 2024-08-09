@@ -440,17 +440,31 @@ zPH3D *zPH3DCreateLathe(zPH3D *lathe, zVec3D rim[], int n, int div, zVec3D *cent
   return lathe;
 }
 
+/* flag to print status while reading polyhedral model from a file. */
+bool zeo_ph_echo_while_reading = false;
+
 /* parse ZTK format */
 
 static void *_zPH3DVertFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 {
-  int vi;
+  int vi, n;
   zVec3D *v;
 
   if( ( vi = ZTKInt(ztk) ) != i )
     ZRUNWARN( ZEO_WARN_PH_VERT_UNMATCH, vi );
-  v = zArraySize((zVec3DArray*)arg) > 0 ? zArrayElemNC((zVec3DArray*)arg,i) : zPH3DVert((zPH3D*)obj,i);
+  if( zArraySize((zVec3DArray*)arg) > 0 ){
+    n = zArraySize((zVec3DArray*)arg);
+    v = zArrayElemNC((zVec3DArray*)arg,i);
+  } else{
+    n = zPH3DVertNum((zPH3D*)obj);
+    v = zPH3DVert((zPH3D*)obj,i);
+  }
   zVec3DFromZTK( v, ztk );
+  if( zeo_ph_echo_while_reading ){
+    i++;
+    eprintf( "\r%d/%d vertices", i, n );
+    if( i == n ) eprintf( "\n" );
+  }
   return obj;
 }
 
@@ -472,6 +486,11 @@ static void *_zPH3DFaceFromZTK(void *obj, int i, void *arg, ZTK *ztk)
   }
   zTri3DCreate( zPH3DFace((zPH3D*)obj,i),
     zPH3DVert((zPH3D*)obj,i0), zPH3DVert((zPH3D*)obj,i1), zPH3DVert((zPH3D*)obj,i2) );
+  if( zeo_ph_echo_while_reading ){
+    i++;
+    eprintf( "\r%d/%d facets", i, zPH3DFaceNum((zPH3D*)obj) );
+    if( i == zPH3DFaceNum((zPH3D*)obj) ) eprintf( "\n" );
+  }
   return obj;
 }
 
@@ -567,6 +586,7 @@ static void *_zPH3DLoopFromZTK(void *obj, int i, void *arg, ZTK *ztk)
     j++;
   }
   zVec2DListDestroy( &vlist );
+  zeo_ph_echo_while_reading ? eprintf( "created a loop with %d vertices\n", zArraySize((zVec3DArray*)arg) ) : 0;
   return obj;
 }
 
@@ -579,6 +599,7 @@ static void *_zPH3DCreatePrismFromZTK(void *obj, int i, void *arg, ZTK *ztk)
   } else{
     zVec3DFromZTK( &shift, ztk );
     obj = zPH3DCreatePrism( (zPH3D*)obj, zArrayBuf((zVec3DArray*)arg), zArraySize((zVec3DArray*)arg), &shift );
+    zeo_ph_echo_while_reading ? eprintf( "created a prism\n" ) : 0;
     zArrayFree( (zVec3DArray*)arg );
   }
   return obj;
@@ -594,6 +615,7 @@ static void *_zPH3DCreatePyramidFromZTK(void *obj, int i, void *arg, ZTK *ztk)
     zVec3DFromZTK( &shift, ztk );
     obj = zPH3DCreatePyramid( (zPH3D*)obj, zArrayBuf((zVec3DArray*)arg), zArraySize((zVec3DArray*)arg), &shift );
     zArrayFree( (zVec3DArray*)arg );
+    zeo_ph_echo_while_reading ? eprintf( "created a pyramid\n" ) : 0;
   }
   return obj;
 }
@@ -640,7 +662,10 @@ zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk)
         zPH3DFaceNum(ph) != num_face ) return NULL;
   }
   /* vertices & faces */
-  return (zPH3D *)ZTKEvalKey( ph, &varray, ztk, __ztk_prp_ph );
+  ph = (zPH3D *)ZTKEvalKey( ph, &varray, ztk, __ztk_prp_ph );
+  if( zArraySize(&varray) != 0 )
+    zArrayFree( &varray );
+  return ph;
 }
 
 /* print a 3D polyhedron to a file. */

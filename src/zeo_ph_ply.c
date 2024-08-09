@@ -408,7 +408,9 @@ static bool _zPH3DFReadPLYVert(FILE *fp, zPH3D *ph, zPLY *ply, zPLYElement *elem
       val = elem->prp[j]->read_double( fp );
       _zPH3DSetPLYVert( ph, ply, i, j, val );
     }
+    zeo_ph_echo_while_reading ? eprintf( "\r%d/%d vertex", i, elem->num ) : 0;
   }
+  zeo_ph_echo_while_reading ? eprintf( "\n" ) : 0;
   return true;
 }
 
@@ -455,7 +457,9 @@ static bool _zPH3DFReadPLYFace(FILE *fp, zPH3D *ph, zPLY *ply, zPLYElement *elem
         zTri3DCreate( zPH3DFace(ph,nf++), zPH3DVert(ph,v1), zPH3DVert(ph,v2), zPH3DVert(ph,v3) );
       }
     }
+    zeo_ph_echo_while_reading ? eprintf( "\r%d/%d face", i, elem->num ) : 0;
   }
+  zeo_ph_echo_while_reading ? eprintf( "\n" ) : 0;
   return true;
 }
 

@@ -11,10 +11,6 @@
 
 __BEGIN_DECLS
 
-__ZEO_EXPORT bool __zeo_stl_echo;
-#define zSTLEchoOn()  ( __zeo_stl_echo = true )
-#define zSTLEchoOff() ( __zeo_stl_echo = false )
-
 /*! \brief read and write a 3D polyhedron in ASCII STL format. */
 __ZEO_EXPORT zPH3D *zPH3DFReadSTL_ASCII(FILE *fp, zPH3D *ph, char shapenamebuf[], size_t bufsize);
 __ZEO_EXPORT void zPH3DFWriteSTL_ASCII(FILE *fp, zPH3D *ph, const char shapename[]);

@@ -1,3 +1,6 @@
+2024. 8.10. Modified readers of vertices and faces of zPH3D to output counters to stderr while reading. [zeo_ph, zeo_ph_ply, zeo_ph_stl, zeo_ph_obj, zeo_ph_dae]
+2024. 8.10. Debugged zPH3DFromZTK to free an array of 3D vertices if it is not empty after creating the polyhedron. [zeo_ph]
+2024. 8.10. Renamed __zeo_stl_echo, zSTLEchoOn and zSTLEchoOff to zeo_ph_echo_while_reading, zPH3DEchoOn and zPH3DEchoOff, respectively, and moved them to zeo_ph. [zeo_ph, zeo_ph_stl]
 2024. 7.23. Debugged zTri3DPointIsOnPlane (thanks to Daishi Kaneta). [zeo_elem3d]
 2024. 6.27. Added zTri2DDistFromPoint. [zeo_elem2d]
 2024. 6.27. Added ZEO_ELEM_TRIXD_DIST_FROM_POINT_PROTOTYPE and ZEO_ELEM_TRIXD_DIST_FROM_POINT, and reimplemented zTri3DDistFromPoint. [zeo_elemxd, zeo_elem3d]
