@@ -337,11 +337,13 @@ static void *_zShape3DFrameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 
-static void _zShape3DNameFPrint(FILE *fp, int i, void *obj){
+static bool _zShape3DNameFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%s\n", zName((zShape3D*)obj) );
+  return true;
 }
-static void _zShape3DTypeFPrint(FILE *fp, int i, void *obj){
+static bool _zShape3DTypeFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%s\n", ((zShape3D*)obj)->com->typestr );
+  return true;
 }
 
 static ZTKPrp __ztk_prp_shape[] = {

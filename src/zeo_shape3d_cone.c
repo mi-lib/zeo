@@ -256,14 +256,18 @@ static void *_zCone3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zCone3DDiv((zCone3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static void _zCone3DCenterFPrintZTK(FILE *fp, int i, void *obj){
-  zVec3DFPrint( fp, zCone3DCenter((zCone3D*)obj) ); }
-static void _zCone3DVertFPrintZTK(FILE *fp, int i, void *obj){
-  zVec3DFPrint( fp, zCone3DVert((zCone3D*)obj) ); }
-static void _zCone3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
-  fprintf( fp, "%.10g\n", zCone3DRadius((zCone3D*)obj) ); }
-static void _zCone3DDivFPrintZTK(FILE *fp, int i, void *obj){
-  fprintf( fp, "%d\n", zCone3DDiv((zCone3D*)obj) ); }
+static bool _zCone3DCenterFPrintZTK(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zCone3DCenter((zCone3D*)obj) );
+  return true; }
+static bool _zCone3DVertFPrintZTK(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zCone3DVert((zCone3D*)obj) );
+  return true; }
+static bool _zCone3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zCone3DRadius((zCone3D*)obj) );
+  return true; }
+static bool _zCone3DDivFPrintZTK(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d\n", zCone3DDiv((zCone3D*)obj) );
+  return true; }
 
 static ZTKPrp __ztk_prp_shape_cone[] = {
   { "center", 1, _zCone3DCenterFromZTK, _zCone3DCenterFPrintZTK },

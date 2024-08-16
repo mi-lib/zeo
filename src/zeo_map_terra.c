@@ -354,26 +354,33 @@ static void *_zTerraGridFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 
-static void _zTerraOriginFPrint(FILE *fp, int i, void *obj){
+static bool _zTerraOriginFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g %.10g\n", ((zTerra*)obj)->xmin, ((zTerra*)obj)->ymin );
+  return true;
 }
-static void _zTerraResolFPrint(FILE *fp, int i, void *obj){
+static bool _zTerraResolFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g %.10g\n", ((zTerra*)obj)->dx, ((zTerra*)obj)->dy );
+  return true;
 }
-static void _zTerraSizeFPrint(FILE *fp, int i, void *obj){
+static bool _zTerraSizeFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%d %d\n", zTerraXSize((zTerra*)obj), zTerraYSize((zTerra*)obj) );
+  return true;
 }
-static void _zTerraZRangeFPrint(FILE *fp, int i, void *obj){
+static bool _zTerraZRangeFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g %.10g\n", ((zTerra*)obj)->zmin, ((zTerra*)obj)->zmax );
+  return true;
 }
-static void _zTerraVarThrsdFPrint(FILE *fp, int i, void *obj){
+static bool _zTerraVarThrsdFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", ((zTerra*)obj)->travs_th_var );
+  return true;
 }
-static void _zTerraGrdThrsdFPrint(FILE *fp, int i, void *obj){
+static bool _zTerraGrdThrsdFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", zRad2Deg( acos( ((zTerra*)obj)->travs_th_grd ) ) );
+  return true;
 }
-static void _zTerraResThrsdFPrint(FILE *fp, int i, void *obj){
+static bool _zTerraResThrsdFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", ((zTerra*)obj)->travs_th_res );
+  return true;
 }
 
 static ZTKPrp __ztk_prp_terra[] = {

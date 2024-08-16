@@ -196,12 +196,15 @@ static void *_zCapsule3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zCapsule3DDiv((zCapsule3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static void _zCapsule3DCenterFPrintZTK(FILE *fp, int i, void *obj){
-  zVec3DFPrint( fp, zCapsule3DCenter((zCapsule3D*)obj,i) ); }
-static void _zCapsule3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
-  fprintf( fp, "%.10g\n", zCapsule3DRadius((zCapsule3D*)obj) ); }
-static void _zCapsule3DDivFPrintZTK(FILE *fp, int i, void *obj){
-  fprintf( fp, "%d\n", zCapsule3DDiv((zCapsule3D*)obj) ); }
+static bool _zCapsule3DCenterFPrintZTK(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zCapsule3DCenter((zCapsule3D*)obj,i) );
+  return true; }
+static bool _zCapsule3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zCapsule3DRadius((zCapsule3D*)obj) );
+  return true; }
+static bool _zCapsule3DDivFPrintZTK(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d\n", zCapsule3DDiv((zCapsule3D*)obj) );
+  return true; }
 
 static ZTKPrp __ztk_prp_shape_capsule[] = {
   { "center", 2, _zCapsule3DCenterFromZTK, _zCapsule3DCenterFPrintZTK },

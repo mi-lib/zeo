@@ -387,20 +387,27 @@ static void *_zNURBS3DCPFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 
-static void _zNURBS3DOrderFPrint(FILE *fp, int i, void *obj){
+static bool _zNURBS3DOrderFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%d %d\n", ((zNURBS3D*)obj)->order[0], ((zNURBS3D*)obj)->order[1] );
+  return true;
 }
-static void _zNURBS3DUKnotFPrint(FILE *fp, int i, void *obj){
-  if( zVecSizeNC(((zNURBS3D*)obj)->knot[0]) > 0 ) zVecFPrint( fp, ((zNURBS3D*)obj)->knot[0] );
+static bool _zNURBS3DUKnotFPrint(FILE *fp, int i, void *obj){
+  if( zVecSizeNC(((zNURBS3D*)obj)->knot[0]) <= 0 ) return false;
+  zVecFPrint( fp, ((zNURBS3D*)obj)->knot[0] );
+  return true;
 }
-static void _zNURBS3DVKnotFPrint(FILE *fp, int i, void *obj){
-  if( zVecSizeNC(((zNURBS3D*)obj)->knot[1]) > 0 ) zVecFPrint( fp, ((zNURBS3D*)obj)->knot[1] );
+static bool _zNURBS3DVKnotFPrint(FILE *fp, int i, void *obj){
+  if( zVecSizeNC(((zNURBS3D*)obj)->knot[1]) <= 0 ) return false;
+  zVecFPrint( fp, ((zNURBS3D*)obj)->knot[1] );
+  return true;
 }
-static void _zNURBS3DSliceFPrint(FILE *fp, int i, void *obj){
+static bool _zNURBS3DSliceFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%d %d\n", zNURBS3DSliceNum((zNURBS3D*)obj,0), zNURBS3DSliceNum((zNURBS3D*)obj,1) );
+  return true;
 }
-static void _zNURBS3DSizeFPrint(FILE *fp, int i, void *obj){
+static bool _zNURBS3DSizeFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%d %d\n", zNURBS3DCPNum((zNURBS3D*)obj,0), zNURBS3DCPNum((zNURBS3D*)obj,1) );
+  return true;
 }
 
 static ZTKPrp __ztk_prp_nurbs[] = {

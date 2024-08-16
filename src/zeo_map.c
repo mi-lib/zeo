@@ -44,11 +44,13 @@ static void *_zMapTypeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return NULL;
 }
 
-static void _zMapNameFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zMapNameFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%s\n", zName((zMap*)obj) );
+  return true;
 }
-static void _zMapTypeFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zMapTypeFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%s\n", ((zMap*)obj)->com->typestr );
+  return true;
 }
 
 static ZTKPrp __ztk_prp_map_key[] = {

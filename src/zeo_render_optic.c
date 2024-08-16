@@ -96,20 +96,27 @@ static void *_zOpticalInfoAlphaFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zOpticalInfoSetAlpha( (zOpticalInfo*)obj, ZTKDouble(ztk) );
   return obj; }
 
-static void _zOpticalInfoNameFPrintZTK(FILE *fp, int i, void *obj){
-  fprintf( fp, "%s\n", zName((zOpticalInfo*)obj) ); }
-static void _zOpticalInfoAmbFPrintZTK(FILE *fp, int i, void *obj){
-  zRGBFPrint( fp, &((zOpticalInfo*)obj)->amb ); }
-static void _zOpticalInfoDifFPrintZTK(FILE *fp, int i, void *obj){
-  zRGBFPrint( fp, &((zOpticalInfo*)obj)->dif ); }
-static void _zOpticalInfoSpcFPrintZTK(FILE *fp, int i, void *obj){
-  zRGBFPrint( fp, &((zOpticalInfo*)obj)->spc ); }
-static void _zOpticalInfoESRFPrintZTK(FILE *fp, int i, void *obj){
-  fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->esr ); }
-static void _zOpticalInfoSnsFPrintZTK(FILE *fp, int i, void *obj){
-  fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->sns ); }
-static void _zOpticalInfoAlphaFPrintZTK(FILE *fp, int i, void *obj){
-  fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->alpha ); }
+static bool _zOpticalInfoNameFPrintZTK(FILE *fp, int i, void *obj){
+  fprintf( fp, "%s\n", zName((zOpticalInfo*)obj) );
+  return true; }
+static bool _zOpticalInfoAmbFPrintZTK(FILE *fp, int i, void *obj){
+  zRGBFPrint( fp, &((zOpticalInfo*)obj)->amb );
+  return true; }
+static bool _zOpticalInfoDifFPrintZTK(FILE *fp, int i, void *obj){
+  zRGBFPrint( fp, &((zOpticalInfo*)obj)->dif );
+  return true; }
+static bool _zOpticalInfoSpcFPrintZTK(FILE *fp, int i, void *obj){
+  zRGBFPrint( fp, &((zOpticalInfo*)obj)->spc );
+  return true; }
+static bool _zOpticalInfoESRFPrintZTK(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->esr );
+  return true; }
+static bool _zOpticalInfoSnsFPrintZTK(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->sns );
+  return true; }
+static bool _zOpticalInfoAlphaFPrintZTK(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->alpha );
+  return true; }
 
 static ZTKPrp __ztk_prp_optic[] = {
   { "name", 1, _zOpticalInfoNameFromZTK, _zOpticalInfoNameFPrintZTK },

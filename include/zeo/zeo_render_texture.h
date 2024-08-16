@@ -7,6 +7,7 @@
 #ifndef __ZEO_RENDER_TEXTURE_H__
 #define __ZEO_RENDER_TEXTURE_H__
 
+#include <zeda/zeda_misc.h>
 #include <zeo/zeo_elem2d.h>
 
 __BEGIN_DECLS

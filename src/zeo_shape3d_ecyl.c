@@ -259,14 +259,18 @@ static void *_zECyl3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zECyl3DDiv((zECyl3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static void _zECyl3DCenterFPrintZTK(FILE *fp, int i, void *obj){
-  zVec3DFPrint( fp, zECyl3DCenter((zECyl3D*)obj,i) ); }
-static void _zECyl3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
-  fprintf( fp, "%.10g\n", zECyl3DRadius((zECyl3D*)obj,i) ); }
-static void _zECyl3DRefFPrintZTK(FILE *fp, int i, void *obj){
-  zVec3DFPrint( fp, zECyl3DRadVec((zECyl3D*)obj,0) ); }
-static void _zECyl3DDivFPrintZTK(FILE *fp, int i, void *obj){
-  fprintf( fp, "%d\n", zECyl3DDiv((zECyl3D*)obj) ); }
+static bool _zECyl3DCenterFPrintZTK(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zECyl3DCenter((zECyl3D*)obj,i) );
+  return true; }
+static bool _zECyl3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
+  fprintf( fp, "%.10g\n", zECyl3DRadius((zECyl3D*)obj,i) );
+  return true; }
+static bool _zECyl3DRefFPrintZTK(FILE *fp, int i, void *obj){
+  zVec3DFPrint( fp, zECyl3DRadVec((zECyl3D*)obj,0) );
+  return true; }
+static bool _zECyl3DDivFPrintZTK(FILE *fp, int i, void *obj){
+  fprintf( fp, "%d\n", zECyl3DDiv((zECyl3D*)obj) );
+  return true; }
 
 static ZTKPrp __ztk_prp_shape_ecyl[] = {
   { "center", 2, _zECyl3DCenterFromZTK, _zECyl3DCenterFPrintZTK },
