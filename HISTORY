@@ -1,3 +1,6 @@
+2024.10.18. Added zIntersectPlane3D. [zeo_errmsg, zeo_col]
+2024.10.18. Defined ZEO_ERR_COLCHK_LINE_PARALLEL. [zeo_errmsg, zeo_elem2d]
+2024.10.18. Renamed ZEO_ERR_ELEM_DEGP, ZEO_ERR_ELEM_DEGE, and ZEO_ERR_ELEM_DEGT to ZEO_ERR_ELEM_DEG_PLANE, ZEO_ERR_ELEM_DEG_EDGE, and ZEO_ERR_ELEM_DEG_TRI, respectively. [zeo_errmsg, zeo_elemxd, zeo_elem3d]
 2024. 8.16. Modified *FPrintZTK to respond to the new specification of _ZTKPrpKeyFPrint. [zeo_render_optic,zeo_render_texture,zeo_nurbs,zeo_shape3d,zeo_shape3d_box,zeo_shape3d_sphere,zeo_shape3d_ellips,zeo_shape3d_cyl,zeo_shape3d_capsule,zeo_shape3d_ecyl,zeo_shape3d_cone,zeo_map,zeo_map_terra]
 2024. 8.10. Modified readers of vertices and faces of zPH3D to output counters to stderr while reading. [zeo_ph, zeo_ph_ply, zeo_ph_stl, zeo_ph_obj, zeo_ph_dae]
 2024. 8.10. Debugged zPH3DFromZTK to free an array of 3D vertices if it is not empty after creating the polyhedron. [zeo_ph]

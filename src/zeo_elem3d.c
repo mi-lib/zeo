@@ -123,7 +123,7 @@ _ZEO_ELEM_EDGEXD_LINSCALE( 3D )
 zPlane3D* zPlane3DCreate(zPlane3D *plane, zVec3D *origin, zVec3D *norm)
 {
   if( zVec3DIsTiny( norm ) ){
-    ZRUNERROR( ZEO_ERR_ELEM_DEGP );
+    ZRUNERROR( ZEO_ERR_ELEM_DEG_PLANE );
     return NULL;
   }
   zPlane3DSetOrg( plane, origin );

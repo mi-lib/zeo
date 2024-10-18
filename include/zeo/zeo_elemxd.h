@@ -193,7 +193,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
     zVec##XD##Sub( point, zEdge##XD##Vert(edge,1), &dp1 ); \
     ni = ( zVec##XD##SqrNorm(&dp0) <= zVec##XD##SqrNorm(&dp1) ) ? 0 : 1; \
     if( ( d = zVec##XD##Normalize( zEdge##XD##Vec(edge), &v ) ) < 0 ){ \
-      ZRUNERROR( ZEO_ERR_ELEM_DEGE ); \
+      ZRUNERROR( ZEO_ERR_ELEM_DEG_EDGE ); \
       return -1; \
     } \
     if( ni == 0 ){ \

@@ -42,7 +42,7 @@ zVec2D *zIntersectLine2D(zLine2D *line1, zLine2D *line2, zVec2D *intersection)
   zVec2DCopy( zLine2DDir(line1), zMat2DVec(&m,0) );
   zVec2DRev(  zLine2DDir(line2), zMat2DVec(&m,1) );
   if( !zMulInvMat2DVec2D( &m, &dp, &s ) ){
-    ZRUNERROR( "parallel 2D lines do not intersect" );
+    ZRUNERROR( ZEO_ERR_COLCHK_LINE_PARALLEL );
     return NULL;
   }
   return zLine2DPoint( line1, s.c.x, intersection );

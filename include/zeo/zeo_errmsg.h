@@ -27,9 +27,9 @@
 
 #define ZEO_ERR_INVINDEX     "invalid index specified"
 
-#define ZEO_ERR_ELEM_DEGP    "too small normal vector to define a plane"
-#define ZEO_ERR_ELEM_DEGE    "edge degenerated"
-#define ZEO_ERR_ELEM_DEGT    "triangle degenerated"
+#define ZEO_ERR_ELEM_DEG_PLANE   "too small normal vector to define a plane"
+#define ZEO_ERR_ELEM_DEG_EDGE    "edge degenerated"
+#define ZEO_ERR_ELEM_DEG_TRI     "triangle degenerated"
 
 #define ZEO_ERR_ELEM_NPTR_SPECIFIED(XD) "null pointer specified for position / direction vector of a " #XD " line"
 #define ZEO_ERR_ELEM_ZERO_DIRVEC(XD)    "cannot create a " #XD " line from a zero direction vector"
@@ -118,6 +118,10 @@
 #define ZEO_ERR_CH_DEG3      "point set degenerated onto a single plane"
 
 #define ZEO_ERR_BREP_CONV    "cannot convert polyhedron to B-Rep solid"
+
+#define ZEO_ERR_COLCHK_LINE_PARALLEL  "lines are parallel"
+#define ZEO_ERR_COLCHK_PLANE_IDENT    "planes are identical"
+#define ZEO_ERR_COLCHK_PLANE_PARALLEL "planes are parallel"
 
 #define ZEO_ERR_TERRA_INVSIZ "grid size unspecified"
 #define ZEO_ERR_TERRA_INVRSL "too fine (or negative) grid resolution"
