@@ -863,6 +863,17 @@ zMat3D *zMat3DFromZTK(zMat3D *m, ZTK *ztk)
   return m;
 }
 
+/* add a 3x3 matrix to a ZTK format processor. */
+ZTK *zMat3DToZTK(zMat3D *m, ZTK *ztk)
+{
+  int i, j;
+
+  for( i=0; i<3; i++ )
+    for( j=0; j<3; j++ )
+      if( !ZTKAddDouble( ztk, m->e[j][i] ) ) return NULL;
+  return ztk;
+}
+
 /* scan a 3x3 matrix from a file. */
 zMat3D *zMat3DFScan(FILE *fp, zMat3D *m)
 {

@@ -28,6 +28,10 @@ __ZEO_EXPORT const zRGB zrgbwhite; /*!< RGB set for white */
 #define ZRGBBLACK ( (zRGB *)&zrgbblack )
 #define ZRGBWHITE ( (zRGB *)&zrgbwhite )
 
+#define ZRGB_TOL (1.0e-6)
+
+#define zRGBIsZero(rgb) ( zIsTol((rgb)->r,ZRGB_TOL) && zIsTol((rgb)->g,ZRGB_TOL) && zIsTol((rgb)->b,ZRGB_TOL) )
+
 /*! \brief create and copy a set of RGB parameters.
  *
  * zRGBSet() sets \a red, \a green and \a blue to a set of RGB
@@ -83,8 +87,10 @@ __ZEO_EXPORT zRGB *zRGBBlend(zRGB *rgb1, zRGB *rgb2, double ratio, zRGB *rgb);
  */
 __ZEO_EXPORT zRGB *zRGBDec(zRGB *rgb, const char *str);
 
-/* \brief read a set of RGB from a ZTK format processor. */
+/*! \brief read a set of RGB from a ZTK format processor. */
 __ZEO_EXPORT zRGB *zRGBFromZTK(zRGB *rgb, ZTK *ztk);
+/*! \brief add RGB values to a ZTK format processor. */
+__ZEO_EXPORT ZTK *zRGBToZTK(zRGB *rgb, ZTK *ztk);
 
 /*! \brief scan/print of a set of RGB parameters.
  *

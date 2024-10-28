@@ -590,6 +590,8 @@ __ZEO_EXPORT zVec3D *zAngVelToZYZVelSC(zVec3D *angvel, double sa, double ca, dou
 
 /*! \brief read a 3D vector from a ZTK format processor. */
 __ZEO_EXPORT zVec3D *zVec3DFromZTK(zVec3D *v, ZTK *ztk);
+/*! \brief add a 3D vector to a ZTK format processor. */
+__ZEO_EXPORT ZTK *zVec3DToZTK(zVec3D *v, ZTK *ztk);
 
 /*! \brief scan and print a 3D vector.
  *

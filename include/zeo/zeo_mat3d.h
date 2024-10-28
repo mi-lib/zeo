@@ -804,8 +804,10 @@ __ZEO_EXPORT void zMat3DSymEig(zMat3D *m, double eval[], zVec3D evec[]);
 /* I/O
  * ********************************************************** */
 
-/* read a 3x3 matrix from a ZTK format processor. */
+/*! \brief read a 3x3 matrix from a ZTK format processor. */
 __ZEO_EXPORT zMat3D *zMat3DFromZTK(zMat3D *m, ZTK *ztk);
+/*! \brief add a 3x3 matrix to a ZTK format processor. */
+__ZEO_EXPORT ZTK *zMat3DToZTK(zMat3D *m, ZTK *ztk);
 
 /*! \brief scan and print a 3x3 matrix.
  *

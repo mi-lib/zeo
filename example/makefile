@@ -1,9 +1,8 @@
-INCLUDE=`zeo-config -I`
-LIB=`zeo-config -L`
+CFLAGS=`zeo-config --cflags`
 LINK=`zeo-config -l`
 
 CC=gcc
-CFLAGS=-ansi -Wall -O3 $(LIB) $(INCLUDE) -funroll-loops
+CFLAGS+=-ansi -Wall -O3 -funroll-loops
 
 %: %.c
 	$(CC) $(CFLAGS) -o $@ $< $(LINK)

@@ -75,13 +75,15 @@ __ZEO_EXPORT zOpticalInfo *zOpticalInfoMul(zOpticalInfo *oi1, zOpticalInfo *oi2,
 /*! \brief blend a pair of sets of optical parameters at a given ratio. */
 __ZEO_EXPORT zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, double ratio, zOpticalInfo *oi, char *name);
 
-/* tag to identify optical info. */
+/*! \brief tag to identify optical info. */
 #define ZTK_TAG_OPTIC "optic"
 
-/* decode an optical info from a ZTK format processor. */
+/*! \brief read an optical info from a ZTK format processor. */
 __ZEO_EXPORT zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk);
+/*! \brief add an optical info to a ZTK format processor. */
+__ZEO_EXPORT ZTK *zOpticalInfoToZTK(zOpticalInfo *oi, ZTK *ztk);
 
-/* print out an optical info to the current stream of a file. */
+/*! \brief print out an optical info to the current stream of a file. */
 __ZEO_EXPORT void zOpticalInfoFPrintZTK(FILE *fp, zOpticalInfo *oi);
 
 /*! \struct zOpticalInfoArray

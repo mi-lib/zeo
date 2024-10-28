@@ -513,6 +513,15 @@ zVec3D *zVec3DFromZTK(zVec3D *v, ZTK *ztk)
   return v;
 }
 
+/* add a 3D vector to a ZTK format processor. */
+ZTK *zVec3DToZTK(zVec3D *v, ZTK *ztk)
+{
+  if( !ZTKAddDouble( ztk, v->e[0] ) ) return NULL;
+  if( !ZTKAddDouble( ztk, v->e[1] ) ) return NULL;
+  if( !ZTKAddDouble( ztk, v->e[2] ) ) return NULL;
+  return ztk;
+}
+
 /* scan a 3D vector from a file. */
 zVec3D *zVec3DFScan(FILE *fp, zVec3D *v)
 {

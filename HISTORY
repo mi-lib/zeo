@@ -1,3 +1,7 @@
+2024.10.28. Added zVec3DToZTK and zMat3DToZTK. [zeo_vec3d]
+2024.10.28. Added zRGBToZTK and zOpticalInfoToZTK. [zeo_render_color, zeo_render_optic]
+2024.10.27. Modified _zOpticalInfoAmbFPrintZTK, _zOpticalInfoDifFPrintZTK, _zOpticalInfoSpcFPrintZTK, _zOpticalInfoESRFPrintZTK, _zOpticalInfoSnsFPrintZTK, and _zOpticalInfoAlphaFPrintZTK to return false if the corresponding value is default. [zeo_render_optic]
+2024.10.27. Added ZRGB_TOL and zRGBIsZero. [zeo_render_color]
 2024.10.18. Added zIntersectPlane3D. [zeo_errmsg, zeo_col]
 2024.10.18. Defined ZEO_ERR_COLCHK_LINE_PARALLEL. [zeo_errmsg, zeo_elem2d]
 2024.10.18. Renamed ZEO_ERR_ELEM_DEGP, ZEO_ERR_ELEM_DEGE, and ZEO_ERR_ELEM_DEGT to ZEO_ERR_ELEM_DEG_PLANE, ZEO_ERR_ELEM_DEG_EDGE, and ZEO_ERR_ELEM_DEG_TRI, respectively. [zeo_errmsg, zeo_elemxd, zeo_elem3d]

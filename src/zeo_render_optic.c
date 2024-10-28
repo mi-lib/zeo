@@ -100,21 +100,27 @@ static bool _zOpticalInfoNameFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%s\n", zName((zOpticalInfo*)obj) );
   return true; }
 static bool _zOpticalInfoAmbFPrintZTK(FILE *fp, int i, void *obj){
+  if( zRGBIsZero( &((zOpticalInfo*)obj)->amb ) ) return false;
   zRGBFPrint( fp, &((zOpticalInfo*)obj)->amb );
   return true; }
 static bool _zOpticalInfoDifFPrintZTK(FILE *fp, int i, void *obj){
+  if( zRGBIsZero( &((zOpticalInfo*)obj)->dif ) ) return false;
   zRGBFPrint( fp, &((zOpticalInfo*)obj)->dif );
   return true; }
 static bool _zOpticalInfoSpcFPrintZTK(FILE *fp, int i, void *obj){
+  if( zRGBIsZero( &((zOpticalInfo*)obj)->spc ) ) return false;
   zRGBFPrint( fp, &((zOpticalInfo*)obj)->spc );
   return true; }
 static bool _zOpticalInfoESRFPrintZTK(FILE *fp, int i, void *obj){
+  if( zIsTiny( ((zOpticalInfo*)obj)->esr ) ) return false;
   fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->esr );
   return true; }
 static bool _zOpticalInfoSnsFPrintZTK(FILE *fp, int i, void *obj){
+  if( zIsTiny( ((zOpticalInfo*)obj)->sns ) ) return false;
   fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->sns );
   return true; }
 static bool _zOpticalInfoAlphaFPrintZTK(FILE *fp, int i, void *obj){
+  if( zIsTiny( 1.0 - ((zOpticalInfo*)obj)->alpha ) ) return false;
   fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->alpha );
   return true; }
 
@@ -128,11 +134,43 @@ static ZTKPrp __ztk_prp_optic[] = {
   { "alpha", 1, _zOpticalInfoAlphaFromZTK, _zOpticalInfoAlphaFPrintZTK },
 };
 
-/* encode an optical info from a ZTK format processor. */
+/* read an optical info from a ZTK format processor. */
 zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk)
 {
   zOpticalInfoInit( oi );
   return (zOpticalInfo *)ZTKEvalKey( oi, NULL, ztk, __ztk_prp_optic );
+}
+
+/* add an optical info to a ZTK format processor. */
+ZTK *zOpticalInfoToZTK(zOpticalInfo *oi, ZTK *ztk)
+{
+  if( !ZTKAddKey( ztk, "name" ) ) return false;
+  if( !ZTKAddVal( ztk, zName(oi) ) ) return false;
+  if( !zRGBIsZero( &oi->amb ) ){
+    if( !ZTKAddKey( ztk, "ambient" ) ) return false;
+    if( !zRGBToZTK( &oi->amb, ztk ) ) return false;
+  }
+  if( !zRGBIsZero( &oi->dif ) ){
+    if( !ZTKAddKey( ztk, "diffuse" ) ) return false;
+    if( !zRGBToZTK( &oi->dif, ztk ) ) return false;
+  }
+  if( !zRGBIsZero( &oi->spc ) ){
+    if( !ZTKAddKey( ztk, "specular" ) ) return false;
+    if( !zRGBToZTK( &oi->spc, ztk ) ) return false;
+  }
+  if( !zIsTiny( oi->esr ) ){
+    if( !ZTKAddKey( ztk, "esr" ) ) return false;
+    if( !ZTKAddDouble( ztk, oi->esr ) ) return false;
+  }
+  if( !zIsTiny( oi->sns ) ){
+    if( !ZTKAddKey( ztk, "shininess" ) ) return false;
+    if( !ZTKAddDouble( ztk, oi->sns ) ) return false;
+  }
+  if( !zIsTiny( oi->alpha ) ){
+    if( !ZTKAddKey( ztk, "alpha" ) ) return false;
+    if( !ZTKAddDouble( ztk, oi->alpha ) ) return false;
+  }
+  return ztk;
 }
 
 /* print information of the optical parameter set out to a file. */

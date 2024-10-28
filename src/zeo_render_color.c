@@ -87,6 +87,15 @@ zRGB *zRGBFromZTK(zRGB *rgb, ZTK *ztk)
   return rgb;
 }
 
+/* add RGB values to a ZTK format processor. */
+ZTK *zRGBToZTK(zRGB *rgb, ZTK *ztk)
+{
+  if( !ZTKAddDouble( ztk, rgb->r ) ) return NULL;
+  if( !ZTKAddDouble( ztk, rgb->g ) ) return NULL;
+  if( !ZTKAddDouble( ztk, rgb->b ) ) return NULL;
+  return ztk;
+}
+
 /* scan a set of RGB parameters from a file. */
 zRGB *zRGBFScan(FILE *fp, zRGB *rgb)
 {
