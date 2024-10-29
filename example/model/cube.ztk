@@ -1,4 +1,4 @@
-[optic]
+[zeo::optic]
 name: cyan
 ambient: 0.4, 1.0, 1.0
 diffuse: 0.4, 1.0, 1.0
@@ -6,7 +6,7 @@ specular: 0.0, 0.0, 0.0
 alpha: 0.8
 esr: 1
 
-[shape]
+[zeo::shape]
 name: cube
 type: polyhedron
 optic: cyan

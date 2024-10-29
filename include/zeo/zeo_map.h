@@ -36,7 +36,7 @@ __ZEO_EXPORT zMap *zMapInit(zMap *map);
 /* destroy a map. */
 __ZEO_EXPORT void zMapDestroy(zMap *map);
 
-#define ZTK_TAG_MAP "map"
+#define ZTK_TAG_ZEO_MAP "zeo::map"
 
 __ZEO_EXPORT zMap *zMapFromZTK(zMap *map, ZTK *ztk);
 __ZEO_EXPORT void zMapFPrintZTK(FILE *fp, zMap *map);

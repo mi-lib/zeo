@@ -1,4 +1,4 @@
-[shape]
+[zeo::shape]
 name: nurbs
 type: nurbs
 dim: 3 3

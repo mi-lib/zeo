@@ -1,3 +1,7 @@
+2024.10.29. Renamed ZTK_TAG_OPTIC, ZTK_TAG_TEXTURE, ZTK_TAG_SHAPE, and ZTK_TAG_MAP to ZTK_TAG_ZEO_OPTIC, ZTK_TAG_ZEO_TEXTURE, ZTK_TAG_ZEO_SHAPE, and ZTK_TAG_ZEO_MAP, repectively. [zeo_render_optic, zeo_render_texture, zeo_shape3d, zeo_mshape3d, zeo_map, zeo_mapnet]
+2024.10.29. Abolished zOpticalInfoSetAmb, zOpticalInfoSetDif, zOpticalInfoSetSpc, zOpticalInfoSetESR, zOpticalInfoSetShininess, and zOpticalInfoSetAlpha. [zeo_render_optic]
+2024.10.29. Renamed members amb, dif, spc, and sns of zOpticalInfo to ambient, difffuse, specular, and shininess, respectively. [zeo_render_optic]
+2024.10.29. Redefined ZTK_TAG_OPTIC, ZTK_TAG_TEXTURE, ZTK_TAG_SHAPE, and ZTK_TAG_MAP as "zeo::optic", "zeo::texture", "zeo::shape", and "zeo::map", respectively. [zeo_render_optic, zeo_shape3d, zeo_map, example]
 2024.10.28. Added zVec3DToZTK and zMat3DToZTK. [zeo_vec3d]
 2024.10.28. Added zRGBToZTK and zOpticalInfoToZTK. [zeo_render_color, zeo_render_optic]
 2024.10.27. Modified _zOpticalInfoAmbFPrintZTK, _zOpticalInfoDifFPrintZTK, _zOpticalInfoSpcFPrintZTK, _zOpticalInfoESRFPrintZTK, _zOpticalInfoSnsFPrintZTK, and _zOpticalInfoAlphaFPrintZTK to return false if the corresponding value is default. [zeo_render_optic]

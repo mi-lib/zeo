@@ -138,7 +138,7 @@ __ZEO_EXPORT zShape3D *zShape3DReadFileDAE(zShape3D *shape, const char *filename
  */
 zArrayClass( zShape3DArray, zShape3D );
 
-#define ZTK_TAG_SHAPE "shape"
+#define ZTK_TAG_ZEO_SHAPE "zeo::shape"
 
 /*! \brief default number of division in conversion from smooth curves to polygonal models. */
 #define ZEO_SHAPE_DEFAULT_DIV 32

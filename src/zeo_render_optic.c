@@ -12,14 +12,14 @@
  * ********************************************************** */
 
 /* create a set of optical parameters. */
-zOpticalInfo *zOpticalInfoCreate(zOpticalInfo *oi, float ar, float ag, float ab, float dr, float dg, float db, float sr, float sg, float sb, double esr, double sns, double alpha, char *name)
+zOpticalInfo *zOpticalInfoCreate(zOpticalInfo *oi, float ar, float ag, float ab, float dr, float dg, float db, float sr, float sg, float sb, double esr, double shininess, double alpha, char *name)
 {
   zNameSet( oi, name );
-  zRGBSet( &oi->amb, ar, ag, ab );
-  zRGBSet( &oi->dif, dr, dg, db );
-  zRGBSet( &oi->spc, sr, sg, sb );
+  zRGBSet( &oi->ambient, ar, ag, ab );
+  zRGBSet( &oi->diffuse, dr, dg, db );
+  zRGBSet( &oi->specular, sr, sg, sb );
   oi->esr = esr;
-  oi->sns = sns;
+  oi->shininess = shininess;
   oi->alpha = alpha;
   return oi;
 }
@@ -27,11 +27,11 @@ zOpticalInfo *zOpticalInfoCreate(zOpticalInfo *oi, float ar, float ag, float ab,
 /* copy a set of optical parameters. */
 zOpticalInfo *zOpticalInfoCopy(zOpticalInfo *src, zOpticalInfo *dest)
 {
-  zOpticalInfoSetAmb( dest, &src->amb );
-  zOpticalInfoSetDif( dest, &src->dif );
-  zOpticalInfoSetSpc( dest, &src->spc );
+  zRGBCopy( &src->ambient, &dest->ambient );
+  zRGBCopy( &src->diffuse, &dest->diffuse );
+  zRGBCopy( &src->specular, &dest->specular );
   dest->esr = src->esr;
-  dest->sns = src->sns;
+  dest->shininess = src->shininess;
   dest->alpha = src->alpha;
   return dest;
 }
@@ -46,11 +46,11 @@ zOpticalInfo *zOpticalInfoClone(zOpticalInfo *src, zOpticalInfo *dest)
 /* multiply a set of optical parameters to another. */
 zOpticalInfo *zOpticalInfoMul(zOpticalInfo *oi1, zOpticalInfo *oi2, zOpticalInfo *oi)
 {
-  zRGBMul( &oi1->amb, &oi2->amb, &oi->amb );
-  zRGBMul( &oi1->dif, &oi2->dif, &oi->dif );
-  zRGBMul( &oi1->spc, &oi2->spc, &oi->spc );
+  zRGBMul( &oi1->ambient, &oi2->ambient, &oi->ambient );
+  zRGBMul( &oi1->diffuse, &oi2->diffuse, &oi->diffuse );
+  zRGBMul( &oi1->specular, &oi2->specular, &oi->specular );
   oi->esr = oi1->esr * oi2->esr;
-  oi->sns = oi1->sns * oi2->sns;
+  oi->shininess = oi1->shininess * oi2->shininess;
   oi->alpha = oi1->alpha * oi2->alpha;
   return oi;
 }
@@ -62,12 +62,12 @@ zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, double rat
 
   ratio = _zLimit( ratio, 0, 1 );
   zNameSet( oi, name );
-  zRGBBlend( &oi1->amb, &oi2->amb, ratio, &oi->amb );
-  zRGBBlend( &oi1->dif, &oi2->dif, ratio, &oi->dif );
-  zRGBBlend( &oi1->spc, &oi2->spc, ratio, &oi->spc );
+  zRGBBlend( &oi1->ambient, &oi2->ambient, ratio, &oi->ambient );
+  zRGBBlend( &oi1->diffuse, &oi2->diffuse, ratio, &oi->diffuse );
+  zRGBBlend( &oi1->specular, &oi2->specular, ratio, &oi->specular );
   rn = 1 - ratio;
   oi->esr = ratio*oi1->esr + rn*oi2->esr;
-  oi->sns = ratio*oi1->sns + rn*oi2->sns;
+  oi->shininess = ratio*oi1->shininess + rn*oi2->shininess;
   oi->alpha = ratio*oi1->alpha + rn*oi2->alpha;
   return oi;
 }
@@ -77,47 +77,47 @@ zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, double rat
 static void *_zOpticalInfoNameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zNameSet( (zOpticalInfo *)obj, ZTKVal(ztk) );
   return zNamePtr((zOpticalInfo *)obj) ? obj : NULL; }
-static void *_zOpticalInfoAmbFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  zRGBFromZTK( &((zOpticalInfo*)obj)->amb, ztk );
+static void *_zOpticalInfoAmbientFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zRGBFromZTK( &((zOpticalInfo*)obj)->ambient, ztk );
   return obj; }
-static void *_zOpticalInfoDifFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  zRGBFromZTK( &((zOpticalInfo*)obj)->dif, ztk );
+static void *_zOpticalInfoDiffuseFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zRGBFromZTK( &((zOpticalInfo*)obj)->diffuse, ztk );
   return obj; }
-static void *_zOpticalInfoSpcFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  zRGBFromZTK( &((zOpticalInfo*)obj)->spc, ztk );
+static void *_zOpticalInfoSpecularFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  zRGBFromZTK( &((zOpticalInfo*)obj)->specular, ztk );
   return obj; }
 static void *_zOpticalInfoESRFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  zOpticalInfoSetESR( (zOpticalInfo*)obj, ZTKDouble(ztk) );
+  ((zOpticalInfo*)obj)->esr = ZTKDouble(ztk);
   return obj; }
-static void *_zOpticalInfoSnsFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  zOpticalInfoSetShininess( (zOpticalInfo*)obj, ZTKDouble(ztk) );
+static void *_zOpticalInfoShininessFromZTK(void *obj, int i, void *arg, ZTK *ztk){
+  ((zOpticalInfo*)obj)->shininess = ZTKDouble(ztk);
   return obj; }
 static void *_zOpticalInfoAlphaFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  zOpticalInfoSetAlpha( (zOpticalInfo*)obj, ZTKDouble(ztk) );
+  ((zOpticalInfo*)obj)->alpha = ZTKDouble(ztk);
   return obj; }
 
 static bool _zOpticalInfoNameFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%s\n", zName((zOpticalInfo*)obj) );
   return true; }
-static bool _zOpticalInfoAmbFPrintZTK(FILE *fp, int i, void *obj){
-  if( zRGBIsZero( &((zOpticalInfo*)obj)->amb ) ) return false;
-  zRGBFPrint( fp, &((zOpticalInfo*)obj)->amb );
+static bool _zOpticalInfoAmbientFPrintZTK(FILE *fp, int i, void *obj){
+  if( zRGBIsZero( &((zOpticalInfo*)obj)->ambient ) ) return false;
+  zRGBFPrint( fp, &((zOpticalInfo*)obj)->ambient );
   return true; }
-static bool _zOpticalInfoDifFPrintZTK(FILE *fp, int i, void *obj){
-  if( zRGBIsZero( &((zOpticalInfo*)obj)->dif ) ) return false;
-  zRGBFPrint( fp, &((zOpticalInfo*)obj)->dif );
+static bool _zOpticalInfoDiffuseFPrintZTK(FILE *fp, int i, void *obj){
+  if( zRGBIsZero( &((zOpticalInfo*)obj)->diffuse ) ) return false;
+  zRGBFPrint( fp, &((zOpticalInfo*)obj)->diffuse );
   return true; }
-static bool _zOpticalInfoSpcFPrintZTK(FILE *fp, int i, void *obj){
-  if( zRGBIsZero( &((zOpticalInfo*)obj)->spc ) ) return false;
-  zRGBFPrint( fp, &((zOpticalInfo*)obj)->spc );
+static bool _zOpticalInfoSpecularFPrintZTK(FILE *fp, int i, void *obj){
+  if( zRGBIsZero( &((zOpticalInfo*)obj)->specular ) ) return false;
+  zRGBFPrint( fp, &((zOpticalInfo*)obj)->specular );
   return true; }
 static bool _zOpticalInfoESRFPrintZTK(FILE *fp, int i, void *obj){
   if( zIsTiny( ((zOpticalInfo*)obj)->esr ) ) return false;
   fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->esr );
   return true; }
-static bool _zOpticalInfoSnsFPrintZTK(FILE *fp, int i, void *obj){
-  if( zIsTiny( ((zOpticalInfo*)obj)->sns ) ) return false;
-  fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->sns );
+static bool _zOpticalInfoShininessFPrintZTK(FILE *fp, int i, void *obj){
+  if( zIsTiny( ((zOpticalInfo*)obj)->shininess ) ) return false;
+  fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->shininess );
   return true; }
 static bool _zOpticalInfoAlphaFPrintZTK(FILE *fp, int i, void *obj){
   if( zIsTiny( 1.0 - ((zOpticalInfo*)obj)->alpha ) ) return false;
@@ -126,11 +126,11 @@ static bool _zOpticalInfoAlphaFPrintZTK(FILE *fp, int i, void *obj){
 
 static ZTKPrp __ztk_prp_optic[] = {
   { "name", 1, _zOpticalInfoNameFromZTK, _zOpticalInfoNameFPrintZTK },
-  { "ambient", 1, _zOpticalInfoAmbFromZTK, _zOpticalInfoAmbFPrintZTK },
-  { "diffuse", 1, _zOpticalInfoDifFromZTK, _zOpticalInfoDifFPrintZTK },
-  { "specular", 1, _zOpticalInfoSpcFromZTK, _zOpticalInfoSpcFPrintZTK },
+  { "ambient", 1, _zOpticalInfoAmbientFromZTK, _zOpticalInfoAmbientFPrintZTK },
+  { "diffuse", 1, _zOpticalInfoDiffuseFromZTK, _zOpticalInfoDiffuseFPrintZTK },
+  { "specular", 1, _zOpticalInfoSpecularFromZTK, _zOpticalInfoSpecularFPrintZTK },
   { "esr", 1, _zOpticalInfoESRFromZTK, _zOpticalInfoESRFPrintZTK },
-  { "shininess", 1, _zOpticalInfoSnsFromZTK, _zOpticalInfoSnsFPrintZTK },
+  { "shininess", 1, _zOpticalInfoShininessFromZTK, _zOpticalInfoShininessFPrintZTK },
   { "alpha", 1, _zOpticalInfoAlphaFromZTK, _zOpticalInfoAlphaFPrintZTK },
 };
 
@@ -146,25 +146,25 @@ ZTK *zOpticalInfoToZTK(zOpticalInfo *oi, ZTK *ztk)
 {
   if( !ZTKAddKey( ztk, "name" ) ) return false;
   if( !ZTKAddVal( ztk, zName(oi) ) ) return false;
-  if( !zRGBIsZero( &oi->amb ) ){
+  if( !zRGBIsZero( &oi->ambient ) ){
     if( !ZTKAddKey( ztk, "ambient" ) ) return false;
-    if( !zRGBToZTK( &oi->amb, ztk ) ) return false;
+    if( !zRGBToZTK( &oi->ambient, ztk ) ) return false;
   }
-  if( !zRGBIsZero( &oi->dif ) ){
+  if( !zRGBIsZero( &oi->diffuse ) ){
     if( !ZTKAddKey( ztk, "diffuse" ) ) return false;
-    if( !zRGBToZTK( &oi->dif, ztk ) ) return false;
+    if( !zRGBToZTK( &oi->diffuse, ztk ) ) return false;
   }
-  if( !zRGBIsZero( &oi->spc ) ){
+  if( !zRGBIsZero( &oi->specular ) ){
     if( !ZTKAddKey( ztk, "specular" ) ) return false;
-    if( !zRGBToZTK( &oi->spc, ztk ) ) return false;
+    if( !zRGBToZTK( &oi->specular, ztk ) ) return false;
   }
   if( !zIsTiny( oi->esr ) ){
     if( !ZTKAddKey( ztk, "esr" ) ) return false;
     if( !ZTKAddDouble( ztk, oi->esr ) ) return false;
   }
-  if( !zIsTiny( oi->sns ) ){
+  if( !zIsTiny( oi->shininess ) ){
     if( !ZTKAddKey( ztk, "shininess" ) ) return false;
-    if( !ZTKAddDouble( ztk, oi->sns ) ) return false;
+    if( !ZTKAddDouble( ztk, oi->shininess ) ) return false;
   }
   if( !zIsTiny( oi->alpha ) ){
     if( !ZTKAddKey( ztk, "alpha" ) ) return false;

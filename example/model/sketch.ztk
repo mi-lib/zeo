@@ -1,4 +1,4 @@
-[shape]
+[zeo::shape]
 name: prism
 type: polyhedron
 loop: z 1

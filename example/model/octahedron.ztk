@@ -1,4 +1,4 @@
-[optic]
+[zeo::optic]
 name: red
 ambient: 0.6 0.2 0.2
 diffuse: 1.0 0.2 0.2
@@ -6,7 +6,7 @@ specular: 0.0 0.0 0.0
 alpha: 1.0
 esr: 0.0
 
-[shape]
+[zeo::shape]
 name: a
 type: polyhedron
 optic: red

@@ -41,7 +41,7 @@ static void *_zMapNetMapFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return zMapFromZTK( zMapNetMap((zMapNet*)obj,i), ztk ) ? obj : NULL;
 }
 
-static ZTKPrp __ztk_prp_mapnet[] = {
+static ZTKPrp __ztk_prp_zeo_mapnet[] = {
   { "map", -1, _zMapNetMapFromZTK, NULL },
 };
 
@@ -51,9 +51,9 @@ zMapNet *zMapNetFromZTK(zMapNet *mn, ZTK *ztk)
   int num_map;
 
   zMapNetInit( mn );
-  num_map = ZTKCountTag( ztk, ZTK_TAG_MAP );
+  num_map = ZTKCountTag( ztk, ZTK_TAG_ZEO_MAP );
   if( !zMapNetAlloc( mn, num_map ) ) return NULL;
-  ZTKEvalTag( mn, NULL, ztk, __ztk_prp_mapnet );
+  ZTKEvalTag( mn, NULL, ztk, __ztk_prp_zeo_mapnet );
   return mn;
 }
 
@@ -63,7 +63,7 @@ void zMapNetFPrintZTK(FILE *fp, zMapNet *mn)
   int i;
 
   for( i=0; i<zArraySize(&mn->maparray); i++ ){
-    fprintf( fp, "[%s]\n", ZTK_TAG_MAP );
+    fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_MAP );
     zMapFPrintZTK( fp, zMapNetMap(mn,i) );
   }
 }

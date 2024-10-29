@@ -71,7 +71,7 @@ void terra_output(zTerra *terra, double scale)
   register int i, j;
 
   fp = zOpenZTKFile( TERRAIN_OUT_FILE, "w" );
-  fprintf( fp, "[%s]\n", ZTK_TAG_MAP );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_MAP );
   fprintf( fp, "name: test_terrain\n" );
   fprintf( fp, "type: terra\n" );
   zTerraFPrintZTK( fp, terra );

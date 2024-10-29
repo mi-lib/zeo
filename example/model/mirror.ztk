@@ -1,4 +1,4 @@
-[optic]
+[zeo::optic]
 name: cyan
 ambient: 0.4, 1.0, 1.0
 diffuse: 0.4, 1.0, 1.0
@@ -6,7 +6,7 @@ specular: 0.0, 0.0, 0.0
 alpha: 0.8
 esr: 1
 
-[optic]
+[zeo::optic]
 name: magenta
 ambient: 0.8, 0.1, 0.8
 diffuse: 0.8, 0.1, 0.8
@@ -14,7 +14,7 @@ specular: 0.0, 0.0, 0.0
 alpha: 0.9
 esr: 1
 
-[shape]
+[zeo::shape]
 name : cone
 type : cone
 optic: magenta
@@ -22,7 +22,7 @@ center: ( -0.2, 0.2,-0.2 )
 vert: ( -0.2, 0.0, 0.1 )
 radius: 0.08
 
-[shape]
+[zeo::shape]
 name : cone2
 % type: polyhedron % this will cause a warning if uncommented.
 optic: cyan % this will be ignored.
