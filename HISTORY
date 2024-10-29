@@ -1,3 +1,4 @@
+2024.10.29. Modified makefile for examples. [example]
 2024.10.29. Renamed ZTK_TAG_OPTIC, ZTK_TAG_TEXTURE, ZTK_TAG_SHAPE, and ZTK_TAG_MAP to ZTK_TAG_ZEO_OPTIC, ZTK_TAG_ZEO_TEXTURE, ZTK_TAG_ZEO_SHAPE, and ZTK_TAG_ZEO_MAP, repectively. [zeo_render_optic, zeo_render_texture, zeo_shape3d, zeo_mshape3d, zeo_map, zeo_mapnet]
 2024.10.29. Abolished zOpticalInfoSetAmb, zOpticalInfoSetDif, zOpticalInfoSetSpc, zOpticalInfoSetESR, zOpticalInfoSetShininess, and zOpticalInfoSetAlpha. [zeo_render_optic]
 2024.10.29. Renamed members amb, dif, spc, and sns of zOpticalInfo to ambient, difffuse, specular, and shininess, respectively. [zeo_render_optic]

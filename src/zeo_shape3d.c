@@ -346,7 +346,7 @@ static bool _zShape3DTypeFPrint(FILE *fp, int i, void *obj){
   return true;
 }
 
-static ZTKPrp __ztk_prp_shape[] = {
+static ZTKPrp __ztk_prp_zeo_shape[] = {
   { "name", 1, _zShape3DNameFromZTK, _zShape3DNameFPrint },
   { "type", 1, _zShape3DTypeFromZTK, _zShape3DTypeFPrint },
   { "optic", 1, _zShape3DOpticFromZTK, NULL },
@@ -372,7 +372,7 @@ zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoAr
   prp.imported = false;
   zFrame3DIdent( &prp.f );
   prp.xformed = false;
-  if( !ZTKEvalKey( shape, &prp, ztk, __ztk_prp_shape ) ) return NULL;
+  if( !ZTKEvalKey( shape, &prp, ztk, __ztk_prp_zeo_shape ) ) return NULL;
   if( !prp.imported ){
     if( !shape->com ){
       ZRUNERROR( ZEO_ERR_SHAPE_INVALID );
@@ -390,7 +390,7 @@ zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoAr
 void zShape3DFPrintZTK(FILE *fp, zShape3D *shape)
 {
   if( !shape ) return;
-  ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape );
+  ZTKPrpKeyFPrint( fp, shape, __ztk_prp_zeo_shape );
   if( zShape3DOptic(shape) )
     fprintf( fp, "optic: %s\n", zName(zShape3DOptic(shape)) );
   if( zShape3DTexture(shape) )

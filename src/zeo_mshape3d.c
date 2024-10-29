@@ -179,9 +179,9 @@ static void *_zMShape3DShapeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
 }
 
 static ZTKPrp __ztk_prp_zeo_mshape[] = {
-  { "optic", -1, _zMShape3DOpticFromZTK, NULL },
-  { "texture", -1, _zMShape3DTextureFromZTK, NULL },
-  { "shape", -1, _zMShape3DShapeFromZTK, NULL },
+  { ZTK_TAG_ZEO_OPTIC,   -1, _zMShape3DOpticFromZTK,   NULL },
+  { ZTK_TAG_ZEO_TEXTURE, -1, _zMShape3DTextureFromZTK, NULL },
+  { ZTK_TAG_ZEO_SHAPE,   -1, _zMShape3DShapeFromZTK,   NULL },
 };
 
 /* read multiple 3D shapes from a ZTK format processor. */

@@ -3,7 +3,7 @@
 void test1(zMShape3D *ms, int n)
 {
   zVec3D p, cp;
-  register int i;
+  int i;
   FILE *fp1, *fp2;
 
   fp1 = fopen( "p", "w" );
@@ -21,7 +21,7 @@ void test1(zMShape3D *ms, int n)
 void test2(zMShape3D *ms, int n)
 {
   zVec3D p, cp;
-  register int i;
+  int i;
   FILE *fp;
 
   fp = fopen( "p", "w" );
