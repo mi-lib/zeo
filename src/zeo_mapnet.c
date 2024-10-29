@@ -42,7 +42,7 @@ static void *_zMapNetMapFromZTK(void *obj, int i, void *arg, ZTK *ztk){
 }
 
 static ZTKPrp __ztk_prp_zeo_mapnet[] = {
-  { "map", -1, _zMapNetMapFromZTK, NULL },
+  { ZTK_TAG_ZEO_MAP, -1, _zMapNetMapFromZTK, NULL },
 };
 
 /* read multiple 3D shapes from a ZTK format processor. */
