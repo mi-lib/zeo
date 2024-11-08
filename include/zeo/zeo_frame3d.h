@@ -89,11 +89,11 @@ __ZEO_EXPORT zFrame3D *zFrame3DCreate(zFrame3D *frame, zVec3D *p, zMat3D *m);
 
 /*! \brief check if two 3D coordinate frames are equal. */
 #define _zFrame3DEqual(frame1,frame2) ( _zVec3DEqual( zFrame3DPos(frame1), zFrame3DPos(frame2) ) && _zMat3DEqual( zFrame3DAtt(frame1), zFrame3DAtt(frame2) ) )
-__ZEO_EXPORT bool zFrame3DEqual(zFrame3D *frame1, zFrame3D *frame2);
+__ZEO_EXPORT bool zFrame3DEqual(const zFrame3D *frame1, const zFrame3D *frame2);
 
 /*! \brief check if a 3D coordinate frame is the identity frame. */
 #define _zFrame3DIsIdent(frame) _zFrame3DEqual( frame, ZFRAME3DIDENT )
-__ZEO_EXPORT bool zFrame3DIsIdent(zFrame3D *frame);
+__ZEO_EXPORT bool zFrame3DIsIdent(const zFrame3D *frame);
 
 /*! \brief transform coordinates of a 3D vector.
  *
@@ -116,13 +116,13 @@ __ZEO_EXPORT bool zFrame3DIsIdent(zFrame3D *frame);
   _zMulMat3DVec3D( zFrame3DAtt(frame), v, tv );\
   _zVec3DAddDRC( tv, zFrame3DPos(frame) );\
 } while(0)
-__ZEO_EXPORT zVec3D *zXform3D(zFrame3D *frame, zVec3D *v, zVec3D *tv);
+__ZEO_EXPORT zVec3D *zXform3D(const zFrame3D *frame, const zVec3D *v, zVec3D *tv);
 
 #define _zXform3DInv( frame, v, tv ) do{\
   _zVec3DSub( v, zFrame3DPos(frame), tv );\
   _zMulMat3DTVec3DDRC( zFrame3DAtt(frame), tv );\
 } while(0)
-__ZEO_EXPORT zVec3D *zXform3DInv(zFrame3D *frame, zVec3D *v, zVec3D *tv);
+__ZEO_EXPORT zVec3D *zXform3DInv(const zFrame3D *frame, const zVec3D *v, zVec3D *tv);
 
 #define zXform3DDRC(frame,v)    zXform3D(frame,v,v)
 #define zXform3DInvDRC(frame,v) zXform3DInv(frame,v,v)
@@ -153,28 +153,28 @@ __ZEO_EXPORT zVec3D *zXform3DInv(zFrame3D *frame, zVec3D *v, zVec3D *tv);
   _zMulMat3DVec3D( zFrame3DAtt(invframe), zFrame3DPos(frame), zFrame3DPos(invframe) );\
   zVec3DRevDRC( zFrame3DPos(invframe) );\
 } while(0)
-__ZEO_EXPORT zFrame3D *zFrame3DInv(zFrame3D *frame, zFrame3D *invframe);
+__ZEO_EXPORT zFrame3D *zFrame3DInv(const zFrame3D *frame, zFrame3D *invframe);
 
 #define _zFrame3DCascade( frame1, frame2, frame ) do{\
   zMulMat3DMat3D( zFrame3DAtt(frame1), zFrame3DAtt(frame2), zFrame3DAtt(frame) );\
   _zXform3D( frame1, zFrame3DPos(frame2), zFrame3DPos(frame) );\
 } while(0)
-__ZEO_EXPORT zFrame3D *zFrame3DCascade(zFrame3D *frame1, zFrame3D *frame2, zFrame3D *frame);
+__ZEO_EXPORT zFrame3D *zFrame3DCascade(const zFrame3D *frame1, const zFrame3D *frame2, zFrame3D *frame);
 
 #define _zFrame3DXform( frame1, frame2, frame ) do{\
   zMulMat3DTMat3D( zFrame3DAtt(frame1), zFrame3DAtt(frame2), zFrame3DAtt(frame) );\
   _zXform3DInv( frame1, zFrame3DPos(frame2), zFrame3DPos(frame) );\
 } while(0)
-__ZEO_EXPORT zFrame3D *zFrame3DXform(zFrame3D *frame1, zFrame3D *frame2, zFrame3D *frame);
+__ZEO_EXPORT zFrame3D *zFrame3DXform(const zFrame3D *frame1, const zFrame3D *frame2, zFrame3D *frame);
 
 /*! \brief transform a 6D vector.
  */
-__ZEO_EXPORT zVec6D *zXform6DLin(zFrame3D *frame, zVec6D *v, zVec6D *vc);
-__ZEO_EXPORT zVec6D *zXform6DAng(zFrame3D *frame, zVec6D *v, zVec6D *vc);
+__ZEO_EXPORT zVec6D *zXform6DLin(const zFrame3D *frame, const zVec6D *v, zVec6D *vc);
+__ZEO_EXPORT zVec6D *zXform6DAng(const zFrame3D *frame, const zVec6D *v, zVec6D *vc);
 
 /*! \brief twist a frame by a torsion vector (position offset & angle-axis rotation).
  */
-__ZEO_EXPORT zFrame3D *zFrame3DTwist(zFrame3D *frame1, zVec6D *twist, zFrame3D *frame2);
+__ZEO_EXPORT zFrame3D *zFrame3DTwist(const zFrame3D *frame1, const zVec6D *twist, zFrame3D *frame2);
 
 /*! \brief error between two 3D coordinate frames.
  *
@@ -183,7 +183,7 @@ __ZEO_EXPORT zFrame3D *zFrame3DTwist(zFrame3D *frame1, zVec6D *twist, zFrame3D *
  * \retval \a error
  * \sa zMat3DError
  */
-__ZEO_EXPORT zVec6D *zFrame3DError(zFrame3D *frame1, zFrame3D *frame2, zVec6D *error);
+__ZEO_EXPORT zVec6D *zFrame3DError(const zFrame3D *frame1, const zFrame3D *frame2, zVec6D *error);
 
 /*! \brief create a frame from a handy expression.
  *
@@ -258,20 +258,20 @@ __ZEO_EXPORT zFrame3D *zFrame3DFromDH(zFrame3D *frame, double a, double alpha, d
  * For zFrame3DZYXToArray() and zFrame3DZYZToArray(), the buffer pointed by \a array must have enough
  * size more than or equal to six. If not, anything may happen.
  */
-__ZEO_EXPORT zFrame3D *zArrayToFrame3DZYX(double *array, zFrame3D *frame);
-__ZEO_EXPORT double *zFrame3DToArrayZYX(zFrame3D *frame, double *array);
-__ZEO_EXPORT zFrame3D *zVec6DToFrame3DZYX(zVec6D *v, zFrame3D *frame);
-__ZEO_EXPORT zVec6D *zFrame3DToVec6DZYX(zFrame3D *frame, zVec6D *v);
+__ZEO_EXPORT zFrame3D *zArrayToFrame3DZYX(const double *array, zFrame3D *frame);
+__ZEO_EXPORT double *zFrame3DToArrayZYX(const zFrame3D *frame, double *array);
+__ZEO_EXPORT zFrame3D *zVec6DToFrame3DZYX(const zVec6D *v, zFrame3D *frame);
+__ZEO_EXPORT zVec6D *zFrame3DToVec6DZYX(const zFrame3D *frame, zVec6D *v);
 
-__ZEO_EXPORT zFrame3D *zArrayToFrame3DZYZ(double *array, zFrame3D *frame);
-__ZEO_EXPORT double *zFrame3DToArrayZYZ(zFrame3D *frame, double *array);
-__ZEO_EXPORT zFrame3D *zVec6DToFrame3DZYZ(zVec6D *v, zFrame3D *frame);
-__ZEO_EXPORT zVec6D *zFrame3DToVec6DZYZ(zFrame3D *frame, zVec6D *v);
+__ZEO_EXPORT zFrame3D *zArrayToFrame3DZYZ(const double *array, zFrame3D *frame);
+__ZEO_EXPORT double *zFrame3DToArrayZYZ(const zFrame3D *frame, double *array);
+__ZEO_EXPORT zFrame3D *zVec6DToFrame3DZYZ(const zVec6D *v, zFrame3D *frame);
+__ZEO_EXPORT zVec6D *zFrame3DToVec6DZYZ(const zFrame3D *frame, zVec6D *v);
 
-__ZEO_EXPORT zFrame3D *zArrayToFrame3DAA(double *array, zFrame3D *frame);
-__ZEO_EXPORT double *zFrame3DToArrayAA(zFrame3D *frame, double *array);
-__ZEO_EXPORT zFrame3D *zVec6DToFrame3DAA(zVec6D *v, zFrame3D *frame);
-__ZEO_EXPORT zVec6D *zFrame3DToVec6DAA(zFrame3D *frame, zVec6D *v);
+__ZEO_EXPORT zFrame3D *zArrayToFrame3DAA(const double *array, zFrame3D *frame);
+__ZEO_EXPORT double *zFrame3DToArrayAA(const zFrame3D *frame, double *array);
+__ZEO_EXPORT zFrame3D *zVec6DToFrame3DAA(const zVec6D *v, zFrame3D *frame);
+__ZEO_EXPORT zVec6D *zFrame3DToVec6DAA(const zFrame3D *frame, zVec6D *v);
 
 /* ********************************************************** */
 /* I/O
@@ -312,7 +312,7 @@ __ZEO_EXPORT zFrame3D *zFrame3DDHFromZTK(zFrame3D *frame, ZTK *ztk);
 __ZEO_EXPORT zFrame3D *zFrame3DFScan(FILE *fp, zFrame3D *frame);
 #define zFrame3DScan(frame) zFrame3DFScan( stdin, (frame) )
 
-__ZEO_EXPORT void zFrame3DFPrint(FILE *fp, zFrame3D *frame);
+__ZEO_EXPORT void zFrame3DFPrint(FILE *fp, const zFrame3D *frame);
 #define zFrame3DPrint(frame) zFrame3DFPrint( stdout, (frame) )
 
 __END_DECLS

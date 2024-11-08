@@ -144,31 +144,31 @@ zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk)
 /* add an optical info to a ZTK format processor. */
 ZTK *zOpticalInfoToZTK(zOpticalInfo *oi, ZTK *ztk)
 {
-  if( !ZTKAddKey( ztk, "name" ) ) return false;
-  if( !ZTKAddVal( ztk, zName(oi) ) ) return false;
+  if( !ZTKAddKey( ztk, "name" ) ) return NULL;
+  if( !ZTKAddVal( ztk, zName(oi) ) ) return NULL;
   if( !zRGBIsZero( &oi->ambient ) ){
-    if( !ZTKAddKey( ztk, "ambient" ) ) return false;
-    if( !zRGBToZTK( &oi->ambient, ztk ) ) return false;
+    if( !ZTKAddKey( ztk, "ambient" ) ) return NULL;
+    if( !zRGBToZTK( &oi->ambient, ztk ) ) return NULL;
   }
   if( !zRGBIsZero( &oi->diffuse ) ){
-    if( !ZTKAddKey( ztk, "diffuse" ) ) return false;
-    if( !zRGBToZTK( &oi->diffuse, ztk ) ) return false;
+    if( !ZTKAddKey( ztk, "diffuse" ) ) return NULL;
+    if( !zRGBToZTK( &oi->diffuse, ztk ) ) return NULL;
   }
   if( !zRGBIsZero( &oi->specular ) ){
-    if( !ZTKAddKey( ztk, "specular" ) ) return false;
-    if( !zRGBToZTK( &oi->specular, ztk ) ) return false;
+    if( !ZTKAddKey( ztk, "specular" ) ) return NULL;
+    if( !zRGBToZTK( &oi->specular, ztk ) ) return NULL;
   }
   if( !zIsTiny( oi->esr ) ){
-    if( !ZTKAddKey( ztk, "esr" ) ) return false;
-    if( !ZTKAddDouble( ztk, oi->esr ) ) return false;
+    if( !ZTKAddKey( ztk, "esr" ) ) return NULL;
+    if( !ZTKAddDouble( ztk, oi->esr ) ) return NULL;
   }
   if( !zIsTiny( oi->shininess ) ){
-    if( !ZTKAddKey( ztk, "shininess" ) ) return false;
-    if( !ZTKAddDouble( ztk, oi->shininess ) ) return false;
+    if( !ZTKAddKey( ztk, "shininess" ) ) return NULL;
+    if( !ZTKAddDouble( ztk, oi->shininess ) ) return NULL;
   }
   if( !zIsTiny( oi->alpha ) ){
-    if( !ZTKAddKey( ztk, "alpha" ) ) return false;
-    if( !ZTKAddDouble( ztk, oi->alpha ) ) return false;
+    if( !ZTKAddKey( ztk, "alpha" ) ) return NULL;
+    if( !ZTKAddDouble( ztk, oi->alpha ) ) return NULL;
   }
   return ztk;
 }

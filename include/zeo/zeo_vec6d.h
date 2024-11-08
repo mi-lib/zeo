@@ -105,7 +105,7 @@ __ZEO_EXPORT zVec6D *zVec6DCreate(zVec6D *v, double x, double y, double z, doubl
   zVec3DCopy( vl, zVec6DLin(v) );\
   zVec3DCopy( va, zVec6DAng(v) );\
 } while(0)
-__ZEO_EXPORT zVec6D *zVec6DFromVec3D(zVec6D *v, zVec3D *vl, zVec3D *va);
+__ZEO_EXPORT zVec6D *zVec6DFromVec3D(zVec6D *v, const zVec3D *vl, const zVec3D *va);
 
 /*! \brief copy a 6D vector to another.
  *
@@ -137,9 +137,9 @@ __ZEO_EXPORT zVec6D *zVec6DFromVec3D(zVec6D *v, zVec3D *vl, zVec3D *va);
  * are equal. Otherwise, the false value is returned.
  */
 #define _zVec6DMatch(v1,v2) ( _zVec3DMatch( zVec6DLin(v1), zVec6DLin(v2) ) && _zVec3DMatch( zVec6DAng(v1), zVec6DAng(v2) ) )
-__ZEO_EXPORT bool zVec6DMatch(zVec6D *v1, zVec6D *v2);
+__ZEO_EXPORT bool zVec6DMatch(const zVec6D *v1, const zVec6D *v2);
 #define _zVec6DEqual(v1,v2) ( _zVec3DEqual( zVec6DLin(v1), zVec6DLin(v2) ) && _zVec3DEqual( zVec6DAng(v1), zVec6DAng(v2) ) )
-__ZEO_EXPORT bool zVec6DEqual(zVec6D *v1, zVec6D *v2);
+__ZEO_EXPORT bool zVec6DEqual(const zVec6D *v1, const zVec6D *v2);
 
 /*! \brief check if a 6D vector is tiny.
  *
@@ -158,7 +158,7 @@ __ZEO_EXPORT bool zVec6DEqual(zVec6D *v1, zVec6D *v2);
  * zIsTol, zIsTiny
  */
 #define _zVec6DIsTol(v,tol) ( _zVec3DIsTol( zVec6DLin(v), tol ) && _zVec3DIsTol( zVec6DAng(v), tol ) )
-__ZEO_EXPORT bool zVec6DIsTol(zVec6D *v, double tol);
+__ZEO_EXPORT bool zVec6DIsTol(const zVec6D *v, double tol);
 #define _zVec6DIsTiny(v) _zVec6DIsTol( v, zTOL )
 #define zVec6DIsTiny(v) zVec6DIsTol( v, zTOL )
 
@@ -204,28 +204,28 @@ __ZEO_EXPORT bool zVec6DIsTol(zVec6D *v, double tol);
   _zVec3DAdd( zVec6DLin(v1), zVec6DLin(v2), zVec6DLin(v) );\
   _zVec3DAdd( zVec6DAng(v1), zVec6DAng(v2), zVec6DAng(v) );\
 } while(0)
-__ZEO_EXPORT zVec6D *zVec6DAdd(zVec6D *v1, zVec6D *v2, zVec6D *v);
+__ZEO_EXPORT zVec6D *zVec6DAdd(const zVec6D *v1, const zVec6D *v2, zVec6D *v);
 #define _zVec6DSub(v1,v2,v) do{\
   _zVec3DSub( zVec6DLin(v1), zVec6DLin(v2), zVec6DLin(v) );\
   _zVec3DSub( zVec6DAng(v1), zVec6DAng(v2), zVec6DAng(v) );\
 } while(0)
-__ZEO_EXPORT zVec6D *zVec6DSub(zVec6D *v1, zVec6D *v2, zVec6D *v);
+__ZEO_EXPORT zVec6D *zVec6DSub(const zVec6D *v1, const zVec6D *v2, zVec6D *v);
 #define _zVec6DRev(v,rv) do{\
   _zVec3DRev( zVec6DLin(v), zVec6DLin(rv) );\
   _zVec3DRev( zVec6DAng(v), zVec6DAng(rv) );\
 } while(0)
-__ZEO_EXPORT zVec6D *zVec6DRev(zVec6D *v, zVec6D *rv);
+__ZEO_EXPORT zVec6D *zVec6DRev(const zVec6D *v, zVec6D *rv);
 #define _zVec6DMul(v,k,mv) do{\
   _zVec3DMul( zVec6DLin(v), k, zVec6DLin(mv) );\
   _zVec3DMul( zVec6DAng(v), k, zVec6DAng(mv) );\
 } while(0)
-__ZEO_EXPORT zVec6D *zVec6DMul(zVec6D *v, double k, zVec6D *mv);
-__ZEO_EXPORT zVec6D *zVec6DDiv(zVec6D *v, double k, zVec6D *dv);
+__ZEO_EXPORT zVec6D *zVec6DMul(const zVec6D *v, double k, zVec6D *mv);
+__ZEO_EXPORT zVec6D *zVec6DDiv(const zVec6D *v, double k, zVec6D *dv);
 #define _zVec6DCat(v1,k,v2,v) do{\
   _zVec3DCat( zVec6DLin(v1), k, zVec6DLin(v2), zVec6DLin(v) );\
   _zVec3DCat( zVec6DAng(v1), k, zVec6DAng(v2), zVec6DAng(v) );\
 } while(0)
-__ZEO_EXPORT zVec6D *zVec6DCat(zVec6D *v1, double k, zVec6D *v2, zVec6D *v);
+__ZEO_EXPORT zVec6D *zVec6DCat(const zVec6D *v1, double k, const zVec6D *v2, zVec6D *v);
 
 #define _zVec6DAddDRC(v1,v2) do{\
   _zVec3DAddDRC( zVec6DLin(v1), zVec6DLin(v2) );\
@@ -261,7 +261,7 @@ __ZEO_EXPORT zVec6D *zVec6DCat(zVec6D *v1, double k, zVec6D *v2, zVec6D *v);
  * \retval \a v1 ^T \a v2
  */
 #define _zVec6DInnerProd(v1,v2) ( _zVec3DInnerProd( zVec6DLin(v1), zVec6DLin(v2) ) + _zVec3DInnerProd( zVec6DAng(v1), zVec6DAng(v2) ) )
-__ZEO_EXPORT double zVec6DInnerProd(zVec6D *v1, zVec6D *v2);
+__ZEO_EXPORT double zVec6DInnerProd(const zVec6D *v1, const zVec6D *v2);
 
 /*! \brief shift a 6D vector in 3D space.
  *
@@ -290,16 +290,16 @@ __ZEO_EXPORT double zVec6DInnerProd(zVec6D *v1, zVec6D *v2);
  * zVec6DLinShift() and zVec6DAngShift() return a pointer \a dest.
  * zVec6DLinShiftDRC() and zVec6DAngShift() return a pointer \a vec.
  */
-__ZEO_EXPORT zVec6D *zVec6DLinShiftDRC(zVec6D *vec, zVec3D *pos);
-__ZEO_EXPORT zVec6D *zVec6DLinShift(zVec6D *src, zVec3D *pos, zVec6D *dest);
-__ZEO_EXPORT zVec6D *zVec6DAngShiftDRC(zVec6D *vec, zVec3D *pos);
-__ZEO_EXPORT zVec6D *zVec6DAngShift(zVec6D *src, zVec3D *pos, zVec6D *dest);
+__ZEO_EXPORT zVec6D *zVec6DLinShift(const zVec6D *src, const zVec3D *pos, zVec6D *dest);
+__ZEO_EXPORT zVec6D *zVec6DLinShiftDRC(zVec6D *vec, const zVec3D *pos);
+__ZEO_EXPORT zVec6D *zVec6DAngShift(const zVec6D *src, const zVec3D *pos, zVec6D *dest);
+__ZEO_EXPORT zVec6D *zVec6DAngShiftDRC(zVec6D *vec, const zVec3D *pos);
 
 /* ********************************************************** */
 /* differential kinematics
  * ********************************************************** */
 
-__ZEO_EXPORT zVec6D *zVec6DDif(zVec6D *v, zVec6D *vnew, double dt, zVec6D *vel);
+__ZEO_EXPORT zVec6D *zVec6DDif(const zVec6D *v, const zVec6D *vnew, double dt, zVec6D *vel);
 
 /* ********************************************************** */
 /* I/O
@@ -335,11 +335,11 @@ __ZEO_EXPORT zVec6D *zVec6DFromZTK(zVec6D *v, ZTK *ztk);
  */
 __ZEO_EXPORT zVec6D *zVec6DFScan(FILE *fp, zVec6D *v);
 #define zVec6DScan(v) zVec6DFScan( stdin, (v) )
-__ZEO_EXPORT zVec6D *zVec6DDataFPrint(FILE *fp, zVec6D *v);
+__ZEO_EXPORT const zVec6D *zVec6DDataFPrint(FILE *fp, const zVec6D *v);
 #define zVec6DDataPrint(v) zVec6DDataFPrint( stdout, (v) )
-__ZEO_EXPORT zVec6D *zVec6DDataNLFPrint(FILE *fp, zVec6D *v);
+__ZEO_EXPORT const zVec6D *zVec6DDataNLFPrint(FILE *fp, const zVec6D *v);
 #define zVec6DDataNLPrint(v) zVec6DDataNLFPrint( stdout, (v) )
-__ZEO_EXPORT zVec6D *zVec6DFPrint(FILE *fp, zVec6D *v);
+__ZEO_EXPORT const zVec6D *zVec6DFPrint(FILE *fp, const zVec6D *v);
 #define zVec6DPrint(v) zVec6DFPrint( stdout, (v) )
 
 __END_DECLS

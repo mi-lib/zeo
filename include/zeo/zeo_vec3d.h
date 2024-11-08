@@ -125,9 +125,9 @@ __ZEO_EXPORT zVec3D *zVec3DCreatePolar(zVec3D *v, double r, double theta, double
  * \a v1 and \a v2 are equal, or false otherwise.
  */
 #define _zVec3DMatch(v1,v2) ( (v1)->c.x == (v2)->c.x && (v1)->c.y == (v2)->c.y && (v1)->c.z == (v2)->c.z )
-__ZEO_EXPORT bool zVec3DMatch(zVec3D *v1, zVec3D *v2);
+__ZEO_EXPORT bool zVec3DMatch(const zVec3D *v1, const zVec3D *v2);
 #define _zVec3DEqual(v1,v2) ( zIsTiny( (v1)->c.x - (v2)->c.x ) && zIsTiny( (v1)->c.y - (v2)->c.y ) && zIsTiny( (v1)->c.z - (v2)->c.z ) )
-__ZEO_EXPORT bool zVec3DEqual(zVec3D *v1, zVec3D *v2);
+__ZEO_EXPORT bool zVec3DEqual(const zVec3D *v1, const zVec3D *v2);
 
 /*! \brief check if a 3D vector is tiny.
  *
@@ -147,12 +147,12 @@ __ZEO_EXPORT bool zVec3DEqual(zVec3D *v1, zVec3D *v2);
  * zIsTol, zIsTiny
  */
 #define _zVec3DIsTol(v,tol) ( zIsTol( (v)->c.x, (tol) ) && zIsTol( (v)->c.y, (tol) ) && zIsTol( (v)->c.z, (tol) ) )
-__ZEO_EXPORT bool zVec3DIsTol(zVec3D *v, double tol);
+__ZEO_EXPORT bool zVec3DIsTol(const zVec3D *v, double tol);
 #define _zVec3DIsTiny(v) _zVec3DIsTol( v, zTOL )
 #define zVec3DIsTiny(v)  zVec3DIsTol( v, zTOL )
 
 /*! \brief check if a 3D vector includes NaN or Inf components. */
-__ZEO_EXPORT bool zVec3DIsNan(zVec3D *v);
+__ZEO_EXPORT bool zVec3DIsNan(const zVec3D *v);
 
 /* ********************************************************** */
 /* arithmetics
@@ -213,51 +213,51 @@ __ZEO_EXPORT bool zVec3DIsNan(zVec3D *v);
   (v)->c.y = (v1)->c.y + (v2)->c.y;\
   (v)->c.z = (v1)->c.z + (v2)->c.z;\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DAdd(zVec3D *v1, zVec3D *v2, zVec3D *v);
+__ZEO_EXPORT zVec3D *zVec3DAdd(const zVec3D *v1, const zVec3D *v2, zVec3D *v);
 
 #define _zVec3DSub(v1,v2,v) do{\
   (v)->c.x = (v1)->c.x - (v2)->c.x;\
   (v)->c.y = (v1)->c.y - (v2)->c.y;\
   (v)->c.z = (v1)->c.z - (v2)->c.z;\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DSub(zVec3D *v1, zVec3D *v2, zVec3D *v);
+__ZEO_EXPORT zVec3D *zVec3DSub(const zVec3D *v1, const zVec3D *v2, zVec3D *v);
 
 #define _zVec3DRev(v,rv) do{\
   (rv)->c.x = -(v)->c.x;\
   (rv)->c.y = -(v)->c.y;\
   (rv)->c.z = -(v)->c.z;\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DRev(zVec3D *v, zVec3D *rv);
+__ZEO_EXPORT zVec3D *zVec3DRev(const zVec3D *v, zVec3D *rv);
 
 #define _zVec3DMul(v,k,mv) do{\
   (mv)->c.x = (k) * (v)->c.x;\
   (mv)->c.y = (k) * (v)->c.y;\
   (mv)->c.z = (k) * (v)->c.z;\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DMul(zVec3D *v, double k, zVec3D *mv);
+__ZEO_EXPORT zVec3D *zVec3DMul(const zVec3D *v, double k, zVec3D *mv);
 
-__ZEO_EXPORT zVec3D *zVec3DDiv(zVec3D *v, double k, zVec3D *dv);
+__ZEO_EXPORT zVec3D *zVec3DDiv(const zVec3D *v, double k, zVec3D *dv);
 
 #define _zVec3DAmp(v,a,av) do{\
   (av)->c.x = (a)->c.x * (v)->c.x;\
   (av)->c.y = (a)->c.y * (v)->c.y;\
   (av)->c.z = (a)->c.z * (v)->c.z;\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DAmp(zVec3D *v1, zVec3D *v2, zVec3D *v);
+__ZEO_EXPORT zVec3D *zVec3DAmp(const zVec3D *v1, const zVec3D *v2, zVec3D *v);
 
 #define _zVec3DDem(v,d,dv) do{\
   (dv)->c.x = (v)->c.x / (d)->c.x;\
   (dv)->c.y = (v)->c.y / (d)->c.y;\
   (dv)->c.z = (v)->c.z / (d)->c.z;\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DDem(zVec3D *v1, zVec3D *v2, zVec3D *v);
+__ZEO_EXPORT zVec3D *zVec3DDem(const zVec3D *v1, const zVec3D *v2, zVec3D *v);
 
 #define _zVec3DCat(v1,k,v2,v) do{\
   (v)->c.x = (v1)->c.x + (k) * (v2)->c.x;\
   (v)->c.y = (v1)->c.y + (k) * (v2)->c.y;\
   (v)->c.z = (v1)->c.z + (k) * (v2)->c.z;\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DCat(zVec3D *v1, double k, zVec3D *v2, zVec3D *v);
+__ZEO_EXPORT zVec3D *zVec3DCat(const zVec3D *v1, double k, const zVec3D *v2, zVec3D *v);
 
 /*! \brief directly add a 3D vector to another. */
 #define _zVec3DAddDRC(v1,v2) do{\
@@ -265,14 +265,14 @@ __ZEO_EXPORT zVec3D *zVec3DCat(zVec3D *v1, double k, zVec3D *v2, zVec3D *v);
   (v1)->c.y += (v2)->c.y;\
   (v1)->c.z += (v2)->c.z;\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DAddDRC(zVec3D *v1, zVec3D *v2);
+__ZEO_EXPORT zVec3D *zVec3DAddDRC(zVec3D *v1, const zVec3D *v2);
 /*! \brief directly subtract a 3D vector from another. */
 #define _zVec3DSubDRC(v1,v2) do{\
   (v1)->c.x -= (v2)->c.x;\
   (v1)->c.y -= (v2)->c.y;\
   (v1)->c.z -= (v2)->c.z;\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DSubDRC(zVec3D *v1, zVec3D *v2);
+__ZEO_EXPORT zVec3D *zVec3DSubDRC(zVec3D *v1, const zVec3D *v2);
 /*! \brief directly reverse a 3D vector. */
 #define _zVec3DRevDRC(v) do{\
   (v)->c.x = -(v)->c.x;\
@@ -295,21 +295,21 @@ __ZEO_EXPORT zVec3D *zVec3DDivDRC(zVec3D *v, double k);
   (v)->c.y *= (a)->c.y;\
   (v)->c.z *= (a)->c.z;\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DAmpDRC(zVec3D *v1, zVec3D *v2);
+__ZEO_EXPORT zVec3D *zVec3DAmpDRC(zVec3D *v1, const zVec3D *v2);
 /*! \brief directly demagnify a 3D vector by another. */
 #define _zVec3DDemDRC(v,d) do{\
   (v)->c.x /= (d)->c.x;\
   (v)->c.y /= (d)->c.y;\
   (v)->c.z /= (d)->c.z;\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DDemDRC(zVec3D *v1, zVec3D *v2);
+__ZEO_EXPORT zVec3D *zVec3DDemDRC(zVec3D *v1, const zVec3D *v2);
 /*! \brief directly concatenate a 3D vector multiplied by a scalar to another. */
 #define _zVec3DCatDRC(v1,k,v2) do{\
   (v1)->c.x += (k) * (v2)->c.x;\
   (v1)->c.y += (k) * (v2)->c.y;\
   (v1)->c.z += (k) * (v2)->c.z;\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DCatDRC(zVec3D *v1, double k, zVec3D *v2);
+__ZEO_EXPORT zVec3D *zVec3DCatDRC(zVec3D *v1, double k, const zVec3D *v2);
 
 /*! \brief inner/outer products.
  *
@@ -340,7 +340,7 @@ __ZEO_EXPORT zVec3D *zVec3DCatDRC(zVec3D *v1, double k, zVec3D *v2);
  * to let \a v point to the same address with \a v1 or \a v2.
  */
 #define _zVec3DInnerProd(v1,v2) ( (v1)->c.x*(v2)->c.x + (v1)->c.y*(v2)->c.y + (v1)->c.z*(v2)->c.z )
-__ZEO_EXPORT double zVec3DInnerProd(zVec3D *v1, zVec3D *v2);
+__ZEO_EXPORT double zVec3DInnerProd(const zVec3D *v1, const zVec3D *v2);
 #define __zVec3DOuterProd(v1,v2,__x,__y,__z) do{\
   __x = (v1)->c.y * (v2)->c.z - (v1)->c.z * (v2)->c.y;\
   __y = (v1)->c.z * (v2)->c.x - (v1)->c.x * (v2)->c.z;\
@@ -351,15 +351,15 @@ __ZEO_EXPORT double zVec3DInnerProd(zVec3D *v1, zVec3D *v2);
   __zVec3DOuterProd( v1, v2, __x, __y, __z );\
  _zVec3DCreate( v, __x, __y, __z );\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DOuterProd(zVec3D *v1, zVec3D *v2, zVec3D *v);
-__ZEO_EXPORT double zVec3DOuterProdNorm(zVec3D *v1, zVec3D *v2);
-__ZEO_EXPORT double zVec3DGrassmannProd(zVec3D *v1, zVec3D *v2, zVec3D *v3);
+__ZEO_EXPORT zVec3D *zVec3DOuterProd(const zVec3D *v1, const zVec3D *v2, zVec3D *v);
+__ZEO_EXPORT double zVec3DOuterProdNorm(const zVec3D *v1, const zVec3D *v2);
+__ZEO_EXPORT double zVec3DGrassmannProd(const zVec3D *v1, const zVec3D *v2, const zVec3D *v3);
 #define _zVec3DTripleProd(v1,v2,v3,v) do{\
   zVec3D __v;\
   __zVec3DOuterProd( v2, v3, __v.c.x, __v.c.y, __v.c.z );\
   _zVec3DOuterProd( v1, &__v, v );\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DTripleProd(zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v);
+__ZEO_EXPORT zVec3D *zVec3DTripleProd(const zVec3D *v1, const zVec3D *v2, const zVec3D *v3, zVec3D *v);
 
 /*! \brief calculate norm of a 3D vector.
  *
@@ -370,12 +370,12 @@ __ZEO_EXPORT zVec3D *zVec3DTripleProd(zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D
  * zVec3DSqrNorm() returns a squared norm of \a v.
  */
 #define _zVec3DSqrNorm(v) _zVec3DInnerProd( v, v )
-__ZEO_EXPORT double zVec3DSqrNorm(zVec3D *v);
+__ZEO_EXPORT double zVec3DSqrNorm(const zVec3D *v);
 #define _zVec3DNorm(v) sqrt( _zVec3DSqrNorm(v) )
 #define zVec3DNorm(v) sqrt( zVec3DSqrNorm(v) )
 
 #define _zVec3DWSqrNorm(v,w) ( (v)->c.x*(v)->c.x*(w)->c.x + (v)->c.y*(v)->c.y*(w)->c.y + (v)->c.z*(v)->c.z*(w)->c.z )
-__ZEO_EXPORT double zVec3DWSqrNorm(zVec3D *v, zVec3D *w);
+__ZEO_EXPORT double zVec3DWSqrNorm(const zVec3D *v, const zVec3D *w);
 #define _zVec3DWNorm(v,w) sqrt( _zVec3DWSqrNorm(v,w) )
 #define zVec3DWNorm(v,w) sqrt( zVec3DWSqrNorm(v,w) )
 
@@ -390,7 +390,7 @@ __ZEO_EXPORT double zVec3DWSqrNorm(zVec3D *v, zVec3D *w);
  * zVec3DDist() returns a distance between \a v1 and \a v2.
  * zVec3DSqrDist() returns a squared distance between \a v1 and \a v2.
  */
-__ZEO_EXPORT double zVec3DSqrDist(zVec3D *v1, zVec3D *v2);
+__ZEO_EXPORT double zVec3DSqrDist(const zVec3D *v1, const zVec3D *v2);
 #define zVec3DDist(v1,v2) sqrt( zVec3DSqrDist((v1),(v2)) )
 
 /*! \brief normalize a 3D vector.
@@ -413,8 +413,8 @@ __ZEO_EXPORT double zVec3DSqrDist(zVec3D *v1, zVec3D *v2);
  * If all components of \a v are less than zTOL, zVec3DNormalize() and
  * zVec3DNormalizeDRC() return 0.
  */
-__ZEO_EXPORT double zVec3DNormalizeNC(zVec3D *v, zVec3D *nv);
-__ZEO_EXPORT double zVec3DNormalize(zVec3D *v, zVec3D *nv);
+__ZEO_EXPORT double zVec3DNormalizeNC(const zVec3D *v, zVec3D *nv);
+__ZEO_EXPORT double zVec3DNormalize(const zVec3D *v, zVec3D *nv);
 #define zVec3DNormalizeNCDRC(v) zVec3DNormalizeNC(v,v)
 #define zVec3DNormalizeDRC(v)   zVec3DNormalize(v,v)
 
@@ -441,14 +441,14 @@ __ZEO_EXPORT double zVec3DNormalize(zVec3D *v, zVec3D *nv);
   (v)->c.y = (v1)->c.y + (r) * ( (v2)->c.y - (v1)->c.y );\
   (v)->c.z = (v1)->c.z + (r) * ( (v2)->c.z - (v1)->c.z );\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DInterDiv(zVec3D *v1, zVec3D *v2, double ratio, zVec3D *v);
+__ZEO_EXPORT zVec3D *zVec3DInterDiv(const zVec3D *v1, const zVec3D *v2, double ratio, zVec3D *v);
 
 #define _zVec3DMid(v1,v2,v) do{\
   (v)->c.x = 0.5 * ( (v1)->c.x + (v2)->c.x );\
   (v)->c.y = 0.5 * ( (v1)->c.y + (v2)->c.y );\
   (v)->c.z = 0.5 * ( (v1)->c.z + (v2)->c.z );\
 } while(0)
-__ZEO_EXPORT zVec3D *zVec3DMid(zVec3D *v1, zVec3D *v2, zVec3D *v);
+__ZEO_EXPORT zVec3D *zVec3DMid(const zVec3D *v1, const zVec3D *v2, zVec3D *v);
 
 /*! \brief angle between the two vectors.
  *
@@ -459,7 +459,7 @@ __ZEO_EXPORT zVec3D *zVec3DMid(zVec3D *v1, zVec3D *v2, zVec3D *v);
  * \return
  * The value returned is the angle between \a v1 and \a v2.
  */
-__ZEO_EXPORT double zVec3DAngle(zVec3D *v1, zVec3D *v2, zVec3D *n);
+__ZEO_EXPORT double zVec3DAngle(const zVec3D *v1, const zVec3D *v2, const zVec3D *n);
 
 /*! \brief angle-axis error of two vectors.
  *
@@ -469,7 +469,7 @@ __ZEO_EXPORT double zVec3DAngle(zVec3D *v1, zVec3D *v2, zVec3D *n);
  * \return
  * zVec3DAAError() returns a pointer \a aa.
  */
-__ZEO_EXPORT zVec3D *zVec3DAAError(zVec3D *v1, zVec3D *v2, zVec3D *aa);
+__ZEO_EXPORT zVec3D *zVec3DAAError(const zVec3D *v1, const zVec3D *v2, zVec3D *aa);
 
 /*! \brief extract angle and unit axis vector from an angle-axis vector. */
 #define zAA2AngleAndAxis(aa,angle,axis) ( *(angle) = zVec3DNormalize( (aa), axis ) )
@@ -507,12 +507,12 @@ __ZEO_EXPORT zVec3D *zVec3DAAError(zVec3D *v1, zVec3D *v2, zVec3D *aa);
  *
  * zVec3DRot() returns a pointer to \a rv.
  */
-__ZEO_EXPORT zVec3D *zVec3DProj(zVec3D *v, zVec3D *n, zVec3D *pv);
-__ZEO_EXPORT zVec3D *zVec3DOrthoNormal(zVec3D *v, zVec3D *ov);
-__ZEO_EXPORT zVec3D *zVec3DOrthogonalize(zVec3D *v, zVec3D *n, zVec3D *ov);
-__ZEO_EXPORT bool zVec3DOrthoSpace(zVec3D *v, zVec3D *sv1, zVec3D *sv2);
+__ZEO_EXPORT zVec3D *zVec3DProj(const zVec3D *v, const zVec3D *n, zVec3D *pv);
+__ZEO_EXPORT zVec3D *zVec3DOrthoNormal(const zVec3D *v, zVec3D *ov);
+__ZEO_EXPORT zVec3D *zVec3DOrthogonalize(const zVec3D *v, const zVec3D *n, zVec3D *ov);
+__ZEO_EXPORT bool zVec3DOrthoSpace(const zVec3D *v, zVec3D *sv1, zVec3D *sv2);
 __ZEO_EXPORT bool zVec3DOrthoNormalSpace(zVec3D *v, zVec3D *sv1, zVec3D *sv2);
-__ZEO_EXPORT zVec3D *zVec3DRot(zVec3D *v, zVec3D *aa, zVec3D *rv);
+__ZEO_EXPORT zVec3D *zVec3DRot(const zVec3D *v, const zVec3D *aa, zVec3D *rv);
 
 /* ********************************************************** */
 /* differential kinematics
@@ -525,7 +525,7 @@ __ZEO_EXPORT zVec3D *zVec3DRot(zVec3D *v, zVec3D *aa, zVec3D *rv);
  * \a vel is a velocity vector computed.
  * \retval \a vel
  */
-__ZEO_EXPORT zVec3D *zVec3DDif(zVec3D *v, zVec3D *vnew, double dt, zVec3D *vel);
+__ZEO_EXPORT zVec3D *zVec3DDif(const zVec3D *v, const zVec3D *vnew, double dt, zVec3D *vel);
 
 /*! \brief convert from/to Eulerian angle differential to/from angular velocity.
  *
@@ -575,14 +575,14 @@ __ZEO_EXPORT zVec3D *zVec3DDif(zVec3D *v, zVec3D *vnew, double dt, zVec3D *vel);
  * \sa
  * zMat3DZYX, zMat3DToZYX, zMat3DZYZ, zMat3DToZYZ
  */
-__ZEO_EXPORT zVec3D *zZYXVelToAngVel(zVec3D *zyxvel, zVec3D *zyx, zVec3D *angvel);
-__ZEO_EXPORT zVec3D *zZYXVelToAngVelSC(zVec3D *zyxvel, double sa, double ca, double sb, double cb, zVec3D *angvel);
-__ZEO_EXPORT zVec3D *zAngVelToZYXVel(zVec3D *angvel, zVec3D *zyx, zVec3D *zyxvel);
-__ZEO_EXPORT zVec3D *zAngVelToZYXVelSC(zVec3D *angvel, double sa, double ca, double sb, double cb, zVec3D *zyxvel);
-__ZEO_EXPORT zVec3D *zZYZVelToAngVel(zVec3D *zyzvel, zVec3D *zyz, zVec3D *angvel);
-__ZEO_EXPORT zVec3D *zZYZVelToAngVelSC(zVec3D *zyzvel, double sa, double ca, double sb, double cb, zVec3D *angvel);
-__ZEO_EXPORT zVec3D *zAngVelToZYZVel(zVec3D *angvel, zVec3D *zyz, zVec3D *zyzvel);
-__ZEO_EXPORT zVec3D *zAngVelToZYZVelSC(zVec3D *angvel, double sa, double ca, double sb, double cb, zVec3D *zyzvel);
+__ZEO_EXPORT zVec3D *zZYXVelToAngVel(const zVec3D *zyxvel, const zVec3D *zyx, zVec3D *angvel);
+__ZEO_EXPORT zVec3D *zZYXVelToAngVelSC(const zVec3D *zyxvel, double sa, double ca, double sb, double cb, zVec3D *angvel);
+__ZEO_EXPORT zVec3D *zAngVelToZYXVel(const zVec3D *angvel, const zVec3D *zyx, zVec3D *zyxvel);
+__ZEO_EXPORT zVec3D *zAngVelToZYXVelSC(const zVec3D *angvel, double sa, double ca, double sb, double cb, zVec3D *zyxvel);
+__ZEO_EXPORT zVec3D *zZYZVelToAngVel(const zVec3D *zyzvel, const zVec3D *zyz, zVec3D *angvel);
+__ZEO_EXPORT zVec3D *zZYZVelToAngVelSC(const zVec3D *zyzvel, double sa, double ca, double sb, double cb, zVec3D *angvel);
+__ZEO_EXPORT zVec3D *zAngVelToZYZVel(const zVec3D *angvel, const zVec3D *zyz, zVec3D *zyzvel);
+__ZEO_EXPORT zVec3D *zAngVelToZYZVelSC(const zVec3D *angvel, double sa, double ca, double sb, double cb, zVec3D *zyzvel);
 
 /* ********************************************************** */
 /* I/O
@@ -591,7 +591,7 @@ __ZEO_EXPORT zVec3D *zAngVelToZYZVelSC(zVec3D *angvel, double sa, double ca, dou
 /*! \brief read a 3D vector from a ZTK format processor. */
 __ZEO_EXPORT zVec3D *zVec3DFromZTK(zVec3D *v, ZTK *ztk);
 /*! \brief add a 3D vector to a ZTK format processor. */
-__ZEO_EXPORT ZTK *zVec3DToZTK(zVec3D *v, ZTK *ztk);
+__ZEO_EXPORT ZTK *zVec3DToZTK(const zVec3D *v, ZTK *ztk);
 
 /*! \brief scan and print a 3D vector.
  *
@@ -626,11 +626,11 @@ __ZEO_EXPORT ZTK *zVec3DToZTK(zVec3D *v, ZTK *ztk);
  */
 __ZEO_EXPORT zVec3D *zVec3DFScan(FILE *fp, zVec3D *v);
 #define zVec3DScan(v) zVec3DFScan( stdin, (v) )
-__ZEO_EXPORT zVec3D *zVec3DDataFPrint(FILE *fp, zVec3D *v);
+__ZEO_EXPORT const zVec3D *zVec3DDataFPrint(FILE *fp, const zVec3D *v);
 #define zVec3DDataPrint(v) zVec3DDataFPrint( stdout, (v) )
-__ZEO_EXPORT zVec3D *zVec3DDataNLFPrint(FILE *fp, zVec3D *v);
+__ZEO_EXPORT const zVec3D *zVec3DDataNLFPrint(FILE *fp, const zVec3D *v);
 #define zVec3DDataNLPrint(v) zVec3DDataNLFPrint( stdout, (v) )
-__ZEO_EXPORT zVec3D *zVec3DFPrint(FILE *fp, zVec3D *v);
+__ZEO_EXPORT const zVec3D *zVec3DFPrint(FILE *fp, const zVec3D *v);
 #define zVec3DPrint(v) zVec3DFPrint( stdout, (v) )
 
 __END_DECLS

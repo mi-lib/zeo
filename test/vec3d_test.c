@@ -70,14 +70,15 @@ void assert_vecprod(void)
   zVec3DCreate( &v2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
   zAssert( zVec3DInnerProd, v1.e[0]*v2.e[0]+v1.e[1]*v2.e[1]+v1.e[2]*v2.e[2] == zVec3DInnerProd(&v1,&v2) );
   zVec3DOuterProd( &v1, &v2, &v3 );
-  zVec3DCopy( &v1, &v4 ); zVec3DOuterProd( &v4, &v2, &v4 );
-  zVec3DCopy( &v2, &v5 ); zVec3DOuterProd( &v1, &v5, &v5 );
   zAssert( zVec3DOuterProd,
        v1.e[1]*v2.e[2]-v1.e[2]*v2.e[1] == v3.e[0]
     && v1.e[2]*v2.e[0]-v1.e[0]*v2.e[2] == v3.e[1]
-    && v1.e[0]*v2.e[1]-v1.e[1]*v2.e[0] == v3.e[2]
-    && v4.e[0]==v3.e[0] && v4.e[1]==v3.e[1] && v4.e[2]==v3.e[2]
-    && v5.e[0]==v3.e[0] && v5.e[1]==v3.e[1] && v5.e[2]==v3.e[2] );
+    && v1.e[0]*v2.e[1]-v1.e[1]*v2.e[0] == v3.e[2] );
+  zVec3DCopy( &v1, &v4 ); zVec3DOuterProd( &v4, &v2, &v4 );
+  zAssert( zVec3DOuterProd (v=vxu), zVec3DMatch( &v3, &v4 ) );
+  zVec3DCopy( &v2, &v5 ); zVec3DOuterProd( &v1, &v5, &v5 );
+  zAssert( zVec3DOuterProd (v=uxv), zVec3DMatch( &v3, &v5 ) );
+
   zAssert( zVec3DOuterProdNorm, zVec3DOuterProdNorm(&v1,&v2) == zVec3DNorm(&v3) );
   zVec3DCreate( &v3, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
   zAssert( zVec3DGrassmannProd, zIsTiny(zVec3DGrassmannProd(&v1,&v2,&v3)-((v1.e[1]*v2.e[2]-v1.e[2]*v2.e[1])*v3.e[0]+(v1.e[2]*v2.e[0]-v1.e[0]*v2.e[2])*v3.e[1]+(v1.e[0]*v2.e[1]-v1.e[1]*v2.e[0])*v3.e[2])) );

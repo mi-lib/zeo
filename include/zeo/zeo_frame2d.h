@@ -69,18 +69,18 @@ __ZEO_EXPORT const zFrame2D zframe2Dident;
  *
  * zFrame2DCopy() and zFrame2DIdent() return no value.
  */
-__ZEO_EXPORT zFrame2D *zFrame2DCreate(zFrame2D *frame, zVec2D *p, zMat2D *m);
-__ZEO_EXPORT zFrame2D *zFrame2DCreateAngle(zFrame2D *frame, zVec2D *p, double angle);
+__ZEO_EXPORT zFrame2D *zFrame2DCreate(zFrame2D *frame, const zVec2D *p, const zMat2D *m);
+__ZEO_EXPORT zFrame2D *zFrame2DCreateAngle(zFrame2D *frame, const zVec2D *p, double angle);
 #define zFrame2DCopy(src,dest) ( *(dest) = *(src) )
 #define zFrame2DIdent(frame) zFrame2DCopy( ZFRAME2DIDENT, frame )
 
 /*! \brief check if two 2D coordinate frames are equal. */
 #define _zFrame2DEqual(frame1,frame2) ( _zVec2DEqual( zFrame2DPos(frame1), zFrame2DPos(frame2) ) && _zMat2DEqual( zFrame2DAtt(frame1), zFrame2DAtt(frame2) ) )
-__ZEO_EXPORT bool zFrame2DEqual(zFrame2D *frame1, zFrame2D *frame2);
+__ZEO_EXPORT bool zFrame2DEqual(const zFrame2D *frame1, const zFrame2D *frame2);
 
 /*! \brief check if a 2D coordinate frame is the identity frame. */
 #define _zFrame2DIsIdent(frame) _zFrame2DEqual( frame, ZFRAME2DIDENT )
-__ZEO_EXPORT bool zFrame2DIsIdent(zFrame2D *frame);
+__ZEO_EXPORT bool zFrame2DIsIdent(const zFrame2D *frame);
 
 /*! \brief transform coordinates of a 2D vector.
  *
@@ -103,13 +103,13 @@ __ZEO_EXPORT bool zFrame2DIsIdent(zFrame2D *frame);
   _zMulMat2DVec2D( zFrame2DAtt(frame), v, tv );\
   _zVec2DAddDRC( tv, zFrame2DPos(frame) );\
 } while(0)
-__ZEO_EXPORT zVec2D *zXform2D(zFrame2D *frame, zVec2D *v, zVec2D *tv);
+__ZEO_EXPORT zVec2D *zXform2D(const zFrame2D *frame, const zVec2D *v, zVec2D *tv);
 
 #define _zXform2DInv( frame, v, tv ) do{\
   _zVec2DSub( v, zFrame2DPos(frame), tv );\
   _zMulMat2DTVec2DDRC( zFrame2DAtt(frame), tv );\
 } while(0)
-__ZEO_EXPORT zVec2D *zXform2DInv(zFrame2D *frame, zVec2D *v, zVec2D *tv);
+__ZEO_EXPORT zVec2D *zXform2DInv(const zFrame2D *frame, const zVec2D *v, zVec2D *tv);
 
 #define zXform2DDRC(frame,v)    zXform2D(frame,v,v)
 #define zXform2DInvDRC(frame,v) zXform2DInv(frame,v,v)
@@ -140,24 +140,24 @@ __ZEO_EXPORT zVec2D *zXform2DInv(zFrame2D *frame, zVec2D *v, zVec2D *tv);
   _zMulMat2DVec2D( zFrame2DAtt(invframe), zFrame2DPos(frame), zFrame2DPos(invframe) );\
   zVec2DRevDRC( zFrame2DPos(invframe) );\
 } while(0)
-__ZEO_EXPORT zFrame2D *zFrame2DInv(zFrame2D *frame, zFrame2D *invframe);
+__ZEO_EXPORT zFrame2D *zFrame2DInv(const zFrame2D *frame, zFrame2D *invframe);
 
 #define _zFrame2DCascade( frame1, frame2, frame ) do{\
   zMulMat2DMat2D( zFrame2DAtt(frame1), zFrame2DAtt(frame2), zFrame2DAtt(frame) );\
   _zXform2D( frame1, zFrame2DPos(frame2), zFrame2DPos(frame) );\
 } while(0)
-__ZEO_EXPORT zFrame2D *zFrame2DCascade(zFrame2D *frame1, zFrame2D *frame2, zFrame2D *frame);
+__ZEO_EXPORT zFrame2D *zFrame2DCascade(const zFrame2D *frame1, const zFrame2D *frame2, zFrame2D *frame);
 
 #define _zFrame2DXform( frame1, frame2, frame ) do{\
   zMulMat2DTMat2D( zFrame2DAtt(frame1), zFrame2DAtt(frame2), zFrame2DAtt(frame) );\
   _zXform2DInv( frame1, zFrame2DPos(frame2), zFrame2DPos(frame) );\
 } while(0)
-__ZEO_EXPORT zFrame2D *zFrame2DXform(zFrame2D *frame1, zFrame2D *frame2, zFrame2D *frame);
+__ZEO_EXPORT zFrame2D *zFrame2DXform(const zFrame2D *frame1, const zFrame2D *frame2, zFrame2D *frame);
 
 /*! \brief convert a 2D coordinate to a 2D frame. */
-__ZEO_EXPORT zFrame2D *zFrame2DFromCoord2D(zFrame2D *frame, zCoord2D *coord);
+__ZEO_EXPORT zFrame2D *zFrame2DFromCoord2D(zFrame2D *frame, const zCoord2D *coord);
 /*! \brief convert a 2D frame to a 2D coordinate. */
-__ZEO_EXPORT zCoord2D *zCoord2DFromFrame2D(zCoord2D *coord, zFrame2D *frame);
+__ZEO_EXPORT zCoord2D *zCoord2DFromFrame2D(zCoord2D *coord, const zFrame2D *frame);
 
 /* ********************************************************** */
 /* I/O
@@ -194,7 +194,7 @@ __ZEO_EXPORT zFrame2D *zFrame2DFromZTK(zFrame2D *frame, ZTK *ztk);
 __ZEO_EXPORT zFrame2D *zFrame2DFScan(FILE *fp, zFrame2D *frame);
 #define zFrame2DScan(frame) zFrame2DFScan( stdin, (frame) )
 
-__ZEO_EXPORT void zFrame2DFPrint(FILE *fp, zFrame2D *frame);
+__ZEO_EXPORT void zFrame2DFPrint(FILE *fp, const zFrame2D *frame);
 #define zFrame2DPrint(frame) zFrame2DFPrint( stdout, (frame) )
 
 __END_DECLS

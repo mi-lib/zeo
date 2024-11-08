@@ -20,7 +20,7 @@ void mat_create_rand(zMat3D *m)
 
 void assert_matstruct(void)
 {
-  zMat3D m, tm;
+  zMat3D m, mc, tm;
   zVec3D v1, v2, v3;
   double a11, a12, a13, a21, a22, a23, a31, a32, a33;
 
@@ -63,11 +63,11 @@ void assert_matstruct(void)
        tm.e[0][0] == m.e[0][0] && tm.e[1][0] == m.e[0][1] && tm.e[2][0] == m.e[0][2]
     && tm.e[0][1] == m.e[1][0] && tm.e[1][1] == m.e[1][1] && tm.e[2][1] == m.e[1][2]
     && tm.e[0][2] == m.e[2][0] && tm.e[1][2] == m.e[2][1] && tm.e[2][2] == m.e[2][2] );
+  zMat3DCopy( &m, &mc );
+  zMat3DT( &mc, &mc );
+  zAssert( zMat3DT (direct transpose), zMat3DEqual( &tm, &mc ) );
   zMat3DTDRC( &m );
-  zAssert( zMat3DTDRC,
-       tm.e[0][0] == m.e[0][0] && tm.e[0][1] == m.e[0][1] && tm.e[0][2] == m.e[0][2]
-    && tm.e[1][0] == m.e[1][0] && tm.e[1][1] == m.e[1][1] && tm.e[1][2] == m.e[1][2]
-    && tm.e[2][0] == m.e[2][0] && tm.e[2][1] == m.e[2][1] && tm.e[2][2] == m.e[2][2] );
+  zAssert( zMat3DTDRC, zMat3DEqual( &tm, &m ) );
 }
 
 void assert_arith(void)

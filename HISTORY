@@ -1,3 +1,5 @@
+2024.11. 8. Debugged zOpticalInfoToZTK to return the null pointer in failure cases. [zeo_render_optic]
+2024.11. 8. Added const qualifiers to function prototypes. [zeo_vec2d, zeo_mat2d, zeo_frame2d, zeo_vec3d, zeo_mat3d, zeo_frame3d, zeo_vec6d, zeo_mat6d]
 2024.10.29. Debugged __ztk_prp_zeo_mapnet. [zeo_mapnet]
 2024.10.29. Modified makefile for examples. [example]
 2024.10.29. Renamed ZTK_TAG_OPTIC, ZTK_TAG_TEXTURE, ZTK_TAG_SHAPE, and ZTK_TAG_MAP to ZTK_TAG_ZEO_OPTIC, ZTK_TAG_ZEO_TEXTURE, ZTK_TAG_ZEO_SHAPE, and ZTK_TAG_ZEO_MAP, repectively. [zeo_render_optic, zeo_render_texture, zeo_shape3d, zeo_mshape3d, zeo_map, zeo_mapnet]

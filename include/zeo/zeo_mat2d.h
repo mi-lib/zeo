@@ -70,7 +70,7 @@ __ZEO_EXPORT const zMat2D zmat2Dident;
 __ZEO_EXPORT zMat2D *zMat2DCreate(zMat2D *m, double a11, double a12, double a21, double a22);
 __ZEO_EXPORT zMat2D *zMat2DCreateAngle(zMat2D *m, double angle);
 #define _zMat2DCopy(s,d) zCopy( zMat2D, s, d )
-__ZEO_EXPORT zMat2D *zMat2DCopy(zMat2D *src, zMat2D *dest);
+__ZEO_EXPORT zMat2D *zMat2DCopy(const zMat2D *src, zMat2D *dest);
 #define zMat2DZero(m)  zMat2DCopy( ZMAT2DZERO, (m) )
 #define zMat2DIdent(m) zMat2DCopy( ZMAT2DIDENT, (m) )
 
@@ -85,9 +85,9 @@ __ZEO_EXPORT zMat2D *zMat2DCopy(zMat2D *src, zMat2D *dest);
  * zMat2DMatch() and zMat2DEqual() return the true value if \a m1 and \a m2 are equal, or false otherwise.
  */
 #define _zMat2DMatch(m1,m2) ( _zVec2DMatch(&(m1)->b.x,&(m2)->b.x) && _zVec2DMatch(&(m1)->b.y,&(m2)->b.y) )
-__ZEO_EXPORT bool zMat2DMatch(zMat2D *m1, zMat2D *m2);
+__ZEO_EXPORT bool zMat2DMatch(const zMat2D *m1, const zMat2D *m2);
 #define _zMat2DEqual(m1,m2) ( _zVec2DEqual(&(m1)->b.x,&(m2)->b.x) && _zVec2DEqual(&(m1)->b.y,&(m2)->b.y) )
-__ZEO_EXPORT bool zMat2DEqual(zMat2D *m1, zMat2D *m2);
+__ZEO_EXPORT bool zMat2DEqual(const zMat2D *m1, const zMat2D *m2);
 
 /*! \brief abstract row/column vector of a 2x2 matrix.
  *
@@ -101,8 +101,8 @@ __ZEO_EXPORT bool zMat2DEqual(zMat2D *m1, zMat2D *m2);
  * \return
  * zMat2DRow() and zMat2DCol() return no value.
  */
-__ZEO_EXPORT void zMat2DRow(zMat2D *m, zVec2D *r1, zVec2D *r2);
-__ZEO_EXPORT void zMat2DCol(zMat2D *m, zVec2D *c1, zVec2D *c2);
+__ZEO_EXPORT void zMat2DRow(const zMat2D *m, zVec2D *r1, zVec2D *r2);
+__ZEO_EXPORT void zMat2DCol(const zMat2D *m, zVec2D *c1, zVec2D *c2);
 
 /*! \brief transpose a 2x2 matrix.
  *
@@ -110,7 +110,7 @@ __ZEO_EXPORT void zMat2DCol(zMat2D *m, zVec2D *c1, zVec2D *c2);
  * \retval \a tm
  */
 #define _zMat2DT(m,tm) zMat2DRow( m, &(tm)->b.x, &(tm)->b.y )
-__ZEO_EXPORT zMat2D *zMat2DT(zMat2D *m, zMat2D *tm);
+__ZEO_EXPORT zMat2D *zMat2DT(const zMat2D *m, zMat2D *tm);
 
 /* ********************************************************** */
 /* arithmetics
@@ -164,12 +164,12 @@ __ZEO_EXPORT zMat2D *zMat2DT(zMat2D *m, zMat2D *tm);
 #define _zMat2DCat(m1,k,m2,m) \
   _zMat2DCreate( m, (m1)->c.xx+(k)*(m2)->c.xx, (m1)->c.yx+(k)*(m2)->c.yx, (m1)->c.xy+(k)*(m2)->c.xy, (m1)->c.yy+(k)*(m2)->c.yy )
 
-__ZEO_EXPORT zMat2D *zMat2DAdd(zMat2D *m1, zMat2D *m2, zMat2D *m);
-__ZEO_EXPORT zMat2D *zMat2DSub(zMat2D *m1, zMat2D *m2, zMat2D *m);
-__ZEO_EXPORT zMat2D *zMat2DRev(zMat2D *m, zMat2D *rm);
-__ZEO_EXPORT zMat2D *zMat2DMul(zMat2D *m, double k, zMat2D *mm);
-__ZEO_EXPORT zMat2D *zMat2DDiv(zMat2D *m, double k, zMat2D *dm);
-__ZEO_EXPORT zMat2D *zMat2DCat(zMat2D *m1, double k, zMat2D *m2, zMat2D *m);
+__ZEO_EXPORT zMat2D *zMat2DAdd(const zMat2D *m1, const zMat2D *m2, zMat2D *m);
+__ZEO_EXPORT zMat2D *zMat2DSub(const zMat2D *m1, const zMat2D *m2, zMat2D *m);
+__ZEO_EXPORT zMat2D *zMat2DRev(const zMat2D *m, zMat2D *rm);
+__ZEO_EXPORT zMat2D *zMat2DMul(const zMat2D *m, double k, zMat2D *mm);
+__ZEO_EXPORT zMat2D *zMat2DDiv(const zMat2D *m, double k, zMat2D *dm);
+__ZEO_EXPORT zMat2D *zMat2DCat(const zMat2D *m1, double k, const zMat2D *m2, zMat2D *m);
 
 #define zMat2DAddDRC(m1,m2)   zMat2DAdd(m1,m2,m1)
 #define zMat2DSubDRC(m1,m2)   zMat2DSub(m1,m2,m1)
@@ -188,7 +188,7 @@ __ZEO_EXPORT zMat2D *zMat2DCat(zMat2D *m1, double k, zMat2D *m2, zMat2D *m);
  */
 #define _zMat2DDyad(d,v1,v2) \
   _zMat2DCreate( (d), (v1)->c.x*(v2)->c.x, (v1)->c.x*(v2)->c.y, (v1)->c.y*(v2)->c.x, (v1)->c.y*(v2)->c.y )
-__ZEO_EXPORT zMat2D *zMat2DDyad(zMat2D *dyad, zVec2D *v1, zVec2D *v2);
+__ZEO_EXPORT zMat2D *zMat2DDyad(zMat2D *dyad, const zVec2D *v1, const zVec2D *v2);
 
 /* ********************************************************** */
 /* inverse of a 2x2 matrix
@@ -201,7 +201,7 @@ __ZEO_EXPORT zMat2D *zMat2DDyad(zMat2D *dyad, zVec2D *v1, zVec2D *v2);
  * zMat2DDet() returns the determinant of \a m.
  */
 #define _zMat2DDet(m) ( m->c.xx*m->c.yy - m->c.yx*m->c.xy )
-__ZEO_EXPORT double zMat2DDet(zMat2D *m);
+__ZEO_EXPORT double zMat2DDet(const zMat2D *m);
 
 /*! \brief inverse of a 2x2 matrix.
  *
@@ -213,7 +213,7 @@ __ZEO_EXPORT double zMat2DDet(zMat2D *m);
  * \a im has to be different from \a m. If \a tm is equal to \a m,
  * anything might happen.
  */
-__ZEO_EXPORT zMat2D *zMat2DInv(zMat2D *m, zMat2D *im);
+__ZEO_EXPORT zMat2D *zMat2DInv(const zMat2D *m, zMat2D *im);
 
 /* ********************************************************** */
 /* multiplication of a 2D vector by a 2x2 matrix
@@ -236,18 +236,18 @@ __ZEO_EXPORT zMat2D *zMat2DInv(zMat2D *m, zMat2D *im);
   __y = (m)->c.xy*(v)->c.x + (m)->c.yy*(v)->c.y;\
   _zVec2DCreate( mv, __x, __y );\
 } while(0)
-__ZEO_EXPORT zVec2D *zMulMat2DVec2D(zMat2D *m, zVec2D *v, zVec2D *mv);
+__ZEO_EXPORT zVec2D *zMulMat2DVec2D(const zMat2D *m, const zVec2D *v, zVec2D *mv);
 #define _zMulMat2DVec2DDRC(m,v) _zMulMat2DVec2D(m,v,v)
-__ZEO_EXPORT zVec2D *zMulMat2DVec2DDRC(zMat2D *m, zVec2D *v);
+__ZEO_EXPORT zVec2D *zMulMat2DVec2DDRC(const zMat2D *m, zVec2D *v);
 #define _zMulMat2DTVec2D(m,v,mv) do{\
   double __x, __y;\
   __x = _zVec2DInnerProd( &(m)->b.x, v );\
   __y = _zVec2DInnerProd( &(m)->b.y, v );\
   _zVec2DCreate( mv, __x, __y );\
 } while(0)
-__ZEO_EXPORT zVec2D *zMulMat2DTVec2D(zMat2D *m, zVec2D *v, zVec2D *mv);
+__ZEO_EXPORT zVec2D *zMulMat2DTVec2D(const zMat2D *m, const zVec2D *v, zVec2D *mv);
 #define _zMulMat2DTVec2DDRC(m,v) _zMulMat2DTVec2D(m,v,v)
-__ZEO_EXPORT zVec2D *zMulMat2DTVec2DDRC(zMat2D *m, zVec2D *v);
+__ZEO_EXPORT zVec2D *zMulMat2DTVec2DDRC(const zMat2D *m, zVec2D *v);
 
 /*! \brief multiply a 2D vector and the inverse of a 2x2 matrix.
  *
@@ -255,7 +255,7 @@ __ZEO_EXPORT zVec2D *zMulMat2DTVec2DDRC(zMat2D *m, zVec2D *v);
  * \return
  * zMulInvMat2DVec2D() returns a pointer \a mv.
  */
-__ZEO_EXPORT zVec2D *zMulInvMat2DVec2D(zMat2D *m, zVec2D *v, zVec2D *mv);
+__ZEO_EXPORT zVec2D *zMulInvMat2DVec2D(const zMat2D *m, const zVec2D *v, zVec2D *mv);
 
 /* ********************************************************** */
 /* multiplication of a 2x2 matrix by another 2x2 matrix
@@ -284,9 +284,9 @@ __ZEO_EXPORT zVec2D *zMulInvMat2DVec2D(zMat2D *m, zVec2D *v, zVec2D *mv);
  * zMulMat2DMat2DDRC() and zMulMat2DTMat2DDRC() return the pointer \a m2.
  * zMulMat2DMat2DTDRC() returns the pointer \a m1.
  */
-__ZEO_EXPORT zMat2D *zMulMat2DMat2D(zMat2D *m1, zMat2D *m2, zMat2D *m);
-__ZEO_EXPORT zMat2D *zMulMat2DTMat2D(zMat2D *m1, zMat2D *m2, zMat2D *m);
-__ZEO_EXPORT zMat2D *zMulMat2DMat2DT(zMat2D *m1, zMat2D *m2, zMat2D *m);
+__ZEO_EXPORT zMat2D *zMulMat2DMat2D(const zMat2D *m1, const zMat2D *m2, zMat2D *m);
+__ZEO_EXPORT zMat2D *zMulMat2DTMat2D(const zMat2D *m1, const zMat2D *m2, zMat2D *m);
+__ZEO_EXPORT zMat2D *zMulMat2DMat2DT(const zMat2D *m1, const zMat2D *m2, zMat2D *m);
 
 #define zMulMat2DMat2DDRC(m1,m2)  zMulMat2DMat2D(m1,m2,m2)
 #define zMulMat2DTMat2DDRC(m1,m2) zMulMat2DTMat2D(m1,m2,m2)
@@ -299,7 +299,7 @@ __ZEO_EXPORT zMat2D *zMulMat2DMat2DT(zMat2D *m1, zMat2D *m2, zMat2D *m);
  * \return
  * zMulInvMat2DMat2D() returns the pointer \a m.
  */
-__ZEO_EXPORT zMat2D *zMulInvMat2DMat2D(zMat2D *m1, zMat2D *m2, zMat2D *m);
+__ZEO_EXPORT zMat2D *zMulInvMat2DMat2D(const zMat2D *m1, const zMat2D *m2, zMat2D *m);
 
 /* ********************************************************** */
 /* rotation
@@ -314,7 +314,7 @@ __ZEO_EXPORT zMat2D *zMulInvMat2DMat2D(zMat2D *m1, zMat2D *m2, zMat2D *m);
  * and that of \a mat.
  */
 #define _zMat2DAngle(mat) atan2( (mat)->c.xy - (mat)->c.yx, (mat)->c.xx + (mat)->c.yy )
-__ZEO_EXPORT double zMat2DAngle(zMat2D *mat);
+__ZEO_EXPORT double zMat2DAngle(const zMat2D *mat);
 
 /*! \brief rotate matrix.
  *
@@ -333,8 +333,8 @@ __ZEO_EXPORT double zMat2DAngle(zMat2D *mat);
     (c)*(m)->c.yx-(s)*(m)->c.yy,\
     (s)*(m)->c.xx+(c)*(m)->c.xy,\
     (s)*(m)->c.yx+(c)*(m)->c.yy )
-__ZEO_EXPORT zMat2D *zMat2DRotSC(zMat2D *m, double s, double c, zMat2D *rm);
-__ZEO_EXPORT zMat2D *zMat2DRot(zMat2D *m, double angle, zMat2D *rm);
+__ZEO_EXPORT zMat2D *zMat2DRotSC(const zMat2D *m, double s, double c, zMat2D *rm);
+__ZEO_EXPORT zMat2D *zMat2DRot(const zMat2D *m, double angle, zMat2D *rm);
 
 /*! \brief error vector between two attitude matrices.
  *
@@ -345,7 +345,7 @@ __ZEO_EXPORT zMat2D *zMat2DRot(zMat2D *m, double angle, zMat2D *rm);
 #define _zMat2DError(m1,m2) \
   atan2( (m2)->c.xx*(m1)->c.xy+(m2)->c.yx*(m1)->c.yy-(m2)->c.xy*(m1)->c.xx-(m2)->c.yy*(m1)->c.yx,\
          (m2)->c.xx*(m1)->c.xx+(m2)->c.yx*(m1)->c.yx+(m2)->c.xy*(m1)->c.xy+(m2)->c.yy*(m1)->c.yy )
-__ZEO_EXPORT double zMat2DError(zMat2D *m1, zMat2D *m2);
+__ZEO_EXPORT double zMat2DError(const zMat2D *m1, const zMat2D *m2);
 
 /* ********************************************************** */
 /* I/O
@@ -373,7 +373,7 @@ __ZEO_EXPORT double zMat2DError(zMat2D *m1, zMat2D *m2);
  */
 __ZEO_EXPORT zMat2D *zMat2DFScan(FILE *fp, zMat2D *m);
 #define zMat2DScan(m) zMat2DFScan( stdin, (m) )
-__ZEO_EXPORT void zMat2DFPrint(FILE *fp, zMat2D *m);
+__ZEO_EXPORT void zMat2DFPrint(FILE *fp, const zMat2D *m);
 #define zMat2DPrint(m) zMat2DFPrint( stdout, (m) )
 
 __END_DECLS

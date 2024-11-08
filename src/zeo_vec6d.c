@@ -38,26 +38,26 @@ zVec6D *zVec6DCreate(zVec6D *v, double x, double y, double z, double xa, double 
 }
 
 /* convert a set of two 3D vectors to a 6D vector. */
-zVec6D *zVec6DFromVec3D(zVec6D *v, zVec3D *vl, zVec3D *va)
+zVec6D *zVec6DFromVec3D(zVec6D *v, const zVec3D *vl, const zVec3D *va)
 {
   _zVec6DFromVec3D( v, vl, va );
   return v;
 }
 
 /* check if two 6D vectors match each other. */
-bool zVec6DMatch(zVec6D *v1, zVec6D *v2)
+bool zVec6DMatch(const zVec6D *v1, const zVec6D *v2)
 {
   return _zVec6DMatch( v1, v2 );
 }
 
 /* check if two 6D vectors are equal. */
-bool zVec6DEqual(zVec6D *v1, zVec6D *v2)
+bool zVec6DEqual(const zVec6D *v1, const zVec6D *v2)
 {
   return _zVec6DEqual( v1, v2 );
 }
 
 /* check if a 6D vector is tiny. */
-bool zVec6DIsTol(zVec6D *v, double tol)
+bool zVec6DIsTol(const zVec6D *v, double tol)
 {
   return _zVec6DIsTol( v, tol );
 }
@@ -67,35 +67,35 @@ bool zVec6DIsTol(zVec6D *v, double tol)
  * ********************************************************** */
 
 /* add two 6D vectors. */
-zVec6D *zVec6DAdd(zVec6D *v1, zVec6D *v2, zVec6D *v)
+zVec6D *zVec6DAdd(const zVec6D *v1, const zVec6D *v2, zVec6D *v)
 {
   _zVec6DAdd( v1, v2, v );
   return v;
 }
 
 /* subtract a 6D vector from another. */
-zVec6D *zVec6DSub(zVec6D *v1, zVec6D *v2, zVec6D *v)
+zVec6D *zVec6DSub(const zVec6D *v1, const zVec6D *v2, zVec6D *v)
 {
   _zVec6DSub( v1, v2, v );
   return v;
 }
 
 /* reverse a 6D vector. */
-zVec6D *zVec6DRev(zVec6D *v, zVec6D *rv)
+zVec6D *zVec6DRev(const zVec6D *v, zVec6D *rv)
 {
   _zVec6DRev( v, rv );
   return rv;
 }
 
 /* multiply a 6D vector by a scalar value. */
-zVec6D *zVec6DMul(zVec6D *v, double k, zVec6D *mv)
+zVec6D *zVec6DMul(const zVec6D *v, double k, zVec6D *mv)
 {
   _zVec6DMul( v, k, mv );
   return mv;
 }
 
 /* divide a 6D vector by a scalar value. */
-zVec6D *zVec6DDiv(zVec6D *v, double k, zVec6D *dv)
+zVec6D *zVec6DDiv(const zVec6D *v, double k, zVec6D *dv)
 {
   if( k == 0 ){
     ZRUNWARN( ZEO_ERR_ZERODIV );
@@ -108,20 +108,20 @@ zVec6D *zVec6DDiv(zVec6D *v, double k, zVec6D *dv)
 }
 
 /* concatenate a 6D vector with another multiplied by a scalar value. */
-zVec6D *zVec6DCat(zVec6D *v1, double k, zVec6D *v2, zVec6D *v)
+zVec6D *zVec6DCat(const zVec6D *v1, double k, const zVec6D *v2, zVec6D *v)
 {
   _zVec6DCat( v1, k, v2, v );
   return v;
 }
 
 /* inner product of two 6D vectors. */
-double zVec6DInnerProd(zVec6D *v1, zVec6D *v2)
+double zVec6DInnerProd(const zVec6D *v1, const zVec6D *v2)
 {
   return _zVec6DInnerProd( v1, v2 );
 }
 
 /* shift a velocity-type 6D vector. */
-zVec6D *zVec6DLinShift(zVec6D *src, zVec3D *pos, zVec6D *dest)
+zVec6D *zVec6DLinShift(const zVec6D *src, const zVec3D *pos, zVec6D *dest)
 {
   zVec3D v;
 
@@ -132,7 +132,7 @@ zVec6D *zVec6DLinShift(zVec6D *src, zVec3D *pos, zVec6D *dest)
 }
 
 /* shift a velocity-type 6D vector directly. */
-zVec6D *zVec6DLinShiftDRC(zVec6D *vec, zVec3D *pos)
+zVec6D *zVec6DLinShiftDRC(zVec6D *vec, const zVec3D *pos)
 {
   zVec3D v;
 
@@ -142,7 +142,7 @@ zVec6D *zVec6DLinShiftDRC(zVec6D *vec, zVec3D *pos)
 }
 
 /* shift a force-type 6D vector. */
-zVec6D *zVec6DAngShift(zVec6D *src, zVec3D *pos, zVec6D *dest)
+zVec6D *zVec6DAngShift(const zVec6D *src, const zVec3D *pos, zVec6D *dest)
 {
   zVec3D n;
 
@@ -153,7 +153,7 @@ zVec6D *zVec6DAngShift(zVec6D *src, zVec3D *pos, zVec6D *dest)
 }
 
 /* shift a force-type 6D vector directly. */
-zVec6D *zVec6DAngShiftDRC(zVec6D *vec, zVec3D *pos)
+zVec6D *zVec6DAngShiftDRC(zVec6D *vec, const zVec3D *pos)
 {
   zVec3D n;
 
@@ -167,7 +167,7 @@ zVec6D *zVec6DAngShiftDRC(zVec6D *vec, zVec3D *pos)
  * ********************************************************** */
 
 /* numerical differentiation of a 6D vector. */
-zVec6D *zVec6DDif(zVec6D *v, zVec6D *vnew, double dt, zVec6D *vel)
+zVec6D *zVec6DDif(const zVec6D *v, const zVec6D *vnew, double dt, zVec6D *vel)
 {
   _zVec6DSub( vnew, v, vel );
   return zVec6DDivDRC( vel, dt );
@@ -200,7 +200,7 @@ zVec6D *zVec6DFScan(FILE *fp, zVec6D *v)
 }
 
 /* print a 6D vector data out to a file. */
-zVec6D *zVec6DDataFPrint(FILE *fp, zVec6D *v)
+const zVec6D *zVec6DDataFPrint(FILE *fp, const zVec6D *v)
 {
   if( !v ) return NULL;
   fprintf( fp, " %.10g %.10g %.10g %.10g %.10g %.10g",
@@ -209,7 +209,7 @@ zVec6D *zVec6DDataFPrint(FILE *fp, zVec6D *v)
 }
 
 /* print a 6D vector data with the new line out to a file. */
-zVec6D *zVec6DDataNLFPrint(FILE *fp, zVec6D *v)
+const zVec6D *zVec6DDataNLFPrint(FILE *fp, const zVec6D *v)
 {
   if( !zVec6DDataFPrint( fp, v ) ) return NULL;
   fprintf( fp, "\n" );
@@ -217,7 +217,7 @@ zVec6D *zVec6DDataNLFPrint(FILE *fp, zVec6D *v)
 }
 
 /* print a 6D vector out to a file. */
-zVec6D *zVec6DFPrint(FILE *fp, zVec6D *v)
+const zVec6D *zVec6DFPrint(FILE *fp, const zVec6D *v)
 {
   if( !v ){
     fprintf( fp, "(null 6D vector)\n" );

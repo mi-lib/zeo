@@ -22,14 +22,14 @@ zMat6D *zMat6DZero(zMat6D *m)
 }
 
 /* transpose of a 6x6 matrix. */
-zMat6D *zMat6DT(zMat6D *m, zMat6D *tm)
+zMat6D *zMat6DT(const zMat6D *m, zMat6D *tm)
 {
   _zMat6DT( m, tm );
   return tm;
 }
 
 /* abstract row vector from a 6x6 matrix. */
-zVec6D *zMat6DRow(zMat6D *m, int i, zVec6D *v)
+zVec6D *zMat6DRow(const zMat6D *m, int i, zVec6D *v)
 {
   int j;
 
@@ -46,7 +46,7 @@ zVec6D *zMat6DRow(zMat6D *m, int i, zVec6D *v)
 }
 
 /* abstract column vector from a 6x6 matrix. */
-zVec6D *zMat6DCol(zMat6D *m, int i, zVec6D *v)
+zVec6D *zMat6DCol(const zMat6D *m, int i, zVec6D *v)
 {
   int j;
 
@@ -62,28 +62,28 @@ zVec6D *zMat6DCol(zMat6D *m, int i, zVec6D *v)
 }
 
 /* add two 6x6 matrices. */
-zMat6D *zMat6DAdd(zMat6D *m1, zMat6D *m2, zMat6D *m)
+zMat6D *zMat6DAdd(const zMat6D *m1, const zMat6D *m2, zMat6D *m)
 {
   _zMat6DAdd( m1, m2, m );
   return m;
 }
 
 /* subtract a 6x6 matrix from another. */
-zMat6D *zMat6DSub(zMat6D *m1, zMat6D *m2, zMat6D *m)
+zMat6D *zMat6DSub(const zMat6D *m1, const zMat6D *m2, zMat6D *m)
 {
   _zMat6DSub( m1, m2, m );
   return m;
 }
 
 /* multiply a 6x6 matrix by a scalar value. */
-zMat6D *zMat6DMul(zMat6D *m, double k, zMat6D *mm)
+zMat6D *zMat6DMul(const zMat6D *m, double k, zMat6D *mm)
 {
   _zMat6DMul( m, k, mm );
   return mm;
 }
 
 /* divide a 6x6 matrix by a scalar value. */
-zMat6D *zMat6DDiv(zMat6D *m, double k, zMat6D *dm)
+zMat6D *zMat6DDiv(const zMat6D *m, double k, zMat6D *dm)
 {
   if( k == 0 ){
     ZRUNWARN( ZEO_ERR_ZERODIV );
@@ -95,14 +95,14 @@ zMat6D *zMat6DDiv(zMat6D *m, double k, zMat6D *dm)
 }
 
 /* directly add a 6x6 matrix to another. */
-zMat6D *zMat6DAddDRC(zMat6D *m1, zMat6D *m2)
+zMat6D *zMat6DAddDRC(zMat6D *m1, const zMat6D *m2)
 {
   _zMat6DAddDRC( m1, m2 );
   return m1;
 }
 
 /* directly subtract a 6x6 matrix from another. */
-zMat6D *zMat6DSubDRC(zMat6D *m1, zMat6D *m2)
+zMat6D *zMat6DSubDRC(zMat6D *m1, const zMat6D *m2)
 {
   _zMat6DSubDRC( m1, m2 );
   return m1;
@@ -128,7 +128,7 @@ zMat6D *zMat6DDivDRC(zMat6D *m, double k)
 }
 
 /* multiply a 6x1 vector by a 6x6 matrix from the left side. */
-zVec6D *zMulMat6DVec6D(zMat6D *m, zVec6D *vin, zVec6D *vout)
+zVec6D *zMulMat6DVec6D(const zMat6D *m, const zVec6D *vin, zVec6D *vout)
 {
   zVec3D v1, v2, v3, v4;
 
@@ -142,7 +142,7 @@ zVec6D *zMulMat6DVec6D(zMat6D *m, zVec6D *vin, zVec6D *vout)
 }
 
 /* multiply a 6x1 vector by the transpose of a 6x6 matrix from the left side. */
-zVec6D *zMulMat6DTVec6D(zMat6D *m, zVec6D *vin, zVec6D *vout)
+zVec6D *zMulMat6DTVec6D(const zMat6D *m, const zVec6D *vin, zVec6D *vout)
 {
   zVec3D v1, v2, v3, v4;
 
@@ -156,7 +156,7 @@ zVec6D *zMulMat6DTVec6D(zMat6D *m, zVec6D *vin, zVec6D *vout)
 }
 
 /* multiply a 6x6 matrix by another. */
-zMat6D *zMulMat6DMat6D(zMat6D *m1, zMat6D *m2, zMat6D *m)
+zMat6D *zMulMat6DMat6D(const zMat6D *m1, const zMat6D *m2, zMat6D *m)
 {
   zMat3D tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8;
 
@@ -176,7 +176,7 @@ zMat6D *zMulMat6DMat6D(zMat6D *m1, zMat6D *m2, zMat6D *m)
 }
 
 /* multiply a 6x6 matrix by the transpose of another from the left side. */
-zMat6D *zMulMat6DTMat6D(zMat6D *m1, zMat6D *m2, zMat6D *m)
+zMat6D *zMulMat6DTMat6D(const zMat6D *m1, const zMat6D *m2, zMat6D *m)
 {
   zMat3D tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8;
 
@@ -196,7 +196,7 @@ zMat6D *zMulMat6DTMat6D(zMat6D *m1, zMat6D *m2, zMat6D *m)
 }
 
 /* multiply a 6x6 matrix by the transpose of another from the right side. */
-zMat6D *zMulMat6DMat6DT(zMat6D *m1, zMat6D *m2, zMat6D *m)
+zMat6D *zMulMat6DMat6DT(const zMat6D *m1, const zMat6D *m2, zMat6D *m)
 {
   zMat3D tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8;
 
@@ -216,14 +216,14 @@ zMat6D *zMulMat6DMat6DT(zMat6D *m1, zMat6D *m2, zMat6D *m)
 }
 
 /* dyadic product of two 6x1 vectors. */
-zMat6D *zMat6DDyad(zMat6D *m, zVec6D *v1, zVec6D *v2)
+zMat6D *zMat6DDyad(zMat6D *m, const zVec6D *v1, const zVec6D *v2)
 {
   _zMat6DDyad( m, v1, v2 );
   return m;
 }
 
 /* print a 6x6 matrix out to a file. */
-void zMat6DFPrint(FILE *fp, zMat6D *m)
+void zMat6DFPrint(FILE *fp, const zMat6D *m)
 {
   if( !m ) return;
   fprintf( fp, "{\n" );
