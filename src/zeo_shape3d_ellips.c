@@ -299,14 +299,14 @@ static bool _zEllips3DDivFPrintZTK(FILE *fp, int i, void *obj){
   return true; }
 
 static ZTKPrp __ztk_prp_shape_ellips[] = {
-  { "center", 1, _zEllips3DCenterFromZTK, _zEllips3DCenterFPrintZTK },
-  { "ax", 1, _zEllips3DAxisXFromZTK, _zEllips3DAxisXFPrintZTK },
-  { "ay", 1, _zEllips3DAxisYFromZTK, _zEllips3DAxisYFPrintZTK },
-  { "az", 1, _zEllips3DAxisZFromZTK, _zEllips3DAxisZFPrintZTK },
-  { "rx", 1, _zEllips3DRadiusXFromZTK, _zEllips3DRadiusXFPrintZTK },
-  { "ry", 1, _zEllips3DRadiusYFromZTK, _zEllips3DRadiusYFPrintZTK },
-  { "rz", 1, _zEllips3DRadiusZFromZTK, _zEllips3DRadiusZFPrintZTK },
-  { "div", 1, _zEllips3DDivFromZTK, _zEllips3DDivFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_CENTER, 1, _zEllips3DCenterFromZTK, _zEllips3DCenterFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_AX,     1, _zEllips3DAxisXFromZTK, _zEllips3DAxisXFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_AY,     1, _zEllips3DAxisYFromZTK, _zEllips3DAxisYFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_AZ,     1, _zEllips3DAxisZFromZTK, _zEllips3DAxisZFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_RX,     1, _zEllips3DRadiusXFromZTK, _zEllips3DRadiusXFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_RY,     1, _zEllips3DRadiusYFromZTK, _zEllips3DRadiusYFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_RZ,     1, _zEllips3DRadiusZFromZTK, _zEllips3DRadiusZFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_DIV,    1, _zEllips3DDivFromZTK, _zEllips3DDivFPrintZTK },
 };
 
 /* print a 3D ellipsoid out to a file in a ZTK format. */

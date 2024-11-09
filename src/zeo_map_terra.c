@@ -384,14 +384,14 @@ static bool _zTerraResThrsdFPrint(FILE *fp, int i, void *obj){
 }
 
 static ZTKPrp __ztk_prp_terra[] = {
-  { "origin", 1, _zTerraOriginFromZTK, _zTerraOriginFPrint },
-  { "resolution", 1, _zTerraResolFromZTK, _zTerraResolFPrint },
-  { "size", 1, _zTerraSizeFromZTK, _zTerraSizeFPrint },
-  { "zrange", 1, _zTerraZRangeFromZTK, _zTerraZRangeFPrint },
-  { "th_var", 1, _zTerraVarThrsdFromZTK, _zTerraVarThrsdFPrint },
-  { "th_grd", 1, _zTerraGrdThrsdFromZTK, _zTerraGrdThrsdFPrint },
-  { "th_res", 1, _zTerraResThrsdFromZTK, _zTerraResThrsdFPrint },
-  { "grid", -1, _zTerraGridFromZTK, NULL },
+  { ZTK_KEY_ZEO_MAP_TERRA_ORIGIN,     1, _zTerraOriginFromZTK, _zTerraOriginFPrint },
+  { ZTK_KEY_ZEO_MAP_TERRA_RESOLUTION, 1, _zTerraResolFromZTK, _zTerraResolFPrint },
+  { ZTK_KEY_ZEO_MAP_TERRA_SIZE,       1, _zTerraSizeFromZTK, _zTerraSizeFPrint },
+  { ZTK_KEY_ZEO_MAP_TERRA_ZRANGE,     1, _zTerraZRangeFromZTK, _zTerraZRangeFPrint },
+  { ZTK_KEY_ZEO_MAP_TERRA_TH_VAR,     1, _zTerraVarThrsdFromZTK, _zTerraVarThrsdFPrint },
+  { ZTK_KEY_ZEO_MAP_TERRA_TH_GRID,    1, _zTerraGrdThrsdFromZTK, _zTerraGrdThrsdFPrint },
+  { ZTK_KEY_ZEO_MAP_TERRA_TH_RES,     1, _zTerraResThrsdFromZTK, _zTerraResThrsdFPrint },
+  { ZTK_KEY_ZEO_MAP_TERRA_GRID,      -1, _zTerraGridFromZTK, NULL },
 };
 
 /* read a terrain elevation map from a ZTK format processor. */
@@ -411,7 +411,8 @@ void zTerraFPrintZTK(FILE *fp, zTerra *terra)
   for( i=0; i<zTerraXSize(terra); i++ )
     for( j=0; j<zTerraYSize(terra); j++ ){
       if( !( grid = zTerraGridNC(terra,i,j) ) ) continue;
-      fprintf( fp, "grid: %d %d %.10g %.10g %.10g %.10g %.10g %d\n", i, j, grid->z, grid->norm.e[zX], grid->norm.e[zY], grid->norm.e[zZ], grid->var, grid->travs ? 1 : 0 );
+      fprintf( fp, "%s: %d %d %.10g %.10g %.10g %.10g %.10g %d\n", ZTK_KEY_ZEO_MAP_TERRA_GRID,
+        i, j, grid->z, grid->norm.e[zX], grid->norm.e[zY], grid->norm.e[zZ], grid->var, grid->travs ? 1 : 0 );
     }
 }
 

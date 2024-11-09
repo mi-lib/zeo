@@ -620,18 +620,12 @@ static void *_zPH3DCreatePyramidFromZTK(void *obj, int i, void *arg, ZTK *ztk)
   return obj;
 }
 
-#define ZEO_PH_KEY_VERT    "vert"
-#define ZEO_PH_KEY_FACE    "face"
-#define ZEO_PH_KEY_LOOP    "loop"
-#define ZEO_PH_KEY_PRISM   "prism"
-#define ZEO_PH_KEY_PYRAMID "pyramid"
-
 static ZTKPrp __ztk_prp_ph[] = {
-  { ZEO_PH_KEY_VERT,   -1, _zPH3DVertFromZTK,    NULL },
-  { ZEO_PH_KEY_FACE,   -1, _zPH3DFaceFromZTK,    NULL },
-  { ZEO_PH_KEY_LOOP,    1, _zPH3DLoopFromZTK,    NULL },
-  { ZEO_PH_KEY_PRISM,   1, _zPH3DCreatePrismFromZTK,   NULL },
-  { ZEO_PH_KEY_PYRAMID, 1, _zPH3DCreatePyramidFromZTK, NULL },
+  { ZTK_KEY_ZEO_PH_VERT,   -1, _zPH3DVertFromZTK,    NULL },
+  { ZTK_KEY_ZEO_PH_FACE,   -1, _zPH3DFaceFromZTK,    NULL },
+  { ZTK_KEY_ZEO_PH_LOOP,    1, _zPH3DLoopFromZTK,    NULL },
+  { ZTK_KEY_ZEO_PH_PRISM,   1, _zPH3DCreatePrismFromZTK,   NULL },
+  { ZTK_KEY_ZEO_PH_PYRAMID, 1, _zPH3DCreatePyramidFromZTK, NULL },
 };
 
 /* read a 3D polyhedron from a ZTK format processor. */
@@ -643,10 +637,10 @@ zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk)
   zPH3DInit( ph );
   zArrayInit( &varray );
   if( !ZTKKeyRewind( ztk ) ) return NULL;
-  num_vert = ZTKCountKey( ztk, ZEO_PH_KEY_VERT );
-  num_face = ZTKCountKey( ztk, ZEO_PH_KEY_FACE );
-  if( ZTKCountKey( ztk, ZEO_PH_KEY_PRISM ) > 0 ||
-      ZTKCountKey( ztk, ZEO_PH_KEY_PYRAMID ) > 0 ){
+  num_vert = ZTKCountKey( ztk, ZTK_KEY_ZEO_PH_VERT );
+  num_face = ZTKCountKey( ztk, ZTK_KEY_ZEO_PH_FACE );
+  if( ZTKCountKey( ztk, ZTK_KEY_ZEO_PH_PRISM ) > 0 ||
+      ZTKCountKey( ztk, ZTK_KEY_ZEO_PH_PYRAMID ) > 0 ){
     if( num_face > 0 ){
       ZRUNERROR( ZEO_ERR_PH_INV_FACE, num_face );
       return NULL;
@@ -675,11 +669,11 @@ void zPH3DFPrintZTK(FILE *fp, zPH3D *ph)
 
   if( !ph || zPH3DVertNum(ph) == 0 ) return;
   for( i=0; i<zPH3DVertNum(ph); i++ ){
-    fprintf( fp, "%s: %d ", ZEO_PH_KEY_VERT, i );
+    fprintf( fp, "%s: %d ", ZTK_KEY_ZEO_PH_VERT, i );
     zVec3DFPrint( fp, zPH3DVert(ph,i) );
   }
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
-    fprintf( fp, "%s: %d %d %d\n", ZEO_PH_KEY_FACE,
+    fprintf( fp, "%s: %d %d %d\n", ZTK_KEY_ZEO_PH_FACE,
       (int)( zPH3DFaceVert(ph,i,0)-zPH3DVertBuf(ph) ),
       (int)( zPH3DFaceVert(ph,i,1)-zPH3DVertBuf(ph) ),
       (int)( zPH3DFaceVert(ph,i,2)-zPH3DVertBuf(ph) ) );

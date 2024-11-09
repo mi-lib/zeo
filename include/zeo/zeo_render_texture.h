@@ -95,6 +95,13 @@ __ZEO_EXPORT bool (* __z_texture_bump_read_file)(zTexture *, char *);
 /* tag to identify a texture */
 #define ZTK_TAG_ZEO_TEXTURE "zeo::texture"
 
+#define ZTK_KEY_ZEO_TEXTURE_NAME  "name"
+#define ZTK_KEY_ZEO_TEXTURE_FILE  "file"
+#define ZTK_KEY_ZEO_TEXTURE_TYPE  "type"
+#define ZTK_KEY_ZEO_TEXTURE_DEPTH "depth"
+#define ZTK_KEY_ZEO_TEXTURE_COORD "coord"
+#define ZTK_KEY_ZEO_TEXTURE_FACE  "face"
+
 /* decode a texture from a ZTK format processor. */
 __ZEO_EXPORT zTexture *zTextureFromZTK(zTexture *texture, ZTK *ztk);
 

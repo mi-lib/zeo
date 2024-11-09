@@ -205,6 +205,14 @@ __ZEO_EXPORT bool zeo_ph_echo_while_reading;
 #define zPH3DEchoOn()  ( zeo_ph_echo_while_reading = true )
 #define zPH3DEchoOff() ( zeo_ph_echo_while_reading = false )
 
+/* ZTK */
+
+#define ZTK_KEY_ZEO_PH_VERT    "vert"
+#define ZTK_KEY_ZEO_PH_FACE    "face"
+#define ZTK_KEY_ZEO_PH_LOOP    "loop"
+#define ZTK_KEY_ZEO_PH_PRISM   "prism"
+#define ZTK_KEY_ZEO_PH_PYRAMID "pyramid"
+
 /*! \brief read a 3D polyhedron from a ZTK format processor. */
 __ZEO_EXPORT zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk);
 

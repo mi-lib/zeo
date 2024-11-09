@@ -347,16 +347,16 @@ static bool _zShape3DTypeFPrint(FILE *fp, int i, void *obj){
 }
 
 static ZTKPrp __ztk_prp_zeo_shape[] = {
-  { "name", 1, _zShape3DNameFromZTK, _zShape3DNameFPrint },
-  { "type", 1, _zShape3DTypeFromZTK, _zShape3DTypeFPrint },
-  { "optic", 1, _zShape3DOpticFromZTK, NULL },
-  { "texture", 1, _zShape3DTextureFromZTK, NULL },
-  { "mirror", 1, _zShape3DMirrorFromZTK, NULL },
-  { "import", 1, _zShape3DImportFromZTK, NULL },
-  { "pos", 1, _zShape3DPosFromZTK, NULL },
-  { "att", 1, _zShape3DAttFromZTK, NULL },
-  { "rot", -1, _zShape3DRotFromZTK, NULL },
-  { "frame", 1, _zShape3DFrameFromZTK, NULL },
+  { ZTK_KEY_ZEO_SHAPE3D_NAME,    1, _zShape3DNameFromZTK, _zShape3DNameFPrint },
+  { ZTK_KEY_ZEO_SHAPE3D_TYPE,    1, _zShape3DTypeFromZTK, _zShape3DTypeFPrint },
+  { ZTK_KEY_ZEO_SHAPE3D_OPTIC,   1, _zShape3DOpticFromZTK, NULL },
+  { ZTK_KEY_ZEO_SHAPE3D_TEXTURE, 1, _zShape3DTextureFromZTK, NULL },
+  { ZTK_KEY_ZEO_SHAPE3D_MIRROR,  1, _zShape3DMirrorFromZTK, NULL },
+  { ZTK_KEY_ZEO_SHAPE3D_IMPORT,  1, _zShape3DImportFromZTK, NULL },
+  { ZTK_KEY_ZEO_SHAPE3D_POS,     1, _zShape3DPosFromZTK, NULL },
+  { ZTK_KEY_ZEO_SHAPE3D_ATT,     1, _zShape3DAttFromZTK, NULL },
+  { ZTK_KEY_ZEO_SHAPE3D_ROT,    -1, _zShape3DRotFromZTK, NULL },
+  { ZTK_KEY_ZEO_SHAPE3D_FRAME,   1, _zShape3DFrameFromZTK, NULL },
 };
 
 /* read a 3D shape from a ZTK format processor. */
@@ -392,9 +392,9 @@ void zShape3DFPrintZTK(FILE *fp, zShape3D *shape)
   if( !shape ) return;
   ZTKPrpKeyFPrint( fp, shape, __ztk_prp_zeo_shape );
   if( zShape3DOptic(shape) )
-    fprintf( fp, "optic: %s\n", zName(zShape3DOptic(shape)) );
+    fprintf( fp, "%s: %s\n", ZTK_KEY_ZEO_SHAPE3D_OPTIC, zName(zShape3DOptic(shape)) );
   if( zShape3DTexture(shape) )
-    fprintf( fp, "texture: %s\n", zName(zShape3DTexture(shape)) );
+    fprintf( fp, "%s: %s\n", ZTK_KEY_ZEO_SHAPE3D_TEXTURE, zName(zShape3DTexture(shape)) );
   shape->com->_fprintZTK( fp, shape->body );
   fprintf( fp, "\n" );
 }

@@ -270,10 +270,10 @@ static bool _zCone3DDivFPrintZTK(FILE *fp, int i, void *obj){
   return true; }
 
 static ZTKPrp __ztk_prp_shape_cone[] = {
-  { "center", 1, _zCone3DCenterFromZTK, _zCone3DCenterFPrintZTK },
-  { "vert", 1, _zCone3DVertFromZTK, _zCone3DVertFPrintZTK },
-  { "radius", 1, _zCone3DRadiusFromZTK, _zCone3DRadiusFPrintZTK },
-  { "div", 1, _zCone3DDivFromZTK, _zCone3DDivFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_CENTER, 1, _zCone3DCenterFromZTK, _zCone3DCenterFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_VERT,   1, _zCone3DVertFromZTK, _zCone3DVertFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_RADIUS, 1, _zCone3DRadiusFromZTK, _zCone3DRadiusFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_DIV,    1, _zCone3DDivFromZTK, _zCone3DDivFPrintZTK },
 };
 
 /* print a 3D cone out to a file in a ZTK format. */

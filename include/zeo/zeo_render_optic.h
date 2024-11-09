@@ -68,7 +68,15 @@ __ZEO_EXPORT zOpticalInfo *zOpticalInfoMul(zOpticalInfo *oi1, zOpticalInfo *oi2,
 __ZEO_EXPORT zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, double ratio, zOpticalInfo *oi, char *name);
 
 /*! \brief tag to identify optical info. */
-#define ZTK_TAG_ZEO_OPTIC "zeo::optic"
+#define ZTK_TAG_ZEO_OPTIC           "zeo::optic"
+
+#define ZTK_KEY_ZEO_OPTIC_NAME      "name"
+#define ZTK_KEY_ZEO_OPTIC_AMBIENT   "ambient"
+#define ZTK_KEY_ZEO_OPTIC_DIFFUSE   "diffuse"
+#define ZTK_KEY_ZEO_OPTIC_SPECULAR  "specular"
+#define ZTK_KEY_ZEO_OPTIC_ESR       "esr"
+#define ZTK_KEY_ZEO_OPTIC_SHININESS "shininess"
+#define ZTK_KEY_ZEO_OPTIC_ALPHA     "alpha"
 
 /*! \brief read an optical info from a ZTK format processor. */
 __ZEO_EXPORT zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk);

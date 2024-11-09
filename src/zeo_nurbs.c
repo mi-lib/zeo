@@ -411,12 +411,12 @@ static bool _zNURBS3DSizeFPrint(FILE *fp, int i, void *obj){
 }
 
 static ZTKPrp __ztk_prp_nurbs[] = {
-  { "order", 1, _zNURBS3DOrderFromZTK, _zNURBS3DOrderFPrint },
-  { "uknot", 1, _zNURBS3DUKnotFromZTK, _zNURBS3DUKnotFPrint },
-  { "vknot", 1, _zNURBS3DVKnotFromZTK, _zNURBS3DVKnotFPrint },
-  { "size", 1, _zNURBS3DSizeFromZTK, _zNURBS3DSizeFPrint },
-  { "cp", -1, _zNURBS3DCPFromZTK, NULL },
-  { "slice", 1, _zNURBS3DSliceFromZTK, _zNURBS3DSliceFPrint },
+  { ZTK_KEY_ZEO_NURBS_ORDER, 1, _zNURBS3DOrderFromZTK, _zNURBS3DOrderFPrint },
+  { ZTK_KEY_ZEO_NURBS_UKNOT, 1, _zNURBS3DUKnotFromZTK, _zNURBS3DUKnotFPrint },
+  { ZTK_KEY_ZEO_NURBS_VKNOT, 1, _zNURBS3DVKnotFromZTK, _zNURBS3DVKnotFPrint },
+  { ZTK_KEY_ZEO_NURBS_SIZE,  1, _zNURBS3DSizeFromZTK, _zNURBS3DSizeFPrint },
+  { ZTK_KEY_ZEO_NURBS_CP,   -1, _zNURBS3DCPFromZTK, NULL },
+  { ZTK_KEY_ZEO_NURBS_SLICE, 1, _zNURBS3DSliceFromZTK, _zNURBS3DSliceFPrint },
 };
 
 /* read a 3D NURBS from a ZTK format processor. */
@@ -434,7 +434,7 @@ void zNURBS3DFPrintZTK(FILE *fp, zNURBS3D *nurbs)
   ZTKPrpKeyFPrint( fp, nurbs, __ztk_prp_nurbs );
   for( i=0; i<zNURBS3DCPNum(nurbs,0); i++ )
     for( j=0; j<zNURBS3DCPNum(nurbs,1); j++ ){
-      fprintf( fp, "cp: %d %d %.12g ", i, j, zNURBS3DWeight(nurbs,i,j) );
+      fprintf( fp, "%s: %d %d %.12g ", ZTK_KEY_ZEO_NURBS_CP, i, j, zNURBS3DWeight(nurbs,i,j) );
       zVec3DFPrint( fp, zNURBS3DCP(nurbs,i,j) );
     }
 }

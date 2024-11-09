@@ -120,6 +120,17 @@ __ZEO_EXPORT void zTerraZRange(zTerra *terra, double *zmin, double *zmax);
 /*! \brief estimate z-value at a given horizontal place of an elevation map. */
 __ZEO_EXPORT double zTerraZ(zTerra *terra, double x, double y);
 
+/* ZTK */
+
+#define ZTK_KEY_ZEO_MAP_TERRA_ORIGIN     "origin"
+#define ZTK_KEY_ZEO_MAP_TERRA_RESOLUTION "resolution"
+#define ZTK_KEY_ZEO_MAP_TERRA_SIZE       "size"
+#define ZTK_KEY_ZEO_MAP_TERRA_ZRANGE     "zrange"
+#define ZTK_KEY_ZEO_MAP_TERRA_TH_VAR     "th_var"
+#define ZTK_KEY_ZEO_MAP_TERRA_TH_GRID    "th_grd"
+#define ZTK_KEY_ZEO_MAP_TERRA_TH_RES     "th_res"
+#define ZTK_KEY_ZEO_MAP_TERRA_GRID       "grid"
+
 /*! \brief read a terrain elevation map from a ZTK format processor. */
 __ZEO_EXPORT zTerra *zTerraFromZTK(zTerra *terra, ZTK *ztk);
 

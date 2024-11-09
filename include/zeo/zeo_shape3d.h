@@ -138,7 +138,35 @@ __ZEO_EXPORT zShape3D *zShape3DReadFileDAE(zShape3D *shape, const char *filename
  */
 zArrayClass( zShape3DArray, zShape3D );
 
-#define ZTK_TAG_ZEO_SHAPE "zeo::shape"
+/* ZTK */
+
+#define ZTK_TAG_ZEO_SHAPE           "zeo::shape"
+
+#define ZTK_KEY_ZEO_SHAPE3D_NAME    "name"
+#define ZTK_KEY_ZEO_SHAPE3D_TYPE    "type"
+#define ZTK_KEY_ZEO_SHAPE3D_OPTIC   "optic"
+#define ZTK_KEY_ZEO_SHAPE3D_TEXTURE "texture"
+#define ZTK_KEY_ZEO_SHAPE3D_MIRROR  "mirror"
+#define ZTK_KEY_ZEO_SHAPE3D_IMPORT  "import"
+#define ZTK_KEY_ZEO_SHAPE3D_POS     "pos"
+#define ZTK_KEY_ZEO_SHAPE3D_ATT     "att"
+#define ZTK_KEY_ZEO_SHAPE3D_ROT     "rot"
+#define ZTK_KEY_ZEO_SHAPE3D_FRAME   "frame"
+
+#define ZTK_KEY_ZEO_SHAPE3D_CENTER  "center"
+#define ZTK_KEY_ZEO_SHAPE3D_VERT    "vert"
+#define ZTK_KEY_ZEO_SHAPE3D_AX      "ax"
+#define ZTK_KEY_ZEO_SHAPE3D_AY      "ay"
+#define ZTK_KEY_ZEO_SHAPE3D_AZ      "az"
+#define ZTK_KEY_ZEO_SHAPE3D_REF     "ref"
+#define ZTK_KEY_ZEO_SHAPE3D_DEPTH   "depth"
+#define ZTK_KEY_ZEO_SHAPE3D_WIDTH   "width"
+#define ZTK_KEY_ZEO_SHAPE3D_HEIGHT  "height"
+#define ZTK_KEY_ZEO_SHAPE3D_RADIUS  "radius"
+#define ZTK_KEY_ZEO_SHAPE3D_RX      "rx"
+#define ZTK_KEY_ZEO_SHAPE3D_RY      "ry"
+#define ZTK_KEY_ZEO_SHAPE3D_RZ      "rz"
+#define ZTK_KEY_ZEO_SHAPE3D_DIV     "div"
 
 /*! \brief default number of division in conversion from smooth curves to polygonal models. */
 #define ZEO_SHAPE_DEFAULT_DIV 32

@@ -273,10 +273,10 @@ static bool _zECyl3DDivFPrintZTK(FILE *fp, int i, void *obj){
   return true; }
 
 static ZTKPrp __ztk_prp_shape_ecyl[] = {
-  { "center", 2, _zECyl3DCenterFromZTK, _zECyl3DCenterFPrintZTK },
-  { "radius", 2, _zECyl3DRadiusFromZTK, _zECyl3DRadiusFPrintZTK },
-  { "ref", 1, _zECyl3DRefFromZTK, _zECyl3DRefFPrintZTK },
-  { "div", 1, _zECyl3DDivFromZTK, _zECyl3DDivFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_CENTER, 2, _zECyl3DCenterFromZTK, _zECyl3DCenterFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_RADIUS, 2, _zECyl3DRadiusFromZTK, _zECyl3DRadiusFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_REF,    1, _zECyl3DRefFromZTK, _zECyl3DRefFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_DIV,    1, _zECyl3DDivFromZTK, _zECyl3DDivFPrintZTK },
 };
 
 /* print a 3D elliptic cylinder out to a file in a ZTK format. */

@@ -249,9 +249,9 @@ static bool _zCyl3DDivFPrintZTK(FILE *fp, int i, void *obj){
   return true; }
 
 static ZTKPrp __ztk_prp_shape_cyl[] = {
-  { "center", 2, _zCyl3DCenterFromZTK, _zCyl3DCenterFPrintZTK },
-  { "radius", 1, _zCyl3DRadiusFromZTK, _zCyl3DRadiusFPrintZTK },
-  { "div", 1, _zCyl3DDivFromZTK, _zCyl3DDivFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_CENTER, 2, _zCyl3DCenterFromZTK, _zCyl3DCenterFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_RADIUS, 1, _zCyl3DRadiusFromZTK, _zCyl3DRadiusFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_DIV,    1, _zCyl3DDivFromZTK, _zCyl3DDivFPrintZTK },
 };
 
 /* print a 3D cylinder out to a file in a ZTK format. */

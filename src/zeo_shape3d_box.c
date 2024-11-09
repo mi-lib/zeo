@@ -234,13 +234,13 @@ static bool _zBox3DHeightFPrintZTK(FILE *fp, int i, void *obj){
   return true; }
 
 static ZTKPrp __ztk_prp_shape_box[] = {
-  { "center", 1, _zBox3DCenterFromZTK, _zBox3DCenterFPrintZTK },
-  { "ax", 1, _zBox3DAxisXFromZTK, _zBox3DAxisXFPrintZTK },
-  { "ay", 1, _zBox3DAxisYFromZTK, _zBox3DAxisYFPrintZTK },
-  { "az", 1, _zBox3DAxisZFromZTK, _zBox3DAxisZFPrintZTK },
-  { "depth", 1, _zBox3DDepthFromZTK, _zBox3DDepthFPrintZTK },
-  { "width", 1, _zBox3DWidthFromZTK, _zBox3DWidthFPrintZTK },
-  { "height", 1, _zBox3DHeightFromZTK, _zBox3DHeightFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_CENTER, 1, _zBox3DCenterFromZTK, _zBox3DCenterFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_AX,     1, _zBox3DAxisXFromZTK, _zBox3DAxisXFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_AY,     1, _zBox3DAxisYFromZTK, _zBox3DAxisYFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_AZ,     1, _zBox3DAxisZFromZTK, _zBox3DAxisZFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_DEPTH,  1, _zBox3DDepthFromZTK, _zBox3DDepthFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_WIDTH,  1, _zBox3DWidthFromZTK, _zBox3DWidthFPrintZTK },
+  { ZTK_KEY_ZEO_SHAPE3D_HEIGHT, 1, _zBox3DHeightFromZTK, _zBox3DHeightFPrintZTK },
 };
 
 /* print a 3D box out to a file in a ZTK format. */

@@ -54,8 +54,8 @@ static bool _zMapTypeFPrintZTK(FILE *fp, int i, void *obj){
 }
 
 static ZTKPrp __ztk_prp_map_key[] = {
-  { "name", 1, _zMapNameFromZTK, _zMapNameFPrintZTK },
-  { "type", 1, _zMapTypeFromZTK, _zMapTypeFPrintZTK },
+  { ZTK_KEY_ZEO_MAP_NAME, 1, _zMapNameFromZTK, _zMapNameFPrintZTK },
+  { ZTK_KEY_ZEO_MAP_TYPE, 1, _zMapTypeFromZTK, _zMapTypeFPrintZTK },
 };
 
 zMap *zMapFromZTK(zMap *map, ZTK *ztk)

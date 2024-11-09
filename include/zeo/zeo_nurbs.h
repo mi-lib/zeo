@@ -203,6 +203,13 @@ __ZEO_EXPORT zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph);
 
 /* I/O */
 
+#define ZTK_KEY_ZEO_NURBS_ORDER "order"
+#define ZTK_KEY_ZEO_NURBS_UKNOT "uknot"
+#define ZTK_KEY_ZEO_NURBS_VKNOT "vknot"
+#define ZTK_KEY_ZEO_NURBS_SIZE  "size"
+#define ZTK_KEY_ZEO_NURBS_CP    "cp"
+#define ZTK_KEY_ZEO_NURBS_SLICE "slice"
+
 /*! \brief read a 3D NURBS from a ZTK format processor. */
 __ZEO_EXPORT zNURBS3D *zNURBS3DFromZTK(zNURBS3D *nurbs, ZTK *ztk);
 

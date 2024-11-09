@@ -156,12 +156,12 @@ static bool _zTextureDepthFPrintZTK(FILE *fp, int i, void *obj){
 }
 
 static ZTKPrp __ztk_prp_texture[] = {
-  { "name", 1, _zTextureNameFromZTK, _zTextureNameFPrintZTK },
-  { "file", 1, _zTextureFileFromZTK, _zTextureFileFPrintZTK },
-  { "type", 1, _zTextureTypeFromZTK, _zTextureTypeFPrintZTK },
-  { "depth", 1, _zTextureDepthFromZTK, _zTextureDepthFPrintZTK },
-  { "coord", -1, _zTextureCoordFromZTK, NULL },
-  { "face", -1, _zTextureFaceFromZTK, NULL },
+  { ZTK_KEY_ZEO_TEXTURE_NAME,  1, _zTextureNameFromZTK, _zTextureNameFPrintZTK },
+  { ZTK_KEY_ZEO_TEXTURE_FILE,  1, _zTextureFileFromZTK, _zTextureFileFPrintZTK },
+  { ZTK_KEY_ZEO_TEXTURE_TYPE,  1, _zTextureTypeFromZTK, _zTextureTypeFPrintZTK },
+  { ZTK_KEY_ZEO_TEXTURE_DEPTH, 1, _zTextureDepthFromZTK, _zTextureDepthFPrintZTK },
+  { ZTK_KEY_ZEO_TEXTURE_COORD,-1, _zTextureCoordFromZTK, NULL },
+  { ZTK_KEY_ZEO_TEXTURE_FACE, -1, _zTextureFaceFromZTK, NULL },
 };
 
 /* encode a texture from a ZTK format processor. */
@@ -171,11 +171,11 @@ zTexture *zTextureFromZTK(zTexture *texture, ZTK *ztk)
 
   zTextureInit( texture );
   if( !ZTKKeyRewind( ztk ) ) return NULL;
-  if( ( num_coord = ZTKCountKey( ztk, "coord" ) ) == 0 ){
+  if( ( num_coord = ZTKCountKey( ztk, ZTK_KEY_ZEO_TEXTURE_COORD ) ) == 0 ){
     ZRUNWARN( ZEO_WARN_TEXTURE_EMPTY );
     return NULL;
   }
-  num_face = ZTKCountKey( ztk, "face" );
+  num_face = ZTKCountKey( ztk, ZTK_KEY_ZEO_TEXTURE_FACE );
   zArrayAlloc( &texture->coord, zVec2D, num_coord );
   zArrayAlloc( &texture->face, zTri2D, num_face );
   if( zTextureCoordNum(texture) != num_coord ||
@@ -198,11 +198,11 @@ void zTextureFPrintZTK(FILE *fp, zTexture *texture)
   if( !texture ) return;
   ZTKPrpKeyFPrint( fp, texture, __ztk_prp_texture );
   for( i=0; i<zTextureCoordNum(texture); i++ ){
-    fprintf( fp, "coord: %d ", i );
+    fprintf( fp, "%s: %d ", ZTK_KEY_ZEO_TEXTURE_COORD, i );
     zVec2DFPrint( fp, zTextureCoord(texture,i) );
   }
   for( i=0; i<zTextureFaceNum(texture); i++ ){
-    fprintf( fp, "face: %d %d %d\n",
+    fprintf( fp, "%s: %d %d %d\n", ZTK_KEY_ZEO_TEXTURE_FACE,
       (int)( zTextureFaceCoord(texture,i,0)-zTextureCoordBuf(texture) ),
       (int)( zTextureFaceCoord(texture,i,1)-zTextureCoordBuf(texture) ),
       (int)( zTextureFaceCoord(texture,i,2)-zTextureCoordBuf(texture) ) );
