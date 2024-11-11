@@ -233,7 +233,7 @@ static bool _zBox3DHeightFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", zBox3DHeight((zBox3D*)obj) );
   return true; }
 
-static ZTKPrp __ztk_prp_shape_box[] = {
+static const ZTKPrp __ztk_prp_shape_box[] = {
   { ZTK_KEY_ZEO_SHAPE3D_CENTER, 1, _zBox3DCenterFromZTK, _zBox3DCenterFPrintZTK },
   { ZTK_KEY_ZEO_SHAPE3D_AX,     1, _zBox3DAxisXFromZTK, _zBox3DAxisXFPrintZTK },
   { ZTK_KEY_ZEO_SHAPE3D_AY,     1, _zBox3DAxisYFromZTK, _zBox3DAxisYFPrintZTK },

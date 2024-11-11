@@ -383,7 +383,7 @@ static bool _zTerraResThrsdFPrint(FILE *fp, int i, void *obj){
   return true;
 }
 
-static ZTKPrp __ztk_prp_terra[] = {
+static const ZTKPrp __ztk_prp_terra[] = {
   { ZTK_KEY_ZEO_MAP_TERRA_ORIGIN,     1, _zTerraOriginFromZTK, _zTerraOriginFPrint },
   { ZTK_KEY_ZEO_MAP_TERRA_RESOLUTION, 1, _zTerraResolFromZTK, _zTerraResolFPrint },
   { ZTK_KEY_ZEO_MAP_TERRA_SIZE,       1, _zTerraSizeFromZTK, _zTerraSizeFPrint },

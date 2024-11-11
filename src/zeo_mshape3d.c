@@ -178,7 +178,7 @@ static void *_zMShape3DShapeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
     &((zMShape3D*)obj)->shape, &((zMShape3D*)obj)->optic, &((zMShape3D*)obj)->texture, ztk ) ? obj : NULL;
 }
 
-static ZTKPrp __ztk_prp_zeo_mshape[] = {
+static const ZTKPrp __ztk_prp_mshape[] = {
   { ZTK_TAG_ZEO_OPTIC,   -1, _zMShape3DOpticFromZTK,   NULL },
   { ZTK_TAG_ZEO_TEXTURE, -1, _zMShape3DTextureFromZTK, NULL },
   { ZTK_TAG_ZEO_SHAPE,   -1, _zMShape3DShapeFromZTK,   NULL },
@@ -203,7 +203,7 @@ zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk)
     ZRUNWARN( ZEO_WARN_MSHAPE_EMPTY );
     return NULL;
   }
-  ZTKEvalTag( ms, NULL, ztk, __ztk_prp_zeo_mshape );
+  ZTKEvalTag( ms, NULL, ztk, __ztk_prp_mshape );
   return ms;
 }
 

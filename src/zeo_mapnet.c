@@ -41,7 +41,7 @@ static void *_zMapNetMapFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return zMapFromZTK( zMapNetMap((zMapNet*)obj,i), ztk ) ? obj : NULL;
 }
 
-static ZTKPrp __ztk_prp_zeo_mapnet[] = {
+static const ZTKPrp __ztk_prp_mapnet[] = {
   { ZTK_TAG_ZEO_MAP, -1, _zMapNetMapFromZTK, NULL },
 };
 
@@ -53,7 +53,7 @@ zMapNet *zMapNetFromZTK(zMapNet *mn, ZTK *ztk)
   zMapNetInit( mn );
   num_map = ZTKCountTag( ztk, ZTK_TAG_ZEO_MAP );
   if( !zMapNetAlloc( mn, num_map ) ) return NULL;
-  ZTKEvalTag( mn, NULL, ztk, __ztk_prp_zeo_mapnet );
+  ZTKEvalTag( mn, NULL, ztk, __ztk_prp_mapnet );
   return mn;
 }
 

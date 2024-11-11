@@ -53,7 +53,7 @@ static bool _zMapTypeFPrintZTK(FILE *fp, int i, void *obj){
   return true;
 }
 
-static ZTKPrp __ztk_prp_map_key[] = {
+static const ZTKPrp __ztk_prp_map[] = {
   { ZTK_KEY_ZEO_MAP_NAME, 1, _zMapNameFromZTK, _zMapNameFPrintZTK },
   { ZTK_KEY_ZEO_MAP_TYPE, 1, _zMapTypeFromZTK, _zMapTypeFPrintZTK },
 };
@@ -61,7 +61,7 @@ static ZTKPrp __ztk_prp_map_key[] = {
 zMap *zMapFromZTK(zMap *map, ZTK *ztk)
 {
   zMapInit( map );
-  if( !ZTKEvalKey( map, NULL, ztk, __ztk_prp_map_key ) ) return NULL;
+  if( !ZTKEvalKey( map, NULL, ztk, __ztk_prp_map ) ) return NULL;
   if( !map->body ){
     ZRUNERROR( ZEO_ERR_MAP_UNSPEC );
     return NULL;
@@ -71,6 +71,6 @@ zMap *zMapFromZTK(zMap *map, ZTK *ztk)
 
 void zMapFPrintZTK(FILE *fp, zMap *map)
 {
-  ZTKPrpKeyFPrint( fp, map, __ztk_prp_map_key );
+  ZTKPrpKeyFPrint( fp, map, __ztk_prp_map );
   map->com->_fprintZTK( fp, map->body );
 }

@@ -121,7 +121,7 @@ static bool _zOpticalInfoAlphaFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->alpha );
   return true; }
 
-static ZTKPrp __ztk_prp_optic[] = {
+static const ZTKPrp __ztk_prp_optic[] = {
   { ZTK_KEY_ZEO_OPTIC_NAME,     1, _zOpticalInfoNameFromZTK, _zOpticalInfoNameFPrintZTK },
   { ZTK_KEY_ZEO_OPTIC_AMBIENT,  1, _zOpticalInfoAmbientFromZTK, _zOpticalInfoAmbientFPrintZTK },
   { ZTK_KEY_ZEO_OPTIC_DIFFUSE,  1, _zOpticalInfoDiffuseFromZTK, _zOpticalInfoDiffuseFPrintZTK },

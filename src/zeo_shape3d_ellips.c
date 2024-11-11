@@ -298,7 +298,7 @@ static bool _zEllips3DDivFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%d\n", zEllips3DDiv((zEllips3D*)obj) );
   return true; }
 
-static ZTKPrp __ztk_prp_shape_ellips[] = {
+static const ZTKPrp __ztk_prp_shape_ellips[] = {
   { ZTK_KEY_ZEO_SHAPE3D_CENTER, 1, _zEllips3DCenterFromZTK, _zEllips3DCenterFPrintZTK },
   { ZTK_KEY_ZEO_SHAPE3D_AX,     1, _zEllips3DAxisXFromZTK, _zEllips3DAxisXFPrintZTK },
   { ZTK_KEY_ZEO_SHAPE3D_AY,     1, _zEllips3DAxisYFromZTK, _zEllips3DAxisYFPrintZTK },

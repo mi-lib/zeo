@@ -269,7 +269,7 @@ static bool _zSphere3DDivFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%d\n", zSphere3DDiv((zSphere3D*)obj) );
   return true; }
 
-static ZTKPrp __ztk_prp_shape_sphere[] = {
+static const ZTKPrp __ztk_prp_shape_sphere[] = {
   { ZTK_KEY_ZEO_SHAPE3D_CENTER, 1, _zSphere3DCenterFromZTK, _zSphere3DCenterFPrintZTK },
   { ZTK_KEY_ZEO_SHAPE3D_RADIUS, 1, _zSphere3DRadiusFromZTK, _zSphere3DRadiusFPrintZTK },
   { ZTK_KEY_ZEO_SHAPE3D_DIV,    1, _zSphere3DDivFromZTK, _zSphere3DDivFPrintZTK },

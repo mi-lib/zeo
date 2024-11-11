@@ -410,7 +410,7 @@ static bool _zNURBS3DSizeFPrint(FILE *fp, int i, void *obj){
   return true;
 }
 
-static ZTKPrp __ztk_prp_nurbs[] = {
+static const ZTKPrp __ztk_prp_nurbs[] = {
   { ZTK_KEY_ZEO_NURBS_ORDER, 1, _zNURBS3DOrderFromZTK, _zNURBS3DOrderFPrint },
   { ZTK_KEY_ZEO_NURBS_UKNOT, 1, _zNURBS3DUKnotFromZTK, _zNURBS3DUKnotFPrint },
   { ZTK_KEY_ZEO_NURBS_VKNOT, 1, _zNURBS3DVKnotFromZTK, _zNURBS3DVKnotFPrint },

@@ -155,7 +155,7 @@ static bool _zTextureDepthFPrintZTK(FILE *fp, int i, void *obj){
   return true;
 }
 
-static ZTKPrp __ztk_prp_texture[] = {
+static const ZTKPrp __ztk_prp_texture[] = {
   { ZTK_KEY_ZEO_TEXTURE_NAME,  1, _zTextureNameFromZTK, _zTextureNameFPrintZTK },
   { ZTK_KEY_ZEO_TEXTURE_FILE,  1, _zTextureFileFromZTK, _zTextureFileFPrintZTK },
   { ZTK_KEY_ZEO_TEXTURE_TYPE,  1, _zTextureTypeFromZTK, _zTextureTypeFPrintZTK },

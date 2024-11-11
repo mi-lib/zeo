@@ -206,7 +206,7 @@ static bool _zCapsule3DDivFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%d\n", zCapsule3DDiv((zCapsule3D*)obj) );
   return true; }
 
-static ZTKPrp __ztk_prp_shape_capsule[] = {
+static const ZTKPrp __ztk_prp_shape_capsule[] = {
   { ZTK_KEY_ZEO_SHAPE3D_CENTER, 2, _zCapsule3DCenterFromZTK, _zCapsule3DCenterFPrintZTK },
   { ZTK_KEY_ZEO_SHAPE3D_RADIUS, 1, _zCapsule3DRadiusFromZTK, _zCapsule3DRadiusFPrintZTK },
   { ZTK_KEY_ZEO_SHAPE3D_DIV,    1, _zCapsule3DDivFromZTK, _zCapsule3DDivFPrintZTK },

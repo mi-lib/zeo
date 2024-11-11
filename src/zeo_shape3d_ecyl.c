@@ -272,7 +272,7 @@ static bool _zECyl3DDivFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%d\n", zECyl3DDiv((zECyl3D*)obj) );
   return true; }
 
-static ZTKPrp __ztk_prp_shape_ecyl[] = {
+static const ZTKPrp __ztk_prp_shape_ecyl[] = {
   { ZTK_KEY_ZEO_SHAPE3D_CENTER, 2, _zECyl3DCenterFromZTK, _zECyl3DCenterFPrintZTK },
   { ZTK_KEY_ZEO_SHAPE3D_RADIUS, 2, _zECyl3DRadiusFromZTK, _zECyl3DRadiusFPrintZTK },
   { ZTK_KEY_ZEO_SHAPE3D_REF,    1, _zECyl3DRefFromZTK, _zECyl3DRefFPrintZTK },

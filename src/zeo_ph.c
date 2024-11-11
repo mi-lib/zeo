@@ -620,7 +620,7 @@ static void *_zPH3DCreatePyramidFromZTK(void *obj, int i, void *arg, ZTK *ztk)
   return obj;
 }
 
-static ZTKPrp __ztk_prp_ph[] = {
+static const ZTKPrp __ztk_prp_ph[] = {
   { ZTK_KEY_ZEO_PH_VERT,   -1, _zPH3DVertFromZTK,    NULL },
   { ZTK_KEY_ZEO_PH_FACE,   -1, _zPH3DFaceFromZTK,    NULL },
   { ZTK_KEY_ZEO_PH_LOOP,    1, _zPH3DLoopFromZTK,    NULL },
