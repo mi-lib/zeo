@@ -345,12 +345,22 @@ static bool _zShape3DTypeFPrint(FILE *fp, int i, void *obj){
   fprintf( fp, "%s\n", ((zShape3D*)obj)->com->typestr );
   return true;
 }
+static bool _zShape3DOpticFPrint(FILE *fp, int i, void *obj){
+  if( !zShape3DOptic((zShape3D*)obj) ) return false;
+  fprintf( fp, "%s\n", zName(zShape3DOptic((zShape3D*)obj)) );
+  return true;
+}
+static bool _zShape3DTextureFPrint(FILE *fp, int i, void *obj){
+  if( !zShape3DTexture((zShape3D*)obj) ) return false;
+  fprintf( fp, "%s\n", zName(zShape3DTexture((zShape3D*)obj)) );
+  return true;
+}
 
 static const ZTKPrp __ztk_prp_shape[] = {
   { ZTK_KEY_ZEO_SHAPE3D_NAME,    1, _zShape3DNameFromZTK, _zShape3DNameFPrint },
   { ZTK_KEY_ZEO_SHAPE3D_TYPE,    1, _zShape3DTypeFromZTK, _zShape3DTypeFPrint },
-  { ZTK_KEY_ZEO_SHAPE3D_OPTIC,   1, _zShape3DOpticFromZTK, NULL },
-  { ZTK_KEY_ZEO_SHAPE3D_TEXTURE, 1, _zShape3DTextureFromZTK, NULL },
+  { ZTK_KEY_ZEO_SHAPE3D_OPTIC,   1, _zShape3DOpticFromZTK, _zShape3DOpticFPrint },
+  { ZTK_KEY_ZEO_SHAPE3D_TEXTURE, 1, _zShape3DTextureFromZTK, _zShape3DTextureFPrint },
   { ZTK_KEY_ZEO_SHAPE3D_MIRROR,  1, _zShape3DMirrorFromZTK, NULL },
   { ZTK_KEY_ZEO_SHAPE3D_IMPORT,  1, _zShape3DImportFromZTK, NULL },
   { ZTK_KEY_ZEO_SHAPE3D_POS,     1, _zShape3DPosFromZTK, NULL },
@@ -391,10 +401,6 @@ void zShape3DFPrintZTK(FILE *fp, zShape3D *shape)
 {
   if( !shape ) return;
   ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape );
-  if( zShape3DOptic(shape) )
-    fprintf( fp, "%s: %s\n", ZTK_KEY_ZEO_SHAPE3D_OPTIC, zName(zShape3DOptic(shape)) );
-  if( zShape3DTexture(shape) )
-    fprintf( fp, "%s: %s\n", ZTK_KEY_ZEO_SHAPE3D_TEXTURE, zName(zShape3DTexture(shape)) );
   shape->com->_fprintZTK( fp, shape->body );
   fprintf( fp, "\n" );
 }

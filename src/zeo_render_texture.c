@@ -183,11 +183,17 @@ zTexture *zTextureFromZTK(zTexture *texture, ZTK *ztk)
   /* vertices & faces */
   if( !ZTKEvalKey( texture, NULL, ztk, __ztk_prp_texture ) ) return NULL;
   switch( texture->type ){
-  case ZTEXTURE_COLOR: return zTextureReadFile( texture, texture->filename ) ? texture : NULL;
-  case ZTEXTURE_BUMP:  return zTextureBumpReadFile( texture, texture->filename ) ? texture : NULL;
+  case ZTEXTURE_COLOR:
+    if( !zTextureReadFile( texture, texture->filename ) )
+      ZRUNWARN( ZEO_WARN_TEXTURE_READFUNCTION_NOT_ASSIGNED );
+    break;
+  case ZTEXTURE_BUMP:
+    if( !zTextureBumpReadFile( texture, texture->filename ) )
+      ZRUNWARN( ZEO_WARN_TEXTURE_READFUNCTION_NOT_ASSIGNED );
+    break;
   default: ;
   }
-  return NULL;
+  return texture;
 }
 
 /* print information of the texture parameter set out to a file. */

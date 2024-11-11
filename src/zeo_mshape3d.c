@@ -178,10 +178,23 @@ static void *_zMShape3DShapeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
     &((zMShape3D*)obj)->shape, &((zMShape3D*)obj)->optic, &((zMShape3D*)obj)->texture, ztk ) ? obj : NULL;
 }
 
+static bool _zMShape3DOpticFPrint(FILE *fp, int i, void *obj){
+  zOpticalInfoFPrintZTK( fp, zMShape3DOptic( (zMShape3D*)obj, i ) );
+  return true;
+}
+static bool _zMShape3DTextureFPrint(FILE *fp, int i, void *obj){
+  zTextureFPrintZTK( fp, zMShape3DTexture( (zMShape3D*)obj, i ) );
+  return true;
+}
+static bool _zMShape3DShapeFPrint(FILE *fp, int i, void *obj){
+  zShape3DFPrintZTK( fp, zMShape3DShape( (zMShape3D*)obj, i ) );
+  return true;
+}
+
 static const ZTKPrp __ztk_prp_mshape[] = {
-  { ZTK_TAG_ZEO_OPTIC,   -1, _zMShape3DOpticFromZTK,   NULL },
-  { ZTK_TAG_ZEO_TEXTURE, -1, _zMShape3DTextureFromZTK, NULL },
-  { ZTK_TAG_ZEO_SHAPE,   -1, _zMShape3DShapeFromZTK,   NULL },
+  { ZTK_TAG_ZEO_OPTIC,   -1, _zMShape3DOpticFromZTK,   _zMShape3DOpticFPrint },
+  { ZTK_TAG_ZEO_TEXTURE, -1, _zMShape3DTextureFromZTK, _zMShape3DTextureFPrint },
+  { ZTK_TAG_ZEO_SHAPE,   -1, _zMShape3DShapeFromZTK,   _zMShape3DShapeFPrint },
 };
 
 /* read multiple 3D shapes from a ZTK format processor. */
@@ -210,20 +223,19 @@ zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk)
 /* print multiple 3D shapes out to a file. */
 void zMShape3DFPrintZTK(FILE *fp, zMShape3D *ms)
 {
-  int i;
+  ZTKPrp *prp;
+  size_t size;
 
-  for( i=0; i<zMShape3DOpticNum(ms); i++ ){
-    fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
-    zOpticalInfoFPrintZTK( fp, zMShape3DOptic( ms, i ) );
+  if( !( prp = ZTKPrpDup( __ztk_prp_mshape ) ) ){
+    ZALLOCERROR();
+    return;
   }
-  for( i=0; i<zMShape3DTextureNum(ms); i++ ){
-    fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_TEXTURE );
-    zTextureFPrintZTK( fp, zMShape3DTexture( ms, i ) );
-  }
-  for( i=0; i<zMShape3DShapeNum(ms); i++ ){
-    fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
-    zShape3DFPrintZTK( fp, zMShape3DShape( ms, i ) );
-  }
+  size = sizeof(__ztk_prp_mshape) / sizeof(ZTKPrp);
+  _ZTKPrpSetNum( prp, size, ZTK_TAG_ZEO_OPTIC,   zMShape3DOpticNum(ms) );
+  _ZTKPrpSetNum( prp, size, ZTK_TAG_ZEO_TEXTURE, zMShape3DTextureNum(ms) );
+  _ZTKPrpSetNum( prp, size, ZTK_TAG_ZEO_SHAPE,   zMShape3DShapeNum(ms) );
+  _ZTKPrpTagFPrint( fp, ms, prp, size );
+  free( prp );
 }
 
 /* read multiple 3D shapes from a ZTK format file. */

@@ -137,6 +137,7 @@
 #define ZEO_WARN_TEXTURE_COORD_UNMATCH "%d: unmatched identifier of a coordinate"
 #define ZEO_WARN_TEXTURE_UNKNOWN_TYPE  "unknown texture type: %s"
 #define ZEO_WARN_TEXTURE_EMPTY         "empty set of coordinates assigned for a texture."
+#define ZEO_WARN_TEXTURE_READFUNCTION_NOT_ASSIGNED "function to read texture not assigned"
 
 #define ZEO_WARN_PCD_LACKOFDATA           "short of data"
 

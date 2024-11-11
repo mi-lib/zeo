@@ -93,7 +93,7 @@ __ZEO_EXPORT bool (* __z_texture_bump_read_file)(zTexture *, char *);
 #define zTextureBumpReadFile(t,f) ( __z_texture_bump_read_file ? __z_texture_bump_read_file( (t), (f) ) : false )
 
 /* tag to identify a texture */
-#define ZTK_TAG_ZEO_TEXTURE "zeo::texture"
+#define ZTK_TAG_ZEO_TEXTURE       "zeo::texture"
 
 #define ZTK_KEY_ZEO_TEXTURE_NAME  "name"
 #define ZTK_KEY_ZEO_TEXTURE_FILE  "file"
