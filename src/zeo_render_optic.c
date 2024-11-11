@@ -100,15 +100,12 @@ static bool _zOpticalInfoNameFPrintZTK(FILE *fp, int i, void *obj){
   fprintf( fp, "%s\n", zName((zOpticalInfo*)obj) );
   return true; }
 static bool _zOpticalInfoAmbientFPrintZTK(FILE *fp, int i, void *obj){
-  if( zRGBIsZero( &((zOpticalInfo*)obj)->ambient ) ) return false;
   zRGBFPrint( fp, &((zOpticalInfo*)obj)->ambient );
   return true; }
 static bool _zOpticalInfoDiffuseFPrintZTK(FILE *fp, int i, void *obj){
-  if( zRGBIsZero( &((zOpticalInfo*)obj)->diffuse ) ) return false;
   zRGBFPrint( fp, &((zOpticalInfo*)obj)->diffuse );
   return true; }
 static bool _zOpticalInfoSpecularFPrintZTK(FILE *fp, int i, void *obj){
-  if( zRGBIsZero( &((zOpticalInfo*)obj)->specular ) ) return false;
   zRGBFPrint( fp, &((zOpticalInfo*)obj)->specular );
   return true; }
 static bool _zOpticalInfoESRFPrintZTK(FILE *fp, int i, void *obj){
