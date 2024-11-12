@@ -1,3 +1,4 @@
+2024.11.12. Modified .gitignore. [all]
 2024.11.11. Modified zMShape3DFPrintZTK to call fprint methods in _ZTKPrpTagFPrint with a help of ZTKPrpDup and _ZTKPrpSetNum. [zeo_mshape3d]
 2024.11.11. Added _zMShape3DOpticFPrint, _zMShape3DTextureFPrint, and _zMShape3DShapeFPrint, and assigned those functions for fprint methods of __ztk_prp_mshape. [zeo_mshape3d]
 2024.11.11. Added _zShape3DOpticFPrint and _zShape3DTextureFPrint, and modified __ztk_prp_shape to read those functions in ZTKEvalKey in zShape3DFPrintZTK. [zeo_shape3d]

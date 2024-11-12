@@ -1,4 +1,5 @@
 config
+include/*/*_export.h
 src/*.o
 lib/*
 !lib/.gitkeep
