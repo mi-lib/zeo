@@ -12,7 +12,7 @@ static const char *__zaxisname[] = { "x", "y", "z", "tilt", "elev", "azim", NULL
 char *zAxisStr(zAxis axis)
 {
   if( axis < zX || axis > zZA ){
-    ZRUNERROR( ZEO_ERR_AXIS_INVALID, axis );
+    ZRUNERROR( ZEO_ERR_INVALID_AXIS, axis );
     return NULL;
   }
   return (char *)__zaxisname[axis];
@@ -27,7 +27,7 @@ zAxis zAxisFromStr(const char *str)
   if( !str ) return zAxisInvalid;
   for( axis=zX, jp=(char **)__zaxisname; *jp; jp++, axis++ )
     if( strcmp( str, *jp ) == 0 ) return axis;
-  ZRUNERROR( ZEO_ERR_AXIS_INVNAME, str );
+  ZRUNERROR( ZEO_ERR_INVALID_AXIS_NAME, str );
   return zAxisInvalid; /* invalid string */
 }
 
@@ -39,7 +39,7 @@ static const char *__zdirname[] = {
 char *zDirStr(zDir dir)
 {
   if( dir < ZEO_DIR_NONE || dir > ZEO_DIR_CCW ){
-    ZRUNERROR( ZEO_ERR_DIR_INVALID, dir );
+    ZRUNERROR( ZEO_ERR_INVALID_DIR, dir );
     return NULL;
   }
   return (char *)__zdirname[dir];
@@ -54,7 +54,7 @@ zDir zDirFromStr(const char *str)
   if( !str ) return ZEO_DIR_NONE;
   for( dir=ZEO_DIR_NONE, jp=(char **)__zdirname; *jp; jp++, dir++ )
     if( strcmp( str, *jp ) == 0 ) return dir;
-  ZRUNERROR( ZEO_ERR_DIR_INVNAME, str );
+  ZRUNERROR( ZEO_ERR_INVALID_DIR_NAME, str );
   return ZEO_DIR_NONE;
 }
 

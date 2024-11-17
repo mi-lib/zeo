@@ -64,11 +64,11 @@ zShape3D *zShape3DClone(zShape3D *org, zShape3D *cln, zOpticalInfo *oi)
 zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis)
 {
   if( dest->com ){
-    ZRUNWARN( ZEO_WARN_SHAPE_MIRROR_INV_TYPE, dest->com->typestr );
+    ZRUNWARN( ZEO_WARN_SHAPE_INVALID_MIRRORTYPE, dest->com->typestr );
     zShape3DDestroy( dest );
   }
   if( axis < zX || axis > zZ ){
-    ZRUNERROR( ZEO_ERR_SHAPE_MIRROR_INV_AXIS, zAxisStr(axis) );
+    ZRUNERROR( ZEO_ERR_SHAPE_INVALID_MIRRORAXIS, zAxisStr(axis) );
     return NULL;
   }
   if( !( dest->body = ( dest->com = src->com )->_mirror( src->body, axis ) ) )
@@ -385,7 +385,7 @@ zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoAr
   if( !ZTKEvalKey( shape, &prp, ztk, __ztk_prp_shape ) ) return NULL;
   if( !prp.imported ){
     if( !shape->com ){
-      ZRUNERROR( ZEO_ERR_SHAPE_INVALID );
+      ZRUNERROR( ZEO_ERR_SHAPE_INVALID_TYPE );
       return NULL;
     }
     if( !shape->com->_fromZTK( shape->body, ztk ) ) return NULL;

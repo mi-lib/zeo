@@ -93,7 +93,7 @@ zEP *zMat3DToEP(zMat3D *m, zEP *ep)
   for( imax=0, i=1; i<4; i++ )
     if( s[i] > s[imax] ) imax = i;
   if( s[imax] <= 0 ){
-    ZRUNERROR( ZEO_ERR_NONSO3 );
+    ZRUNERROR( ZEO_ERR_MAT_NOTSO3 );
     return NULL;
   }
   k = 0.25 / ( ep->e[imax] = 0.5 * sqrt( s[imax] ) );

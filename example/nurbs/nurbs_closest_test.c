@@ -20,9 +20,9 @@ int main(void)
   ZTKDestroy( &ztk );
 
   fp = fopen( "sfc", "w" );
-  for( i=0; i<=nurbs.ns[0]; i++ ){
+  for( i=0; i<=zNURBS3DSlice(&nurbs,0); i++ ){
     u = zNURBS3DKnotSlice( &nurbs, 0, i );
-    for( j=0; j<=nurbs.ns[1]; j++ ){
+    for( j=0; j<=zNURBS3DSlice(&nurbs,1); j++ ){
       v = zNURBS3DKnotSlice( &nurbs, 1, j );
       if( zNURBS3DVec( &nurbs, u, v, &p ) ){
         zVec3DDataFPrint( fp, &p );

@@ -22,10 +22,10 @@ int main(int argc, char *argv[])
   for( i=0; i<n; i++ )
     zNURBS3D1SetCP( &nurbs, i, &cp[i] );
   zNURBS3D1SetWeight( &nurbs, 4, argc > 1 ? atof(argv[1]) : 1.0 );
-  zNURBS3DSetSliceNum( &nurbs, 0, 100 );
+  zNURBS3DSetSlice( &nurbs, 0, 100 );
   fpp = fopen( "p", "w" );
   fpt = fopen( "t", "w" );
-  for( i=0; i<=nurbs.ns[1]; i++ ){
+  for( i=0; i<=zNURBS3DSlice(&nurbs,1); i++ ){
     t = zNURBS3D1KnotSlice( &nurbs, i );
     if( zNURBS3D1VecTan( &nurbs, 0, t, &p, &tv ) ){
       zVec3DDataNLFPrint( fpp, &p );

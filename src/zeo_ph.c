@@ -503,7 +503,7 @@ static bool _zPH3DLoopArcFromZTK(ZTK *ztk, zVec2DList *vlist)
 
   dir = zDirFromStr( ZTKVal(ztk) );
   if( dir != ZEO_DIR_CW && dir != ZEO_DIR_CCW ){
-    ZRUNERROR( ZEO_ERR_DIR_INVNAME, ZTKVal(ztk) );
+    ZRUNERROR( ZEO_ERR_INVALID_DIR_NAME, ZTKVal(ztk) );
     return false;
   }
   ZTKValNext(ztk);
@@ -524,7 +524,7 @@ static bool _zPH3DLoopArcFromZTK(ZTK *ztk, zVec2DList *vlist)
   zVec2DSub( &v2, v1, &d1 );
   zVec2DRot( &d1, dir == ZEO_DIR_CW ? -zPI_2 : zPI_2, &c );
   if( ( cr = zSqr(r) / zVec2DSqrNorm(&d1) - 0.25 ) < 0 ){
-    ZRUNERROR( ZEO_ERR_PH_ARC_INV_RADIUS, r );
+    ZRUNERROR( ZEO_ERR_PH_TOOSMALL_ARC, r );
     return false;
   }
   zVec2DMulDRC( &c, sqrt( cr ) );
@@ -553,11 +553,11 @@ static void *_zPH3DLoopFromZTK(void *obj, int i, void *arg, ZTK *ztk)
 
   plane_axis = zAxisFromStr( ZTKVal(ztk) );
   if( plane_axis != zX && plane_axis != zY && plane_axis != zZ ){
-    ZRUNERROR( ZEO_ERR_AXIS_INVNAME, ZTKVal(ztk) );
+    ZRUNERROR( ZEO_ERR_INVALID_AXIS_NAME, ZTKVal(ztk) );
     return NULL;
   }
   if( !ZTKValNext( ztk ) ){
-    ZRUNERROR( ZEO_ERR_PH_LOOP_INVALID );
+    ZRUNERROR( ZEO_ERR_PH_INVALID_LOOP );
     return NULL;
   }
   plane_val = ZTKDouble(ztk);
@@ -642,7 +642,7 @@ zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk)
   if( ZTKCountKey( ztk, ZTK_KEY_ZEO_PH_PRISM ) > 0 ||
       ZTKCountKey( ztk, ZTK_KEY_ZEO_PH_PYRAMID ) > 0 ){
     if( num_face > 0 ){
-      ZRUNERROR( ZEO_ERR_PH_INV_FACE, num_face );
+      ZRUNERROR( ZEO_ERR_PH_INVALID_FACE, num_face );
       return NULL;
     }
     if( num_vert > 0 ){

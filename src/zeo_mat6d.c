@@ -34,7 +34,7 @@ zVec6D *zMat6DRow(const zMat6D *m, int i, zVec6D *v)
   int j;
 
   if( i < 0 || i > 5 ){
-    ZRUNERROR( ZEO_ERR_INVINDEX );
+    ZRUNERROR( ZEO_ERR_INVALID_INDEX );
     return NULL;
   }
   j = i % 3;
@@ -51,7 +51,7 @@ zVec6D *zMat6DCol(const zMat6D *m, int i, zVec6D *v)
   int j;
 
   if( i < 0 || i > 5 ){
-    ZRUNERROR( ZEO_ERR_INVINDEX );
+    ZRUNERROR( ZEO_ERR_INVALID_INDEX );
     return NULL;
   }
   j = i % 3;

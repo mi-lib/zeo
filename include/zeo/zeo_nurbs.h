@@ -39,50 +39,47 @@ zArray2Class( zNURBS3DCPNet, zNURBS3DCPCell );
  * zNURBS3D is a 3D NURBS that represents curve and surface.
  *//* ******************************************************* */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zNURBS3D ){
-  int order[2];   /*!< \brief orders of a curve in two axes */
-  zVec knot[2]; /*!< \brief knot vectors */
-  int ns[2];    /*!< \brief number of slices in each axis */
-  /*! \cond */
-  zNURBS3DCPNet cpnet; /* a net of control points */
-  /*! \endcond */
+  zBSplineParam param[2]; /*!< \brief B-spline parameter */
+  zNURBS3DCPNet cpnet;    /*!< \brief a net of control points */
 };
 
-#define zNURBS3DKnotNum(n,i)       zVecSizeNC((n)->knot[i])
-#define zNURBS3DKnot(n,i,j)        zVecElemNC((n)->knot[i],j)
-#define zNURBS3DSetKnot(n,i,j,v)   ( zNURBS3DKnot(n,i,j) = (v) )
-#define zNURBS3DKnotS(n,i)         zNURBS3DKnot(n,i,(n)->order[i])
-#define zNURBS3DKnotE(n,i)         zNURBS3DKnot(n,i,zNURBS3DCPNum(n,i))
-#define zNURBS3DKnotSlice(n,i,k)   ( ( zNURBS3DKnotE(n,i) - zNURBS3DKnotS(n,i) ) * k / (n)->ns[i] + zNURBS3DKnotS(n,i) )
-#define zNURBS3DSliceNum(n,i)      (n)->ns[i]
+#define zNURBS3DOrder(nurbs,i)       (nurbs)->param[(i)].order
+#define zNURBS3DKnotNum(nurbs,i)     zBSplineParamKnotNum( &(nurbs)->param[(i)] )
+#define zNURBS3DKnot(nurbs,i,j)      zBSplineParamKnot( &(nurbs)->param[(i)], j )
+#define zNURBS3DSetKnot(nurbs,i,j,v) zBSplineParamSetKnot( &(nurbs)->param[(i)], j, v )
+#define zNURBS3DKnotS(nurbs,i)       zBSplineParamKnotS( &(nurbs)->param[(i)] )
+#define zNURBS3DKnotE(nurbs,i)       zBSplineParamKnotE( &(nurbs)->param[(i)] )
+#define zNURBS3DKnotSlice(nurbs,i,k) zBSplineParamKnotSlice( &(nurbs)->param[(i)], k )
+#define zNURBS3DSlice(nurbs,i)       (nurbs)->param[(i)].slice
 
 /*! \brief set numbers of slices of a NURBS curve / surface. */
-#define zNURBS3DSetSliceNum(n,nu,nv) do{\
-  (n)->ns[0] = (nu);\
-  (n)->ns[1] = (nv);\
+#define zNURBS3DSetSlice(nurbs,nu,nv) do{\
+  zBSplineParamSetSlice( &(nurbs)->param[0], nu );\
+  zBSplineParamSetSlice( &(nurbs)->param[1], nv );\
 } while(0)
 
-#define zNURBS3DCPNum(n,i)         zArray2Size(&(n)->cpnet,i)
-#define zNURBS3DWeight(n,i,j)      ( zArray2ElemNC(&(n)->cpnet,i,j)->w )
-#define zNURBS3DSetWeight(n,i,j,v) ( zNURBS3DWeight(n,i,j) = (v) )
-#define zNURBS3DCP(n,i,j)          ( &zArray2ElemNC(&(n)->cpnet,i,j)->cp )
-#define zNURBS3DSetCP(n,i,j,v)     zVec3DCopy( v, zNURBS3DCP(n,i,j) )
+#define zNURBS3DCPNum(nurbs,i)         zArray2Size(&(nurbs)->cpnet,i)
+#define zNURBS3DWeight(nurbs,i,j)      ( zArray2ElemNC(&(nurbs)->cpnet,i,j)->w )
+#define zNURBS3DSetWeight(nurbs,i,j,v) ( zNURBS3DWeight(nurbs,i,j) = (v) )
+#define zNURBS3DCP(nurbs,i,j)          ( &zArray2ElemNC(&(nurbs)->cpnet,i,j)->cp )
+#define zNURBS3DSetCP(nurbs,i,j,v)     zVec3DCopy( v, zNURBS3DCP(nurbs,i,j) )
 
-#define zNURBS3D1KnotNum(n)        zNURBS3DKnotNum(n,1)
-#define zNURBS3D1Knot(n,j)         zNURBS3DKnot(n,1,j)
-#define zNURBS3D1SetKnot(n,j,v)    zNURBS3DSetKnot(n,1,j,v)
-#define zNURBS3D1KnotS(n)          zNURBS3DKnotS(n,1)
-#define zNURBS3D1KnotE(n)          zNURBS3DKnotE(n,1)
-#define zNURBS3D1KnotSlice(n,k)    zNURBS3DKnotSlice(n,1,k)
-#define zNURBS3D1SliceNum(n)       zNURBS3DSliceNum(n,1)
-#define zNURBS3D1SetSliceNum(n,k)  zNURBS3DSetSliceNum(n,0,k)
+#define zNURBS3D1KnotNum(nurbs)        zNURBS3DKnotNum(nurbs,1)
+#define zNURBS3D1Knot(nurbs,j)         zNURBS3DKnot(nurbs,1,j)
+#define zNURBS3D1SetKnot(nurbs,j,v)    zNURBS3DSetKnot(nurbs,1,j,v)
+#define zNURBS3D1KnotS(nurbs)          zNURBS3DKnotS(nurbs,1)
+#define zNURBS3D1KnotE(nurbs)          zNURBS3DKnotE(nurbs,1)
+#define zNURBS3D1KnotSlice(nurbs,k)    zNURBS3DKnotSlice(nurbs,1,k)
+#define zNURBS3D1Slice(nurbs)          zNURBS3DSlice(nurbs,1)
+#define zNURBS3D1SetSlice(nurbs,k)     zNURBS3DSetSlice(nurbs,0,k)
 
-#define zNURBS3D1CPNum(n)          zNURBS3DCPNum(n,1)
-#define zNURBS3D1Weight(n,j)       zNURBS3DWeight(n,0,j)
-#define zNURBS3D1SetWeight(n,j,v)  zNURBS3DSetWeight(n,0,j,v)
-#define zNURBS3D1CP(n,j)           zNURBS3DCP(n,0,j)
-#define zNURBS3D1SetCP(n,j,v)      zNURBS3DSetCP(n,0,j,v)
+#define zNURBS3D1CPNum(nurbs)          zNURBS3DCPNum(nurbs,1)
+#define zNURBS3D1Weight(nurbs,j)       zNURBS3DWeight(nurbs,0,j)
+#define zNURBS3D1SetWeight(nurbs,j,v)  zNURBS3DSetWeight(nurbs,0,j,v)
+#define zNURBS3D1CP(nurbs,j)           zNURBS3DCP(nurbs,0,j)
+#define zNURBS3D1SetCP(nurbs,j,v)      zNURBS3DSetCP(nurbs,0,j,v)
 
-#define ZEO_NURBS3D_DEFAULT_NS     20
+#define ZEO_NURBS3D_DEFAULT_SLICE  20
 
 /*! \brief allocate a NURBS curve / surface.
  *

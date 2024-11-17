@@ -59,7 +59,7 @@ static zRGB *_zRGBHex(zRGB *rgb, const char *hex)
 
   len = strlen( hex );
   if( len % 3 != 0 )
-    ZRUNWARN( ZEO_ERR_RGB, hex, len );
+    ZRUNWARN( ZEO_ERR_INVALID_RGBSTR, hex, len );
   len /= 3;
   for( r=g=b=d=0, i=0; i<len; i++ ){
     r <<= 4; r |= zA2X_c( hex[i] );

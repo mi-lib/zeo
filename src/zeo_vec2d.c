@@ -236,7 +236,7 @@ double zVec2DNormalize(const zVec2D *v, zVec2D *nv)
   double l, k;
 
   if( zVec2DIsTiny( v ) ){
-    ZRUNWARN( ZEO_ERR_ZERONORM );
+    ZRUNWARN( ZEO_ERR_VEC_ZERONORM );
     return -1;
   }
   k = 1.0 / ( l = zVec2DNorm(v) );

@@ -92,7 +92,7 @@ zTerra *zTerraLevel(zTerra *terra)
 zTerra *zTerraAlloc(zTerra *terra, int xsize, int ysize)
 {
   if( xsize == 0 || ysize == 0 ){
-    ZRUNERROR( ZEO_ERR_TERRA_INVSIZ );
+    ZRUNERROR( ZEO_ERR_TERRA_INVALIDGRIDSIZE );
     return NULL;
   }
   zArray2Alloc( &terra->gridmap, zTerraCell, xsize, ysize );
@@ -122,7 +122,7 @@ zTerra *zTerraAllocRegion(zTerra *terra, double xmin, double xmax, double ymin, 
   int xsize, ysize;
 
   if( dx < zTOL || dy < zTOL ){
-    ZRUNERROR( ZEO_ERR_TERRA_INVRSL );
+    ZRUNERROR( ZEO_ERR_TERRA_INVALIDRESOLUTION );
     return NULL;
   }
   xsize = floor( ( xmax - xmin ) / dx ) + 1;
@@ -278,7 +278,7 @@ double zTerraZ(zTerra *terra, double x, double y)
 
   zVec3DCreate( &p, x, y, 0.5*(terra->zmin+terra->zmax) );
   if( !_zTerraGetBaseGrid( terra, &p, &i, &j ) ){
-    ZRUNERROR( ZEO_ERR_TERRA_OOREG, x, y );
+    ZRUNERROR( ZEO_ERR_TERRA_OUTOFREGION, x, y );
     return NAN;
   }
   _zTerraZGrid( terra, x, y, i  , j  , &z[0], &d[0] );
@@ -303,7 +303,7 @@ static void *_zTerraResolFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   ((zTerra*)obj)->dx = ZTKDouble( ztk );
   ((zTerra*)obj)->dy = ZTKDouble( ztk );
   if( zIsTiny(((zTerra*)obj)->dx) || zIsTiny(((zTerra*)obj)->dy) ){
-    ZRUNERROR( ZEO_ERR_TERRA_INVRSL );
+    ZRUNERROR( ZEO_ERR_TERRA_INVALIDRESOLUTION );
     return NULL;
   }
   return obj;
@@ -342,7 +342,7 @@ static void *_zTerraGridFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   j = ZTKInt( ztk );
   k = ZTKInt( ztk );
   if( !( grid = zTerraGrid((zTerra*)obj,j,k) ) ){
-    ZRUNERROR( ZEO_ERR_TERRA_OORAN );
+    ZRUNERROR( ZEO_ERR_TERRA_OUTOFRANGE );
     return NULL;
   }
   grid->z = ZTKDouble( ztk );

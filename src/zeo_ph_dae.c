@@ -155,14 +155,14 @@ static bool _zDAESrcEvalAccessor(xmlNode *node, zDAESrc *s)
     zXMLCheckAttrAndExec( attr, "stride", s->stride = zXMLGetAttrInt( attr ) );
   }
   if( s->vcount * s->stride != s->count ){
-    ZRUNERROR( ZEO_ERR_DAE_ARRSIZMIS, s->vcount * s->stride, s->count );
+    ZRUNERROR( ZEO_ERR_DAE_SIZEMISMATCH_ARRAY, s->vcount * s->stride, s->count );
     return false;
   }
   i = 0;
   zXMLForEachNode( node->children, np ){
     zXMLCheckElementAndExec( np, "param", _zDAESrcSetAccessor( np, s, i++ ) );
     if( i > s->stride ){
-      ZRUNERROR( ZEO_ERR_DAE_STRIDEMIS, i, s->stride );
+      ZRUNERROR( ZEO_ERR_DAE_STRIDEMISMATCH, i, s->stride );
       return false;
     }
   }
@@ -193,11 +193,11 @@ static char *_zDAEEvalURI(xmlNode *node, const char *name)
   char *id;
 
   if( !( id = zXMLFindNodeAttr( node, name ) ) ){
-    ZRUNERROR( ZEO_ERR_DAE_URI_EMPTY );
+    ZRUNERROR( ZEO_ERR_DAE_EMPTY_URI );
     return NULL;
   }
   if( id[0] != '#' ){ /* only local URI is accepted. */
-    ZRUNERROR( ZEO_ERR_DAE_URI_INVALID, id );
+    ZRUNERROR( ZEO_ERR_DAE_INVALID_URI, id );
     return NULL;
   }
   return &id[1];
@@ -255,7 +255,7 @@ static bool _zDAEPrimitiveEvalFace(xmlNode *node, zDAEMesh *mesh)
         if( !( source_id = _zDAEEvalURI( np, "source" ) ) ) return false;
         pc->data.voffset = offset;
         if( strcmp( mesh->vid, source_id ) != 0 ){
-          ZRUNERROR( ZEO_ERR_DAE_IDENTMIS, mesh->vid, source_id );
+          ZRUNERROR( ZEO_ERR_DAE_IDENTMISMATCH, mesh->vid, source_id );
           return false;
         }
       }
@@ -434,7 +434,7 @@ static bool _zDAEEval(xmlNode *node, zDAEMeshList *mlist)
   xmlNode *np;
 
   if( !( np = zXMLFindNodeElement( node, "COLLADA" ) ) ){
-    ZRUNERROR( ZEO_ERR_DAE_NOT_COLLADA );
+    ZRUNERROR( ZEO_ERR_DAE_NOTCOLLADA );
     return false;
   }
   zXMLForEachNode( node->children, np ){
@@ -445,7 +445,7 @@ static bool _zDAEEval(xmlNode *node, zDAEMeshList *mlist)
      library_effects, library_materials, library_controllers, library_visual_scenes,
      and scene) are ignored. */
   if( zListIsEmpty( mlist ) ){
-    ZRUNERROR( ZEO_ERR_DAE_NO_GEOMETRY );
+    ZRUNERROR( ZEO_ERR_DAE_NOGEOMETRY );
     return false;
   }
   return true;
@@ -493,7 +493,7 @@ static zPH3D *_zDAEMeshList2PH3D(zPH3D *ph, zDAEMeshList *mlist)
         if( vp ){ /* polylist */
           vp = zSTokenSkim( vp, buf, BUFSIZ );
           if( ( ns = atoi( buf ) ) != 3 ){
-            ZRUNERROR( ZEO_ERR_DAE_PRIM_UNSUPPORTED );
+            ZRUNERROR( ZEO_ERR_DAE_UNSUPPORTED_PRIM );
             break;
           }
         } else /* triangles */
@@ -527,11 +527,11 @@ zPH3D *zPH3DReadFileDAE(zPH3D *ph, const char *filename)
     return NULL;
   }
   if( !_zDAEEval( xmlDocGetRootElement( doc ), &mlist ) ){
-    ZRUNERROR( ZEO_ERR_DAE_PRIM_INVALID, filename );
+    ZRUNERROR( ZEO_ERR_DAE_INVALID_PRIM, filename );
     ph = NULL;
   } else
   if( !_zDAEMeshList2PH3D( ph, &mlist ) ){
-    ZRUNERROR( ZEO_ERR_DAE_FAILCONV, filename );
+    ZRUNERROR( ZEO_ERR_DAE_FAILURE, filename );
     ph = NULL;
   }
   _zDAEMeshListDestroy( &mlist );

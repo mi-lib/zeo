@@ -150,7 +150,7 @@ zMat2D *zMat2DInv(const zMat2D *m, zMat2D *im)
   double det;
 
   if( zIsTiny( ( det = _zMat2DDet( m ) ) ) ){
-    ZRUNERROR( ZEO_ERR_SINGULARMAT );
+    ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
     return NULL;
   }
   det = 1.0 / det;
@@ -196,7 +196,7 @@ zVec2D *zMulInvMat2DVec2D(const zMat2D *m, const zVec2D *v, zVec2D *mv)
   double det;
 
   if( zIsTiny( ( det = _zMat2DDet( m ) ) ) ){
-    ZRUNERROR( ZEO_ERR_SINGULARMAT );
+    ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
     return NULL;
   }
   _zVec2DCreate( mv, (m->c.yy*v->c.x-m->c.yx*v->c.y)/det, (-m->c.xy*v->c.x+m->c.xx*v->c.y)/det );
@@ -247,7 +247,7 @@ zMat2D *zMulInvMat2DMat2D(const zMat2D *m1, const zMat2D *m2, zMat2D *m)
   double det;
 
   if( zIsTiny( ( det = _zMat2DDet( m1 ) ) ) ){
-    ZRUNERROR( ZEO_ERR_SINGULARMAT );
+    ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
     return NULL;
   }
   _zMat2DCreate( m,

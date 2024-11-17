@@ -271,7 +271,7 @@ double zVec3DNormalizeNC(const zVec3D *v, zVec3D *nv)
 double zVec3DNormalize(const zVec3D *v, zVec3D *nv)
 {
   if( zVec3DIsTiny( v ) ){
-    ZRUNWARN( ZEO_ERR_ZERONORM );
+    ZRUNWARN( ZEO_ERR_VEC_ZERONORM );
     return 0;
   }
   __zVec3DNormalize( v, nv );
@@ -331,7 +331,7 @@ zVec3D *zVec3DProj(const zVec3D *v, const zVec3D *n, zVec3D *pv)
   double l;
 
   if( _zVec3DIsTiny( n ) ){
-    ZRUNWARN( ZEO_ERR_ZERONORM );
+    ZRUNWARN( ZEO_ERR_VEC_ZERONORM );
     return NULL;
   }
   l = _zVec3DInnerProd( n, v ) / _zVec3DSqrNorm( n );
@@ -347,7 +347,7 @@ zVec3D *zVec3DOrthoNormal(const zVec3D *v, zVec3D *ov)
   else
     _zVec3DCreate( ov, v->c.y - v->c.z, v->c.z - v->c.x, v->c.x - v->c.y );
   if( zVec3DIsTiny( ov ) ){
-    ZRUNWARN( ZEO_ERR_ZERONORM );
+    ZRUNWARN( ZEO_ERR_VEC_ZERONORM );
     return NULL;
   }
   zVec3DNormalizeDRC( ov );
@@ -360,7 +360,7 @@ zVec3D *zVec3DOrthogonalize(const zVec3D *v, const zVec3D *n, zVec3D *ov)
   double l;
 
   if( _zVec3DIsTiny( n ) ){
-    ZRUNWARN( ZEO_ERR_ZERONORM );
+    ZRUNWARN( ZEO_ERR_VEC_ZERONORM );
     return NULL;
   }
   l = -_zVec3DInnerProd( n, v ) / _zVec3DSqrNorm( n );

@@ -6,56 +6,43 @@
 
 #include <zeo/zeo_nurbs.h>
 
-/* set knots & assign control points & initialize weight uniformly. */
-static void _zNURBS3DKnotInit(zNURBS3D *nurbs, int i)
-{
-  int j;
-
-  for( j=0; j<=nurbs->order[i]; j++ )
-    zNURBS3DSetKnot( nurbs, i, j, 0 );
-  for( ; j<=zNURBS3DCPNum(nurbs,i); j++ )
-    zNURBS3DSetKnot( nurbs, i, j, zNURBS3DKnot(nurbs,i,j-1) + 1 );
-  for( ; j<zNURBS3DKnotNum(nurbs,i); j++ )
-    zNURBS3DSetKnot( nurbs, i, j, zNURBS3DKnot(nurbs,i,j-1) );
-}
-
 /* allocate a NURBS curve / surface. */
 bool zNURBS3DAlloc(zNURBS3D *nurbs, int size1, int size2, int order1, int order2)
 {
   int i, j;
 
   if( size1 <= order1 || size2 <= order2 ){
-    ZRUNERROR( ZEO_ERR_NURBS_INVORDER );
+    ZRUNERROR( ZEO_ERR_NURBS_INVALID_ORDER );
     return false;
   }
-  nurbs->order[0] = order1;
-  nurbs->order[1] = order2;
-  nurbs->knot[0] = zVecAlloc( size1+order1+1 );
-  nurbs->knot[1] = zVecAlloc( size2+order2+1 );
-
+  if( !zBSplineParamAlloc( &nurbs->param[0], order1, size1, 0 ) ||
+      !zBSplineParamAlloc( &nurbs->param[1], order2, size2, 0 ) ){
+    zBSplineParamFree( &nurbs->param[0] );
+    zBSplineParamFree( &nurbs->param[1] );
+    return false;
+  }
   zArray2Alloc( &nurbs->cpnet, zNURBS3DCPCell, size1, size2 );
-  if( !nurbs->knot[0] || !nurbs->knot[1] || zArray2Buf(&nurbs->cpnet) == NULL ){
+  if( !zArray2Buf(&nurbs->cpnet) ){
     ZALLOCERROR();
     zNURBS3DDestroy( nurbs );
     return false;
   }
-  _zNURBS3DKnotInit( nurbs, 0 );
-  _zNURBS3DKnotInit( nurbs, 1 );
+  zBSplineParamKnotInit( &nurbs->param[0] );
+  zBSplineParamKnotInit( &nurbs->param[1] );
   for( i=0; i<size1; i++ )
     for( j=0; j<size2; j++ ){
       zNURBS3DSetWeight( nurbs, i, j, 1.0 );
       zVec3DZero( zNURBS3DCP(nurbs,i,j) );
     }
-  zNURBS3DSetSliceNum( nurbs, ZEO_NURBS3D_DEFAULT_NS, ZEO_NURBS3D_DEFAULT_NS );
+  zNURBS3DSetSlice( nurbs, ZEO_NURBS3D_DEFAULT_SLICE, ZEO_NURBS3D_DEFAULT_SLICE );
   return true;
 }
 
 /* initialize a NURBS curve / surface. */
 zNURBS3D *zNURBS3DInit(zNURBS3D *nurbs)
 {
-  nurbs->order[0] = nurbs->order[1] = 0;
-  zNURBS3DSetSliceNum( nurbs, 0, 0 );
-  nurbs->knot[0] = nurbs->knot[1] = NULL;
+  zBSplineParamInit( &nurbs->param[0] );
+  zBSplineParamInit( &nurbs->param[1] );
   zArray2Init( &nurbs->cpnet );
   return nurbs;
 }
@@ -63,8 +50,8 @@ zNURBS3D *zNURBS3DInit(zNURBS3D *nurbs)
 /* destroy a NURBS curve / surface. */
 void zNURBS3DDestroy(zNURBS3D *nurbs)
 {
-  zVecFree( nurbs->knot[0] );
-  zVecFree( nurbs->knot[1] );
+  zBSplineParamFree( &nurbs->param[0] );
+  zBSplineParamFree( &nurbs->param[1] );
   zArray2Free( &nurbs->cpnet );
   zNURBS3DInit( nurbs );
 }
@@ -72,17 +59,15 @@ void zNURBS3DDestroy(zNURBS3D *nurbs)
 /* copy a NURBS curve / surface. */
 zNURBS3D *zNURBS3DCopy(zNURBS3D *src, zNURBS3D *dest)
 {
-  if( src->order[0] != dest->order[0] || src->order[1] != dest->order[1] ||
-      !zVecSizeIsEqual( src->knot[0], dest->knot[0] ) ||
-      !zVecSizeIsEqual( src->knot[1], dest->knot[1] ) ||
-      zNURBS3DCPNum(src,0) != zNURBS3DCPNum(dest,0) ||
-      zNURBS3DCPNum(src,1) != zNURBS3DCPNum(dest,1) ){
-    ZRUNERROR( ZEO_ERR_NURBS_SIZMIS );
+  if( !zBSplineParamCopy( &src->param[0], &dest->param[0] ) ||
+      !zBSplineParamCopy( &src->param[1], &dest->param[1] ) ){
     return NULL;
   }
-  zNURBS3DSetSliceNum( dest, zNURBS3DSliceNum(src,0), zNURBS3DSliceNum(src,1) );
-  zVecCopyNC( src->knot[0], dest->knot[0] );
-  zVecCopyNC( src->knot[1], dest->knot[1] );
+  if( zNURBS3DCPNum(src,0) != zNURBS3DCPNum(dest,0) ||
+      zNURBS3DCPNum(src,1) != zNURBS3DCPNum(dest,1) ){
+    ZRUNERROR( ZEO_ERR_NURBS_SIZEMISMATCH );
+    return NULL;
+  }
   memcpy( zArray2Buf(&dest->cpnet), zArray2Buf(&src->cpnet), zNURBS3DCPNum(src,0)*zNURBS3DCPNum(src,1)*sizeof(zNURBS3DCPCell) );
   return dest;
 }
@@ -90,7 +75,7 @@ zNURBS3D *zNURBS3DCopy(zNURBS3D *src, zNURBS3D *dest)
 /* clone a NURBS curve / surface. */
 zNURBS3D *zNURBS3DClone(zNURBS3D *src, zNURBS3D *dest)
 {
-  if( !zNURBS3DAlloc( dest, zNURBS3DCPNum(src,0), zNURBS3DCPNum(src,1), src->order[0], src->order[1] ) )
+  if( !zNURBS3DAlloc( dest, zNURBS3DCPNum(src,0), zNURBS3DCPNum(src,1), zNURBS3DOrder(src,0), zNURBS3DOrder(src,1) ) )
     return NULL;
   return zNURBS3DCopy( src, dest );
 }
@@ -134,50 +119,8 @@ zNURBS3D *zNURBS3DXformInv(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest)
 /* normalize knot vectors of a NURBS curve / surface. */
 void zNURBS3DKnotNormalize(zNURBS3D *nurbs)
 {
-  zVecShift( nurbs->knot[0], -zVecElemNC(nurbs->knot[0],0) );
-  zVecDivDRC( nurbs->knot[0], zVecElemNC(nurbs->knot[0],zVecSizeNC(nurbs->knot[0])-1) );
-  zVecShift( nurbs->knot[1], -zVecElemNC(nurbs->knot[1],0) );
-  zVecDivDRC( nurbs->knot[1], zVecElemNC(nurbs->knot[1],zVecSizeNC(nurbs->knot[1])-1) );
-}
-
-/* find a knot segment that includes the given parameter. */
-static int _zNURBS3DSeg(zNURBS3D *nurbs, int i, double t)
-{
-  int j, k, l;
-
-  for( j=nurbs->order[i], k=zNURBS3DCPNum(nurbs,i); ; ){
-    while( zNURBS3DKnot(nurbs,i,j+1) == zNURBS3DKnot(nurbs,i,j) ) j++;
-    while( zNURBS3DKnot(nurbs,i,k-1) == zNURBS3DKnot(nurbs,i,k) ) k--;
-    if( k <= j + 1 ) break;
-    l = ( j + k ) / 2;
-    if( zNURBS3DKnot(nurbs,i,l) > t )
-      k = l;
-    else
-      j = l;
-  }
-  return j;
-}
-
-/* basis function of NURBS. */
-static double _zNURBS3DBasis(zNURBS3D *nurbs, int i, double t, int j, int r, int seg)
-{
-  double t1, tr1, b = 0;
-
-  if( r == 0 )
-    return j == seg ? 1 : 0;
-  if( j >= seg - r ){
-    t1  = zNURBS3DKnot(nurbs,i,j);
-    tr1 = zNURBS3DKnot(nurbs,i,j+r);
-    if( tr1 != t1 )
-      b += ( t - t1 ) / ( tr1 - t1 ) * _zNURBS3DBasis(nurbs,i,t,j,r-1,seg);
-  }
-  if( j <= seg ){
-    t1  = zNURBS3DKnot(nurbs,i,j+1);
-    tr1 = zNURBS3DKnot(nurbs,i,j+r+1);
-    if( tr1 != t1 )
-      b += ( tr1 - t ) / ( tr1 - t1 ) * _zNURBS3DBasis(nurbs,i,t,j+1,r-1,seg);
-  }
-  return b;
+  zBSplineParamKnotNormalize( &nurbs->param[0] );
+  zBSplineParamKnotNormalize( &nurbs->param[1] );
 }
 
 /* compute a vector on a NURBS curve / surface. */
@@ -187,32 +130,20 @@ zVec3D *zNURBS3DVec(zNURBS3D *nurbs, double u, double v, zVec3D *p)
   double bu, bv, dv, den;
   zVec3D tmp;
 
-  su = _zNURBS3DSeg( nurbs, 0, u );
-  sv = _zNURBS3DSeg( nurbs, 1, v );
+  su = zBSplineParamSeg( &nurbs->param[0], u );
+  sv = zBSplineParamSeg( &nurbs->param[1], v );
   zVec3DZero( p );
-  for( den=0, i=su-nurbs->order[0]; i<=su; i++ ){
-    bu = _zNURBS3DBasis(nurbs,0,u,i,nurbs->order[0],su);
+  for( den=0, i=su-zNURBS3DOrder(nurbs,0); i<=su; i++ ){
+    bu = zBSplineParamBasis( &nurbs->param[0], u, i, zNURBS3DOrder(nurbs,0), su );
     zVec3DZero( &tmp );
-    for( dv=0, j=sv-nurbs->order[1]; j<=sv; j++ ){
-      dv += bv = zNURBS3DWeight(nurbs,i,j) * _zNURBS3DBasis(nurbs,1,v,j,nurbs->order[1],sv);
+    for( dv=0, j=sv-zNURBS3DOrder(nurbs,1); j<=sv; j++ ){
+      dv += bv = zNURBS3DWeight(nurbs,i,j) * zBSplineParamBasis( &nurbs->param[1], v, j, zNURBS3DOrder(nurbs,1), sv );
       zVec3DCatDRC( &tmp, bv, zNURBS3DCP(nurbs,i,j) );
     }
     zVec3DCatDRC( p, bu, &tmp );
     den += bu * dv;
   }
   return zIsTiny(den) ? NULL : zVec3DDivDRC( p, den );
-}
-
-/* derivative of the basis function of NURBS. */
-static double _zNURBS3DBasisDiff(zNURBS3D *nurbs, int i, double t, int j, int r, int seg)
-{
-  double dt, b = 0;
-
-  if( j >= seg - r && ( dt = zNURBS3DKnot(nurbs,i,j+r) - zNURBS3DKnot(nurbs,i,j) ) != 0 )
-    b += _zNURBS3DBasis(nurbs,i,t,j,r-1,seg) / dt;
-  if( j <= seg && ( dt = zNURBS3DKnot(nurbs,i,j+r+1) - zNURBS3DKnot(nurbs,i,j+1) ) != 0 )
-    b -= _zNURBS3DBasis(nurbs,i,t,j+1,r-1,seg) / dt;
-  return b * r;
 }
 
 /* compute a position and normal vectors on NURBS surface. */
@@ -224,19 +155,19 @@ zVec3D *zNURBS3DVecTSpace(zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D
 
   tu = t1 ? t1 : &tu_tmp;
   tv = t2 ? t2 : &tv_tmp;
-  su = _zNURBS3DSeg( nurbs, 0, u );
-  sv = _zNURBS3DSeg( nurbs, 1, v );
+  su = zBSplineParamSeg( &nurbs->param[0], u );
+  sv = zBSplineParamSeg( &nurbs->param[1], v );
   zVec3DZero( p );
   zVec3DZero( tu );
   zVec3DZero( tv );
-  for( den=dubv=budv=0, i=su-nurbs->order[0]; i<=su; i++ ){
-    bu = _zNURBS3DBasis(nurbs,0,u,i,nurbs->order[0],su);
-    dbu = _zNURBS3DBasisDiff(nurbs,0,u,i,nurbs->order[0],su);
+  for( den=dubv=budv=0, i=su-zNURBS3DOrder(nurbs,0); i<=su; i++ ){
+    bu = zBSplineParamBasis( &nurbs->param[0], u, i, zNURBS3DOrder(nurbs,0), su );
+    dbu = zBSplineParamBasisDiff( &nurbs->param[0], u, i, zNURBS3DOrder(nurbs,0), su, 1 );
     zVec3DZero( &pv_tmp );
     zVec3DZero( &dpv_tmp );
-    for( dv=ddv=0, j=sv-nurbs->order[1]; j<=sv; j++ ){
-      dv += bv = zNURBS3DWeight(nurbs,i,j) * _zNURBS3DBasis(nurbs,1,v,j,nurbs->order[1],sv);
-      ddv += dbv = zNURBS3DWeight(nurbs,i,j) * _zNURBS3DBasisDiff(nurbs,1,v,j,nurbs->order[1],sv);
+    for( dv=ddv=0, j=sv-zNURBS3DOrder(nurbs,1); j<=sv; j++ ){
+      dv += bv = zNURBS3DWeight(nurbs,i,j) * zBSplineParamBasis( &nurbs->param[1], v, j, zNURBS3DOrder(nurbs,1), sv );
+      ddv += dbv = zNURBS3DWeight(nurbs,i,j) * zBSplineParamBasisDiff( &nurbs->param[1], v, j, zNURBS3DOrder(nurbs,1), sv, 1 );
       zVec3DCatDRC( &pv_tmp, bv, zNURBS3DCP(nurbs,i,j) );
       zVec3DCatDRC( &dpv_tmp, dbv, zNURBS3DCP(nurbs,i,j) );
     }
@@ -307,22 +238,22 @@ zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph)
   double u, v;
 
   if( !zPH3DAlloc( ph,
-      ( zNURBS3DSliceNum(nurbs,0) + 1 ) * ( zNURBS3DSliceNum(nurbs,1) + 1 ), zNURBS3DSliceNum(nurbs,0) * zNURBS3DSliceNum(nurbs,1) * 2 ) )
+      ( zNURBS3DSlice(nurbs,0)+1 ) * ( zNURBS3DSlice(nurbs,1)+1 ), zNURBS3DSlice(nurbs,0) * zNURBS3DSlice(nurbs,1)*2 ) )
     return NULL;
 
   vert = zPH3DVertBuf( ph );
-  for( i=0; i<=zNURBS3DSliceNum(nurbs,0); i++ ){
+  for( i=0; i<=zNURBS3DSlice(nurbs,0); i++ ){
     u = zNURBS3DKnotSlice( nurbs, 0, i );
-    for( j=0; j<=zNURBS3DSliceNum(nurbs,1); j++ ){
+    for( j=0; j<=zNURBS3DSlice(nurbs,1); j++ ){
       v = zNURBS3DKnotSlice( nurbs, 1, j );
       if( zNURBS3DVec( nurbs, u, v, vert ) ) vert++;
     }
   }
   face = zPH3DFaceBuf( ph );
   vert = zPH3DVertBuf( ph );
-  vert2 = vert + zNURBS3DSliceNum(nurbs,1) + 1;
-  for( i=0; i<zNURBS3DSliceNum(nurbs,0); i++, vert+=zNURBS3DSliceNum(nurbs,1)+1, vert2+=zNURBS3DSliceNum(nurbs,1)+1 )
-    for( j=0; j<zNURBS3DSliceNum(nurbs,1); j++ ){
+  vert2 = vert + zNURBS3DSlice(nurbs,1) + 1;
+  for( i=0; i<zNURBS3DSlice(nurbs,0); i++, vert+=zNURBS3DSlice(nurbs,1)+1, vert2+=zNURBS3DSlice(nurbs,1)+1 )
+    for( j=0; j<zNURBS3DSlice(nurbs,1); j++ ){
       zTri3DCreate( face++, &vert[j], &vert2[j], &vert2[j+1] );
       zTri3DCreate( face++, &vert[j], &vert2[j+1], &vert[j+1] );
     }
@@ -336,19 +267,19 @@ static zVec _zNURBS3DKnotFromZTK(zNURBS3D *nurbs, int id, ZTK *ztk)
   int i;
 
   if( !ZTKValRewind(ztk) ) return NULL;
-  if( nurbs->knot[id] ){
+  if( nurbs->param[id].knot ){
     ZRUNWARN( ZEO_ERR_NURBS_KNOTALREADY );
-    zVecFree( nurbs->knot[id] );
+    zVecFree( nurbs->param[id].knot );
   }
-  if( !( nurbs->knot[id] = zVecAlloc( ZTKInt(ztk) ) ) ) return NULL;
+  if( !( nurbs->param[id].knot = zVecAlloc( ZTKInt(ztk) ) ) ) return NULL;
   for( i=0; i<zNURBS3DKnotNum(nurbs,id); i++ )
     zNURBS3DKnot(nurbs,id,i) = ZTKDouble(ztk);
-  return nurbs->knot[id];
+  return nurbs->param[id].knot;
 }
 
 static void *_zNURBS3DOrderFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  ((zNURBS3D*)obj)->order[0] = ZTKInt( ztk );
-  ((zNURBS3D*)obj)->order[1] = ZTKInt( ztk );
+  zNURBS3DOrder((zNURBS3D*)obj,0) = ZTKInt( ztk );
+  zNURBS3DOrder((zNURBS3D*)obj,1) = ZTKInt( ztk );
   return obj;
 }
 static void *_zNURBS3DUKnotFromZTK(void *obj, int i, void *arg, ZTK *ztk){
@@ -358,8 +289,8 @@ static void *_zNURBS3DVKnotFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return _zNURBS3DKnotFromZTK( (zNURBS3D *)obj, 1, ztk ) ? obj : NULL;
 }
 static void *_zNURBS3DSliceFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  zNURBS3DSliceNum((zNURBS3D*)obj,0) = ZTKInt( ztk );
-  zNURBS3DSliceNum((zNURBS3D*)obj,1) = ZTKInt( ztk );
+  zNURBS3DSlice((zNURBS3D*)obj,0) = ZTKInt( ztk );
+  zNURBS3DSlice((zNURBS3D*)obj,1) = ZTKInt( ztk );
   return obj;
 }
 static void *_zNURBS3DSizeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
@@ -379,7 +310,7 @@ static void *_zNURBS3DCPFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   j = ZTKInt( ztk );
   k = ZTKInt( ztk );
   if( !zArray2PosIsValid( &((zNURBS3D*)obj)->cpnet, j, k ) ){
-    ZRUNERROR( ZEO_ERR_NURBS_INVCP );
+    ZRUNERROR( ZEO_ERR_NURBS_INVALID_CP );
     return NULL;
   }
   zNURBS3DSetWeight( ((zNURBS3D*)obj), j, k, ZTKDouble(ztk) );
@@ -388,21 +319,21 @@ static void *_zNURBS3DCPFromZTK(void *obj, int i, void *arg, ZTK *ztk){
 }
 
 static bool _zNURBS3DOrderFPrint(FILE *fp, int i, void *obj){
-  fprintf( fp, "%d %d\n", ((zNURBS3D*)obj)->order[0], ((zNURBS3D*)obj)->order[1] );
+  fprintf( fp, "%d %d\n", zNURBS3DOrder((zNURBS3D*)obj,0), zNURBS3DOrder((zNURBS3D*)obj,1) );
   return true;
 }
 static bool _zNURBS3DUKnotFPrint(FILE *fp, int i, void *obj){
-  if( zVecSizeNC(((zNURBS3D*)obj)->knot[0]) <= 0 ) return false;
-  zVecFPrint( fp, ((zNURBS3D*)obj)->knot[0] );
+  if( zVecSizeNC(((zNURBS3D*)obj)->param[0].knot) <= 0 ) return false;
+  zVecFPrint( fp, ((zNURBS3D*)obj)->param[0].knot );
   return true;
 }
 static bool _zNURBS3DVKnotFPrint(FILE *fp, int i, void *obj){
-  if( zVecSizeNC(((zNURBS3D*)obj)->knot[1]) <= 0 ) return false;
-  zVecFPrint( fp, ((zNURBS3D*)obj)->knot[1] );
+  if( zVecSizeNC(((zNURBS3D*)obj)->param[1].knot) <= 0 ) return false;
+  zVecFPrint( fp, ((zNURBS3D*)obj)->param[1].knot );
   return true;
 }
 static bool _zNURBS3DSliceFPrint(FILE *fp, int i, void *obj){
-  fprintf( fp, "%d %d\n", zNURBS3DSliceNum((zNURBS3D*)obj,0), zNURBS3DSliceNum((zNURBS3D*)obj,1) );
+  fprintf( fp, "%d %d\n", zNURBS3DSlice((zNURBS3D*)obj,0), zNURBS3DSlice((zNURBS3D*)obj,1) );
   return true;
 }
 static bool _zNURBS3DSizeFPrint(FILE *fp, int i, void *obj){

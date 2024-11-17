@@ -50,10 +50,10 @@ int main(void)
   fclose( fp );
 
   fp = fopen( "sfc", "w" );
-  zNURBS3DSetSliceNum( &nurbs, 30, 30 );
-  for( i=0; i<=nurbs.ns[0]; i++ ){
+  zNURBS3DSetSlice( &nurbs, 30, 30 );
+  for( i=0; i<=zNURBS3DSlice(&nurbs,0); i++ ){
     u = zNURBS3DKnotSlice( &nurbs, 0, i );
-    for( j=0; j<=nurbs.ns[1]; j++ ){
+    for( j=0; j<=zNURBS3DSlice(&nurbs,1); j++ ){
       v = zNURBS3DKnotSlice( &nurbs, 1, j );
       if( zNURBS3DVec( &nurbs, u, v, &p ) ){
         zVec3DDataFPrint( fp, &p );
@@ -88,7 +88,7 @@ int main(void)
   fclose( fp );
 
   fp = fopen( "test_nurbs.ztk", "w" );
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "type: nurbs\n" );
   zNURBS3DFPrintZTK( fp, &nurbs );
   fclose( fp );

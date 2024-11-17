@@ -90,7 +90,7 @@ static bool _zPH3DFReadSTL_ASCIIloop(FILE *fp, char buf[], zVec3D v[])
     return false;
   }
   if( strcmp( buf, "loop" ) != 0 ){
-    ZRUNWARN( ZEO_WARN_STL_MIS_LOOP );
+    ZRUNWARN( ZEO_WARN_STL_MISSINGLOOP );
     return false;
   }
   while( !feof( fp ) ){

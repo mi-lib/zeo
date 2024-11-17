@@ -63,7 +63,7 @@ zMap *zMapFromZTK(zMap *map, ZTK *ztk)
   zMapInit( map );
   if( !ZTKEvalKey( map, NULL, ztk, __ztk_prp_map ) ) return NULL;
   if( !map->body ){
-    ZRUNERROR( ZEO_ERR_MAP_UNSPEC );
+    ZRUNERROR( ZEO_ERR_MAP_TYPENOTSPECIFIED );
     return NULL;
   }
   return map->com->_fromZTK( map->body, ztk ) ? map : NULL;

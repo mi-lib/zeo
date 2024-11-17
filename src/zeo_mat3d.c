@@ -279,7 +279,7 @@ static zMat3D *_zMat3DInv(const zMat3D *m, zMat3D *im)
 
   det = _zMat3DDet( m );
   if( zIsTiny( det ) ){
-    ZRUNERROR( ZEO_ERR_SINGULARMAT );
+    ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
     return NULL;
   }
   idet = 1.0 / det;
@@ -365,7 +365,7 @@ static zVec3D *_zMulInvMat3DVec3D(const zMat3D *m, const zVec3D *v, zVec3D *imv)
   double val;
 
   if( zIsTiny( ( val = zMat3DDet( m ) ) ) ){
-    ZRUNERROR( ZEO_ERR_SINGULARMAT );
+    ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
     return NULL;
   }
   val = 1.0 / val;
@@ -458,7 +458,7 @@ static zMat3D *_zMulInvMat3DMat3D(const zMat3D *m1, const zMat3D *m2, zMat3D *m)
   double val;
 
   if( zIsTiny( ( val = zMat3DDet( m1 ) ) ) ){
-    ZRUNERROR( ZEO_ERR_SINGULARMAT );
+    ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
     return NULL;
   }
   val = 1.0 / val;
