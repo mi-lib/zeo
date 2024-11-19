@@ -3,7 +3,7 @@
 int main(void)
 {
   zNURBS3D nurbs;
-  register int i, j;
+  int i, j;
   double u, v;
   zVec3D p, nn;
   FILE *fp;

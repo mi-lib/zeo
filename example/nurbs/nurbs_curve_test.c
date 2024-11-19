@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     { { 5.0, 4.0, 0.0 } },
     { { 7.0, 1.5, 0.0 } },
   };
-  register int i, n;
+  int i, n;
   double t;
   zVec3D p;
   zVec3D tv;

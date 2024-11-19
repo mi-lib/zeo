@@ -34,7 +34,6 @@ bool zNURBS3DAlloc(zNURBS3D *nurbs, int size1, int size2, int order1, int order2
       zNURBS3DSetWeight( nurbs, i, j, 1.0 );
       zVec3DZero( zNURBS3DCP(nurbs,i,j) );
     }
-  zNURBS3DSetSlice( nurbs, ZEO_NURBS3D_DEFAULT_SLICE, ZEO_NURBS3D_DEFAULT_SLICE );
   return true;
 }
 

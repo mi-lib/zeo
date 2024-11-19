@@ -2,7 +2,7 @@
 
 void nurbs_fprint(FILE *fp, zNURBS3D *nurbs)
 {
-  register int i, j;
+  int i, j;
   double u, v;
   zVec3D p;
 

@@ -103,6 +103,8 @@
 #define ZEO_ERR_NURBS_KNOTALREADY             "knot already allocated"
 #define ZEO_ERR_NURBS_CPALREADY               "control point already allocated"
 #define ZEO_ERR_NURBS_INVALID_CP              "invalid index of control point specified"
+#define ZEO_ERR_NURBS_ELLIPS_INVALID_KNOT_NUM "the number of u knots has to be 12 for initialization, but is %d"
+#define ZEO_ERR_NURBS_ELLIPS_INVALID_CP_NUM   "the number of control points in u-axis has to be 9, but is %d"
 
 #define ZEO_ERR_SHAPE_INVALID_TYPE            "invalid shape type assigned."
 #define ZEO_ERR_SHAPE_ZEROC                   "zero-distance centers specified"

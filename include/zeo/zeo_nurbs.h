@@ -79,8 +79,6 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zNURBS3D ){
 #define zNURBS3D1CP(nurbs,j)           zNURBS3DCP(nurbs,0,j)
 #define zNURBS3D1SetCP(nurbs,j,v)      zNURBS3DSetCP(nurbs,0,j,v)
 
-#define ZEO_NURBS3D_DEFAULT_SLICE  20
-
 /*! \brief allocate a NURBS curve / surface.
  *
  * zNURBS3D1Alloc() allocates a NURBS curve \a nurbs from a given

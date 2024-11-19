@@ -31,7 +31,7 @@ zVec3D cp[] = {
 int main(void)
 {
   zNURBS3D nurbs;
-  register int i, j, n1, n2;
+  int i, j, n1, n2;
   double u, v;
   zVec3D p, n, t1, t2;
   FILE *fp;
