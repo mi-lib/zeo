@@ -1,21 +1,5 @@
 #include <zeo/zeo_nurbs_shape.h>
 
-#if 0
-zEllips3D *zSphere3DToEllips3D(const zSphere3D *sphere, zEllips3D *ellips)
-{
-  return zEllips3DCreateAlign( ellips, zSphere3DCenter(sphere), zSphere3DRadius(sphere), zSphere3DRadius(sphere), zSphere3DRadius(sphere), zSphere3DDiv(sphere) );
-}
-
-zECyl3D *zCyl3DToECyl3D(const zCyl3D *cylinder, zECyl3D *ecyl)
-{
-  zVec3D axis, ax, ay;
-
-  zCyl3DAxis( cylinder, &axis );
-  zVec3DOrthoNormalSpace( &axis, &ax, &ay );
-  return zECyl3DCreate( ecyl, zCyl3DCenter(cylinder,0), zCyl3DCenter(cylinder,1), zCyl3DRadius(cylinder), zCyl3DRadius(cylinder), &ax, zCyl3DDiv(cylinder) );
-}
-#endif
-
 void foutput(FILE *fp, zNURBS3D *nurbs, const char *shapename, const char *opticname, float rd, float gd, float bd)
 {
   fprintf( fp, "[zeo::optic]\n" );
@@ -32,14 +16,38 @@ void foutput(FILE *fp, zNURBS3D *nurbs, const char *shapename, const char *optic
 int main(void)
 {
   zNURBS3D nurbs;
-  zECyl3D ecyl;
+  zBox3D box;
+  zSphere3D sphere;
+  zCyl3D cylinder;
   zCone3D cone;
   zEllips3D ellips;
+  zECyl3D ecyl;
   zVec3D center1, center2;
   zVec3D ax, ay, az;
   FILE *fp;
 
   fp = fopen( "primitive.ztk", "w" );
+
+  zVec3DCreate( &center1, 0, 0, 1.7 );
+  zVec3DCreate( &az, 0, 0, 10 );
+  zVec3DOrthoNormalSpace( &az, &ax, &ay );
+  zBox3DCreate( &box, &center1, &ax, &ay, &az, 0.8, 0.6, 0.5 );
+  zNURBS3DBox( &nurbs, &box );
+  foutput( fp, &nurbs, "box", "white", 1.0, 1.0, 1.0 );
+  zNURBS3DDestroy( &nurbs );
+
+  zVec3DCreate( &center1, 0, 1, 1.5 );
+  zSphere3DCreate( &sphere, &center1, 0.5, 0 );
+  zNURBS3DSphere( &nurbs, &sphere );
+  foutput( fp, &nurbs, "sphere", "lightblue", 0.5, 0.5, 1.0 );
+  zNURBS3DDestroy( &nurbs );
+
+  zVec3DCreate( &center1, 0,-1, 0.9 );
+  zVec3DCreate( &center2, 0,-1.2, 1.8 );
+  zCyl3DCreate( &cylinder, &center1, &center2, 0.3, 0 );
+  zNURBS3DCyl( &nurbs, &cylinder );
+  foutput( fp, &nurbs, "cylinder", "orange", 1.0, 0.5, 0.0 );
+  zNURBS3DDestroy( &nurbs );
 
   zVec3DCreate( &center1, 0, 1, 0 );
   zVec3DCreate( &center2, 0, 1.8, 1.0 );

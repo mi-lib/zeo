@@ -1,10 +1,26 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_nurbs_shape - conversion from 3D shape to NURBS surface.
+ * zeo_nurbs_shape - conversion from 3D shape to NURBS surface
  */
 
 #include <zeo/zeo_nurbs_shape.h>
+
+/* convert a sphere to an instance of ellipsoid. */
+zEllips3D *zSphere3DToEllips3D(const zSphere3D *sphere, zEllips3D *ellips)
+{
+  return zEllips3DCreateAlign( ellips, zSphere3DCenter(sphere), zSphere3DRadius(sphere), zSphere3DRadius(sphere), zSphere3DRadius(sphere), zSphere3DDiv(sphere) );
+}
+
+/* convert a cylinder to an instance of elliptic cylinder. */
+zECyl3D *zCyl3DToECyl3D(const zCyl3D *cylinder, zECyl3D *ecyl)
+{
+  zVec3D axis, ax, ay;
+
+  zCyl3DAxis( cylinder, &axis );
+  zVec3DOrthoNormalSpace( &axis, &ax, &ay );
+  return zECyl3DCreate( ecyl, zCyl3DCenter(cylinder,0), zCyl3DCenter(cylinder,1), zCyl3DRadius(cylinder), zCyl3DRadius(cylinder), &ax, zCyl3DDiv(cylinder) );
+}
 
 /* initialize knots for elliptic intersection. */
 static bool _zNURBS3DEllipsInitKnot(zNURBS3D *nurbs, int i)
@@ -13,18 +29,18 @@ static bool _zNURBS3DEllipsInitKnot(zNURBS3D *nurbs, int i)
     ZRUNERROR( ZEO_ERR_NURBS_ELLIPS_INVALID_KNOT_NUM, zNURBS3DKnotNum(nurbs,0) );
     return false;
   }
-  zNURBS3DSetKnot( nurbs, i, 0, 0.0 );
-  zNURBS3DSetKnot( nurbs, i, 1, 0.0 );
-  zNURBS3DSetKnot( nurbs, i, 2, 0.0 );
+  zNURBS3DSetKnot( nurbs, i, 0, 0.0  );
+  zNURBS3DSetKnot( nurbs, i, 1, 0.0  );
+  zNURBS3DSetKnot( nurbs, i, 2, 0.0  );
   zNURBS3DSetKnot( nurbs, i, 3, 0.25 );
   zNURBS3DSetKnot( nurbs, i, 4, 0.25 );
-  zNURBS3DSetKnot( nurbs, i, 5, 0.5 );
-  zNURBS3DSetKnot( nurbs, i, 6, 0.5 );
+  zNURBS3DSetKnot( nurbs, i, 5, 0.5  );
+  zNURBS3DSetKnot( nurbs, i, 6, 0.5  );
   zNURBS3DSetKnot( nurbs, i, 7, 0.75 );
   zNURBS3DSetKnot( nurbs, i, 8, 0.75 );
-  zNURBS3DSetKnot( nurbs, i, 9, 1.0 );
-  zNURBS3DSetKnot( nurbs, i,10, 1.0 );
-  zNURBS3DSetKnot( nurbs, i,11, 1.0 );
+  zNURBS3DSetKnot( nurbs, i, 9, 1.0  );
+  zNURBS3DSetKnot( nurbs, i,10, 1.0  );
+  zNURBS3DSetKnot( nurbs, i,11, 1.0  );
   return true;
 }
 
@@ -47,51 +63,37 @@ static bool _zNURBS3DEllipsInitCP(zNURBS3D *nurbs, int i, const zVec3D *center, 
   return true;
 }
 
-/* closed NURBS surface that represents an elliptic cylinder. */
-zNURBS3D *zNURBS3DECyl(zNURBS3D *nurbs, const zECyl3D *ecyl)
+/* closed NURBS surface that represents a box. */
+zNURBS3D *zNURBS3DBox(zNURBS3D *nurbs, const zBox3D *box)
 {
-  zVec3D axis;
   int i;
 
-  if( !zNURBS3DAlloc( nurbs, 9, 2, 2, 1 ) ) return NULL;
-  _zNURBS3DEllipsInitCP( nurbs, 0, zECyl3DCenter(ecyl,0), zECyl3DRadius(ecyl,0), zECyl3DRadius(ecyl,1), zECyl3DRadVec(ecyl,0), zECyl3DRadVec(ecyl,1) );
-  zECyl3DAxis( ecyl, &axis );
-  for( i=0; i<9; i++ ){
-    zVec3DAdd( zNURBS3DCP(nurbs,i,0), &axis, zNURBS3DCP(nurbs,i,1) );
-    zNURBS3DSetWeight( nurbs, i, 0, zIsEven(i) ? 1.0 : 1.0/sqrt(2) );
-    zNURBS3DSetWeight( nurbs, i, 1, zNURBS3DWeight(nurbs,i,0) );
+  if( !zNURBS3DAlloc( nurbs, 4, 5, 1, 1 ) ) return NULL;
+  zVec3DCat( zBox3DCenter(box), 0.5*zBox3DHeight(box), zBox3DAxis(box,zZ), zNURBS3DCP(nurbs,0,0) );
+  zVec3DCat( zBox3DCenter(box),-0.5*zBox3DHeight(box), zBox3DAxis(box,zZ), zNURBS3DCP(nurbs,3,0) );
+  for( i=0; i<4; i++ ){
+    zBox3DVert( box, i,   zNURBS3DCP(nurbs,1,i) );
+    zBox3DVert( box, i+4, zNURBS3DCP(nurbs,2,i) );
   }
-  _zNURBS3DEllipsInitKnot( nurbs, 0 );
+  zVec3DCopy( zNURBS3DCP(nurbs,1,0), zNURBS3DCP(nurbs,1,4) );
+  zVec3DCopy( zNURBS3DCP(nurbs,2,0), zNURBS3DCP(nurbs,2,4) );
+  for( i=1; i<5; i++ ){
+    zVec3DCopy( zNURBS3DCP(nurbs,0,0), zNURBS3DCP(nurbs,0,i) );
+    zVec3DCopy( zNURBS3DCP(nurbs,3,0), zNURBS3DCP(nurbs,3,i) );
+  }
+  zNURBS3DSetKnot( nurbs, 0, 0, 0.0 );
+  zNURBS3DSetKnot( nurbs, 0, 1, 0.0 );
+  zNURBS3DSetKnot( nurbs, 0, 2, 1.0 );
+  zNURBS3DSetKnot( nurbs, 0, 3, 1.0 );
+  zNURBS3DSetKnot( nurbs, 0, 4, 2.0 );
+  zNURBS3DSetKnot( nurbs, 0, 5, 2.0 );
   zNURBS3DSetKnot( nurbs, 1, 0, 0.0 );
   zNURBS3DSetKnot( nurbs, 1, 1, 0.0 );
   zNURBS3DSetKnot( nurbs, 1, 2, 1.0 );
-  zNURBS3DSetKnot( nurbs, 1, 3, 1.0 );
-  return nurbs;
-}
-
-/* closed NURBS surface that represents a cone. */
-zNURBS3D *zNURBS3DCone(zNURBS3D *nurbs, const zCone3D *cone)
-{
-  zVec3D axis;
-  zVec3D ax, ay;
-  int i;
-
-  if( !zNURBS3DAlloc( nurbs, 9, 2, 2, 1 ) ) return NULL;
-  zCone3DAxis( cone, &axis );
-  zVec3DOrthoSpace( &axis, &ax, &ay );
-  zVec3DNormalizeDRC( &ax );
-  zVec3DNormalizeDRC( &ay );
-  _zNURBS3DEllipsInitCP( nurbs, 0, zCone3DCenter(cone), zCone3DRadius(cone), zCone3DRadius(cone), &ax, &ay );
-  for( i=0; i<9; i++ ){
-    zVec3DAdd( zCone3DCenter(cone), &axis, zNURBS3DCP(nurbs,i,1) );
-    zNURBS3DSetWeight( nurbs, i, 0, zIsEven(i) ? 1.0 : 1.0/sqrt(2) );
-    zNURBS3DSetWeight( nurbs, i, 1, zNURBS3DWeight(nurbs,i,0) );
-  }
-  _zNURBS3DEllipsInitKnot( nurbs, 0 );
-  zNURBS3DSetKnot( nurbs, 1, 0, 0.0 );
-  zNURBS3DSetKnot( nurbs, 1, 1, 0.0 );
-  zNURBS3DSetKnot( nurbs, 1, 2, 1.0 );
-  zNURBS3DSetKnot( nurbs, 1, 3, 1.0 );
+  zNURBS3DSetKnot( nurbs, 1, 3, 2.0 );
+  zNURBS3DSetKnot( nurbs, 1, 4, 3.0 );
+  zNURBS3DSetKnot( nurbs, 1, 5, 4.0 );
+  zNURBS3DSetKnot( nurbs, 1, 6, 4.0 );
   return nurbs;
 }
 
@@ -122,6 +124,81 @@ zNURBS3D *zNURBS3DEllips(zNURBS3D *nurbs, const zEllips3D *ellips)
   zNURBS3DSetKnot( nurbs, 1, 5, 1.0 );
   zNURBS3DSetKnot( nurbs, 1, 6, 1.0 );
   zNURBS3DSetKnot( nurbs, 1, 7, 1.0 );
+  return nurbs;
+}
+
+/* closed NURBS surface that represents a sphere. */
+zNURBS3D *zNURBS3DSphere(zNURBS3D *nurbs, const zSphere3D *sphere)
+{
+  zEllips3D ellips;
+
+  zSphere3DToEllips3D( sphere, &ellips );
+  return zNURBS3DEllips( nurbs, &ellips );
+}
+
+/* closed NURBS surface that represents an elliptic cylinder. */
+zNURBS3D *zNURBS3DECyl(zNURBS3D *nurbs, const zECyl3D *ecyl)
+{
+  zVec3D axis;
+  int i;
+
+  if( !zNURBS3DAlloc( nurbs, 9, 4, 2, 1 ) ) return NULL;
+  _zNURBS3DEllipsInitCP( nurbs, 1, zECyl3DCenter(ecyl,0), zECyl3DRadius(ecyl,0), zECyl3DRadius(ecyl,1), zECyl3DRadVec(ecyl,0), zECyl3DRadVec(ecyl,1) );
+  zECyl3DAxis( ecyl, &axis );
+  for( i=0; i<9; i++ ){
+    zVec3DCopy( zECyl3DCenter(ecyl,0), zNURBS3DCP(nurbs,i,0) );
+    zVec3DAdd( zNURBS3DCP(nurbs,i,1), &axis, zNURBS3DCP(nurbs,i,2) );
+    zVec3DCopy( zECyl3DCenter(ecyl,1), zNURBS3DCP(nurbs,i,3) );
+    zNURBS3DSetWeight( nurbs, i, 0, zIsEven(i) ? 1.0 : 1.0/sqrt(2) );
+    zNURBS3DSetWeight( nurbs, i, 1, zNURBS3DWeight(nurbs,i,0) );
+    zNURBS3DSetWeight( nurbs, i, 2, zNURBS3DWeight(nurbs,i,0) );
+    zNURBS3DSetWeight( nurbs, i, 3, zNURBS3DWeight(nurbs,i,0) );
+  }
+  _zNURBS3DEllipsInitKnot( nurbs, 0 );
+  zNURBS3DSetKnot( nurbs, 1, 0, 0.0 );
+  zNURBS3DSetKnot( nurbs, 1, 1, 0.0 );
+  zNURBS3DSetKnot( nurbs, 1, 2, 1.0 );
+  zNURBS3DSetKnot( nurbs, 1, 3, 1.0 );
+  zNURBS3DSetKnot( nurbs, 1, 4, 2.0 );
+  zNURBS3DSetKnot( nurbs, 1, 5, 2.0 );
+  return nurbs;
+}
+
+/* closed NURBS surface that represents a cylinder. */
+zNURBS3D *zNURBS3DCyl(zNURBS3D *nurbs, const zCyl3D *cylinder)
+{
+  zECyl3D ecyl;
+
+  zCyl3DToECyl3D( cylinder, &ecyl );
+  return zNURBS3DECyl( nurbs, &ecyl );
+}
+
+/* closed NURBS surface that represents a cone. */
+zNURBS3D *zNURBS3DCone(zNURBS3D *nurbs, const zCone3D *cone)
+{
+  zVec3D axis;
+  zVec3D ax, ay;
+  int i;
+
+  if( !zNURBS3DAlloc( nurbs, 9, 3, 2, 1 ) ) return NULL;
+  zCone3DAxis( cone, &axis );
+  zVec3DOrthoSpace( &axis, &ax, &ay );
+  zVec3DNormalizeDRC( &ax );
+  zVec3DNormalizeDRC( &ay );
+  _zNURBS3DEllipsInitCP( nurbs, 1, zCone3DCenter(cone), zCone3DRadius(cone), zCone3DRadius(cone), &ax, &ay );
+  for( i=0; i<9; i++ ){
+    zVec3DCopy( zCone3DCenter(cone), zNURBS3DCP(nurbs,i,0) );
+    zVec3DAdd( zCone3DCenter(cone), &axis, zNURBS3DCP(nurbs,i,2) );
+    zNURBS3DSetWeight( nurbs, i, 0, zIsEven(i) ? 1.0 : 1.0/sqrt(2) );
+    zNURBS3DSetWeight( nurbs, i, 1, zNURBS3DWeight(nurbs,i,0) );
+    zNURBS3DSetWeight( nurbs, i, 2, zNURBS3DWeight(nurbs,i,0) );
+  }
+  _zNURBS3DEllipsInitKnot( nurbs, 0 );
+  zNURBS3DSetKnot( nurbs, 1, 0, 0.0 );
+  zNURBS3DSetKnot( nurbs, 1, 1, 0.0 );
+  zNURBS3DSetKnot( nurbs, 1, 2, 1.0 );
+  zNURBS3DSetKnot( nurbs, 1, 3, 2.0 );
+  zNURBS3DSetKnot( nurbs, 1, 4, 2.0 );
   return nurbs;
 }
 

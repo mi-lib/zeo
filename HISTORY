@@ -1,3 +1,5 @@
+2024.11.19. Added zNURBS3DBox, zNURBS3DSphere, and zNURBS3DCyl. [zeo_nurbs_shape]
+2024.11.19. Added zSphere3DToEllips3D and zCyl3DToECyl3D. [zeo_nurbs_shape]
 2024.11.19. Applied ZDEF_STRUCT to zShape3DCom, zShape3D, zBox3D, zSphere3D, zCyl3D, zCone3D, zEllips3D, and zECyl3D. [zeo_shape3d, zeo_shape3d_box, zeo_shape3d_sphere, zeo_shape3d_cyl, zeo_shape3d_cone, zeo_shape3d_ellips, zeo_shape3d_ecyl]
 2024.11.19. Added const qualifiers to functions in zeo_elemxd, zeo_elem2d, and zeo_elem3d. [zeo_elemxd, zeo_elem2d, zeo_elem3d, zeo_elem3d_list]
 2024.11.19. Added const qualifiers to functions in zeo_vec3d_list. [zeo_vec3d_list, zeo_col_gjk]
