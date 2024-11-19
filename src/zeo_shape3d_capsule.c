@@ -11,7 +11,7 @@
  * 3D capsule class
  * ********************************************************** */
 
-static void _zCapsule3DClosestPrep(zCapsule3D *capsule, zVec3D *p, zVec3D *axis, zVec3D *v, double *l, double *r, double *d)
+static void _zCapsule3DClosestPrep(const zCapsule3D *capsule, const zVec3D *p, zVec3D *axis, zVec3D *v, double *l, double *r, double *d)
 {
   zCapsule3DAxis( capsule, axis );
   _zVec3DSub( p, zCapsule3DCenter(capsule,0), v );
@@ -21,9 +21,10 @@ static void _zCapsule3DClosestPrep(zCapsule3D *capsule, zVec3D *p, zVec3D *axis,
 }
 
 /* the closest point to a 3D capsule. */
-double zCapsule3DClosest(zCapsule3D *capsule, zVec3D *p, zVec3D *cp)
+double zCapsule3DClosest(const zCapsule3D *capsule, const zVec3D *p, zVec3D *cp)
 {
-  zVec3D axis, v, *c, cr;
+  zVec3D axis, v, cr;
+  const zVec3D *c;
   double l, r, d;
 
   _zCapsule3DClosestPrep( capsule, p, &axis, &v, &l, &r, &d );
@@ -51,7 +52,7 @@ double zCapsule3DClosest(zCapsule3D *capsule, zVec3D *p, zVec3D *cp)
 }
 
 /* distance from a point to a 3D capsule. */
-double zCapsule3DDistFromPoint(zCapsule3D *capsule, zVec3D *p)
+double zCapsule3DDistFromPoint(const zCapsule3D *capsule, const zVec3D *p)
 {
   zVec3D axis, v;
   double l, r, d;
@@ -65,31 +66,31 @@ double zCapsule3DDistFromPoint(zCapsule3D *capsule, zVec3D *p)
 }
 
 /* check if a point is inside of a capsule. */
-bool zCapsule3DPointIsInside(zCapsule3D *capsule, zVec3D *p, double margin)
+bool zCapsule3DPointIsInside(const zCapsule3D *capsule, const zVec3D *p, double margin)
 {
   return zCapsule3DDistFromPoint( capsule, p ) < margin ? true : false;
 }
 
 /* height of a 3D capsule. */
-double zCapsule3DHeight(zCapsule3D *capsule)
+double zCapsule3DHeight(const zCapsule3D *capsule)
 {
   return zCyl3DHeight( capsule ) + zCapsule3DRadius( capsule ) * 2;
 }
 
 /* volume of a 3D capsule. */
-double zCapsule3DVolume(zCapsule3D *capsule)
+double zCapsule3DVolume(const zCapsule3D *capsule)
 {
   return zCyl3DVolume( capsule ) + 4 * zPI * zCube( zCapsule3DRadius(capsule) ) / 3.0;
 }
 
 /* inertia tensor about barycenter of a 3D capsule from mass. */
-zMat3D *zCapsule3DBaryInertiaMass(zCapsule3D *capsule, double mass, zMat3D *inertia)
+zMat3D *zCapsule3DBaryInertiaMass(const zCapsule3D *capsule, double mass, zMat3D *inertia)
 {
   return zCapsule3DBaryInertia( capsule, mass / zCapsule3DVolume( capsule ), inertia );
 }
 
 /* inertia tensor about barycenter of a 3D capsule. */
-zMat3D *zCapsule3DBaryInertia(zCapsule3D *capsule, double density, zMat3D *inertia)
+zMat3D *zCapsule3DBaryInertia(const zCapsule3D *capsule, double density, zMat3D *inertia)
 {
   double r, r2, h, m, izz, ixx;
   zMat3D i, att;
@@ -111,7 +112,7 @@ zMat3D *zCapsule3DBaryInertia(zCapsule3D *capsule, double density, zMat3D *inert
 }
 
 /* convert a capsule to a polyhedron. */
-zPH3D *zCapsule3DToPH(zCapsule3D *capsule, zPH3D *ph)
+zPH3D *zCapsule3DToPH(const zCapsule3D *capsule, zPH3D *ph)
 {
   zVec3D *vert, d, dr, s, r, aa;
   zTri3D *face;
@@ -213,9 +214,9 @@ static const ZTKPrp __ztk_prp_shape_capsule[] = {
 };
 
 /* print a 3D capsule out to a file in a ZTK format. */
-void zCapsule3DFPrintZTK(FILE *fp, zCapsule3D *capsule)
+void zCapsule3DFPrintZTK(FILE *fp, const zCapsule3D *capsule)
 {
-  ZTKPrpKeyFPrint( fp, capsule, __ztk_prp_shape_capsule );
+  ZTKPrpKeyFPrint( fp, (void *)capsule, __ztk_prp_shape_capsule );
 }
 
 /* methods for abstraction */
@@ -231,15 +232,15 @@ static void *_zShape3DCapsuleMirror(void *src, zAxis axis){
   zCapsule3D *mrr;
   return ( mrr = zCapsule3DAlloc() ) ? zCapsule3DMirror( (zCapsule3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DCapsuleDestroy(void *body){}
-static void *_zShape3DCapsuleXform(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DCapsuleXform(void *src, const zFrame3D *f, void *dest){
   return zCapsule3DXform( (zCapsule3D*)src, f, (zCapsule3D*)dest ); }
-static void *_zShape3DCapsuleXformInv(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DCapsuleXformInv(void *src, const zFrame3D *f, void *dest){
   return zCapsule3DXformInv( (zCapsule3D*)src, f, (zCapsule3D*)dest ); }
-static double _zShape3DCapsuleClosest(void *body, zVec3D *p, zVec3D *cp){
+static double _zShape3DCapsuleClosest(void *body, const zVec3D *p, zVec3D *cp){
   return zCapsule3DClosest( (zCapsule3D*)body, p, cp ); }
-static double _zShape3DCapsuleDistFromPoint(void *body, zVec3D *p){
+static double _zShape3DCapsuleDistFromPoint(void *body, const zVec3D *p){
   return zCapsule3DDistFromPoint( (zCapsule3D*)body, p ); }
-static bool _zShape3DCapsulePointIsInside(void *body, zVec3D *p, double margin){
+static bool _zShape3DCapsulePointIsInside(void *body, const zVec3D *p, double margin){
   return zCapsule3DPointIsInside( (zCapsule3D*)body, p, margin ); }
 static double _zShape3DCapsuleVolume(void *body){
   return zCapsule3DVolume( (zCapsule3D*)body ); }
@@ -279,7 +280,7 @@ zShape3DCom zeo_shape3d_capsule_com = {
 };
 
 /* create a 3D shape as a capsule. */
-zShape3D *zShape3DCapsuleCreate(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r, int div)
+zShape3D *zShape3DCapsuleCreate(zShape3D *shape, const zVec3D *c1, const zVec3D *c2, double r, int div)
 {
   zShape3DInit( shape );
   if( !( shape->body = zCapsule3DAlloc() ) ) return NULL;

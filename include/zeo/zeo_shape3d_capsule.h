@@ -71,9 +71,9 @@ typedef zCyl3D zCapsule3D;
  * zCapsule3DPointIsInside() returns the true value if \a p is inside of \a capsule,
  * or the false value otherwise.
  */
-__ZEO_EXPORT double zCapsule3DClosest(zCapsule3D *capsule, zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zCapsule3DDistFromPoint(zCapsule3D *capsule, zVec3D *p);
-__ZEO_EXPORT bool zCapsule3DPointIsInside(zCapsule3D *capsule, zVec3D *p, double margin);
+__ZEO_EXPORT double zCapsule3DClosest(const zCapsule3D *capsule, const zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT double zCapsule3DDistFromPoint(const zCapsule3D *capsule, const zVec3D *p);
+__ZEO_EXPORT bool zCapsule3DPointIsInside(const zCapsule3D *capsule, const zVec3D *p, double margin);
 
 /*! \brief axis vector and height of a 3D capsule.
  *
@@ -88,7 +88,7 @@ __ZEO_EXPORT bool zCapsule3DPointIsInside(zCapsule3D *capsule, zVec3D *p, double
  * zCapsule3DHeight() returns the calculated height.
  */
 #define zCapsule3DAxis(c,a) zCyl3DAxis( c, a )
-__ZEO_EXPORT double zCapsule3DHeight(zCapsule3D *capsule);
+__ZEO_EXPORT double zCapsule3DHeight(const zCapsule3D *capsule);
 
 /*! \brief volume of a 3D capsule.
  *
@@ -96,7 +96,7 @@ __ZEO_EXPORT double zCapsule3DHeight(zCapsule3D *capsule);
  * \return
  * zCapsule3DVolume() returns the calculated volume.
  */
-__ZEO_EXPORT double zCapsule3DVolume(zCapsule3D *capsule);
+__ZEO_EXPORT double zCapsule3DVolume(const zCapsule3D *capsule);
 
 /*! \brief barycenter of a capsule.
  *
@@ -120,8 +120,8 @@ __ZEO_EXPORT double zCapsule3DVolume(zCapsule3D *capsule);
  * \sa
  * zCapsule3DVolume(), zCapsule3DBarycenter()
  */
-__ZEO_EXPORT zMat3D *zCapsule3DBaryInertiaMass(zCapsule3D *capsule, double mass, zMat3D *inertia);
-__ZEO_EXPORT zMat3D *zCapsule3DBaryInertia(zCapsule3D *capsule, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zCapsule3DBaryInertiaMass(const zCapsule3D *capsule, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zCapsule3DBaryInertia(const zCapsule3D *capsule, double density, zMat3D *inertia);
 
 /*! \brief convert a 3D capsule to a polyhedron.
  *
@@ -135,17 +135,17 @@ __ZEO_EXPORT zMat3D *zCapsule3DBaryInertia(zCapsule3D *capsule, double density, 
  * zSphere3DToPH, zSphere3DToPH,
  * zCone3DToPH, zCone3DToPHDRC
  */
-__ZEO_EXPORT zPH3D *zCapsule3DToPH(zCapsule3D *capsule, zPH3D *ph);
+__ZEO_EXPORT zPH3D *zCapsule3DToPH(const zCapsule3D *capsule, zPH3D *ph);
 
 /*! \brief print a 3D capsule out to a file in a ZTK format. */
-__ZEO_EXPORT void zCapsule3DFPrintZTK(FILE *fp, zCapsule3D *capsule);
+__ZEO_EXPORT void zCapsule3DFPrintZTK(FILE *fp, const zCapsule3D *capsule);
 
 /* methods for abstraction */
 __ZEO_EXPORT zShape3DCom zeo_shape3d_capsule_com;
 
 #define zShape3DCapsule(s) ( (zCapsule3D*)(s)->body )
 
-__ZEO_EXPORT zShape3D *zShape3DCapsuleCreate(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r, int div);
+__ZEO_EXPORT zShape3D *zShape3DCapsuleCreate(zShape3D *shape, const zVec3D *c1, const zVec3D *c2, double r, int div);
 
 __END_DECLS
 

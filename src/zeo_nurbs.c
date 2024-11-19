@@ -56,7 +56,7 @@ void zNURBS3DDestroy(zNURBS3D *nurbs)
 }
 
 /* copy a NURBS curve / surface. */
-zNURBS3D *zNURBS3DCopy(zNURBS3D *src, zNURBS3D *dest)
+zNURBS3D *zNURBS3DCopy(const zNURBS3D *src, zNURBS3D *dest)
 {
   if( !zBSplineParamCopy( &src->param[0], &dest->param[0] ) ||
       !zBSplineParamCopy( &src->param[1], &dest->param[1] ) ){
@@ -72,7 +72,7 @@ zNURBS3D *zNURBS3DCopy(zNURBS3D *src, zNURBS3D *dest)
 }
 
 /* clone a NURBS curve / surface. */
-zNURBS3D *zNURBS3DClone(zNURBS3D *src, zNURBS3D *dest)
+zNURBS3D *zNURBS3DClone(const zNURBS3D *src, zNURBS3D *dest)
 {
   if( !zNURBS3DAlloc( dest, zNURBS3DCPNum(src,0), zNURBS3DCPNum(src,1), zNURBS3DOrder(src,0), zNURBS3DOrder(src,1) ) )
     return NULL;
@@ -80,7 +80,7 @@ zNURBS3D *zNURBS3DClone(zNURBS3D *src, zNURBS3D *dest)
 }
 
 /* mirror a NURBS curve / surface about specified axis. */
-zNURBS3D *zNURBS3DMirror(zNURBS3D *src, zNURBS3D *dest, zAxis axis)
+zNURBS3D *zNURBS3DMirror(const zNURBS3D *src, zNURBS3D *dest, zAxis axis)
 {
   int i, j;
 
@@ -92,7 +92,7 @@ zNURBS3D *zNURBS3DMirror(zNURBS3D *src, zNURBS3D *dest, zAxis axis)
 }
 
 /* transform control points of a NURBS curve / surface. */
-zNURBS3D *zNURBS3DXform(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest)
+zNURBS3D *zNURBS3DXform(const zNURBS3D *src, const zFrame3D *f, zNURBS3D *dest)
 {
   int i, j;
 
@@ -104,7 +104,7 @@ zNURBS3D *zNURBS3DXform(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest)
 }
 
 /* inversely transform control points of a NURBS curve / surface. */
-zNURBS3D *zNURBS3DXformInv(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest)
+zNURBS3D *zNURBS3DXformInv(const zNURBS3D *src, const zFrame3D *f, zNURBS3D *dest)
 {
   int i, j;
 
@@ -123,7 +123,7 @@ void zNURBS3DKnotNormalize(zNURBS3D *nurbs)
 }
 
 /* compute a vector on a NURBS curve / surface. */
-zVec3D *zNURBS3DVec(zNURBS3D *nurbs, double u, double v, zVec3D *p)
+zVec3D *zNURBS3DVec(const zNURBS3D *nurbs, double u, double v, zVec3D *p)
 {
   int su, sv, i, j;
   double bu, bv, dv, den;
@@ -146,7 +146,7 @@ zVec3D *zNURBS3DVec(zNURBS3D *nurbs, double u, double v, zVec3D *p)
 }
 
 /* compute a position and normal vectors on NURBS surface. */
-zVec3D *zNURBS3DVecTSpace(zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *n, zVec3D *t1, zVec3D *t2)
+zVec3D *zNURBS3DVecTSpace(const zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *n, zVec3D *t1, zVec3D *t2)
 {
   int su, sv, i, j;
   double bu, bv, dbu, dbv, dv, ddv, dubv, budv, den;
@@ -195,7 +195,7 @@ zVec3D *zNURBS3DVecTSpace(zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D
 
 #define ZNURBS3D_CLOSEST_GAIN 0.1
 /* closest point of a 3D point on a NURBS surface. */
-double zNURBS3DClosest(zNURBS3D *nurbs, zVec3D *p, zVec3D *nn, double *u, double *v)
+double zNURBS3DClosest(const zNURBS3D *nurbs, const zVec3D *p, zVec3D *nn, double *u, double *v)
 {
   double utmp, vtmp, u_prev, v_prev, duu, duv, dvv, eu, ev, eval, eval_prev, gain;
   zVec3D du, dv, e;
@@ -229,7 +229,7 @@ double zNURBS3DClosest(zNURBS3D *nurbs, zVec3D *p, zVec3D *nn, double *u, double
 }
 
 /* convert NURBS surface to a polyhedron. */
-zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph)
+zPH3D *zNURBS3DToPH(const zNURBS3D *nurbs, zPH3D *ph)
 {
   zVec3D *vert, *vert2;
   zTri3D *face;
@@ -357,11 +357,11 @@ zNURBS3D *zNURBS3DFromZTK(zNURBS3D *nurbs, ZTK *ztk)
 }
 
 /* print out a 3D NURBS to a file. */
-void zNURBS3DFPrintZTK(FILE *fp, zNURBS3D *nurbs)
+void zNURBS3DFPrintZTK(FILE *fp, const zNURBS3D *nurbs)
 {
   int i, j;
 
-  ZTKPrpKeyFPrint( fp, nurbs, __ztk_prp_nurbs );
+  ZTKPrpKeyFPrint( fp, (void*)nurbs, __ztk_prp_nurbs );
   for( i=0; i<zNURBS3DCPNum(nurbs,0); i++ )
     for( j=0; j<zNURBS3DCPNum(nurbs,1); j++ ){
       fprintf( fp, "%s: %d %d %.12g ", ZTK_KEY_ZEO_NURBS_CP, i, j, zNURBS3DWeight(nurbs,i,j) );

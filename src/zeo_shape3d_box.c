@@ -12,7 +12,7 @@
  * ********************************************************** */
 
 /* create a 3D box. */
-zBox3D *zBox3DCreate(zBox3D *box, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double d, double w, double h)
+zBox3D *zBox3DCreate(zBox3D *box, const zVec3D *c, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double d, double w, double h)
 {
   zBox3DSetCenter( box, c );
   zBox3DSetAxis( box, 0, ax );
@@ -34,7 +34,7 @@ zBox3D *zBox3DInit(zBox3D *box)
 ZDEF_ALLOC_FUNCTION( zBox3D )
 
 /* copy a 3D box to another. */
-zBox3D *zBox3DCopy(zBox3D *src, zBox3D *dest)
+zBox3D *zBox3DCopy(const zBox3D *src, zBox3D *dest)
 {
   return zBox3DCreate( dest, zBox3DCenter(src),
     zBox3DAxis(src,0), zBox3DAxis(src,1), zBox3DAxis(src,2),
@@ -42,7 +42,7 @@ zBox3D *zBox3DCopy(zBox3D *src, zBox3D *dest)
 }
 
 /* mirror a 3D box along an axis. */
-zBox3D *zBox3DMirror(zBox3D *src, zBox3D *dest, zAxis axis)
+zBox3D *zBox3DMirror(const zBox3D *src, zBox3D *dest, zAxis axis)
 {
   zBox3DCopy( src, dest );
   zBox3DCenter(dest)->e[(int)axis] *= -1;
@@ -53,7 +53,7 @@ zBox3D *zBox3DMirror(zBox3D *src, zBox3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D box. */
-zBox3D *zBox3DXform(zBox3D *src, zFrame3D *f, zBox3D *dest)
+zBox3D *zBox3DXform(const zBox3D *src, const zFrame3D *f, zBox3D *dest)
 {
   zXform3D( f, zBox3DCenter(src), zBox3DCenter(dest) );
   zMulMat3DVec3D( zFrame3DAtt(f), zBox3DAxis(src,zX), zBox3DAxis(dest,zX) );
@@ -66,7 +66,7 @@ zBox3D *zBox3DXform(zBox3D *src, zFrame3D *f, zBox3D *dest)
 }
 
 /* inversely transform coordinates of a 3D box. */
-zBox3D *zBox3DXformInv(zBox3D *src, zFrame3D *f, zBox3D *dest)
+zBox3D *zBox3DXformInv(const zBox3D *src, const zFrame3D *f, zBox3D *dest)
 {
   zXform3DInv( f, zBox3DCenter(src), zBox3DCenter(dest) );
   zMulMat3DTVec3D( zFrame3DAtt(f), zBox3DAxis(src,zX), zBox3DAxis(dest,zX) );
@@ -79,7 +79,7 @@ zBox3D *zBox3DXformInv(zBox3D *src, zFrame3D *f, zBox3D *dest)
 }
 
 /* the closest point from a 3D point to a 3D box. */
-double zBox3DClosest(zBox3D *box, zVec3D *p, zVec3D *cp)
+double zBox3DClosest(const zBox3D *box, const zVec3D *p, zVec3D *cp)
 {
   zVec3D _p;
   double min, max;
@@ -96,14 +96,14 @@ double zBox3DClosest(zBox3D *box, zVec3D *p, zVec3D *cp)
 }
 
 /* distance from a point to a 3D box. */
-double zBox3DDistFromPoint(zBox3D *box, zVec3D *p)
+double zBox3DDistFromPoint(const zBox3D *box, const zVec3D *p)
 {
   zVec3D cp;
   return zBox3DClosest( box, p, &cp );
 }
 
 /* check if a point is inside of a box. */
-bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, double margin)
+bool zBox3DPointIsInside(const zBox3D *box, const zVec3D *p, double margin)
 {
   zDir dir;
   zVec3D pl;
@@ -118,13 +118,13 @@ bool zBox3DPointIsInside(zBox3D *box, zVec3D *p, double margin)
 }
 
 /* volume of a 3D box. */
-double zBox3DVolume(zBox3D *box)
+double zBox3DVolume(const zBox3D *box)
 {
   return zBox3DDepth(box) * zBox3DWidth(box) * zBox3DHeight(box);
 }
 
 /* inertia tensor about barycenter of a 3D box from mass. */
-zMat3D *zBox3DBaryInertiaMass(zBox3D *box, double mass, zMat3D *inertia)
+zMat3D *zBox3DBaryInertiaMass(const zBox3D *box, double mass, zMat3D *inertia)
 {
   zMat3D i;
   double xx, yy, zz, c;
@@ -141,13 +141,13 @@ zMat3D *zBox3DBaryInertiaMass(zBox3D *box, double mass, zMat3D *inertia)
 }
 
 /* inertia tensor about barycenter of a 3D box. */
-zMat3D *zBox3DBaryInertia(zBox3D *box, double density, zMat3D *inertia)
+zMat3D *zBox3DBaryInertia(const zBox3D *box, double density, zMat3D *inertia)
 {
   return zBox3DBaryInertiaMass( box, density * zBox3DVolume( box ), inertia );
 }
 
 /* get vertex of a box. */
-zVec3D *zBox3DVert(zBox3D *box, int i, zVec3D *v)
+zVec3D *zBox3DVert(const zBox3D *box, int i, zVec3D *v)
 {
   _zVec3DCreate( v,
     ( (i&0x1)^(i>>1&0x1) ) ? -0.5*zBox3DDepth(box) : 0.5*zBox3DDepth(box),
@@ -162,7 +162,7 @@ zVec3D *zBox3DVert(zBox3D *box, int i, zVec3D *v)
 } while(0)
 
 /* convert a box to a polyhedron. */
-zPH3D* zBox3DToPH(zBox3D *box, zPH3D *ph)
+zPH3D* zBox3DToPH(const zBox3D *box, zPH3D *ph)
 {
   int i;
 
@@ -244,13 +244,13 @@ static const ZTKPrp __ztk_prp_shape_box[] = {
 };
 
 /* print a 3D box out to a file in a ZTK format. */
-void zBox3DFPrintZTK(FILE *fp, zBox3D *box)
+void zBox3DFPrintZTK(FILE *fp, const zBox3D *box)
 {
-  ZTKPrpKeyFPrint( fp, box, __ztk_prp_shape_box );
+  ZTKPrpKeyFPrint( fp, (void *)box, __ztk_prp_shape_box );
 }
 
 /* print a 3D box out to a file in a plottable format. */
-void zBox3DDataFPrint(FILE *fp, zBox3D *box)
+void zBox3DDataFPrint(FILE *fp, const zBox3D *box)
 {
   zVec3D v[8];
   int i;
@@ -292,15 +292,15 @@ static void *_zShape3DBoxMirror(void *src, zAxis axis){
   zBox3D *mrr;
   return ( mrr = zBox3DAlloc() ) ? zBox3DMirror( (zBox3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DBoxDestroy(void *body){}
-static void *_zShape3DBoxXform(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DBoxXform(void *src, const zFrame3D *f, void *dest){
   return zBox3DXform( (zBox3D*)src, f, (zBox3D*)dest ); }
-static void *_zShape3DBoxXformInv(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DBoxXformInv(void *src, const zFrame3D *f, void *dest){
   return zBox3DXformInv( (zBox3D*)src, f, (zBox3D*)dest ); }
-static double _zShape3DBoxClosest(void *body, zVec3D *p, zVec3D *cp){
+static double _zShape3DBoxClosest(void *body, const zVec3D *p, zVec3D *cp){
   return zBox3DClosest( (zBox3D*)body, p, cp ); }
-static double _zShape3DBoxDistFromPoint(void *body, zVec3D *p){
+static double _zShape3DBoxDistFromPoint(void *body, const zVec3D *p){
   return zBox3DDistFromPoint( (zBox3D*)body, p ); }
-static bool _zShape3DBoxPointIsInside(void *body, zVec3D *p, double margin){
+static bool _zShape3DBoxPointIsInside(void *body, const zVec3D *p, double margin){
   return zBox3DPointIsInside( (zBox3D*)body, p, margin ); }
 static double _zShape3DBoxVolume(void *body){
   return zBox3DVolume( (zBox3D*)body ); }
@@ -340,7 +340,7 @@ zShape3DCom zeo_shape3d_box_com = {
 };
 
 /* create a 3D shape as a box. */
-zShape3D *zShape3DBoxCreate(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, zVec3D *az, double d, double w, double h)
+zShape3D *zShape3DBoxCreate(zShape3D *shape, const zVec3D *c, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double d, double w, double h)
 {
   zShape3DInit( shape );
   if( !( shape->body = zBox3DAlloc() ) ) return NULL;
@@ -350,7 +350,7 @@ zShape3D *zShape3DBoxCreate(zShape3D *shape, zVec3D *c, zVec3D *ax, zVec3D *ay, 
 }
 
 /* create a 3D shape as an axis-aligned box. */
-zShape3D *zShape3DBoxCreateAlign(zShape3D *shape, zVec3D *c, double d, double w, double h)
+zShape3D *zShape3DBoxCreateAlign(zShape3D *shape, const zVec3D *c, double d, double w, double h)
 {
   zShape3DInit( shape );
   if( !( shape->body = zBox3DAlloc() ) ) return NULL;

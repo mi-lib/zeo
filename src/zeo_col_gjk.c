@@ -10,8 +10,8 @@ typedef struct{
   bool sw_w;  /* included in W (the smallest simplex) */
   bool sw_y;  /* included in Y (the updated simplex) */
   zVec3D w;   /* support map of Minkowski's sum */
-  zVec3D *p1; /* corresponding vertex on object 1 to the support map */
-  zVec3D *p2; /* corresponding vertex on object 2 to the support map */
+  const zVec3D *p1; /* corresponding vertex on object 1 to the support map */
+  const zVec3D *p2; /* corresponding vertex on object 2 to the support map */
   double s;   /* linear sum coefficient */
 } zGJKSlot;
 

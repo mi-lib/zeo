@@ -33,7 +33,7 @@ ZEO_ELEM_LINEXD_DIST_FROM_POINT( 3D )
 ZEO_ELEM_LINEXD_POINT_IS_ON( 3D )
 
 /* find two end points of the common perpendicular of two 3D lines. */
-void zLine3DCommonPerpEnd(zLine3D *line1, zLine3D *line2, zVec3D *p1, zVec3D *p2)
+void zLine3DCommonPerpEnd(const zLine3D *line1, const zLine3D *line2, zVec3D *p1, zVec3D *p2)
 {
   double r11, r12, r22, det;
   zVec3D dp, d1, d2;
@@ -57,7 +57,7 @@ void zLine3DCommonPerpEnd(zLine3D *line1, zLine3D *line2, zVec3D *p1, zVec3D *p2
 }
 
 /* create the common perpendicular of two 3D lines. */
-zLine3D *zLine3DCommonPerp(zLine3D *line1, zLine3D *line2, zVec3D *origin, zLine3D *commonperp)
+zLine3D *zLine3DCommonPerp(const zLine3D *line1, const zLine3D *line2, zVec3D *origin, zLine3D *commonperp)
 {
   zVec3D p2;
 
@@ -66,7 +66,7 @@ zLine3D *zLine3DCommonPerp(zLine3D *line1, zLine3D *line2, zVec3D *origin, zLine
 }
 
 /* distance between two 3D lines. */
-double zDistLine3DLine3D(zLine3D *line1, zLine3D *line2)
+double zDistLine3DLine3D(const zLine3D *line1, const zLine3D *line2)
 {
   zVec3D p1, p2;
 
@@ -120,19 +120,19 @@ _ZEO_ELEM_EDGEXD_LINSCALE( 3D )
  * ********************************************************** */
 
 /* create a plane. */
-zPlane3D* zPlane3DCreate(zPlane3D *plane, zVec3D *origin, zVec3D *norm)
+zPlane3D* zPlane3DCreate(zPlane3D *plane, const zVec3D *origin, const zVec3D *norm)
 {
   if( zVec3DIsTiny( norm ) ){
     ZRUNERROR( ZEO_ERR_ELEM_DEG_PLANE );
     return NULL;
   }
-  zPlane3DSetOrg( plane, origin );
+  zPlane3DSetOrg( plane, (zVec3D*)origin );
   zPlane3DSetNorm( plane, norm );
   return plane;
 }
 
 /* signed distance between a point and a plane. */
-double zPlane3DDistFromPoint(zPlane3D *plane, zVec3D *point)
+double zPlane3DDistFromPoint(const zPlane3D *plane, const zVec3D *point)
 {
   zVec3D tmp;
 
@@ -141,7 +141,7 @@ double zPlane3DDistFromPoint(zPlane3D *plane, zVec3D *point)
 }
 
 /* check if a 3D point is on a 3D plane. */
-bool zPlane3DPointIsOn(zPlane3D *plane, zVec3D *point, double margin)
+bool zPlane3DPointIsOn(const zPlane3D *plane, const zVec3D *point, double margin)
 {
   zVec3D tmp;
 
@@ -152,7 +152,7 @@ bool zPlane3DPointIsOn(zPlane3D *plane, zVec3D *point, double margin)
 }
 
 /* project a 3D point onto a 3D plane. */
-double zPlane3DProjPoint(zPlane3D *plane, zVec3D *p, zVec3D *projection)
+double zPlane3DProjPoint(const zPlane3D *plane, const zVec3D *p, zVec3D *projection)
 {
   double d;
 
@@ -187,7 +187,7 @@ zPlane3D *zPlane3DMean(zPlane3D *plane, zVec3D *pc, zVec3D v[], int n)
 }
 
 /* print information of a plane to a file. */
-void zPlane3DFPrint(FILE *fp, zPlane3D *plane)
+void zPlane3DFPrint(FILE *fp, const zPlane3D *plane)
 {
   fprintf( fp, "origin: " );
   zVec3DFPrint( fp, zPlane3DOrg(plane) );
@@ -210,30 +210,30 @@ zTri3D *zTri3DInit(zTri3D *tri)
 }
 
 /* create a 3D triangle. */
-zTri3D *zTri3DCreate(zTri3D *tri, zVec3D *v1, zVec3D *v2, zVec3D *v3)
+zTri3D *zTri3DCreate(zTri3D *tri, const zVec3D *v1, const zVec3D *v2, const zVec3D *v3)
 {
-  zTri3DSetVert( tri, 0, v1 );
-  zTri3DSetVert( tri, 1, v2 );
-  zTri3DSetVert( tri, 2, v3 );
+  zTri3DSetVert( tri, 0, (zVec3D*)v1 );
+  zTri3DSetVert( tri, 1, (zVec3D*)v2 );
+  zTri3DSetVert( tri, 2, (zVec3D*)v3 );
   if( v1 && v2 && v3 )
     if( !zTri3DCalcNorm(tri) ) return NULL;
   return tri;
 }
 
 /* create a 3D triangle in the reversed order. */
-zTri3D *zTri3DCreateRev(zTri3D *tri, zVec3D *v1, zVec3D *v2, zVec3D *v3)
+zTri3D *zTri3DCreateRev(zTri3D *tri, const zVec3D *v1, const zVec3D *v2, const zVec3D *v3)
 {
   return zTri3DCreate( tri, v1, v3, v2 );
 }
 
 /* reverse a 3D triangle. */
-zTri3D *zTri3DRev(zTri3D *src, zTri3D *dest)
+zTri3D *zTri3DRev(const zTri3D *src, zTri3D *dest)
 {
   return zTri3DCreate( dest, zTri3DVert(src,0), zTri3DVert(src,2), zTri3DVert(src,1) );
 }
 
 /* outer product of two edges of a 3D triangle. */
-static zVec3D *_zTri3DOuterProd(zTri3D *tri, zVec3D *n)
+static zVec3D *_zTri3DOuterProd(const zTri3D *tri, zVec3D *n)
 {
   zVec3D edge1, edge2;
 
@@ -243,7 +243,7 @@ static zVec3D *_zTri3DOuterProd(zTri3D *tri, zVec3D *n)
 }
 
 /* area of a 3D triangle. */
-double zTri3DArea(zTri3D *tri)
+double zTri3DArea(const zTri3D *tri)
 {
   zVec3D norm;
 
@@ -284,7 +284,7 @@ ZEO_ELEM_TRIXD_ORTHOCENTER( 3D )
 ZEO_ELEM_TRIXD_CONTIG_VERT( 3D )
 
 /* signed distance from a 3D point to the identical plane of a 3D triangle. */
-double zTri3DDistFromPointToPlane(zTri3D *tri, zVec3D *v)
+double zTri3DDistFromPointToPlane(const zTri3D *tri, const zVec3D *v)
 {
   zVec3D tmp;
   double d[3];
@@ -298,7 +298,7 @@ double zTri3DDistFromPointToPlane(zTri3D *tri, zVec3D *v)
 }
 
 /* check if a 3D point is on the identical plane of a 3D triangle. */
-bool zTri3DPointIsOnPlane(zTri3D *tri, zVec3D *v, double margin)
+bool zTri3DPointIsOnPlane(const zTri3D *tri, const zVec3D *v, double margin)
 {
   zVec3D tmp;
 
@@ -309,7 +309,7 @@ bool zTri3DPointIsOnPlane(zTri3D *tri, zVec3D *v, double margin)
 }
 
 /* project a 3D point to a 3D triangle. */
-double zTri3DProjPoint(zTri3D *tri, zVec3D *v, zVec3D *cp)
+double zTri3DProjPoint(const zTri3D *tri, const zVec3D *v, zVec3D *cp)
 {
   double d;
 
@@ -319,7 +319,7 @@ double zTri3DProjPoint(zTri3D *tri, zVec3D *v, zVec3D *cp)
 }
 
 /* check if a 3D point is inside of a 3D triangle. */
-bool zTri3DPointIsInside(zTri3D *tri, zVec3D *v, double margin)
+bool zTri3DPointIsInside(const zTri3D *tri, const zVec3D *v, double margin)
 {
   int i;
   zVec3D vp, e, n, d;
@@ -338,12 +338,12 @@ bool zTri3DPointIsInside(zTri3D *tri, zVec3D *v, double margin)
 /* compute a trio of linear scale factors of a point on a 3D triangle.
  * when p is on t, p = l0*t->v0 + l1*t->v1 + l2*t->v2. If p is not on t, the result does not make sense. */
 
-static void _zTri3DLinScaleVal(zVec2D *l, double d1, double d2, double *l0, double *l1, double *l2)
+static void _zTri3DLinScaleVal(const zVec2D *l, double d1, double d2, double *l0, double *l1, double *l2)
 {
   *l0 = 1 - ( ( *l1 = l->c.x / d1 ) + ( *l2 = l->c.y / d2 ) );
 }
 
-static void _zTri3DLinScaleDeg2(zTri3D *tri, zVec3D *p, int i1, int i2, double *l0, double *l1, double *l2, zVec3D *cp)
+static void _zTri3DLinScaleDeg2(const zTri3D *tri, const zVec3D *p, int i1, int i2, double *l0, double *l1, double *l2, zVec3D *cp)
 {
   zEdge3D edge;
   zVec3D pp;
@@ -354,13 +354,13 @@ static void _zTri3DLinScaleDeg2(zTri3D *tri, zVec3D *p, int i1, int i2, double *
   _zEdge3DLinScale( &edge, &pp, l1, l2, cp );
 }
 
-static void _zTri3DLinScaleDeg1(zTri3D *tri, int i, double *l0, double *l1, double *l2, zVec3D *cp)
+static void _zTri3DLinScaleDeg1(const zTri3D *tri, int i, double *l0, double *l1, double *l2, zVec3D *cp)
 {
   *l0 = *l1 = 0; *l2 = 1;
   zVec3DCopy( zTri3DVert(tri,i), cp );
 }
 
-double zTri3DLinScale(zTri3D *tri, zVec3D *p, double *l0, double *l1, double *l2, zVec3D *cp)
+double zTri3DLinScale(const zTri3D *tri, const zVec3D *p, double *l0, double *l1, double *l2, zVec3D *cp)
 {
   zVec3D e1, e2, dp;
   zVec2D v, l;
@@ -410,7 +410,7 @@ ZEO_ELEM_TRIXD_CLOSEST( 3D )
 ZEO_ELEM_TRIXD_DIST_FROM_POINT( 3D )
 
 /* volume of a 3D cone. */
-double zTri3DConeVolume(zTri3D *tri, zVec3D *v)
+double zTri3DConeVolume(const zTri3D *tri, const zVec3D *v)
 {
   zVec3D v1, v2, v3;
 
@@ -421,7 +421,7 @@ double zTri3DConeVolume(zTri3D *tri, zVec3D *v)
 }
 
 /* barycenter of a 3D cone. */
-zVec3D *zTri3DConeBarycenter(zTri3D *tri, zVec3D *v, zVec3D *c)
+zVec3D *zTri3DConeBarycenter(const zTri3D *tri, const zVec3D *v, zVec3D *c)
 {
   zVec3DAdd( zTri3DVert(tri,0), zTri3DVert(tri,1), c );
   zVec3DAddDRC( c, zTri3DVert(tri,2) );
@@ -430,7 +430,7 @@ zVec3D *zTri3DConeBarycenter(zTri3D *tri, zVec3D *v, zVec3D *c)
 }
 
 /* inertia tensor of a 3D cone. */
-zMat3D *zTri3DConeInertia(zTri3D *tri, double density, zMat3D *i)
+zMat3D *zTri3DConeInertia(const zTri3D *tri, double density, zMat3D *i)
 {
   int j;
   zMat3D m;
@@ -454,7 +454,7 @@ zMat3D *zTri3DConeInertia(zTri3D *tri, double density, zMat3D *i)
 }
 
 /* circumcenter of a 3D cone. */
-zVec3D *zTri3DConeCircumcenter(zTri3D *tri, zVec3D *c)
+zVec3D *zTri3DConeCircumcenter(const zTri3D *tri, zVec3D *c)
 {
   zVec3D v;
 
@@ -466,7 +466,7 @@ zVec3D *zTri3DConeCircumcenter(zTri3D *tri, zVec3D *c)
 }
 
 /* print information of a 3D triangle to a file. */
-void zTri3DFPrint(FILE *fp, zTri3D *tri)
+void zTri3DFPrint(FILE *fp, const zTri3D *tri)
 {
   if( !tri )
     fprintf( fp, "(null triangle)\n" );

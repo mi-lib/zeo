@@ -21,7 +21,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
 
 #define zLineXDOrg(XD,line)       (line)->origin
 #define zLineXDDir(XD,line)       ( &(line)->direction )
-#define zLineXDSetOrg(XD,line,p)  ( zLine##XD##Org(line) = p )
+#define zLineXDSetOrg(XD,line,p)  ( zLine##XD##Org(line) = (p) )
 #define zLineXDSetDir(XD,line,d)  zVec##XD##Copy( d, zLine##XD##Dir(line) )
 
 #define ZEO_ELEM_LINEXD_INIT_PROTOTYPE(XD) \
@@ -34,7 +34,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
   }
 
 #define ZEO_ELEM_LINEXD_CREATE_PROTOTYPE(XD) \
-  zLine##XD *zLine##XD##Create(zLine##XD *line, zVec##XD *p, zVec##XD *direction)
+  zLine##XD *zLine##XD##Create(zLine##XD *line, const zVec##XD *p, const zVec##XD *direction)
 #define ZEO_ELEM_LINEXD_CREATE(XD) \
   ZEO_ELEM_LINEXD_CREATE_PROTOTYPE( XD ){ \
     if( !p || !direction ){ \
@@ -45,23 +45,23 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
       ZRUNERROR( ZEO_ERR_ELEM_NPTR_SPECIFIED( XD ) ); \
       return NULL; \
     } \
-    zLine##XD##SetOrg( line, p ); \
+    zLine##XD##SetOrg( line, (zVec##XD*)p ); \
     zVec##XD##NormalizeNC( direction, zLine##XD##Dir(line) ); \
     return line; \
   }
 
 #define ZEO_ELEM_LINEXD_CREATE_TWOPOINT_PROTOTYPE(XD) \
-  zLine##XD *zLine##XD##CreateTwoPoints(zLine##XD *line, zVec##XD *p1, zVec##XD *p2)
+  zLine##XD *zLine##XD##CreateTwoPoints(zLine##XD *line, const zVec##XD *p1, const zVec##XD *p2)
 #define ZEO_ELEM_LINEXD_CREATE_TWOPOINT(XD) \
   ZEO_ELEM_LINEXD_CREATE_TWOPOINT_PROTOTYPE( XD ){ \
-    zLine##XD##SetOrg( line, p1 ); \
+    zLine##XD##SetOrg( line, (zVec##XD*)p1 ); \
     zVec##XD##Sub( p2, p1, zLine##XD##Dir(line) ); \
     zVec##XD##NormalizeDRC( zLine##XD##Dir(line) ); \
     return line; \
   }
 
 #define ZEO_ELEM_LINEXD_POINT_PROTOTYPE(XD) \
-  zVec##XD *zLine##XD##Point(zLine##XD *line, double magnitude, zVec##XD *p)
+  zVec##XD *zLine##XD##Point(const zLine##XD *line, double magnitude, zVec##XD *p)
 #define ZEO_ELEM_LINEXD_POINT(XD) \
   ZEO_ELEM_LINEXD_POINT_PROTOTYPE( XD ){ \
     _zVec##XD##Cat( zLine##XD##Org(line), magnitude, zLine##XD##Dir(line), p ); \
@@ -69,7 +69,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
   }
 
 #define ZEO_ELEM_LINEXD_PROJ_POINT_PROTOTYPE(XD) \
-  zVec##XD *zLine##XD##ProjPoint(zLine##XD *line, zVec##XD *src, zVec##XD *projection)
+  zVec##XD *zLine##XD##ProjPoint(const zLine##XD *line, const zVec##XD *src, zVec##XD *projection)
 #define ZEO_ELEM_LINEXD_PROJ_POINT(XD) \
   ZEO_ELEM_LINEXD_PROJ_POINT_PROTOTYPE( XD ){ \
     zVec##XD v; \
@@ -77,7 +77,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
   }
 
 #define ZEO_ELEM_LINEXD_DIST_FROM_POINT_PROTOTYPE(XD) \
-  double zLine##XD##DistFromPoint(zLine##XD *line, zVec##XD *p)
+  double zLine##XD##DistFromPoint(const zLine##XD *line, const zVec##XD *p)
 #define ZEO_ELEM_LINEXD_DIST_FROM_POINT(XD) \
   ZEO_ELEM_LINEXD_DIST_FROM_POINT_PROTOTYPE( XD ){ \
     zVec##XD v; \
@@ -86,7 +86,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
   }
 
 #define ZEO_ELEM_LINEXD_POINT_IS_ON_PROTOTYPE(XD) \
-  bool zLine##XD##PointIsOn(zLine##XD *line, zVec##XD *p, double margin)
+  bool zLine##XD##PointIsOn(const zLine##XD *line, const zVec##XD *p, double margin)
 #define ZEO_ELEM_LINEXD_POINT_IS_ON(XD) \
   ZEO_ELEM_LINEXD_POINT_IS_ON_PROTOTYPE( XD ){ \
     return zLine##XD##DistFromPoint( line, p ) < margin; \
@@ -119,11 +119,11 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   }
 
 #define ZEO_ELEM_EDGEXD_CREATE_PROTOTYPE(XD) \
-  zEdge##XD *zEdge##XD##Create(zEdge##XD *edge, zVec##XD *v1, zVec##XD *v2)
+  zEdge##XD *zEdge##XD##Create(zEdge##XD *edge, const zVec##XD *v1, const zVec##XD *v2)
 #define ZEO_ELEM_EDGEXD_CREATE(XD) \
   ZEO_ELEM_EDGEXD_CREATE_PROTOTYPE( XD ){ \
-    zEdge##XD##SetVert( edge, 0, v1 ); \
-    zEdge##XD##SetVert( edge, 1, v2 ); \
+    zEdge##XD##SetVert( edge, 0, (zVec##XD*)v1 ); \
+    zEdge##XD##SetVert( edge, 1, (zVec##XD*)v2 ); \
     zEdge##XD##CalcVec( edge ); \
     return edge; \
   }
@@ -143,14 +143,14 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
  * len       ... length of the edge
  */
 #define _ZEO_ELEM_EDGEXD_PROJ_SET(XD) \
-  static bool _zEdge##XD##ProjSet(zEdge##XD *edge, zVec##XD *point, zVec##XD *unit_dir, zVec##XD *rel_point, double *len){ \
+  static bool _zEdge##XD##ProjSet(const zEdge##XD *edge, const zVec##XD *point, zVec##XD *unit_dir, zVec##XD *rel_point, double *len){ \
     zVec##XD##Sub( point, zEdge##XD##Vert(edge,0), rel_point ); \
     *len = ZEO_ELEM_EDGEXD_DIR( XD, edge, unit_dir ); \
     return !zVec##XD##IsTiny( rel_point ); \
   }
 
 #define ZEO_ELEM_EDGEXD_PROJ_POINT_PROTOTYPE(XD) \
-  zVec##XD *zEdge##XD##ProjPoint(zEdge##XD *edge, zVec##XD *point, zVec##XD *cp)
+  zVec##XD *zEdge##XD##ProjPoint(const zEdge##XD *edge, const zVec##XD *point, zVec##XD *cp)
 #define ZEO_ELEM_EDGEXD_PROJ_POINT(XD) \
   ZEO_ELEM_EDGEXD_PROJ_POINT_PROTOTYPE( XD ){ \
     zVec##XD unit_dir, rel_point; \
@@ -160,7 +160,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   }
 
 #define ZEO_ELEM_EDGEXD_DIST_FROM_POINT_PROTOTYPE(XD) \
-  double zEdge##XD##DistFromPoint(zEdge##XD *edge, zVec##XD *point)
+  double zEdge##XD##DistFromPoint(const zEdge##XD *edge, const zVec##XD *point)
 #define ZEO_ELEM_EDGEXD_DIST_FROM_POINT(XD) \
   ZEO_ELEM_EDGEXD_DIST_FROM_POINT_PROTOTYPE( XD ){ \
     zVec##XD cp; \
@@ -168,7 +168,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   }
 
 #define ZEO_ELEM_EDGEXD_POINT_IS_ON_LINE_PROTOTYPE(XD) \
-  bool zEdge##XD##PointIsOnLine(zEdge##XD *edge, zVec##XD *point, double margin)
+  bool zEdge##XD##PointIsOnLine(const zEdge##XD *edge, const zVec##XD *point, double margin)
 #define ZEO_ELEM_EDGEXD_POINT_IS_ON_LINE(XD) \
   ZEO_ELEM_EDGEXD_POINT_IS_ON_LINE_PROTOTYPE( XD ){ \
     zVec##XD unit_dir, rel_point; \
@@ -178,14 +178,14 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   }
 
 #define ZEO_ELEM_EDGEXD_POINT_IS_ON_PROTOTYPE(XD) \
-  bool zEdge##XD##PointIsOn(zEdge##XD *edge, zVec##XD *point, double margin)
+  bool zEdge##XD##PointIsOn(const zEdge##XD *edge, const zVec##XD *point, double margin)
 #define ZEO_ELEM_EDGEXD_POINT_IS_ON(XD) \
   ZEO_ELEM_EDGEXD_POINT_IS_ON_PROTOTYPE( XD ){ \
     return zEdge##XD##DistFromPoint( edge, point ) < margin; \
   }
 
 #define _ZEO_ELEM_EDGEXD_LINSCALE(XD) \
-  static double _zEdge##XD##LinScale(zEdge##XD *edge, zVec##XD *point, double *l0, double *l1, zVec##XD *cp){ \
+  static double _zEdge##XD##LinScale(const zEdge##XD *edge, const zVec##XD *point, double *l0, double *l1, zVec##XD *cp){ \
     zVec##XD dp0, dp1, v; \
     double d, ret; \
     int ni; \
@@ -220,7 +220,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   }
 
 #define ZEO_ELEM_EDGEXD_CLOSEST_PROTOTYPE(XD) \
-  double zEdge##XD##Closest(zEdge##XD *edge, zVec##XD *point, zVec##XD *cp)
+  double zEdge##XD##Closest(const zEdge##XD *edge, const zVec##XD *point, zVec##XD *cp)
 #define ZEO_ELEM_EDGEXD_CLOSEST(XD) \
   ZEO_ELEM_EDGEXD_CLOSEST_PROTOTYPE( XD ){ \
     zVec##XD unit_dir, rel_point; \
@@ -238,7 +238,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   }
 
 #define ZEO_ELEM_EDGEXD_CONTIG_VERT_PROTOTYPE(XD) \
-  zVec##XD *zEdge##XD##ContigVert(zEdge##XD *edge, zVec##XD *point, double *distance)
+  zVec##XD *zEdge##XD##ContigVert(const zEdge##XD *edge, const zVec##XD *point, double *distance)
 #define ZEO_ELEM_EDGEXD_CONTIG_VERT(XD) \
   ZEO_ELEM_EDGEXD_CONTIG_VERT_PROTOTYPE( XD ){ \
     double d0, d1, _distance; \
@@ -255,7 +255,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   }
 
 #define ZEO_ELEM_EDGEXD_FPRINT_PROTOTYPE(XD) \
-  void zEdge##XD##FPrint(FILE *fp, zEdge##XD *edge)
+  void zEdge##XD##FPrint(FILE *fp, const zEdge##XD *edge)
 #define ZEO_ELEM_EDGEXD_FPRINT(XD) \
   ZEO_ELEM_EDGEXD_FPRINT_PROTOTYPE( XD ){ \
     if( !edge ) \
@@ -275,7 +275,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
  * ********************************************************** */
 
 #define ZEO_ELEM_TRIXD_BARYCENTER_PROTOTYPE(XD) \
-  zVec##XD *zTri##XD##Barycenter(zTri##XD *tri, zVec##XD *c)
+  zVec##XD *zTri##XD##Barycenter(const zTri##XD *tri, zVec##XD *c)
 #define ZEO_ELEM_TRIXD_BARYCENTER(XD) \
   ZEO_ELEM_TRIXD_BARYCENTER_PROTOTYPE( XD ){ \
     zVec##XD##Add( zTri##XD##Vert(tri,0), zTri##XD##Vert(tri,1), c ); \
@@ -284,7 +284,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   }
 
 #define ZEO_ELEM_TRIXD_CIRCUMCENTER_PROTOTYPE(XD) \
-  zVec##XD *zTri##XD##Circumcenter(zTri##XD *tri, zVec##XD *c)
+  zVec##XD *zTri##XD##Circumcenter(const zTri##XD *tri, zVec##XD *c)
 #define ZEO_ELEM_TRIXD_CIRCUMCENTER(XD) \
   ZEO_ELEM_TRIXD_CIRCUMCENTER_PROTOTYPE( XD ){ \
     double r[3], s[3]; \
@@ -299,7 +299,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   }
 
 #define ZEO_ELEM_TRIXD_INCENTER_PROTOTYPE(XD) \
-  zVec##XD *zTri##XD##Incenter(zTri##XD *tri, zVec##XD *c)
+  zVec##XD *zTri##XD##Incenter(const zTri##XD *tri, zVec##XD *c)
 #define ZEO_ELEM_TRIXD_INCENTER(XD) \
   ZEO_ELEM_TRIXD_INCENTER_PROTOTYPE( XD ){ \
     double s[3]; \
@@ -311,7 +311,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   }
 
 #define ZEO_ELEM_TRIXD_ORTHOCENTER_PROTOTYPE(XD) \
-  zVec##XD *zTri##XD##Orthocenter(zTri##XD *tri, zVec##XD *c)
+  zVec##XD *zTri##XD##Orthocenter(const zTri##XD *tri, zVec##XD *c)
 #define ZEO_ELEM_TRIXD_ORTHOCENTER(XD) \
   ZEO_ELEM_TRIXD_ORTHOCENTER_PROTOTYPE( XD ){ \
     zVec##XD e[3]; \
@@ -327,7 +327,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   }
 
 #define ZEO_ELEM_TRIXD_CONTIG_VERT_PROTOTYPE(XD) \
-  zVec##XD *zTri##XD##ContigVert(zTri##XD *tri, zVec##XD *p, double *d)
+  zVec##XD *zTri##XD##ContigVert(const zTri##XD *tri, const zVec##XD *p, double *d)
 #define ZEO_ELEM_TRIXD_CONTIG_VERT(XD) \
   ZEO_ELEM_TRIXD_CONTIG_VERT_PROTOTYPE( XD ){ \
     double d0, d1, d2; \
@@ -354,20 +354,20 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   }
 
 #define ZEO_ELEM_TRIXD_CLOSEST_PROTOTYPE(XD) \
-  double zTri##XD##Closest(zTri##XD *tri, zVec##XD *v, zVec##XD *cp)
+  double zTri##XD##Closest(const zTri##XD *tri, const zVec##XD *p, zVec##XD *cp)
 #define ZEO_ELEM_TRIXD_CLOSEST(XD) \
   ZEO_ELEM_TRIXD_CLOSEST_PROTOTYPE( XD ){ \
     zEdge##XD edge; \
     zVec##XD cp_tmp; \
     double d, d_tmp; \
     int i; \
-    zTri##XD##ProjPoint( tri, v, cp ); \
+    zTri##XD##ProjPoint( tri, p, cp ); \
     if( zTri##XD##PointIsInside( tri, cp, zTOL ) ) return 0; \
     zEdge##XD##Create( &edge, zTri##XD##Vert(tri,0), zTri##XD##Vert(tri,1) ); \
-    d = zEdge##XD##Closest( &edge, v, cp ); \
+    d = zEdge##XD##Closest( &edge, p, cp ); \
     for( i=1; i<=2; i++ ){ \
       zEdge##XD##Create( &edge, zTri##XD##Vert(tri,i), zTri##XD##Vert(tri,(i+1)%3) ); \
-      if( ( d_tmp = zEdge##XD##Closest( &edge, v, &cp_tmp ) ) < d ){ \
+      if( ( d_tmp = zEdge##XD##Closest( &edge, p, &cp_tmp ) ) < d ){ \
         zVec##XD##Copy( &cp_tmp, cp ); \
         d = d_tmp; \
       } \
@@ -376,11 +376,11 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   }
 
 #define ZEO_ELEM_TRIXD_DIST_FROM_POINT_PROTOTYPE(XD) \
-  double zTri##XD##DistFromPoint(zTri##XD *tri, zVec##XD *v)
+  double zTri##XD##DistFromPoint(const zTri##XD *tri, const zVec##XD *p)
 #define ZEO_ELEM_TRIXD_DIST_FROM_POINT(XD) \
   ZEO_ELEM_TRIXD_DIST_FROM_POINT_PROTOTYPE( XD ){ \
     zVec##XD cp; \
-    return zTri##XD##Closest( tri, v, &cp ); \
+    return zTri##XD##Closest( tri, p, &cp ); \
   }
 
 #endif /* __ZEO_ELEMXD_H__ */

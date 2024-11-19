@@ -12,7 +12,7 @@
  * ********************************************************** */
 
 /* add a 3D triangle list cell. */
-zTri3DListCell *zTri3DListAdd(zTri3DList *list, zTri3D *t)
+zTri3DListCell *zTri3DListAdd(zTri3DList *list, const zTri3D *t)
 {
   zTri3DListCell *cell;
 
@@ -26,7 +26,7 @@ zTri3DListCell *zTri3DListAdd(zTri3DList *list, zTri3D *t)
 }
 
 /* align triangles to a direction referred by a vector. */
-void zTri3DListAlign(zTri3DList *list, zVec3D *ref)
+void zTri3DListAlign(zTri3DList *list, const zVec3D *ref)
 {
   zTri3DListCell *tp;
 
@@ -36,7 +36,7 @@ void zTri3DListAlign(zTri3DList *list, zVec3D *ref)
 }
 
 /* copy triangles in a list to array. */
-void zTri3DListCopyArray(zTri3DList *list, zTri3D t[], int n)
+void zTri3DListCopyArray(const zTri3DList *list, zTri3D t[], int n)
 {
   zTri3DListCell *tp;
   int i = 0;
@@ -52,7 +52,7 @@ void zTri3DListCopyArray(zTri3DList *list, zTri3D t[], int n)
  * ********************************************************** */
 
 /* normal vector of non-convex for inside-outside judgement. */
-static zVec3D *_zLoop3DTriangulateNorm(zLoop3D *loop, zVec3D *norm)
+static zVec3D *_zLoop3DTriangulateNorm(const zLoop3D *loop, zVec3D *norm)
 {
   double x_min;
   zLoop3DCell *vp, *st, *pre, *pst;
@@ -76,7 +76,7 @@ static zVec3D *_zLoop3DTriangulateNorm(zLoop3D *loop, zVec3D *norm)
 }
 
 /* check if a triangle piece is valid. */
-static bool _zLoop3DTriangulateCheck(zLoop3D *loop, zTri3D *t, zLoop3DCell *pre, zLoop3DCell *pst)
+static bool _zLoop3DTriangulateCheck(const zLoop3D *loop, const zTri3D *t, zLoop3DCell *pre, zLoop3DCell *pst)
 {
   zLoop3DCell *vp;
 
@@ -120,7 +120,7 @@ static int _zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist)
 }
 
 /* triangulate a simple loop of vertices. */
-int zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist)
+int zLoop3DTriangulate(const zLoop3D *loop, zTri3DList *tlist)
 {
   zLoop3D loop_copy;
   int ret = 0;
@@ -132,7 +132,7 @@ int zLoop3DTriangulate(zLoop3D *loop, zTri3DList *tlist)
 }
 
 /* triangulate a non-convex loop of vertices. */
-int zTriangulate(zVec3DArray *array, zTri3DList *tlist)
+int zTriangulate(const zVec3DArray *array, zTri3DList *tlist)
 {
   zLoop3D loop;
 

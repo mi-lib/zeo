@@ -16,11 +16,11 @@ __BEGIN_DECLS
  * 3D sphere class
  * ********************************************************** */
 
-typedef struct{
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zSphere3D ){
   zVec3D center;
   double radius;
   int div;
-} zSphere3D;
+};
 
 #define zSphere3DCenter(s)      ( &(s)->center )
 #define zSphere3DRadius(s)      (s)->radius
@@ -47,11 +47,11 @@ typedef struct{
  * pointer \a sphere.
  * zSphere3DCopy() returns the pointer \a dest.
  */
-__ZEO_EXPORT zSphere3D *zSphere3DCreate(zSphere3D *sphere, zVec3D *c, double r, int div);
+__ZEO_EXPORT zSphere3D *zSphere3DCreate(zSphere3D *sphere, const zVec3D *c, double r, int div);
 __ZEO_EXPORT zSphere3D *zSphere3DInit(zSphere3D *sphere);
 __ZEO_EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zSphere3D );
-__ZEO_EXPORT zSphere3D *zSphere3DCopy(zSphere3D *src, zSphere3D *dest);
-__ZEO_EXPORT zSphere3D *zSphere3DMirror(zSphere3D *src, zSphere3D *dest, zAxis axis);
+__ZEO_EXPORT zSphere3D *zSphere3DCopy(const zSphere3D *src, zSphere3D *dest);
+__ZEO_EXPORT zSphere3D *zSphere3DMirror(const zSphere3D *src, zSphere3D *dest, zAxis axis);
 
 /*! \brief transform coordinates of a 3D sphere.
  *
@@ -63,8 +63,8 @@ __ZEO_EXPORT zSphere3D *zSphere3DMirror(zSphere3D *src, zSphere3D *dest, zAxis a
  * \return
  * zSphere3DXform() and zSphere3DXformInv() return the pointer \a dest.
  */
-__ZEO_EXPORT zSphere3D *zSphere3DXform(zSphere3D *src, zFrame3D *f, zSphere3D *dest);
-__ZEO_EXPORT zSphere3D *zSphere3DXformInv(zSphere3D *src, zFrame3D *f, zSphere3D *dest);
+__ZEO_EXPORT zSphere3D *zSphere3DXform(const zSphere3D *src, const zFrame3D *f, zSphere3D *dest);
+__ZEO_EXPORT zSphere3D *zSphere3DXformInv(const zSphere3D *src, const zFrame3D *f, zSphere3D *dest);
 
 /*! \brief distance from a 3D point to a 3D sphere.
  *
@@ -87,18 +87,18 @@ __ZEO_EXPORT zSphere3D *zSphere3DXformInv(zSphere3D *src, zFrame3D *f, zSphere3D
  * zSphere3DPointIsInside() returns the true value if \a p is inside
  * of \a sphere, or the false value otherwise.
  */
-__ZEO_EXPORT double zSphere3DClosest(zSphere3D *sphere, zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zSphere3DDistFromPoint(zSphere3D *sphere, zVec3D *p);
-__ZEO_EXPORT bool zSphere3DPointIsInside(zSphere3D *sphere, zVec3D *p, double margin);
+__ZEO_EXPORT double zSphere3DClosest(const zSphere3D *sphere, const zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT double zSphere3DDistFromPoint(const zSphere3D *sphere, const zVec3D *p);
+__ZEO_EXPORT bool zSphere3DPointIsInside(const zSphere3D *sphere, const zVec3D *p, double margin);
 
 /*! \brief create a 3D sphere from two points at both ends of diameter. */
-__ZEO_EXPORT zSphere3D *zSphere3DFrom2(zSphere3D *sphere, zVec3D *v1, zVec3D *v2);
+__ZEO_EXPORT zSphere3D *zSphere3DFrom2(zSphere3D *sphere, const zVec3D *v1, const zVec3D *v2);
 
 /*! \brief create a 3D sphere from three points to include their circumcircle as the great circle. */
-__ZEO_EXPORT zSphere3D *zSphere3DFrom3(zSphere3D *sphere, zVec3D *v1, zVec3D *v2, zVec3D *v3);
+__ZEO_EXPORT zSphere3D *zSphere3DFrom3(zSphere3D *sphere, const zVec3D *v1, const zVec3D *v2, const zVec3D *v3);
 
 /*! \brief create a 3D sphere from four points as the circumscribing sphere of them. */
-__ZEO_EXPORT zSphere3D *zSphere3DFrom4(zSphere3D *sphere, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4);
+__ZEO_EXPORT zSphere3D *zSphere3DFrom4(zSphere3D *sphere, const zVec3D *v1, const zVec3D *v2, const zVec3D *v3, const zVec3D *v4);
 
 /*! \brief volume of a 3D sphere.
  *
@@ -106,7 +106,7 @@ __ZEO_EXPORT zSphere3D *zSphere3DFrom4(zSphere3D *sphere, zVec3D *v1, zVec3D *v2
  * \return
  * zSphere3DVolume() returns the calculated volume.
  */
-__ZEO_EXPORT double zSphere3DVolume(zSphere3D *sphere);
+__ZEO_EXPORT double zSphere3DVolume(const zSphere3D *sphere);
 
 /*! \brief inertia tensor of a 3D sphere.
  *
@@ -121,8 +121,8 @@ __ZEO_EXPORT double zSphere3DVolume(zSphere3D *sphere);
  * \sa
  * zSphere3DVolume()
  */
-__ZEO_EXPORT zMat3D *zSphere3DBaryInertiaMass(zSphere3D *sphere, double mass, zMat3D *inertia);
-__ZEO_EXPORT zMat3D *zSphere3DBaryInertia(zSphere3D *sphere, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zSphere3DBaryInertiaMass(const zSphere3D *sphere, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zSphere3DBaryInertia(const zSphere3D *sphere, double density, zMat3D *inertia);
 
 /*! \brief convert a 3D sphere to a polyhedron.
  *
@@ -137,10 +137,10 @@ __ZEO_EXPORT zMat3D *zSphere3DBaryInertia(zSphere3D *sphere, double density, zMa
  * zCone3DToPH, zCone3DToPHDRC
  */
 /* default longitudinal & latitudinal division number are the same. */
-__ZEO_EXPORT zPH3D *zSphere3DToPH(zSphere3D *sphere, zPH3D *ph);
+__ZEO_EXPORT zPH3D *zSphere3DToPH(const zSphere3D *sphere, zPH3D *ph);
 
 /*! \brief print a 3D sphere out to a file in a ZTK format. */
-__ZEO_EXPORT void zSphere3DFPrintZTK(FILE *fp, zSphere3D *sphere);
+__ZEO_EXPORT void zSphere3DFPrintZTK(FILE *fp, const zSphere3D *sphere);
 
 /*! \brief fit a sphere to point cloud.
  *
@@ -156,7 +156,7 @@ __ZEO_EXPORT zShape3DCom zeo_shape3d_sphere_com;
 
 #define zShape3DSphere(s) ( (zSphere3D*)(s)->body )
 
-__ZEO_EXPORT zShape3D *zShape3DSphereCreate(zShape3D *shape, zVec3D *c, double r, int div);
+__ZEO_EXPORT zShape3D *zShape3DSphereCreate(zShape3D *shape, const zVec3D *c, double r, int div);
 
 __END_DECLS
 

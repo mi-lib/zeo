@@ -26,15 +26,15 @@ static void *_zShape3DPHMirror(void *src, zAxis axis){
   return ( mrr = (zPH3D*)_zShape3DPHAlloc() ) ? zPH3DMirror( (zPH3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DPHDestroy(void *body){
   zPH3DDestroy( (zPH3D*)body ); }
-static void *_zShape3DPHXform(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DPHXform(void *src, const zFrame3D *f, void *dest){
   return zPH3DXform( (zPH3D*)src, f, (zPH3D*)dest ); }
-static void *_zShape3DPHXformInv(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DPHXformInv(void *src, const zFrame3D *f, void *dest){
   return zPH3DXformInv( (zPH3D*)src, f, (zPH3D*)dest ); }
-static double _zShape3DPHClosest(void *body, zVec3D *p, zVec3D *cp){
+static double _zShape3DPHClosest(void *body, const zVec3D *p, zVec3D *cp){
   return zPH3DClosest( (zPH3D*)body, p, cp ); }
-static double _zShape3DPHDistFromPoint(void *body, zVec3D *p){
+static double _zShape3DPHDistFromPoint(void *body, const zVec3D *p){
   return zPH3DDistFromPoint( (zPH3D*)body, p ); }
-static bool _zShape3DPHPointIsInside(void *body, zVec3D *p, double margin){
+static bool _zShape3DPHPointIsInside(void *body, const zVec3D *p, double margin){
   return zPH3DPointIsInside( (zPH3D*)body, p, margin ); }
 static double _zShape3DPHVolume(void *body){
   return zPH3DVolume( (zPH3D*)body ); }

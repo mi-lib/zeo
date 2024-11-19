@@ -33,7 +33,7 @@ ZEO_ELEM_LINEXD_DIST_FROM_POINT( 2D )
 ZEO_ELEM_LINEXD_POINT_IS_ON( 2D )
 
 /* the intersection of two 2D lines. */
-zVec2D *zIntersectLine2D(zLine2D *line1, zLine2D *line2, zVec2D *intersection)
+zVec2D *zIntersectLine2D(const zLine2D *line1, const zLine2D *line2, zVec2D *intersection)
 {
   zVec2D dp, s;
   zMat2D m;
@@ -90,11 +90,11 @@ ZEO_ELEM_EDGEXD_FPRINT( 2D )
  * ********************************************************** */
 
 /* create a triangle. */
-zTri2D *zTri2DCreate(zTri2D *tri, zVec2D *v1, zVec2D *v2, zVec2D *v3)
+zTri2D *zTri2DCreate(zTri2D *tri, const zVec2D *v1, const zVec2D *v2, const zVec2D *v3)
 {
-  zTri2DSetVert( tri, 0, v1 );
-  zTri2DSetVert( tri, 1, v2 );
-  zTri2DSetVert( tri, 2, v3 );
+  zTri2DSetVert( tri, 0, (zVec2D*)v1 );
+  zTri2DSetVert( tri, 1, (zVec2D*)v2 );
+  zTri2DSetVert( tri, 2, (zVec2D*)v3 );
   return tri;
 }
 
@@ -121,7 +121,7 @@ ZEO_ELEM_TRIXD_ORTHOCENTER( 2D )
 ZEO_ELEM_TRIXD_CONTIG_VERT( 2D )
 
 /* check if a point is inside of a triangle. */
-bool zTri2DPointIsInside(zTri2D *tri, zVec2D *v, double margin)
+bool zTri2DPointIsInside(const zTri2D *tri, const zVec2D *v, double margin)
 {
   int i;
   zVec2D e, n, d;
@@ -144,7 +144,7 @@ ZEO_ELEM_TRIXD_CLOSEST( 2D )
 ZEO_ELEM_TRIXD_DIST_FROM_POINT( 2D )
 
 /* print information of a triangle to a file. */
-void zTri2DFPrint(FILE *fp, zTri2D *tri)
+void zTri2DFPrint(FILE *fp, const zTri2D *tri)
 {
   if( !tri )
     fprintf( fp, "(null triangle)\n" );
@@ -163,7 +163,7 @@ void zTri2DFPrint(FILE *fp, zTri2D *tri)
  * ********************************************************** */
 
 /* create a 2D disk. */
-zDisk2D *zDisk2DCreate(zDisk2D *disk, zVec2D *c, double r)
+zDisk2D *zDisk2DCreate(zDisk2D *disk, const zVec2D *c, double r)
 {
   zDisk2DSetCenter( disk, c );
   zDisk2DSetRadius( disk, r );
@@ -171,19 +171,19 @@ zDisk2D *zDisk2DCreate(zDisk2D *disk, zVec2D *c, double r)
 }
 
 /* signed distance from a 2D point to a disk. */
-double zDisk2DDistFromPoint(zDisk2D *disk, zVec2D *p)
+double zDisk2DDistFromPoint(const zDisk2D *disk, const zVec2D *p)
 {
   return zVec2DDist( zDisk2DCenter(disk), p ) - zDisk2DRadius(disk);
 }
 
 /* check if a 2D point is inside of a disk. */
-bool zDisk2DPointIsInside(zDisk2D *disk, zVec2D *v, double margin)
+bool zDisk2DPointIsInside(const zDisk2D *disk, const zVec2D *v, double margin)
 {
   return zDisk2DDistFromPoint( disk, v ) < margin ? true : false;
 }
 
 /* create a 2D disk from two points at both ends of diameter. */
-zDisk2D *zDisk2DFrom2(zDisk2D *disk, zVec2D *v1, zVec2D *v2)
+zDisk2D *zDisk2DFrom2(zDisk2D *disk, const zVec2D *v1, const zVec2D *v2)
 {
   zVec2DMid( v1, v2, zDisk2DCenter(disk) );
   zDisk2DSetRadius( disk, zVec2DDist(zDisk2DCenter(disk),v1) );
@@ -191,7 +191,7 @@ zDisk2D *zDisk2DFrom2(zDisk2D *disk, zVec2D *v1, zVec2D *v2)
 }
 
 /* create a 2D disk from three points as the circumcircle of them. */
-zDisk2D *zDisk2DFrom3(zDisk2D *disk, zVec2D *v1, zVec2D *v2, zVec2D *v3)
+zDisk2D *zDisk2DFrom3(zDisk2D *disk, const zVec2D *v1, const zVec2D *v2, const zVec2D *v3)
 {
   zTri2D tri;
 
@@ -206,7 +206,7 @@ zDisk2D *zDisk2DFrom3(zDisk2D *disk, zVec2D *v1, zVec2D *v2, zVec2D *v3)
  * ********************************************************** */
 
 /* create an ellipse. */
-zEllips2D *zEllips2DCreate(zEllips2D *ellips, zVec2D *c, double r1, double r2)
+zEllips2D *zEllips2DCreate(zEllips2D *ellips, const zVec2D *c, double r1, double r2)
 {
   zEllips2DSetCenter( ellips, c );
   zEllips2DSetRadius( ellips, 0, r1 );
@@ -215,7 +215,7 @@ zEllips2D *zEllips2DCreate(zEllips2D *ellips, zVec2D *c, double r1, double r2)
 }
 
 /* closest point to a 2D point on an ellipse with a margin. */
-static zVec2D *_zEllips2DClosest(zEllips2D *ellips, zVec2D *p, double margin, zVec2D *cp)
+static zVec2D *_zEllips2DClosest(const zEllips2D *ellips, const zVec2D *p, double margin, zVec2D *cp)
 {
   zVec2D v;
   double x2, y2, r02, r12, l;
@@ -255,13 +255,13 @@ static zVec2D *_zEllips2DClosest(zEllips2D *ellips, zVec2D *p, double margin, zV
 }
 
 /* closest point to a 2D point on an ellipse. */
-zVec2D *zEllips2DClosest(zEllips2D *ellips, zVec2D *p, zVec2D *cp)
+zVec2D *zEllips2DClosest(const zEllips2D *ellips, const zVec2D *p, zVec2D *cp)
 {
   return _zEllips2DClosest( ellips, p, 0, cp );
 }
 
 /* distance from a 2D ellipse to a 2D point. */
-double zEllips2DDistFromPoint(zEllips2D *ellips, zVec2D *p)
+double zEllips2DDistFromPoint(const zEllips2D *ellips, const zVec2D *p)
 {
   zVec2D cp, *ret;
 
@@ -270,7 +270,7 @@ double zEllips2DDistFromPoint(zEllips2D *ellips, zVec2D *p)
 }
 
 /* check if a 2D point is inside of an ellipse. */
-bool zEllips2DPointIsInside(zEllips2D *ellips, zVec2D *p, double margin)
+bool zEllips2DPointIsInside(const zEllips2D *ellips, const zVec2D *p, double margin)
 {
   return zSqr( ( p->c.x - zEllips2DCenter(ellips)->c.x ) / ( zEllips2DRadius(ellips,0) + margin ) )
        + zSqr( ( p->c.y - zEllips2DCenter(ellips)->c.y ) / ( zEllips2DRadius(ellips,1) + margin ) ) < 1 ?

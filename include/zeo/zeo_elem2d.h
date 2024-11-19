@@ -39,7 +39,7 @@ __ZEO_EXPORT ZEO_ELEM_LINEXD_DIST_FROM_POINT_PROTOTYPE( 2D );
 __ZEO_EXPORT ZEO_ELEM_LINEXD_POINT_IS_ON_PROTOTYPE( 2D );
 
 /*! \brief the intersection of two 2D lines. */
-__ZEO_EXPORT zVec2D *zIntersectLine2D(zLine2D *line1, zLine2D *line2, zVec2D *intersection);
+__ZEO_EXPORT zVec2D *zIntersectLine2D(const zLine2D *line1, const zLine2D *line2, zVec2D *intersection);
 
 /* ********************************************************** */
 /*! \brief 2D edge class.
@@ -150,7 +150,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zTri2D ){
   zVec2D *v[3]; /*!< \brief vertices */
 };
 
-#define zTri2DVert(tri,i)      (tri)->v[i]
+#define zTri2DVert(tri,i)      (tri)->v[(i)]
 #define zTri2DSetVert(tri,i,v) ( zTri2DVert(tri,i) = (v) )
 
 #define zTri2DVertNext(tri,i)  zTri2DVert( tri, ( (i)+1 ) % 3 )
@@ -165,17 +165,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zTri2D ){
  * \return
  * zTri2DInit() and zTri2DCreate() return a pointer \a tri.
  */
-__ZEO_EXPORT zTri2D *zTri2DCreate(zTri2D *tri, zVec2D *v1, zVec2D *v2, zVec2D *v3);
+__ZEO_EXPORT zTri2D *zTri2DCreate(zTri2D *tri, const zVec2D *v1, const zVec2D *v2, const zVec2D *v3);
 #define zTri2DInit(t) zTri2DCreate( t, NULL, NULL, NULL )
-
-/*! \brief initialize and create a 2D triangle.
- *
- * zTri2DCreate() creates a 2D triangle from three vertices \a v1, \a v2
- * and \a v3.
- * \return
- * zTri2DCreate() returns a pointer \a tri.
- */
-__ZEO_EXPORT zTri2D *zTri2DCreate(zTri2D *tri, zVec2D *v1, zVec2D *v2, zVec2D *v3);
 
 /*! \brief various centers of a 2D triangle.
  *
@@ -211,7 +202,7 @@ __ZEO_EXPORT ZEO_ELEM_TRIXD_CONTIG_VERT_PROTOTYPE( 2D );
  * zTri2DPointIsInside() returns the true value if \a v is inside of \a tri
  * with a margin \a margin. Otherwise, the false value is returned.
  */
-__ZEO_EXPORT bool zTri2DPointIsInside(zTri2D *tri, zVec2D *v, double margin);
+__ZEO_EXPORT bool zTri2DPointIsInside(const zTri2D *tri, const zVec2D *v, double margin);
 
 /*! \brief the closest point from a point to a 2D triangle.
  *
@@ -247,7 +238,7 @@ __ZEO_EXPORT ZEO_ELEM_TRIXD_DIST_FROM_POINT_PROTOTYPE( 2D );
  * \return
  * zTri2DFPrint() and zTri2DPrint() do not return any values.
  */
-__ZEO_EXPORT void zTri2DFPrint(FILE *fp, zTri2D *tri);
+__ZEO_EXPORT void zTri2DFPrint(FILE *fp, const zTri2D *tri);
 #define zTri2DPrint(tri) zTri2DFPrint( stdout, (tri) )
 
 /*! \struct zTri2DArray
@@ -272,19 +263,19 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zDisk2D ){
 #define zDisk2DSetRadius(disk,r) ( zDisk2DRadius(disk) = (r) )
 
 /*! \brief create a 2D disk. */
-__ZEO_EXPORT zDisk2D *zDisk2DCreate(zDisk2D *disk, zVec2D *c, double r);
+__ZEO_EXPORT zDisk2D *zDisk2DCreate(zDisk2D *disk, const zVec2D *c, double r);
 
 /*! \brief signed distance from a 2D point to a disk. */
-__ZEO_EXPORT double zDisk2DDistFromPoint(zDisk2D *disk, zVec2D *p);
+__ZEO_EXPORT double zDisk2DDistFromPoint(const zDisk2D *disk, const zVec2D *p);
 
 /*! \brief check if a 2D point is inside of a disk. */
-__ZEO_EXPORT bool zDisk2DPointIsInside(zDisk2D *disk, zVec2D *v, double margin);
+__ZEO_EXPORT bool zDisk2DPointIsInside(const zDisk2D *disk, const zVec2D *v, double margin);
 
 /*! \brief create a 2D disk from two points at both ends of diameter. */
-__ZEO_EXPORT zDisk2D *zDisk2DFrom2(zDisk2D *disk, zVec2D *v1, zVec2D *v2);
+__ZEO_EXPORT zDisk2D *zDisk2DFrom2(zDisk2D *disk, const zVec2D *v1, const zVec2D *v2);
 
 /*! \brief create a 2D disk from three points as a circumcircle of them. */
-__ZEO_EXPORT zDisk2D *zDisk2DFrom3(zDisk2D *disk, zVec2D *v1, zVec2D *v2, zVec2D *v3);
+__ZEO_EXPORT zDisk2D *zDisk2DFrom3(zDisk2D *disk, const zVec2D *v1, const zVec2D *v2, const zVec2D *v3);
 
 /* ********************************************************** */
 /*! \brief 2D ellipse class.
@@ -301,16 +292,16 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEllips2D ){
 #define zEllips2DSetRadius(ellips,i,r) ( zEllips2DRadius(ellips,i) = (r) )
 
 /*! \brief create an ellipse. */
-__ZEO_EXPORT zEllips2D *zEllips2DCreate(zEllips2D *ellips, zVec2D *c, double r1, double r2);
+__ZEO_EXPORT zEllips2D *zEllips2DCreate(zEllips2D *ellips, const zVec2D *c, double r1, double r2);
 
 /*! \brief closest point to a 2D point on an ellipse. */
-__ZEO_EXPORT zVec2D *zEllips2DClosest(zEllips2D *ellips, zVec2D *p, zVec2D *cp);
+__ZEO_EXPORT zVec2D *zEllips2DClosest(const zEllips2D *ellips, const zVec2D *p, zVec2D *cp);
 
 /*! \brief signed distance from a 2D point to an ellipse. */
-__ZEO_EXPORT double zEllips2DDistFromPoint(zEllips2D *ellips, zVec2D *p);
+__ZEO_EXPORT double zEllips2DDistFromPoint(const zEllips2D *ellips, const zVec2D *p);
 
 /*! \brief check if a 2D point is inside of an ellipse. */
-__ZEO_EXPORT bool zEllips2DPointIsInside(zEllips2D *ellips, zVec2D *p, double margin);
+__ZEO_EXPORT bool zEllips2DPointIsInside(const zEllips2D *ellips, const zVec2D *p, double margin);
 
 __END_DECLS
 

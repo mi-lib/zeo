@@ -16,11 +16,12 @@ __BEGIN_DECLS
  * 3D cone class
  * ********************************************************** */
 
-typedef struct{
-  zVec3D center, vert;
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zCone3D ){
+  zVec3D center;
+  zVec3D vert;
   double radius;
   int div;
-} zCone3D;
+};
 
 #define zCone3DCenter(c)        ( &(c)->center )
 #define zCone3DVert(c)          ( &(c)->vert )
@@ -47,11 +48,11 @@ typedef struct{
  * Each of zCone3DInit() and zCone3DCreate() returns a pointer \a cone.
  * zCone3DCopy() returns a pointer the copied \a dest.
  */
-__ZEO_EXPORT zCone3D *zCone3DCreate(zCone3D *cone, zVec3D *c, zVec3D *v, double r, int div);
+__ZEO_EXPORT zCone3D *zCone3DCreate(zCone3D *cone, const zVec3D *c, const zVec3D *v, double r, int div);
 __ZEO_EXPORT zCone3D *zCone3DInit(zCone3D *cone);
 __ZEO_EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zCone3D );
-__ZEO_EXPORT zCone3D *zCone3DCopy(zCone3D *src, zCone3D *dest);
-__ZEO_EXPORT zCone3D *zCone3DMirror(zCone3D *src, zCone3D *dest, zAxis axis);
+__ZEO_EXPORT zCone3D *zCone3DCopy(const zCone3D *src, zCone3D *dest);
+__ZEO_EXPORT zCone3D *zCone3DMirror(const zCone3D *src, zCone3D *dest, zAxis axis);
 
 /*! \brief transformation of a 3D cone.
  *
@@ -63,8 +64,8 @@ __ZEO_EXPORT zCone3D *zCone3DMirror(zCone3D *src, zCone3D *dest, zAxis axis);
  * \return
  * zCone3DXform() and zCone3DXformInv() return a pointer \a dest.
  */
-__ZEO_EXPORT zCone3D *zCone3DXform(zCone3D *src, zFrame3D *f, zCone3D *dest);
-__ZEO_EXPORT zCone3D *zCone3DXformInv(zCone3D *src, zFrame3D *f, zCone3D *dest);
+__ZEO_EXPORT zCone3D *zCone3DXform(const zCone3D *src, const zFrame3D *f, zCone3D *dest);
+__ZEO_EXPORT zCone3D *zCone3DXformInv(const zCone3D *src, const zFrame3D *f, zCone3D *dest);
 
 /*! \brief check if a point is inside of a cone.
  *
@@ -75,9 +76,9 @@ __ZEO_EXPORT zCone3D *zCone3DXformInv(zCone3D *src, zFrame3D *f, zCone3D *dest);
  * zCone3DPointIsInside() returns the true value when \a p is inside of \a cone,
  * or the false value otherwise.
  */
-__ZEO_EXPORT double zCone3DClosest(zCone3D *cone, zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zCone3DDistFromPoint(zCone3D *cone, zVec3D *p);
-__ZEO_EXPORT bool zCone3DPointIsInside(zCone3D *cone, zVec3D *p, double margin);
+__ZEO_EXPORT double zCone3DClosest(const zCone3D *cone, const zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT double zCone3DDistFromPoint(const zCone3D *cone, const zVec3D *p);
+__ZEO_EXPORT bool zCone3DPointIsInside(const zCone3D *cone, const zVec3D *p, double margin);
 
 /*! \brief axis vector and height of a 3D cone.
  *
@@ -90,7 +91,7 @@ __ZEO_EXPORT bool zCone3DPointIsInside(zCone3D *cone, zVec3D *p, double margin);
  * zCone3DHeight() returns the height calculated.
  */
 #define zCone3DAxis(c,a) zVec3DSub( zCone3DVert(c), zCone3DCenter(c), a )
-__ZEO_EXPORT double zCone3DHeight(zCone3D *cone);
+__ZEO_EXPORT double zCone3DHeight(const zCone3D *cone);
 
 /*! \brief volume of a cone.
  *
@@ -98,7 +99,7 @@ __ZEO_EXPORT double zCone3DHeight(zCone3D *cone);
  * \return
  * zCone3DVolume() returns the calculated volume.
  */
-__ZEO_EXPORT double zCone3DVolume(zCone3D *cone);
+__ZEO_EXPORT double zCone3DVolume(const zCone3D *cone);
 
 /*! \brief barycenter of a cone.
  *
@@ -107,7 +108,7 @@ __ZEO_EXPORT double zCone3DVolume(zCone3D *cone);
  * \return
  * zCone3DBarycenter() returns a pointer \a c.
  */
-__ZEO_EXPORT zVec3D *zCone3DBarycenter(zCone3D *cone, zVec3D *c);
+__ZEO_EXPORT zVec3D *zCone3DBarycenter(const zCone3D *cone, zVec3D *c);
 
 /*! \brief inertia tensor of a cone.
  *
@@ -122,8 +123,8 @@ __ZEO_EXPORT zVec3D *zCone3DBarycenter(zCone3D *cone, zVec3D *c);
  * \sa
  * zCone3DVolume(), zCone3DBarycenter()
  */
-__ZEO_EXPORT zMat3D *zCone3DBaryInertiaMass(zCone3D *cone, double mass, zMat3D *inertia);
-__ZEO_EXPORT zMat3D *zCone3DBaryInertia(zCone3D *cone, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zCone3DBaryInertiaMass(const zCone3D *cone, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zCone3DBaryInertia(const zCone3D *cone, double density, zMat3D *inertia);
 
 /*! \brief convert cone to polyhedron.
  *
@@ -135,17 +136,17 @@ __ZEO_EXPORT zMat3D *zCone3DBaryInertia(zCone3D *cone, double density, zMat3D *i
  * \sa
  * zSphere3DToPH, zSphere3DToPH, zCyl3DToPH, zCyl3DToPHDRC
  */
-__ZEO_EXPORT zPH3D *zCone3DToPH(zCone3D *cone, zPH3D *ph);
+__ZEO_EXPORT zPH3D *zCone3DToPH(const zCone3D *cone, zPH3D *ph);
 
 /*! \brief print a 3D cone out to a file in a ZTK format. */
-__ZEO_EXPORT void zCone3DFPrintZTK(FILE *fp, zCone3D *cone);
+__ZEO_EXPORT void zCone3DFPrintZTK(FILE *fp, const zCone3D *cone);
 
 /* methods for abstraction */
 __ZEO_EXPORT zShape3DCom zeo_shape3d_cone_com;
 
 #define zShape3DCone(s) ( (zCone3D*)(s)->body )
 
-__ZEO_EXPORT zShape3D *zShape3DConeCreate(zShape3D *shape, zVec3D *c, zVec3D *v, double r, int div);
+__ZEO_EXPORT zShape3D *zShape3DConeCreate(zShape3D *shape, const zVec3D *c, const zVec3D *v, double r, int div);
 
 __END_DECLS
 

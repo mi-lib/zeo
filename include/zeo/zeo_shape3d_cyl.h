@@ -16,15 +16,15 @@ __BEGIN_DECLS
  * 3D cylinder class
  * ********************************************************** */
 
-typedef struct{
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zCyl3D ){
   zVec3D center[2];
   double radius;
   int div;
-} zCyl3D;
+};
 
-#define zCyl3DCenter(c,i)     ( &(c)->center[i] )
-#define zCyl3DRadius(c)       (c)->radius
-#define zCyl3DDiv(c)          (c)->div
+#define zCyl3DCenter(c,i)      ( &(c)->center[i] )
+#define zCyl3DRadius(c)        (c)->radius
+#define zCyl3DDiv(c)           (c)->div
 
 #define zCyl3DSetCenter(c,i,p) zVec3DCopy(p,zCyl3DCenter(c,i))
 #define zCyl3DSetRadius(c,r)   ( zCyl3DRadius(c) = (r) )
@@ -45,11 +45,11 @@ typedef struct{
  * zCyl3DInit() and zCyl3DCreate() return a pointer \a cyl.
  * zCyl3DCopy() returns a pointer \a dest.
  */
-__ZEO_EXPORT zCyl3D *zCyl3DCreate(zCyl3D *cyl, zVec3D *c1, zVec3D *c2, double r, int div);
+__ZEO_EXPORT zCyl3D *zCyl3DCreate(zCyl3D *cyl, const zVec3D *c1, const zVec3D *c2, double r, int div);
 __ZEO_EXPORT zCyl3D *zCyl3DInit(zCyl3D *cyl);
 __ZEO_EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zCyl3D );
-__ZEO_EXPORT zCyl3D *zCyl3DCopy(zCyl3D *src, zCyl3D *dest);
-__ZEO_EXPORT zCyl3D *zCyl3DMirror(zCyl3D *src, zCyl3D *dest, zAxis axis);
+__ZEO_EXPORT zCyl3D *zCyl3DCopy(const zCyl3D *src, zCyl3D *dest);
+__ZEO_EXPORT zCyl3D *zCyl3DMirror(const zCyl3D *src, zCyl3D *dest, zAxis axis);
 
 /*! \brief transform a 3D cylinder.
  *
@@ -61,8 +61,8 @@ __ZEO_EXPORT zCyl3D *zCyl3DMirror(zCyl3D *src, zCyl3D *dest, zAxis axis);
  * \return
  * zCyl3DXform() and zCyl3DXformInv() return a pointer \a dest.
  */
-__ZEO_EXPORT zCyl3D *zCyl3DXform(zCyl3D *src, zFrame3D *f, zCyl3D *dest);
-__ZEO_EXPORT zCyl3D *zCyl3DXformInv(zCyl3D *src, zFrame3D *f, zCyl3D *dest);
+__ZEO_EXPORT zCyl3D *zCyl3DXform(const zCyl3D *src, const zFrame3D *f, zCyl3D *dest);
+__ZEO_EXPORT zCyl3D *zCyl3DXformInv(const zCyl3D *src, const zFrame3D *f, zCyl3D *dest);
 
 /*! \brief check if a point is inside of a 3D cylinder.
  *
@@ -73,9 +73,9 @@ __ZEO_EXPORT zCyl3D *zCyl3DXformInv(zCyl3D *src, zFrame3D *f, zCyl3D *dest);
  * zCyl3DPointIsInside() returns the true value if \a p is inside of \a cyl,
  * or the false value otherwise.
  */
-__ZEO_EXPORT double zCyl3DClosest(zCyl3D *cyl, zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zCyl3DDistFromPoint(zCyl3D *cyl, zVec3D *p);
-__ZEO_EXPORT bool zCyl3DPointIsInside(zCyl3D *cyl, zVec3D *p, double margin);
+__ZEO_EXPORT double zCyl3DClosest(const zCyl3D *cyl, const zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT double zCyl3DDistFromPoint(const zCyl3D *cyl, const zVec3D *p);
+__ZEO_EXPORT bool zCyl3DPointIsInside(const zCyl3D *cyl, const zVec3D *p, double margin);
 
 /*! \brief axis vector and height of a 3D cylinder.
  *
@@ -89,9 +89,8 @@ __ZEO_EXPORT bool zCyl3DPointIsInside(zCyl3D *cyl, zVec3D *p, double margin);
  * zCyl3DAxis() returns a pointer \a axis.
  * zCyl3DHeight() returns the calculated height.
  */
-#define zCyl3DAxis(c,a) \
-  zVec3DSub( zCyl3DCenter(c,1), zCyl3DCenter(c,0), a )
-__ZEO_EXPORT double zCyl3DHeight(zCyl3D *cyl);
+#define zCyl3DAxis(c,a) zVec3DSub( zCyl3DCenter(c,1), zCyl3DCenter(c,0), a )
+__ZEO_EXPORT double zCyl3DHeight(const zCyl3D *cyl);
 
 /*! \brief volume of a 3D cylinder.
  *
@@ -99,7 +98,7 @@ __ZEO_EXPORT double zCyl3DHeight(zCyl3D *cyl);
  * \return
  * zCyl3DVolume() returns the calculated volume.
  */
-__ZEO_EXPORT double zCyl3DVolume(zCyl3D *cyl);
+__ZEO_EXPORT double zCyl3DVolume(const zCyl3D *cyl);
 
 /*! \brief barycenter of a cylinder.
  *
@@ -108,7 +107,7 @@ __ZEO_EXPORT double zCyl3DVolume(zCyl3D *cyl);
  * \return
  * zCyl3DBarycenter() returns a pointer \a c.
  */
-__ZEO_EXPORT zVec3D *zCyl3DBarycenter(zCyl3D *cyl, zVec3D *c);
+__ZEO_EXPORT zVec3D *zCyl3DBarycenter(const zCyl3D *cyl, zVec3D *c);
 
 /*! \brief inertia tensor of a cylinder.
  *
@@ -123,8 +122,8 @@ __ZEO_EXPORT zVec3D *zCyl3DBarycenter(zCyl3D *cyl, zVec3D *c);
  * \sa
  * zCyl3DVolume(), zCyl3DBarycenter()
  */
-__ZEO_EXPORT zMat3D *zCyl3DBaryInertiaMass(zCyl3D *cyl, double mass, zMat3D *inertia);
-__ZEO_EXPORT zMat3D *zCyl3DBaryInertia(zCyl3D *cyl, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zCyl3DBaryInertiaMass(const zCyl3D *cyl, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zCyl3DBaryInertia(const zCyl3D *cyl, double density, zMat3D *inertia);
 
 /*! \brief convert a 3D cylinder to a polyhedron.
  *
@@ -138,17 +137,17 @@ __ZEO_EXPORT zMat3D *zCyl3DBaryInertia(zCyl3D *cyl, double density, zMat3D *iner
  * zSphere3DToPH, zSphere3DToPH,
  * zCone3DToPH, zCone3DToPHDRC
  */
-__ZEO_EXPORT zPH3D *zCyl3DToPH(zCyl3D *cyl, zPH3D *ph);
+__ZEO_EXPORT zPH3D *zCyl3DToPH(const zCyl3D *cyl, zPH3D *ph);
 
 /*! \brief print a 3D cylinder out to a file in a ZTK format. */
-__ZEO_EXPORT void zCyl3DFPrintZTK(FILE *fp, zCyl3D *cyl);
+__ZEO_EXPORT void zCyl3DFPrintZTK(FILE *fp, const zCyl3D *cyl);
 
 /* methods for abstraction */
 __ZEO_EXPORT zShape3DCom zeo_shape3d_cyl_com;
 
 #define zShape3DCyl(s) ( (zCyl3D*)(s)->body )
 
-__ZEO_EXPORT zShape3D *zShape3DCylCreate(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r, int div);
+__ZEO_EXPORT zShape3D *zShape3DCylCreate(zShape3D *shape, const zVec3D *c1, const zVec3D *c2, double r, int div);
 
 __END_DECLS
 

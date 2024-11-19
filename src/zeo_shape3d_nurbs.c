@@ -26,18 +26,18 @@ static void *_zShape3DNURBSMirror(void *src, zAxis axis){
   return ( mrr = (zNURBS3D*)_zShape3DNURBSAlloc() ) ? zNURBS3DMirror( (zNURBS3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DNURBSDestroy(void *body){
   zNURBS3DDestroy( (zNURBS3D*)body ); }
-static void *_zShape3DNURBSXform(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DNURBSXform(void *src, const zFrame3D *f, void *dest){
   return zNURBS3DXform( (zNURBS3D*)src, f, (zNURBS3D*)dest ); }
-static void *_zShape3DNURBSXformInv(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DNURBSXformInv(void *src, const zFrame3D *f, void *dest){
   return zNURBS3DXformInv( (zNURBS3D*)src, f, (zNURBS3D*)dest ); }
-static double _zShape3DNURBSClosest(void *body, zVec3D *p, zVec3D *cp){
+static double _zShape3DNURBSClosest(void *body, const zVec3D *p, zVec3D *cp){
   return zNURBS3DClosest( (zNURBS3D*)body, p, cp, NULL, NULL ); }
-static double _zShape3DNURBSDistFromPoint(void *body, zVec3D *p){
+static double _zShape3DNURBSDistFromPoint(void *body, const zVec3D *p){
   zVec3D nn;
   return zNURBS3DClosest( (zNURBS3D*)body, p, &nn, NULL, NULL ); }
 
 /* dummy functions */
-static bool _zShape3DNURBSPointIsInside(void *body, zVec3D *p, double margin){
+static bool _zShape3DNURBSPointIsInside(void *body, const zVec3D *p, double margin){
   return false; }
 static double _zShape3DNURBSVolume(void *body){
   return 0; }

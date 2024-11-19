@@ -1,3 +1,8 @@
+2024.11.19. Applied ZDEF_STRUCT to zShape3DCom, zShape3D, zBox3D, zSphere3D, zCyl3D, zCone3D, zEllips3D, and zECyl3D. [zeo_shape3d, zeo_shape3d_box, zeo_shape3d_sphere, zeo_shape3d_cyl, zeo_shape3d_cone, zeo_shape3d_ellips, zeo_shape3d_ecyl]
+2024.11.19. Added const qualifiers to functions in zeo_elemxd, zeo_elem2d, and zeo_elem3d. [zeo_elemxd, zeo_elem2d, zeo_elem3d, zeo_elem3d_list]
+2024.11.19. Added const qualifiers to functions in zeo_vec3d_list. [zeo_vec3d_list, zeo_col_gjk]
+2024.11.19. Added const qualifiers to functions in zeo_shape3d*. [zeo_shape3d, zeo_shape3d_box, zeo_shape3d_cyl, zeo_shape3d_capsule, zeo_shape3d_cone, zeo_shape3d_sphere, zeo_shape3d_ellips, zeo_shape3d_ecyl, zeo_shape3d_ph, zeo_shape3d_nurbs]
+2024.11.19. Added const qualifiers to functions in zeo_ph and zeo_nurbs. [zeo_ph, zeo_nurbs]
 2024.11.19. Defined ZEO_ERR_NURBS_ELLIPS_INVALID_KNOT_NUM and ZEO_ERR_NURBS_ELLIPS_INVALID_CP_NUM. [zeo_errmsg, zeo_nurbs]
 2024.11.19. Added _zNURBS3DEllipsInitKnot, _zNURBS3DEllipsInitCP, zNURBS3DECyl, zNURBS3DCone, zNURBS3DEllips, and zNURBS3DTorus to create NURBS surfaces that represent primitive shapes. [zeo_nurbs]
 2024.11.19. Added zeo_nurbs_shape. [src, zeo_nurbs_shape]

@@ -12,7 +12,7 @@
  * ********************************************************** */
 
 /* create a 3D sphere. */
-zSphere3D *zSphere3DCreate(zSphere3D *sphere, zVec3D *c, double r, int div)
+zSphere3D *zSphere3DCreate(zSphere3D *sphere, const zVec3D *c, double r, int div)
 {
   zSphere3DSetCenter( sphere, c );
   zSphere3DSetRadius( sphere, r );
@@ -30,14 +30,14 @@ zSphere3D *zSphere3DInit(zSphere3D *sphere)
 ZDEF_ALLOC_FUNCTION( zSphere3D )
 
 /* copy a 3D sphere. */
-zSphere3D *zSphere3DCopy(zSphere3D *src, zSphere3D *dest)
+zSphere3D *zSphere3DCopy(const zSphere3D *src, zSphere3D *dest)
 {
   return zSphere3DCreate( dest,
     zSphere3DCenter(src), zSphere3DRadius(src), zSphere3DDiv(src) );
 }
 
 /* mirror a 3D sphere. */
-zSphere3D *zSphere3DMirror(zSphere3D *src, zSphere3D *dest, zAxis axis)
+zSphere3D *zSphere3DMirror(const zSphere3D *src, zSphere3D *dest, zAxis axis)
 {
   zSphere3DCopy( src, dest );
   zSphere3DCenter(dest)->e[(int)axis] *= -1;
@@ -45,7 +45,7 @@ zSphere3D *zSphere3DMirror(zSphere3D *src, zSphere3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D sphere. */
-zSphere3D *zSphere3DXform(zSphere3D *src, zFrame3D *f, zSphere3D *dest)
+zSphere3D *zSphere3DXform(const zSphere3D *src, const zFrame3D *f, zSphere3D *dest)
 {
   zXform3D( f, zSphere3DCenter(src), zSphere3DCenter(dest) );
   zSphere3DSetRadius( dest, zSphere3DRadius(src) );
@@ -54,7 +54,7 @@ zSphere3D *zSphere3DXform(zSphere3D *src, zFrame3D *f, zSphere3D *dest)
 }
 
 /* inversely transform coordinates of a 3D sphere. */
-zSphere3D *zSphere3DXformInv(zSphere3D *src, zFrame3D *f, zSphere3D *dest)
+zSphere3D *zSphere3DXformInv(const zSphere3D *src, const zFrame3D *f, zSphere3D *dest)
 {
   zXform3DInv( f, zSphere3DCenter(src), zSphere3DCenter(dest) );
   zSphere3DSetRadius( dest, zSphere3DRadius(src) );
@@ -63,7 +63,7 @@ zSphere3D *zSphere3DXformInv(zSphere3D *src, zFrame3D *f, zSphere3D *dest)
 }
 
 /* closest point from a point to a sphere. */
-double zSphere3DClosest(zSphere3D *sphere, zVec3D *p, zVec3D *cp)
+double zSphere3DClosest(const zSphere3D *sphere, const zVec3D *p, zVec3D *cp)
 {
   zVec3D d;
   double l;
@@ -79,7 +79,7 @@ double zSphere3DClosest(zSphere3D *sphere, zVec3D *p, zVec3D *cp)
 }
 
 /* distance between a 3D sphere and a point. */
-double zSphere3DDistFromPoint(zSphere3D *sphere, zVec3D *p)
+double zSphere3DDistFromPoint(const zSphere3D *sphere, const zVec3D *p)
 {
   zVec3D d;
 
@@ -88,13 +88,13 @@ double zSphere3DDistFromPoint(zSphere3D *sphere, zVec3D *p)
 }
 
 /* judge if a point is inside of a 3D sphere. */
-bool zSphere3DPointIsInside(zSphere3D *sphere, zVec3D *p, double margin)
+bool zSphere3DPointIsInside(const zSphere3D *sphere, const zVec3D *p, double margin)
 {
   return zSphere3DDistFromPoint( sphere, p ) < margin ? true : false;
 }
 
 /* create a 3D sphere from two points at both ends of diameter. */
-zSphere3D *zSphere3DFrom2(zSphere3D *sphere, zVec3D *v1, zVec3D *v2)
+zSphere3D *zSphere3DFrom2(zSphere3D *sphere, const zVec3D *v1, const zVec3D *v2)
 {
   zVec3D c;
   double r;
@@ -104,7 +104,7 @@ zSphere3D *zSphere3DFrom2(zSphere3D *sphere, zVec3D *v1, zVec3D *v2)
 }
 
 /* create a 3D sphere from three points to include their circumcircle as the great circle. */
-zSphere3D *zSphere3DFrom3(zSphere3D *sphere, zVec3D *v1, zVec3D *v2, zVec3D *v3)
+zSphere3D *zSphere3DFrom3(zSphere3D *sphere, const zVec3D *v1, const zVec3D *v2, const zVec3D *v3)
 {
   zVec3D c;
   zTri3D t;
@@ -116,7 +116,7 @@ zSphere3D *zSphere3DFrom3(zSphere3D *sphere, zVec3D *v1, zVec3D *v2, zVec3D *v3)
 }
 
 /* create a 3D sphere from four points as the circumscribing sphere of them. */
-zSphere3D *zSphere3DFrom4(zSphere3D *sphere, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4)
+zSphere3D *zSphere3DFrom4(zSphere3D *sphere, const zVec3D *v1, const zVec3D *v2, const zVec3D *v3, const zVec3D *v4)
 {
   zVec3D e1, e2, e3, c;
   zTri3D t;
@@ -132,13 +132,13 @@ zSphere3D *zSphere3DFrom4(zSphere3D *sphere, zVec3D *v1, zVec3D *v2, zVec3D *v3,
 }
 
 /* volume of a 3D sphere. */
-double zSphere3DVolume(zSphere3D *sphere)
+double zSphere3DVolume(const zSphere3D *sphere)
 {
   return 4.0 * zPI * pow(zSphere3DRadius(sphere),3) / 3.0;
 }
 
 /* inertia tensor about barycenter of a 3D sphere from mass. */
-zMat3D *zSphere3DBaryInertiaMass(zSphere3D *sphere, double mass, zMat3D *inertia)
+zMat3D *zSphere3DBaryInertiaMass(const zSphere3D *sphere, double mass, zMat3D *inertia)
 {
   double i;
 
@@ -148,13 +148,13 @@ zMat3D *zSphere3DBaryInertiaMass(zSphere3D *sphere, double mass, zMat3D *inertia
 }
 
 /* inertia tensor about barycenter of a 3D sphere. */
-zMat3D *zSphere3DBaryInertia(zSphere3D *sphere, double density, zMat3D *inertia)
+zMat3D *zSphere3DBaryInertia(const zSphere3D *sphere, double density, zMat3D *inertia)
 {
   return zSphere3DBaryInertiaMass( sphere, density * zSphere3DVolume( sphere ), inertia );
 }
 
 /* convert a sphere to a polyhedron. */
-zPH3D *zSphere3DToPH(zSphere3D *sphere, zPH3D *ph)
+zPH3D *zSphere3DToPH(const zSphere3D *sphere, zPH3D *ph)
 {
   zVec3D *vert;
   zTri3D *face;
@@ -276,9 +276,9 @@ static const ZTKPrp __ztk_prp_shape_sphere[] = {
 };
 
 /* print a 3D sphere out to a file in a ZTK format. */
-void zSphere3DFPrintZTK(FILE *fp, zSphere3D *sphere)
+void zSphere3DFPrintZTK(FILE *fp, const zSphere3D *sphere)
 {
-  ZTKPrpKeyFPrint( fp, sphere, __ztk_prp_shape_sphere );
+  ZTKPrpKeyFPrint( fp, (void*)sphere, __ztk_prp_shape_sphere );
 }
 
 /* methods for abstraction */
@@ -294,15 +294,15 @@ static void *_zShape3DSphereMirror(void *src, zAxis axis){
   zSphere3D *mrr;
   return ( mrr = zSphere3DAlloc() ) ? zSphere3DMirror( (zSphere3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DSphereDestroy(void *body){}
-static void *_zShape3DSphereXform(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DSphereXform(void *src, const zFrame3D *f, void *dest){
   return zSphere3DXform( (zSphere3D*)src, f, (zSphere3D*)dest ); }
-static void *_zShape3DSphereXformInv(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DSphereXformInv(void *src, const zFrame3D *f, void *dest){
   return zSphere3DXformInv( (zSphere3D*)src, f, (zSphere3D*)dest ); }
-static double _zShape3DSphereClosest(void *body, zVec3D *p, zVec3D *cp){
+static double _zShape3DSphereClosest(void *body, const zVec3D *p, zVec3D *cp){
   return zSphere3DClosest( (zSphere3D*)body, p, cp ); }
-static double _zShape3DSphereDistFromPoint(void *body, zVec3D *p){
+static double _zShape3DSphereDistFromPoint(void *body, const zVec3D *p){
   return zSphere3DDistFromPoint( (zSphere3D*)body, p ); }
-static bool _zShape3DSpherePointIsInside(void *body, zVec3D *p, double margin){
+static bool _zShape3DSpherePointIsInside(void *body, const zVec3D *p, double margin){
   return zSphere3DPointIsInside( (zSphere3D*)body, p, margin ); }
 static double _zShape3DSphereVolume(void *body){
   return zSphere3DVolume( (zSphere3D*)body ); }
@@ -342,7 +342,7 @@ zShape3DCom zeo_shape3d_sphere_com = {
 };
 
 /* create a 3D shape as a sphere. */
-zShape3D *zShape3DSphereCreate(zShape3D *shape, zVec3D *c, double r, int div)
+zShape3D *zShape3DSphereCreate(zShape3D *shape, const zVec3D *c, double r, int div)
 {
   zShape3DInit( shape );
   if( !( shape->body = zSphere3DAlloc() ) ) return NULL;

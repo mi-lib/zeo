@@ -15,18 +15,18 @@ __BEGIN_DECLS
 
 /*! \brief common methods of shape class.
  */
-typedef struct{
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3DCom ){
   const char *typestr;
   void *(*_init)(void*);
   void *(*_alloc)(void);
   void *(*_clone)(void*);
   void *(*_mirror)(void*,zAxis);
   void (*_destroy)(void*);
-  void *(*_xform)(void*,zFrame3D*,void*);
-  void *(*_xforminv)(void*,zFrame3D*,void*);
-  double (*_closest)(void*,zVec3D*,zVec3D*);
-  double (*_distfrompoint)(void*,zVec3D*);
-  bool (*_pointisinside)(void*,zVec3D*,double);
+  void *(*_xform)(void*,const zFrame3D*,void*);
+  void *(*_xforminv)(void*,const zFrame3D*,void*);
+  double (*_closest)(void*,const zVec3D*,zVec3D*);
+  double (*_distfrompoint)(void*,const zVec3D*);
+  bool (*_pointisinside)(void*,const zVec3D*,double);
   double (*_volume)(void*);
   zVec3D *(*_barycenter)(void*,zVec3D*);
   zMat3D *(*_baryinertia_m)(void*,double,zMat3D*);
@@ -34,20 +34,20 @@ typedef struct{
   zPH3D *(*_toph)(void*,zPH3D*);
   void *(*_fromZTK)(void*,ZTK*);
   void (*_fprintZTK)(FILE*,void*);
-} zShape3DCom;
+};
 
 /* ********************************************************** */
 /* CLASS: zShape3D
  * 3D unit shape class
  * ********************************************************** */
 
-typedef struct{
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3D ){
   Z_NAMED_CLASS;
   void *body;
   zOpticalInfo *optic;
   zTexture *texture;
   zShape3DCom *com; /* methods */
-} zShape3D;
+};
 
 #define zShape3DOptic(s)        (s)->optic
 #define zShape3DSetOptic(s,o)   ( (s)->optic = (o) )
@@ -72,8 +72,8 @@ __ZEO_EXPORT zShape3D *zShape3DQueryAssign(zShape3D *shape, const char *str);
  */
 __ZEO_EXPORT void zShape3DDestroy(zShape3D *shape);
 
-__ZEO_EXPORT zShape3D *zShape3DClone(zShape3D *org, zShape3D *cln, zOpticalInfo *oi);
-__ZEO_EXPORT zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis);
+__ZEO_EXPORT zShape3D *zShape3DClone(const zShape3D *org, zShape3D *cln, zOpticalInfo *oi);
+__ZEO_EXPORT zShape3D *zShape3DMirror(const zShape3D *src, zShape3D *dest, zAxis axis);
 
 /*! \brief transform coordinates of a 3D shape.
  *
@@ -85,8 +85,8 @@ __ZEO_EXPORT zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis)
  * \return
  * zShape3DXform() and zShape3DXformInv() return a pointer to \a dest.
  */
-__ZEO_EXPORT zShape3D *zShape3DXform(zShape3D *src, zFrame3D *f, zShape3D *dest);
-__ZEO_EXPORT zShape3D *zShape3DXformInv(zShape3D *src, zFrame3D *f, zShape3D *dest);
+__ZEO_EXPORT zShape3D *zShape3DXform(const zShape3D *src, const zFrame3D *f, zShape3D *dest);
+__ZEO_EXPORT zShape3D *zShape3DXformInv(const zShape3D *src, const zFrame3D *f, zShape3D *dest);
 
 #define zShape3DContigVert(s,p,d) zPH3DContigVert( zShape3DPH(s), p, d )
 
@@ -101,23 +101,23 @@ __ZEO_EXPORT zShape3D *zShape3DXformInv(zShape3D *src, zFrame3D *f, zShape3D *de
  * \sa
  * zPH3DPointIsInside
  */
-__ZEO_EXPORT double zShape3DClosest(zShape3D *shape, zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zShape3DDistFromPoint(zShape3D *shape, zVec3D *p);
-__ZEO_EXPORT bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, double margin);
+__ZEO_EXPORT double zShape3DClosest(const zShape3D *shape, const zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT double zShape3DDistFromPoint(const zShape3D *shape, const zVec3D *p);
+__ZEO_EXPORT bool zShape3DPointIsInside(const zShape3D *shape, const zVec3D *p, double margin);
 
 /*! \brief volume of a 3D shape. */
-__ZEO_EXPORT double zShape3DVolume(zShape3D *shape);
+__ZEO_EXPORT double zShape3DVolume(const zShape3D *shape);
 /*! \brief barycenter of a 3D shape. */
-__ZEO_EXPORT zVec3D *zShape3DBarycenter(zShape3D *shape, zVec3D *c);
+__ZEO_EXPORT zVec3D *zShape3DBarycenter(const zShape3D *shape, zVec3D *c);
 
 /*! \brief inertia tensor about barycenter of a 3D shape from mass. */
-__ZEO_EXPORT zMat3D *zShape3DBaryInertiaMass(zShape3D *shape, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zShape3DBaryInertiaMass(const zShape3D *shape, double mass, zMat3D *inertia);
 /*! \brief inertia tensor about barycenter of a 3D shape. */
-__ZEO_EXPORT zMat3D *zShape3DBaryInertia(zShape3D *shape, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zShape3DBaryInertia(const zShape3D *shape, double density, zMat3D *inertia);
 /*! \brief inertia tensor about origin of a 3D shape from mass. */
-__ZEO_EXPORT zMat3D *zShape3DInertiaMass(zShape3D *shape, double mass, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zShape3DInertiaMass(const zShape3D *shape, double mass, zMat3D *inertia);
 /*! \brief inertia tensor about origin of a 3D shape. */
-__ZEO_EXPORT zMat3D *zShape3DInertia(zShape3D *shape, double density, zMat3D *inertia);
+__ZEO_EXPORT zMat3D *zShape3DInertia(const zShape3D *shape, double density, zMat3D *inertia);
 
 /*! \brief convert a shape to a polyhedron. */
 __ZEO_EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
@@ -210,13 +210,13 @@ __ZEO_EXPORT zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, z
  * \return
  * zShape3DFPrintZTK() returns no value.
  */
-__ZEO_EXPORT void zShape3DFPrintZTK(FILE *fp, zShape3D *shape);
+__ZEO_EXPORT void zShape3DFPrintZTK(FILE *fp, const zShape3D *shape);
 
 /*! \brief read a 3D shape from a ZTK format file. */
-__ZEO_EXPORT zShape3D *zShape3DReadZTK(zShape3D *shape, char filename[]);
+__ZEO_EXPORT zShape3D *zShape3DReadZTK(zShape3D *shape, const char filename[]);
 
 /*! \brief write a 3D shape to a ZTK format file. */
-__ZEO_EXPORT bool zShape3DWriteZTK(zShape3D *shape, char filename[]);
+__ZEO_EXPORT bool zShape3DWriteZTK(const zShape3D *shape, const char filename[]);
 
 __END_DECLS
 

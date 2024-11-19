@@ -24,7 +24,7 @@ zListClass( zVec3DList, zVec3DListCell, zVec3D* );
  * \return
  * zVec3DListNew() returns a pointer to the newly allocated cell.
  */
-__ZEO_EXPORT zVec3DListCell *zVec3DListNew(zVec3D *v);
+__ZEO_EXPORT zVec3DListCell *zVec3DListNew(const zVec3D *v);
 
 /*! \brief add a 3D vector to a vector list.
  *
@@ -32,7 +32,7 @@ __ZEO_EXPORT zVec3DListCell *zVec3DListNew(zVec3D *v);
  * \return
  * zVec3DListAdd() returns a pointer to the newly added cell.
  */
-__ZEO_EXPORT zVec3DListCell *zVec3DListAdd(zVec3DList *list, zVec3D *v);
+__ZEO_EXPORT zVec3DListCell *zVec3DListAdd(zVec3DList *list, const zVec3D *v);
 
 /*! \brief append an array of 3D vectors to a list.
  *
@@ -42,7 +42,7 @@ __ZEO_EXPORT zVec3DListCell *zVec3DListAdd(zVec3DList *list, zVec3D *v);
  * zVec3DListAppendArray() returns \a list if succeeding. Otherwise, the null pointer is returned.
  * \sa zVec3DArray2List
  */
-__ZEO_EXPORT zVec3DList *zVec3DListAppendArray(zVec3DList *list, zVec3DArray *array);
+__ZEO_EXPORT zVec3DList *zVec3DListAppendArray(zVec3DList *list, const zVec3DArray *array);
 
 /*! \brief clone an array of 3D vectors.
  *
@@ -51,7 +51,7 @@ __ZEO_EXPORT zVec3DList *zVec3DListAppendArray(zVec3DList *list, zVec3DArray *ar
  * zVec3DListClone() returns a pointer \a dest if it succeeds.
  * Otherwise, the null pointer is returned.
  */
-__ZEO_EXPORT zVec3DList *zVec3DListClone(zVec3DList *src, zVec3DList *dest);
+__ZEO_EXPORT zVec3DList *zVec3DListClone(const zVec3DList *src, zVec3DList *dest);
 
 /*! \brief converts an array of 3D vectors to a list.
  *
@@ -61,7 +61,7 @@ __ZEO_EXPORT zVec3DList *zVec3DListClone(zVec3DList *src, zVec3DList *dest);
  * zVec3DArray2List() returns a pointer \a list.
  * \sa zVec3DArrayAppendList
  */
-__ZEO_EXPORT zVec3DList *zVec3DArray2List(zVec3DArray *array, zVec3DList *list);
+__ZEO_EXPORT zVec3DList *zVec3DArray2List(const zVec3DArray *array, zVec3DList *list);
 
 /*! \brief destroy a 3D vector list.
  *
@@ -78,7 +78,7 @@ __ZEO_EXPORT void zVec3DListDestroy(zVec3DList *list);
  * zVec3DListFind() returns a pointer to the 3D vector in \a list, if found. Otherwise, it returns
  * the null pointer.
  */
-__ZEO_EXPORT zVec3DListCell *zVec3DListFind(zVec3DList *list, zVec3D *v);
+__ZEO_EXPORT zVec3DListCell *zVec3DListFind(const zVec3DList *list, const zVec3D *v);
 
 /*! \brief a quick sort routine for vector list class.
  *
@@ -106,7 +106,7 @@ __ZEO_EXPORT zVec3DList *zVec3DListQuickSort(zVec3DList *list, int (*cmp)(void*,
  * \return
  * zVec3DListFPrint() and zVec3DListPrint() return no value.
  */
-__ZEO_EXPORT void zVec3DListFPrint(FILE *fp, zVec3DList *list);
+__ZEO_EXPORT void zVec3DListFPrint(FILE *fp, const zVec3DList *list);
 #define zVec3DListPrint(l) zVec3DListFPrint( stdout, (l) )
 
 /*! \brief print a list of 3D vectors in a plain form.
@@ -120,7 +120,7 @@ __ZEO_EXPORT void zVec3DListFPrint(FILE *fp, zVec3DList *list);
  * \return
  * zVec3DListDataFPrint() and zVec3DListDataPrint() return no value.
  */
-__ZEO_EXPORT void zVec3DListDataFPrint(FILE *fp, zVec3DList *list);
+__ZEO_EXPORT void zVec3DListDataFPrint(FILE *fp, const zVec3DList *list);
 #define zVec3DListDataPrint(l) zVec3DListDataFPrint( stdout, (l) )
 
 /* ********************************************************** */
@@ -137,7 +137,7 @@ typedef zVec3DListCell zVec3DAddr;
  * \return
  * zVec3DAddrListAdd() returns a pointer to the newly added cell.
  */
-__ZEO_EXPORT zVec3DAddr *zVec3DAddrListAdd(zVec3DAddrList *list, zVec3D *v);
+__ZEO_EXPORT zVec3DAddr *zVec3DAddrListAdd(zVec3DAddrList *list, const zVec3D *v);
 
 /*! \brief append an array of 3D vectors to a list of pointers to 3D vectors.
  *
@@ -147,7 +147,7 @@ __ZEO_EXPORT zVec3DAddr *zVec3DAddrListAdd(zVec3DAddrList *list, zVec3D *v);
  * zVec3DAddrListAppendArray() returns \a list if succeeding. Otherwise, the null pointer is returned.
  * \sa zVec3DArray2List
  */
-__ZEO_EXPORT zVec3DAddrList *zVec3DAddrListAppendArray(zVec3DAddrList *list, zVec3DArray *array);
+__ZEO_EXPORT zVec3DAddrList *zVec3DAddrListAppendArray(zVec3DAddrList *list, const zVec3DArray *array);
 
 /*! \brief create a list of pointers to 3D vectors from an array.
  *
@@ -156,7 +156,7 @@ __ZEO_EXPORT zVec3DAddrList *zVec3DAddrListAppendArray(zVec3DAddrList *list, zVe
  * \return
  * zVec3DAddrListCreate() returns a pointer \a list.
  */
-__ZEO_EXPORT zVec3DAddrList *zVec3DAddrListCreate(zVec3DAddrList *list, zVec3DArray *array);
+__ZEO_EXPORT zVec3DAddrList *zVec3DAddrListCreate(zVec3DAddrList *list, const zVec3DArray *array);
 
 /*! \brief clone a list of vectors.
  *
@@ -165,7 +165,7 @@ __ZEO_EXPORT zVec3DAddrList *zVec3DAddrListCreate(zVec3DAddrList *list, zVec3DAr
  * zVec3DAddrListClone() returns a pointer \a dest if it succeeds.
  * Otherwise, the null pointer is returned.
  */
-__ZEO_EXPORT zVec3DAddrList *zVec3DAddrListClone(zVec3DAddrList *src, zVec3DAddrList *dest);
+__ZEO_EXPORT zVec3DAddrList *zVec3DAddrListClone(const zVec3DAddrList *src, zVec3DAddrList *dest);
 
 /*! \brief destroy a list of 3D vectors.
  *
@@ -201,7 +201,7 @@ __ZEO_EXPORT zVec3DAddrList *zVec3DAddrListQuickSort(zVec3DAddrList *list, int (
  * \return
  * zVec3DAddrListFPrint() and zVec3DAddrListPrint() return no value.
  */
-__ZEO_EXPORT void zVec3DAddrListFPrint(FILE *fp, zVec3DAddrList *list);
+__ZEO_EXPORT void zVec3DAddrListFPrint(FILE *fp, const zVec3DAddrList *list);
 #define zVec3DAddrListPrint(l) zVec3DAddrListFPrint( stdout, (l) )
 
 /*! \brief print a list of pointers to 3D vectors in a plain form.
@@ -215,7 +215,7 @@ __ZEO_EXPORT void zVec3DAddrListFPrint(FILE *fp, zVec3DAddrList *list);
  * \return
  * zVec3DAddrListDataFPrint() and zVec3DAddrListDataPrint() return no value.
  */
-__ZEO_EXPORT void zVec3DAddrListDataFPrint(FILE *fp, zVec3DAddrList *list);
+__ZEO_EXPORT void zVec3DAddrListDataFPrint(FILE *fp, const zVec3DAddrList *list);
 #define zVec3DAddrListDataPrint(l) zVec3DAddrListDataFPrint( stdout, (l) )
 
 /* ********************************************************** */
@@ -224,13 +224,13 @@ __ZEO_EXPORT void zVec3DAddrListDataFPrint(FILE *fp, zVec3DAddrList *list);
 
 /*! \brief a naive algorithm to find the nearest neighbor in a list of 3D vectors.
  */
-__ZEO_EXPORT double zVec3DListNN(zVec3DList *list, zVec3D *v, zVec3D **nn);
+__ZEO_EXPORT double zVec3DListNN(const zVec3DList *list, const zVec3D *v, zVec3D **nn);
 
 /*! \brief support map of a set of points with respect to a direction vector. */
-__ZEO_EXPORT zVec3D *zVec3DSupportMap(zVec3D p[], int n, zVec3D *v);
+__ZEO_EXPORT const zVec3D *zVec3DSupportMap(const zVec3D p[], int n, zVec3D *v);
 
 /*! \brief support map of a list of points with respect to a direction vector. */
-__ZEO_EXPORT zVec3D *zVec3DListSupportMap(zVec3DList *pl, zVec3D *v);
+__ZEO_EXPORT const zVec3D *zVec3DListSupportMap(const zVec3DList *pl, zVec3D *v);
 
 __END_DECLS
 

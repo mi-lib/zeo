@@ -12,7 +12,7 @@
  * ********************************************************** */
 
 /* create a 3D cylinder. */
-zCyl3D *zCyl3DCreate(zCyl3D *cyl, zVec3D *c1, zVec3D *c2, double r, int div)
+zCyl3D *zCyl3DCreate(zCyl3D *cyl, const zVec3D *c1, const zVec3D *c2, double r, int div)
 {
   zCyl3DSetCenter( cyl, 0, c1 );
   zCyl3DSetCenter( cyl, 1, c2 );
@@ -31,7 +31,7 @@ zCyl3D *zCyl3DInit(zCyl3D *cyl)
 ZDEF_ALLOC_FUNCTION( zCyl3D )
 
 /* copy a 3D cylinder to another. */
-zCyl3D *zCyl3DCopy(zCyl3D *src, zCyl3D *dest)
+zCyl3D *zCyl3DCopy(const zCyl3D *src, zCyl3D *dest)
 {
   return zCyl3DCreate( dest,
     zCyl3DCenter(src,0), zCyl3DCenter(src,1),
@@ -39,7 +39,7 @@ zCyl3D *zCyl3DCopy(zCyl3D *src, zCyl3D *dest)
 }
 
 /* mirror a 3D cylinder. */
-zCyl3D *zCyl3DMirror(zCyl3D *src, zCyl3D *dest, zAxis axis)
+zCyl3D *zCyl3DMirror(const zCyl3D *src, zCyl3D *dest, zAxis axis)
 {
   zCyl3DCopy( src, dest );
   zCyl3DCenter(dest,0)->e[(int)axis] *= -1;
@@ -48,7 +48,7 @@ zCyl3D *zCyl3DMirror(zCyl3D *src, zCyl3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D cylinder. */
-zCyl3D *zCyl3DXform(zCyl3D *src, zFrame3D *f, zCyl3D *dest)
+zCyl3D *zCyl3DXform(const zCyl3D *src, const zFrame3D *f, zCyl3D *dest)
 {
   zXform3D( f, zCyl3DCenter(src,0), zCyl3DCenter(dest,0) );
   zXform3D( f, zCyl3DCenter(src,1), zCyl3DCenter(dest,1) );
@@ -58,7 +58,7 @@ zCyl3D *zCyl3DXform(zCyl3D *src, zFrame3D *f, zCyl3D *dest)
 }
 
 /* inversely transform coordinates of a 3D cylinder. */
-zCyl3D *zCyl3DXformInv(zCyl3D *src, zFrame3D *f, zCyl3D *dest)
+zCyl3D *zCyl3DXformInv(const zCyl3D *src, const zFrame3D *f, zCyl3D *dest)
 {
   zXform3DInv( f, zCyl3DCenter(src,0), zCyl3DCenter(dest,0) );
   zXform3DInv( f, zCyl3DCenter(src,1), zCyl3DCenter(dest,1) );
@@ -67,7 +67,7 @@ zCyl3D *zCyl3DXformInv(zCyl3D *src, zFrame3D *f, zCyl3D *dest)
   return dest;
 }
 
-static void _zCyl3DClosestPrep(zCyl3D *cyl, zVec3D *p, zVec3D *axis, zVec3D *v, double *l, double *r, double *d)
+static void _zCyl3DClosestPrep(const zCyl3D *cyl, const zVec3D *p, zVec3D *axis, zVec3D *v, double *l, double *r, double *d)
 {
   zCyl3DAxis( cyl, axis );
   _zVec3DSub( p, zCyl3DCenter(cyl,0), v );
@@ -77,9 +77,10 @@ static void _zCyl3DClosestPrep(zCyl3D *cyl, zVec3D *p, zVec3D *axis, zVec3D *v, 
 }
 
 /* the closest point to a 3D cylinder. */
-double zCyl3DClosest(zCyl3D *cyl, zVec3D *p, zVec3D *cp)
+double zCyl3DClosest(const zCyl3D *cyl, const zVec3D *p, zVec3D *cp)
 {
-  zVec3D axis, v, *c, cr;
+  zVec3D axis, v, cr;
+  const zVec3D *c;
   double l, r, d;
 
   _zCyl3DClosestPrep( cyl, p, &axis, &v, &l, &r, &d );
@@ -108,7 +109,7 @@ double zCyl3DClosest(zCyl3D *cyl, zVec3D *p, zVec3D *cp)
 }
 
 /* distance from a point to a 3D cylinder. */
-double zCyl3DDistFromPoint(zCyl3D *cyl, zVec3D *p)
+double zCyl3DDistFromPoint(const zCyl3D *cyl, const zVec3D *p)
 {
   zVec3D axis, v;
   double l, r, d;
@@ -122,7 +123,7 @@ double zCyl3DDistFromPoint(zCyl3D *cyl, zVec3D *p)
 }
 
 /* check if a point is inside of a cylinder. */
-bool zCyl3DPointIsInside(zCyl3D *cyl, zVec3D *p, double margin)
+bool zCyl3DPointIsInside(const zCyl3D *cyl, const zVec3D *p, double margin)
 {
   zVec3D axis, v;
   double l, r, d;
@@ -133,7 +134,7 @@ bool zCyl3DPointIsInside(zCyl3D *cyl, zVec3D *p, double margin)
 }
 
 /* height of a 3D cylinder. */
-double zCyl3DHeight(zCyl3D *cyl)
+double zCyl3DHeight(const zCyl3D *cyl)
 {
   zVec3D axis;
 
@@ -141,19 +142,19 @@ double zCyl3DHeight(zCyl3D *cyl)
 }
 
 /* volume of a 3D cylinder. */
-double zCyl3DVolume(zCyl3D *cyl)
+double zCyl3DVolume(const zCyl3D *cyl)
 {
   return zPI * zSqr(zCyl3DRadius(cyl)) * zCyl3DHeight(cyl);
 }
 
 /* barycenter of a 3D cylinder. */
-zVec3D *zCyl3DBarycenter(zCyl3D *cyl, zVec3D *c)
+zVec3D *zCyl3DBarycenter(const zCyl3D *cyl, zVec3D *c)
 {
   return zVec3DMid( zCyl3DCenter(cyl,0), zCyl3DCenter(cyl,1), c );
 }
 
 /* inertia tensor about barycenter of a 3D cylinder from mass. */
-zMat3D *zCyl3DBaryInertiaMass(zCyl3D *cyl, double mass, zMat3D *inertia)
+zMat3D *zCyl3DBaryInertiaMass(const zCyl3D *cyl, double mass, zMat3D *inertia)
 {
   double rr, hh;
   zMat3D i, att;
@@ -172,13 +173,13 @@ zMat3D *zCyl3DBaryInertiaMass(zCyl3D *cyl, double mass, zMat3D *inertia)
 }
 
 /* inertia tensor about barycenter of a 3D cylinder. */
-zMat3D *zCyl3DBaryInertia(zCyl3D *cyl, double density, zMat3D *inertia)
+zMat3D *zCyl3DBaryInertia(const zCyl3D *cyl, double density, zMat3D *inertia)
 {
   return zCyl3DBaryInertiaMass( cyl, density * zCyl3DVolume( cyl ), inertia );
 }
 
 /* convert a cylinder to a polyhedron. */
-zPH3D *zCyl3DToPH(zCyl3D *cyl, zPH3D *ph)
+zPH3D *zCyl3DToPH(const zCyl3D *cyl, zPH3D *ph)
 {
   zVec3D *vert, d, s, r, aa;
   zTri3D *face;
@@ -255,9 +256,9 @@ static const ZTKPrp __ztk_prp_shape_cyl[] = {
 };
 
 /* print a 3D cylinder out to a file in a ZTK format. */
-void zCyl3DFPrintZTK(FILE *fp, zCyl3D *cyl)
+void zCyl3DFPrintZTK(FILE *fp, const zCyl3D *cyl)
 {
-  ZTKPrpKeyFPrint( fp, cyl, __ztk_prp_shape_cyl );
+  ZTKPrpKeyFPrint( fp, (void*)cyl, __ztk_prp_shape_cyl );
 }
 
 /* methods for abstraction */
@@ -273,15 +274,15 @@ static void *_zShape3DCylMirror(void *src, zAxis axis){
   zCyl3D *mrr;
   return ( mrr = zCyl3DAlloc() ) ? zCyl3DMirror( (zCyl3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DCylDestroy(void *body){}
-static void *_zShape3DCylXform(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DCylXform(void *src, const zFrame3D *f, void *dest){
   return zCyl3DXform( (zCyl3D*)src, f, (zCyl3D*)dest ); }
-static void *_zShape3DCylXformInv(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DCylXformInv(void *src, const zFrame3D *f, void *dest){
   return zCyl3DXformInv( (zCyl3D*)src, f, (zCyl3D*)dest ); }
-static double _zShape3DCylClosest(void *body, zVec3D *p, zVec3D *cp){
+static double _zShape3DCylClosest(void *body, const zVec3D *p, zVec3D *cp){
   return zCyl3DClosest( (zCyl3D*)body, p, cp ); }
-static double _zShape3DCylDistFromPoint(void *body, zVec3D *p){
+static double _zShape3DCylDistFromPoint(void *body, const zVec3D *p){
   return zCyl3DDistFromPoint( (zCyl3D*)body, p ); }
-static bool _zShape3DCylPointIsInside(void *body, zVec3D *p, double margin){
+static bool _zShape3DCylPointIsInside(void *body, const zVec3D *p, double margin){
   return zCyl3DPointIsInside( (zCyl3D*)body, p, margin ); }
 static double _zShape3DCylVolume(void *body){
   return zCyl3DVolume( (zCyl3D*)body ); }
@@ -321,7 +322,7 @@ zShape3DCom zeo_shape3d_cyl_com = {
 };
 
 /* create a 3D shape as a cylinder. */
-zShape3D *zShape3DCylCreate(zShape3D *shape, zVec3D *c1, zVec3D *c2, double r, int div)
+zShape3D *zShape3DCylCreate(zShape3D *shape, const zVec3D *c1, const zVec3D *c2, double r, int div)
 {
   zShape3DInit( shape );
   if( !( shape->body = zCyl3DAlloc() ) ) return NULL;

@@ -47,7 +47,7 @@ void zShape3DDestroy(zShape3D *shape)
 }
 
 /* clone a 3D shape. */
-zShape3D *zShape3DClone(zShape3D *org, zShape3D *cln, zOpticalInfo *oi)
+zShape3D *zShape3DClone(const zShape3D *org, zShape3D *cln, zOpticalInfo *oi)
 {
   if( !zNameSet( cln, zName(org) ) ){
     ZALLOCERROR();
@@ -61,7 +61,7 @@ zShape3D *zShape3DClone(zShape3D *org, zShape3D *cln, zOpticalInfo *oi)
 }
 
 /* mirror a 3D shape. */
-zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis)
+zShape3D *zShape3DMirror(const zShape3D *src, zShape3D *dest, zAxis axis)
 {
   if( dest->com ){
     ZRUNWARN( ZEO_WARN_SHAPE_INVALID_MIRRORTYPE, dest->com->typestr );
@@ -79,63 +79,63 @@ zShape3D *zShape3DMirror(zShape3D *src, zShape3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D shape. */
-zShape3D *zShape3DXform(zShape3D *src, zFrame3D *f, zShape3D *dest)
+zShape3D *zShape3DXform(const zShape3D *src, const zFrame3D *f, zShape3D *dest)
 {
   src->com->_xform( src->body, f, dest->body );
   return dest;
 }
 
 /* inversely transform coordinates of a 3D shape. */
-zShape3D *zShape3DXformInv(zShape3D *src, zFrame3D *f, zShape3D *dest)
+zShape3D *zShape3DXformInv(const zShape3D *src, const zFrame3D *f, zShape3D *dest)
 {
   src->com->_xforminv( src->body, f, dest->body );
   return dest;
 }
 
 /* closest point to a 3D shape. */
-double zShape3DClosest(zShape3D *shape, zVec3D *p, zVec3D *cp)
+double zShape3DClosest(const zShape3D *shape, const zVec3D *p, zVec3D *cp)
 {
   return shape->com->_closest( shape->body, p, cp );
 }
 
 /* distance from a point to a 3D shape. */
-double zShape3DDistFromPoint(zShape3D *shape, zVec3D *p)
+double zShape3DDistFromPoint(const zShape3D *shape, const zVec3D *p)
 {
   return shape->com->_distfrompoint( shape->body, p );
 }
 
 /* check if a point is inside of a 3D shape. */
-bool zShape3DPointIsInside(zShape3D *shape, zVec3D *p, double margin)
+bool zShape3DPointIsInside(const zShape3D *shape, const zVec3D *p, double margin)
 {
   return shape->com->_pointisinside( shape->body, p, margin );
 }
 
 /* volume of a 3D shape. */
-double zShape3DVolume(zShape3D *shape)
+double zShape3DVolume(const zShape3D *shape)
 {
   return shape->com->_volume( shape->body );
 }
 
 /* barycenter of a 3D shape. */
-zVec3D *zShape3DBarycenter(zShape3D *shape, zVec3D *c)
+zVec3D *zShape3DBarycenter(const zShape3D *shape, zVec3D *c)
 {
   return shape->com->_barycenter( shape->body, c );
 }
 
 /* inertia tensor about barycenter of a 3D shape from mass. */
-zMat3D *zShape3DBaryInertiaMass(zShape3D *shape, double mass, zMat3D *inertia)
+zMat3D *zShape3DBaryInertiaMass(const zShape3D *shape, double mass, zMat3D *inertia)
 {
   return shape->com->_baryinertia_m( shape->body, mass, inertia );
 }
 
 /* inertia tensor about barycenter of a 3D shape. */
-zMat3D *zShape3DBaryInertia(zShape3D *shape, double density, zMat3D *inertia)
+zMat3D *zShape3DBaryInertia(const zShape3D *shape, double density, zMat3D *inertia)
 {
   return shape->com->_baryinertia_d( shape->body, density, inertia );
 }
 
 /* inertia tensor about origin of a 3D shape from mass. */
-zMat3D *zShape3DInertiaMass(zShape3D *shape, double mass, zMat3D *inertia)
+zMat3D *zShape3DInertiaMass(const zShape3D *shape, double mass, zMat3D *inertia)
 {
   zVec3D c;
 
@@ -145,7 +145,7 @@ zMat3D *zShape3DInertiaMass(zShape3D *shape, double mass, zMat3D *inertia)
 }
 
 /* inertia tensor about origin of a 3D shape. */
-zMat3D *zShape3DInertia(zShape3D *shape, double density, zMat3D *inertia)
+zMat3D *zShape3DInertia(const zShape3D *shape, double density, zMat3D *inertia)
 {
   zVec3D c;
   double mass;
@@ -397,16 +397,16 @@ zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoAr
 }
 
 /* print out a 3D shape to a file. */
-void zShape3DFPrintZTK(FILE *fp, zShape3D *shape)
+void zShape3DFPrintZTK(FILE *fp, const zShape3D *shape)
 {
   if( !shape ) return;
-  ZTKPrpKeyFPrint( fp, shape, __ztk_prp_shape );
+  ZTKPrpKeyFPrint( fp, (void *)shape, __ztk_prp_shape );
   shape->com->_fprintZTK( fp, shape->body );
   fprintf( fp, "\n" );
 }
 
 /* read a 3D shape from a ZTK format file. */
-zShape3D *zShape3DReadZTK(zShape3D *shape, char filename[])
+zShape3D *zShape3DReadZTK(zShape3D *shape, const char filename[])
 {
   ZTK ztk;
 
@@ -418,7 +418,7 @@ zShape3D *zShape3DReadZTK(zShape3D *shape, char filename[])
 }
 
 /* write a 3D shape to a ZTK format file. */
-bool zShape3DWriteZTK(zShape3D *shape, char filename[])
+bool zShape3DWriteZTK(const zShape3D *shape, const char filename[])
 {
   FILE *fp;
 

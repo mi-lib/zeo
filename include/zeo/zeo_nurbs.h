@@ -121,15 +121,15 @@ __ZEO_EXPORT zNURBS3D *zNURBS3DInit(zNURBS3D *nurbs);
 __ZEO_EXPORT void zNURBS3DDestroy(zNURBS3D *nurbs);
 
 /*! \brief copy a NURBS curve / surface. */
-__ZEO_EXPORT zNURBS3D *zNURBS3DCopy(zNURBS3D *src, zNURBS3D *dest);
+__ZEO_EXPORT zNURBS3D *zNURBS3DCopy(const zNURBS3D *src, zNURBS3D *dest);
 /*! \brief clone a NURBS curve / surface. */
-__ZEO_EXPORT zNURBS3D *zNURBS3DClone(zNURBS3D *src, zNURBS3D *dest);
+__ZEO_EXPORT zNURBS3D *zNURBS3DClone(const zNURBS3D *src, zNURBS3D *dest);
 /*! \brief mirror a NURBS curve / surface about specified axis. */
-__ZEO_EXPORT zNURBS3D *zNURBS3DMirror(zNURBS3D *src, zNURBS3D *dest, zAxis axis);
+__ZEO_EXPORT zNURBS3D *zNURBS3DMirror(const zNURBS3D *src, zNURBS3D *dest, zAxis axis);
 /*! \brief transform control points of a NURBS curve / surface. */
-__ZEO_EXPORT zNURBS3D *zNURBS3DXform(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest);
+__ZEO_EXPORT zNURBS3D *zNURBS3DXform(const zNURBS3D *src, const zFrame3D *f, zNURBS3D *dest);
 /*! \brief inversely transform control points of a NURBS curve / surface. */
-__ZEO_EXPORT zNURBS3D *zNURBS3DXformInv(zNURBS3D *src, zFrame3D *f, zNURBS3D *dest);
+__ZEO_EXPORT zNURBS3D *zNURBS3DXformInv(const zNURBS3D *src, const zFrame3D *f, zNURBS3D *dest);
 
 /*! \brief normalize the knot vectors of a NURBS curve / surface.
  *
@@ -152,7 +152,7 @@ __ZEO_EXPORT void zNURBS3DKnotNormalize(zNURBS3D *nurbs);
  * zNURBS3DVec() returns a pointer \a v if \a u and \a v are valid.
  * Otherwise, the null vector is returned.
  */
-__ZEO_EXPORT zVec3D *zNURBS3DVec(zNURBS3D *nurbs, double u, double v, zVec3D *p);
+__ZEO_EXPORT zVec3D *zNURBS3DVec(const zNURBS3D *nurbs, double u, double v, zVec3D *p);
 #define zNURBS3D1Vec(nurbs,t,p) zNURBS3DVec( nurbs, 0, t, p )
 
 /*! \brief compute a position and normal vectors on NURBS surface.
@@ -166,7 +166,7 @@ __ZEO_EXPORT zVec3D *zNURBS3DVec(zNURBS3D *nurbs, double u, double v, zVec3D *p)
  * \return
  * zNURBS3DVecNorm() returns a pointer \a p.
  */
-__ZEO_EXPORT zVec3D *zNURBS3DVecTSpace(zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *n, zVec3D *t1, zVec3D *t2);
+__ZEO_EXPORT zVec3D *zNURBS3DVecTSpace(const zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *n, zVec3D *t1, zVec3D *t2);
 
 #define zNURBS3DVecTan(nurbs,u,v,p,t1,t2) zNURBS3DVecTSpace( nurbs, u, v, p, NULL, t1, t2 )
 #define zNURBS3DVecNorm(nurbs,u,v,p,n)    zNURBS3DVecTSpace( nurbs, u, v, p, n, NULL, NULL )
@@ -182,7 +182,7 @@ __ZEO_EXPORT zVec3D *zNURBS3DVecTSpace(zNURBS3D *nurbs, double u, double v, zVec
  * \return
  * zNURBS3DClosest() returns the distance between \a p and \a cp.
  */
-__ZEO_EXPORT double zNURBS3DClosest(zNURBS3D *nurbs, zVec3D *p, zVec3D *cp, double *u, double *v);
+__ZEO_EXPORT double zNURBS3DClosest(const zNURBS3D *nurbs, const zVec3D *p, zVec3D *cp, double *u, double *v);
 
 /*! \brief convert NURBS surface to a polyhedron.
  *
@@ -194,7 +194,7 @@ __ZEO_EXPORT double zNURBS3DClosest(zNURBS3D *nurbs, zVec3D *p, zVec3D *cp, doub
  * convert the polyhedron. If it fails to allocate memory for
  * the polyhedron, the null pointer is returned.
  */
-__ZEO_EXPORT zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph);
+__ZEO_EXPORT zPH3D *zNURBS3DToPH(const zNURBS3D *nurbs, zPH3D *ph);
 
 /* I/O */
 
@@ -209,7 +209,7 @@ __ZEO_EXPORT zPH3D *zNURBS3DToPH(zNURBS3D *nurbs, zPH3D *ph);
 __ZEO_EXPORT zNURBS3D *zNURBS3DFromZTK(zNURBS3D *nurbs, ZTK *ztk);
 
 /*! \brief print information of a 3D NURBS surface out to a file. */
-__ZEO_EXPORT void zNURBS3DFPrintZTK(FILE *fp, zNURBS3D *nurbs);
+__ZEO_EXPORT void zNURBS3DFPrintZTK(FILE *fp, const zNURBS3D *nurbs);
 
 __END_DECLS
 

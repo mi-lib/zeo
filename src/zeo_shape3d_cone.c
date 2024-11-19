@@ -12,7 +12,7 @@
  * ********************************************************** */
 
 /* create a 3D cone. */
-zCone3D *zCone3DCreate(zCone3D *cone, zVec3D *c, zVec3D *v, double r, int div)
+zCone3D *zCone3DCreate(zCone3D *cone, const zVec3D *c, const zVec3D *v, double r, int div)
 {
   zCone3DSetCenter( cone, c );
   zCone3DSetVert( cone, v );
@@ -31,14 +31,14 @@ zCone3D *zCone3DInit(zCone3D *cone)
 ZDEF_ALLOC_FUNCTION( zCone3D )
 
 /* copy a 3D cone to another. */
-zCone3D *zCone3DCopy(zCone3D *src, zCone3D *dest)
+zCone3D *zCone3DCopy(const zCone3D *src, zCone3D *dest)
 {
   return zCone3DCreate( dest,
     zCone3DCenter(src), zCone3DVert(src), zCone3DRadius(src), zCone3DDiv(src) );
 }
 
 /* mirror a 3D cone. */
-zCone3D *zCone3DMirror(zCone3D *src, zCone3D *dest, zAxis axis)
+zCone3D *zCone3DMirror(const zCone3D *src, zCone3D *dest, zAxis axis)
 {
   zCone3DCopy( src, dest );
   zCone3DCenter(dest)->e[(int)axis] *= -1;
@@ -47,7 +47,7 @@ zCone3D *zCone3DMirror(zCone3D *src, zCone3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D cone. */
-zCone3D *zCone3DXform(zCone3D *src, zFrame3D *f, zCone3D *dest)
+zCone3D *zCone3DXform(const zCone3D *src, const zFrame3D *f, zCone3D *dest)
 {
   zXform3D( f, zCone3DCenter(src), zCone3DCenter(dest) );
   zXform3D( f, zCone3DVert(src), zCone3DVert(dest) );
@@ -57,7 +57,7 @@ zCone3D *zCone3DXform(zCone3D *src, zFrame3D *f, zCone3D *dest)
 }
 
 /* inversely transform coordinates of a 3D cone. */
-zCone3D *zCone3DXformInv(zCone3D *src, zFrame3D *f, zCone3D *dest)
+zCone3D *zCone3DXformInv(const zCone3D *src, const zFrame3D *f, zCone3D *dest)
 {
   zXform3DInv( f, zCone3DCenter(src), zCone3DCenter(dest) );
   zXform3DInv( f, zCone3DVert(src), zCone3DVert(dest) );
@@ -67,7 +67,7 @@ zCone3D *zCone3DXformInv(zCone3D *src, zFrame3D *f, zCone3D *dest)
 }
 
 /* the closest point to a 3D cone. */
-double zCone3DClosest(zCone3D *cone, zVec3D *p, zVec3D *cp)
+double zCone3DClosest(const zCone3D *cone, const zVec3D *p, zVec3D *cp)
 {
   zVec3D axis, v, s, g;
   double l, r, d;
@@ -106,7 +106,7 @@ double zCone3DClosest(zCone3D *cone, zVec3D *p, zVec3D *cp)
 }
 
 /* distance from a point to a 3D cone. */
-double zCone3DDistFromPoint(zCone3D *cone, zVec3D *p)
+double zCone3DDistFromPoint(const zCone3D *cone, const zVec3D *p)
 {
   zVec3D axis, v, s, g;
   double l, r, d;
@@ -136,7 +136,7 @@ double zCone3DDistFromPoint(zCone3D *cone, zVec3D *p)
 }
 
 /* check if a point is inside of a cone. */
-bool zCone3DPointIsInside(zCone3D *cone, zVec3D *p, double margin)
+bool zCone3DPointIsInside(const zCone3D *cone, const zVec3D *p, double margin)
 {
   zVec3D axis, v;
   zVec2D p2d, l2d;
@@ -154,7 +154,7 @@ bool zCone3DPointIsInside(zCone3D *cone, zVec3D *p, double margin)
 }
 
 /* height of a 3D cone. */
-double zCone3DHeight(zCone3D *cone)
+double zCone3DHeight(const zCone3D *cone)
 {
   zVec3D axis;
 
@@ -162,19 +162,19 @@ double zCone3DHeight(zCone3D *cone)
 }
 
 /* volume of a 3D cone. */
-double zCone3DVolume(zCone3D *cone)
+double zCone3DVolume(const zCone3D *cone)
 {
   return zPI * zSqr(zCone3DRadius(cone)) * zCone3DHeight(cone) / 3;
 }
 
 /* barycenter of a 3D cone. */
-zVec3D *zCone3DBarycenter(zCone3D *cone, zVec3D *c)
+zVec3D *zCone3DBarycenter(const zCone3D *cone, zVec3D *c)
 {
   return zVec3DInterDiv( zCone3DCenter(cone), zCone3DVert(cone), 0.25, c );
 }
 
 /* inertia tensor about barycenter of a 3D cone from mass. */
-zMat3D *zCone3DBaryInertiaMass(zCone3D *cone, double mass, zMat3D *inertia)
+zMat3D *zCone3DBaryInertiaMass(const zCone3D *cone, double mass, zMat3D *inertia)
 {
   double rr, hh;
   zMat3D i, att;
@@ -193,13 +193,13 @@ zMat3D *zCone3DBaryInertiaMass(zCone3D *cone, double mass, zMat3D *inertia)
 }
 
 /* inertia tensor about barycenter of a 3D cone. */
-zMat3D *zCone3DBaryInertia(zCone3D *cone, double density, zMat3D *inertia)
+zMat3D *zCone3DBaryInertia(const zCone3D *cone, double density, zMat3D *inertia)
 {
   return zCone3DBaryInertiaMass( cone, density * zCone3DVolume( cone ), inertia );
 }
 
 /* convert a cone to a polyhedron. */
-zPH3D *zCone3DToPH(zCone3D *cone, zPH3D *ph)
+zPH3D *zCone3DToPH(const zCone3D *cone, zPH3D *ph)
 {
   zVec3D *vert, d, s, r, aa;
   zTri3D *face;
@@ -277,9 +277,9 @@ static const ZTKPrp __ztk_prp_shape_cone[] = {
 };
 
 /* print a 3D cone out to a file in a ZTK format. */
-void zCone3DFPrintZTK(FILE *fp, zCone3D *cone)
+void zCone3DFPrintZTK(FILE *fp, const zCone3D *cone)
 {
-  ZTKPrpKeyFPrint( fp, cone, __ztk_prp_shape_cone );
+  ZTKPrpKeyFPrint( fp, (void*)cone, __ztk_prp_shape_cone );
 }
 
 /* methods for abstraction */
@@ -295,15 +295,15 @@ static void *_zShape3DConeMirror(void *src, zAxis axis){
   zCone3D *mrr;
   return ( mrr = zCone3DAlloc() ) ? zCone3DMirror( (zCone3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DConeDestroy(void *body){}
-static void *_zShape3DConeXform(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DConeXform(void *src, const zFrame3D *f, void *dest){
   return zCone3DXform( (zCone3D*)src, f, (zCone3D*)dest ); }
-static void *_zShape3DConeXformInv(void *src, zFrame3D *f, void *dest){
+static void *_zShape3DConeXformInv(void *src, const zFrame3D *f, void *dest){
   return zCone3DXformInv( (zCone3D*)src, f, (zCone3D*)dest ); }
-static double _zShape3DConeClosest(void *body, zVec3D *p, zVec3D *cp){
+static double _zShape3DConeClosest(void *body, const zVec3D *p, zVec3D *cp){
   return zCone3DClosest( (zCone3D*)body, p, cp ); }
-static double _zShape3DConeDistFromPoint(void *body, zVec3D *p){
+static double _zShape3DConeDistFromPoint(void *body, const zVec3D *p){
   return zCone3DDistFromPoint( (zCone3D*)body, p ); }
-static bool _zShape3DConePointIsInside(void *body, zVec3D *p, double margin){
+static bool _zShape3DConePointIsInside(void *body, const zVec3D *p, double margin){
   return zCone3DPointIsInside( (zCone3D*)body, p, margin ); }
 static double _zShape3DConeVolume(void *body){
   return zCone3DVolume( (zCone3D*)body ); }
@@ -343,7 +343,7 @@ zShape3DCom zeo_shape3d_cone_com = {
 };
 
 /* create a 3D shape as a cone. */
-zShape3D *zShape3DConeCreate(zShape3D *shape, zVec3D *c, zVec3D *v, double r, int div)
+zShape3D *zShape3DConeCreate(zShape3D *shape, const zVec3D *c, const zVec3D *v, double r, int div)
 {
   zShape3DInit( shape );
   if( !( shape->body = zCone3DAlloc() ) ) return NULL;
