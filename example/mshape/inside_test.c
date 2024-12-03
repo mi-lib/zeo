@@ -10,7 +10,7 @@ void test(zMShape3D *ms, int n)
   for( i=0; i<n; i++ ){
     zVec3DCreate( &p, zRandF(-0.4,0.4), zRandF(-0.4,0.4), zRandF(-0.4,0.4) );
     if( zMShape3DPointIsInside( ms, &p, true ) )
-      zVec3DDataNLFPrint( fp, &p );
+      zVec3DValueNLFPrint( fp, &p );
   }
   fclose( fp );
 }

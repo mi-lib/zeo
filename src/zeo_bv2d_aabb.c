@@ -34,7 +34,7 @@ bool zAABox2DPointIsInside(zAABox2D *box, zVec2D *p, double margin)
 }
 
 /* print a 2D axis-aligned box out to a file in a format to be plotted. */
-void zAABox2DDataFPrint(FILE *fp, zAABox2D *box)
+void zAABox2DValueFPrint(FILE *fp, zAABox2D *box)
 {
   double x0, y0, x1, y1;
 

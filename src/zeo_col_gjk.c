@@ -42,8 +42,8 @@ static void _zGJKSlotPrint(zGJKSlot *slot)
 /* print out vertices of a slot. */
 static void _zGJKSlotVertFPrint(FILE *fp, zGJKSlot *slot)
 {
-  zVec3DDataFPrint( fp, slot->p1 );
-  zVec3DDataFPrint( fp, slot->p2 );
+  zVec3DValueFPrint( fp, slot->p1 );
+  zVec3DValueFPrint( fp, slot->p2 );
 }
 #endif
 
@@ -452,7 +452,7 @@ bool zGJKPL(zVec3DList *pl1, zVec3DList *pl2, zVec3D *c1, zVec3D *c2)
   zVec3D v; /* proximity */
   double dv2;
 
-  zVec3DSub( zListTail(pl1)->data, zListTail(pl2)->data, &v );
+  zVec3DSub( &zListTail(pl1)->data, &zListTail(pl2)->data, &v );
   dv2 = zVec3DSqrNorm( &v );
   _zGJKSimplexInit( &s );
   do{

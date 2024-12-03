@@ -16,7 +16,7 @@ __BEGIN_DECLS
  * list of 3D vectors
  * ********************************************************** */
 
-zListClass( zVec3DList, zVec3DListCell, zVec3D* );
+zListClass( zVec3DList, zVec3DListCell, zVec3D );
 
 /*! \brief allocate a 3D vector list cell and copy a vector.
  *
@@ -69,7 +69,7 @@ __ZEO_EXPORT zVec3DList *zVec3DArray2List(const zVec3DArray *array, zVec3DList *
  * \return
  * zVec3DListDestroy() returns no value.
  */
-__ZEO_EXPORT void zVec3DListDestroy(zVec3DList *list);
+#define zVec3DListDestroy(list) zListDestroy( zVec3DListCell, list )
 
 /*! \brief find an identical 3D vector in a list.
  *
@@ -128,8 +128,7 @@ __ZEO_EXPORT void zVec3DListDataFPrint(FILE *fp, const zVec3DList *list);
  * list of addresses of 3D vectors
  * ********************************************************** */
 
-typedef zVec3DList zVec3DAddrList;
-typedef zVec3DListCell zVec3DAddr;
+zListClass( zVec3DAddrList, zVec3DAddrListCell, zVec3D* );
 
 /*! \brief add a pointer to a 3D vector into a list of vectors.
  *
@@ -137,7 +136,7 @@ typedef zVec3DListCell zVec3DAddr;
  * \return
  * zVec3DAddrListAdd() returns a pointer to the newly added cell.
  */
-__ZEO_EXPORT zVec3DAddr *zVec3DAddrListAdd(zVec3DAddrList *list, const zVec3D *v);
+__ZEO_EXPORT zVec3DAddrListCell *zVec3DAddrListAdd(zVec3DAddrList *list, const zVec3D *v);
 
 /*! \brief append an array of 3D vectors to a list of pointers to 3D vectors.
  *
@@ -173,7 +172,7 @@ __ZEO_EXPORT zVec3DAddrList *zVec3DAddrListClone(const zVec3DAddrList *src, zVec
  * \return
  * zVec3DAddrListDestroy() returns no value.
  */
-#define zVec3DAddrListDestroy(l) zListDestroy( zVec3DAddr, l )
+#define zVec3DAddrListDestroy(l) zListDestroy( zVec3DAddrListCell, l )
 
 /*! \brief a quick sort routine for vector list class.
  *

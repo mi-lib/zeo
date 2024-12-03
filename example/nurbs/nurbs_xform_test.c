@@ -11,7 +11,7 @@ void nurbs_fprint(FILE *fp, zNURBS3D *nurbs)
     for( j=0; j<=zNURBS3DSlice(nurbs,1); j++ ){
       v = zNURBS3DKnotSlice( nurbs, 1, j );
       if( zNURBS3DVec( nurbs, u, v, &p ) ){
-        zVec3DDataFPrint( fp, &p );
+        zVec3DValueFPrint( fp, &p );
         fprintf( fp, "\n" );
       }
     }

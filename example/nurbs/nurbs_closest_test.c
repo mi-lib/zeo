@@ -25,7 +25,7 @@ int main(void)
     for( j=0; j<=zNURBS3DSlice(&nurbs,1); j++ ){
       v = zNURBS3DKnotSlice( &nurbs, 1, j );
       if( zNURBS3DVec( &nurbs, u, v, &p ) ){
-        zVec3DDataFPrint( fp, &p );
+        zVec3DValueFPrint( fp, &p );
         fprintf( fp, "\n" );
       }
     }
@@ -37,9 +37,9 @@ int main(void)
   fp = fopen( "nn", "w" );
   zVec3DCreate( &p, zRandF(2,6), zRandF(-1,1), zRandF(-3,3) );
   zNURBS3DClosest( &nurbs, &p, &nn, &u, &v );
-  zVec3DDataFPrint( fp, &p );
+  zVec3DValueFPrint( fp, &p );
   fprintf( fp, "\n" );
-  zVec3DDataFPrint( fp, &nn );
+  zVec3DValueFPrint( fp, &nn );
   fprintf( fp, "\n\n\n" );
   fclose( fp );
 

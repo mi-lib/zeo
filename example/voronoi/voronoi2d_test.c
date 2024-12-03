@@ -13,8 +13,7 @@ void generate_points(FILE *fp, zVec2DList *pl, int n)
     zVec2DCreate( &p, i / 10, i % 10 );
 #endif
     zVec2DListAdd( pl, &p );
-    zVec2DDataFPrint( fp, &p );
-    fprintf( fp, "\n" );
+    zVec2DValueNLFPrint( fp, &p );
   }
 }
 

@@ -550,7 +550,7 @@ static void _zPH3DFWritePLYDataASCII(FILE *fp, zPH3D *ph)
   int i;
 
   for( i=0; i<zPH3DVertNum(ph); i++ )
-    zVec3DDataNLFPrint( fp, zPH3DVert(ph,i) );
+    zVec3DValueNLFPrint( fp, zPH3DVert(ph,i) );
   for( i=0; i<zPH3DFaceNum(ph); i++ )
     fprintf( fp, "3 %d %d %d\n",
       (int)( zPH3DFaceVert(ph,i,0)-zPH3DVertBuf(ph) ),

@@ -19,7 +19,7 @@ void assert_list_clone(void)
   for( result=true, sp=zListTail(&src), dp=zListTail(&dest);
        sp!=zListRoot(&src) && dp!=zListRoot(&dest);
        sp=zListCellNext(sp), dp=zListCellNext(dp) ){
-    if( !zVec3DEqual( sp->data, dp->data ) ) result = false;
+    if( !zVec3DEqual( &sp->data, &dp->data ) ) result = false;
   }
   zVec3DListDestroy( &src );
   zVec3DListDestroy( &dest );
@@ -29,7 +29,7 @@ void assert_list_clone(void)
 void assert_addr_list_clone(void)
 {
   zVec3DAddrList src, dest;
-  zVec3DAddr *sp, *dp;
+  zVec3DAddrListCell *sp, *dp;
   zVec3D v[N];
   int i;
   bool result;

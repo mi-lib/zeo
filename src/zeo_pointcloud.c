@@ -497,7 +497,7 @@ static void _zPCDDataASCIIFWrite(FILE *fp, zVec3DList *pc)
 
   fprintf( fp, "DATA ascii\n" );
   zListForEach( pc, cp )
-    fprintf( fp, "%.10g %.10g %.10g\n", cp->data->c.x, cp->data->c.y, cp->data->c.z );
+    fprintf( fp, "%.10g %.10g %.10g\n", cp->data.c.x, cp->data.c.y, cp->data.c.z );
 }
 
 static void _zPCDDataBinFWrite(FILE *fp, zVec3DList *pc)
@@ -506,7 +506,7 @@ static void _zPCDDataBinFWrite(FILE *fp, zVec3DList *pc)
 
   fprintf( fp, "DATA binary\n" );
   zListForEach( pc, cp )
-    fwrite( cp->data->e, sizeof(double), 3, fp );
+    fwrite( cp->data.e, sizeof(double), 3, fp );
 }
 
 /* write point cloud to a stream of PCD file. */

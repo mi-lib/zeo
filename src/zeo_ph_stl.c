@@ -70,7 +70,7 @@ static zTri3DArray *_zSTLFacetListToTri3DArray(_zSTLFacetList *list, zVec3DArray
 /* convert a vertex tree and a facet list to a polyhedron (and destroy the tree and the list). */
 static zPH3D *_zSTLToPH3D(zVec3DTree *vert_tree, _zSTLFacetList *facet_list, zPH3D *ph)
 {
-  if( !zVec3DTree2Array( vert_tree, &ph->vert ) ||
+  if( !zVec3DTreeToArray( vert_tree, &ph->vert ) ||
       !_zSTLFacetListToTri3DArray( facet_list, &ph->vert, &ph->face ) )
     ph = NULL;
   zVec3DTreeDestroy( vert_tree );
@@ -189,14 +189,14 @@ void zPH3DFWriteSTL_ASCII(FILE *fp, zPH3D *ph, const char shapename[])
   fprintf( fp, "solid %s\n", shapename );
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
     fprintf( fp, "\tfacet normal\t" );
-    zVec3DDataFPrint( fp, zTri3DNorm(zPH3DFace(ph,i)) );
+    zVec3DValueFPrint( fp, zTri3DNorm(zPH3DFace(ph,i)) );
     fprintf( fp, "\n\t\touter loop" );
     fprintf( fp, "\n\t\t\tvertex\t" );
-    zVec3DDataFPrint( fp, zTri3DVert(zPH3DFace(ph,i),0) );
+    zVec3DValueFPrint( fp, zTri3DVert(zPH3DFace(ph,i),0) );
     fprintf( fp, "\n\t\t\tvertex\t" );
-    zVec3DDataFPrint( fp, zTri3DVert(zPH3DFace(ph,i),1) );
+    zVec3DValueFPrint( fp, zTri3DVert(zPH3DFace(ph,i),1) );
     fprintf( fp, "\n\t\t\tvertex\t" );
-    zVec3DDataFPrint( fp, zTri3DVert(zPH3DFace(ph,i),2) );
+    zVec3DValueFPrint( fp, zTri3DVert(zPH3DFace(ph,i),2) );
     fprintf( fp, "\n\t\tendloop\n\tendfacet\n" );
   }
   fprintf( fp, "endsolid\n" );

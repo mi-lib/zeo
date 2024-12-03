@@ -21,8 +21,8 @@ int main(void)
   zVec3DCreate( &v2, zRandF(0,1), zRandF(0,1), 0 );
   zEdge3DCreate( &e, &v1, &v2 );
   fp[0] = fopen( "e", "w" );
-  zVec3DDataNLFPrint( fp[0], &v1 );
-  zVec3DDataNLFPrint( fp[0], &v2 );
+  zVec3DValueNLFPrint( fp[0], &v1 );
+  zVec3DValueNLFPrint( fp[0], &v2 );
   fclose( fp[0] );
 
   fp[0] = fopen( "d", "w" );
@@ -31,20 +31,20 @@ int main(void)
   for( i=0; i<N; i++ ){
     zVec3DCreate( &p,  zRandF(0,1), zRandF(0,1), 0 );
     if( zEdge3DPointIsOn( &e, &p, zTOL ) )
-      zVec3DDataNLFPrint( fp[1], &p );
+      zVec3DValueNLFPrint( fp[1], &p );
     zEdge3DClosest( &e, &p, &v );
     p.e[zZ] = zEdge3DDistFromPoint( &e, &p );
-    zVec3DDataNLFPrint( fp[0], &p );
+    zVec3DValueNLFPrint( fp[0], &p );
     print_arrow( fp[2], &p, &v );
   }
   for( i=0; i<NN; i++ ){
     zVec3DMul( zEdge3DVec(&e), zRandF(-1.5,1.5), &p );
     zVec3DAddDRC( &p, zEdge3DVert(&e,0) );
     if( zEdge3DPointIsOn( &e, &p, zTOL ) )
-      zVec3DDataNLFPrint( fp[1], &p );
+      zVec3DValueNLFPrint( fp[1], &p );
     zEdge3DClosest( &e, &p, &v );
     p.e[zZ] = zEdge3DDistFromPoint( &e, &p );
-    zVec3DDataNLFPrint( fp[0], &p );
+    zVec3DValueNLFPrint( fp[0], &p );
     print_arrow( fp[2], &p, &v );
   }
   fclose( fp[0] );

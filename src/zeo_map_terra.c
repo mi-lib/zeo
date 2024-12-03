@@ -195,7 +195,7 @@ zTerra *zTerraIdent(zTerra *terra, zVec3DList *pl)
   int ic = 0, jc = 0;
 
   zListForEach( pl, pc ){
-    _zTerraUpdate( terra, pc->data, grid, ic, jc );
+    _zTerraUpdate( terra, &pc->data, grid, ic, jc );
   }
   zTerraForm( terra );
   zTerraCheckTravs( terra );

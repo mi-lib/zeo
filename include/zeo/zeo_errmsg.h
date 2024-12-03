@@ -11,6 +11,8 @@
 
 /* error messages */
 
+#define ZEO_ERR_NULLPOINTERASSIGNED           "null pointer assigned for %s"
+
 #define ZEO_ERR_ZERODIV                       "cannot divid by zero value"
 #define ZEO_ERR_VEC_ZERONORM                  "cannot normalize zero vector"
 #define ZEO_ERR_MAT_SINGULAR                  "matrix is singular"

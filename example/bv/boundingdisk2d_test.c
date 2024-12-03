@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
   for( i=0; i<N; i++ ){
     zVec2DCreatePolar( &p, zRandF(0,10), zRandF(-zPI,zPI) );
     zVec2DListAdd( &pl, &p );
-    zVec2DDataFPrint( fp, &p );
+    zVec2DValueFPrint( fp, &p );
     fprintf( fp, "\n" );
   }
   fclose( fp );

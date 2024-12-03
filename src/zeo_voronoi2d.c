@@ -88,10 +88,10 @@ void zDelaunayTri2DListFPrint(FILE *fp, zDelaunayTri2DList *tl)
   zDelaunayTri2DListCell *tc;
 
   zListForEach( tl, tc ){
-    zVec2DDataNLFPrint( fp, zTri2DVert(&tc->data.t,0) );
-    zVec2DDataNLFPrint( fp, zTri2DVert(&tc->data.t,1) );
-    zVec2DDataNLFPrint( fp, zTri2DVert(&tc->data.t,2) );
-    zVec2DDataNLFPrint( fp, zTri2DVert(&tc->data.t,0) );
+    zVec2DValueNLFPrint( fp, zTri2DVert(&tc->data.t,0) );
+    zVec2DValueNLFPrint( fp, zTri2DVert(&tc->data.t,1) );
+    zVec2DValueNLFPrint( fp, zTri2DVert(&tc->data.t,2) );
+    zVec2DValueNLFPrint( fp, zTri2DVert(&tc->data.t,0) );
     fprintf( fp, "\n" );
   }
 }
@@ -254,20 +254,20 @@ void zDelaunayTri2DListVoronoi2DFPrint(FILE *fp, zDelaunayTri2DList *tl)
     zTri2DCircumcenter( &tc->data.t, &c );
     if( tc->data.adj[0] ){
       zTri2DCircumcenter( &tc->data.adj[0]->t, &c0 );
-      zVec2DDataNLFPrint( fp, &c );
-      zVec2DDataNLFPrint( fp, &c0 );
+      zVec2DValueNLFPrint( fp, &c );
+      zVec2DValueNLFPrint( fp, &c0 );
       fprintf( fp, "\n" );
     }
     if( tc->data.adj[1] ){
       zTri2DCircumcenter( &tc->data.adj[1]->t, &c1 );
-      zVec2DDataNLFPrint( fp, &c );
-      zVec2DDataNLFPrint( fp, &c1 );
+      zVec2DValueNLFPrint( fp, &c );
+      zVec2DValueNLFPrint( fp, &c1 );
       fprintf( fp, "\n" );
     }
     if( tc->data.adj[2] ){
       zTri2DCircumcenter( &tc->data.adj[2]->t, &c2 );
-      zVec2DDataNLFPrint( fp, &c );
-      zVec2DDataNLFPrint( fp, &c2 );
+      zVec2DValueNLFPrint( fp, &c );
+      zVec2DValueNLFPrint( fp, &c2 );
       fprintf( fp, "\n" );
     }
   }
@@ -383,8 +383,8 @@ void zVoronoi2DListFPrint(FILE *fp, zVoronoi2DList *vl)
 
   zListForEach( vl, vc ){
     zListForEach( &vc->data.loop, lc )
-      zVec2DDataNLFPrint( fp, &lc->data.node );
-    zVec2DDataNLFPrint( fp, &zListTail(&vc->data.loop)->data.node );
+      zVec2DValueNLFPrint( fp, &lc->data.node );
+    zVec2DValueNLFPrint( fp, &zListTail(&vc->data.loop)->data.node );
     fprintf( fp, "\n" );
   }
 }

@@ -85,7 +85,7 @@ zAABox3D *zBox3DToAABox3D(zBox3D *box, zAABox3D *aabox)
 }
 
 /* print an 3D axis-aligned box out to a file in a format to be plotted. */
-void zAABox3DDataFPrint(FILE *fp, zAABox3D *box)
+void zAABox3DValueFPrint(FILE *fp, zAABox3D *box)
 {
   double x0, y0, z0, x1, y1, z1;
 
@@ -190,9 +190,9 @@ static zAABox3D *_zAABB3DPLInc(zAABox3D *bb, zVec3DListCell *pc, zVec3DListCell 
 {
   int s;
 
-  if( ( s = _zAABB3DTest( bb, pc->data, zX ) ) != -1 && vp ) vp[zX+s] = pc;
-  if( ( s = _zAABB3DTest( bb, pc->data, zY ) ) != -1 && vp ) vp[zY+s] = pc;
-  if( ( s = _zAABB3DTest( bb, pc->data, zZ ) ) != -1 && vp ) vp[zZ+s] = pc;
+  if( ( s = _zAABB3DTest( bb, &pc->data, zX ) ) != -1 && vp ) vp[zX+s] = pc;
+  if( ( s = _zAABB3DTest( bb, &pc->data, zY ) ) != -1 && vp ) vp[zY+s] = pc;
+  if( ( s = _zAABB3DTest( bb, &pc->data, zZ ) ) != -1 && vp ) vp[zZ+s] = pc;
   return bb;
 }
 
@@ -205,8 +205,8 @@ zAABox3D *zAABB3DPL(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vp)
   if( zListIsEmpty(pl) ) return NULL;
 
   pc = zListTail( pl );
-  zVec3DCopy( pc->data, &bb->min );
-  zVec3DCopy( pc->data, &bb->max );
+  zVec3DCopy( &pc->data, &bb->min );
+  zVec3DCopy( &pc->data, &bb->max );
   if( vp ) vp[0] = vp[1] = vp[2] = vp[3] = vp[4] = vp[5] = pc;
   zListForEach( pl, pc )
     _zAABB3DPLInc( bb, pc, vp );
@@ -223,11 +223,11 @@ zAABox3D *zAABB3DXformPL(zAABox3D *bb, zVec3DList *pl, zFrame3D *f)
   if( zListIsEmpty(pl) ) return NULL;
 
   pc = zListTail( pl );
-  zXform3D( f, pc->data, &px );
+  zXform3D( f, &pc->data, &px );
   zVec3DCopy( &px, &bb->min );
   zVec3DCopy( &px, &bb->max );
   zListForEach( pl, pc ){
-    zXform3D( f, pc->data, &px );
+    zXform3D( f, &pc->data, &px );
     _zAABB3DInc( bb, &px, NULL );
   }
   return bb;

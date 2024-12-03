@@ -28,10 +28,10 @@ int main(int argc, char *argv[])
   for( i=0; i<=zNURBS3DSlice(&nurbs,1); i++ ){
     t = zNURBS3D1KnotSlice( &nurbs, i );
     if( zNURBS3D1VecTan( &nurbs, 0, t, &p, &tv ) ){
-      zVec3DDataNLFPrint( fpp, &p );
-      zVec3DDataNLFPrint( fpt, &p );
+      zVec3DValueNLFPrint( fpp, &p );
+      zVec3DValueNLFPrint( fpt, &p );
       zVec3DAddDRC( &p, &tv );
-      zVec3DDataNLFPrint( fpt, &p );
+      zVec3DValueNLFPrint( fpt, &p );
       zFEndl( fpt );
     }
   }

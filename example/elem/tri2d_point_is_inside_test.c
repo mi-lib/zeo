@@ -13,10 +13,10 @@ int main(int argc, char *argv[])
 
   zRandInit();
   fp1 = fopen( "t", "w" );
-  zVec2DCreate( &v1, -2, -3 ); zVec2DDataNLFPrint( fp1, &v1 );
-  zVec2DCreate( &v2,  4, -1 ); zVec2DDataNLFPrint( fp1, &v2 );
-  zVec2DCreate( &v3,  1,  5 ); zVec2DDataNLFPrint( fp1, &v3 );
-  zVec2DDataNLFPrint( fp1, &v1 );
+  zVec2DCreate( &v1, -2, -3 ); zVec2DValueNLFPrint( fp1, &v1 );
+  zVec2DCreate( &v2,  4, -1 ); zVec2DValueNLFPrint( fp1, &v2 );
+  zVec2DCreate( &v3,  1,  5 ); zVec2DValueNLFPrint( fp1, &v3 );
+  zVec2DValueNLFPrint( fp1, &v1 );
   fclose( fp1 );
 
   zTri2DCreate( &t, &v1, &v2, &v3 );
@@ -26,9 +26,9 @@ int main(int argc, char *argv[])
   for( i=0; i<N; i++ ){
     zVec2DCreate( &v, zRandF(-10,10), zRandF(-10,10) );
     if( zTri2DPointIsInside( &t, &v, margin ) )
-      zVec2DDataNLFPrint( fp1, &v );
+      zVec2DValueNLFPrint( fp1, &v );
     else
-      zVec2DDataNLFPrint( fp2, &v );
+      zVec2DValueNLFPrint( fp2, &v );
   }
   fclose( fp1 );
   fclose( fp2 );

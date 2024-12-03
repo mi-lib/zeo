@@ -58,7 +58,7 @@ static int _zBoundingBall3D4(zSphere3D *bb, zVec3D *v[], zVec3D **vp)
 }
 
 /* bounding ball of up to four points. */
-static int _zBoundingBall3DPrim(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
+static int _zBoundingBall3DPrim(zSphere3D *bb, zVec3DAddrList *pl, zVec3D **vp)
 {
   zVec3D *v[4];
 
@@ -92,9 +92,9 @@ static int _zBoundingBall3DPrim(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
 
 /* a recursive procedure to find bounding ball of two sets of points,
  * where the latter is the set of those on the surface of the ball. */
-static int _zBoundingBall3DInc(zSphere3D *bb, zVec3DList *pl, zVec3DList *shell, zVec3D **vp)
+static int _zBoundingBall3DInc(zSphere3D *bb, zVec3DAddrList *pl, zVec3DAddrList *shell, zVec3D **vp)
 {
-  zVec3DListCell *cp;
+  zVec3DAddrListCell *cp;
   int num;
 
   if( zListIsEmpty(pl) || zListSize(shell) == 4 )
@@ -111,10 +111,10 @@ static int _zBoundingBall3DInc(zSphere3D *bb, zVec3DList *pl, zVec3DList *shell,
 }
 
 /* a recursive procedure to find bounding ball of a list of 3D points. */
-static int _zBoundingBall3DPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
+static int _zBoundingBall3DPL(zSphere3D *bb, zVec3DAddrList *pl, zVec3D **vp)
 {
-  zVec3DList shell;
-  zVec3DListCell *cp;
+  zVec3DAddrList shell;
+  zVec3DAddrListCell *cp;
   int num;
 
   zListInit( &shell );
@@ -138,7 +138,9 @@ int zBoundingBall3DPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
   zVec3DAddrList al;
   int ret;
 
+#if 0
   if( zListSize(pl) > ZEO_BOUNDINGBALL_PN_THRESHOLD ){
+#endif
     /* discard points inside of the convex hull from the list. */
     if( !zConvexHull3DPL( &ch, pl ) ){
       ret = 0;
@@ -149,8 +151,10 @@ int zBoundingBall3DPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
       zVec3DAddrListDestroy( &al );
     }
     zPH3DDestroy( &ch );
+#if 0
   } else
     ret = _zBoundingBall3DPL( bb, pl, vp );
+#endif
   return ret;
 }
 
@@ -161,7 +165,7 @@ int zBoundingBall3D(zSphere3D *bb, zVec3DArray *pa, zVec3D **vp)
   int num;
 
   if( !zVec3DAddrListCreate( &pl, pa ) ) return 0;
-  num = zBoundingBall3DPL( bb, &pl, vp );
+  num = _zBoundingBall3DPL( bb, &pl, vp );
   zVec3DAddrListDestroy( &pl );
   return num;
 }

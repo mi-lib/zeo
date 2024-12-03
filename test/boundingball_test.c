@@ -1,26 +1,26 @@
 #include <zeo/zeo.h>
 
-#define N 1000
-
-int main(void)
+bool generate_points(zVec3DArray *array, int n, double radius)
 {
-  zSphere3D bb;
-  zVec3D *vp[4]; /* vertices on the sphere up to four. */
-  int i, n;
+  int i;
+
+  zArrayAlloc( array, zVec3D, n );
+  if( zArraySize(array) == 0 ) return false;
+  for( i=0; i<n; i++ )
+    zVec3DCreatePolar( zArrayElem(array,i), zRandF(-radius,radius), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
+  return true;
+}
+
+bool test_boundingball(zSphere3D *bb, zVec3D *vp[], int n, zVec3DArray *array)
+{
+  int i;
   double r1, r;
   int count;
   int errcode = 0;
-  zVec3DArray arr;
 
-  zRandInit();
-  zArrayAlloc( &arr, zVec3D, N );
-  for( i=0; i<N; i++ )
-    zVec3DCreatePolar( zArrayElem(&arr,i), zRandF(-5,5), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
-  n = zBoundingBall3D( &bb, &arr, vp );
-  r = zSphere3DRadius(&bb);
-
-  for( count=0, i=0; i<N; i++ ){
-    r1 = zVec3DDist( zSphere3DCenter(&bb), zArrayElem(&arr,i) );
+  r = zSphere3DRadius(bb);
+  for( count=0, i=0; i<zArraySize(array); i++ ){
+    r1 = zVec3DDist( zSphere3DCenter(bb), zArrayElem(array,i) );
     if( r1 > r + zTOL ){
       eprintf( "a point outside of the bounding ball found. (%.10g > %.10g)\n", r1, r );
       errcode = 1;
@@ -35,15 +35,38 @@ int main(void)
     eprintf( "mismatch of the number of points." );
     errcode = 3;
   }
-
   for( i=0; i<n; i++ ){
-    r1 = zVec3DDist( zSphere3DCenter(&bb), vp[i] );
-    if( !zIsTol( r1-r, zTOL*2 ) ){
-      eprintf( "extrema points not on the bounding ball.\n" );
+    r1 = zVec3DDist( zSphere3DCenter(bb), vp[i] );
+    if( !zIsTol( r1 - r, zTOL*2 ) ){
+      eprintf( "extrema points not on the bounding ball (error = %g).\n", r1 - r );
       errcode = 4;
     }
   }
-  printf( "error code = %d\n", errcode );
-  zAssert( zBoundingBall3D, errcode == 0 );
+  eprintf( "error code = %d ... ", errcode );
+  return errcode == 0;
+}
+
+#define N 1000
+
+int main(void)
+{
+  zVec3DArray array;
+  zVec3DList plist;
+  zSphere3D bb;
+  zVec3D *vp[4]; /* vertices on the sphere up to four. */
+  int n;
+
+  zRandInit();
+  generate_points( &array, N, 5 );
+  zVec3DArray2List( &array, &plist );
+
+  n = zBoundingBall3D( &bb, &array, vp );
+  zAssert( zBoundingBall3D, test_boundingball( &bb, vp, n, &array ) );
+
+  n = zBoundingBall3DPL( &bb, &plist, vp );
+  zVec3DListDestroy( &plist );
+  zAssert( zBoundingBall3DPL, test_boundingball( &bb, vp, n, &array ) );
+
+  zArrayFree( &array );
   return 0;
 }

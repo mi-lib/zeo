@@ -25,19 +25,19 @@ int main(int argc, char *argv[])
   vec_rand_create( &p, &u, &v, &v3 );
   zTri3DCreate( &tri, &v1, &v2, &v3 );
   fp1 = fopen( "t", "w" );
-  zVec3DDataNLFPrint( fp1, &v1 );
-  zVec3DDataNLFPrint( fp1, &v2 );
-  zVec3DDataNLFPrint( fp1, &v3 );
-  zVec3DDataNLFPrint( fp1, &v1 ); fprintf( fp1, "\n" );
+  zVec3DValueNLFPrint( fp1, &v1 );
+  zVec3DValueNLFPrint( fp1, &v2 );
+  zVec3DValueNLFPrint( fp1, &v3 );
+  zVec3DValueNLFPrint( fp1, &v1 ); fprintf( fp1, "\n" );
   fclose( fp1 );
   fp1 = fopen( "i", "w" );
   fp2 = fopen( "o", "w" );
   for( i=0; i<N; i++ ){
     vec_rand_create( &p, &u, &v, &vn );
     if( zTri3DPointIsInside( &tri, &vn, true ) ){
-      zVec3DDataFPrint( fp1, &vn ); fprintf( fp1, "\n" );
+      zVec3DValueFPrint( fp1, &vn ); fprintf( fp1, "\n" );
     } else{
-      zVec3DDataFPrint( fp2, &vn ); fprintf( fp2, "\n" );
+      zVec3DValueFPrint( fp2, &vn ); fprintf( fp2, "\n" );
     }
   }
   fclose( fp1 );

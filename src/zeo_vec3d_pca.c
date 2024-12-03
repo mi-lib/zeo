@@ -13,7 +13,7 @@ zVec3D *zVec3DBarycenterPL(zVec3DList *pl, zVec3D *c)
 
   zVec3DZero( c );
   zListForEach( pl, pc )
-    zVec3DAddDRC( c, pc->data );
+    zVec3DAddDRC( c, &pc->data );
   return zVec3DDivDRC( c, zListSize(pl) );
 }
 
@@ -37,7 +37,7 @@ zVec3D *zVec3DPCA_PL(zVec3DList *pl, zVec3D evec[])
 
   zMat3DZero( &vm );
   zListForEach( pl, pc )
-    zMat3DAddDyad( &vm, pc->data, pc->data );
+    zMat3DAddDyad( &vm, &pc->data, &pc->data );
   zMat3DSymEig( &vm, eval, evec );
   return evec;
 }
@@ -67,7 +67,7 @@ zVec3D *zVec3DBaryPCA_PL(zVec3DList *pl, zVec3D *c, zVec3D evec[])
   zVec3DBarycenterPL( pl, c );
   zMat3DZero( &vm );
   zListForEach( pl, pc ){
-    zVec3DSub( pc->data, c, &dp );
+    zVec3DSub( &pc->data, c, &dp );
     zMat3DAddDyad( &vm, &dp, &dp );
   }
   zMat3DSymEig( &vm, eval, evec );

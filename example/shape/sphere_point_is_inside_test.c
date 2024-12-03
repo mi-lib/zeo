@@ -32,7 +32,7 @@ void output_sphere(FILE *fp, zSphere3D *sphere)
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: cyan\n" );
   fprintf( fp, "center: " );
-  zVec3DDataNLFPrint( fp, zSphere3DCenter(sphere) );
+  zVec3DValueNLFPrint( fp, zSphere3DCenter(sphere) );
   fprintf( fp, "radius: %g\n\n", zSphere3DRadius(sphere) );
 }
 
@@ -43,7 +43,7 @@ void output_point_inside(FILE *fp, zVec3D *p, int i)
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: red\n" );
   fprintf( fp, "center: " );
-  zVec3DDataNLFPrint( fp, p );
+  zVec3DValueNLFPrint( fp, p );
   fprintf( fp, "radius: 0.1\n\n" );
 }
 
@@ -54,7 +54,7 @@ void output_point_outside(FILE *fp, zVec3D *p, int i)
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: white\n" );
   fprintf( fp, "center: " );
-  zVec3DDataNLFPrint( fp, p );
+  zVec3DValueNLFPrint( fp, p );
   fprintf( fp, "radius: 0.05\n\n" );
 }
 

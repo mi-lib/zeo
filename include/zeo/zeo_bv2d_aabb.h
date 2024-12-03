@@ -29,7 +29,7 @@ __ZEO_EXPORT zAABox2D *zAABox2DCreate(zAABox2D *box, double xmin, double ymin, d
 __ZEO_EXPORT bool zAABox2DPointIsInside(zAABox2D *box, zVec2D *p, double margin);
 
 /*! \brief printa 2D axis-aligned box out to a file. */
-__ZEO_EXPORT void zAABox2DDataFPrint(FILE *fp, zAABox2D *box);
+__ZEO_EXPORT void zAABox2DValueFPrint(FILE *fp, zAABox2D *box);
 
 /* ********************************************************** */
 /* AABB2D - 2D axis-aligned bounding box

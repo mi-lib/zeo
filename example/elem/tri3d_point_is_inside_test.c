@@ -13,10 +13,10 @@ int main(int argc, char *argv[])
 
   zRandInit();
   fp1 = fopen( "t", "w" );
-  zVec3DCreate( &v1, -4, -5, 1 ); zVec3DDataNLFPrint( fp1, &v1 );
-  zVec3DCreate( &v2, -1,  6, 1 ); zVec3DDataNLFPrint( fp1, &v2 );
-  zVec3DCreate( &v3,  6, -1, 1 ); zVec3DDataNLFPrint( fp1, &v3 );
-  zVec3DDataNLFPrint( fp1, &v1 );
+  zVec3DCreate( &v1, -4, -5, 1 ); zVec3DValueNLFPrint( fp1, &v1 );
+  zVec3DCreate( &v2, -1,  6, 1 ); zVec3DValueNLFPrint( fp1, &v2 );
+  zVec3DCreate( &v3,  6, -1, 1 ); zVec3DValueNLFPrint( fp1, &v3 );
+  zVec3DValueNLFPrint( fp1, &v1 );
   fclose( fp1 );
 
   zTri3DCreate( &t, &v1, &v2, &v3 );
@@ -26,9 +26,9 @@ int main(int argc, char *argv[])
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
     if( zTri3DPointIsInside( &t, &v, margin ) )
-      zVec3DDataNLFPrint( fp1, &v );
+      zVec3DValueNLFPrint( fp1, &v );
     else
-      zVec3DDataNLFPrint( fp2, &v );
+      zVec3DValueNLFPrint( fp2, &v );
   }
   fclose( fp1 );
   fclose( fp2 );

@@ -36,8 +36,8 @@ int main(int argc, char *argv[])
   gjk_read_vset( argv[2], &vl2 );
 
   zGJKPL( &vl1, &vl2, &c1, &c2 );
-  zVec3DDataPrint( &c1 );
-  zVec3DDataPrint( &c2 );
+  zVec3DValueNLPrint( &c1 );
+  zVec3DValueNLPrint( &c2 );
 
   zVec3DListDestroy( &vl1 );
   zVec3DListDestroy( &vl2 );

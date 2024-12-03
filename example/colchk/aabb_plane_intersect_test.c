@@ -67,10 +67,10 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
   zVec3DCatDRC( &v[2],-1.0, &sv2 );
   zVec3DCat( zPlane3DOrg(p),-1.0, &sv1, &v[3] );
   zVec3DCatDRC( &v[3], 1.0, &sv2 );
-  fprintf( fp, "vert: 0 " ); zVec3DDataNLFPrint( fp, &v[0] );
-  fprintf( fp, "vert: 1 " ); zVec3DDataNLFPrint( fp, &v[1] );
-  fprintf( fp, "vert: 2 " ); zVec3DDataNLFPrint( fp, &v[2] );
-  fprintf( fp, "vert: 3 " ); zVec3DDataNLFPrint( fp, &v[3] );
+  fprintf( fp, "vert: 0 " ); zVec3DValueNLFPrint( fp, &v[0] );
+  fprintf( fp, "vert: 1 " ); zVec3DValueNLFPrint( fp, &v[1] );
+  fprintf( fp, "vert: 2 " ); zVec3DValueNLFPrint( fp, &v[2] );
+  fprintf( fp, "vert: 3 " ); zVec3DValueNLFPrint( fp, &v[3] );
   fprintf( fp, "face: 0 1 2\n" );
   fprintf( fp, "face: 0 2 3\n" );
 
@@ -80,7 +80,7 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
     fprintf( fp, "type: sphere\n" );
     fprintf( fp, "optic: blue\n" );
     fprintf( fp, "center: " );
-    zVec3DDataNLFPrint( fp, &ip[i] );
+    zVec3DValueNLFPrint( fp, &ip[i] );
     fprintf( fp, "radius: 0.01\n" );
   }
   fclose( fp );

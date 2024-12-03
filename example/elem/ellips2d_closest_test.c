@@ -19,11 +19,11 @@ int main(int argc, char *argv[])
   for( i=0; i<N; i++ ){
     zVec2DCreate( &p, zRandF(-4,4), zRandF(-4,4) );
     if( zEllips2DPointIsInside( &e, &p, margin ) ){
-      zVec2DDataNLFPrint( fp1, &p );
+      zVec2DValueNLFPrint( fp1, &p );
     } else{
       zEllips2DClosest( &e, &p, &cp );
-      zVec2DDataNLFPrint( fp2, &p );
-      zVec2DDataNLFPrint( fp2, &cp );
+      zVec2DValueNLFPrint( fp2, &p );
+      zVec2DValueNLFPrint( fp2, &cp );
       zFEndl( fp2 );
       zFEndl( fp2 );
     }

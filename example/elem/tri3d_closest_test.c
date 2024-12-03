@@ -10,11 +10,11 @@ void create_tri(zTri3D *t, zVec3D *p1, zVec3D *p2, zVec3D *p3)
   zTri3DCreate( t, p1, p2, p3 );
 
   fp = fopen( "tri", "w" );
-  zVec3DDataNLFPrint( fp, p1 );
-  zVec3DDataNLFPrint( fp, p2 );
+  zVec3DValueNLFPrint( fp, p1 );
+  zVec3DValueNLFPrint( fp, p2 );
   fprintf( fp, "\n" );
-  zVec3DDataNLFPrint( fp, p3 );
-  zVec3DDataNLFPrint( fp, p3 );
+  zVec3DValueNLFPrint( fp, p3 );
+  zVec3DValueNLFPrint( fp, p3 );
   fclose( fp );
 }
 
@@ -23,8 +23,8 @@ void output(zVec3D *p, zVec3D *cp)
   FILE *fp;
 
   fp = fopen( "p", "w" );
-  zVec3DDataNLFPrint( fp, p );
-  zVec3DDataNLFPrint( fp, cp );
+  zVec3DValueNLFPrint( fp, p );
+  zVec3DValueNLFPrint( fp, cp );
   fclose( fp );
 }
 

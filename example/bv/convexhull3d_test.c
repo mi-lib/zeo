@@ -40,7 +40,7 @@ void generate_points(zVec3D p[], int n, zVec3DList *pl, const char filename[])
     zVec3DCreate( &p[i], zRandF(-5,5), zRandF(-5,5), 0 );
 #endif
     zVec3DListAdd( pl, &p[i] );
-    zVec3DDataNLFPrint( fp, &p[i] );
+    zVec3DValueNLFPrint( fp, &p[i] );
   }
   fclose( fp );
 }
@@ -54,7 +54,7 @@ void output_convexhull(zPH3D *ph, const char shapename[], const char colorname[]
   zAddSuffix( shapename, "ztk", filename, BUFSIZ );
   fp = fopen( filename, "w" );
   /* for visualization */
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[zeo::optic]\n" );
   fprintf( fp, "name: %s\n", colorname );
   fprintf( fp, "ambient: 0.8 0.8 0.8\n" );
   fprintf( fp, "diffuse: %g %g %g\n", r, g, b );
@@ -62,7 +62,7 @@ void output_convexhull(zPH3D *ph, const char shapename[], const char colorname[]
   fprintf( fp, "alpha: 0.6\n" );
   fprintf( fp, "esr: 1.0\n\n" );
 
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "name: %s\n", shapename );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: %s\n", colorname );
@@ -84,11 +84,11 @@ int main(int argc, char *argv[])
   }
   zConvexHull3D( &ch1, p, n );
   zConvexHull3DPL( &ch2, &pl );
-  zVec3DListDestroy( &pl );
 
   output_convexhull( &ch1, "ch1", "red", 1.0, 0.2, 0.2 );
   output_convexhull( &ch2, "ch2", "cyan", 0.5, 1.0, 1.0 );
   zPH3DDestroy( &ch1 );
   zPH3DDestroy( &ch2 );
+  zVec3DListDestroy( &pl );
   return 0;
 }

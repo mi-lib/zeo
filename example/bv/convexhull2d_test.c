@@ -15,7 +15,7 @@ void generate_points(int n, zVec3D p[], zVec3DList *pl, const char filename[])
 #else
     zVec3DCreatePolar( &p[i], zRandF(-10,10), 0.5*zPI, zRandF(-zPI,zPI) );
 #endif
-    zVec3DDataNLFPrint( fp, &p[i] );
+    zVec3DValueNLFPrint( fp, &p[i] );
     zVec3DListAdd( pl, &p[i] );
   }
   fclose( fp );
@@ -28,8 +28,8 @@ void output_convexhull(zLoop3D *ch, const char filename[])
 
   fp = fopen( filename, "w" );
   zListForEach( ch, vc )
-    zVec3DDataNLFPrint( fp, vc->data );
-  zVec3DDataNLFPrint( fp, zListTail(ch)->data );
+    zVec3DValueNLFPrint( fp, vc->data );
+  zVec3DValueNLFPrint( fp, zListTail(ch)->data );
   fclose( fp );
 }
 
@@ -40,8 +40,8 @@ void output_convexhull_ph(zPH3D *ph, const char filename[])
 
   fp = fopen( filename, "w" );
   for( i=0; i<zPH3DVertNum(ph); i++ )
-    zVec3DDataNLFPrint( fp, zPH3DVert(ph,i) );
-  zVec3DDataNLFPrint( fp, zPH3DVert(ph,0) );
+    zVec3DValueNLFPrint( fp, zPH3DVert(ph,i) );
+  zVec3DValueNLFPrint( fp, zPH3DVert(ph,0) );
   fclose( fp );
 }
 

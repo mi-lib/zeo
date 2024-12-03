@@ -32,13 +32,13 @@ void output_ellips(FILE *fp, zEllips3D *ellips)
   fprintf( fp, "type: ellipsoid\n" );
   fprintf( fp, "optic: cyan\n" );
   fprintf( fp, "center: " );
-  zVec3DDataNLFPrint( fp, zEllips3DCenter(ellips) );
+  zVec3DValueNLFPrint( fp, zEllips3DCenter(ellips) );
   fprintf( fp, "ax: " );
-  zVec3DDataNLFPrint( fp, zEllips3DAxis(ellips,zX) );
+  zVec3DValueNLFPrint( fp, zEllips3DAxis(ellips,zX) );
   fprintf( fp, "ay: " );
-  zVec3DDataNLFPrint( fp, zEllips3DAxis(ellips,zY) );
+  zVec3DValueNLFPrint( fp, zEllips3DAxis(ellips,zY) );
   fprintf( fp, "az: " );
-  zVec3DDataNLFPrint( fp, zEllips3DAxis(ellips,zZ) );
+  zVec3DValueNLFPrint( fp, zEllips3DAxis(ellips,zZ) );
   fprintf( fp, "rx: %g\n\n", zEllips3DRadiusX(ellips) );
   fprintf( fp, "ry: %g\n\n", zEllips3DRadiusY(ellips) );
   fprintf( fp, "rz: %g\n\n", zEllips3DRadiusZ(ellips) );
@@ -51,7 +51,7 @@ void output_point_inside(FILE *fp, zVec3D *p, int i)
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: red\n" );
   fprintf( fp, "center: " );
-  zVec3DDataNLFPrint( fp, p );
+  zVec3DValueNLFPrint( fp, p );
   fprintf( fp, "radius: 0.1\n\n" );
 }
 
@@ -62,7 +62,7 @@ void output_point_outside(FILE *fp, zVec3D *p, int i)
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: white\n" );
   fprintf( fp, "center: " );
-  zVec3DDataNLFPrint( fp, p );
+  zVec3DValueNLFPrint( fp, p );
   fprintf( fp, "radius: 0.05\n\n" );
 }
 

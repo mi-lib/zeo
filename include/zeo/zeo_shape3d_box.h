@@ -155,7 +155,7 @@ __ZEO_EXPORT zPH3D *zBox3DToPH(const zBox3D *box, zPH3D *ph);
 __ZEO_EXPORT void zBox3DFPrintZTK(FILE *fp, const zBox3D *box);
 
 /*! \brief print a box out to a file in a plottable format. */
-__ZEO_EXPORT void zBox3DDataFPrint(FILE *fp, const zBox3D *box);
+__ZEO_EXPORT void zBox3DValueFPrint(FILE *fp, const zBox3D *box);
 
 /* methods for abstraction */
 __ZEO_EXPORT zShape3DCom zeo_shape3d_box_com;

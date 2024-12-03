@@ -400,25 +400,25 @@ __ZEO_EXPORT zVec2D *zVec2DFromZTK(zVec2D *v, ZTK *ztk);
  *  (null 2D vector)
  * zVec2DPrint() prints \a v out to the standard output.
  *
- * zVec2DDataFPrint() prints a 2D vector \a v out to the current
+ * zVec2DValueFPrint() prints a 2D vector \a v out to the current
  * position of a file \a fp in the following style.
  *  x y
  * When the null pointer is given, nothing is printed.
- * zVec2DDataPrint() prints \a v out to the standard output in the
- * same style with zVec2DDataFPrint().
+ * zVec2DValuePrint() prints \a v out to the standard output in the
+ * same style with zVec2DValueFPrint().
  * \return
  * zVec2DFScan() and zVec2DScan() return a pointer \a v.
  *
- * zVec2DFPrint(), zVec2DPrint(), zVec2DDataFPrint() and zVec2DDataPrint()
+ * zVec2DFPrint(), zVec2DPrint(), zVec2DValueFPrint() and zVec2DValuePrint()
  * return no value.
  */
 __ZEO_EXPORT zVec2D *zVec2DFScan(FILE *fp, zVec2D *v);
 #define zVec2DScan(v) zVec2DFScan( stdin, (v) )
-__ZEO_EXPORT void zVec2DDataFPrint(FILE *fp, const zVec2D *v);
-#define zVec2DDataPrint(v) zVec2DDataFPrint( stdout, (v) )
-__ZEO_EXPORT void zVec2DDataNLFPrint(FILE *fp, const zVec2D *v);
-#define zVec2DDataNLPrint(v) zVec2DDataNLFPrint( stdout, (v) )
-__ZEO_EXPORT void zVec2DFPrint(FILE *fp, const zVec2D *v);
+__ZEO_EXPORT const zVec2D *zVec2DValueFPrint(FILE *fp, const zVec2D *v);
+#define zVec2DValuePrint(v) zVec2DValueFPrint( stdout, (v) )
+__ZEO_EXPORT const zVec2D *zVec2DValueNLFPrint(FILE *fp, const zVec2D *v);
+#define zVec2DValueNLPrint(v) zVec2DValueNLFPrint( stdout, (v) )
+__ZEO_EXPORT const zVec2D *zVec2DFPrint(FILE *fp, const zVec2D *v);
 #define zVec2DPrint(v) zVec2DFPrint( stdout, (v) )
 
 __END_DECLS

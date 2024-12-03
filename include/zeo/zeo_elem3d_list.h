@@ -16,7 +16,7 @@ __BEGIN_DECLS
  * loop of 3D vertices
  * ********************************************************** */
 
-typedef zVec3DAddr zLoop3DCell;
+typedef zVec3DAddrListCell zLoop3DCell;
 typedef zVec3DAddrList zLoop3D;
 
 #define zLoop3DAdd(l,c)    zVec3DAddrListAdd( l, c )

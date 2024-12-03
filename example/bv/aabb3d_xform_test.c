@@ -22,7 +22,7 @@ void veclist_create_rand(zFrame3D *f)
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v[i], zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
     zXform3D( f, &v[i], &vert );
-    zVec3DDataNLFPrint( fp, &vert );
+    zVec3DValueNLFPrint( fp, &vert );
   }
   fclose( fp );
 }
@@ -39,23 +39,23 @@ void verify(zAABox3D *bb, zFrame3D *f)
   for( i=0; i<N; i++ ){
     zXform3D( f, &v[i], &vert );
     if( ( ret = zBox3DPointIsInside(&box,&vert,true) ) == false ){
-      zVec3DDataNLFPrint( stderr, &vert );
+      zVec3DValueNLFPrint( stderr, &vert );
       eprintf( "D=%.15g\n", zBox3DDistFromPoint(&box,&vert) );
     }
   }
   /* AABB */
   fp = fopen( "aabb", "w" );
   for( i=0; i<4; i++ )
-    zVec3DDataNLFPrint( fp, zBox3DVert(&box,i,&vert) );
-  zVec3DDataNLFPrint( fp, zBox3DVert(&box,0,&vert) );
+    zVec3DValueNLFPrint( fp, zBox3DVert(&box,i,&vert) );
+  zVec3DValueNLFPrint( fp, zBox3DVert(&box,0,&vert) );
   fprintf( fp, "\n" );
   for( i=4; i<8; i++ )
-    zVec3DDataNLFPrint( fp, zBox3DVert(&box,i,&vert) );
-  zVec3DDataNLFPrint( fp, zBox3DVert(&box,4,&vert) );
+    zVec3DValueNLFPrint( fp, zBox3DVert(&box,i,&vert) );
+  zVec3DValueNLFPrint( fp, zBox3DVert(&box,4,&vert) );
   fprintf( fp, "\n" );
   for( i=0; i<4; i++ ){
-    zVec3DDataNLFPrint( fp, zBox3DVert(&box,i,&vert) );
-    zVec3DDataNLFPrint( fp, zBox3DVert(&box,i+4,&vert) );
+    zVec3DValueNLFPrint( fp, zBox3DVert(&box,i,&vert) );
+    zVec3DValueNLFPrint( fp, zBox3DVert(&box,i+4,&vert) );
     fprintf( fp, "\n" );
   }
   fclose( fp );

@@ -532,7 +532,7 @@ zVec3D *zVec3DFScan(FILE *fp, zVec3D *v)
 }
 
 /* print a 3D vector out to a file. */
-const zVec3D *zVec3DDataFPrint(FILE *fp, const zVec3D *v)
+const zVec3D *zVec3DValueFPrint(FILE *fp, const zVec3D *v)
 {
   if( !v ) return NULL;
   fprintf( fp, " %.10g, %.10g, %.10g", v->c.x, v->c.y, v->c.z );
@@ -540,9 +540,9 @@ const zVec3D *zVec3DDataFPrint(FILE *fp, const zVec3D *v)
 }
 
 /* print a 3D vector out to a file with the new line. */
-const zVec3D *zVec3DDataNLFPrint(FILE *fp, const zVec3D *v)
+const zVec3D *zVec3DValueNLFPrint(FILE *fp, const zVec3D *v)
 {
-  if( !zVec3DDataFPrint( fp, v ) ) return NULL;
+  if( !zVec3DValueFPrint( fp, v ) ) return NULL;
   fprintf( fp, "\n" );
   return v;
 }
@@ -554,7 +554,7 @@ const zVec3D *zVec3DFPrint(FILE *fp, const zVec3D *v)
   if( !v )
     fprintf( fp, "null 3D vector" );
   else
-    zVec3DDataFPrint( fp, v );
+    zVec3DValueFPrint( fp, v );
   fprintf( fp, ")\n" );
   return v;
 }

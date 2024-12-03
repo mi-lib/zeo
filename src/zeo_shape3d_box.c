@@ -250,32 +250,32 @@ void zBox3DFPrintZTK(FILE *fp, const zBox3D *box)
 }
 
 /* print a 3D box out to a file in a plottable format. */
-void zBox3DDataFPrint(FILE *fp, const zBox3D *box)
+void zBox3DValueFPrint(FILE *fp, const zBox3D *box)
 {
   zVec3D v[8];
   int i;
 
   for( i=0; i<8; i++ )
     zBox3DVert( box, i, &v[i] );
-  zVec3DDataNLFPrint( fp, &v[0] );
-  zVec3DDataNLFPrint( fp, &v[1] );
-  zVec3DDataNLFPrint( fp, &v[2] );
-  zVec3DDataNLFPrint( fp, &v[3] );
-  zVec3DDataNLFPrint( fp, &v[0] );
-  zVec3DDataNLFPrint( fp, &v[4] );
-  zVec3DDataNLFPrint( fp, &v[5] );
-  zVec3DDataNLFPrint( fp, &v[6] );
-  zVec3DDataNLFPrint( fp, &v[7] );
-  zVec3DDataNLFPrint( fp, &v[4] );
+  zVec3DValueNLFPrint( fp, &v[0] );
+  zVec3DValueNLFPrint( fp, &v[1] );
+  zVec3DValueNLFPrint( fp, &v[2] );
+  zVec3DValueNLFPrint( fp, &v[3] );
+  zVec3DValueNLFPrint( fp, &v[0] );
+  zVec3DValueNLFPrint( fp, &v[4] );
+  zVec3DValueNLFPrint( fp, &v[5] );
+  zVec3DValueNLFPrint( fp, &v[6] );
+  zVec3DValueNLFPrint( fp, &v[7] );
+  zVec3DValueNLFPrint( fp, &v[4] );
   fprintf( fp, "\n" );
-  zVec3DDataNLFPrint( fp, &v[1] );
-  zVec3DDataNLFPrint( fp, &v[5] );
+  zVec3DValueNLFPrint( fp, &v[1] );
+  zVec3DValueNLFPrint( fp, &v[5] );
   fprintf( fp, "\n" );
-  zVec3DDataNLFPrint( fp, &v[2] );
-  zVec3DDataNLFPrint( fp, &v[6] );
+  zVec3DValueNLFPrint( fp, &v[2] );
+  zVec3DValueNLFPrint( fp, &v[6] );
   fprintf( fp, "\n" );
-  zVec3DDataNLFPrint( fp, &v[3] );
-  zVec3DDataNLFPrint( fp, &v[7] );
+  zVec3DValueNLFPrint( fp, &v[3] );
+  zVec3DValueNLFPrint( fp, &v[7] );
   fprintf( fp, "\n\n" );
 }
 

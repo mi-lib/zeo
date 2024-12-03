@@ -8,7 +8,7 @@ void vec_create_rand(zVec2D v[], int n)
   fp = fopen( "src", "w" );
   for( i=0; i<n; i++ ){
     zVec2DCreate( &v[i], zRandF(-5,5), zRandF(-5,5) );
-    zVec2DDataNLFPrint( fp, &v[i] );
+    zVec2DValueNLFPrint( fp, &v[i] );
   }
   fclose( fp );
 }
@@ -24,7 +24,7 @@ void vec_list_create_rand(zVec2DList *pl, int n)
   for( i=0; i<n; i++ ){
     zVec2DCreate( &v, zRandF(-5,5), zRandF(-5,5) );
     zVec2DListAdd( pl, &v );
-    zVec2DDataNLFPrint( fp, &v );
+    zVec2DValueNLFPrint( fp, &v );
   }
   fclose( fp );
 }
@@ -37,11 +37,11 @@ void verify(zAABox2D *bb, zVec2D **vp)
   /* points on the walls */
   fp = fopen( "bd", "w" );
   for( i=0; i<4; i++ )
-    zVec2DDataNLFPrint( fp, vp[i] );
+    zVec2DValueNLFPrint( fp, vp[i] );
   fclose( fp );
   /* AABB */
   fp = fopen( "aabb", "w" );
-  zAABox2DDataFPrint( fp, bb );
+  zAABox2DValueFPrint( fp, bb );
   fclose( fp );
 }
 
@@ -53,11 +53,11 @@ void verify_list(zAABox2D *bb, zVec2DListCell **vpl)
   /* points on the walls */
   fp = fopen( "bd", "w" );
   for( i=0; i<4; i++ )
-    zVec2DDataNLFPrint( fp, vpl[i]->data );
+    zVec2DValueNLFPrint( fp, vpl[i]->data );
   fclose( fp );
   /* AABB */
   fp = fopen( "aabb", "w" );
-  zAABox2DDataFPrint( fp, bb );
+  zAABox2DValueFPrint( fp, bb );
   fclose( fp );
 }
 

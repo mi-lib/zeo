@@ -64,16 +64,16 @@ __ZEO_EXPORT zVec3DTree *zVec3DTreePart(zVec3DTree *tree, zVec3D *v);
 __ZEO_EXPORT double zVec3DTreeNN(zVec3DTree *tree, zVec3D *v, zVec3DTree **nn);
 
 /*! \brief convert an array of 3D vectors to a 3D vector tree. */
-__ZEO_EXPORT zVec3DTree *zVec3DArray2Tree(zVec3DArray *array, zVec3DTree *tree);
+__ZEO_EXPORT zVec3DTree *zVec3DArrayToTree(zVec3DArray *array, zVec3DTree *tree);
 
 /*! \brief convert a 3D vector tree to an array of 3D vectors. */
-__ZEO_EXPORT zVec3DArray *zVec3DTree2Array(zVec3DTree *tree, zVec3DArray *array);
+__ZEO_EXPORT zVec3DArray *zVec3DTreeToArray(zVec3DTree *tree, zVec3DArray *array);
 
 /*! \brief convert a 3D vector tree to a 3D vector list. */
-__ZEO_EXPORT zVec3DList *zVec3DTree2List(zVec3DTree *tree, zVec3DList *list);
+__ZEO_EXPORT zVec3DList *zVec3DTreeToList(zVec3DTree *tree, zVec3DList *list);
 
 /*! \brief convert a 3D vector list to a 3D vector tree. */
-__ZEO_EXPORT zVec3DTree *zVec3DList2Tree(zVec3DList *list, zVec3DTree *tree);
+__ZEO_EXPORT zVec3DTree *zVec3DListToTree(zVec3DList *list, zVec3DTree *tree);
 
 /*! \brief print out a 3D vector tree (for debug). */
 __ZEO_EXPORT void zVec3DTreeFPrint(FILE *fp, zVec3DTree *tree);

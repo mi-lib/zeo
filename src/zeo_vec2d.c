@@ -323,22 +323,24 @@ zVec2D *zVec2DFScan(FILE *fp, zVec2D *v)
 }
 
 /* print a 2D vector data to a file. */
-void zVec2DDataFPrint(FILE *fp, const zVec2D *v)
+const zVec2D *zVec2DValueFPrint(FILE *fp, const zVec2D *v)
 {
-  if( !v ) return;
+  if( !v ) return NULL;
   fprintf( fp, " %.10g, %.10g", v->c.x, v->c.y );
+  return v;
 }
 
 /* print a 2D vector data with the new line to a file. */
-void zVec2DDataNLFPrint(FILE *fp, const zVec2D *v)
+const zVec2D *zVec2DValueNLFPrint(FILE *fp, const zVec2D *v)
 {
-  if( !v ) return;
-  zVec2DDataFPrint( fp, v );
+  if( !v ) return NULL;
+  zVec2DValueFPrint( fp, v );
   fprintf( fp, "\n" );
+  return v;
 }
 
 /* print a 2D vector to a file. */
-void zVec2DFPrint(FILE *fp, const zVec2D *v)
+const zVec2D *zVec2DFPrint(FILE *fp, const zVec2D *v)
 {
   fprintf( fp, "(" );
   if( !v )
@@ -346,4 +348,5 @@ void zVec2DFPrint(FILE *fp, const zVec2D *v)
   else
     fprintf( fp, " %.10g, %.10g ", v->c.x, v->c.y );
   fprintf( fp, ")\n" );
+  return v;
 }

@@ -21,9 +21,9 @@ int main(int argc, char *argv[])
   for( i=0; i<N; i++ ){
     zVec2DCreate( &v, zRandF(-5,5), zRandF(-5,5) );
     if( zDisk2DPointIsInside( &d, &v, margin ) )
-      zVec2DDataNLFPrint( fp1, &v );
+      zVec2DValueNLFPrint( fp1, &v );
     else
-      zVec2DDataNLFPrint( fp2, &v );
+      zVec2DValueNLFPrint( fp2, &v );
   }
   fclose( fp1 );
   fclose( fp2 );

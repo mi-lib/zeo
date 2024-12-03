@@ -14,15 +14,15 @@ int main(int argc, char *argv[])
   zVec2DCreate( &p2, zRandF(0.2,0.8), zRandF(0.2,0.8) );
   zEdge2DCreate( &e, &p1, &p2 );
   fp = fopen( "e", "w" );
-  zVec2DDataNLFPrint( fp, zEdge2DVert(&e,0) );
-  zVec2DDataNLFPrint( fp, zEdge2DVert(&e,1) );
+  zVec2DValueNLFPrint( fp, zEdge2DVert(&e,0) );
+  zVec2DValueNLFPrint( fp, zEdge2DVert(&e,1) );
   fclose( fp );
   fp = fopen( "r", "w" );
   for( i=0; i<N; i++ ){
     zVec2DCreate( &p, zRandF(0,1), zRandF(0,1) );
     zEdge2DClosest( &e, &p, &cp );
-    zVec2DDataNLFPrint( fp, &p );
-    zVec2DDataNLFPrint( fp, &cp );
+    zVec2DValueNLFPrint( fp, &p );
+    zVec2DValueNLFPrint( fp, &cp );
     fprintf( fp, "\n" );
   }
   fclose( fp );

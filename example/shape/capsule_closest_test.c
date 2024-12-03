@@ -28,14 +28,14 @@ void output_prox(FILE *fp, zVec3D *p, zVec3D *cp)
   fprintf( fp, "name: point\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: blue\n" );
-  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, p );
+  fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, p );
   fprintf( fp, "radius: 0.02\n\n" );
 
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: closestpoint\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: red\n" );
-  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, cp );
+  fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, cp );
   fprintf( fp, "radius: 0.02\n\n" );
 
   if( zIsTiny( zVec3DDist( p, cp ) ) ) return;
@@ -43,8 +43,8 @@ void output_prox(FILE *fp, zVec3D *p, zVec3D *cp)
   fprintf( fp, "name: tether\n" );
   fprintf( fp, "type: cylinder\n" );
   fprintf( fp, "optic: gray\n" );
-  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, p );
-  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, cp );
+  fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, p );
+  fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, cp );
   fprintf( fp, "radius: 0.005\n\n" );
 }
 

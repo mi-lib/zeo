@@ -509,7 +509,7 @@ zPH3D *zConvexHull3DPL(zPH3D *ch, zVec3DList *vl)
   zListInit( &pl );
   zListForEach( vl, vc ){
     if( !( pc = zAlloc( zQHPointListCell, 1 ) ) ) break;
-    _zQHPointCreate( &pc->data, vc->data );
+    _zQHPointCreate( &pc->data, &vc->data );
     zListInsertHead( &pl, pc );
   }
   /* quickhull */
@@ -583,7 +583,7 @@ static void _zQHPointListPrint(zQHPointList *pl, char filename[])
 
   fp = fopen( filename, "w" );
   zListForEach( pl, pc )
-    zVec3DDataNLFPrint( fp, pc->data.v );
+    zVec3DValueNLFPrint( fp, pc->data.v );
   fclose( fp );
 }
 
@@ -594,11 +594,11 @@ static void _zQHFacetListPrint(zQHFacetList *fl, char filename[])
 
   fp = fopen( filename, "w" );
   zListForEach( fl, fc ){
-    zVec3DDataNLFPrint( fp, fc->data.p[1]->v );
-    zVec3DDataNLFPrint( fp, fc->data.p[2]->v );
+    zVec3DValueNLFPrint( fp, fc->data.p[1]->v );
+    zVec3DValueNLFPrint( fp, fc->data.p[2]->v );
     fprintf( fp, "\n" );
-    zVec3DDataNLFPrint( fp, fc->data.p[0]->v );
-    zVec3DDataNLFPrint( fp, fc->data.p[0]->v );
+    zVec3DValueNLFPrint( fp, fc->data.p[0]->v );
+    zVec3DValueNLFPrint( fp, fc->data.p[0]->v );
     fprintf( fp, "\n\n" );
   }
   fclose(fp);
@@ -615,7 +615,7 @@ static void _zQHPrint(zQH *qh)
   fp = fopen( "op", "w" );
   zListForEach( &qh->fl, fc )
     zListForEach( &fc->data.op, pc )
-      zVec3DDataNLFPrint( fp, pc->data.v );
+      zVec3DValueNLFPrint( fp, pc->data.v );
   fclose( fp );
 }
 
@@ -633,7 +633,7 @@ static void _zQHPrint2(zQH *qh)
     sprintf( filename, "op%03d", i );
     fp = fopen( filename, "w" );
     zListForEach( &fc->data.op, pc )
-      zVec3DDataNLFPrint( fp, pc->data.v );
+      zVec3DValueNLFPrint( fp, pc->data.v );
     fclose( fp );
     i++;
   }

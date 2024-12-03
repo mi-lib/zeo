@@ -17,11 +17,8 @@ zVec3DListCell *zVec3DListNew(const zVec3D *v)
   zVec3DListCell *cell;
 
   if( ( cell = zAlloc( zVec3DListCell, 1 ) ) ){
-    if( ( cell->data = zAlloc( zVec3D, 1 ) ) ){
-      zVec3DCopy( v, cell->data );
-      return cell;
-    }
-    free( cell );
+    zVec3DCopy( v, &cell->data );
+    return cell;
   }
   ZALLOCERROR();
   return NULL;
@@ -54,7 +51,7 @@ zVec3DList *zVec3DListClone(const zVec3DList *src, zVec3DList *dest)
 
   zListInit( dest );
   zListForEach( src, cp ){
-    if( !zVec3DListAdd( dest, cp->data ) ){
+    if( !zVec3DListAdd( dest, &cp->data ) ){
       zVec3DListDestroy( dest );
       return NULL;
     }
@@ -69,25 +66,13 @@ zVec3DList *zVec3DArray2List(const zVec3DArray *array, zVec3DList *list)
   return zVec3DListAppendArray( list, array );
 }
 
-/* destroy a list of 3D vectors. */
-void zVec3DListDestroy(zVec3DList *list)
-{
-  zVec3DListCell *vc;
-
-  while( !zListIsEmpty( list ) ){
-    zListDeleteHead( list, &vc );
-    zFree( vc->data );
-    zFree( vc );
-  }
-}
-
 /* find an identical 3D vector in a list. */
 zVec3DListCell *zVec3DListFind(const zVec3DList *list, const zVec3D *v)
 {
   zVec3DListCell *cp;
 
   zListForEach( list, cp )
-    if( zVec3DEqual( cp->data, v ) ) return cp;
+    if( zVec3DEqual( &cp->data, v ) ) return cp;
   return NULL;
 }
 
@@ -101,7 +86,7 @@ void zVec3DListFPrint(FILE *fp, const zVec3DList *list)
 
   fprintf( fp, "%d\n", zListSize(list) );
   zListForEach( list, cp )
-    zVec3DFPrint( fp, cp->data );
+    zVec3DFPrint( fp, &cp->data );
 }
 
 /* print a list of 3D vectors in a plain form to a file. */
@@ -110,7 +95,7 @@ void zVec3DListDataFPrint(FILE *fp, const zVec3DList *list)
   zVec3DListCell *cp;
 
   zListForEach( list, cp )
-    zVec3DDataNLFPrint( fp, cp->data );
+    zVec3DValueNLFPrint( fp, &cp->data );
 }
 
 /* ********************************************************** */
@@ -119,11 +104,11 @@ void zVec3DListDataFPrint(FILE *fp, const zVec3DList *list)
  * ********************************************************** */
 
 /* add a pointer to a 3D vector into a list of pointers to 3D vectors. */
-zVec3DAddr *zVec3DAddrListAdd(zVec3DAddrList *list, const zVec3D *v)
+zVec3DAddrListCell *zVec3DAddrListAdd(zVec3DAddrList *list, const zVec3D *v)
 {
-  zVec3DAddr *cell;
+  zVec3DAddrListCell *cell;
 
-  if( !( cell = zAlloc( zVec3DAddr, 1 ) ) ){
+  if( !( cell = zAlloc( zVec3DAddrListCell, 1 ) ) ){
     ZALLOCERROR();
     return NULL;
   }
@@ -152,7 +137,7 @@ zVec3DAddrList *zVec3DAddrListCreate(zVec3DAddrList *list, const zVec3DArray *ar
 /* clone a list of pointers to 3D vectors. */
 zVec3DAddrList *zVec3DAddrListClone(const zVec3DAddrList *src, zVec3DAddrList *dest)
 {
-  zVec3DAddr *scp;
+  zVec3DAddrListCell *scp;
 
   zListInit( dest );
   zListForEach( src, scp ){
@@ -165,12 +150,12 @@ zVec3DAddrList *zVec3DAddrListClone(const zVec3DAddrList *src, zVec3DAddrList *d
 }
 
 /* quick sort of a list of pointers to 3D vectors. */
-zListQuickSortDef( zVec3DAddrList, zVec3DAddr )
+zListQuickSortDef( zVec3DAddrList, zVec3DAddrListCell )
 
 /* print a list of pointers to 3D vectors to a file. */
 void zVec3DAddrListFPrint(FILE *fp, const zVec3DAddrList *list)
 {
-  zVec3DAddr *cp;
+  zVec3DAddrListCell *cp;
 
   fprintf( fp, "%d\n", zListSize(list) );
   zListForEach( list, cp )
@@ -180,10 +165,10 @@ void zVec3DAddrListFPrint(FILE *fp, const zVec3DAddrList *list)
 /* print a list of pointers to 3D vectors in a plain form to a file. */
 void zVec3DAddrListDataFPrint(FILE *fp, const zVec3DAddrList *list)
 {
-  zVec3DAddr *cp;
+  zVec3DAddrListCell *cp;
 
   zListForEach( list, cp )
-    zVec3DDataNLFPrint( fp, cp->data );
+    zVec3DValueNLFPrint( fp, cp->data );
 }
 
 /* ********************************************************** */
@@ -203,9 +188,9 @@ double zVec3DListNN(const zVec3DList *list, const zVec3D *v, zVec3D **nn)
   }
   dmin = HUGE_VAL;
   zListForEach( list, cell )
-    if( ( d = zVec3DSqrDist( cell->data, v ) ) < dmin ){
+    if( ( d = zVec3DSqrDist( &cell->data, v ) ) < dmin ){
       dmin = d;
-      *nn = cell->data;
+      *nn = &cell->data;
     }
   return sqrt( dmin );
 }
@@ -242,11 +227,11 @@ const zVec3D *zVec3DListSupportMap(const zVec3DList *pl, zVec3D *v)
     ZRUNWARN( ZEO_ERR_EMPTYSET );
     return NULL;
   }
-  sp = zListTail(pl)->data;
+  sp = &zListTail(pl)->data;
   d_max = zVec3DInnerProd( sp, v );
   zListForEach( pl, cp ){
-    if( ( d = zVec3DInnerProd( cp->data, v ) ) > d_max ){
-      sp = cp->data;
+    if( ( d = zVec3DInnerProd( &cp->data, v ) ) > d_max ){
+      sp = &cp->data;
       d_max = d;
     }
   }

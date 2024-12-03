@@ -48,11 +48,11 @@ void brep_output(zBREP *brep)
   /* for gnuplot */
   fp = fopen( "brep", "w" );
   zListForEach( &brep->flist, cp ){
-    zVec3DDataNLFPrint( fp, &cp->data.v[0]->data.p );
-    zVec3DDataNLFPrint( fp, &cp->data.v[1]->data.p );
+    zVec3DValueNLFPrint( fp, &cp->data.v[0]->data.p );
+    zVec3DValueNLFPrint( fp, &cp->data.v[1]->data.p );
     fprintf( fp, "\n" );
-    zVec3DDataNLFPrint( fp, &cp->data.v[2]->data.p );
-    zVec3DDataNLFPrint( fp, &cp->data.v[2]->data.p );
+    zVec3DValueNLFPrint( fp, &cp->data.v[2]->data.p );
+    zVec3DValueNLFPrint( fp, &cp->data.v[2]->data.p );
     fprintf( fp, "\n\n" );
   }
   fclose( fp );

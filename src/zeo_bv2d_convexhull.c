@@ -18,14 +18,14 @@ static zVec3D *_zConvexHull2DBasePL(zVec3DList *pl, zVec3D s[])
 
   for( pc=zListCellNext(zListTail(pl));
        pc!=zListRoot(pl); pc=zListCellNext(pc) )
-    if( !zVec3DIsTiny( zVec3DSub( pc->data, zListTail(pl)->data, &s[0] ) ) )
+    if( !zVec3DIsTiny( zVec3DSub( &pc->data, &zListTail(pl)->data, &s[0] ) ) )
       goto STEP2;
   ZRUNERROR( ZEO_ERR_CH_DEG1 );
   return NULL;
  STEP2:
   for( pc=zListCellNext(pc);
        pc!=zListRoot(pl); pc=zListCellNext(pc) ){
-    if( !zVec3DIsTiny( zVec3DSub( pc->data, zListTail(pl)->data, &s[1] ) ) &&
+    if( !zVec3DIsTiny( zVec3DSub( &pc->data, &zListTail(pl)->data, &s[1] ) ) &&
         !zVec3DIsTiny( zVec3DOuterProd( &s[0], &s[1], &n ) ) )
       goto STEP3;
   }
@@ -46,11 +46,11 @@ static int __z_ch2d_pl_cmp(void *v1, void *v2, void *priv)
 
   s1 = (zVec3D *)priv;
   s2 = (zVec3D *)priv + 1;
-  d1 = zVec3DInnerProd( ((zVec3DListCell *)v1)->data, s1 );
-  d2 = zVec3DInnerProd( ((zVec3DListCell *)v2)->data, s1 );
+  d1 = zVec3DInnerProd( &((zVec3DListCell *)v1)->data, s1 );
+  d2 = zVec3DInnerProd( &((zVec3DListCell *)v2)->data, s1 );
   if( zIsTiny( d1 - d2 ) ){
-    d1 = zVec3DInnerProd( ((zVec3DListCell *)v1)->data, s2 );
-    d2 = zVec3DInnerProd( ((zVec3DListCell *)v2)->data, s2 );
+    d1 = zVec3DInnerProd( &((zVec3DListCell *)v1)->data, s2 );
+    d2 = zVec3DInnerProd( &((zVec3DListCell *)v2)->data, s2 );
     if( zIsTiny( d1 - d2 ) ) return 0;
     return d1 > d2 ? 1 : -1;
   }
@@ -71,9 +71,9 @@ zLoop3D *zConvexHull2DPL(zLoop3D *ch, zVec3DList *pl)
   }
   zVec3DListQuickSort( pl, __z_ch2d_pl_cmp, s );
   /* upper bound */
-  for( p0=zListTail(pl); p0!=zListHead(pl); zLoop3DAdd( ch, p0->data ), p0=p1 )
+  for( p0=zListTail(pl); p0!=zListHead(pl); zLoop3DAdd( ch, &p0->data ), p0=p1 )
     for( t_max=-zPI_2, p1=p=zListCellNext(p0); p!=zListRoot(pl); p=zListCellNext(p) )
-      if( !zVec3DIsTiny( zVec3DSub( p->data, p0->data, &d ) ) &&
+      if( !zVec3DIsTiny( zVec3DSub( &p->data, &p0->data, &d ) ) &&
           ( t = atan2( zVec3DInnerProd(&d,&s[1]), zVec3DInnerProd(&d,&s[0]) ) ) >= t_max ){
         t_max = t;
         p1 = p;
@@ -82,9 +82,9 @@ zLoop3D *zConvexHull2DPL(zLoop3D *ch, zVec3DList *pl)
   zVec3DRevDRC( &s[0] );
   zVec3DRevDRC( &s[1] );
   /* lower bound */
-  for( ; p0!=zListTail(pl); zLoop3DAdd( ch, p0->data ), p0=p1 )
+  for( ; p0!=zListTail(pl); zLoop3DAdd( ch, &p0->data ), p0=p1 )
     for( t_max=-zPI_2, p1=p=zListCellPrev(p0); p!=zListRoot(pl); p=zListCellPrev(p) )
-      if( !zVec3DIsTiny( zVec3DSub( p->data, p0->data, &d ) ) &&
+      if( !zVec3DIsTiny( zVec3DSub( &p->data, &p0->data, &d ) ) &&
           ( t = atan2( zVec3DInnerProd(&d,&s[1]), zVec3DInnerProd(&d,&s[0]) ) ) >= t_max ){
         t_max = t;
         p1 = p;

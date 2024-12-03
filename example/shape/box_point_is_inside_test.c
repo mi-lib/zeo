@@ -31,10 +31,10 @@ void output_box(FILE *fp, zBox3D *box)
   fprintf( fp, "name: box\n" );
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: cyan\n" );
-  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, zBox3DCenter(box) );
-  fprintf( fp, "ax: " ); zVec3DDataNLFPrint( fp, zBox3DAxis(box,zX) );
-  fprintf( fp, "ay: " ); zVec3DDataNLFPrint( fp, zBox3DAxis(box,zY) );
-  fprintf( fp, "az: " ); zVec3DDataNLFPrint( fp, zBox3DAxis(box,zZ) );
+  fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, zBox3DCenter(box) );
+  fprintf( fp, "ax: " ); zVec3DValueNLFPrint( fp, zBox3DAxis(box,zX) );
+  fprintf( fp, "ay: " ); zVec3DValueNLFPrint( fp, zBox3DAxis(box,zY) );
+  fprintf( fp, "az: " ); zVec3DValueNLFPrint( fp, zBox3DAxis(box,zZ) );
   fprintf( fp, "depth: %g\n\n", zBox3DDepth(box) );
   fprintf( fp, "width: %g\n\n", zBox3DWidth(box) );
   fprintf( fp, "height: %g\n\n", zBox3DHeight(box) );
@@ -47,7 +47,7 @@ void output_point_inside(FILE *fp, zVec3D *p, int i)
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: red\n" );
   fprintf( fp, "center: " );
-  zVec3DDataNLFPrint( fp, p );
+  zVec3DValueNLFPrint( fp, p );
   fprintf( fp, "radius: 0.1\n\n" );
 }
 
@@ -58,7 +58,7 @@ void output_point_outside(FILE *fp, zVec3D *p, int i)
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: white\n" );
   fprintf( fp, "center: " );
-  zVec3DDataNLFPrint( fp, p );
+  zVec3DValueNLFPrint( fp, p );
   fprintf( fp, "radius: 0.05\n\n" );
 }
 

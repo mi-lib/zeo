@@ -32,9 +32,9 @@ void output_ecyl(FILE *fp, zECyl3D *ecyl)
   fprintf( fp, "type: ellipticcylinder\n" );
   fprintf( fp, "optic: cyan\n" );
   fprintf( fp, "center: " );
-  zVec3DDataNLFPrint( fp, zECyl3DCenter(ecyl,0) );
+  zVec3DValueNLFPrint( fp, zECyl3DCenter(ecyl,0) );
   fprintf( fp, "center: " );
-  zVec3DDataNLFPrint( fp, zECyl3DCenter(ecyl,1) );
+  zVec3DValueNLFPrint( fp, zECyl3DCenter(ecyl,1) );
   fprintf( fp, "radius: %g\n", zECyl3DRadius(ecyl,0) );
   fprintf( fp, "radius: %g\n", zECyl3DRadius(ecyl,1) );
   fprintf( fp, "ref: 1, 0, 0\n\n" );
@@ -47,7 +47,7 @@ void output_point_inside(FILE *fp, zVec3D *p, int i)
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: red\n" );
   fprintf( fp, "center: " );
-  zVec3DDataNLFPrint( fp, p );
+  zVec3DValueNLFPrint( fp, p );
   fprintf( fp, "radius: 0.1\n\n" );
 }
 
@@ -58,7 +58,7 @@ void output_point_outside(FILE *fp, zVec3D *p, int i)
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: white\n" );
   fprintf( fp, "center: " );
-  zVec3DDataNLFPrint( fp, p );
+  zVec3DValueNLFPrint( fp, p );
   fprintf( fp, "radius: 0.05\n\n" );
 }
 

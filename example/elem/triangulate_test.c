@@ -116,8 +116,8 @@ void output_loop(zLoop3D *loop, char filename[])
 
   fp = fopen( filename, "w" );
   zListForEach( loop, cp )
-    zVec3DDataNLFPrint( fp, cp->data );
-  zVec3DDataNLFPrint( fp, zListTail(loop)->data );
+    zVec3DValueNLFPrint( fp, cp->data );
+  zVec3DValueNLFPrint( fp, zListTail(loop)->data );
   fclose( fp );
 }
 
@@ -129,10 +129,10 @@ void output_triangles(zTri3DList *tlist, char filename[])
   fp = fopen( filename, "w" );
   zListForEach( tlist, tp ){
     /* for gnuplot visualization */
-    zVec3DDataNLFPrint( fp, zTri3DVert(&tp->data,0) );
-    zVec3DDataNLFPrint( fp, zTri3DVert(&tp->data,1) );
-    zVec3DDataNLFPrint( fp, zTri3DVert(&tp->data,2) );
-    zVec3DDataNLFPrint( fp, zTri3DVert(&tp->data,0) );
+    zVec3DValueNLFPrint( fp, zTri3DVert(&tp->data,0) );
+    zVec3DValueNLFPrint( fp, zTri3DVert(&tp->data,1) );
+    zVec3DValueNLFPrint( fp, zTri3DVert(&tp->data,2) );
+    zVec3DValueNLFPrint( fp, zTri3DVert(&tp->data,0) );
     fprintf( fp, "\n\n" );
   }
   fclose( fp );

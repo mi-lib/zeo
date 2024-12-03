@@ -30,8 +30,8 @@ int main(void)
     printf( "%f %f %f %f ",  e1.e[zY], e2.e[zY], e.e[zY], em.e[zY] );
     printf( "%f %f %f %f\n", e1.e[zZ], e2.e[zZ], e.e[zZ], em.e[zZ] );
 #if 0
-    fprintf( fp[0], "0.1 3 " ); zVec3DDataNLFPrint(fp[0],&e);
-    fprintf( fp[1], "0.1 3 " ); zVec3DDataNLFPrint(fp[1],&em);
+    fprintf( fp[0], "0.1 3 " ); zVec3DValueNLFPrint(fp[0],&e);
+    fprintf( fp[1], "0.1 3 " ); zVec3DValueNLFPrint(fp[1],&em);
 #endif
   }
 #if 0

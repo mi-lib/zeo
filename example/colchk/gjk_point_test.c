@@ -46,20 +46,20 @@ void output_mshape(char filename[], zVec3D pl[], int n, zVec3D *p, zVec3D *c)
   fprintf( fp, "name: p\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: yellow\n" );
-  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, p );
+  fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, p );
   fprintf( fp, "radius: 0.01\n\n" );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: c\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: yellow\n" );
-  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, c );
+  fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, c );
   fprintf( fp, "radius: 0.01\n\n" );
   fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: rod\n" );
   fprintf( fp, "type: cylinder\n" );
   fprintf( fp, "optic: yellow\n" );
-  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, p );
-  fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, c );
+  fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, p );
+  fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, c );
   fprintf( fp, "radius: 0.005\n" );
   /* convex set */
   zConvexHull3D( &ch, pl, n );

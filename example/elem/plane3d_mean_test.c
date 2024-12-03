@@ -8,7 +8,7 @@ void create_point3D_rand(FILE *fp, zVec3D v[], int n)
 
   for( i=0; i<n; i++ ){
     zVec3DCreate( &v[i], zRandF(-100,100), zRandF(-50,50), zRandF(-10,10) );
-    zVec3DDataNLFPrint( fp, &v[i] );
+    zVec3DValueNLFPrint( fp, &v[i] );
   }
 }
 
@@ -19,7 +19,7 @@ void verify(FILE *fp, zVec3D v[], int n, zPlane3D *pl)
 
   for( i=0; i<n; i++ ){
     zPlane3DProjPoint( pl, &v[i], &p );
-    zVec3DDataNLFPrint( fp, &p );
+    zVec3DValueNLFPrint( fp, &p );
   }
 }
 

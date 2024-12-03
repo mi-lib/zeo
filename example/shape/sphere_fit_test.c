@@ -42,7 +42,7 @@ void output_pc_sphere(zSphere3D *s, zVec3DList *pc)
     fprintf( fp, "name: point%02d\n", i++ );
     fprintf( fp, "type: sphere\n" );
     fprintf( fp, "optic: white\n" );
-    fprintf( fp, "center: " ); zVec3DDataNLFPrint( fp, c->data );
+    fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, c->data );
     fprintf( fp, "radius: 0.01\n\n" );
     fprintf( fp, "div: 4\n\n" );
   }

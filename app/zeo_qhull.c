@@ -14,23 +14,39 @@ void usage(char *arg)
   exit( EXIT_SUCCESS );
 }
 
+#if 0
 void mshape2vlist(zMShape3D *ms, zVec3DAddrList *vl)
+#else
+void mshape2vlist(zMShape3D *ms, zVec3DList *pl)
+#endif
 {
   int i, j;
   zShape3D *s;
 
+#if 0
   zListInit( vl );
+#else
+  zListInit( pl );
+#endif
   for( i=0; i<zMShape3DShapeNum(ms); i++ ){
     s = zMShape3DShape(ms,i);
     for( j=0; j<zShape3DVertNum(s); j++ )
+#if 0
       if( !zVec3DAddrListAdd( vl, zShape3DVert(s,j) ) ){
+#else
+      if( !zVec3DListAdd( pl, zShape3DVert(s,j) ) ){
+#endif
         ZALLOCERROR();
         exit( EXIT_FAILURE );
       }
   }
 }
 
+#if 0
 void read_vlist(char filename[], zVec3DAddrList *vl)
+#else
+void read_vlist(char filename[], zVec3DList *pl)
+#endif
 {
   FILE *fp;
   zVec3D v;
@@ -39,10 +55,18 @@ void read_vlist(char filename[], zVec3DAddrList *vl)
     ZOPENERROR( filename );
     exit( EXIT_FAILURE );
   }
+#if 0
   zListInit( vl );
+#else
+  zListInit( pl );
+#endif
   do{
     zVec3DFScan( fp, &v );
+#if 0
     zVec3DAddrListAdd( vl, &v );
+#else
+    zVec3DListAdd( pl, &v );
+#endif
   } while( !feof( fp ) );
   fclose( fp );
 }
@@ -67,7 +91,11 @@ void output(zPH3D *ch)
 int main(int argc, char *argv[])
 {
   zMShape3D ms;
+#if 0
   zVec3DAddrList vl;
+#else
+  zVec3DList pl;
+#endif
   zPH3D ch;
   char *sfx;
 
@@ -75,16 +103,33 @@ int main(int argc, char *argv[])
   sfx = zGetSuffix( argv[1] );
   if( sfx && strcmp( sfx, ZEDA_ZTK_SUFFIX ) == 0 ){
     if( !zMShape3DReadZTK( &ms, argv[1] ) ) return 1;
+#if 0
     mshape2vlist( &ms, &vl );
+#else
+    mshape2vlist( &ms, &pl );
+    zMShape3DDestroy( &ms );
+#endif
   } else{
+#if 0
     zMShape3DInit( &ms );
     read_vlist( argv[1], &vl );
+#else
+    read_vlist( argv[1], &pl );
+#endif
   }
 
+#if 0
   zConvexHull3DPL( &ch, &vl );
+#else
+  zConvexHull3DPL( &ch, &pl );
+#endif
   output( &ch );
   zPH3DDestroy( &ch );
+#if 0
   zVec3DAddrListDestroy( &vl );
   zMShape3DDestroy( &ms );
+#else
+  zVec3DListDestroy( &pl );
+#endif
   return 0;
 }
