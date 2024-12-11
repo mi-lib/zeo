@@ -425,6 +425,8 @@ __BEGIN_DECLS
       zVec##XD##FPrint( fp, v ); \
   }
 
+#define zVecXDDataPrint(XD,data) zVec##XD##DataFPrint( stdout, data )
+
 /* print out values of a set of 2D/3D vectors. */
 #define ZEO_VECXD_DATA_VALUE_FPRINT_PROTOTYPE(XD) \
   void zVec##XD##DataValueFPrint(FILE *fp, zVec##XD##Data *data)
@@ -435,6 +437,8 @@ __BEGIN_DECLS
     while( ( v = zVec##XD##DataFetch( data ) ) ) \
       zVec##XD##ValueNLFPrint( fp, v ); \
   }
+
+#define zVecXDDataValuePrint(XD,data) zVec##XD##DataValueFPrint( stdout, data )
 
 __END_DECLS
 

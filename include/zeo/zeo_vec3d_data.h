@@ -58,9 +58,11 @@ __ZEO_EXPORT ZEO_VECXD_DATA_SUPPORTMAP_PROTOTYPE( 3D );
 
 /*! \brief print out a set of 3D vectors. */
 __ZEO_EXPORT ZEO_VECXD_DATA_FPRINT_PROTOTYPE( 3D );
+#define zVec3DDataPrint(data) zVecXDDataPrint( 3D, data )
 
 /*! \brief print out values of a set of 3D vectors. */
 __ZEO_EXPORT ZEO_VECXD_DATA_VALUE_FPRINT_PROTOTYPE( 3D );
+#define zVec3DDataValuePrint(data) zVecXDDataValuePrint( 3D, data )
 
 __END_DECLS
 
