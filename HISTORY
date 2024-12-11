@@ -1,3 +1,4 @@
+2024.12.11. Modified ZEO_VECXD_DATA_DEF_STRUCT to cope with implicitly deleted constructor. [zeo_vecx_data, zeo_vec2d_data, zeo_vec3d_data]
 2024.12.11. Renamed _zGJKPDInitAddPoint to _zGJKPDAddPoint. [zeo_col_gjk]
 2024.12.10. Renamed _zBoundingBall3DPL to _zBoundingBall3D. [zeo_bv3d_boundingball]
 2024.12. 9. Renamed zVec6DDataFPrint, zVec6DDataPrint, zVec6DDataNLFPrint, and zVec6DDataNLPrint to zVec6DValueFPrint, zVec6DValuePrint, zVec6DValueNLFPrint, and zVec6DValueNLPrint, respectively. [zeo_vec6d]

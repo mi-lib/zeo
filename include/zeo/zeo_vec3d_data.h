@@ -17,7 +17,7 @@ __BEGIN_DECLS
 /* CLASS: zVec3DData
  * a set of 3D vectors
  * ********************************************************** */
-ZEO_VECXD_DATA_DEF_STRUCT( 3D )
+ZEO_VECXD_DATA_DEF_STRUCT( 3D );
 
 #define zVec3DDataDestroy(data)  zVecXDDataDestroy(data)
 #define zVec3DDataSize(data)     zVecXDDataSize(data)

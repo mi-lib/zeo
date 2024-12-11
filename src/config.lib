@@ -1,5 +1,5 @@
 OBJ=zeo_misc.o\
-	zeo_render_color.o zeo_render_optic.o zeo_render_texture.o\
+	zeo_render_color.o zeo_render_optic.o\
 	zeo_vec2d.o zeo_mat2d.o\
 	zeo_vec2d_list.o zeo_vec2d_data.o\
 	zeo_coord2d.o zeo_frame2d.o zeo_elem2d.o\
@@ -8,6 +8,7 @@ OBJ=zeo_misc.o\
 	zeo_ep.o zeo_frame3d.o\
 	zeo_pointcloud.o\
 	zeo_elem3d.o zeo_elem3d_list.o\
+	zeo_render_texture.o\
 	zeo_ph.o zeo_ph_stl.o zeo_ph_ply.o zeo_ph_obj.o\
 	zeo_nurbs.o\
 	zeo_shape3d.o zeo_shape3d_list.o\

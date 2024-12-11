@@ -16,24 +16,8 @@ __BEGIN_DECLS
  * a set of 2D/3D vectors
  * ********************************************************** */
 
-#define ZEO_VECXD_DATA_DEF_STRUCT(XD) \
-  struct _zVec##XD##DataMethod; \
-  ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec##XD##Data ){ \
-    union{ \
-      zVec##XD##Array array; \
-      zVec##XD##List list; \
-      zVec##XD##AddrList addrlist; \
-      const zVec##XD##Array *array_ptr; \
-      const zVec##XD##List *list_ptr; \
-      const zVec##XD##AddrList *addrlist_ptr; \
-    } data; \
-    union{ \
-      int i; \
-      zVec##XD##ListCell *cp; \
-      zVec##XD##AddrListCell *ap; \
-    } pointer; \
-    const struct _zVec##XD##DataMethod *method; \
-  }; \
+#define ZEO_VECXD_DATA_METHOD_DEF_STRUCT(XD) \
+  ZDECL_STRUCT( zVec##XD##Data ); \
   ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec##XD##DataMethod ){ \
     void (* destroy)(zVec##XD##Data *); \
     int (* size)(zVec##XD##Data *); \
@@ -41,7 +25,49 @@ __BEGIN_DECLS
     bool (* add)(zVec##XD##Data *, const zVec##XD *); \
     void (* rewind)(zVec##XD##Data *); \
     zVec##XD *(* fetch)(zVec##XD##Data *); \
-  };
+  }
+
+#define ZEO_VECXD_DATA_DEF_UNION_MEMBER(XD) \
+  zVec##XD##Array array; \
+  zVec##XD##List list; \
+  zVec##XD##AddrList addrlist; \
+  const zVec##XD##Array *array_ptr; \
+  const zVec##XD##List *list_ptr; \
+  const zVec##XD##AddrList *addrlist_ptr
+
+#define ZEO_VECXD_DATA_DEF_POINTER_MEMBER(XD) \
+  int i; \
+  zVec##XD##ListCell *cp; \
+  zVec##XD##AddrListCell *ap
+
+#ifdef __cplusplus
+#define ZEO_VECXD_DATA_DEF_STRUCT(XD) \
+  ZEO_VECXD_DATA_METHOD_DEF_STRUCT( XD ); \
+  ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec##XD##Data ){ \
+    union __vec##XD##data { \
+      ZEO_VECXD_DATA_DEF_UNION_MEMBER( XD ); \
+      __vec##XD##data(){} \
+    } data; \
+    union __vec##XD##data_pointer{ \
+      ZEO_VECXD_DATA_DEF_POINTER_MEMBER( XD ); \
+      __vec##XD##data_pointer(){} \
+    } pointer; \
+    const zVec##XD##DataMethod *method; \
+    zVec##XD##Data(){} \
+  }
+#else
+#define ZEO_VECXD_DATA_DEF_STRUCT(XD) \
+  ZEO_VECXD_DATA_METHOD_DEF_STRUCT( XD ); \
+  ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec##XD##Data ){ \
+    union{ \
+      ZEO_VECXD_DATA_DEF_UNION_MEMBER( XD ); \
+    } data; \
+    union{ \
+      ZEO_VECXD_DATA_DEF_POINTER_MEMBER( XD ); \
+    } pointer; \
+    const zVec##XD##DataMethod *method; \
+  }
+#endif
 
 #define zVecXDDataDestroy(data)  (data)->method->destroy( data )
 #define zVecXDDataSize(data)     (data)->method->size( data )
