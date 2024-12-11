@@ -1,27 +1,34 @@
 #include <zeo/zeo_brep.h>
 
+#define N 1000
+
 void test_ph(zPH3D *a, zPH3D *b)
 {
-#define N 1000
-  zVec3D v[N];
-  register int i;
+  zVec3DData data;
+  zVec3D v;
+  int i;
 
-  zRandInit();
-  for( i=0; i<N; i++ )
-    zVec3DCreatePolar( &v[i], zRandF(-0.2,0.2), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
-  zConvexHull3D( a, v, N );
+  zVec3DDataInitArray( &data, N );
   for( i=0; i<N; i++ ){
-    zVec3DCreatePolar( &v[i], zRandF(-0.2,0.2), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
-    v[i].e[zX] += 0.15;
-    v[i].e[zY] += 0.15;
-    v[i].e[zZ] += 0.15;
+    zVec3DCreatePolar( &v, zRandF(-0.2,0.2), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
+    zVec3DDataAdd( &data, &v );
   }
-  zConvexHull3D( b, v, N );
+  zVec3DDataConvexHull( &data, a );
+  zVec3DDataRewind( &data );
+  for( i=0; i<N; i++ ){
+    zVec3DCreatePolar( &v, zRandF(-0.2,0.2), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
+    v.e[zX] += 0.15;
+    v.e[zY] += 0.15;
+    v.e[zZ] += 0.15;
+    zVec3DDataAdd( &data, &v );
+  }
+  zVec3DDataConvexHull( &data, b );
+  zVec3DDataDestroy( &data );
 }
 
 void output_blue(FILE *fp)
 {
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[zeo::optic]\n" );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.2 0.2 0.6\n" );
   fprintf( fp, "diffuse: 0.2 0.2 1.0\n" );
@@ -32,7 +39,7 @@ void output_blue(FILE *fp)
 
 void output_red(FILE *fp)
 {
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[zeo::optic]\n" );
   fprintf( fp, "name: red\n" );
   fprintf( fp, "ambient: 0.6 0.2 0.2\n" );
   fprintf( fp, "diffuse: 1.0 0.2 0.2\n" );
@@ -43,7 +50,7 @@ void output_red(FILE *fp)
 
 void output_yellow(FILE *fp)
 {
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[zeo::optic]\n" );
   fprintf( fp, "name: yellow\n" );
   fprintf( fp, "ambient: 0.6 0.6 0.2\n" );
   fprintf( fp, "diffuse: 1.0 1.0 0.2\n" );
@@ -60,12 +67,12 @@ void output(zPH3D *a, zPH3D *b, zPH3D *sa, zPH3D *sb, zPH3D *c)
   fp = fopen( "org.ztk", "w" );
   output_blue( fp );
   output_red( fp );
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
   zPH3DFPrintZTK( fp, a );
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
@@ -75,12 +82,12 @@ void output(zPH3D *a, zPH3D *b, zPH3D *sa, zPH3D *sb, zPH3D *c)
   fp = fopen( "cut.ztk", "w" );
   output_blue( fp );
   output_red( fp );
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
   zPH3DFPrintZTK( fp, sa );
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
@@ -89,7 +96,7 @@ void output(zPH3D *a, zPH3D *b, zPH3D *sa, zPH3D *sb, zPH3D *c)
 
   fp = fopen( "mrg.ztk", "w" );
   output_yellow( fp );
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "name: c\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: yellow\n" );
@@ -102,6 +109,7 @@ int main(int argc, char *argv[])
   zPH3D a, b, sa, sb, c;
   clock_t t1, t2;
 
+  zRandInit();
   test_ph( &a, &b );
 
   zPH3DTruncBREP( &a, &b, &sa );

@@ -1,8 +1,5 @@
 #include <zeo/zeo.h>
 
-#define N 100
-zVec3D v[N];
-
 void frame_create_rand(zFrame3D *f)
 {
   zVec3D aa;
@@ -12,32 +9,35 @@ void frame_create_rand(zFrame3D *f)
   zMat3DFromAA( zFrame3DAtt(f), &aa );
 }
 
-void veclist_create_rand(zFrame3D *f)
+void vec_create_rand(zVec3DData *data, int n, zFrame3D *f)
 {
-  register int i;
+  zVec3D v, vert;
+  int i;
   FILE *fp;
-  zVec3D vert;
 
+  zVec3DDataRewind( data );
   fp = fopen( "src", "w" );
-  for( i=0; i<N; i++ ){
-    zVec3DCreate( &v[i], zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
-    zXform3D( f, &v[i], &vert );
+  for( i=0; i<n; i++ ){
+    zVec3DCreate( &v, zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
+    zVec3DDataAdd( data, &v );
+    zXform3D( f, &v, &vert );
     zVec3DValueNLFPrint( fp, &vert );
   }
   fclose( fp );
 }
 
-void verify(zAABox3D *bb, zFrame3D *f)
+void verify(zVec3DData *data, zAABox3D *bb, zFrame3D *f)
 {
-  register int i;
+  int i;
   bool ret;
   zBox3D box;
-  zVec3D vert;
+  zVec3D *v, vert;
   FILE *fp;
 
   zAABox3DToBox3D( bb, &box );
-  for( i=0; i<N; i++ ){
-    zXform3D( f, &v[i], &vert );
+  zVec3DDataRewind( data );
+  while( ( v = zVec3DDataFetch( data ) ) ){
+    zXform3D( f, v, &vert );
     if( ( ret = zBox3DPointIsInside(&box,&vert,true) ) == false ){
       zVec3DValueNLFPrint( stderr, &vert );
       eprintf( "D=%.15g\n", zBox3DDistFromPoint(&box,&vert) );
@@ -61,15 +61,20 @@ void verify(zAABox3D *bb, zFrame3D *f)
   fclose( fp );
 }
 
+#define N 100
+
 int main(void)
 {
+  zVec3DData data;
   zAABox3D bb;
   zFrame3D f;
 
   zRandInit();
+  zVec3DDataInitArray( &data, N );
   frame_create_rand( &f );
-  veclist_create_rand( &f );
-  zAABB3DXform( &bb, v, N, &f );
-  verify( &bb, &f );
+  vec_create_rand( &data, N, &f );
+  zVec3DDataAABBXform( &data, &bb, &f );
+  verify( &data, &bb, &f );
+  zVec3DDataDestroy( &data );
   return 0;
 }

@@ -19,48 +19,29 @@ typedef struct{
   zMPRSlot slot[4]; /* slots of simplex */
 } zMPRSimplex;
 
-static zVec3D *_zMPRSupportMap(zMPRSlot *s, zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *v);
-static zVec3D *_zMPROrigin(zMPRSlot *center, zVec3D p1[], int n1, zVec3D p2[], int n2);
-static zVec3D *_zMPRSimplexDir(zMPRSimplex *s, int i0, int i1, int i2, zVec3D *dir);
-static int _zMPRFindPortal(zMPRSimplex *portal, zVec3D p1[], int n1, zVec3D p2[], int n2);
-static zVec3D *_zMPRPortalDir(zMPRSimplex* portal, zVec3D* dir);
-static bool _zMPRPortalIsReached(zMPRSimplex *portal, zMPRSlot *s, zVec3D *dir);
-static zMPRSlot *_zMPRExpandPortal(zMPRSimplex* portal, zMPRSlot *s);
-static bool _zMPRRefinePortal(zMPRSimplex* portal, zVec3D p1[], int n1, zVec3D p2[], int n2);
-static void _zMPRDepthPair(zMPRSimplex* portal, zVec3D *pos);
-static double _zMPRCalcSegDist(zVec3D *p0, zVec3D *p1, zVec3D *dir);
-static double _zMPRCalcDepth(zVec3D *p0, zVec3D *p1, zVec3D *p2, zVec3D *dir);
-static bool _zMPRDepth(zMPRSimplex* portal, zVec3D p1[], int n1, zVec3D p2[], int n2, double *depth, zVec3D *pos, zVec3D *dir);
-
 /* support map of Minkowski difference. */
-zVec3D *_zMPRSupportMap(zMPRSlot *s, zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *v)
+static zVec3D *_zMPRSupportMap(zMPRSlot *s, zVec3DData *data1, zVec3DData *data2, zVec3D *v)
 {
   zVec3D nv;
 
   _zVec3DRev( v, &nv );
-  zVec3DCopy( zVec3DSupportMap( p1, n1,   v ), &s->v1 );
-  zVec3DCopy( zVec3DSupportMap( p2, n2, &nv ), &s->v2 );
+  zVec3DCopy( zVec3DDataSupportMap( data1,   v ), &s->v1 );
+  zVec3DCopy( zVec3DDataSupportMap( data2, &nv ), &s->v2 );
   _zVec3DSub( &s->v1, &s->v2, &s->v );
   return &s->v;
 }
 
 /* original Minkowski portal of sets of points. */
-zVec3D *_zMPROrigin(zMPRSlot *center, zVec3D p1[], int n1, zVec3D p2[], int n2)
+static zVec3D *_zMPROrigin(zMPRSlot *center, zVec3DData *data1, zVec3DData *data2)
 {
-  int i;
-
-  for( zVec3DZero( &center->v1 ), i=0; i<n1; i++ )
-    zVec3DAddDRC( &center->v1, &p1[i] );
-  zVec3DDivDRC( &center->v1, n1 );
-  for( zVec3DZero( &center->v2 ), i=0; i<n2; i++ )
-    zVec3DAddDRC( &center->v2, &p2[i] );
-  zVec3DDivDRC( &center->v2, n2 );
+  zVec3DDataBarycenter( data1, &center->v1 );
+  zVec3DDataBarycenter( data2, &center->v2 );
   _zVec3DSub( &center->v1, &center->v2, &center->v );
   return &center->v;
 }
 
 /* direction vector of with respect to two relative support maps of a simplex. */
-zVec3D *_zMPRSimplexDir(zMPRSimplex *s, int i0, int i1, int i2, zVec3D *dir)
+static zVec3D *_zMPRSimplexDir(zMPRSimplex *s, int i0, int i1, int i2, zVec3D *dir)
 {
   zVec3D d1, d2;
 
@@ -76,13 +57,13 @@ zVec3D *_zMPRSimplexDir(zMPRSimplex *s, int i0, int i1, int i2, zVec3D *dir)
 enum{ Z_MPR_PORTAL_OUTSIDE = -1, Z_MPR_PORTAL_TO_REFINE = 0, Z_MPR_PORTAL_AT_POINT = 1, Z_MPR_PORTAL_ON_SEG = 2 };
 
 /* find Minkowski portal. */
-int _zMPRFindPortal(zMPRSimplex *portal, zVec3D p1[], int n1, zVec3D p2[], int n2)
+static int _zMPRFindPortal(zMPRSimplex *portal, zVec3DData *data1, zVec3DData *data2)
 {
   zVec3D dir;
   zMPRSlot tmp;
 
   /* vertex 0: the center of portal */
-  _zMPROrigin( &portal->slot[0], p1, n1, p2, n2 );
+  _zMPROrigin( &portal->slot[0], data1, data2 );
   portal->n = 1;
   if( zVec3DIsTiny( &portal->slot[0].v ) )
     /* intersecting case: the center is slightly biased in order to compute penetration depth. */
@@ -90,7 +71,7 @@ int _zMPRFindPortal(zMPRSimplex *portal, zVec3D p1[], int n1, zVec3D p2[], int n
 
   /* vertex 1 = support in direction to origin */
   zVec3DNormalizeNCDRC( zVec3DRev( &portal->slot[0].v, &dir ) );
-  _zMPRSupportMap( &portal->slot[1], p1, n1, p2, n2, &dir );
+  _zMPRSupportMap( &portal->slot[1], data1, data2, &dir );
   portal->n = 2;
   if( zVec3DInnerProd( &portal->slot[1].v, &dir ) < zTOL ) return Z_MPR_PORTAL_OUTSIDE;
 
@@ -99,7 +80,7 @@ int _zMPRFindPortal(zMPRSimplex *portal, zVec3D p1[], int n1, zVec3D p2[], int n
   if( zVec3DIsTiny( &dir ) ) /* origin lies at vertex 1 or between vertices 0 and 1. */
     return zVec3DIsTiny( &portal->slot[1].v ) ? Z_MPR_PORTAL_AT_POINT : Z_MPR_PORTAL_ON_SEG;
   zVec3DNormalizeNCDRC( &dir );
-  _zMPRSupportMap( &portal->slot[2], p1, n1, p2, n2, &dir );
+  _zMPRSupportMap( &portal->slot[2], data1, data2, &dir );
   portal->n = 3;
   if( zVec3DInnerProd( &portal->slot[2].v, &dir ) < zTOL ) return Z_MPR_PORTAL_OUTSIDE;
 
@@ -113,7 +94,7 @@ int _zMPRFindPortal(zMPRSimplex *portal, zVec3D p1[], int n1, zVec3D p2[], int n
     _zVec3DRevDRC( &dir );
   }
   while( 1 ){
-    _zMPRSupportMap( &portal->slot[3], p1, n1, p2, n2, &dir );
+    _zMPRSupportMap( &portal->slot[3], data1, data2, &dir );
     if( zVec3DInnerProd( &portal->slot[3].v, &dir ) < zTOL ) return Z_MPR_PORTAL_OUTSIDE;
     /* test if origin is outside of (v1, v0, v3) - set v3 for v2 and continue */
     if( zVec3DGrassmannProd( &portal->slot[0].v, &portal->slot[1].v, &portal->slot[3].v ) <= -zTOL ){
@@ -133,14 +114,14 @@ int _zMPRFindPortal(zMPRSimplex *portal, zVec3D p1[], int n1, zVec3D p2[], int n
 }
 
 /* direction vector of Minkowski portal. */
-zVec3D *_zMPRPortalDir(zMPRSimplex* portal, zVec3D* dir)
+static zVec3D *_zMPRPortalDir(zMPRSimplex* portal, zVec3D* dir)
 {
   _zMPRSimplexDir( portal, 1, 2, 3, dir );
   return dir;
 }
 
 /* check if Minkowski portal can no longer expanded. */
-bool _zMPRPortalIsReached(zMPRSimplex *portal, zMPRSlot *s, zVec3D *dir)
+static bool _zMPRPortalIsReached(zMPRSimplex *portal, zMPRSlot *s, zVec3D *dir)
 {
   double r;
 
@@ -151,7 +132,7 @@ bool _zMPRPortalIsReached(zMPRSimplex *portal, zMPRSlot *s, zVec3D *dir)
 }
 
 /* expand Minkowski portal. */
-zMPRSlot *_zMPRExpandPortal(zMPRSimplex* portal, zMPRSlot *s)
+static zMPRSlot *_zMPRExpandPortal(zMPRSimplex* portal, zMPRSlot *s)
 {
   zVec3D d;
 
@@ -164,7 +145,7 @@ zMPRSlot *_zMPRExpandPortal(zMPRSimplex* portal, zMPRSlot *s)
 }
 
 /* refine Minkowski portal. */
-bool _zMPRRefinePortal(zMPRSimplex* portal, zVec3D p1[], int n1, zVec3D p2[], int n2)
+static bool _zMPRRefinePortal(zMPRSimplex* portal, zVec3DData *data1, zVec3DData *data2)
 {
   zVec3D dir;
   zMPRSlot s;
@@ -175,7 +156,7 @@ bool _zMPRRefinePortal(zMPRSimplex* portal, zVec3D p1[], int n1, zVec3D p2[], in
     /* test if origin is inside of portal */
     if( zVec3DInnerProd( &portal->slot[1].v, &dir ) > -zTOL ) return true;
     /* next support point */
-    _zMPRSupportMap( &s, p1, n1, p2, n2, &dir );
+    _zMPRSupportMap( &s, data1, data2, &dir );
     /* test if portal can be expanded toward origin. */
     if( zVec3DInnerProd( &s.v, &dir ) <= -zTOL ||
         _zMPRPortalIsReached( portal, &s, &dir ) ) return false;
@@ -185,7 +166,7 @@ bool _zMPRRefinePortal(zMPRSimplex* portal, zVec3D p1[], int n1, zVec3D p2[], in
 }
 
 /* set the origin of Minkowski portal for the barycenter of a tetrahedral simplex. */
-void _zMPRDepthPair(zMPRSimplex* portal, zVec3D *pos)
+static void _zMPRDepthPair(zMPRSimplex* portal, zVec3D *pos)
 {
   zVec3D dir;
   size_t i;
@@ -217,7 +198,7 @@ void _zMPRDepthPair(zMPRSimplex* portal, zVec3D *pos)
 }
 
 /* calculate distance of an extreme segment on Minkowski portal. */
-double _zMPRCalcSegDist(zVec3D *p0, zVec3D *p1, zVec3D *dir)
+static double _zMPRCalcSegDist(zVec3D *p0, zVec3D *p1, zVec3D *dir)
 {
   double t;
   zVec3D d;
@@ -241,7 +222,7 @@ double _zMPRCalcSegDist(zVec3D *p0, zVec3D *p1, zVec3D *dir)
 }
 
 /* calculate penetration depth of colliding objects. */
-double _zMPRCalcDepth(zVec3D *p0, zVec3D *p1, zVec3D *p2, zVec3D *dir)
+static double _zMPRCalcDepth(zVec3D *p0, zVec3D *p1, zVec3D *p2, zVec3D *dir)
 {
   zVec3D d1, d2, w2;
   double u1, u2, u3, v1, v2, v3, s, t, dist, d;
@@ -281,7 +262,7 @@ double _zMPRCalcDepth(zVec3D *p0, zVec3D *p1, zVec3D *p2, zVec3D *dir)
 }
 
 /* calculate penetration depth of colliding objects based on MPR algorithm. */
-bool _zMPRDepth(zMPRSimplex* portal, zVec3D p1[], int n1, zVec3D p2[], int n2, double *depth, zVec3D *pos, zVec3D *dir)
+static bool _zMPRDepth(zMPRSimplex* portal, zVec3DData *data1, zVec3DData *data2, double *depth, zVec3D *pos, zVec3D *dir)
 {
   zVec3D d;
   zMPRSlot s;
@@ -291,7 +272,7 @@ bool _zMPRDepth(zMPRSimplex* portal, zVec3D p1[], int n1, zVec3D p2[], int n2, d
   for( i=0; i<iter; i++ ){
     /* compute portal direction and obtain next support point */
     _zMPRPortalDir( portal, &d );
-    _zMPRSupportMap( &s, p1, n1, p2, n2, &d );
+    _zMPRSupportMap( &s, data1, data2, &d );
     /* reached tolerance -> find penetration info */
     if( _zMPRPortalIsReached( portal, &s, &d ) ){
       if( depth && dir ){
@@ -308,25 +289,25 @@ bool _zMPRDepth(zMPRSimplex* portal, zVec3D p1[], int n1, zVec3D p2[], int n2, d
 }
 
 /* Minkowski Portal Refinement algorithm. */
-bool zMPR(zVec3D p1[], int n1, zVec3D p2[], int n2)
+bool zMPR(zVec3DData *data1, zVec3DData *data2)
 {
   zMPRSimplex portal;
 
-  switch( _zMPRFindPortal( &portal, p1, n1, p2, n2 ) ){
-  case Z_MPR_PORTAL_OUTSIDE: return false;
-  case Z_MPR_PORTAL_TO_REFINE: return _zMPRRefinePortal( &portal, p1, n1, p2, n2 );
+  switch( _zMPRFindPortal( &portal, data1, data2 ) ){
+  case Z_MPR_PORTAL_OUTSIDE:   return false;
+  case Z_MPR_PORTAL_TO_REFINE: return _zMPRRefinePortal( &portal, data1, data2 );
   default: ;
   }
   return true;
 }
 
 /* Minkowski Portal Refinement algorithm with penetration depth */
-bool zMPRDepth(zVec3D p1[], int n1, zVec3D p2[], int n2, double *depth, zVec3D *pos, zVec3D *dir)
+bool zMPRDepth(zVec3DData *data1, zVec3DData *data2, double *depth, zVec3D *pos, zVec3D *dir)
 {
   zMPRSimplex portal;
 
   /* Phase 1: find portal */
-  switch( _zMPRFindPortal( &portal, p1, n1, p2, n2 ) ){
+  switch( _zMPRFindPortal( &portal, data1, data2 ) ){
   case Z_MPR_PORTAL_AT_POINT: /* contact at a point. */
     *depth = 0;
     _zVec3DZero( dir );
@@ -337,9 +318,9 @@ bool zMPRDepth(zVec3D p1[], int n1, zVec3D p2[], int n2, double *depth, zVec3D *
     zVec3DMid( &portal.slot[1].v1, &portal.slot[1].v2, pos );
     break;
   case Z_MPR_PORTAL_TO_REFINE: /* Phase 2: refine portal */
-    if( _zMPRRefinePortal( &portal, p1, n1, p2, n2 ) ){
+    if( _zMPRRefinePortal( &portal, data1, data2 ) ){
       /* compute penetration depth */
-      return _zMPRDepth( &portal, p1, n1, p2, n2, depth, pos, dir );
+      return _zMPRDepth( &portal, data1, data2, depth, pos, dir );
     }
   default: /* no collision */
     return false;

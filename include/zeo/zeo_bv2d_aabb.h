@@ -19,54 +19,47 @@ typedef struct{
   zVec2D max; /*!< maximum coordinates */
 } zAABox2D;
 
-/*! \brief initializea 2D axis-aligned box */
+/*! \brief initializea a 2D axis-aligned box */
 __ZEO_EXPORT zAABox2D *zAABox2DInit(zAABox2D *box);
 
-/*! \brief createa 2D axis-aligned box */
+/*! \brief createa a 2D axis-aligned box */
 __ZEO_EXPORT zAABox2D *zAABox2DCreate(zAABox2D *box, double xmin, double ymin, double xmax, double ymax);
 
-/*! \brief check if a point is inside ofa 2D axis-aligned box. */
+/*! \brief copy a 2D axis-aligned box. */
+__ZEO_EXPORT zAABox2D *zAABox2DCopy(zAABox2D *src, zAABox2D *dst);
+
+/*! \brief merge two 2D axis-aligned boxes. */
+__ZEO_EXPORT zAABox2D *zAABox2DMerge(zAABox2D *box, zAABox2D *b1, zAABox2D *b2);
+
+/*! \brief check if a point is inside of a 2D axis-aligned box. */
 __ZEO_EXPORT bool zAABox2DPointIsInside(zAABox2D *box, zVec2D *p, double margin);
 
-/*! \brief printa 2D axis-aligned box out to a file. */
-__ZEO_EXPORT void zAABox2DValueFPrint(FILE *fp, zAABox2D *box);
+/*! \brief compute area of a 2D axis-aligned box. */
+__ZEO_EXPORT double zAABox2DArea(zAABox2D *box);
 
-/* ********************************************************** */
-/* AABB2D - 2D axis-aligned bounding box
- * ********************************************************** */
+/*! \brief print out a 2D axis-aligned box to a file. */
+__ZEO_EXPORT void zAABox2DValueFPrint(FILE *fp, zAABox2D *box);
 
 /*! \brief axis-aligned bounding box of 2D points.
  *
- * zAABB2D() computes the axis-aligned bounding box of a set of
- * 2D points \a p. \a num is the number of the points. The result
- * is put into \a bb.
- *
- * The pointers to the extreme points (i.e. points on the faces
- * of \a bb) will be stored into the array pointed by \a vp,
- * unless \a vp is the null pointer. The correspondency of
+ * zVec2DDataAABB() computes the axis-aligned bounding box of a set of 2D points \a data.
+ * The result is put into \a bb.
+ * The pointers to the extreme points (i.e. points on the faces of \a bb) will be stored into
+ * the array pointed by \a vp, unless \a vp is the null pointer. The correspondency of
  * pointers and faces is depicted as follows.
  *  y|_____
  *   |  1  |
  *  2|     |0
  *  _|_____|_ x
  *      3
- *
- * zAABB2DPL() also computes the axis-aligned bounding box of a
- * set of 2D points given by a list of pointers to the points
- * \a pl. This function stores the pointers to the cell of extreme
- * points into the array pointed by \a vc, unless \a vc is the
- * null pointer. The correspondency follows the above, too.
  * \return
- * zAABB2D() and zAABB2DPL() return a pointer \a bb.
+ * zVec2DDataAABB() returns a pointer \a bb.
  * \notes
- * Arrays pointed by \a vp and \a vc must have more than six
- * elements, when they point non-null addresses.
- * Since some of the extreme points are possibly at edges or
- * corners of \a bb, some of the elements in \a vp and \a vc
- * could point the same points.
+ * Arrays pointed by \a vp must have more than four elements, unless it is the null pointer.
+ * Since some of the extreme points are possibly at edges or corners of \a bb, some of the
+ * elements in \a vp could point same points.
  */
-__ZEO_EXPORT zAABox2D *zAABB2D(zAABox2D *bb, zVec2D p[], int num, zVec2D **vp);
-__ZEO_EXPORT zAABox2D *zAABB2DPL(zAABox2D *bb, zVec2DList *pl, zVec2DListCell **vc);
+__ZEO_EXPORT zAABox2D *zVec2DDataAABB(zVec2DData *data, zAABox2D *bb, zVec2D **vp);
 
 __END_DECLS
 

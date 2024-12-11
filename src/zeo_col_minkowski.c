@@ -7,18 +7,22 @@
 #include <zeo/zeo_col.h>
 
 /* Minkowski subtract. */
-zPH3D *zPH3DMinkowskiSub(zPH3D *ph, zVec3D p1[], int n1, zVec3D p2[], int n2)
+zPH3D *zVec3DDataMinkowskiSub(zVec3DData *data1, zVec3DData *data2, zPH3D *ph)
 {
-  zVec3D *v;
-  int i, j;
+  zVec3DData data;
+  zVec3D *v1, *v2, v;
 
-  if( ( v = zAlloc( zVec3D, n1*n2 ) ) == NULL ){
-    ZALLOCERROR();
+  if( !zVec3DDataInitArray( &data, zVec3DDataSize(data1) * zVec3DDataSize(data2) ) )
     return NULL;
+  zVec3DDataRewind( data1 );
+  zVec3DDataRewind( data2 );
+  while( ( v1 = zVec3DDataFetch( data1 ) ) ){
+    while( ( v2 = zVec3DDataFetch( data2 ) ) ){
+      zVec3DSub( v1, v2, &v );
+      zVec3DDataAdd( &data, &v );
+    }
   }
-  for( i=0; i<n1; i++ )
-    for( j=0; j<n2; j++ )
-      zVec3DSub( &p1[i], &p2[j], &v[n2*i+j] );
-  zConvexHull3D( ph, v, n1*n2 );
+  zVec3DDataConvexHull( &data, ph );
+  zVec3DDataDestroy( &data );
   return ph;
 }

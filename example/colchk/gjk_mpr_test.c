@@ -2,40 +2,43 @@
 #include <zeo/zeo_bv3d.h>
 #include <time.h>
 
-void vec_create_rand(zVec3D p[], int n, double x, double y, double z, double r)
+void vec_create_rand(zVec3DData *data, int n, double x, double y, double z, double r)
 {
-  register int i;
+  zVec3D v;
+  int i;
 
+  zVec3DDataInitArray( data, n );
   for( i=0; i<n; i++ ){
-    zVec3DCreatePolar( &p[i], zRandF(0,r), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
-    p[i].e[zX] += x;
-    p[i].e[zY] += y;
-    p[i].e[zZ] += z;
+    zVec3DCreatePolar( &v, zRandF(0,r), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
+    v.e[zX] += x;
+    v.e[zY] += y;
+    v.e[zZ] += z;
+    zVec3DDataAdd( data, &v );
   }
 }
 
-void output(char filename[], zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c1, zVec3D *c2)
+void output(char filename[], zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2)
 {
   zPH3D ch;
   FILE *fp;
 
   fp = fopen( filename, "w" );
   /* for visualization */
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[zeo::optic]\n" );
   fprintf( fp, "name: red\n" );
   fprintf( fp, "ambient: 0.8 0.2 0.2\n" );
   fprintf( fp, "diffuse: 1.0 0.2 0.2\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.6\n" );
   fprintf( fp, "esr: 1.0\n\n" );
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[zeo::optic]\n" );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.2 0.2 0.8\n" );
   fprintf( fp, "diffuse: 0.2 0.2 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.6\n" );
   fprintf( fp, "esr: 1.0\n\n" );
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[zeo::optic]\n" );
   fprintf( fp, "name: yellow\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.4\n" );
   fprintf( fp, "diffuse: 1.0 1.0 0.4\n" );
@@ -43,19 +46,19 @@ void output(char filename[], zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c
   fprintf( fp, "alpha: 0.6\n" );
   fprintf( fp, "esr: 1.0\n\n" );
   /* pair of proximities */
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "name: p1\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: yellow\n" );
   fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, c1 );
   fprintf( fp, "radius: 0.01\n" );
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "name: p2\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: yellow\n" );
   fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, c2 );
   fprintf( fp, "radius: 0.01\n" );
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "name: rod\n" );
   fprintf( fp, "type: cylinder\n" );
   fprintf( fp, "optic: yellow\n" );
@@ -63,16 +66,16 @@ void output(char filename[], zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c
   fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, c2 );
   fprintf( fp, "radius: 0.005\n" );
   /* convex set 1 */
-  zConvexHull3D( &ch, p1, n1 );
-  fprintf( fp, "[shape]\n" );
+  zVec3DDataConvexHull( data1, &ch );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "name: ch1\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
   zPH3DFPrintZTK( fp, &ch );
   zPH3DDestroy( &ch );
   /* convex set 2 */
-  zConvexHull3D( &ch, p2, n2 );
-  fprintf( fp, "[shape]\n" );
+  zVec3DDataConvexHull( data2, &ch );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "name: ch2\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
@@ -86,7 +89,8 @@ void output(char filename[], zVec3D p1[], int n1, zVec3D p2[], int n2, zVec3D *c
 
 int main(int argc, char *argv[])
 {
-  zVec3D a[N], b[N], ca, cb, pos, dir;
+  zVec3DData a, b;
+  zVec3D ca, cb, pos, dir;
   double x, y, z, depth;
   int i, loop = 100;
   clock_t start;
@@ -96,26 +100,26 @@ int main(int argc, char *argv[])
   x = zRandF( 0.1, 0.3 );
   y = zRandF( 0.1, 0.3 );
   z = zRandF( 0.1, 0.3 );
-  vec_create_rand( a, N, 0, 0, 0, 0.2 );
-  vec_create_rand( b, N, x, y, z, 0.2 );
+  vec_create_rand( &a, N, 0, 0, 0, 0.2 );
+  vec_create_rand( &b, N, x, y, z, 0.2 );
 
   start = clock();
   for( i=0; i<loop; i++ )
-    result_gjk = zGJK( a, N, b, N, &ca, &cb );
+    result_gjk = zGJK( &a, &b, &ca, &cb );
   printf( "zGJK time = %ld\n", clock() - start );
   printf( "GJK in collision? %s\n", zBoolStr( result_gjk ) );
-  output( "gjk.ztk", a, N, b, N, &ca, &cb );
+  output( "gjk.ztk", &a, &b, &ca, &cb );
   zVec3DPrint( &ca );
   zVec3DPrint( &cb );
 
   start = clock();
   for( i=0; i<loop; i++ )
-    zMPR( a, N, b, N );
+    zMPR( &a, &b );
   printf( "zMPR time = %ld\n", clock() - start );
 
   start = clock();
   for( i=0; i<loop; i++ )
-    result_mpr = zMPRDepth( a, N, b, N, &depth, &pos, &dir );
+    result_mpr = zMPRDepth( &a, &b, &depth, &pos, &dir );
   printf( "zMPRDepth time = %ld\n", clock() - start );
   printf( "MPR in collision? %s\n", zBoolStr( result_mpr ) );
   if( depth > 0 ){
@@ -124,7 +128,7 @@ int main(int argc, char *argv[])
     zVec3DCat( &pos,-depth/2, &dir, &cb );
     zVec3DPrint( &ca );
     zVec3DPrint( &cb );
-    output( "mpr.ztk", a, N, b, N, &ca, &cb );
+    output( "mpr.ztk", &a, &b, &ca, &cb );
   }
   return 0;
 }

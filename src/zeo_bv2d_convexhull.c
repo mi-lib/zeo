@@ -6,110 +6,23 @@
 
 #include <zeo/zeo_bv2d.h>
 
-/* ********************************************************** */
-/* planar (2D) convex hull for a list of points
- * ********************************************************** */
+/* NOTE: THIS FILE WILL BE COMPLETELY REPLACED TO 2D CONVEX HULL COMPUTATION! */
 
 /* find two independent base vectors on a plane. */
-static zVec3D *_zConvexHull2DBasePL(zVec3DList *pl, zVec3D s[])
+static zVec3D *_zConvexHull2DBase(zVec3DAddrList *addrlist, zVec3D s[])
 {
-  zVec3DListCell *pc;
+  zVec3DAddrListCell *cp;
   zVec3D n;
 
-  for( pc=zListCellNext(zListTail(pl));
-       pc!=zListRoot(pl); pc=zListCellNext(pc) )
-    if( !zVec3DIsTiny( zVec3DSub( &pc->data, &zListTail(pl)->data, &s[0] ) ) )
+  for( cp=zListCellNext(zListTail(addrlist)); cp!=zListRoot(addrlist); cp=zListCellNext(cp) )
+    if( !zVec3DIsTiny( zVec3DSub( cp->data, zListTail(addrlist)->data, &s[0] ) ) )
       goto STEP2;
   ZRUNERROR( ZEO_ERR_CH_DEG1 );
   return NULL;
  STEP2:
-  for( pc=zListCellNext(pc);
-       pc!=zListRoot(pl); pc=zListCellNext(pc) ){
-    if( !zVec3DIsTiny( zVec3DSub( &pc->data, &zListTail(pl)->data, &s[1] ) ) &&
-        !zVec3DIsTiny( zVec3DOuterProd( &s[0], &s[1], &n ) ) )
-      goto STEP3;
-  }
-  ZRUNERROR( ZEO_ERR_CH_DEG2 );
-  return NULL;
- STEP3:
-  zVec3DOuterProd( &n, &s[0], &s[1] );
-  zVec3DNormalizeDRC( &s[0] );
-  zVec3DNormalizeDRC( &s[1] );
-  return s;
-}
-
-/* comparison function of two vertices for sorting. */
-static int __z_ch2d_pl_cmp(void *v1, void *v2, void *priv)
-{
-  double d1, d2;
-  zVec3D *s1, *s2;
-
-  s1 = (zVec3D *)priv;
-  s2 = (zVec3D *)priv + 1;
-  d1 = zVec3DInnerProd( &((zVec3DListCell *)v1)->data, s1 );
-  d2 = zVec3DInnerProd( &((zVec3DListCell *)v2)->data, s1 );
-  if( zIsTiny( d1 - d2 ) ){
-    d1 = zVec3DInnerProd( &((zVec3DListCell *)v1)->data, s2 );
-    d2 = zVec3DInnerProd( &((zVec3DListCell *)v2)->data, s2 );
-    if( zIsTiny( d1 - d2 ) ) return 0;
-    return d1 > d2 ? 1 : -1;
-  }
-  return d1 > d2 ? 1 : -1;
-}
-
-/* planar convex hull of a list of vertices. */
-zLoop3D *zConvexHull2DPL(zLoop3D *ch, zVec3DList *pl)
-{
-  zVec3D s[2], d;
-  zVec3DListCell *p0, *p1, *p;
-  double t, t_max;
-
-  zListInit( ch );
-  if( !_zConvexHull2DBasePL( pl, s ) ){
-    ZRUNERROR( ZEO_ERR_CH_DEG1 );
-    return NULL;
-  }
-  zVec3DListQuickSort( pl, __z_ch2d_pl_cmp, s );
-  /* upper bound */
-  for( p0=zListTail(pl); p0!=zListHead(pl); zLoop3DAdd( ch, &p0->data ), p0=p1 )
-    for( t_max=-zPI_2, p1=p=zListCellNext(p0); p!=zListRoot(pl); p=zListCellNext(p) )
-      if( !zVec3DIsTiny( zVec3DSub( &p->data, &p0->data, &d ) ) &&
-          ( t = atan2( zVec3DInnerProd(&d,&s[1]), zVec3DInnerProd(&d,&s[0]) ) ) >= t_max ){
-        t_max = t;
-        p1 = p;
-      }
-  /* reverse bases */
-  zVec3DRevDRC( &s[0] );
-  zVec3DRevDRC( &s[1] );
-  /* lower bound */
-  for( ; p0!=zListTail(pl); zLoop3DAdd( ch, &p0->data ), p0=p1 )
-    for( t_max=-zPI_2, p1=p=zListCellPrev(p0); p!=zListRoot(pl); p=zListCellPrev(p) )
-      if( !zVec3DIsTiny( zVec3DSub( &p->data, &p0->data, &d ) ) &&
-          ( t = atan2( zVec3DInnerProd(&d,&s[1]), zVec3DInnerProd(&d,&s[0]) ) ) >= t_max ){
-        t_max = t;
-        p1 = p;
-      }
-  return ch;
-}
-
-/* ********************************************************** */
-/* planar (2D) convex hull for an array of points
- * ********************************************************** */
-
-/* find two independent base vectors on a plane. */
-static zVec3D *_zConvexHull2DBase(zVec3D p[], int num, zVec3D s[])
-{
-  int i;
-  zVec3D n;
-
-  for( i=1; i<num; i++ )
-    if( !zVec3DIsTiny( zVec3DSub( &p[i], &p[0], &s[0] ) ) )
-      goto STEP2;
-  ZRUNERROR( ZEO_ERR_CH_DEG1 );
-  return NULL;
- STEP2:
-  for( i++; i<num; i++ ){
-    if( !zVec3DIsTiny( zVec3DSub( &p[i], &p[0], &s[1] ) ) &&
+  for( cp=zListCellNext(cp);
+       cp!=zListRoot(addrlist); cp=zListCellNext(cp) ){
+    if( !zVec3DIsTiny( zVec3DSub( cp->data, zListTail(addrlist)->data, &s[1] ) ) &&
         !zVec3DIsTiny( zVec3DOuterProd( &s[0], &s[1], &n ) ) )
       goto STEP3;
   }
@@ -130,64 +43,63 @@ static int __z_ch2d_cmp(void *v1, void *v2, void *priv)
 
   s1 = (zVec3D *)priv;
   s2 = (zVec3D *)priv + 1;
-  d1 = zVec3DInnerProd( (zVec3D *)v1, s1 );
-  d2 = zVec3DInnerProd( (zVec3D *)v2, s1 );
+  d1 = zVec3DInnerProd( ((zVec3DAddrListCell *)v1)->data, s1 );
+  d2 = zVec3DInnerProd( ((zVec3DAddrListCell *)v2)->data, s1 );
   if( zIsTiny( d1 - d2 ) ){
-    d1 = zVec3DInnerProd( (zVec3D *)v1, s2 );
-    d2 = zVec3DInnerProd( (zVec3D *)v2, s2 );
+    d1 = zVec3DInnerProd( ((zVec3DAddrListCell *)v1)->data, s2 );
+    d2 = zVec3DInnerProd( ((zVec3DAddrListCell *)v2)->data, s2 );
     if( zIsTiny( d1 - d2 ) ) return 0;
     return d1 > d2 ? 1 : -1;
   }
   return d1 > d2 ? 1 : -1;
 }
 
-/* planar convex hull of an array of vertices. */
-zLoop3D *zConvexHull2D(zLoop3D *ch, zVec3D p[], int num)
+/* planar convex hull of a list of vertices. */
+static zLoop3D *_zConvexHull2D(zVec3DAddrList *addrlist, zLoop3D *chloop)
 {
   zVec3D s[2], d;
-  int i, j, k;
+  zVec3DAddrListCell *p0, *p1, *p;
   double t, t_max;
 
-  zListInit( ch );
-  if( !_zConvexHull2DBase( p, num, s ) ){
+  zListInit( chloop );
+  if( !_zConvexHull2DBase( addrlist, s ) ){
     ZRUNERROR( ZEO_ERR_CH_DEG1 );
     return NULL;
   }
-  zQuickSort( p, num, sizeof(zVec3D), __z_ch2d_cmp, s );
-
+  zVec3DAddrListQuickSort( addrlist, __z_ch2d_cmp, s );
   /* upper bound */
-  for( i=0; i<num-1; zLoop3DAdd( ch, &p[i] ), i=j )
-    for( t_max=-zPI_2, j=k=i+1; k<num; k++ )
-      if( !zVec3DIsTiny( zVec3DSub( &p[k], &p[i], &d ) ) &&
+  for( p0=zListTail(addrlist); p0!=zListHead(addrlist); zLoop3DAdd( chloop, p0->data ), p0=p1 )
+    for( t_max=-zPI_2, p1=p=zListCellNext(p0); p!=zListRoot(addrlist); p=zListCellNext(p) )
+      if( !zVec3DIsTiny( zVec3DSub( p->data, p0->data, &d ) ) &&
           ( t = atan2( zVec3DInnerProd(&d,&s[1]), zVec3DInnerProd(&d,&s[0]) ) ) >= t_max ){
         t_max = t;
-        j = k;
+        p1 = p;
       }
   /* reverse bases */
   zVec3DRevDRC( &s[0] );
   zVec3DRevDRC( &s[1] );
   /* lower bound */
-  for( ; i>0; zLoop3DAdd( ch, &p[i] ), i=j )
-    for( t_max=-zPI_2, j=k=i-1; k>=0; k-- )
-      if( !zVec3DIsTiny( zVec3DSub( &p[k], &p[i], &d ) ) &&
+  for( ; p0!=zListTail(addrlist); zLoop3DAdd( chloop, p0->data ), p0=p1 )
+    for( t_max=-zPI_2, p1=p=zListCellPrev(p0); p!=zListRoot(addrlist); p=zListCellPrev(p) )
+      if( !zVec3DIsTiny( zVec3DSub( p->data, p0->data, &d ) ) &&
           ( t = atan2( zVec3DInnerProd(&d,&s[1]), zVec3DInnerProd(&d,&s[0]) ) ) >= t_max ){
         t_max = t;
-        j = k;
+        p1 = p;
       }
-  return ch;
+  return chloop;
 }
 
 /* convert a planar convex hull to a polyhedron. */
-static zPH3D *_zConvexHull2D2PH3D(zPH3D *ch, zLoop3D *vl)
+static zPH3D *_zConvexHull2DToPH3D(zPH3D *ch, zLoop3D *chloop)
 {
   zLoop3DCell *vc;
   int vn, i;
 
-  vn = zListSize(vl);
+  vn = zListSize( chloop );
   if( !( ch = zPH3DAlloc( ch, vn, 2*(vn-2) ) ) ) return NULL;
   i = 0;
   /* vertices */
-  zListForEach( vl, vc )
+  zListForEach( chloop, vc )
     zVec3DCopy( vc->data, zPH3DVert(ch,i++) );
   /* faces */
   for( i=2; i<vn; i++ ){
@@ -199,23 +111,32 @@ static zPH3D *_zConvexHull2D2PH3D(zPH3D *ch, zLoop3D *vl)
   return ch;
 }
 
-/* a planar convex hull to a polyhedron. */
-zPH3D *zConvexHull2D2PH3D(zPH3D *ch, zVec3D vert[], int n)
+/* create the convex hull of 3D points on a plane. */
+zLoop3D *zVec3DDataConvexHull2D(zVec3DData *data, zLoop3D *chloop)
 {
-  zLoop3D vl;
+  zVec3DAddrList addrlist;
+  zLoop3D *ret;
 
-  if( !zConvexHull2D( &vl, vert, n ) || !_zConvexHull2D2PH3D( ch, &vl ) ) return NULL;
-  zLoop3DDestroy( &vl );
-  return ch;
+  if( !zVec3DDataToAddrList( data, &addrlist ) ){
+    zVec3DAddrListDestroy( &addrlist );
+    return NULL;
+  }
+  ret = _zConvexHull2D( &addrlist, chloop );
+  zVec3DAddrListDestroy( &addrlist );
+  if( !ret )
+    zLoop3DDestroy( chloop );
+  return ret;
 }
 
-/* a planar convex hull of a list of vertices to a polyhedron. */
-zPH3D *zConvexHull2DPL2PH3D(zPH3D *ch, zVec3DList *pl)
+/* convert a planar convex hull to a polyhedron. */
+zPH3D *zVec3DDataConvexHull2DPH3D(zVec3DData *data, zPH3D *ch)
 {
-  zLoop3D vl;
+  zLoop3D chloop;
 
-  if( !zConvexHull2DPL( &vl, pl ) || !_zConvexHull2D2PH3D( ch, &vl ) ) return NULL;
-  zLoop3DDestroy( &vl );
+  zPH3DInit( ch );
+  if( !zVec3DDataConvexHull2D( data, &chloop ) ) return NULL;
+  ch = _zConvexHull2DToPH3D( ch, &chloop );
+  zLoop3DDestroy( &chloop );
   return ch;
 }
 

@@ -199,8 +199,8 @@ zVec6D *zVec6DFScan(FILE *fp, zVec6D *v)
   return v;
 }
 
-/* print a 6D vector data out to a file. */
-const zVec6D *zVec6DDataFPrint(FILE *fp, const zVec6D *v)
+/* print out values of a 6D vector to a file. */
+const zVec6D *zVec6DValueFPrint(FILE *fp, const zVec6D *v)
 {
   if( !v ) return NULL;
   fprintf( fp, " %.10g %.10g %.10g %.10g %.10g %.10g",
@@ -208,10 +208,10 @@ const zVec6D *zVec6DDataFPrint(FILE *fp, const zVec6D *v)
   return v;
 }
 
-/* print a 6D vector data with the new line out to a file. */
-const zVec6D *zVec6DDataNLFPrint(FILE *fp, const zVec6D *v)
+/* print out values of a 6D vector with the new line to a file. */
+const zVec6D *zVec6DValueNLFPrint(FILE *fp, const zVec6D *v)
 {
-  if( !zVec6DDataFPrint( fp, v ) ) return NULL;
+  if( !zVec6DValueFPrint( fp, v ) ) return NULL;
   fprintf( fp, "\n" );
   return v;
 }

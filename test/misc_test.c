@@ -1,5 +1,10 @@
 #include <zeo/zeo.h>
 
+void assert_3denum(void)
+{
+  zAssert( zAxis, zX == 0 && zY == 1 && zZ == 2 && zXA == 3 && zYA == 4 && zZA == 5 );
+}
+
 void assert_dir(void)
 {
   zAssert( zDirRev,
@@ -16,6 +21,7 @@ void assert_dir(void)
 
 int main(void)
 {
+  assert_3denum();
   assert_dir();
   return EXIT_SUCCESS;
 }

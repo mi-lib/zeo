@@ -4,7 +4,7 @@ bool generate_points(zVec3DArray *array, int n, double radius)
 {
   int i;
 
-  zArrayAlloc( array, zVec3D, n );
+  zVec3DArrayAlloc( array, n );
   if( zArraySize(array) == 0 ) return false;
   for( i=0; i<n; i++ )
     zVec3DCreatePolar( zArrayElem(array,i), zRandF(-radius,radius), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
@@ -52,21 +52,26 @@ int main(void)
 {
   zVec3DArray array;
   zVec3DList plist;
+  zVec3DData data;
   zSphere3D bb;
   zVec3D *vp[4]; /* vertices on the sphere up to four. */
   int n;
 
   zRandInit();
   generate_points( &array, N, 5 );
-  zVec3DArray2List( &array, &plist );
+  zVec3DArrayToList( &array, &plist );
 
-  n = zBoundingBall3D( &bb, &array, vp );
-  zAssert( zBoundingBall3D, test_boundingball( &bb, vp, n, &array ) );
+  zVec3DDataAssignArray( &data, &array );
+  n = zVec3DDataBoundingBall( &data, &bb, vp );
+  zAssert( zVec3DDataBoundingBall (array), test_boundingball( &bb, vp, n, &array ) );
+  zVec3DDataDestroy( &data );
 
-  n = zBoundingBall3DPL( &bb, &plist, vp );
+  zVec3DDataAssignList( &data, &plist );
+  n = zVec3DDataBoundingBall( &data, &bb, vp );
+  zAssert( zBoundingBall3D (list), test_boundingball( &bb, vp, n, &array ) );
+  zVec3DDataDestroy( &data );
+
   zVec3DListDestroy( &plist );
-  zAssert( zBoundingBall3DPL, test_boundingball( &bb, vp, n, &array ) );
-
   zArrayFree( &array );
   return 0;
 }

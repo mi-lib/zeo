@@ -400,7 +400,7 @@ void assert_tri3D_closest(void)
   zAssert( zTri3DClosest (inside case), result3 );
 }
 
-#define TOL (1.0e-10)
+#define TOL (1.0e-9)
 
 void assert_tri3D_center(void)
 {

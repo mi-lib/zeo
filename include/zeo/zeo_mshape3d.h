@@ -16,11 +16,11 @@ __BEGIN_DECLS
  * multiple 3D shape class
  * ********************************************************** */
 
-typedef struct{
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zMShape3D ){
   zShape3DArray shape;
   zOpticalInfoArray optic;
   zTextureArray texture;
-} zMShape3D;
+};
 
 #define zMShape3DShapeNum(s)      zArraySize(&(s)->shape)
 #define zMShape3DShapeBuf(s)      zArrayBuf(&(s)->shape)
@@ -74,8 +74,8 @@ __ZEO_EXPORT bool zMShape3DPointIsInside(zMShape3D *ms, zVec3D *p, double margin
 /*! \brief convert multiple shapes to polyhedra. */
 __ZEO_EXPORT zMShape3D *zMShape3DToPH(zMShape3D *ms);
 
-/*! \brief make a list of vertices of multiple 3D shapes. */
-__ZEO_EXPORT zVec3DList *zMShape3DVertList(zMShape3D *ms, zVec3DList *vl);
+/*! \brief make a set of vertices of multiple 3D shapes. */
+__ZEO_EXPORT zVec3DData *zMShape3DVertData(zMShape3D *ms, zVec3DData *data);
 
 /*! \brief generate the bounding ball of multiple 3D shapes. */
 __ZEO_EXPORT zSphere3D *zMShape3DBoundingBall(zMShape3D *ms, zSphere3D *bb);

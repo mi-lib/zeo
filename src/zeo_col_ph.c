@@ -10,10 +10,13 @@
 bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, zVec3D *p1, zVec3D *p2)
 {
   zVec3D _p1, _p2;
+  zVec3DData data1, data2;
 
   if( p1 == NULL ) p1 = &_p1;
   if( p2 == NULL ) p2 = &_p2;
-  return zGJK( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2), p1, p2 );
+  zVec3DDataAssignArray( &data1, &ph1->vert );
+  zVec3DDataAssignArray( &data2, &ph2->vert );
+  return zGJK( &data1, &data2, p1, p2 );
 }
 
 /* Muller-Preparata's algorithm */
@@ -57,7 +60,8 @@ static zTri3D *_zIntersectPH3DPointIsInside(zPH3D *ph, zVec3D *p, double *dis)
 /* intersection of convices by Muller-Preparata's algorithm. */
 static zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib)
 {
-  zVec3D *v, p1, p2, p_temp;
+  zVec3DData data1, data2;
+  zVec3D p1, p2, p_temp;
   zTri3D *tri;
   zPH3D ch;
   int i, n;
@@ -65,8 +69,10 @@ static zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib
   zTri3D *tri1, *tri2;
 
   zPH3DInit( phcol );
+  zVec3DDataAssignArray( &data1, &ph1->vert );
+  zVec3DDataAssignArray( &data2, &ph2->vert );
   /* the base point with an ad-hoc modulation */
-  if( !zGJKDepth( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2), &p1, &p2 ) ) return NULL;
+  if( !zGJKDepth( &data1, &data2, &p1, &p2 ) ) return NULL;
   zVec3DMid( &p1, &p2, &p_temp );
   zVec3DCopy( &p_temp, &p1) ;
   for( dis1=dis2=0, i=0; i<=Z_MAX_ITER_NUM; i++ ){
@@ -77,49 +83,72 @@ static zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib
     if( tri1 ) zVec3DCatDRC( &p1, -zTOL-dis1, zTri3DNorm(tri1) );
     if( tri2 ) zVec3DCatDRC( &p1, -zTOL-dis2, zTri3DNorm(tri2) );
   }
+  zVec3DDataDestroy( &data1 );
+  zVec3DDataDestroy( &data2 );
 
   /* transfer to dual space */
-  n = zPH3DFaceNum(ph1) + zPH3DFaceNum(ph2);
-  if( !( v = zAlloc( zVec3D, n ) ) ){
-    ZALLOCERROR();
+  if( !zVec3DDataInitArray( &data1, zPH3DFaceNum(ph1) + zPH3DFaceNum(ph2) ) )
     return NULL;
-  }
-  /* dual-transfer triangles intersecting with
-     the roughly-estimated intersection volume */
+  /* dual-transfer triangles intersecting with the roughly-estimated intersection volume */
   n = 0;
   if( ib ){
     for( i=0; i<zPH3DFaceNum(ph1); i++ )
-      if( zColChkTriAABox3D( ( tri = zPH3DFace(ph1,i) ), ib ) )
-        if(!_zTri3DDualXform_a( tri, &p1, &v[n++] )) return NULL;
+      if( zColChkTriAABox3D( ( tri = zPH3DFace(ph1,i) ), ib ) ){
+        _zTri3DDualXform_a( tri, &p1, &p_temp );
+        if( !zVec3DDataAdd( &data1, &p_temp ) ){
+          phcol = NULL;
+          goto TERMINATE;
+        }
+        n++;
+      }
     for( i=0; i<zPH3DFaceNum(ph2); i++ )
-      if( zColChkTriAABox3D( ( tri = zPH3DFace(ph2,i) ), ib ) )
-        if(!_zTri3DDualXform_a( tri, &p1, &v[n++] )) return NULL;
+      if( zColChkTriAABox3D( ( tri = zPH3DFace(ph2,i) ), ib ) ){
+        _zTri3DDualXform_a( tri, &p1, &p_temp );
+        if( !zVec3DDataAdd( &data1, &p_temp ) ){
+          phcol = NULL;
+          goto TERMINATE;
+        }
+        n++;
+      }
   } else{
-    for( i=0; i<zPH3DFaceNum(ph1); i++ )
-      if(!_zTri3DDualXform_a( zPH3DFace(ph1,i), &p1, &v[n++] )) return NULL;
-    for( i=0; i<zPH3DFaceNum(ph2); i++ )
-      if(!_zTri3DDualXform_a( zPH3DFace(ph2,i), &p1, &v[n++] )) return NULL;
+    for( i=0; i<zPH3DFaceNum(ph1); i++ ){
+      _zTri3DDualXform_a( zPH3DFace(ph1,i), &p1, &p_temp );
+      if( !zVec3DDataAdd( &data1, &p_temp ) ){
+        phcol = NULL;
+        goto TERMINATE;
+      }
+      n++;
+    }
+    for( i=0; i<zPH3DFaceNum(ph2); i++ ){
+      _zTri3DDualXform_a( zPH3DFace(ph2,i), &p1, &p_temp );
+      if( !zVec3DDataAdd( &data1, &p_temp ) ){
+        phcol = NULL;
+        goto TERMINATE;
+      }
+      n++;
+    }
   }
   /* convex hull in dual space */
-  if( !zConvexHull3D( &ch, v, n ) ){
+  if( !zVec3DDataConvexHull( &data1, &ch ) ){
     phcol = NULL;
     goto TERMINATE;
   }
-  zFree( v );
+  zVec3DDataDestroy( &data1 );
   /* re-transfer to the original space */
-  if( !( v = zAlloc( zVec3D, zPH3DFaceNum(&ch) ) ) ){
-    ZALLOCERROR();
+  if( !zVec3DDataInitArray( &data1, zPH3DFaceNum(&ch) ) ){
+    phcol = NULL;
     goto TERMINATE;
   }
   for( i=0; i<zPH3DFaceNum(&ch); i++ ){
-    if(!_zTri3DDualXform_b( zPH3DFace(&ch,i), &v[i] )) return NULL;
-    zVec3DAddDRC( &v[i], &p1 );
+    _zTri3DDualXform_b( zPH3DFace(&ch,i), &p_temp );
+    zVec3DAddDRC( &p_temp, &p1 );
+    zVec3DDataAdd( &data1, &p_temp );
   }
-  if( !zConvexHull3D( phcol, v, zPH3DFaceNum(&ch) ) ) phcol = NULL;
+  if( !zVec3DDataConvexHull( &data1, phcol ) ) phcol = NULL;
 
  TERMINATE:
   zPH3DDestroy( &ch );
-  zFree( v );
+  zVec3DDataDestroy( &data1 );
   return phcol;
 }
 

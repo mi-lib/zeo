@@ -1,7 +1,7 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_bv3d_ch - 3D bounding volume: 3D convex hull.
+ * zeo_bv3d_convexhull - 3D bounding volume: 3D convex hull.
  */
 
 #include <zeo/zeo_bv2d.h>
@@ -496,56 +496,29 @@ static zPH3D *_zQH2PH3D(zQH *qh, zPH3D *ph)
   return ph;
 }
 
-/* convex hull from list of 3D points. */
-zPH3D *zConvexHull3DPL(zPH3D *ch, zVec3DList *vl)
-{
-  zVec3DListCell *vc;
-  zQHPointListCell *pc;
-  zQHPointList pl;
-  zQH qh;
-  int ret;
-
-  /* create point list */
-  zListInit( &pl );
-  zListForEach( vl, vc ){
-    if( !( pc = zAlloc( zQHPointListCell, 1 ) ) ) break;
-    _zQHPointCreate( &pc->data, &vc->data );
-    zListInsertHead( &pl, pc );
-  }
-  /* quickhull */
-  if( ( ret = _zQHCreate( &qh, &pl ) ) < 4 ){
-    zListDestroy( zQHPointListCell, &pl );
-    if( ret == 3 ) /* planar convex hull */
-      return zConvexHull2DPL2PH3D( ch, vl );
-    return NULL;
-  }
-  /* convert to a polyhedron */
-  _zQH2PH3D( &qh, ch );
-  _zQHDestroy( &qh );
-  return ch;
-}
-
 /* convex hull of 3D points. */
-zPH3D *zConvexHull3D(zPH3D *ch, zVec3D p[], int num)
+zPH3D *zVec3DDataConvexHull(zVec3DData *data, zPH3D *ch)
 {
   zQHPointListCell *pc;
   zQHPointList pl;
   zQH qh;
-  int i, ret;
+  zVec3D *v;
+  int ret;
 
   zPH3DInit( ch );
   /* create point list */
   zListInit( &pl );
-  for( i=0; i<num; i++ ){
+  zVec3DDataRewind( data );
+  while( ( v = zVec3DDataFetch( data ) ) ){
     if( !( pc = zAlloc( zQHPointListCell, 1 ) ) ) break;
-    _zQHPointCreate( &pc->data, &p[i] );
+    _zQHPointCreate( &pc->data, v );
     zListInsertHead( &pl, pc );
   }
   /* quickhull */
   if( ( ret = _zQHCreate( &qh, &pl ) ) < 4 ){
     zListDestroy( zQHPointListCell, &pl );
     if( ret == 3 ) /* planar convex hull */
-      return zConvexHull2D2PH3D( ch, p, num );
+      return zVec3DDataConvexHull2DPH3D( data, ch );
     return NULL;
   }
   /* convert to a polyhedron */

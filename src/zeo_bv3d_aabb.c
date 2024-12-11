@@ -10,7 +10,7 @@
 /* zAABox3D - 3D axis-aligned box
  * ********************************************************** */
 
-/* initialize an 3D axis-aligned box */
+/* initialize a 3D axis-aligned box */
 zAABox3D *zAABox3DInit(zAABox3D *box)
 {
   zVec3DZero( &box->min );
@@ -18,7 +18,7 @@ zAABox3D *zAABox3DInit(zAABox3D *box)
   return box;
 }
 
-/* create an 3D axis-aligned box */
+/* create a 3D axis-aligned box */
 zAABox3D *zAABox3DCreate(zAABox3D *box, double x1, double y1, double z1, double x2, double y2, double z2)
 {
   zVec3DCreate( &box->min, _zMin(x1,x2), _zMin(y1,y2), _zMin(z1,z2) );
@@ -26,7 +26,7 @@ zAABox3D *zAABox3DCreate(zAABox3D *box, double x1, double y1, double z1, double 
   return box;
 }
 
-/* copy an 3D axis-aligned box to another. */
+/* copy a 3D axis-aligned box to another. */
 zAABox3D *zAABox3DCopy(zAABox3D *src, zAABox3D *dst)
 {
   zVec3DCopy( &src->min, &dst->min );
@@ -46,7 +46,7 @@ zAABox3D *zAABox3DMerge(zAABox3D *dst, zAABox3D *src1, zAABox3D *src2)
     _zMax( src1->max.e[zZ], src2->max.e[zZ] ) );
 }
 
-/* check if a point is inside of an 3D axis-aligned box. */
+/* check if a point is inside of a 3D axis-aligned box. */
 bool zAABox3DPointIsInside(zAABox3D *box, zVec3D *p, double margin)
 {
   return p->e[zX] > box->min.e[zX] - margin && p->e[zX] <= box->max.e[zX] + margin &&
@@ -54,7 +54,7 @@ bool zAABox3DPointIsInside(zAABox3D *box, zVec3D *p, double margin)
          p->e[zZ] > box->min.e[zZ] - margin && p->e[zZ] <= box->max.e[zZ] + margin ? true : false;
 }
 
-/* compute volume of an 3D axis-aligned box. */
+/* compute volume of a 3D axis-aligned box. */
 double zAABox3DVolume(zAABox3D *box)
 {
   return fabs( ( box->max.e[zX] - box->min.e[zX] )
@@ -62,7 +62,7 @@ double zAABox3DVolume(zAABox3D *box)
              * ( box->max.e[zZ] - box->min.e[zZ] ) );
 }
 
-/* convert an 3D axis-aligned box to a general box. */
+/* convert a 3D axis-aligned box to a general box. */
 zBox3D *zAABox3DToBox3D(zAABox3D *aab, zBox3D *box)
 {
   zVec3DMid( &aab->max, &aab->min, zBox3DCenter(box) );
@@ -73,18 +73,20 @@ zBox3D *zAABox3DToBox3D(zAABox3D *aab, zBox3D *box)
   return box;
 }
 
-/* compute an 3D axis-aligned box of a 3D box. */
+/* compute a 3D axis-aligned box of a 3D box. */
 zAABox3D *zBox3DToAABox3D(zBox3D *box, zAABox3D *aabox)
 {
   zVec3D v[8];
+  zVec3DData data;
   int i;
 
   for( i=0; i<8; i++ )
     zBox3DVert( box, i, &v[i] );
-  return zAABB3D( aabox, v, 8, NULL );
+  zVec3DDataAssignArrayDirect( &data, v, 8 );
+  return zVec3DDataAABB( &data, aabox, NULL );
 }
 
-/* print an 3D axis-aligned box out to a file in a format to be plotted. */
+/* print out a 3D axis-aligned box to a file in a format to be plotted. */
 void zAABox3DValueFPrint(FILE *fp, zAABox3D *box)
 {
   double x0, y0, z0, x1, y1, z1;
@@ -135,8 +137,6 @@ static int _zAABB3DTest(zAABox3D *bb, zVec3D *p, zDir u)
   return -1;
 }
 
-/* *** array version *** */
-
 /* enlarge bounding box if a 3D point is outside of the box. */
 static zAABox3D *_zAABB3DInc(zAABox3D *bb, zVec3D *p, zVec3D **vp)
 {
@@ -149,85 +149,43 @@ static zAABox3D *_zAABB3DInc(zAABox3D *bb, zVec3D *p, zVec3D **vp)
 }
 
 /* bounding box of 3D points. */
-zAABox3D *zAABB3D(zAABox3D *bb, zVec3D p[], int num, zVec3D **vp)
+zAABox3D *zVec3DDataAABB(zVec3DData *data, zAABox3D *bb, zVec3D **vp)
 {
-  int i;
+  zVec3D *v;
 
+  if( zVec3DDataIsEmpty( data ) ){
+    ZRUNERROR( ZEO_ERR_EMPTYSET );
+    return NULL;
+  }
   zAABox3DInit( bb );
-  if( num <= 0 ) return NULL;
-
-  zVec3DCopy( &p[0], &bb->min );
-  zVec3DCopy( &p[0], &bb->max );
-  if( vp ) vp[0] = vp[1] = vp[2] = vp[3] = vp[4] = vp[5] = &p[0];
-  for( i=1; i<num; i++ )
-    _zAABB3DInc( bb, &p[i], vp );
-  return bb;
-}
-
-/* bounding box of 3D points in a specified frame. */
-zAABox3D *zAABB3DXform(zAABox3D *bb, zVec3D p[], int num, zFrame3D *f)
-{
-  int i;
-  zVec3D px;
-
-  zAABox3DInit( bb );
-  if( num <= 0 ) return NULL;
-
-  zXform3D( f, &p[0], &px );
-  zVec3DCopy( &px, &bb->min );
-  zVec3DCopy( &px, &bb->max );
-  for( i=1; i<num; i++ ){
-    zXform3D( f, &p[i], &px );
-    _zAABB3DInc( bb, &px, NULL );
+  zVec3DDataRewind( data );
+  v = zVec3DDataFetch( data );
+  zVec3DCopy( v, &bb->min );
+  zVec3DCopy( v, &bb->max );
+  if( vp ) vp[0] = vp[1] = vp[2] = vp[3] = vp[4] = vp[5] = v;
+  while( ( v = zVec3DDataFetch( data ) ) ){
+    _zAABB3DInc( bb, v, vp );
   }
   return bb;
 }
 
-/* *** list version *** */
-
-/* enlarge bounding box if a 3D point is outside of the box. */
-static zAABox3D *_zAABB3DPLInc(zAABox3D *bb, zVec3DListCell *pc, zVec3DListCell **vp)
+/* bounding box of 3D points in a specified frame. */
+zAABox3D *zVec3DDataAABBXform(zVec3DData *data, zAABox3D *bb, zFrame3D *frame)
 {
-  int s;
+  zVec3D *v, px;
 
-  if( ( s = _zAABB3DTest( bb, &pc->data, zX ) ) != -1 && vp ) vp[zX+s] = pc;
-  if( ( s = _zAABB3DTest( bb, &pc->data, zY ) ) != -1 && vp ) vp[zY+s] = pc;
-  if( ( s = _zAABB3DTest( bb, &pc->data, zZ ) ) != -1 && vp ) vp[zZ+s] = pc;
-  return bb;
-}
-
-/* bounding box of a list of 3D points. */
-zAABox3D *zAABB3DPL(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vp)
-{
-  zVec3DListCell *pc;
-
+  if( zVec3DDataIsEmpty( data ) ){
+    ZRUNERROR( ZEO_ERR_EMPTYSET );
+    return NULL;
+  }
   zAABox3DInit( bb );
-  if( zListIsEmpty(pl) ) return NULL;
-
-  pc = zListTail( pl );
-  zVec3DCopy( &pc->data, &bb->min );
-  zVec3DCopy( &pc->data, &bb->max );
-  if( vp ) vp[0] = vp[1] = vp[2] = vp[3] = vp[4] = vp[5] = pc;
-  zListForEach( pl, pc )
-    _zAABB3DPLInc( bb, pc, vp );
-  return bb;
-}
-
-/* bounding box of a list of 3D points in a specified frame. */
-zAABox3D *zAABB3DXformPL(zAABox3D *bb, zVec3DList *pl, zFrame3D *f)
-{
-  zVec3D px;
-  zVec3DListCell *pc;
-
-  zAABox3DInit( bb );
-  if( zListIsEmpty(pl) ) return NULL;
-
-  pc = zListTail( pl );
-  zXform3D( f, &pc->data, &px );
+  zVec3DDataRewind( data );
+  v = zVec3DDataFetch( data );
+  zXform3D( frame, v, &px );
   zVec3DCopy( &px, &bb->min );
   zVec3DCopy( &px, &bb->max );
-  zListForEach( pl, pc ){
-    zXform3D( f, &pc->data, &px );
+  while( ( v = zVec3DDataFetch( data ) ) ){
+    zXform3D( frame, v, &px );
     _zAABB3DInc( bb, &px, NULL );
   }
   return bb;

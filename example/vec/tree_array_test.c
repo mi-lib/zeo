@@ -2,7 +2,7 @@
 
 void array_print(zVec3DArray *array)
 {
-  register int i;
+  int i;
 
   for( i=0; i<zArraySize(array); i++ ){
     printf( "#%d ", i );
@@ -19,16 +19,18 @@ int main(int argc, char *argv[])
   int i;
 
   zRandInit();
-  zArrayAlloc( &array1, zVec3D, N );
+  zVec3DArrayAlloc( &array1, N );
   for( i=0; i<N; i++ ){
-    zVec3DCreate( zArrayElem(&array1,i), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    zVec3DCreate( zArrayElemNC(&array1,i), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
   }
-  zVec3DArray2Tree( &array1, &tree );
-  zVec3DTree2Array( &tree, &array2 );
+  zVec3DArrayToTree( &array1, &tree );
+  zVec3DTreeToArray( &tree, &array2 );
   printf( ">>> array1\n" );
   array_print( &array1 );
   printf( ">>> array2\n" );
   array_print( &array2 );
+  printf( ">>> tree\n" );
+  zVec3DTreeFPrint( stdout, &tree );
   zArrayFree( &array1 );
   zArrayFree( &array2 );
   zVec3DTreeDestroy( &tree );

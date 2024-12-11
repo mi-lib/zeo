@@ -321,24 +321,24 @@ __ZEO_EXPORT zVec6D *zVec6DFromZTK(zVec6D *v, ZTK *ztk);
  *  (null 6D vector)
  * zVec6DPrint() prints \a v out to the standard output.
  *
- * zVec6DDataFPrint() prints a 6D vector \a v out to the current
+ * zVec6DValueFPrint() prints a 6D vector \a v out to the current
  * position of a file \a fp in the following format:
  *  x y z xa ya za
  * When the null pointer is given, nothing is printed.
- * zVec6DDataPrint() prints \a v out to the standard output in
- * the same format with zVec6DDataFPrint().
+ * zVec6DValuePrint() prints \a v out to the standard output in
+ * the same format with zVec6DValueFPrint().
  * \return
  * zVec6DFScan() and zVec6DScan() return a pointer \a v.
  *
- * zVec6DFPrint(), zVec6DPrint(), zVec6DDataFPrint() and zVec6DDataPrint()
+ * zVec6DFPrint(), zVec6DPrint(), zVec6DValueFPrint() and zVec6DValuePrint()
  * return no value.
  */
 __ZEO_EXPORT zVec6D *zVec6DFScan(FILE *fp, zVec6D *v);
 #define zVec6DScan(v) zVec6DFScan( stdin, (v) )
-__ZEO_EXPORT const zVec6D *zVec6DDataFPrint(FILE *fp, const zVec6D *v);
-#define zVec6DDataPrint(v) zVec6DDataFPrint( stdout, (v) )
-__ZEO_EXPORT const zVec6D *zVec6DDataNLFPrint(FILE *fp, const zVec6D *v);
-#define zVec6DDataNLPrint(v) zVec6DDataNLFPrint( stdout, (v) )
+__ZEO_EXPORT const zVec6D *zVec6DValueFPrint(FILE *fp, const zVec6D *v);
+#define zVec6DValuePrint(v) zVec6DValueFPrint( stdout, (v) )
+__ZEO_EXPORT const zVec6D *zVec6DValueNLFPrint(FILE *fp, const zVec6D *v);
+#define zVec6DValueNLPrint(v) zVec6DValueNLFPrint( stdout, (v) )
 __ZEO_EXPORT const zVec6D *zVec6DFPrint(FILE *fp, const zVec6D *v);
 #define zVec6DPrint(v) zVec6DFPrint( stdout, (v) )
 

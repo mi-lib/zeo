@@ -5,23 +5,23 @@
 
 int main(int argc, char *argv[])
 {
-  zVec2DList pl;
+  zVec2DData data;
   zVec2D p;
   zDisk2D bd;
-  register int i;
+  int i;
   FILE *fp;
 
   zRandInit();
   fp = fopen( "v", "w" );
-  zListInit( &pl );
+  zVec2DDataInitList( &data );
   for( i=0; i<N; i++ ){
     zVec2DCreatePolar( &p, zRandF(0,10), zRandF(-zPI,zPI) );
-    zVec2DListAdd( &pl, &p );
+    zVec2DDataAdd( &data, &p );
     zVec2DValueFPrint( fp, &p );
     fprintf( fp, "\n" );
   }
   fclose( fp );
-  zBoundingDisk2DPL( &bd, &pl, NULL );
+  zVec2DDataBoundingDisk( &data, &bd, NULL );
   fp = fopen( "d", "w" );
   for( i=0; i<=DIV; i++ ){
     fprintf( fp, "%.10g %.10g\n",
@@ -30,6 +30,6 @@ int main(int argc, char *argv[])
   }
   fclose( fp );
 
-  zVec2DListDestroy( &pl );
+  zVec2DDataDestroy( &data );
   return 0;
 }

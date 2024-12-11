@@ -59,6 +59,7 @@ static bool _zOBB3DMaxDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
 {
   zLoop3D rim;
   zLoop3DCell *vp1, *vp2;
+  zVec3DData data;
   zVec3D e1, e2, c, dc;
   double l1, l2;
   double area, area_min;
@@ -69,7 +70,8 @@ static bool _zOBB3DMaxDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
     /* shift to the plane passing the original point */
     zVec3DSubDRC( zPH3DVert(ch,i), zBox3DCenter(obb) );
   }
-  if( !zConvexHull2D( &rim, zPH3DVertBuf(ch), zPH3DVertNum(ch) ) ) return false;
+  zVec3DDataAssignArray( &data, &ch->vert );
+  if( !zVec3DDataConvexHull2D( &data, &rim ) ) return false;
   /* minimum rectangle on minimum-eigenvalue plane */
   vp1 = zListTail(&rim);
   vp2 = zListHead(&rim);
@@ -96,26 +98,13 @@ static bool _zOBB3DMaxDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
   return true;
 }
 
-/* oriented bounding box. */
-zBox3D *zOBB3D(zBox3D *obb, zVec3D p[], int n)
+/* oriented bounding box of 3D points. */
+zBox3D *zVec3DDataOBB(zVec3DData *data, zBox3D *obb)
 {
   zPH3D ch;
   zPlane3D pln;
 
-  if( !zConvexHull3D( &ch, p, n ) ) return NULL;
-  _zOBB3DMinDir( obb, &ch, &pln );
-  if( !_zOBB3DMaxDir( obb, &ch, &pln ) ) obb = NULL;
-  zPH3DDestroy( &ch );
-  return obb;
-}
-
-/* oriented bounding box of a list of points. */
-zBox3D *zOBB3DPL(zBox3D *obb, zVec3DList *pl)
-{
-  zPH3D ch;
-  zPlane3D pln;
-
-  if( !zConvexHull3DPL( &ch, pl ) ) return NULL;
+  if( !zVec3DDataConvexHull( data, &ch ) ) return NULL;
   _zOBB3DMinDir( obb, &ch, &pln );
   if( !_zOBB3DMaxDir( obb, &ch, &pln ) ) obb = NULL;
   zPH3DDestroy( &ch );

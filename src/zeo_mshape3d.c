@@ -128,40 +128,49 @@ zMShape3D *zMShape3DToPH(zMShape3D *ms)
   return ms;
 }
 
-/* make a list of vertices of multiple 3D shapes. */
-zVec3DList *zMShape3DVertList(zMShape3D *ms, zVec3DList *vl)
+/* make a set of vertices of multiple 3D shapes. */
+zVec3DData *zMShape3DVertData(zMShape3D *ms, zVec3DData *data)
 {
   zShape3D *sp, s;
   int i, j;
+  bool result = true;
 
-  zListInit( vl );
+  zVec3DDataInitList( data );
   for( i=0; i<zMShape3DShapeNum(ms); i++ ){
     sp = zMShape3DShape(ms,i);
     if( sp->com == &zeo_shape3d_ph_com ){
       for( j=0; j<zShape3DVertNum(sp); j++ ){
-        if( !zVec3DListAdd( vl, zShape3DVert(sp,j) ) ) return NULL;
+        if( !zVec3DDataAdd( data, zShape3DVert(sp,j) ) ) goto ERROR;
       }
     } else{
       zShape3DClone( sp, &s, NULL );
-      if( !zShape3DToPH( &s ) ) return NULL;
-      if( !zVec3DListAppendArray( vl, &zShape3DPH(&s)->vert ) ) vl = NULL;
+      if( !zShape3DToPH( &s ) ){
+        result = false;
+      } else
+      for( j=0; j<zShape3DVertNum(&s); j++ ){
+        if( !zVec3DDataAdd( data, zShape3DVert(&s,j) ) ) result = false;
+      }
       zShape3DDestroy( &s );
-      if( !vl ) return NULL;
+      if( !result ) goto ERROR;
     }
   }
-  return vl;
+  return data;
+
+ ERROR:
+  zVec3DDataDestroy( data );
+  return NULL;
 }
 
 /* generate the bounding ball of multiple 3D shapes. */
 zSphere3D *zMShape3DBoundingBall(zMShape3D *ms, zSphere3D *bb)
 {
-  zVec3DList pl;
+  zVec3DData data;
 
-  if( zMShape3DVertList( ms, &pl ) )
-    zBoundingBall3DPL( bb, &pl, NULL );
+  if( zMShape3DVertData( ms, &data ) )
+    zVec3DDataBoundingBall( &data, bb, NULL );
   else
     bb = NULL;
-  zVec3DListDestroy( &pl );
+  zVec3DDataDestroy( &data );
   return bb;
 }
 

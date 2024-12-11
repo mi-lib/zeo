@@ -13,9 +13,9 @@ void output_ph(FILE *fp, zPH3D *ph, int i)
 
   sprintf( name, "color%d", i );
   zOpticalInfoCreateSimple( &oi, zRandF(0.3,1), zRandF(0.3,1),zRandF(0.3,1), name );
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[zeo::optic]\n" );
   zOpticalInfoFPrintZTK( fp, &oi );
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "name: shape%d\n", i );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "BB: AABB\n" );
@@ -26,26 +26,31 @@ void output_ph(FILE *fp, zPH3D *ph, int i)
 
 void create_ph(shape_t *shape, int ns, int nv)
 {
-  zVec3D *v;
+  zVec3DData data_src, data_ph;
+  zVec3D v;
   int i, j;
   double x0, y0, z0;
   FILE *fp;
 
-  v = zAlloc( zVec3D, nv );
+  zVec3DDataInitArray( &data_src, nv );
   fp = fopen( "vast_src", "w" );
   for( i=0; i<ns; i++ ){
     x0 = zRandF(-0.4,0.4);
     y0 = zRandF(-0.4,0.4);
     z0 = zRandF(-0.4,0.4);
-    for( j=0; j<nv; j++ )
-      zVec3DCreate( &v[j], x0+zRandF(-0.05,0.05), y0+zRandF(-0.05,0.05), z0+zRandF(-0.05,0.05) );
-    zConvexHull3D( &shape[i].ph, v, nv );
-    zOBB3D( &shape[i].obb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph) );
-    zAABB3D( &shape[i].aabb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph), NULL );
+    for( j=0; j<nv; j++ ){
+      zVec3DCreate( &v, x0+zRandF(-0.05,0.05), y0+zRandF(-0.05,0.05), z0+zRandF(-0.05,0.05) );
+      zVec3DDataAdd( &data_src, &v );
+    }
+    zVec3DDataConvexHull( &data_src, &shape[i].ph );
+    zVec3DDataAssignArray( &data_ph, &shape[i].ph.vert );
+    zVec3DDataOBB( &data_ph, &shape[i].obb );
+    zVec3DDataAABB( &data_ph, &shape[i].aabb, NULL );
     output_ph( fp, &shape[i].ph, i );
+    zVec3DDataDestroy( &data_ph );
   }
   fclose( fp );
-  zFree( v );
+  zVec3DDataDestroy( &data_src );
 }
 
 /* GJK */
@@ -54,18 +59,20 @@ void colchk_bruteforce_gjk(shape_t *shape, int ns)
 {
   int i, j;
   zVec3D ca, cb;
-  zPH3D *ph1, *ph2;
+  zVec3DData data1, data2;
   FILE *fp;
 
   fp = fopen( "vast_GJK", "w" );
   for( i=0; i<ns; i++ ){
-    ph1 = &shape[i].ph;
+    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
     for( j=i+1; j<ns; j++ ){
-      ph2 = &shape[j].ph;
-      if( zGJK( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2), &ca, &cb ) ){
+      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
+      if( zGJK( &data1, &data2, &ca, &cb ) ){
         fprintf( fp, "%d-%d\n", i, j );
       }
+      zVec3DDataDestroy( &data2 );
     }
+    zVec3DDataDestroy( &data1 );
   }
   fclose( fp );
 }
@@ -74,20 +81,22 @@ void colchk_obb_gjk(shape_t *shape, int ns)
 {
   int i, j;
   zVec3D ca, cb;
-  zPH3D *ph1, *ph2;
+  zVec3DData data1, data2;
   FILE *fp;
 
   fp = fopen( "vast_OBB", "w" );
   for( i=0; i<ns; i++ ){
-    ph1 = &shape[i].ph;
+    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
     for( j=i+1; j<ns; j++ ){
-      ph2 = &shape[j].ph;
+      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
       if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
-        if( zGJK( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2), &ca, &cb ) ){
+        if( zGJK( &data1, &data2, &ca, &cb ) ){
           fprintf( fp, "%d-%d\n", i, j );
         }
       }
+      zVec3DDataDestroy( &data2 );
     }
+    zVec3DDataDestroy( &data1 );
   }
   fclose( fp );
 }
@@ -96,25 +105,29 @@ void colchk_aabb_gjk(shape_t *shape, int ns)
 {
   int i, j;
   zVec3D ca, cb;
-  zPH3D *ph1, *ph2;
+  zVec3DData data1, data2;
   FILE *fp;
 
-  for( i=0; i<ns; i++ )
-    zAABB3D( &shape[i].aabb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph), NULL );
+  for( i=0; i<ns; i++ ){
+    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
+    zVec3DDataAABB( &data1, &shape[i].aabb, NULL );
+  }
 
   fp = fopen( "vast_AABB", "w" );
   for( i=0; i<ns; i++ ){
-    ph1 = &shape[i].ph;
+    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
     for( j=i+1; j<ns; j++ ){
-      ph2 = &shape[j].ph;
+      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
       if( zColChkAABox3D( &shape[i].aabb, &shape[j].aabb ) ){
         if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
-          if( zGJK( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2), &ca, &cb ) ){
+          if( zGJK( &data1, &data2, &ca, &cb ) ){
             fprintf( fp, "%d-%d\n", i, j );
           }
         }
       }
+      zVec3DDataDestroy( &data2 );
     }
+    zVec3DDataDestroy( &data1 );
   }
   fclose( fp );
 }
@@ -123,7 +136,7 @@ void colchk_obb_aabb_gjk(shape_t *shape, int ns)
 {
   int i, j;
   zVec3D ca, cb;
-  zPH3D *ph1, *ph2;
+  zVec3DData data1, data2;
   FILE *fp;
 
   for( i=0; i<ns; i++ )
@@ -131,17 +144,19 @@ void colchk_obb_aabb_gjk(shape_t *shape, int ns)
 
   fp = fopen( "vast_OBB_AABB", "w" );
   for( i=0; i<ns; i++ ){
-    ph1 = &shape[i].ph;
+    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
     for( j=i+1; j<ns; j++ ){
-      ph2 = &shape[j].ph;
+      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
       if( zColChkAABox3D( &shape[i].aabb, &shape[j].aabb ) ){
         if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
-          if( zGJK( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2), &ca, &cb ) ){
+          if( zGJK( &data1, &data2, &ca, &cb ) ){
             fprintf( fp, "%d-%d\n", i, j );
           }
         }
       }
+      zVec3DDataDestroy( &data2 );
     }
+    zVec3DDataDestroy( &data1 );
   }
   fclose( fp );
 }
@@ -151,18 +166,20 @@ void colchk_obb_aabb_gjk(shape_t *shape, int ns)
 void colchk_bruteforce_mpr(shape_t *shape, int ns)
 {
   int i, j;
-  zPH3D *ph1, *ph2;
+  zVec3DData data1, data2;
   FILE *fp;
 
   fp = fopen( "vast_MPR", "w" );
   for( i=0; i<ns; i++ ){
-    ph1 = &shape[i].ph;
+    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
     for( j=i+1; j<ns; j++ ){
-      ph2 = &shape[j].ph;
-      if( zMPR( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2) ) ){
+      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
+      if( zMPR( &data1, &data2 ) ){
         fprintf( fp, "%d-%d\n", i, j );
       }
+      zVec3DDataDestroy( &data2 );
     }
+    zVec3DDataDestroy( &data1 );
   }
   fclose( fp );
 }
@@ -170,20 +187,22 @@ void colchk_bruteforce_mpr(shape_t *shape, int ns)
 void colchk_obb_mpr(shape_t *shape, int ns)
 {
   int i, j;
-  zPH3D *ph1, *ph2;
+  zVec3DData data1, data2;
   FILE *fp;
 
   fp = fopen( "vast_OBB", "w" );
   for( i=0; i<ns; i++ ){
-    ph1 = &shape[i].ph;
+    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
     for( j=i+1; j<ns; j++ ){
-      ph2 = &shape[j].ph;
+      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
       if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
-        if( zMPR( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2) ) ){
+        if( zMPR( &data1, &data2 ) ){
           fprintf( fp, "%d-%d\n", i, j );
         }
       }
+      zVec3DDataDestroy( &data2 );
     }
+    zVec3DDataDestroy( &data1 );
   }
   fclose( fp );
 }
@@ -191,25 +210,29 @@ void colchk_obb_mpr(shape_t *shape, int ns)
 void colchk_aabb_mpr(shape_t *shape, int ns)
 {
   int i, j;
-  zPH3D *ph1, *ph2;
+  zVec3DData data1, data2;
   FILE *fp;
 
-  for( i=0; i<ns; i++ )
-    zAABB3D( &shape[i].aabb, zPH3DVertBuf(&shape[i].ph), zPH3DVertNum(&shape[i].ph), NULL );
+  for( i=0; i<ns; i++ ){
+    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
+    zVec3DDataAABB( &data1, &shape[i].aabb, NULL );
+  }
 
   fp = fopen( "vast_AABB", "w" );
   for( i=0; i<ns; i++ ){
-    ph1 = &shape[i].ph;
+    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
     for( j=i+1; j<ns; j++ ){
-      ph2 = &shape[j].ph;
+      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
       if( zColChkAABox3D( &shape[i].aabb, &shape[j].aabb ) ){
         if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
-          if( zMPR( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2) ) ){
+          if( zMPR( &data1, &data2 ) ){
             fprintf( fp, "%d-%d\n", i, j );
           }
         }
       }
+      zVec3DDataDestroy( &data2 );
     }
+    zVec3DDataDestroy( &data1 );
   }
   fclose( fp );
 }
@@ -217,7 +240,7 @@ void colchk_aabb_mpr(shape_t *shape, int ns)
 void colchk_obb_aabb_mpr(shape_t *shape, int ns)
 {
   int i, j;
-  zPH3D *ph1, *ph2;
+  zVec3DData data1, data2;
   FILE *fp;
 
   for( i=0; i<ns; i++ )
@@ -225,17 +248,19 @@ void colchk_obb_aabb_mpr(shape_t *shape, int ns)
 
   fp = fopen( "vast_OBB_AABB", "w" );
   for( i=0; i<ns; i++ ){
-    ph1 = &shape[i].ph;
+    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
     for( j=i+1; j<ns; j++ ){
-      ph2 = &shape[j].ph;
+      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
       if( zColChkAABox3D( &shape[i].aabb, &shape[j].aabb ) ){
         if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
-          if( zMPR( zPH3DVertBuf(ph1), zPH3DVertNum(ph1), zPH3DVertBuf(ph2), zPH3DVertNum(ph2) ) ){
+          if( zMPR( &data1, &data2 ) ){
             fprintf( fp, "%d-%d\n", i, j );
           }
         }
       }
+      zVec3DDataDestroy( &data2 );
     }
+    zVec3DDataDestroy( &data1 );
   }
   fclose( fp );
 }

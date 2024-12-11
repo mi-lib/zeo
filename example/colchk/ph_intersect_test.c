@@ -8,21 +8,21 @@ void output(char filename[], zPH3D *a, zPH3D *b, zPH3D *c)
 
   fp = fopen( filename, "w" );
   /* for visualization */
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[zeo::optic]\n" );
   fprintf( fp, "name: red\n" );
   fprintf( fp, "ambient: 0.8 0.2 0.2\n" );
   fprintf( fp, "diffuse: 1.0 0.2 0.2\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.4\n" );
   fprintf( fp, "esr: 1.0\n\n" );
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[zeo::optic]\n" );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.2 0.2 0.8\n" );
   fprintf( fp, "diffuse: 0.2 0.2 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.4\n" );
   fprintf( fp, "esr: 1.0\n\n" );
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[zeo::optic]\n" );
   fprintf( fp, "name: yellow\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.4\n" );
   fprintf( fp, "diffuse: 1.0 1.0 0.4\n" );
@@ -31,20 +31,20 @@ void output(char filename[], zPH3D *a, zPH3D *b, zPH3D *c)
   fprintf( fp, "esr: 1.0\n\n" );
   /* intersection convex */
   if( c ){
-    fprintf( fp, "[shape]\n" );
+    fprintf( fp, "[zeo::shape]\n" );
     fprintf( fp, "name: c\n" );
     fprintf( fp, "type: polyhedron\n" );
     fprintf( fp, "optic: yellow\n" );
     zPH3DFPrintZTK( fp, c );
   }
   /* convex 1 */
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
   zPH3DFPrintZTK( fp, a );
   /* convex 2 */
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
@@ -57,13 +57,15 @@ void output(char filename[], zPH3D *a, zPH3D *b, zPH3D *c)
 void test_ph(zPH3D *a, zPH3D *b, int n)
 {
   zVec3D v[N];
-  register int i;
+  zVec3DData data;
+  int i;
 
   if( n > N ) n = N;
-  zRandInit();
+  zVec3DDataAssignArrayDirect( &data, v, n );
+
   for( i=0; i<n; i++ )
     zVec3DCreatePolar( &v[i], zRandF(-0.1,0.1), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
-  zConvexHull3D( a, v, n );
+  zVec3DDataConvexHull( &data, a );
 
   for( i=0; i<n; i++ ){
     zVec3DCreatePolar( &v[i], zRandF(-0.1,0.1), zRandF(-zPI,zPI), zRandF(-0.5*zPI,0.5*zPI) );
@@ -71,7 +73,7 @@ void test_ph(zPH3D *a, zPH3D *b, int n)
     v[i].e[zY] += 0.08;
     v[i].e[zZ] += 0.08;
   }
-  zConvexHull3D( b, v, n );
+  zVec3DDataConvexHull( &data, b );
 }
 
 int main(int argc, char *argv[])
@@ -80,6 +82,8 @@ int main(int argc, char *argv[])
   clock_t t1, t2;
   int n;
   int dt1, dt2, dt3, dt4;
+
+  zRandInit();
 
   test_ph( &a, &b, ( n = argc > 1 ? atoi(argv[1]) : N ) );
   output( "org.ztk", &a, &b, NULL );

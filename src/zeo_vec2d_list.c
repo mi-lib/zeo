@@ -11,46 +11,32 @@
  * list of 2D vectors
  * ********************************************************** */
 
-/* find an identical 2D vector in a list. */
-zVec2DListCell *zVec2DListFind(zVec2DList *list, zVec2D *v)
-{
-  zVec2DListCell *cp;
-
-  zListForEach( list, cp )
-    if( zVec2DEqual( cp->data, v ) ) return cp;
-  return NULL;
-}
+/* allocate a 2D vector list cell and copy a vector. */
+ZEO_VECXD_LIST_NEW( 2D )
 
 /* add a 2D vector to a vector list. */
-zVec2DListCell *zVec2DListAdd(zVec2DList *list, zVec2D *v)
-{
-  zVec2DListCell *cell;
+ZEO_VECXD_LIST_ADD( 2D )
 
-  if( !( cell = zAlloc( zVec2DListCell, 1 ) ) ){
-    ZALLOCERROR();
-    return NULL;
-  }
-  if( !( cell->data = zAlloc( zVec2D, 1 ) ) ){
-    ZALLOCERROR();
-    free( cell );
-    return NULL;
-  }
-  zVec2DCopy( v, cell->data );
-  zListInsertHead( list, cell );
-  return cell;
-}
+/* append an array of 2D vectors to a list. */
+ZEO_VECXD_LIST_APPEND_ARRAY( 2D )
 
-/* destroy a list of 2D vectors. */
-void zVec2DListDestroy(zVec2DList *list)
-{
-  zVec2DListCell *vc;
+/* clone an array of 2D vectors. */
+ZEO_VECXD_LIST_CLONE( 2D )
 
-  while( !zListIsEmpty( list ) ){
-    zListDeleteHead( list, &vc );
-    zFree( vc->data );
-    zFree( vc );
-  }
-}
+/* converts an array of 2D vectors to a list. */
+ZEO_VECXD_LIST_ARRAY_TO_LIST( 2D )
+
+/* find an identical 2D vector in a list. */
+ZEO_VECXD_LIST_FIND( 2D )
+
+/* quick sort of a list of 2D vectors. */
+ZEO_VECXD_LIST_QUICKSORT( 2D )
+
+/* print a list of 2D vectors to a file. */
+ZEO_VECXD_LIST_FPRINT( 2D )
+
+/* print a list of 2D vectors in a plain form to a file. */
+ZEO_VECXD_LIST_VALUE_FPRINT( 2D )
 
 /* ********************************************************** */
 /* CLASS: zVec2DAddrList
@@ -58,26 +44,25 @@ void zVec2DListDestroy(zVec2DList *list)
  * ********************************************************** */
 
 /* add a pointer to a 2D vector into a list of pointers to 2D vectors. */
-zVec2DAddr *zVec2DAddrListAdd(zVec2DAddrList *list, zVec2D *v)
-{
-  zVec2DAddr *cell;
+ZEO_VECXD_ADDRLIST_ADD( 2D )
 
-  if( !( cell = zAlloc( zVec2DAddr, 1 ) ) ){
-    ZALLOCERROR();
-    return NULL;
-  }
-  cell->data = v;
-  zListInsertHead( list, cell );
-  return cell;
-}
+/* append an array of 2D vectors to a list of pointers to 2D vectors. */
+ZEO_VECXD_ADDRLIST_APPEND_ARRAY( 2D )
 
 /* create a list of pointers to 2D vectors from an array of 2D vectors. */
-zVec2DAddrList *zVec2DAddrListCreate(zVec2DAddrList *list, zVec2DArray *va)
-{
-  int i;
+ZEO_VECXD_ADDRLIST_CREATE( 2D )
 
-  zListInit( list );
-  for( i=0; i<zArraySize(va); i++ )
-    if( !zVec2DAddrListAdd( list, zArrayElemNC(va,i) ) ) break;
-  return list;
-}
+/* create a list of pointers to 2D vectors from a list of 2D vectors. */
+ZEO_VECXD_ADDRLIST_FROM_LIST( 2D )
+
+/* clone a list of pointers to 2D vectors. */
+ZEO_VECXD_ADDRLIST_CLONE( 2D )
+
+/* quick sort of a list of pointers to 2D vectors. */
+ZEO_VECXD_ADDRLIST_QUICKSORT( 2D )
+
+/* print a list of pointers to 2D vectors to a file. */
+ZEO_VECXD_ADDRLIST_FPRINT( 2D )
+
+/* print a list of pointers to 2D vectors in a plain form to a file. */
+ZEO_VECXD_ADDRLIST_VALUE_FPRINT( 2D )

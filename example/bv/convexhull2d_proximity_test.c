@@ -6,6 +6,7 @@ int main(void)
 {
   zVec3D p, cp;
   zVec3D v[N];
+  zVec3DData data;
   zLoop3D ch;
   zLoop3DCell *vc;
   FILE *fp;
@@ -18,7 +19,9 @@ int main(void)
     zVec3DValueNLFPrint( fp, &v[i] );
   }
   fclose( fp );
-  zConvexHull2D( &ch, v, N );
+  zVec3DDataAssignArrayDirect( &data, v, N );
+  zVec3DDataConvexHull2D( &data, &ch );
+  zVec3DDataDestroy( &data );
 
   fp = fopen( "c", "w" );
   zListForEach( &ch, vc )

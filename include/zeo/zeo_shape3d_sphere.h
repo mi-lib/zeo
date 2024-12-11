@@ -144,19 +144,18 @@ __ZEO_EXPORT void zSphere3DFPrintZTK(FILE *fp, const zSphere3D *sphere);
 
 /*! \brief fit a sphere to point cloud.
  *
- * zSphere3DFit() fits a sphere to given point cloud \a pc. The result
- * is stored in \a s.
+ * zSphere3DFit() fits a sphere to given point cloud \a data. The result is stored in \a sphere.
  * \return
- * The pointer \a s is returned.
+ * The pointer \a sphere is returned.
  */
-__ZEO_EXPORT zSphere3D *zSphere3DFit(zSphere3D *s, zVec3DList *pc);
+__ZEO_EXPORT zSphere3D *zSphere3DFit(zSphere3D *sphere, zVec3DData *data);
 
 /* methods for abstraction */
 __ZEO_EXPORT zShape3DCom zeo_shape3d_sphere_com;
 
-#define zShape3DSphere(s) ( (zSphere3D*)(s)->body )
+#define zShape3DSphere(sphere) ( (zSphere3D*)(sphere)->body )
 
-__ZEO_EXPORT zShape3D *zShape3DSphereCreate(zShape3D *shape, const zVec3D *c, double r, int div);
+__ZEO_EXPORT zShape3D *zShape3DSphereCreate(zShape3D *shape, const zVec3D *center, double radius, int div);
 
 __END_DECLS
 

@@ -15,27 +15,16 @@ __BEGIN_DECLS
 /* 3D convex hull
  * ********************************************************** */
 
-/*! \brief convex hull of points.
+/*! \brief convex hull of 3D points.
  *
- * zConvexHull3D() computes convex hull of a set of points \a p. \a num
- * is the number of points. The result is put into \a ch.
- *
- * zConvexHull3DPL() also computes convex hull. For this function, a set
- * of points is given as a vector list \a pl.
- *
- * The algorithm is according to quickhull by C. Barber,
- * D. Dobkin and H. Huhdanpaa(1996).
- * \notes
- * In the cource of computation, \a pl is partially destroyed
- * but not freed by zConvexHull3DPL().
+ * zVec3DDataConvexHull() computes the convex hull of a set of points \a data based on the
+ * quickhull algorithm by C. Barber, D. Dobkin and H. Huhdanpaa (1996).
+ * The result is put into \a ch.
  * \return
- * zConvexHull3DPL() and zConvexHull3D() return a pointer \a ch if succeeding
- * to compute the convex hull. If failing to allocate working
- * memory necessitated in computation, the null pointer is
- * returned.
+ * zVec3DDataConvexHull() returns a pointer \a ch if it succeeds to compute the convex hull.
+ * If it fails to allocate necessary memory for computation, the null pointer is returned.
  */
-__ZEO_EXPORT zPH3D *zConvexHull3D(zPH3D *ch, zVec3D p[], int num);
-__ZEO_EXPORT zPH3D *zConvexHull3DPL(zPH3D *ch, zVec3DList *pl);
+__ZEO_EXPORT zPH3D *zVec3DDataConvexHull(zVec3DData *data, zPH3D *ch);
 
 __END_DECLS
 

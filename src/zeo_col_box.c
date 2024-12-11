@@ -232,9 +232,12 @@ zAABox3D *zIntersectAABox3D(zAABox3D *dst, zAABox3D *src1, zAABox3D *src2)
 zAABox3D *zIntersectPH3DBox(zPH3D *ph1, zPH3D *ph2, zAABox3D *box)
 {
   zAABox3D b1, b2;
+  zVec3DData data1, data2;
 
-  zAABB3D( &b1, zPH3DVertBuf(ph1), zPH3DVertNum(ph1), NULL );
-  zAABB3D( &b2, zPH3DVertBuf(ph2), zPH3DVertNum(ph2), NULL );
+  zVec3DDataAssignArray( &data1, &ph1->vert );
+  zVec3DDataAssignArray( &data2, &ph2->vert );
+  zVec3DDataAABB( &data1, &b1, NULL );
+  zVec3DDataAABB( &data2, &b2, NULL );
   return zIntersectAABox3D( box, &b1, &b2 ) ? box : NULL;
 }
 

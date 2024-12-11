@@ -6,86 +6,53 @@
 
 #include <zeo/zeo_mat3d.h>
 
-/* barycenter of a point cloud given by a list. */
-zVec3D *zVec3DBarycenterPL(zVec3DList *pl, zVec3D *c)
+/* barycenter of a point cloud. */
+zVec3D *zVec3DDataBarycenter(zVec3DData *data, zVec3D *c)
 {
-  zVec3DListCell *pc;
+  zVec3D *v;
 
-  zVec3DZero( c );
-  zListForEach( pl, pc )
-    zVec3DAddDRC( c, &pc->data );
-  return zVec3DDivDRC( c, zListSize(pl) );
-}
-
-/* barycenter of a point cloud given by an array. */
-zVec3D *zVec3DBarycenter(zVec3D p[], int num, zVec3D *c)
-{
-  int i;
-
-  zVec3DZero( c );
-  for( i=0; i<num; i++ )
-    zVec3DAddDRC( c, &p[i] );
-  return zVec3DDivDRC( c, num );
-}
-
-/* PCA to vector cloud given by a list. */
-zVec3D *zVec3DPCA_PL(zVec3DList *pl, zVec3D evec[])
-{
-  zMat3D vm;
-  double eval[3];
-  zVec3DListCell *pc;
-
-  zMat3DZero( &vm );
-  zListForEach( pl, pc )
-    zMat3DAddDyad( &vm, &pc->data, &pc->data );
-  zMat3DSymEig( &vm, eval, evec );
-  return evec;
-}
-
-/* PCA to vector cloud given by an array. */
-zVec3D *zVec3DPCA(zVec3D p[], int num, zVec3D evec[])
-{
-  zMat3D vm;
-  double eval[3];
-  int i;
-
-  zMat3DZero( &vm );
-  for( i=0; i<num; i++ )
-    zMat3DAddDyad( &vm, &p[i], &p[i] );
-  zMat3DSymEig( &vm, eval, evec );
-  return evec;
-}
-
-/* barycenter of and PCA to vector cloud given by a list. */
-zVec3D *zVec3DBaryPCA_PL(zVec3DList *pl, zVec3D *c, zVec3D evec[])
-{
-  zMat3D vm;
-  double eval[3];
-  zVec3DListCell *pc;
-  zVec3D dp;
-
-  zVec3DBarycenterPL( pl, c );
-  zMat3DZero( &vm );
-  zListForEach( pl, pc ){
-    zVec3DSub( &pc->data, c, &dp );
-    zMat3DAddDyad( &vm, &dp, &dp );
+  if( zVec3DDataIsEmpty( data ) ){
+    ZRUNERROR( ZEO_ERR_EMPTYSET );
+    return NULL;
   }
-  zMat3DSymEig( &vm, eval, evec );
-  return c;
+  zVec3DZero( c );
+  zVec3DDataRewind( data );
+  while( ( v = zVec3DDataFetch( data ) ) )
+    zVec3DAddDRC( c, v );
+  return zVec3DDivDRC( c, zVec3DDataSize(data) );
 }
 
-/* barycenter of and PCA to vector cloud given by an array. */
-zVec3D *zVec3DBaryPCA(zVec3D p[], int num, zVec3D *c, zVec3D evec[])
+/* PCA to vector cloud. */
+zVec3D *zVec3DDataPCA(zVec3DData *data, zVec3D evec[])
 {
   zMat3D vm;
+  zVec3D *v;
   double eval[3];
-  zVec3D dp;
-  int i;
 
-  zVec3DBarycenter( p, num, c );
+  if( zVec3DDataIsEmpty( data ) ){
+    ZRUNERROR( ZEO_ERR_EMPTYSET );
+    return NULL;
+  }
   zMat3DZero( &vm );
-  for( i=0; i<num; i++ ){
-    zVec3DSub( &p[i], c, &dp );
+  zVec3DDataRewind( data );
+  while( ( v = zVec3DDataFetch( data ) ) )
+    zMat3DAddDyad( &vm, v, v );
+  zMat3DSymEig( &vm, eval, evec );
+  return evec;
+}
+
+/* barycenter of and PCA to vector cloud. */
+zVec3D *zVec3DDataBaryPCA(zVec3DData *data, zVec3D *c, zVec3D evec[])
+{
+  zMat3D vm;
+  zVec3D dp, *v;
+  double eval[3];
+
+  if( !zVec3DDataBarycenter( data, c ) ) return NULL;
+  zMat3DZero( &vm );
+  zVec3DDataRewind( data );
+  while( ( v = zVec3DDataFetch( data ) ) ){
+    zVec3DSub( v, c, &dp );
     zMat3DAddDyad( &vm, &dp, &dp );
   }
   zMat3DSymEig( &vm, eval, evec );

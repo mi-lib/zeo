@@ -13,27 +13,21 @@ __BEGIN_DECLS
 
 /*! \brief If the number of points exceeds the this threshold, points inside of the convex hull are discarded from the list. */
 #define ZEO_BOUNDINGBALL_PN_THRESHOLD 1000
-/* NOTE: This should be optimized through a comparison of exection time of _zBoundingBall() and zConvexHull3D(). */
+/* NOTE: This should be optimized through a comparison of exection time of zVec3DDataBoundingBall() and zVec3DDataConvexHull(). */
 
 /*! \brief bounding ball of 3D points.
  *
- * zBoundingBall3D() computes the bounding ball (also known as smallest
- * enclosing ball) of an array of 3D points \a pa.
- * The result is put int \a bb.
+ * zVec3DDataBoundingBall() computes the bounding ball (also known as smallest enclosing ball)
+ * of a set of 3D points \a data. The result is put int \a bb.
  *
- * zBoundingBall3DPL() also computes the bounding ball. For this function,
- * the set of 3D points is given as a vector list \a p.
- *
- * The pointers to points on the sphere will be stored into the
- * array pointed by \a vp, unless \a vp is the null pointer.
+ * The pointers to extreme points on the sphere will be stored into the array pointed by \a vp,
+ * unless it is the null pointer.
  *
  * The algorithm is according to E. Welzl(1991).
  * \return
- * zBoundingBall3D() and zBoundingBall3DPL() return the number of points on the
- * sphere of \a bb.
+ * zVec3DDataBoundingBall() returns the number of extreme points on the sphere \a bb.
  */
-__ZEO_EXPORT int zBoundingBall3D(zSphere3D *bb, zVec3DArray *pa, zVec3D **vp);
-__ZEO_EXPORT int zBoundingBall3DPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp);
+__ZEO_EXPORT int zVec3DDataBoundingBall(zVec3DData *data, zSphere3D *bb, zVec3D **vp);
 
 __END_DECLS
 

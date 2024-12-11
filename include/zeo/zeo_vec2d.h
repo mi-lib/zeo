@@ -458,6 +458,13 @@ inline zVec2D &zVec2D::normalize(){ zVec2DNormalizeNCDRC( this ); return *this; 
  */
 zArrayClass( zVec2DArray, zVec2D );
 
+/*! \brief allocate an array of 2D vectors. */
+#define zVec2DArrayAlloc(array,size) zArrayAlloc( array, zVec2D, size )
+/*! \brief free an array of 2D vectors. */
+#define zVec2DArrayFree(array)       zArrayFree( array )
+
 #include <zeo/zeo_vec2d_list.h>  /* 2D vector list */
+
+#include <zeo/zeo_vec2d_data.h>  /* abstract class of a set of 2D vectors. */
 
 #endif /* __ZEO_VEC2D_H__ */

@@ -1,31 +1,35 @@
 #include <zeo/zeo.h>
 
-void vec_create_rand(zVec3D v[], int n)
+void vec_create_rand(zVec3DData *data, int n)
 {
-  register int i;
+  zVec3D v;
+  int i;
   FILE *fp;
 
   fp = fopen( "src", "w" );
+  zVec3DDataRewind( data );
   for( i=0; i<n; i++ ){
-    zVec3DCreate( &v[i], zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
-    zVec3DValueNLFPrint( fp, &v[i] );
+    zVec3DCreate( &v, zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
+    zVec3DValueNLFPrint( fp, &v );
+    zVec3DDataAdd( data, &v );
   }
   fclose( fp );
 }
 
-void verify(zVec3D v[], int n, zAABox3D *bb, zVec3D **vp)
+void verify(zVec3DData *data, zAABox3D *bb, zVec3D **vp)
 {
-  register int i;
+  int i;
   bool ret;
   zBox3D box;
-  zVec3D vert;
+  zVec3D vert, *v;
   FILE *fp;
 
   zAABox3DToBox3D( bb, &box );
-  for( i=0; i<n; i++ ){
-    if( ( ret = zBox3DPointIsInside(&box,&v[i],true) ) == false ){
-      zVec3DValueNLFPrint( stderr, &v[i] );
-      eprintf( "D=%.15g\n", zBox3DDistFromPoint(&box,&v[i]) );
+  zVec3DDataRewind( data );
+  while( ( v = zVec3DDataFetch( data ) ) ){
+    if( ( ret = zBox3DPointIsInside(&box,v,zTOL) ) == false ){
+      zVec3DValueNLFPrint( stderr, v );
+      eprintf( "D=%.15g\n", zBox3DDistFromPoint(&box,v) );
     }
   }
   /* points on the walls */
@@ -51,81 +55,23 @@ void verify(zVec3D v[], int n, zAABox3D *bb, zVec3D **vp)
   fclose( fp );
 }
 
-void vec_list_create_rand(zVec3DList *pl, int n)
-{
-  register int i;
-  FILE *fp;
-  zVec3D v;
-
-  zListInit( pl );
-  fp = fopen( "src", "w" );
-  for( i=0; i<n; i++ ){
-    zVec3DCreate( &v, zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
-    zVec3DListAdd( pl, &v );
-    zVec3DValueNLFPrint( fp, &v );
-  }
-  fclose( fp );
-}
-
-void verify_list(zAABox3D *bb, zVec3DList *pl, zVec3DListCell **vp)
-{
-  register int i;
-  bool ret;
-  zBox3D box;
-  zVec3D vert;
-  FILE *fp;
-  zVec3DListCell *pc;
-
-  zAABox3DToBox3D( bb, &box );
-  zListForEach( pl, pc ){
-    if( ( ret = zBox3DPointIsInside(&box,pc->data,true) ) == false ){
-      zVec3DValueNLFPrint( stderr, pc->data );
-      eprintf( "D=%.15g\n", zBox3DDistFromPoint(&box,pc->data) );
-    }
-  }
-  /* points on the walls */
-  fp = fopen( "bd", "w" );
-  for( i=0; i<6; i++ )
-    zVec3DValueNLFPrint( fp, vp[i]->data );
-  fclose( fp );
-  /* AABB */
-  fp = fopen( "aabb", "w" );
-  for( i=0; i<4; i++ )
-    zVec3DValueNLFPrint( fp, zBox3DVert(&box,i,&vert) );
-  zVec3DValueNLFPrint( fp, zBox3DVert(&box,0,&vert) );
-  fprintf( fp, "\n" );
-  for( i=4; i<8; i++ )
-    zVec3DValueNLFPrint( fp, zBox3DVert(&box,i,&vert) );
-  zVec3DValueNLFPrint( fp, zBox3DVert(&box,4,&vert) );
-  fprintf( fp, "\n" );
-  for( i=0; i<4; i++ ){
-    zVec3DValueNLFPrint( fp, zBox3DVert(&box,i,&vert) );
-    zVec3DValueNLFPrint( fp, zBox3DVert(&box,i+4,&vert) );
-    fprintf( fp, "\n" );
-  }
-  fclose( fp );
-}
-
 #define N 1000
 
 int main(int argc, char *argv[])
 {
   zAABox3D bb;
-  zVec3D v[N];
+  zVec3DData data;
   zVec3D *vp[6];
-  zVec3DList pl;
-  zVec3DListCell *vpl[6];
 
   zRandInit();
-  if( argc > 1 && strcmp( argv[1], "list" ) == 0 ){
-    vec_list_create_rand( &pl, N );
-    zAABB3DPL( &bb, &pl, vpl );
-    verify_list( &bb, &pl, vpl );
-    zVec3DListDestroy( &pl );
-  } else{
-    vec_create_rand( v, N );
-    zAABB3D( &bb, v, N, vp );
-    verify( v, N, &bb, vp );
-  }
+#if 1
+  zVec3DDataInitArray( &data, N );
+#else
+  zVec3DDataInitList( &data );
+#endif
+  vec_create_rand( &data, N );
+  zVec3DDataAABB( &data, &bb, vp );
+  verify( &data, &bb, vp );
+  zVec3DDataDestroy( &data );
   return 0;
 }

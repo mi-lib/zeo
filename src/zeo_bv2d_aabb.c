@@ -26,6 +26,24 @@ zAABox2D *zAABox2DCreate(zAABox2D *box, double x1, double y1, double x2, double 
   return box;
 }
 
+/* copy a 2D axis-aligned box to another. */
+zAABox2D *zAABox2DCopy(zAABox2D *src, zAABox2D *dst)
+{
+  zVec2DCopy( &src->min, &dst->min );
+  zVec2DCopy( &src->max, &dst->max );
+  return dst;
+}
+
+/* merge two 2D axis-aligned boxes. */
+zAABox2D *zAABox2DMerge(zAABox2D *dst, zAABox2D *src1, zAABox2D *src2)
+{
+  return zAABox2DCreate( dst,
+    _zMin( src1->min.e[zX], src2->min.e[zX] ),
+    _zMin( src1->min.e[zY], src2->min.e[zY] ),
+    _zMax( src1->max.e[zX], src2->max.e[zX] ),
+    _zMax( src1->max.e[zY], src2->max.e[zY] ) );
+}
+
 /* check if a point is inside of a 2D axis-aligned box. */
 bool zAABox2DPointIsInside(zAABox2D *box, zVec2D *p, double margin)
 {
@@ -33,7 +51,14 @@ bool zAABox2DPointIsInside(zAABox2D *box, zVec2D *p, double margin)
          p->e[zY] > box->min.e[zY] - margin && p->e[zY] < box->max.e[zY] + margin ? true : false;
 }
 
-/* print a 2D axis-aligned box out to a file in a format to be plotted. */
+/* compute area of a 2D axis-aligned box. */
+double zAABox2DArea(zAABox2D *box)
+{
+  return fabs( ( box->max.e[zX] - box->min.e[zX] )
+             * ( box->max.e[zY] - box->min.e[zY] ) );
+}
+
+/* print out a 2D axis-aligned box to a file in a format to be plotted. */
 void zAABox2DValueFPrint(FILE *fp, zAABox2D *box)
 {
   double x0, y0, x1, y1;
@@ -69,36 +94,24 @@ static int _zAABB2DTest(zAABox2D *bb, zVec2D *p, zDir u)
 }
 
 /* bounding box of 2D points. */
-zAABox2D *zAABB2D(zAABox2D *bb, zVec2D p[], int num, zVec2D **vp)
+zAABox2D *zVec2DDataAABB(zVec2DData *data, zAABox2D *bb, zVec2D **vp)
 {
-  int i, s;
-
-  zAABox2DInit( bb );
-  if( num <= 0 ) return NULL;
-  zVec2DCopy( &p[0], &bb->min );
-  zVec2DCopy( &p[0], &bb->max );
-  if( vp ) vp[0] = vp[1] = vp[2] = vp[3] = &p[0];
-  for( i=1; i<num; i++ ){
-    if( ( s = _zAABB2DTest( bb, &p[i], zX ) ) != -1 && vp ) vp[zX+s] = &p[i];
-    if( ( s = _zAABB2DTest( bb, &p[i], zY ) ) != -1 && vp ) vp[zY+s] = &p[i];
-  }
-  return bb;
-}
-
-/* bounding box of a list of 2D points. */
-zAABox2D *zAABB2DPL(zAABox2D *bb, zVec2DList *pl, zVec2DListCell **vp)
-{
-  zVec2DListCell *pc;
+  zVec2D *v;
   int s;
 
+  if( zVec2DDataIsEmpty( data ) ){
+    ZRUNERROR( ZEO_ERR_EMPTYSET );
+    return NULL;
+  }
   zAABox2DInit( bb );
-  if( zListIsEmpty(pl) ) return NULL;
-  zVec2DCopy( zListTail(pl)->data, &bb->min );
-  zVec2DCopy( zListTail(pl)->data, &bb->max );
-  if( vp ) vp[0] = vp[1] = vp[2] = vp[3] = zListTail(pl);
-  zListForEach( pl, pc ){
-    if( ( s = _zAABB2DTest( bb, pc->data, zX ) ) != -1 && vp ) vp[zX+s] = pc;
-    if( ( s = _zAABB2DTest( bb, pc->data, zY ) ) != -1 && vp ) vp[zY+s] = pc;
+  zVec2DDataRewind( data );
+  v = zVec2DDataFetch( data );
+  zVec2DCopy( v, &bb->min );
+  zVec2DCopy( v, &bb->max );
+  if( vp ) vp[0] = vp[1] = vp[2] = vp[3] = v;
+  while( ( v = zVec2DDataFetch( data ) ) ){
+    if( ( s = _zAABB2DTest( bb, v, zX ) ) != -1 && vp ) vp[zX+s] = v;
+    if( ( s = _zAABB2DTest( bb, v, zY ) ) != -1 && vp ) vp[zY+s] = v;
   }
   return bb;
 }

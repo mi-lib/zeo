@@ -17,32 +17,22 @@ __BEGIN_DECLS
 
 /*! \brief planar convex hull.
  *
- * zConvexHull2D() creates a planar convex hull of a set of points \a vert,
- * which are placed on a plane. \a n is the number of points.
- * The convex hull is represented as a list of pointers to the
- * vertices in \a vert.
+ * zVec3DDataConvexHull2D() creates a planar convex hull of a set of 3D points \a data,
+ * which are supposed to be on a common plane.
+ * The convex hull is represented as a list of pointers to the vertices in \a data, which
+ * is stored where \a chloop points.
  *
- * zConvexHull2DPL() also computes a planar convex hull of the set of points
- * given as a vector list \a pl.
- *
- * For these functions, it is supposed that the vertices are placed
- * on a common plane.
- *
- * zConvexHull2D2PH3D(), zConvexHull2DPL2PH3D() create a planar convex hull as a
- * polyhedron \a ch with dual-face triangles. For each function,
- * the set of points is given as an array and a list of vertices,
- * respectively.
+ * zVec3DConvexHull2DPH3D() creates a planar convex hull of a set of 3D points \a data as
+ * a polyhedron \a ch with dual-face triangles.
  * \return
- * zConvexHull2D() and zConvexHull2DPL() return a pointer \a list, if succeeding.
- * When it fails to allocate cells dynamically, the null pointer is returned.
+ * zVec3DDataConvexHull2D() returns a pointer \a chloop, if it succeeds.
+ * If it fails to allocate memory for cells of the list, it returns the null pointer.
  *
- * zConvexHull2D2PH3D() and zConvexHull2DPL2PH3D() return a pointer to \a ch created.
- * If they fail to create it, the null pointer is returned.
+ * zVec3DConvexHull2DPH3D() returns a pointer \a ch, if it succeeds.
+ * If it fails to create it, the null pointer is returned.
  */
-__ZEO_EXPORT zLoop3D *zConvexHull2D(zLoop3D *ch, zVec3D vert[], int n);
-__ZEO_EXPORT zLoop3D *zConvexHull2DPL(zLoop3D *ch, zVec3DList *pl);
-__ZEO_EXPORT zPH3D *zConvexHull2D2PH3D(zPH3D *ch, zVec3D vert[], int n);
-__ZEO_EXPORT zPH3D *zConvexHull2DPL2PH3D(zPH3D *ch, zVec3DList *pl);
+__ZEO_EXPORT zLoop3D *zVec3DDataConvexHull2D(zVec3DData *data, zLoop3D *chloop);
+__ZEO_EXPORT zPH3D *zVec3DDataConvexHull2DPH3D(zVec3DData *data, zPH3D *ch);
 
 /*! \brief the closest point in a convex hull to a point.
  *

@@ -159,12 +159,12 @@ static void _zDelaunay2DLegalize(zDelaunayTri2DList *tl, zDelaunayPair2DStack *p
 }
 
 /* create the outer 2D triangle that contains all points for Delaunay triangulation */
-static zDelaunayTri2D *_zDelaunay2DCreateOuter(zDelaunayTri2DList *tl, zVec2DList *pl, zVec2D sp[])
+static zDelaunayTri2D *_zDelaunay2DCreateOuter(zDelaunayTri2DList *tl, zVec2DData *data, zVec2D sp[])
 {
   zDisk2D d;
   zDelaunayTri2DListCell *tc;
 
-  if( !zBoundingDisk2DPL( &d, pl, NULL ) ) return NULL;
+  if( !zVec2DDataBoundingDisk( data, &d, NULL ) ) return NULL;
   if( !( tc = zAlloc( zDelaunayTri2DListCell, 1 ) ) ){
     ZALLOCERROR();
     return NULL;
@@ -232,14 +232,14 @@ static void _zDelaunay2DPurgeOuter(zDelaunayTri2DList *tl, zVec2D *sp)
 }
 
 /* 2D Delaunay triangulation */
-bool zDelaunayTriangulate2D(zVec2DList *pl, zDelaunayTri2DList *tl)
+bool zVec2DDataDelaunayTriangulate(zVec2DData *data, zDelaunayTri2DList *tl)
 {
-  zVec2DListCell *pc;
-  zVec2D sp[3];
+  zVec2D sp[3], *v;
 
-  _zDelaunay2DCreateOuter( tl, pl, sp );
-  zListForEach( pl, pc )
-    if( !_zDelaunay2DUpdate( tl, pc->data ) ) return false;
+  _zDelaunay2DCreateOuter( tl, data, sp );
+  zVec2DDataRewind( data );
+  while( ( v = zVec2DDataFetch( data ) ) )
+    if( !_zDelaunay2DUpdate( tl, v ) ) return false;
   _zDelaunay2DPurgeOuter( tl, sp );
   return true;
 }
@@ -276,20 +276,21 @@ void zDelaunayTri2DListVoronoi2DFPrint(FILE *fp, zDelaunayTri2DList *tl)
 /* *** 2D Voronoi diagram *** */
 
 /* initialize a list of triangles by 2D Delaunay triangulation for 2D Voronoi diagram */
-static bool _zVoronoi2DListInit(zVoronoi2DList *vl, zVec2DList *pl, zDelaunayTri2DList *tl, zVec2D sp[])
+static bool _zVoronoi2DListInit(zVoronoi2DList *vl, zVec2DData *data, zDelaunayTri2DList *tl, zVec2D sp[])
 {
-  zVec2DListCell *pc;
+  zVec2D *v;
   zVoronoi2DCell *vc;
 
   zListInit( vl );
-  _zDelaunay2DCreateOuter( tl, pl, sp );
-  zListForEach( pl, pc ){
-    if( !_zDelaunay2DUpdate( tl, pc->data ) ) return false;
+  _zDelaunay2DCreateOuter( tl, data, sp );
+  zVec2DDataRewind( data );
+  while( ( v = zVec2DDataFetch( data ) ) ){
+    if( !_zDelaunay2DUpdate( tl, v ) ) return false;
     if( !( vc = zAlloc( zVoronoi2DCell, 1 ) ) ){
       ZALLOCERROR();
       return false;
     }
-    vc->data.seed = pc->data;
+    vc->data.seed = v;
     zListInit( &vc->data.loop );
     zListInsertHead( vl, vc );
   }
@@ -390,13 +391,13 @@ void zVoronoi2DListFPrint(FILE *fp, zVoronoi2DList *vl)
 }
 
 /* 2D Voronoi diagram */
-bool zVoronoiDiagram2D(zVec2DList *pl, zVoronoi2DList *vl)
+bool zVec2DDataVoronoiDiagram(zVec2DData *data, zVoronoi2DList *vl)
 {
   zVec2D sp[3];
   zDelaunayTri2DList tl;
   bool ret = true;
 
-  if( _zVoronoi2DListInit( vl, pl, &tl, sp ) ){
+  if( _zVoronoi2DListInit( vl, data, &tl, sp ) ){
     _zVoronoi2DListFromDelaunayTri2DList( vl, &tl );
   } else
     ret = false;

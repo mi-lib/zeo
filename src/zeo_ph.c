@@ -516,10 +516,10 @@ static bool _zPH3DLoopArcFromZTK(ZTK *ztk, zVec2DList *vlist)
     v2.e[0] = ZTKDouble(ztk);
     v2.e[1] = ZTKDouble(ztk);
   } else{
-    zVec2DCopy( zListTail(vlist)->data, &v2 );
+    zVec2DCopy( &zListTail(vlist)->data, &v2 );
     n--;
   }
-  v1 = zListHead(vlist)->data;
+  v1 = &zListHead(vlist)->data;
   /* center */
   zVec2DSub( &v2, v1, &d1 );
   zVec2DRot( &d1, dir == ZEO_DIR_CW ? -zPI_2 : zPI_2, &c );
@@ -580,8 +580,8 @@ static void *_zPH3DLoopFromZTK(void *obj, int i, void *arg, ZTK *ztk)
   if( zArraySize((zVec3DArray*)arg) != zListSize(&vlist) ) return NULL;
   j = 0;
   zListForEach( &vlist, cp ){
-    ((zVec3D*)zArrayElemNC((zVec3DArray*)arg,j))->e[vert1_axis] = cp->data->e[0];
-    ((zVec3D*)zArrayElemNC((zVec3DArray*)arg,j))->e[vert2_axis] = cp->data->e[1];
+    ((zVec3D*)zArrayElemNC((zVec3DArray*)arg,j))->e[vert1_axis] = cp->data.e[0];
+    ((zVec3D*)zArrayElemNC((zVec3DArray*)arg,j))->e[vert2_axis] = cp->data.e[1];
     ((zVec3D*)zArrayElemNC((zVec3DArray*)arg,j))->e[plane_axis] = plane_val;
     j++;
   }

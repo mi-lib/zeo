@@ -7,72 +7,60 @@
 #ifndef __ZEO_VEC3D_DATA_H__
 #define __ZEO_VEC3D_DATA_H__
 
+#include <zeo/zeo_vecxd_data.h>
+
 /* NOTE: never include this header file in user programs. */
 
 __BEGIN_DECLS
 
-struct _zVec3DDataMethod;
+/* ********************************************************** */
+/* CLASS: zVec3DData
+ * a set of 3D vectors
+ * ********************************************************** */
+ZEO_VECXD_DATA_DEF_STRUCT( 3D )
 
-/*! \struct zVec3DData
- * \brief an abstract class of a set of 3D vectors.
- */
-ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec3DData ){
-  union{
-    zVec3DArray array;
-    zVec3DList list;
-    zVec3DAddrList addrlist;
-    const zVec3DArray *array_ptr;
-    const zVec3DList *list_ptr;
-    const zVec3DAddrList *addrlist_ptr;
-  } data;
-  union{
-    int i;
-    zVec3DListCell *cp;
-    zVec3DAddrListCell *ap;
-  } pointer;
-  const struct _zVec3DDataMethod *method;
-};
+#define zVec3DDataDestroy(data)  zVecXDDataDestroy(data)
+#define zVec3DDataSize(data)     zVecXDDataSize(data)
+#define zVec3DDataIsEmpty(data)  zVecXDDataIsEmpty(data)
+#define zVec3DDataAdd(data,v)    zVecXDDataAdd(data,v)
+#define zVec3DDataRewind(data)   zVecXDDataRewind(data)
+#define zVec3DDataFetch(data)    zVecXDDataFetch(data)
 
-/*! \struct zVec3DDataMethod
- * \brief a set of pointers to methods for an abstract class of a set of 3D vectors.
- */
-ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec3DDataMethod ){
-  void (* destroy)(zVec3DData *);
-  size_t (* size)(zVec3DData *);
-  bool (* is_empty)(zVec3DData *);
-  bool (* add)(zVec3DData *, const zVec3D *);
-  void (* rewind)(zVec3DData *);
-  zVec3D *(* fetch)(zVec3DData *);
-};
+/*! \brief initialize 3D vector data as an array. */
+__ZEO_EXPORT ZEO_VECXD_DATA_INIT_ARRAY_PROTOTYPE( 3D );
 
-#define zVec3DDataDestroy(data)    (data)->method->destroy( data )
-#define zVec3DDataSize(data)       (data)->method->size( data )
-#define zVec3DDataIsEmpty(data)    (data)->method->is_empty( data )
-#define zVec3DDataAdd(data,v)      (data)->method->add( data, v )
-#define zVec3DDataRewind(data)     (data)->method->rewind( data )
-#define zVec3DDataFetch(data)      (data)->method->fetch( data )
+/*! \brief initialize 3D vector data as a list. */
+__ZEO_EXPORT ZEO_VECXD_DATA_INIT_LIST_PROTOTYPE( 3D );
 
-/* initialize 3D vector data as an array. */
-__ZEO_EXPORT zVec3DData *zVec3DDataInitArray(zVec3DData *data, size_t size);
-/* initialize 3D vector data as a list. */
-__ZEO_EXPORT zVec3DData *zVec3DDataInitList(zVec3DData *data);
-/* initialize 3D vector data as a list of addresses. */
-__ZEO_EXPORT zVec3DData *zVec3DDataInitAddrList(zVec3DData *data);
+/*! \brief initialize 3D vector data as a list of addresses. */
+__ZEO_EXPORT ZEO_VECXD_DATA_INIT_ADDRLIST_PROTOTYPE( 3D );
 
-/* assign an array to 3D vector data. */
-__ZEO_EXPORT zVec3DData *zVec3DDataAssignArray(zVec3DData *data, const zVec3DArray *array);
-/* assign a list to 3D vector data. */
-__ZEO_EXPORT zVec3DData *zVec3DDataAssignList(zVec3DData *data, const zVec3DList *list);
-/* assign a list of addresses to 3D vector data. */
-__ZEO_EXPORT zVec3DData *zVec3DDataAssignAddrList(zVec3DData *data, const zVec3DAddrList *list);
+/*! \brief directly assign an array to 3D vector data. */
+__ZEO_EXPORT ZEO_VECXD_DATA_ASSIGN_ARRAY_DIRECT_PROTOTYPE( 3D );
 
-/* a naive algorithm to find the nearest neighbor in 3D vector pool. */
-__ZEO_EXPORT double zVec3DDataNN(zVec3DData *data, const zVec3D *point, zVec3D **nn);
-/* support map of a set of points with respect to a direction vector. */
-__ZEO_EXPORT const zVec3D *zVec3DDataSupportMap(zVec3DData *data, zVec3D *direction);
+/*! \brief assign an array to 3D vector data. */
+__ZEO_EXPORT ZEO_VECXD_DATA_ASSIGN_ARRAY_PROTOTYPE( 3D );
 
-/* print out a set of 3D vectors. */
-__ZEO_EXPORT void zVec3DDataFPrint(FILE *fp, zVec3DData *data);
+/*! \brief assign a list to 3D vector data. */
+__ZEO_EXPORT ZEO_VECXD_DATA_ASSIGN_LIST_PROTOTYPE( 3D );
+
+/*! \brief assign a list of addresses to 3D vector data. */
+__ZEO_EXPORT ZEO_VECXD_DATA_ASSIGN_ADDRLIST_PROTOTYPE( 3D );
+
+/*! \brief create a list of addresses of 3D vectors of data. */
+__ZEO_EXPORT ZEO_VECXD_DATA_TO_ADDRLIST_PROTOTYPE( 3D );
+
+/*! \brief a naive algorithm to find the nearest neighbor in a set of 3D vectors. */
+__ZEO_EXPORT ZEO_VECXD_DATA_NN_PROTOTYPE( 3D );
+
+/*! \brief support map of a set of 3D points with respect to a direction vector. */
+__ZEO_EXPORT ZEO_VECXD_DATA_SUPPORTMAP_PROTOTYPE( 3D );
+
+/*! \brief print out a set of 3D vectors. */
+__ZEO_EXPORT ZEO_VECXD_DATA_FPRINT_PROTOTYPE( 3D );
+
+/*! \brief print out values of a set of 3D vectors. */
+__ZEO_EXPORT ZEO_VECXD_DATA_VALUE_FPRINT_PROTOTYPE( 3D );
 
 __END_DECLS
 

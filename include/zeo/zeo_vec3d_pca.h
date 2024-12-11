@@ -11,44 +11,26 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* utilities
- * ********************************************************** */
-
 /*! \brief barycenter of and PCA to vector cloud.
  *
- * zVec3DBarycenterPL() and zVec3DBarycenter() computes the
- * barycenter of a set of vectors. For zVec3DBarycenterPL(),
- * vectors are given by a list \a vl, while given by an array
- * \a v for zVec3DBarycenter().
- * \a num is the number of vectors in \a v. The result vector
- * is put where pointed by \a c.
+ * zVec3DDataBarycenter() computes the barycenter of a set of 3D vectors \a data.
+ * The result is put where \a c points.
  *
- * zVec3DPCA_PL() and zVec3DPCA() examines principal component
- * analysis (PCA) for a set of vectors. Each of the three principal
- * components passes through the original point. The vectors are
- * also given by \a vl for zVec3DPCA_PL(), and \a v and \a num
- * for zVec3DPCA(), respectively. The result PCs are stored into
- * the array \a evec.
+ * zVec3DDataPCA() conducts principal component analysis (PCA) on a set of 3D vectors \a data.
+ * Each of the three principal components passes through the original point.
+ * The result PCs are stored into the array \a evec.
  *
- * zVec3DBaryPCA_PL() and zVec3DBaryPCA() are combinations of
- * the above functions. Each of the three PCs \a evec passes
- * through the barycenter \a c of the vectors. The vectors are
- * given by \a vl for zVec3DBaryPCA_PL(), and \a v and \a num
- * for zVec3DBaryPCA(), respectively.
+ * zVec3DDataBaryPCA() a combination of the above two functions. Each of the three PCs \a evec
+ * passes through the barycenter \a c of the vectors.
  * \return
- * zVec3DBarycenterPL(), zVec3DBarycenter(), zVec3DBaryPCA_PL()
- * and zVec3DBaryPCA() return a pointer \a c.
+ * zVec3DDataBarycenter() and zVec3DDataBaryPCA() return the null pointer if the given \a data
+ * is empty. Otherwise, they return the pointer \a c.
  *
- * zVec3DPCA_PL() and zVec3DPCA() return a pointer to the head of
- * \a evec.
+ * zVec3DDataPCA() returns a pointer to the head of \a evec.
  */
-__ZEO_EXPORT zVec3D *zVec3DBarycenterPL(zVec3DList *vl, zVec3D *c);
-__ZEO_EXPORT zVec3D *zVec3DBarycenter(zVec3D v[], int num, zVec3D *c);
-__ZEO_EXPORT zVec3D *zVec3DPCA_PL(zVec3DList *vl, zVec3D evec[]);
-__ZEO_EXPORT zVec3D *zVec3DPCA(zVec3D v[], int num, zVec3D evec[]);
-__ZEO_EXPORT zVec3D *zVec3DBaryPCA_PL(zVec3DList *vl, zVec3D *c, zVec3D evec[]);
-__ZEO_EXPORT zVec3D *zVec3DBaryPCA(zVec3D v[], int num, zVec3D *c, zVec3D evec[]);
+__ZEO_EXPORT zVec3D *zVec3DDataBarycenter(zVec3DData *data, zVec3D *c);
+__ZEO_EXPORT zVec3D *zVec3DDataPCA(zVec3DData *data, zVec3D evec[]);
+__ZEO_EXPORT zVec3D *zVec3DDataBaryPCA(zVec3DData *data, zVec3D *c, zVec3D evec[]);
 
 __END_DECLS
 

@@ -11,28 +11,22 @@
 
 __BEGIN_DECLS
 
-/*! \brief Minkowski Portal Refinement algorithm.
+/*! \brief Minkowski Portal Refinement algorithm for collision detection.
  *
- * zMPR() checks if two convex objects are in collision.
- * Each object is represented as the convex hull of a set of
- * points \a p1, and \a p2. \a n1 and \a n2 are the numbers
- * of points of each set, respectively.
+ * zMPR() checks if two convex objects are in collision. Each object is represented as the
+ * convex hull of a set of 3D points \a data1 and \a data2.
  *
- * zMPRDepth() checks if two convex objects are incollision,
- * and if yes, computes the penetration depth of the objects.
- * Each object is represented as the convex hull of a set of
- * points \a p1, and \a p2. \a n1 and \a n2 are the numbers
- * of points of each set, respectively.
- * The penetration depth, the point of collision and penetration
- * direction are stored in \a depth, \a pos and \a dir,
- * respectively.
+ * zMPRDepth() checks if the two convex objects are in collision, and if yes, computes the
+ * penetration depth of the objects. Each object is represented as the convex hull of a set of
+ * 3D points \a data1 and \a data2.
+ * The penetration depth, the point of collision, and the penetration direction are stored
+ * in \a depth, \a pos and \a dir, respectively.
  * \return
- * zMPR() and zMPRDepth() returns the true value if the two
- * specified objects are in collisiond. Otherwise, the false
- * value is returned.
+ * zMPR() and zMPRDepth() return the true value if the two objects are in collisiond.
+ * Otherwise, the false value is returned.
  */
-__ZEO_EXPORT bool zMPR(zVec3D p1[], int n1, zVec3D p2[], int n2);
-__ZEO_EXPORT bool zMPRDepth(zVec3D p1[], int n1, zVec3D p2[], int n2, double *depth, zVec3D *pos, zVec3D *dir);
+__ZEO_EXPORT bool zMPR(zVec3DData *data1, zVec3DData *data2);
+__ZEO_EXPORT bool zMPRDepth(zVec3DData *data1, zVec3DData *data2, double *depth, zVec3D *pos, zVec3D *dir);
 
 __END_DECLS
 

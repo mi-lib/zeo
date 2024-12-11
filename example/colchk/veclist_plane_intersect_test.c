@@ -2,17 +2,18 @@
 #include <zeo/zeo_bv2d.h>
 
 /* intersection between a loop of vertices and 3D plane */
-int intersect_vlist_plane(zVec3DList *vl, zPlane3D *p, zVec3D ip[])
+int intersect_vec_plane(zVec3DData *data, zPlane3D *p, zVec3D ip[])
 {
   zEdge3D e;
-  zVec3DListCell *cp1, *cp2;
+  zVec3D *v0, *v;
   int n = 0;
 
-  cp1 = zListHead(vl);
-  zListForEach( vl, cp2 ){
-    zEdge3DCreate( &e, cp1->data, cp2->data );
+  zVec3DDataRewind( data );
+  v0 = zVec3DDataFetch( data );
+  while( ( v = zVec3DDataFetch( data ) ) ){
+    zEdge3DCreate( &e, v0, v );
     if( zIntersectEdgePlane3D( &e, p, &ip[n] ) ) n++;
-    cp1 = cp2;
+    v0 = v;
   }
   return n;
 }
@@ -22,7 +23,7 @@ int intersect_vlist_plane(zVec3DList *vl, zPlane3D *p, zVec3D ip[])
 int main(void)
 {
   int i, n;
-  zVec3DList vlist;
+  zVec3DData data;
   zLoop3D ch;
   zLoop3DCell *vp;
   zVec3D v, ip[N], po;
@@ -30,11 +31,11 @@ int main(void)
   FILE *fp;
 
   zRandInit();
-  zListInit( &vlist );
+  zVec3DDataInitList( &data );
   fp = fopen( "src", "w" );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), 0 );
-    zVec3DListAdd( &vlist, &v );
+    zVec3DDataAdd( &data, &v );
     zVec3DValueNLFPrint( fp, &v );
   }
   fclose( fp );
@@ -42,26 +43,28 @@ int main(void)
   zVec3DCreate( &po, -1, 0, 0 );
   zPlane3DCreate( &pl, &po, ZVEC3DX );
 
-  n = intersect_vlist_plane( &vlist, &pl, ip );
+  n = intersect_vec_plane( &data, &pl, ip );
   fp = fopen( "ip", "w" );
   for( i=0; i<n; i++ )
     zVec3DValueNLFPrint( fp, &ip[i] );
   fclose( fp );
 
-  zConvexHull2DPL( &ch, &vlist );
+  zVec3DDataConvexHull2D( &data, &ch );
   fp = fopen( "ch", "w" );
   zListForEach( &ch, vp )
     zVec3DValueNLFPrint( fp, vp->data );
   zVec3DValueNLFPrint( fp, zListTail(&ch)->data );
   fclose( fp );
+  zVec3DDataDestroy( &data );
 
-  n = intersect_vlist_plane( &ch, &pl, ip );
+  zVec3DDataAssignAddrList( &data, &ch );
+  n = intersect_vec_plane( &data, &pl, ip );
   fp = fopen( "ipch", "w" );
   for( i=0; i<n; i++ )
     zVec3DValueNLFPrint( fp, &ip[i] );
   fclose( fp );
+  zVec3DDataDestroy( &data );
 
   zLoop3DDestroy( &ch );
-  zVec3DListDestroy( &vlist );
   return 0;
 }

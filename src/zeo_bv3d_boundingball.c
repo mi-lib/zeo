@@ -111,7 +111,7 @@ static int _zBoundingBall3DInc(zSphere3D *bb, zVec3DAddrList *pl, zVec3DAddrList
 }
 
 /* a recursive procedure to find bounding ball of a list of 3D points. */
-static int _zBoundingBall3DPL(zSphere3D *bb, zVec3DAddrList *pl, zVec3D **vp)
+static int _zBoundingBall3D(zSphere3D *bb, zVec3DAddrList *pl, zVec3D **vp)
 {
   zVec3DAddrList shell;
   zVec3DAddrListCell *cp;
@@ -121,7 +121,7 @@ static int _zBoundingBall3DPL(zSphere3D *bb, zVec3DAddrList *pl, zVec3D **vp)
   if( zListSize(pl) <= 4 )
     return _zBoundingBall3DPrim( bb, pl, vp );
   zListDeleteTail( pl, &cp );
-  num = _zBoundingBall3DPL( bb, pl, vp );
+  num = _zBoundingBall3D( bb, pl, vp );
   if( !zSphere3DPointIsInside( bb, cp->data, zTOL ) ){
     zListInsertTail( &shell, cp );
     num = _zBoundingBall3DInc( bb, pl, &shell, vp );
@@ -131,41 +131,28 @@ static int _zBoundingBall3DPL(zSphere3D *bb, zVec3DAddrList *pl, zVec3D **vp)
   return num;
 }
 
-/* bounding ball of a list of 3D points. */
-int zBoundingBall3DPL(zSphere3D *bb, zVec3DList *pl, zVec3D **vp)
+/* bounding ball of 3D points. */
+int zVec3DDataBoundingBall(zVec3DData *data, zSphere3D *bb, zVec3D **vp)
 {
+  zVec3DAddrList addrlist;
   zPH3D ch;
-  zVec3DAddrList al;
   int ret;
 
-#if 0
-  if( zListSize(pl) > ZEO_BOUNDINGBALL_PN_THRESHOLD ){
-#endif
+  if( zVec3DDataSize(data) > ZEO_BOUNDINGBALL_PN_THRESHOLD ){
     /* discard points inside of the convex hull from the list. */
-    if( !zConvexHull3DPL( &ch, pl ) ){
+    if( !zVec3DDataConvexHull( data, &ch ) ){
       ret = 0;
     } else{
-      zFree( zPH3DFaceBuf(&ch) );
-      zVec3DAddrListCreate( &al, &ch.vert );
-      ret = _zBoundingBall3DPL( bb, &al, vp );
-      zVec3DAddrListDestroy( &al );
+      zArrayFree( &ch.face );
+      zVec3DAddrListCreate( &addrlist, &ch.vert );
+      ret = _zBoundingBall3D( bb, &addrlist, vp );
+      zVec3DAddrListDestroy( &addrlist );
     }
     zPH3DDestroy( &ch );
-#if 0
-  } else
-    ret = _zBoundingBall3DPL( bb, pl, vp );
-#endif
+  } else{
+    if( !zVec3DDataToAddrList( data, &addrlist ) ) return 0;
+    ret = _zBoundingBall3D( bb, &addrlist, vp );
+    zVec3DAddrListDestroy( &addrlist );
+  }
   return ret;
-}
-
-/* bounding ball of 3D points. */
-int zBoundingBall3D(zSphere3D *bb, zVec3DArray *pa, zVec3D **vp)
-{
-  zVec3DAddrList pl;
-  int num;
-
-  if( !zVec3DAddrListCreate( &pl, pa ) ) return 0;
-  num = _zBoundingBall3DPL( bb, &pl, vp );
-  zVec3DAddrListDestroy( &pl );
-  return num;
 }

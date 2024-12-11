@@ -204,45 +204,47 @@ zPH3D *zSphere3DToPH(const zSphere3D *sphere, zPH3D *ph)
 }
 
 /* fit a sphere to point cloud. */
-zSphere3D *zSphere3DFit(zSphere3D *s, zVec3DList *pc)
+zSphere3D *zSphere3DFit(zSphere3D *sphere, zVec3DData *data)
 {
   zMat c;
   zVec e, d;
-  zVec3DListCell *p;
+  zVec3D *v;
   int i, j, iter = 0;
 
-  c = zMatAlloc( zListSize(pc), 4 );
-  e = zVecAlloc( zListSize(pc) );
+  c = zMatAlloc( zVec3DDataSize(data), 4 );
+  e = zVecAlloc( zVec3DDataSize(data) );
   d = zVecAlloc( 4 );
   /* initial guess */
-  zSphere3DInit( s );
-  zVec3DBarycenterPL( pc, zSphere3DCenter(s) );
-  zSphere3DSetRadius( s, 0 );
-  zListForEach( pc, p )
-    zSphere3DRadius(s) += zVec3DDist( &p->data, zSphere3DCenter(s) );
-  zSphere3DRadius(s) /= zListSize(pc);
+  zSphere3DInit( sphere );
+  zVec3DDataBarycenter( data, zSphere3DCenter(sphere) );
+  zSphere3DSetRadius( sphere, 0 );
+  zVec3DDataRewind( data );
+  while( ( v = zVec3DDataFetch( data ) ) )
+    zSphere3DRadius(sphere) += zVec3DDist( v, zSphere3DCenter(sphere) );
+  zSphere3DRadius(sphere) /= zVec3DDataSize(data);
   /* iterative fitting */
   ZITERINIT( iter );
   for( i=0; i<iter; i++ ){
     j = 0;
-    zListForEach( pc, p ){
-      zMatElemNC(c,j,0) = p->data.c.x - zSphere3DCenter(s)->c.x;
-      zMatElemNC(c,j,1) = p->data.c.y - zSphere3DCenter(s)->c.y;
-      zMatElemNC(c,j,2) = p->data.c.z - zSphere3DCenter(s)->c.z;
-      zMatElemNC(c,j,3) = zSphere3DRadius(s);
-      zVecElemNC(e,j)   = zVec3DSqrDist(&p->data,zSphere3DCenter(s)) - zSqr(zSphere3DRadius(s));
+    zVec3DDataRewind( data );
+    while( ( v = zVec3DDataFetch( data ) ) ){
+      zMatElemNC(c,j,0) = v->c.x - zSphere3DCenter(sphere)->c.x;
+      zMatElemNC(c,j,1) = v->c.y - zSphere3DCenter(sphere)->c.y;
+      zMatElemNC(c,j,2) = v->c.z - zSphere3DCenter(sphere)->c.z;
+      zMatElemNC(c,j,3) = zSphere3DRadius(sphere);
+      zVecElemNC(e,j)   = zVec3DSqrDist(v,zSphere3DCenter(sphere)) - zSqr(zSphere3DRadius(sphere));
       j++;
     }
     zLESolveErrorMin( c, e, NULL, d );
     if( zVecIsTiny( d ) ) goto TERMINATE;
-    zVec3DCatDRC( zSphere3DCenter(s), 0.5, (zVec3D*)&zVecElemNC(d,0) );
-    zSphere3DRadius(s) += 0.5*zVecElemNC(d,3);
+    zVec3DCatDRC( zSphere3DCenter(sphere), 0.5, (zVec3D*)&zVecElemNC(d,0) );
+    zSphere3DRadius(sphere) += 0.5*zVecElemNC(d,3);
   }
   ZITERWARN( iter );
 
  TERMINATE:
   zMatFree( c );
-  return s;
+  return sphere;
 }
 
 /* parse ZTK format */
@@ -342,11 +344,11 @@ zShape3DCom zeo_shape3d_sphere_com = {
 };
 
 /* create a 3D shape as a sphere. */
-zShape3D *zShape3DSphereCreate(zShape3D *shape, const zVec3D *c, double r, int div)
+zShape3D *zShape3DSphereCreate(zShape3D *shape, const zVec3D *center, double radius, int div)
 {
   zShape3DInit( shape );
   if( !( shape->body = zSphere3DAlloc() ) ) return NULL;
-  zSphere3DCreate( zShape3DSphere(shape), c, r, div );
+  zSphere3DCreate( zShape3DSphere(shape), center, radius, div );
   shape->com = &zeo_shape3d_sphere_com;
   return shape;
 }
