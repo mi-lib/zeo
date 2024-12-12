@@ -366,4 +366,6 @@ inline zVec6D zVec6D::mul(double k){ _zVec6DMulDRC( this, k ); return *this; }
 inline zVec6D zVec6D::div(double k){ return *zVec6DDivDRC( this, k ); }
 #endif /* __cplusplus */
 
+#include <zeo/zeo_vec6d_list.h>  /* 6D vector list */
+
 #endif /* __ZEO_VEC6D_H__ */

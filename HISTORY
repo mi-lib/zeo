@@ -1,3 +1,4 @@
+2024.12.12. Added zVec6DList class. [zeo_vec6d, zeo_vec6d_list]
 2024.12.12. Added zVecXDDataPrint and zVecXDDataValuePrint, and applied them to zVec2D/3DData. [zeo_vecxd_data, zeo_vec2d_data, zeo_vec3d_data]
 2024.12.11. Modified ZEO_VECXD_DATA_DEF_STRUCT to cope with implicitly deleted constructor. [zeo_vecx_data, zeo_vec2d_data, zeo_vec3d_data]
 2024.12.11. Renamed _zGJKPDInitAddPoint to _zGJKPDAddPoint. [zeo_col_gjk]
