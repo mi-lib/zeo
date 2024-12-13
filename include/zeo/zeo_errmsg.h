@@ -54,10 +54,10 @@
 #define ZEO_ERR_UNNAMED_OPTICALINFO           "unnamed optical-info exists"
 
 #define ZEO_ERR_PCD_INVALID_VERSION           "invalid string for version: %s"
-#define ZEO_ERR_PCD_UNKNOWN_FIELDID           "unknown field identifier: %s"
 #define ZEO_ERR_PCD_MISMATCH_NUMOFFIELDS      "mismatch number of fields: %d"
 #define ZEO_ERR_PCD_INVALID_FIELDSIZE         "invalid field size: %d"
 #define ZEO_ERR_PCD_UNKNOWN_FIELDTYPE         "unknown field type identifier: %s"
+#define ZEO_ERR_PCD_UNKNOWN_VALUETYPE         "unknown value type: %s"
 #define ZEO_ERR_PCD_INVALID_COUNT             "can only handle 3D point cloud"
 #define ZEO_ERR_PCD_UNSPEC_WIDTH              "width not specified"
 #define ZEO_ERR_PCD_UNSPEC_HEIGHT             "height not specified"
@@ -69,6 +69,8 @@
 #define ZEO_ERR_PCD_INVALID_HEADER            "invalid PCD file header"
 #define ZEO_ERR_PCD_INVALID_DATATYPE          "invalid data type"
 #define ZEO_ERR_PCD_INVALID_FORMAT            "unknown point clound format %s"
+#define ZEO_ERR_PCD_FAILED_TO_READ_DATA       "failed to read compressed data (%u/%u byte)"
+#define ZEO_ERR_PCD_FAILED_TO_DECOMPRESS      "failed to decompress data (%u/%u byte)"
 
 #define ZEO_ERR_STL_UNREADABLE                "unreadable file. probably not a STL file."
 #define ZEO_ERR_STL_INCOMPLETE                "incomplete STL file"

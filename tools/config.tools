@@ -1,8 +1,16 @@
+ifeq ($(CONFIG_USE_PCD_BINARY_COMPRESSED),y)
+	LINK+=-llzf
+endif
+
 INCLUDE+=`zm-config -I`
 LIB+=`zm-config -L`
 DEF+=`zm-config -D`
 LINK+=`zm-config -l`
 LINKCPP+=`zm-config -lcpp`
+
+ifeq ($(CONFIG_USE_PCD_BINARY_COMPRESSED),y)
+	DEF+=-D__ZEO_USE_PCD_BINARY_COMPRESSED
+endif
 
 ifeq ($(CONFIG_USE_DAE),y)
 	DEF+=-D__ZEO_USE_DAE

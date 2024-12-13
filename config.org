@@ -1,5 +1,8 @@
 PREFIX=${HOME}/usr
 STD=c89
 
+# binary-compressed point cloud data format
+CONFIG_USE_PCD_BINARY_COMPRESSED=y
+
 # DAE (COLLADA)
 CONFIG_USE_DAE=y

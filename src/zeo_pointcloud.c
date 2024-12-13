@@ -6,55 +6,57 @@
 
 #include <zeo/zeo_pointcloud.h>
 
+/* for binary_compressed data type */
+#ifdef __ZEO_USE_PCD_BINARY_COMPRESSED
+#include <liblzf/lzf.h>
+#endif /* __ZEO_USE_PCD_BINARY_COMPRESSED */
+
 typedef enum{
   ZEO_PCD_DATATYPE_INVALID = -1,
   ZEO_PCD_DATATYPE_ASCII,
   ZEO_PCD_DATATYPE_BINARY,
+  ZEO_PCD_DATATYPE_BINARY_COMPRESSED,
 } _zPCDDataType;
-static const char *__z_pcd_datatype[] = { "ascii", "binary", NULL };
+static const char *__z_pcd_data_type[] = { "ascii", "binary", "binary_compressed", NULL };
 
 /* ********************************************************** */
 /* PCD format decoder
  * ********************************************************** */
 
-#define ZEO_PCD_FIELD_NUM_MAX 10
-
 typedef enum{
-  ZEO_PCD_NONE = -1,
-  ZEO_PCD_X, ZEO_PCD_Y, ZEO_PCD_Z, ZEO_PCD_RGB,
-  ZEO_PCD_NX, ZEO_PCD_NY, ZEO_PCD_NZ,
-  ZEO_PCD_J1, ZEO_PCD_J2, ZEO_PCD_J3,
-} _zPCDDef;
-static const char *__z_pcd_def[] = {
-  "x", "y", "z", "rgb",
-  "normal_x", "normal_y", "normal_z",
-  "j1", "j2", "j3",
+  ZEO_PCD_FIELDTYPE_INVALID = -1,
+  ZEO_PCD_FIELDTYPE_X = zX, ZEO_PCD_FIELDTYPE_Y = zY, ZEO_PCD_FIELDTYPE_Z = zZ,
+  ZEO_PCD_FIELDTYPE_UNKNOWN,
+} _zPCDFieldType;
+static const char *__z_pcd_field_type[] = {
+  "x", "y", "z",
   NULL,
 };
 
 typedef enum{
-  ZEO_PCD_TYPE_INVALID = -1,
-  ZEO_PCD_TYPE_INT,
-  ZEO_PCD_TYPE_UINT,
-  ZEO_PCD_TYPE_FP,
-} _zPCDType;
-static const char *__z_pcd_type[] = { "I", "U", "F", NULL };
+  ZEO_PCD_VALUETYPE_INVALID =-1,
+  ZEO_PCD_VALUETYPE_INT     = 0,
+  ZEO_PCD_VALUETYPE_UINT    = 1,
+  ZEO_PCD_VALUETYPE_FP      = 2,
+} _zPCDValueType;
+static const char *__z_pcd_value_type[] = { "I", "U", "F", NULL };
 
 typedef struct _zPCDField{
-  _zPCDDef def;
+  _zPCDFieldType fieldtype;
   int size;
   int bitsize;
-  _zPCDType type;
+  _zPCDValueType valuetype;
   int count;
   void (* read_ascii)(struct _zPCDField *, const char *, zVec3D *);
   void (* read_bin)(struct _zPCDField *, FILE *, zVec3D *);
+  void (* read_bincom)(struct _zPCDField *, byte *, zVec3D *);
 } _zPCDField;
 
 #define DEF_zPCDFieldReadASCIIFunc(type,a2v) \
   static void _zPCDFieldReadASCII##type(_zPCDField *field, const char *tkn, zVec3D *v){\
     type val;\
     val = a2v( tkn );\
-    v->e[field->def] = (double)val;\
+    v->e[field->fieldtype] = (double)val;\
   }
 DEF_zPCDFieldReadASCIIFunc( int8_t, atoi );
 DEF_zPCDFieldReadASCIIFunc( uint8_t, atoi );
@@ -82,17 +84,23 @@ static void (* __z_pcd_read_ascii[])(_zPCDField *, const char *, zVec3D *) = {
   _zPCDFieldReadASCIIdouble,
 };
 
-static void _zPCDFieldAssignReadASCII(_zPCDField *field)
+static bool _zPCDFieldIsCoord(_zPCDField *field)
 {
-  if( field->def == ZEO_PCD_X || field->def == ZEO_PCD_Y || field->def == ZEO_PCD_Z )
-    field->read_ascii = __z_pcd_read_ascii[field->type*4+field->bitsize];
+  return field->fieldtype >= ZEO_PCD_FIELDTYPE_X && field->fieldtype <= ZEO_PCD_FIELDTYPE_Z;
 }
 
+static void _zPCDFieldAssignReadASCII(_zPCDField *field)
+{
+  if( _zPCDFieldIsCoord( field ) )
+    field->read_ascii = __z_pcd_read_ascii[field->valuetype*4+field->bitsize];
+}
+
+#if 0
 #define DEF_zPCDFieldReadBINFunc(type,a2v) \
   static void _zPCDFieldReadBIN##type(_zPCDField *field, FILE *fp, zVec3D *v){\
     type val;\
     if( fread( &val, field->size, 1, fp ) == 1 )\
-      v->e[field->def] = (double)val;\
+      v->e[field->fieldtype] = (double)val;\
   }
 DEF_zPCDFieldReadBINFunc( int8_t, atoi );
 DEF_zPCDFieldReadBINFunc( uint8_t, atoi );
@@ -104,6 +112,24 @@ DEF_zPCDFieldReadBINFunc( int64_t, atoi );
 DEF_zPCDFieldReadBINFunc( uint64_t, atoi );
 DEF_zPCDFieldReadBINFunc( float, atof );
 DEF_zPCDFieldReadBINFunc( double, atof );
+#else
+#define DEF_zPCDFieldReadBINFunc(type) \
+  static void _zPCDFieldReadBIN##type(_zPCDField *field, FILE *fp, zVec3D *v){\
+    type val;\
+    if( fread( &val, field->size, 1, fp ) == 1 )\
+      v->e[field->fieldtype] = (double)val;\
+  }
+DEF_zPCDFieldReadBINFunc( int8_t );
+DEF_zPCDFieldReadBINFunc( uint8_t );
+DEF_zPCDFieldReadBINFunc( int16_t );
+DEF_zPCDFieldReadBINFunc( uint16_t );
+DEF_zPCDFieldReadBINFunc( int32_t );
+DEF_zPCDFieldReadBINFunc( uint32_t );
+DEF_zPCDFieldReadBINFunc( int64_t );
+DEF_zPCDFieldReadBINFunc( uint64_t );
+DEF_zPCDFieldReadBINFunc( float );
+DEF_zPCDFieldReadBINFunc( double );
+#endif
 
 static void (* __z_pcd_read_bin[])(_zPCDField *, FILE *, zVec3D *) = {
   _zPCDFieldReadBINint8_t,
@@ -120,21 +146,21 @@ static void (* __z_pcd_read_bin[])(_zPCDField *, FILE *, zVec3D *) = {
   _zPCDFieldReadBINdouble,
 };
 
-#define DEF_zPCDFieldSkipBINFunc(type,a2v) \
+#define DEF_zPCDFieldSkipBINFunc(type) \
   static void _zPCDFieldSkipBIN##type(_zPCDField *field, FILE *fp, zVec3D *v){\
     type val;\
     if( fread( &val, field->size, 1, fp ) == 1 );\
   }
-DEF_zPCDFieldSkipBINFunc( int8_t, atoi );
-DEF_zPCDFieldSkipBINFunc( uint8_t, atoi );
-DEF_zPCDFieldSkipBINFunc( int16_t, atoi );
-DEF_zPCDFieldSkipBINFunc( uint16_t, atoi );
-DEF_zPCDFieldSkipBINFunc( int32_t, atoi );
-DEF_zPCDFieldSkipBINFunc( uint32_t, atoi );
-DEF_zPCDFieldSkipBINFunc( int64_t, atoi );
-DEF_zPCDFieldSkipBINFunc( uint64_t, atoi );
-DEF_zPCDFieldSkipBINFunc( float, atof );
-DEF_zPCDFieldSkipBINFunc( double, atof );
+DEF_zPCDFieldSkipBINFunc( int8_t );
+DEF_zPCDFieldSkipBINFunc( uint8_t );
+DEF_zPCDFieldSkipBINFunc( int16_t );
+DEF_zPCDFieldSkipBINFunc( uint16_t );
+DEF_zPCDFieldSkipBINFunc( int32_t );
+DEF_zPCDFieldSkipBINFunc( uint32_t );
+DEF_zPCDFieldSkipBINFunc( int64_t );
+DEF_zPCDFieldSkipBINFunc( uint64_t );
+DEF_zPCDFieldSkipBINFunc( float );
+DEF_zPCDFieldSkipBINFunc( double );
 
 static void (* __z_pcd_skip_bin[])(_zPCDField *, FILE *, zVec3D *) = {
   _zPCDFieldSkipBINint8_t,
@@ -153,18 +179,59 @@ static void (* __z_pcd_skip_bin[])(_zPCDField *, FILE *, zVec3D *) = {
 
 static void _zPCDFieldAssignReadBIN(_zPCDField *field)
 {
-  if( field->def >= ZEO_PCD_X && field->def <= ZEO_PCD_Z )
-    field->read_bin = __z_pcd_read_bin[field->type*4+field->bitsize];
-  else
-    field->read_bin = __z_pcd_skip_bin[field->type*4+field->bitsize];
+  field->read_bin = _zPCDFieldIsCoord( field ) ?
+    __z_pcd_read_bin[field->valuetype*4+field->bitsize] :
+    __z_pcd_skip_bin[field->valuetype*4+field->bitsize];
+}
+
+#define DEF_zPCDFieldReadBINCOMFunc(type) \
+  static void _zPCDFieldReadBINCOM##type(_zPCDField *field, byte *data_ptr, zVec3D *v){\
+    union{\
+      byte b[8];\
+      type v;\
+    } val;\
+    int i;\
+    for( i=0; i<field->size; i++ ) val.b[i] = *( data_ptr + i );\
+    v->e[field->fieldtype] = (double)val.v;\
+  }
+DEF_zPCDFieldReadBINCOMFunc( int8_t );
+DEF_zPCDFieldReadBINCOMFunc( uint8_t );
+DEF_zPCDFieldReadBINCOMFunc( int16_t );
+DEF_zPCDFieldReadBINCOMFunc( uint16_t );
+DEF_zPCDFieldReadBINCOMFunc( int32_t );
+DEF_zPCDFieldReadBINCOMFunc( uint32_t );
+DEF_zPCDFieldReadBINCOMFunc( int64_t );
+DEF_zPCDFieldReadBINCOMFunc( uint64_t );
+DEF_zPCDFieldReadBINCOMFunc( float );
+DEF_zPCDFieldReadBINCOMFunc( double );
+
+static void (* __z_pcd_read_bincom[])(_zPCDField *, byte *, zVec3D *) = {
+  _zPCDFieldReadBINCOMint8_t,
+  _zPCDFieldReadBINCOMint16_t,
+  _zPCDFieldReadBINCOMint32_t,
+  _zPCDFieldReadBINCOMint64_t,
+  _zPCDFieldReadBINCOMuint8_t,
+  _zPCDFieldReadBINCOMuint16_t,
+  _zPCDFieldReadBINCOMuint32_t,
+  _zPCDFieldReadBINCOMuint64_t,
+  NULL,
+  NULL,
+  _zPCDFieldReadBINCOMfloat,
+  _zPCDFieldReadBINCOMdouble,
+};
+
+static void _zPCDFieldAssignReadBINCOM(_zPCDField *field)
+{
+  if( _zPCDFieldIsCoord( field ) )
+    field->read_bincom = __z_pcd_read_bincom[field->valuetype*4+field->bitsize];
 }
 
 static void _zPCDFieldInit(_zPCDField *field)
 {
-  field->def = ZEO_PCD_NONE;
+  field->fieldtype = ZEO_PCD_FIELDTYPE_INVALID;
   field->size = 0;
   field->bitsize = 0;
-  field->type = ZEO_PCD_TYPE_INVALID;
+  field->valuetype = ZEO_PCD_VALUETYPE_INVALID;
   field->count = 0;
   field->read_ascii = NULL;
   field->read_bin = NULL;
@@ -173,7 +240,7 @@ static void _zPCDFieldInit(_zPCDField *field)
 typedef struct{
   int version_major;
   int version_minor;
-  _zPCDField field[ZEO_PCD_FIELD_NUM_MAX];
+  _zPCDField *field;
   int fieldnum;
   int width;
   int height;
@@ -183,12 +250,8 @@ typedef struct{
 
 static void _zPCDInit(_zPCD *pcd)
 {
-  int i;
-
   pcd->version_major = pcd->version_minor = 0;
-  for( i=0; i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
-    _zPCDFieldInit( &pcd->field[i] );
-  }
+  pcd->field = NULL;
   pcd->fieldnum = 0;
   pcd->width = pcd->height = 0;
   zFrame3DIdent( &pcd->viewpoint );
@@ -225,14 +288,21 @@ static bool _zPCDVersionFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 static bool _zPCDFieldsFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   int i;
+  char bufcpy[BUFSIZ];
 
-  for( i=0; *zSToken( buf, tkn, BUFSIZ ) && i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
-    if( ( pcd->field[i].def = (_zPCDDef)_zPCDFieldAttrFind( tkn, __z_pcd_def ) ) < 0 ){
-      ZRUNERROR( ZEO_ERR_PCD_UNKNOWN_FIELDID, tkn );
-      return false;
+  strcpy( bufcpy, buf );
+  for( pcd->fieldnum=0; *zSToken( bufcpy, tkn, BUFSIZ ); pcd->fieldnum++ );
+  if( !( pcd->field = zAlloc( _zPCDField, pcd->fieldnum ) ) ){
+    ZALLOCERROR();
+    return false;
+  }
+  for( i=0; i<pcd->fieldnum; i++ ){
+    if( !*zSToken( buf, tkn, BUFSIZ ) ) break;
+    _zPCDFieldInit( &pcd->field[i] );
+    if( ( pcd->field[i].fieldtype = (_zPCDFieldType)_zPCDFieldAttrFind( tkn, __z_pcd_field_type ) ) < 0 ){
+      pcd->field[i].fieldtype = ZEO_PCD_FIELDTYPE_UNKNOWN;
     }
   }
-  pcd->fieldnum = i;
   return true;
 }
 
@@ -247,7 +317,7 @@ static bool _zPCDSizeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   int i;
 
-  for( i=0; *zSToken( buf, tkn, BUFSIZ ) && i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
+  for( i=0; *zSToken( buf, tkn, BUFSIZ ) && i<pcd->fieldnum; i++ ){
     switch( ( pcd->field[i].size = atoi( tkn ) ) ){
     case 1: pcd->field[i].bitsize = 0; break;
     case 2: pcd->field[i].bitsize = 1; break;
@@ -261,13 +331,13 @@ static bool _zPCDSizeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
   return _zPCDCheckFieldNum( pcd, i );
 }
 
-static bool _zPCDTypeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
+static bool _zPCDValueTypeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   int i;
 
-  for( i=0; *zSToken( buf, tkn, BUFSIZ ) && i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
-    if( ( pcd->field[i].type = (_zPCDType)_zPCDFieldAttrFind( tkn, __z_pcd_type ) ) < 0 ){
-      ZRUNERROR( ZEO_ERR_PCD_UNKNOWN_FIELDTYPE, tkn );
+  for( i=0; *zSToken( buf, tkn, BUFSIZ ) && i<pcd->fieldnum; i++ ){
+    if( ( pcd->field[i].valuetype = (_zPCDValueType)_zPCDFieldAttrFind( tkn, __z_pcd_value_type ) ) < 0 ){
+      ZRUNERROR( ZEO_ERR_PCD_UNKNOWN_VALUETYPE, tkn );
       return false;
     }
   }
@@ -278,7 +348,7 @@ static bool _zPCDCountFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
 {
   int i;
 
-  for( i=0; *zSToken( buf, tkn, BUFSIZ ) && i<ZEO_PCD_FIELD_NUM_MAX; i++ ){
+  for( i=0; *zSToken( buf, tkn, BUFSIZ ) && i<pcd->fieldnum; i++ ){
     if( ( pcd->field[i].count = atoi( tkn ) ) != 1 ){
       ZRUNERROR( ZEO_ERR_PCD_INVALID_COUNT );
       return false;
@@ -337,8 +407,7 @@ static bool _zPCDPointsFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
   }
   points = atoi( tkn );
   if( points != pcd->width * pcd->height ){
-    ZRUNERROR( ZEO_ERR_PCD_INVALID_NUMOFPOINTS,
-      points, pcd->width, pcd->height );
+    ZRUNERROR( ZEO_ERR_PCD_INVALID_NUMOFPOINTS, points, pcd->width, pcd->height );
     return false;
   }
   return true;
@@ -350,7 +419,7 @@ static bool _zPCDDataTypeFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
     ZRUNERROR( ZEO_ERR_PCD_UNSPEC_DATATYPE );
     return false;
   }
-  if( ( pcd->datatype = (_zPCDDataType)_zPCDFieldAttrFind( tkn, __z_pcd_datatype ) ) < 0 ){
+  if( ( pcd->datatype = (_zPCDDataType)_zPCDFieldAttrFind( tkn, __z_pcd_data_type ) ) < 0 ){
     ZRUNERROR( ZEO_ERR_PCD_UNKNOWN_DATATYPE, tkn );
     return false;
   }
@@ -364,7 +433,7 @@ static const struct _zPCDProperty{
   { "VERSION",   _zPCDVersionFRead },
   { "FIELDS",    _zPCDFieldsFRead },
   { "SIZE",      _zPCDSizeFRead },
-  { "TYPE",      _zPCDTypeFRead },
+  { "TYPE",      _zPCDValueTypeFRead },
   { "COUNT",     _zPCDCountFRead },
   { "WIDTH",     _zPCDWidthFRead },
   { "HEIGHT",    _zPCDHeightFRead },
@@ -435,29 +504,91 @@ static bool _zPCDDataBINFRead(FILE *fp, _zPCD *pcd, zVec3DData *data)
   return true;
 }
 
+static bool _zPCDDataBINCOMFRead(FILE *fp, _zPCD *pcd, zVec3DData *data)
+{
+#ifndef __ZEO_USE_PCD_BINARY_COMPRESSED
+  ZRUNWARN( "binary_compressed not supported" );
+  return false;
+#else
+  uint32_t size_compressed = 0;
+  uint32_t size_decompressed = 0;
+  uint32_t size_processed = 0;
+  byte *data_compressed = NULL;
+  byte *data_decompressed = NULL;
+  byte *data_ptr;
+  bool result = false;
+  zVec3D *v;
+  int i, j, n;
+
+  if( fread( &size_compressed, sizeof(uint32_t), 1, fp ) != 1 ) return false;
+  if( fread( &size_decompressed, sizeof(uint32_t), 1, fp ) != 1 ) return false;
+  data_compressed = zAlloc( byte, size_compressed );
+  data_decompressed = zAlloc( byte, size_decompressed );
+  if( !data_compressed || !data_decompressed ){
+    ZALLOCERROR();
+    goto TERMINATE;
+  }
+  if( ( size_processed = fread( data_compressed, sizeof(byte), size_compressed, fp ) ) != size_compressed ){
+    ZRUNERROR( ZEO_ERR_PCD_FAILED_TO_READ_DATA, size_processed, size_compressed );
+    goto TERMINATE;
+  }
+  if( ( size_processed = lzf_decompress( data_compressed, size_compressed, data_decompressed, size_decompressed ) ) != size_decompressed ){
+    ZRUNERROR( ZEO_ERR_PCD_FAILED_TO_DECOMPRESS, size_processed, size_decompressed );
+    goto TERMINATE;
+  }
+  data_ptr = data_decompressed;
+  n = pcd->width * pcd->height;
+  for( i=0; i<pcd->fieldnum; i++ ){
+    if( _zPCDFieldIsCoord( &pcd->field[i] ) ){
+      zVec3DDataRewind( data );
+      for( j=0; j<n; j++ ){
+        if( !( v = zVec3DDataFetch( data ) ) ) continue;
+        pcd->field[i].read_bincom( &pcd->field[i], data_ptr, v );
+        data_ptr += pcd->field[i].size;
+      }
+    } else
+      data_ptr += pcd->field[i].size * n;
+  }
+  result = true;
+ TERMINATE:
+  zFree( data_compressed );
+  zFree( data_decompressed );
+  return result;
+#endif /* __ZEO_USE_PCD_BINARY_COMPRESSED */
+}
+
 /* read point cloud from a stream of PCD file. */
 bool zVec3DDataFReadPCD(FILE *fp, zVec3DData *data)
 {
   _zPCD pcd;
   int i;
+  bool result = false;
 
-  zVec3DDataRewind( data );
   _zPCDInit( &pcd );
   if( !_zPCDHeaderFRead( fp, &pcd ) ) return false;
-  if( pcd.datatype == ZEO_PCD_DATATYPE_ASCII ){
-    for( i=0; i<ZEO_PCD_FIELD_NUM_MAX; i++ )
+  if( !zVec3DDataInitArray( data, pcd.width * pcd.height ) ) return false;
+  switch( pcd.datatype ){
+  case ZEO_PCD_DATATYPE_ASCII:
+    for( i=0; i<pcd.fieldnum; i++ )
       _zPCDFieldAssignReadASCII( &pcd.field[i] );
-    _zPCDDataASCIIFRead( fp, &pcd, data );
-  } else
-  if( pcd.datatype == ZEO_PCD_DATATYPE_BINARY ){
-    for( i=0; i<ZEO_PCD_FIELD_NUM_MAX; i++ )
+    result = _zPCDDataASCIIFRead( fp, &pcd, data );
+    break;
+  case ZEO_PCD_DATATYPE_BINARY:
+    for( i=0; i<pcd.fieldnum; i++ )
       _zPCDFieldAssignReadBIN( &pcd.field[i] );
-    _zPCDDataBINFRead( fp, &pcd, data );
-  } else{
-    ZRUNERROR( ZEO_ERR_PCD_INVALID_DATATYPE );
-    return false;
+    result = _zPCDDataBINFRead( fp, &pcd, data );
+    break;
+  case ZEO_PCD_DATATYPE_BINARY_COMPRESSED:
+    for( i=0; i<pcd.fieldnum; i++ )
+      _zPCDFieldAssignReadBINCOM( &pcd.field[i] );
+    result = _zPCDDataBINCOMFRead( fp, &pcd, data );
+    break;
+  default: ;
   }
-  return true;
+  free( pcd.field );
+  if( !result )
+    ZRUNERROR( ZEO_ERR_PCD_INVALID_DATATYPE );
+  return result;
 }
 
 /* read point cloud from a PCD file. */
@@ -517,9 +648,7 @@ bool zVec3DDataFWritePCD(FILE *fp, zVec3DData *data, const char *format)
   _zPCDDataType type;
 
   _zPCDHeaderFWrite( fp, data );
-  type = (_zPCDDataType)_zPCDFieldAttrFind( format, __z_pcd_datatype );
-
-  switch( ( type = (_zPCDDataType)_zPCDFieldAttrFind( format, __z_pcd_datatype ) ) ){
+  switch( ( type = (_zPCDDataType)_zPCDFieldAttrFind( format, __z_pcd_data_type ) ) ){
   case ZEO_PCD_DATATYPE_ASCII:  _zPCDDataASCIIFWrite( fp, data ); break;
   case ZEO_PCD_DATATYPE_BINARY: _zPCDDataBinFWrite( fp, data ); break;
   default: ZRUNERROR( ZEO_ERR_PCD_INVALID_FORMAT, format ); return false;

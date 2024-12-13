@@ -3,9 +3,9 @@ OBJ=zeo_misc.o\
 	zeo_vec2d.o zeo_vec2d_list.o zeo_vec2d_data.o\
 	zeo_mat2d.o zeo_coord2d.o zeo_frame2d.o zeo_elem2d.o\
 	zeo_vec3d.o zeo_vec3d_list.o zeo_vec3d_tree.o zeo_vec3d_data.o\
+	zeo_pointcloud.o\
 	zeo_vec6d.o zeo_vec6d_list.o\
 	zeo_mat3d.o zeo_ep.o zeo_frame3d.o zeo_mat6d.o zeo_vec3d_pca.o\
-	zeo_pointcloud.o\
 	zeo_elem3d.o zeo_elem3d_list.o\
 	zeo_render_texture.o\
 	zeo_ph.o zeo_ph_stl.o zeo_ph_ply.o zeo_ph_obj.o\
@@ -22,7 +22,11 @@ OBJ=zeo_misc.o\
 	zeo_map.o zeo_map_terra.o\
 	zeo_mapnet.o
 
+ifeq ($(CONFIG_USE_PCD_BINARY_COMPRESSED),y)
+	CFLAGS += -D__ZEO_USE_PCD_BINARY_COMPRESSED
+endif
+
 ifeq ($(CONFIG_USE_DAE),y)
 	OBJ += zeo_ph_dae.o
-	CFLAGS += -D __ZEDA_USE_LIBXML -D__ZEO_USE_DAE
+	CFLAGS += -D__ZEDA_USE_LIBXML -D__ZEO_USE_DAE
 endif
