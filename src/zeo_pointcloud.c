@@ -186,13 +186,12 @@ static void _zPCDFieldAssignReadBIN(_zPCDField *field)
 
 #define DEF_zPCDFieldReadBINCOMFunc(type) \
   static void _zPCDFieldReadBINCOM##type(_zPCDField *field, byte *data_ptr, zVec3D *v){\
-    union{\
+    union __zeo_pcd_field_val{\
       byte b[8];\
       type v;\
-    } val;\
-    int i;\
-    for( i=0; i<field->size; i++ ) val.b[i] = *( data_ptr + i );\
-    v->e[field->fieldtype] = (double)val.v;\
+    } *val_ptr;\
+    val_ptr = (union __zeo_pcd_field_val *)data_ptr;\
+    v->e[field->fieldtype] = (double)val_ptr->v;\
   }
 DEF_zPCDFieldReadBINCOMFunc( int8_t );
 DEF_zPCDFieldReadBINCOMFunc( uint8_t );

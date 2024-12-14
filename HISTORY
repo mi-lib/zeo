@@ -1,3 +1,4 @@
+2024.12.14. Modified DEF_zPCDFieldReadBINCOMFunc to accelerate conversion. [zeo_pointcloud]
 2024.12.13. Abolished ZEO_ERR_PCD_UNKNOWN_FIELDID. [zeo_errmsg, zeo_pointcloud]
 2024.12.13. Defined ZEO_ERR_PCD_FAILED_TO_READ_DATA and ZEO_ERR_PCD_FAILED_TO_DECOMPRESS. [zeo_errmsg, zeo_pointcloud]
 2024.12.13. Added _zPCDDataBINCOMFRead and modified zVec3DDataFReadPCD to read binary_compressed type of data in PCD file. [zeo_pointcloud]
