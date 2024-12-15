@@ -36,6 +36,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zFrame3D ){
   zFrame3D &createDH(double a, double alpha, double d, double theta);
   zFrame3D &copy(zFrame3D &src);
   zFrame3D &ident();
+  bool match(zFrame3D &f);
   bool isEqual(zFrame3D &f);
   bool isIdent();
   zVec3D xform(zVec3D &v);
@@ -87,6 +88,9 @@ __ZEO_EXPORT zFrame3D *zFrame3DCreate(zFrame3D *frame, zVec3D *p, zMat3D *m);
 #define zFrame3DCopy(src,dest) ( *(dest) = *(src) )
 #define zFrame3DIdent(frame) zFrame3DCopy( ZFRAME3DIDENT, frame )
 
+/*! \brief check if two 3D coordinate frames match. */
+#define _zFrame3DMatch(frame1,frame2) ( _zVec3DMatch( zFrame3DPos(frame1), zFrame3DPos(frame2) ) && _zMat3DMatch( zFrame3DAtt(frame1), zFrame3DAtt(frame2) ) )
+__ZEO_EXPORT bool zFrame3DMatch(const zFrame3D *frame1, const zFrame3D *frame2);
 /*! \brief check if two 3D coordinate frames are equal. */
 #define _zFrame3DEqual(frame1,frame2) ( _zVec3DEqual( zFrame3DPos(frame1), zFrame3DPos(frame2) ) && _zMat3DEqual( zFrame3DAtt(frame1), zFrame3DAtt(frame2) ) )
 __ZEO_EXPORT bool zFrame3DEqual(const zFrame3D *frame1, const zFrame3D *frame2);
@@ -332,6 +336,7 @@ inline zFrame3D &zFrame3D::createAA(zVec6D &v){ return *zVec6DToFrame3DAA( &v, t
 inline zFrame3D &zFrame3D::createDH(double a, double alpha, double d, double theta){ return *zFrame3DFromDH( this, a, alpha, d, theta ); }
 inline zFrame3D &zFrame3D::copy(zFrame3D &src){ zFrame3DCopy( &src, this ); return *this; }
 inline zFrame3D &zFrame3D::ident(){ zFrame3DIdent( this ); return *this; }
+inline bool zFrame3D::match(zFrame3D &f){ return _zFrame3DMatch( this, &f ); }
 inline bool zFrame3D::isEqual(zFrame3D &f){ return _zFrame3DEqual( this, &f ); }
 inline bool zFrame3D::isIdent(){ return _zFrame3DIsIdent( this ); }
 inline zVec3D zFrame3D::xform(zVec3D &v){ zVec3D ret; _zXform3D( this, &v, &ret ); return ret; }

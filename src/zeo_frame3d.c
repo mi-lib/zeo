@@ -30,6 +30,12 @@ zFrame3D *zFrame3DCreate(zFrame3D *frame, zVec3D *p, zMat3D *m)
   return frame;
 }
 
+/* check if two 3D coordinate frames match. */
+bool zFrame3DMatch(const zFrame3D *frame1, const zFrame3D *frame2)
+{
+  return _zFrame3DMatch( frame1, frame2 );
+}
+
 /* check if two 3D coordinate frames are equal. */
 bool zFrame3DEqual(const zFrame3D *frame1, const zFrame3D *frame2)
 {
