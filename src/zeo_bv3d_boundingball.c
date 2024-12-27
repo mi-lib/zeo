@@ -6,10 +6,6 @@
 
 #include <zeo/zeo_bv3d.h>
 
-/* ********************************************************** */
-/* bounding ball / smallest enclosing ball
- * ********************************************************** */
-
 /* test if a ball with its poles at the first two points bounds the last two points. */
 static zSphere3D *_zBoundingBall3DTest2(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
 {
@@ -58,7 +54,7 @@ static int _zBoundingBall3D4(zSphere3D *bb, zVec3D *v[], zVec3D **vp)
 }
 
 /* bounding ball of up to four points. */
-static int _zBoundingBall3DPrim(zSphere3D *bb, zVec3DAddrList *pl, zVec3D **vp)
+static int _zBoundingBall3DDirect(zSphere3D *bb, zVec3DAddrList *pl, zVec3D **vp)
 {
   zVec3D *v[4];
 
@@ -90,69 +86,8 @@ static int _zBoundingBall3DPrim(zSphere3D *bb, zVec3DAddrList *pl, zVec3D **vp)
   return 0;
 }
 
-/* a recursive procedure to find bounding ball of two sets of points,
- * where the latter is the set of those on the surface of the ball. */
-static int _zBoundingBall3DInc(zSphere3D *bb, zVec3DAddrList *pl, zVec3DAddrList *shell, zVec3D **vp)
-{
-  zVec3DAddrListCell *cp;
-  int num;
+/* a recursive implementation */
+ZEO_BOUNDINGBALL_RECURSIVE_DEF_METHOD( 3D, 4, zSphere3D )
 
-  if( zListIsEmpty(pl) || zListSize(shell) == 4 )
-    return _zBoundingBall3DPrim( bb, shell, vp );
-  zListDeleteTail( pl, &cp );
-  num = _zBoundingBall3DInc( bb, pl, shell, vp );
-  if( !zSphere3DPointIsInside( bb, cp->data, zTOL ) ){
-    zListInsertTail( shell, cp );
-    num = _zBoundingBall3DInc( bb, pl, shell, vp );
-    zListPurge( shell, cp );
-  }
-  zListInsertTail( pl, cp );
-  return num;
-}
-
-/* a recursive procedure to find bounding ball of a list of 3D points. */
-static int _zBoundingBall3D(zSphere3D *bb, zVec3DAddrList *pl, zVec3D **vp)
-{
-  zVec3DAddrList shell;
-  zVec3DAddrListCell *cp;
-  int num;
-
-  zListInit( &shell );
-  if( zListSize(pl) <= 4 )
-    return _zBoundingBall3DPrim( bb, pl, vp );
-  zListDeleteTail( pl, &cp );
-  num = _zBoundingBall3D( bb, pl, vp );
-  if( !zSphere3DPointIsInside( bb, cp->data, zTOL ) ){
-    zListInsertTail( &shell, cp );
-    num = _zBoundingBall3DInc( bb, pl, &shell, vp );
-    zListPurge( &shell, cp );
-  }
-  zListInsertTail( pl, cp );
-  return num;
-}
-
-/* bounding ball of 3D points. */
-int zVec3DDataBoundingBall(zVec3DData *data, zSphere3D *bb, zVec3D **vp)
-{
-  zVec3DAddrList addrlist;
-  zPH3D ch;
-  int ret;
-
-  if( zVec3DDataSize(data) > ZEO_BOUNDINGBALL_PN_THRESHOLD ){
-    /* discard points inside of the convex hull from the list. */
-    if( !zVec3DDataConvexHull( data, &ch ) ){
-      ret = 0;
-    } else{
-      zArrayFree( &ch.face );
-      zVec3DAddrListCreate( &addrlist, &ch.vert );
-      ret = _zBoundingBall3D( bb, &addrlist, vp );
-      zVec3DAddrListDestroy( &addrlist );
-    }
-    zPH3DDestroy( &ch );
-  } else{
-    if( !zVec3DDataToAddrList( data, &addrlist ) ) return 0;
-    ret = _zBoundingBall3D( bb, &addrlist, vp );
-    zVec3DAddrListDestroy( &addrlist );
-  }
-  return ret;
-}
+/* a non-recursive implementation */
+ZEO_BOUNDINGBALL_DEF_METHOD( 3D, 4, zSphere3D )

@@ -9,25 +9,34 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
+#include <zeo/zeo_bvxd_boundingball.h>
 
-/*! \brief If the number of points exceeds the this threshold, points inside of the convex hull are discarded from the list. */
-#define ZEO_BOUNDINGBALL_PN_THRESHOLD 1000
-/* NOTE: This should be optimized through a comparison of exection time of zVec3DDataBoundingBall() and zVec3DDataConvexHull(). */
+__BEGIN_DECLS
 
 /*! \brief bounding ball of 3D points.
  *
- * zVec3DDataBoundingBall() computes the bounding ball (also known as smallest enclosing ball)
- * of a set of 3D points \a data. The result is put int \a bb.
+ * zVec3DDataBoundingBall() and zVec3DDataBoundingBallRecursive() compute the bounding ball,
+ * which is also known as smallest enclosing ball, of a set of 3D points \a data.
+ * The ball in the 3D case means a sphere, and hence, the result is put into a sphere \a bb.
  *
  * The pointers to extreme points on the sphere will be stored into the array pointed by \a vp,
  * unless it is the null pointer.
  *
- * The algorithm is according to E. Welzl(1991).
+ * The original algorithm was proposed by E. Welzl (1991).
+ * zVec3DDataBoundingBallRecursive() is a straightforward recursive implementation of the algorithm.
+ * This is possibly violated due to stack-overflow.
+ * On the other hand, zVec3DDataBoundingBall() is a non-recursive implementation. Though it is
+ * also based on the original algorithm, it uses an internal action stack to avoid recursive
+ * function calls.
+ * The latter should be used in user programs if not for any particular reasons.
  * \return
- * zVec3DDataBoundingBall() returns the number of extreme points on the sphere \a bb.
+ * zVec3DDataBoundingBall() returns the number of extreme points on the sphere \a bb, which is
+ * up to four.
+ * \sa
+ * zVec2DDataBoundingBall, zVec2DDataBoundingBallRecursive
  */
-__ZEO_EXPORT int zVec3DDataBoundingBall(zVec3DData *data, zSphere3D *bb, zVec3D **vp);
+__ZEO_EXPORT int zVec3DDataBoundingBallRecursive(zVec3DData *data, zSphere3D *bb, zVec3D **vp);
+__ZEO_EXPORT int zVec3DDataBoundingBall(zVec3DData *pointdata, zSphere3D *bb, zVec3D **vp);
 
 __END_DECLS
 

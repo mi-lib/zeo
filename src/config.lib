@@ -13,7 +13,7 @@ OBJ=zeo_misc.o\
 	zeo_shape3d.o zeo_shape3d_list.o\
 	zeo_shape3d_box.o zeo_shape3d_sphere.o zeo_shape3d_ellips.o zeo_shape3d_cyl.o zeo_shape3d_capsule.o zeo_shape3d_ecyl.o zeo_shape3d_cone.o zeo_shape3d_ph.o zeo_shape3d_nurbs.o\
 	zeo_nurbs_shape.o\
-	zeo_bv2d_aabb.o zeo_bv2d_boundingdisk.o zeo_bv2d_convexhull.o\
+	zeo_bv2d_aabb.o zeo_bv2d_boundingball.o zeo_bv2d_convexhull.o\
 	zeo_bv3d_aabb.o zeo_bv3d_obb.o zeo_bv3d_boundingball.o zeo_bv3d_convexhull.o\
 	zeo_voronoi2d.o\
 	zeo_brep.o zeo_brep_trunc.o zeo_brep_bool.o\

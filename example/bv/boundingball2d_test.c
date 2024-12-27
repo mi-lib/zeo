@@ -1,13 +1,13 @@
 #include <zeo/zeo_bv2d.h>
 
-#define N  10000
+#define N    100
 #define DIV  100
 
 int main(int argc, char *argv[])
 {
   zVec2DData data;
   zVec2D p;
-  zDisk2D bd;
+  zDisk2D bb;
   int i;
   FILE *fp;
 
@@ -21,12 +21,12 @@ int main(int argc, char *argv[])
     fprintf( fp, "\n" );
   }
   fclose( fp );
-  zVec2DDataBoundingDisk( &data, &bd, NULL );
+  zVec2DDataBoundingBall( &data, &bb, NULL );
   fp = fopen( "d", "w" );
   for( i=0; i<=DIV; i++ ){
     fprintf( fp, "%.10g %.10g\n",
-      zDisk2DRadius(&bd)*cos(zPIx2*(double)i/DIV)+zDisk2DCenter(&bd)->c.x,
-      zDisk2DRadius(&bd)*sin(zPIx2*(double)i/DIV)+zDisk2DCenter(&bd)->c.y );
+      zDisk2DRadius(&bb)*cos(zPIx2*(double)i/DIV)+zDisk2DCenter(&bb)->c.x,
+      zDisk2DRadius(&bb)*sin(zPIx2*(double)i/DIV)+zDisk2DCenter(&bb)->c.y );
   }
   fclose( fp );
 
