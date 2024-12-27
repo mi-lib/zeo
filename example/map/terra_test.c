@@ -40,7 +40,7 @@ void terra_gen_sample(zVec3DList *pl)
     zVec3DListAdd( pl, p );
   }
   fp = fopen( TERRAIN_SRC_FILE, "w" );
-  zVec3DListDataFPrint( fp, pl );
+  zVec3DListValueFPrint( fp, pl );
   fclose( fp );
 }
 

@@ -1,3 +1,4 @@
+2024.12.28. Corrected terra_test to reflect renaming of zVec3DListValueFPrint. [example]
 2024.12.28. Added ZEO_BOUNDINGBALL_RECURSIVE_DEF_METHOD, and redefined zVec2D/3DDataBoundingBallRecursive by using it. [zeo_bvxd_boundingball, zeo_bv2d_boundingball, zeo_bv3d_boundingball]
 2024.12.27. Added ZEO_BOUNDINGBALL_DEF_METHOD, and redefined zVec2D/3DDataBoundingBall by using it. [zeo_bvxd_boundingball, zeo_bv2d_boundingball, zeo_bv3d_boundingball]
 2024.12.27. Renamed _zBoundingDisk2DTest2, _zBoundingDisk2DTest3, _zBoundingDisk2D3, _zBoundingDisk2DDirect, _zBoundingDisk2DRecursive, and zVec2DDataBoundingDiskRecursive to _zBoundingBall2DTest2, _zBoundingBall2DTest3, _zBoundingBall2D3, _zBoundingBall2DDirect, _zBoundingBall2DRecursive, and zVec2DDataBoundingBallRecursive, respectively. [zeo_bv2d_boundingball, zeo_voronoi2d]
