@@ -5,6 +5,7 @@
  including:
  - color and optics computations
  - 2D/3D vectors and matrices
+ - read/write of PCD format file (point cloud)
  - 6D spatial vectors and matrices
  - 2D/3D frame and coordinate transformation
  - Euler parameter (unit quaternion)
@@ -12,7 +13,7 @@
  - 3D shape primitives (box, sphere, cylinder, cone, ellipsoid,
    elliptic cylinder, polyhedron)
  - multiple 3D shapes
- - point cloud
+ - read/write of PLY/STL/OBJ/DAE format files
  - NURBS curve / surface
  - trianglation of non-convex
  - bounding volume (AABB, OBB, boundin ball, convex-hull)
@@ -28,7 +29,7 @@
 
 #include <zeo/zeo_frame2d.h>
 #include <zeo/zeo_mat6d.h>
-#include <zeo/zeo_pointcloud.h>
+#include <zeo/zeo_vec3d_pcd.h>
 #include <zeo/zeo_mshape3d.h>
 #include <zeo/zeo_bv3d.h>
 #include <zeo/zeo_voronoi2d.h>

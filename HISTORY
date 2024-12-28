@@ -1,3 +1,4 @@
+2024.12.29. Renamed zeo_pointcloud to zeo_vec3d_pcd. [zeo, zeo_vec3d_pcd, example]
 2024.12.28. Corrected terra_test to reflect renaming of zVec3DListValueFPrint. [example]
 2024.12.28. Added ZEO_BOUNDINGBALL_RECURSIVE_DEF_METHOD, and redefined zVec2D/3DDataBoundingBallRecursive by using it. [zeo_bvxd_boundingball, zeo_bv2d_boundingball, zeo_bv3d_boundingball]
 2024.12.27. Added ZEO_BOUNDINGBALL_DEF_METHOD, and redefined zVec2D/3DDataBoundingBall by using it. [zeo_bvxd_boundingball, zeo_bv2d_boundingball, zeo_bv3d_boundingball]

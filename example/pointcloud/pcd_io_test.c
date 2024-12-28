@@ -1,4 +1,4 @@
-#include <zeo/zeo_pointcloud.h>
+#include <zeo/zeo_vec3d_pcd.h>
 
 int main(int argc, char *argv[])
 {

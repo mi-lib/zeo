@@ -1,11 +1,11 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_pointcloud - 3D point cloud.
+ * zeo_vec3d_pcd - read/write of PCD format files (3D point cloud).
  */
 
-#ifndef __ZEO_POINTCLOUD_H__
-#define __ZEO_POINTCLOUD_H__
+#ifndef __ZEO_VEC3D_PCD_H__
+#define __ZEO_VEC3D_PCD_H__
 
 #include <zeo/zeo_ep.h>
 #include <zeo/zeo_frame3d.h>
@@ -41,4 +41,4 @@ __ZEO_EXPORT bool zVec3DDataWritePCDFile(zVec3DData *data, char filename[], cons
 
 __END_DECLS
 
-#endif /* __ZEO_POINTCLOUD_H__ */
+#endif /* __ZEO_VEC3D_PCD_H__ */

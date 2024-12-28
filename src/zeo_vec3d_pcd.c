@@ -1,10 +1,10 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_pointcloud - 3D point cloud.
+ * zeo_vec3d_pcd - read/write of PCD format files (3D point cloud).
  */
 
-#include <zeo/zeo_pointcloud.h>
+#include <zeo/zeo_vec3d_pcd.h>
 
 /* for binary_compressed data type */
 #ifdef __ZEO_USE_PCD_BINARY_COMPRESSED
