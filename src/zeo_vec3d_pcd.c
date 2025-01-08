@@ -451,10 +451,14 @@ static bool _zPCDHeaderFRead(FILE *fp, _zPCD *pcd)
     if( fgets( buf, BUFSIZ, fp ) == NULL ) break;
     if( buf[0] == '#' ) continue; /* comment */
     if( !*zSToken( buf, tkn, BUFSIZ ) ) break;
-    if( strcmp( tkn, property->key ) != 0 ) continue;
+    for( ; strcmp( tkn, property->key ) != 0; property++ ){
+      if( !property->key ){
+        ZRUNERROR( ZEO_ERR_PCD_UNKNOWN_KEY, tkn );
+        return false;
+      }
+    }
     if( !property->read( fp, pcd, buf, tkn ) ) return false;
     if( strcmp( property->key, "DATA" ) == 0 ) return true;
-    property++;
   }
   ZRUNERROR( ZEO_ERR_PCD_INVALID_HEADER );
   return false;

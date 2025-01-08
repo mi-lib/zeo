@@ -1,3 +1,4 @@
+2025. 1. 9. Debugged _zPCDHeaderFRead to cope with cases where some keys are missing. [zeo_vec3d_pcd]
 2025. 1. 9. Added zNURBS3DKnotScale and zNURBS3D1KnotScale. [zeo_nurbs]
 2025. 1. 9. Defined zNURBS3D1KnotNormalize. [zeo_nurbs]
 2025. 1. 9. Modified specification of zNURBS3DKnotNormalize, and redefined it as a macro. [zeo_nurbs]

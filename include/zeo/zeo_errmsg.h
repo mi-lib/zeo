@@ -66,6 +66,7 @@
 #define ZEO_ERR_PCD_INVALID_NUMOFPOINTS       "inconsistent number of points: %d VS %d x %d"
 #define ZEO_ERR_PCD_UNSPEC_DATATYPE           "data type not specified"
 #define ZEO_ERR_PCD_UNKNOWN_DATATYPE          "unknown data type identifier: %s"
+#define ZEO_ERR_PCD_UNKNOWN_KEY               "unknown key in PCD header: %s"
 #define ZEO_ERR_PCD_INVALID_HEADER            "invalid PCD file header"
 #define ZEO_ERR_PCD_INVALID_DATATYPE          "invalid data type"
 #define ZEO_ERR_PCD_INVALID_FORMAT            "unknown point clound format %s"
