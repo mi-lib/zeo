@@ -131,12 +131,33 @@ __ZEO_EXPORT zNURBS3D *zNURBS3DXform(const zNURBS3D *src, const zFrame3D *f, zNU
 /*! \brief inversely transform control points of a NURBS curve / surface. */
 __ZEO_EXPORT zNURBS3D *zNURBS3DXformInv(const zNURBS3D *src, const zFrame3D *f, zNURBS3D *dest);
 
-/*! \brief normalize the knot vectors of a NURBS curve / surface.
+/*! \brief normalize the knot vectors of a NURBS surface.
  *
- * zNURBS3DKnotNormalize() normalizes knot vectors of a NURBS
- * curve / surface \a nurbs so that it starts from 0 and ends to 1.
+ * zNURBS3DKnotNormalize() normalizes knot vectors in \a i axis of a NURBS surface \a nurbs
+ * so that it starts from 0 and ends to 1.
  */
-__ZEO_EXPORT void zNURBS3DKnotNormalize(zNURBS3D *nurbs);
+#define zNURBS3DKnotNormalize(nurbs,i) zBSplineParamKnotNormalize( &(nurbs)->param[(i)] )
+
+/*! \brief normalize the knot vectors of a NURBS curve.
+ *
+ * zNURBS3D1KnotNormalize() normalizes knot vectors of a NURBS curve \a nurbs so that it starts
+ * from 0 and ends to 1.
+ */
+#define zNURBS3D1KnotNormalize(nurbs)  zNURBS3DKnotNormalize(nurbs,1)
+
+/*! \brief scale the knot vectors of a NURBS surface.
+ *
+ * zNURBS3DKnotScale() scales knot vectors in \a i axis of a NURBS surface \a nurbs so that
+ * it starts from \a knot_s and ends to \a knot_e.
+ */
+#define zNURBS3DKnotScale(nurbs,i,knot_s,knot_e) zBSplineParamKnotScale( &(nurbs)->param[(i)], knot_s, knot_e )
+
+/*! \brief scale the knot vectors of a NURBS curve.
+ *
+ * zNURBS3DKnotScale() scales knot vectors of a NURBS curve \a nurbs so that it starts from
+ * \a knot_s and ends to \a knot_e.
+ */
+#define zNURBS3D1KnotScale(nurbs,knot_s,knot_e)  zNURBS3DKnotScale( nurbs, 1, knot_s, knot_e )
 
 /*! \brief compute a vector on NURBS curve / surface.
  *

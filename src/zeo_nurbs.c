@@ -115,13 +115,6 @@ zNURBS3D *zNURBS3DXformInv(const zNURBS3D *src, const zFrame3D *f, zNURBS3D *des
   return dest;
 }
 
-/* normalize knot vectors of a NURBS curve / surface. */
-void zNURBS3DKnotNormalize(zNURBS3D *nurbs)
-{
-  zBSplineParamKnotNormalize( &nurbs->param[0] );
-  zBSplineParamKnotNormalize( &nurbs->param[1] );
-}
-
 /* compute a vector on a NURBS curve / surface. */
 zVec3D *zNURBS3DVec(const zNURBS3D *nurbs, double u, double v, zVec3D *p)
 {

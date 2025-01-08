@@ -1,3 +1,6 @@
+2025. 1. 9. Added zNURBS3DKnotScale and zNURBS3D1KnotScale. [zeo_nurbs]
+2025. 1. 9. Defined zNURBS3D1KnotNormalize. [zeo_nurbs]
+2025. 1. 9. Modified specification of zNURBS3DKnotNormalize, and redefined it as a macro. [zeo_nurbs]
 2024.12.29. Renamed zeo_pointcloud to zeo_vec3d_pcd. [zeo, zeo_vec3d_pcd, example]
 2024.12.28. Corrected terra_test to reflect renaming of zVec3DListValueFPrint. [example]
 2024.12.28. Added ZEO_BOUNDINGBALL_RECURSIVE_DEF_METHOD, and redefined zVec2D/3DDataBoundingBallRecursive by using it. [zeo_bvxd_boundingball, zeo_bv2d_boundingball, zeo_bv3d_boundingball]
