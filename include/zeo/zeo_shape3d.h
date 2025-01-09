@@ -218,6 +218,9 @@ __ZEO_EXPORT zShape3D *zShape3DReadZTK(zShape3D *shape, const char filename[]);
 /*! \brief write a 3D shape to a ZTK format file. */
 __ZEO_EXPORT bool zShape3DWriteZTK(const zShape3D *shape, const char filename[]);
 
+/*! \brief read a 3D shape from a file. */
+__ZEO_EXPORT zShape3D *zShape3DReadFile(zShape3D *shape, const char filename[]);
+
 __END_DECLS
 
 #include <zeo/zeo_shape3d_box.h>     /* box */

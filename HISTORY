@@ -1,3 +1,7 @@
+2025. 1. 9. Added zeo_ph2pcd. [app]
+2025. 1. 9. Modified zeo_phconv. [app]
+2025. 1. 9. Abolished zeo_stl2ztk. [app]
+2025. 1. 9. Added zShape3DReadFile, and modified _zShape3DImportFromZTK. [zeo_shape3d]
 2025. 1. 9. Debugged _zPCDHeaderFRead to cope with cases where some keys are missing. [zeo_vec3d_pcd]
 2025. 1. 9. Added zNURBS3DKnotScale and zNURBS3D1KnotScale. [zeo_nurbs]
 2025. 1. 9. Defined zNURBS3D1KnotNormalize. [zeo_nurbs]

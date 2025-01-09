@@ -283,30 +283,7 @@ static void *_zShape3DMirrorFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  char *suffix;
-
-  suffix = zGetSuffix( ZTKVal(ztk) );
-  if( strcmp( suffix, "stl" ) == 0 || strcmp( suffix, "STL" ) == 0 ){
-    if( !zShape3DReadFileSTL( (zShape3D *)obj, ZTKVal(ztk) ) ) obj = NULL;
-  } else
-  if( strcmp( suffix, "obj" ) == 0 || strcmp( suffix, "OBJ" ) == 0 ){
-    if( !zShape3DReadFileOBJ( (zShape3D *)obj, ZTKVal(ztk) ) ) obj = NULL;
-  } else
-  if( strcmp( suffix, "ply" ) == 0 || strcmp( suffix, "PLY" ) == 0 ){
-    if( !zShape3DReadFilePLY( (zShape3D *)obj, ZTKVal(ztk) ) ) obj = NULL;
-  } else
-  if( strcmp( suffix, "dae" ) == 0 || strcmp( suffix, "DAE" ) == 0 ){
-#ifdef __ZEO_USE_DAE
-    if( !zShape3DReadFileDAE( (zShape3D *)obj, ZTKVal(ztk) ) ) obj = NULL;
-#else
-    ZRUNWARN( ZEO_ERR_DAE_UNSUPPORTED );
-    obj = NULL;
-#endif
-  } else{
-    ZRUNERROR( ZEO_WARN_SHAPE_UNKNOWNFORMAT, suffix );
-    obj = NULL;
-  }
-  if( obj ){
+  if( ( obj = zShape3DReadFile( obj, ZTKVal(ztk) ) ) ){
     ((_zShape3DRefPrp*)arg)->imported = true;
     if( ZTKValNext(ztk) )
       zPH3DScale( zShape3DPH((zShape3D*)obj), atof(ZTKVal(ztk)) );
@@ -429,4 +406,37 @@ bool zShape3DWriteZTK(const zShape3D *shape, const char filename[])
   zShape3DFPrintZTK( fp, shape );
   fclose( fp );
   return true;
+}
+
+/* read a 3D shape from a file. */
+zShape3D *zShape3DReadFile(zShape3D *shape, const char filename[])
+{
+  char *suffix;
+
+  zShape3DInit( shape );
+  suffix = zGetSuffix( filename );
+  if( strcmp( suffix, "ztk" ) == 0 || strcmp( suffix, "ZTK" ) == 0 ){
+    shape = zShape3DReadZTK( shape, filename );
+  } else
+  if( strcmp( suffix, "stl" ) == 0 || strcmp( suffix, "STL" ) == 0 ){
+    shape = zShape3DReadFileSTL( shape, filename );
+  } else
+  if( strcmp( suffix, "obj" ) == 0 || strcmp( suffix, "OBJ" ) == 0 ){
+    shape = zShape3DReadFileOBJ( shape, filename );
+  } else
+  if( strcmp( suffix, "ply" ) == 0 || strcmp( suffix, "PLY" ) == 0 ){
+    shape = zShape3DReadFilePLY( shape, filename );
+  } else
+  if( strcmp( suffix, "dae" ) == 0 || strcmp( suffix, "DAE" ) == 0 ){
+#ifdef __ZEO_USE_DAE
+    shape = zShape3DReadFileDAE( shape, filename );
+#else
+    ZRUNWARN( ZEO_ERR_DAE_UNSUPPORTED );
+    shape = NULL;
+#endif
+  } else{
+    ZRUNERROR( ZEO_WARN_SHAPE_UNKNOWNFORMAT, suffix );
+    shape = NULL;
+  }
+  return shape;
 }
