@@ -67,12 +67,29 @@ static int zPLY_fread_ASCII_int_double(FILE *fp){
 
 typedef enum{
   ZEO_PLY_DATA_NONE=-1,
-  ZEO_PLY_DATA_CHAR=0, ZEO_PLY_DATA_UCHAR,
-  ZEO_PLY_DATA_SHORT, ZEO_PLY_DATA_USHORT,
-  ZEO_PLY_DATA_INT, ZEO_PLY_DATA_UINT,
-  ZEO_PLY_DATA_FLOAT, ZEO_PLY_DATA_DOUBLE,
+  ZEO_PLY_DATA_CHAR=0,
+  ZEO_PLY_DATA_UCHAR,
+  ZEO_PLY_DATA_SHORT,
+  ZEO_PLY_DATA_USHORT,
+  ZEO_PLY_DATA_INT,
+  ZEO_PLY_DATA_UINT,
+  ZEO_PLY_DATA_FLOAT,
+  ZEO_PLY_DATA_DOUBLE,
   ZEO_PLY_DATA_LIST,
+  ZEO_PLY_DATA_TYPE_NUM,
 } zPLYDATA;
+
+static const char *zeo_ply_prp_type_name[] = {
+  "char",
+  "uchar",
+  "short",
+  "ushort",
+  "int",
+  "uint",
+  "float",
+  "double",
+  "list",
+};
 
 typedef struct{
   const char *typestr;
@@ -81,34 +98,24 @@ typedef struct{
   int (* read_int)(FILE*);
 } zPLYPrp;
 
-static zPLYPrp z_ply_prp[] = {
-  { "char",   ZEO_PLY_DATA_CHAR,   NULL, NULL },
-  { "uchar",  ZEO_PLY_DATA_UCHAR,  NULL, NULL },
-  { "short",  ZEO_PLY_DATA_SHORT,  NULL, NULL },
-  { "ushort", ZEO_PLY_DATA_USHORT, NULL, NULL },
-  { "int",    ZEO_PLY_DATA_INT,    NULL, NULL },
-  { "uint",   ZEO_PLY_DATA_UINT,   NULL, NULL },
-  { "float",  ZEO_PLY_DATA_FLOAT,  NULL, NULL },
-  { "double", ZEO_PLY_DATA_DOUBLE, NULL, NULL },
-  { "list",   ZEO_PLY_DATA_LIST,   NULL, NULL },
-  { NULL,     ZEO_PLY_DATA_NONE,   NULL, NULL },
-};
-
-static const zPLYPrp *_zPLYPrpFind(char *str)
-{
-  int i;
-
-  for( i=0; z_ply_prp[i].typestr; i++ )
-    if( strcmp( str, z_ply_prp[i].typestr ) == 0 )
-      return &z_ply_prp[i];
-  return NULL;
-}
-
 typedef enum{
   ZEO_PLY_ELEM_NONE=-1,
-  ZEO_PLY_ELEM_VERTEX, ZEO_PLY_ELEM_FACE, ZEO_PLY_ELEM_EDGE, ZEO_PLY_ELEM_MATERIAL,
+  ZEO_PLY_ELEM_VERTEX=0,
+  ZEO_PLY_ELEM_FACE,
+  ZEO_PLY_ELEM_EDGE,
+  ZEO_PLY_ELEM_MATERIAL,
+  ZEO_PLY_ELEM_RANGE_GRID,
   ZEO_PLY_ELEM_NUM
 } zPLYElemType;
+
+const char *zeo_ply_elem[] = {
+  "vertex",
+  "face",
+  "edge",
+  "material",
+  "range_grid",
+  NULL,
+};
 
 #define ZEO_PLY_ELEM_MAX_NUM ZEO_PLY_ELEM_NUM
 #define ZEO_PLY_PRP_MAX_NUM  12
@@ -134,13 +141,10 @@ static void _zPLYElementFPrint(FILE *fp, zPLYElement *elem)
 {
   int i;
 
-  switch( elem->type ){
-  case ZEO_PLY_ELEM_VERTEX:   fprintf( fp, "vertex" );    break;
-  case ZEO_PLY_ELEM_FACE:     fprintf( fp, "face" );      break;
-  case ZEO_PLY_ELEM_EDGE:     fprintf( fp, "edge" );      break;
-  case ZEO_PLY_ELEM_MATERIAL: fprintf( fp, "material" );  break;
-  default:                    fprintf( fp, "(unknown)" ); break;
-  }
+  if( elem->type >= ZEO_PLY_ELEM_VERTEX && elem->type < ZEO_PLY_ELEM_NUM )
+    fprintf( fp, "%s", zeo_ply_elem[elem->type] );
+  else
+    fprintf( fp, "(unknown)" );
   fprintf( fp, ", num=%d\n", elem->num );
   for( i=0; i<elem->prpnum; i++ )
     fprintf( fp, " type: %s\n", elem->prp[i]->typestr );
@@ -158,6 +162,7 @@ typedef struct{
   int elemnum;
   zPLYElement elem[ZEO_PLY_ELEM_MAX_NUM];
   byte vertidx[3];
+  zPLYPrp prp_ref[ZEO_PLY_DATA_TYPE_NUM];
   zPLYPrp *facelistnum;
   zPLYPrp *facelistelem;
 } zPLY;
@@ -180,32 +185,38 @@ static void _zPLYPrpInit(zPLY *ply)
     zPLY_fread_ASCII_double_int,    zPLY_fread_ASCII_double_int,
     zPLY_fread_ASCII_double_int,    zPLY_fread_ASCII_double_int,
     zPLY_fread_ASCII_double_int,    zPLY_fread_ASCII_double_int,
-    zPLY_fread_ASCII_double_double, zPLY_fread_ASCII_double_double };
+    zPLY_fread_ASCII_double_double, zPLY_fread_ASCII_double_double,
+    NULL };
   double (* read_double_bin[])(FILE*) = {
     zPLY_fread_double_byte,         zPLY_fread_double_byte,
     zPLY_fread_double_word,         zPLY_fread_double_word,
     zPLY_fread_double_dword,        zPLY_fread_double_dword,
-    zPLY_fread_double_float,        zPLY_fread_double_double };
+    zPLY_fread_double_float,        zPLY_fread_double_double,
+    NULL };
   double (* read_double_bin_rev[])(FILE*) = {
     zPLY_fread_double_byte,         zPLY_fread_double_byte,
     zPLY_fread_double_word_rev,     zPLY_fread_double_word_rev,
     zPLY_fread_double_dword_rev,    zPLY_fread_double_dword_rev,
-    zPLY_fread_double_float_rev,    zPLY_fread_double_double_rev };
+    zPLY_fread_double_float_rev,    zPLY_fread_double_double_rev,
+    NULL };
   int (* read_int_ASCII[])(FILE*) = {
     zPLY_fread_ASCII_int_int,       zPLY_fread_ASCII_int_int,
     zPLY_fread_ASCII_int_int,       zPLY_fread_ASCII_int_int,
     zPLY_fread_ASCII_int_int,       zPLY_fread_ASCII_int_int,
-    zPLY_fread_ASCII_int_double,    zPLY_fread_ASCII_int_double };
+    zPLY_fread_ASCII_int_double,    zPLY_fread_ASCII_int_double,
+    NULL };
   int (* read_int_bin[])(FILE*) = {
     zPLY_fread_int_byte,            zPLY_fread_int_byte,
     zPLY_fread_int_word,            zPLY_fread_int_word,
     zPLY_fread_int_dword,           zPLY_fread_int_dword,
-    zPLY_fread_int_float,           zPLY_fread_int_double };
+    zPLY_fread_int_float,           zPLY_fread_int_double,
+    NULL };
   int (* read_int_bin_rev[])(FILE*) = {
     zPLY_fread_int_byte,            zPLY_fread_int_byte,
     zPLY_fread_int_word_rev,        zPLY_fread_int_word_rev,
     zPLY_fread_int_dword_rev,       zPLY_fread_int_dword_rev,
-    zPLY_fread_int_float_rev,       zPLY_fread_int_double_rev };
+    zPLY_fread_int_float_rev,       zPLY_fread_int_double_rev,
+    NULL };
   double (** read_double)(FILE*) = NULL;
   int (** read_int)(FILE*) = NULL;
   int i;
@@ -219,10 +230,22 @@ static void _zPLYPrpInit(zPLY *ply)
     read_double = read_double_bin_rev; read_int = read_int_bin_rev; break;
   default: ;
   }
-  for( i=ZEO_PLY_DATA_CHAR; i<ZEO_PLY_DATA_LIST; i++ ){
-    z_ply_prp[i].read_double = read_double[i];
-    z_ply_prp[i].read_int = read_int[i];
+  for( i=ZEO_PLY_DATA_CHAR; i<ZEO_PLY_DATA_TYPE_NUM; i++ ){
+    ply->prp_ref[i].typestr = zeo_ply_prp_type_name[i];
+    ply->prp_ref[i].type = i;
+    ply->prp_ref[i].read_double = read_double[i];
+    ply->prp_ref[i].read_int = read_int[i];
   }
+}
+
+static zPLYPrp *_zPLYPrpFind(zPLY *ply, char *str)
+{
+  int i;
+
+  for( i=0; i<ZEO_PLY_DATA_TYPE_NUM; i++ )
+    if( strcmp( str, ply->prp_ref[i].typestr ) == 0 )
+      return &ply->prp_ref[i];
+  return NULL;
 }
 
 #ifdef DEBUG
@@ -294,20 +317,17 @@ static bool _zPLYFReadElement(zPLY *ply, char *buf)
     return false;
   }
   zSToken( buf, tkn, BUFSIZ );
-  if( strcmp( tkn, "vertex" ) == 0 ){
-    ply->elem[ply->elemnum].type = ZEO_PLY_ELEM_VERTEX;
-  } else
-  if( strcmp( tkn, "face" ) == 0 ){
-    ply->elem[ply->elemnum].type = ZEO_PLY_ELEM_FACE;
-  } else
-  if( strcmp( tkn, "edge" ) == 0 ){
-    ply->elem[ply->elemnum].type = ZEO_PLY_ELEM_EDGE;
-  } else
-  if( strcmp( tkn, "material" ) == 0 ){
-    ply->elem[ply->elemnum].type = ZEO_PLY_ELEM_MATERIAL;
-  } else{
+  int i;
+  for( i=ZEO_PLY_ELEM_VERTEX; i<ZEO_PLY_ELEM_NUM; i++ ){
+    if( strcmp( tkn, zeo_ply_elem[i] ) == 0 ){
+      ply->elem[ply->elemnum].type = i;
+      break;
+    }
+  }
+  if( i == ZEO_PLY_ELEM_NUM ){
     ZRUNERROR( ZEO_ERR_PLY_UNKNOWNELEM, tkn );
     ply->elem[ply->elemnum].type = ZEO_PLY_ELEM_NONE;
+    return false;
   }
   if( !zSInt( buf, &num ) ) return false;
   ply->elem[ply->elemnum].num = num;
@@ -321,15 +341,15 @@ static bool _zPLYFReadProperty(zPLY *ply, char *buf)
 
   elem = &ply->elem[ply->elemnum];
   zSToken( buf, tkn, BUFSIZ );
-  if( !( elem->prp[elem->prpnum] = (zPLYPrp*)_zPLYPrpFind( tkn ) ) ){
+  if( !( elem->prp[elem->prpnum] = _zPLYPrpFind( ply, tkn ) ) ){
     ZRUNERROR( ZEO_ERR_PLY_UNKNOWNPRP, tkn );
     return false;
   }
   if( elem->prp[elem->prpnum]->type == ZEO_PLY_DATA_LIST ){
     zSToken( buf, tkn, BUFSIZ );
-    ply->facelistnum = (zPLYPrp*)_zPLYPrpFind( tkn );
+    ply->facelistnum = _zPLYPrpFind( ply, tkn );
     zSToken( buf, tkn, BUFSIZ );
-    ply->facelistelem = (zPLYPrp*)_zPLYPrpFind( tkn );
+    ply->facelistelem = _zPLYPrpFind( ply, tkn );
     zSToken( buf, tkn, BUFSIZ );
     if( strcmp( tkn, "vertex_indices" ) != 0 ){
       ZRUNERROR( ZEO_ERR_PLY_UNKNOWNPRP, tkn );
@@ -444,7 +464,7 @@ static bool _zPH3DFReadPLYFace(FILE *fp, zPH3D *ph, zPLY *ply, zPLYElement *elem
   for( i=0; i<elem->num; i++ ){
     for( j=0; j<elem->prpnum; j++ ){
       if( elem->prp[j]->type != ZEO_PLY_DATA_LIST ){
-        elem->prp[j]->read_double( fp ); /* discard data */
+        elem->prp[j]->read_double( fp ); /* discard data again */
         continue;
       }
       nv = ply->facelistnum->read_int( fp );
@@ -461,6 +481,25 @@ static bool _zPH3DFReadPLYFace(FILE *fp, zPH3D *ph, zPLY *ply, zPLYElement *elem
   }
   zeo_ph_echo_while_reading ? eprintf( "\n" ) : 0;
   return true;
+}
+
+static bool _zPH3DFReadPLYRangeGrid(FILE *fp, zPH3D *ph, zPLY *ply, zPLYElement *elem)
+{
+  int i, j, k;
+  int ni;
+
+  for( i=0; i<elem->num; i++ ){
+    for( j=0; j<elem->prpnum; j++ ){
+      if( elem->prp[j]->type != ZEO_PLY_DATA_LIST ){
+        elem->prp[j]->read_double( fp ); /* discard data */
+        continue;
+      }
+      if( ( ni = ply->facelistnum->read_int( fp ) ) > 0 ) /* a vertex exists in the grid. */
+        for( k=0; k<ni; k++ )
+          ply->facelistnum->read_int( fp ); /* discard data */
+    }
+  }
+  return true; /* dummy */
 }
 
 static bool _zPH3DFReadPLYElem(FILE *fp, zPH3D *ph, zPLY *ply, zPLYElement *elem)
@@ -490,6 +529,9 @@ static bool _zPH3DFReadPLYData(FILE *fp, zPH3D *ph, zPLY *ply)
       break;
     case ZEO_PLY_ELEM_FACE:
       if( !_zPH3DFReadPLYFace( fp, ph, ply, &ply->elem[i] ) ) return false;
+      break;
+    case ZEO_PLY_ELEM_RANGE_GRID:
+      if( !_zPH3DFReadPLYRangeGrid( fp, ph, ply, &ply->elem[i] ) ) return false;
       break;
     default:
       if( !_zPH3DFReadPLYElem( fp, ph, ply, &ply->elem[i] ) ) return false;
