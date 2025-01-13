@@ -17,7 +17,7 @@ OBJ=zeo_misc.o\
 	zeo_bv3d_aabb.o zeo_bv3d_obb.o zeo_bv3d_boundingball.o zeo_bv3d_convexhull.o\
 	zeo_voronoi2d.o\
 	zeo_brep.o zeo_brep_trunc.o zeo_brep_bool.o\
-	zeo_col.o zeo_col_box.o zeo_col_minkowski.o zeo_col_gjk.o zeo_col_mpr.o zeo_col_ph.o\
+	zeo_col.o zeo_col_box.o zeo_col_octree.o zeo_col_minkowski.o zeo_col_gjk.o zeo_col_mpr.o zeo_col_ph.o\
 	zeo_mshape3d.o\
 	zeo_map.o zeo_map_terra.o\
 	zeo_mapnet.o

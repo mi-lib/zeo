@@ -7,14 +7,14 @@ void output_src(zVec3DData *data1, zVec3DData *data2)
 
   fp = fopen( "src", "w" );
   /* for visualization */
-  fprintf( fp, "[zeo::optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: red\n" );
   fprintf( fp, "ambient: 0.8 0.2 0.2\n" );
   fprintf( fp, "diffuse: 1.0 0.2 0.2\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.6\n" );
   fprintf( fp, "esr: 1.0\n\n" );
-  fprintf( fp, "[zeo::optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.2 0.2 0.8\n" );
   fprintf( fp, "diffuse: 0.2 0.2 1.0\n" );
@@ -23,7 +23,7 @@ void output_src(zVec3DData *data1, zVec3DData *data2)
   fprintf( fp, "esr: 1.0\n\n" );
   /* convex set 1 */
   zVec3DDataConvexHull( data1, &ch );
-  fprintf( fp, "[zeo::shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: ch1\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
@@ -31,7 +31,7 @@ void output_src(zVec3DData *data1, zVec3DData *data2)
   zPH3DDestroy( &ch );
   /* convex set 2 */
   zVec3DDataConvexHull( data2, &ch );
-  fprintf( fp, "[zeo::shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: ch2\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
@@ -47,14 +47,14 @@ void output_ms(zPH3D *ph)
 
   fp = fopen( "ms", "w" );
   /* for visualization */
-  fprintf( fp, "[zeo::optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: white\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.8\n" );
   fprintf( fp, "diffuse: 1.0 1.0 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.6\n" );
   fprintf( fp, "esr: 1.0\n\n" );
-  fprintf( fp, "[zeo::optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: yellow\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.4\n" );
   fprintf( fp, "diffuse: 1.0 1.0 0.4\n" );
@@ -62,12 +62,12 @@ void output_ms(zPH3D *ph)
   fprintf( fp, "alpha: 1.0\n" );
   fprintf( fp, "esr: 1.0\n\n" );
   /* convex set */
-  fprintf( fp, "[zeo::shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: minkowski_sub\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: white\n" );
   zPH3DFPrintZTK( fp, ph );
-  fprintf( fp, "[zeo::shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: origin\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: yellow\n" );

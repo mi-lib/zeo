@@ -20,21 +20,21 @@ void output_mshape(char filename[], zVec3DData *data, zVec3D *p, zVec3D *c)
 
   fp = fopen( filename, "w" );
   /* for visualization */
-  fprintf( fp, "[zeo::optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: red\n" );
   fprintf( fp, "ambient: 0.8 0.2 0.2\n" );
   fprintf( fp, "diffuse: 1.0 0.2 0.2\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.6\n" );
   fprintf( fp, "esr: 1.0\n\n" );
-  fprintf( fp, "[zeo::optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.2 0.2 0.8\n" );
   fprintf( fp, "diffuse: 0.2 0.2 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.6\n" );
   fprintf( fp, "esr: 1.0\n\n" );
-  fprintf( fp, "[zeo::optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: yellow\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.4\n" );
   fprintf( fp, "diffuse: 1.0 1.0 0.4\n" );
@@ -42,19 +42,19 @@ void output_mshape(char filename[], zVec3DData *data, zVec3D *p, zVec3D *c)
   fprintf( fp, "alpha: 0.6\n" );
   fprintf( fp, "esr: 1.0\n\n" );
   /* pair of proximities */
-  fprintf( fp, "[zeo::shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: p\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: yellow\n" );
   fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, p );
   fprintf( fp, "radius: 0.01\n\n" );
-  fprintf( fp, "[zeo::shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: c\n" );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: yellow\n" );
   fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, c );
   fprintf( fp, "radius: 0.01\n\n" );
-  fprintf( fp, "[zeo::shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: rod\n" );
   fprintf( fp, "type: cylinder\n" );
   fprintf( fp, "optic: yellow\n" );
@@ -63,7 +63,7 @@ void output_mshape(char filename[], zVec3DData *data, zVec3D *p, zVec3D *c)
   fprintf( fp, "radius: 0.005\n" );
   /* convex set */
   zVec3DDataConvexHull( data, &ch );
-  fprintf( fp, "[zeo::shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: ch\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );

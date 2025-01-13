@@ -13,12 +13,11 @@ void output_ph(FILE *fp, zPH3D *ph, int i)
 
   sprintf( name, "color%d", i );
   zOpticalInfoCreateSimple( &oi, zRandF(0.3,1), zRandF(0.3,1),zRandF(0.3,1), name );
-  fprintf( fp, "[zeo::optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   zOpticalInfoFPrintZTK( fp, &oi );
-  fprintf( fp, "[zeo::shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: shape%d\n", i );
   fprintf( fp, "type: polyhedron\n" );
-  fprintf( fp, "BB: AABB\n" );
   fprintf( fp, "optic: color%d\n", i );
   zPH3DFPrintZTK( fp, ph );
   zOpticalInfoDestroy( &oi );

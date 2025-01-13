@@ -36,7 +36,7 @@ void output_convexhull(zPH3D *ph, const char shapename[], const char colorname[]
   zAddSuffix( shapename, "ztk", filename, BUFSIZ );
   fp = fopen( filename, "w" );
   /* for visualization */
-  fprintf( fp, "[zeo::optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: %s\n", colorname );
   fprintf( fp, "ambient: 0.8 0.8 0.8\n" );
   fprintf( fp, "diffuse: %g %g %g\n", r, g, b );
@@ -44,7 +44,7 @@ void output_convexhull(zPH3D *ph, const char shapename[], const char colorname[]
   fprintf( fp, "alpha: 0.6\n" );
   fprintf( fp, "esr: 1.0\n\n" );
 
-  fprintf( fp, "[zeo::shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: %s\n", shapename );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: %s\n", colorname );

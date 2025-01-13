@@ -19,26 +19,26 @@ void box_output(zBox3D *b1, zBox3D *b2)
 
   /* for visualization */
   fp = fopen( "box.ztk", "w" );
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.8 0.8 1.0\n" );
   fprintf( fp, "diffuse: 0.8 0.8 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 1.0\n" );
-  fprintf( fp, "esr: 1.0\n\n" );
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "esr: 1.0\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: red\n" );
   fprintf( fp, "ambient: 1.0 0.6 0.6\n" );
   fprintf( fp, "diffuse: 1.0 0.6 0.6\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 1.0\n" );
-  fprintf( fp, "esr: 1.0\n\n" );
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "esr: 1.0\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: blue\n" );
   zBox3DFPrintZTK( fp, b1 );
-  fprintf( fp, "\n[shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: red\n" );
@@ -53,9 +53,7 @@ int main(void)
   zRandInit();
   box_create( &b1 );
   box_create( &b2 );
-
   printf( "in collision? %s\n", zBoolStr( zColChkBox3D( &b1, &b2 ) ) );
-
   box_output( &b1, &b2 );
   return 0;
 }

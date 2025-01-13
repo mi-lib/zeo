@@ -18,7 +18,7 @@ void output(zTri3D *t, zAABox3D *b, zVec3D ip[], int n)
 
   /* for visualization */
   fp = fopen( "tb.ztk", "w" );
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.2 0.2 0.6\n" );
   fprintf( fp, "diffuse: 0.2 0.2 1.0\n" );
@@ -26,7 +26,7 @@ void output(zTri3D *t, zAABox3D *b, zVec3D ip[], int n)
   fprintf( fp, "alpha: 1.0\n" );
   fprintf( fp, "esr: 0.0\n\n" );
 
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: red\n" );
   fprintf( fp, "ambient: 0.6 0.2 0.2\n" );
   fprintf( fp, "diffuse: 1.0 0.2 0.2\n" );
@@ -34,7 +34,7 @@ void output(zTri3D *t, zAABox3D *b, zVec3D ip[], int n)
   fprintf( fp, "alpha: 0.5\n" );
   fprintf( fp, "esr: 0.0\n\n" );
 
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: yellow\n" );
   fprintf( fp, "ambient: 0.6 0.6 0.6\n" );
   fprintf( fp, "diffuse: 1.0 1.0 0.2\n" );
@@ -42,7 +42,7 @@ void output(zTri3D *t, zAABox3D *b, zVec3D ip[], int n)
   fprintf( fp, "alpha: 1.0\n" );
   fprintf( fp, "esr: 0.0\n\n" );
 
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: plane\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: yellow\n" );
@@ -51,7 +51,7 @@ void output(zTri3D *t, zAABox3D *b, zVec3D ip[], int n)
   fprintf( fp, "vert: 2 " ); zVec3DValueNLFPrint( fp, zTri3DVert(t,2) );
   fprintf( fp, "face: 0 1 2\n" );
 
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: c\n" );
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: red\n" );
@@ -59,7 +59,7 @@ void output(zTri3D *t, zAABox3D *b, zVec3D ip[], int n)
   zBox3DFPrintZTK( fp, &box );
 
   for( i=0; i<n; i++ ){
-    fprintf( fp, "[shape]\n" );
+    fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
     fprintf( fp, "name: p%d\n", i );
     fprintf( fp, "type: sphere\n" );
     fprintf( fp, "optic: blue\n" );

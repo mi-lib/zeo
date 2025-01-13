@@ -24,7 +24,7 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
   /* for visualization */
   fp = fopen( filename, "w" );
 
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.2 0.2 0.6\n" );
   fprintf( fp, "diffuse: 0.2 0.2 1.0\n" );
@@ -32,7 +32,7 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
   fprintf( fp, "alpha: 1.0\n" );
   fprintf( fp, "esr: 0.0\n\n" );
 
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: red\n" );
   fprintf( fp, "ambient: 0.6 0.2 0.2\n" );
   fprintf( fp, "diffuse: 1.0 0.2 0.2\n" );
@@ -40,7 +40,7 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
   fprintf( fp, "alpha: 1.0\n" );
   fprintf( fp, "esr: 0.0\n\n" );
 
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: yellow\n" );
   fprintf( fp, "ambient: 0.6 0.6 0.0\n" );
   fprintf( fp, "diffuse: 1.0 1.0 0.2\n" );
@@ -48,14 +48,14 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
   fprintf( fp, "alpha: 0.4\n" );
   fprintf( fp, "esr: 0.0\n\n" );
 
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: c\n" );
   fprintf( fp, "type: box\n" );
   fprintf( fp, "optic: red\n" );
   zAABox3DToBox3D( b, &box );
   zBox3DFPrintZTK( fp, &box );
 
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: plane\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: yellow\n" );
@@ -75,7 +75,7 @@ void output(zPlane3D *p, zAABox3D *b, zVec3D ip[], int n, const char filename[])
   fprintf( fp, "face: 0 2 3\n" );
 
   for( i=0; i<n; i++ ){
-    fprintf( fp, "[shape]\n" );
+    fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
     fprintf( fp, "name: p%d\n", i );
     fprintf( fp, "type: sphere\n" );
     fprintf( fp, "optic: blue\n" );

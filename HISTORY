@@ -1,3 +1,7 @@
+2025. 1.13. Added zeo_col_octree. [zeo_col, zeo_col_octree]
+2025. 1.13. Added zColChkSphereAABox3D and zColChkSphereBox3D. [zeo_col_box]
+2025. 1.13. Added zAABox3DClosest and zAABox3DDistFromPoint. [zeo_bv3d_aabb]
+2025. 1.12. Added zAABox3DXMin, zAABox3DYMin, zAABox3DZMin, zAABox3DXMax, zAABox3DYMax, zAABox3DZMax, zAABox3DDepth, zAABox3DWidth, zAABox3DHeight, and zAABox3DCenter. [zeo_bv3d_aabb]
 2025. 1.10. Added _zPH3DFReadPLYRangeGrid, and modified _zPH3DFReadPLYData. [zeo_ph_ply]
 2025. 1.10. Added ZEO_PLY_ELEM_RANGE_GRID and the corresponding string in zPLYElemType and zeo_ply_elem, respectively. [zeo_ph_ply]
 2025. 1.10. Redefined _zPLYPrpFind, and modified _zPLYFReadProperty. [zeo_ph_ply]

@@ -46,6 +46,23 @@ zAABox3D *zAABox3DMerge(zAABox3D *dst, zAABox3D *src1, zAABox3D *src2)
     _zMax( src1->max.e[zZ], src2->max.e[zZ] ) );
 }
 
+/* the closest point from a 3D point to a 3D axis-aligned box. */
+double zAABox3DClosest(const zAABox3D *box, const zVec3D *point, zVec3D *cp)
+{
+  zVec3DCreate( cp,
+    zLimit( point->c.x, zAABox3DXMin(box), zAABox3DXMax(box) ),
+    zLimit( point->c.y, zAABox3DYMin(box), zAABox3DYMax(box) ),
+    zLimit( point->c.z, zAABox3DZMin(box), zAABox3DZMax(box) ) );
+  return zVec3DDist( point, cp );
+}
+
+/* distance from a point to a 3D axis-aligned box. */
+double zAABox3DDistFromPoint(zAABox3D *box, zVec3D *point)
+{
+  zVec3D cp;
+  return zAABox3DClosest( box, point, &cp );
+}
+
 /* check if a point is inside of a 3D axis-aligned box. */
 bool zAABox3DPointIsInside(zAABox3D *box, zVec3D *p, double margin)
 {

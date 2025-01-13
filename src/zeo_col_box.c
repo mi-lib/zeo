@@ -303,3 +303,17 @@ bool zColChkBox3D(zBox3D *b1, zBox3D *b2)
          !_zColChkBox3DPerp( b1, zY, b2, zZ, &l ) ||
          !_zColChkBox3DPerp( b1, zZ, b2, zZ, &l ) ? false : true;
 }
+
+/* box vs sphere */
+
+/* check collision between a 3D sphere and a 3D axis-aligned box. */
+bool zColChkSphereAABox3D(zSphere3D *sphere, zAABox3D *box)
+{
+  return zAABox3DDistFromPoint( box, zSphere3DCenter(sphere) ) < zSphere3DRadius(sphere);
+}
+
+/* check collision between a 3D sphere and a 3D box. */
+bool zColChkSphereBox3D(zSphere3D *sphere, zBox3D *box)
+{
+  return zBox3DDistFromPoint( box, zSphere3DCenter(sphere) ) < zSphere3DRadius(sphere);
+}

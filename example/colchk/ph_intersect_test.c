@@ -8,21 +8,21 @@ void output(char filename[], zPH3D *a, zPH3D *b, zPH3D *c)
 
   fp = fopen( filename, "w" );
   /* for visualization */
-  fprintf( fp, "[zeo::optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: red\n" );
   fprintf( fp, "ambient: 0.8 0.2 0.2\n" );
   fprintf( fp, "diffuse: 1.0 0.2 0.2\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.4\n" );
   fprintf( fp, "esr: 1.0\n\n" );
-  fprintf( fp, "[zeo::optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: blue\n" );
   fprintf( fp, "ambient: 0.2 0.2 0.8\n" );
   fprintf( fp, "diffuse: 0.2 0.2 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.4\n" );
   fprintf( fp, "esr: 1.0\n\n" );
-  fprintf( fp, "[zeo::optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: yellow\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.4\n" );
   fprintf( fp, "diffuse: 1.0 1.0 0.4\n" );
@@ -31,20 +31,20 @@ void output(char filename[], zPH3D *a, zPH3D *b, zPH3D *c)
   fprintf( fp, "esr: 1.0\n\n" );
   /* intersection convex */
   if( c ){
-    fprintf( fp, "[zeo::shape]\n" );
+    fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
     fprintf( fp, "name: c\n" );
     fprintf( fp, "type: polyhedron\n" );
     fprintf( fp, "optic: yellow\n" );
     zPH3DFPrintZTK( fp, c );
   }
   /* convex 1 */
-  fprintf( fp, "[zeo::shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
   zPH3DFPrintZTK( fp, a );
   /* convex 2 */
-  fprintf( fp, "[zeo::shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
