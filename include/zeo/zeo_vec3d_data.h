@@ -7,9 +7,9 @@
 #ifndef __ZEO_VEC3D_DATA_H__
 #define __ZEO_VEC3D_DATA_H__
 
+#include <zeo/zeo_ep.h>
+#include <zeo/zeo_elem3d.h>
 #include <zeo/zeo_vecxd_data.h>
-
-/* NOTE: never include this header file in user programs. */
 
 __BEGIN_DECLS
 
@@ -65,5 +65,8 @@ __ZEO_EXPORT ZEO_VECXD_DATA_VALUE_FPRINT_PROTOTYPE( 3D );
 #define zVec3DDataValuePrint(data) zVecXDDataValuePrint( 3D, data )
 
 __END_DECLS
+
+#include <zeo/zeo_vec3d_pca.h>
+#include <zeo/zeo_vec3d_pcd.h>
 
 #endif /* __ZEO_VEC3D_DATA_H__ */

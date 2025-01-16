@@ -677,6 +677,4 @@ zArrayClass( zVec3DArray, zVec3D );
 #include <zeo/zeo_vec3d_list.h>  /* 3D vector list */
 #include <zeo/zeo_vec3d_tree.h>  /* 3D vector tree */
 
-#include <zeo/zeo_vec3d_data.h>  /* abstract class of a set of 3D vectors. */
-
 #endif /* __ZEO_VEC3D_H__ */

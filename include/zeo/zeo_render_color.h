@@ -58,10 +58,10 @@ __ZEO_EXPORT zRGB *zRGBSet(zRGB *rgb, float red, float green, float blue);
 #define zGSSet(c,i)  ( (c)->r = (c)->g = (c)->b = (i) )
 
 /*! \brief multiply a set of RGB parameters by another. */
-__ZEO_EXPORT zRGB *zRGBMul(zRGB *rgb1, zRGB *rgb2, zRGB *rgb);
+__ZEO_EXPORT zRGB *zRGBMul(const zRGB *rgb1, const zRGB *rgb2, zRGB *rgb);
 
 /*! \brief blend a pair of RGB parameters at a given ratio. */
-__ZEO_EXPORT zRGB *zRGBBlend(zRGB *rgb1, zRGB *rgb2, double ratio, zRGB *rgb);
+__ZEO_EXPORT zRGB *zRGBBlend(const zRGB *rgb1, const zRGB *rgb2, double ratio, zRGB *rgb);
 
 /*! \brief decode a string to RGB.
  *
@@ -90,7 +90,7 @@ __ZEO_EXPORT zRGB *zRGBDec(zRGB *rgb, const char *str);
 /*! \brief read a set of RGB from a ZTK format processor. */
 __ZEO_EXPORT zRGB *zRGBFromZTK(zRGB *rgb, ZTK *ztk);
 /*! \brief add RGB values to a ZTK format processor. */
-__ZEO_EXPORT ZTK *zRGBToZTK(zRGB *rgb, ZTK *ztk);
+__ZEO_EXPORT ZTK *zRGBToZTK(const zRGB *rgb, ZTK *ztk);
 
 /*! \brief scan/print of a set of RGB parameters.
  *
@@ -112,7 +112,7 @@ __ZEO_EXPORT ZTK *zRGBToZTK(zRGB *rgb, ZTK *ztk);
  */
 __ZEO_EXPORT zRGB *zRGBFScan(FILE *fp, zRGB *rgb);
 #define zRGBScan(c)  zRGBFScan( stdin, (c) )
-__ZEO_EXPORT void zRGBFPrint(FILE *fp, zRGB *rgb);
+__ZEO_EXPORT void zRGBFPrint(FILE *fp, const zRGB *rgb);
 #define zRGBPrint(c) zRGBFPrint( stdout, (c) )
 
 /* ********************************************************** */
@@ -126,9 +126,9 @@ typedef struct{
   float val; /* value */
 } zHSV;
 
-__ZEO_EXPORT zHSV *zRGB2HSV(zRGB *rgb, zHSV *hsv);
-__ZEO_EXPORT zRGB *zHSV2RGB(zHSV *hsv, zRGB *rgb);
-__ZEO_EXPORT void zHSVFPrint(FILE *fp, zHSV *hsv);
+__ZEO_EXPORT zHSV *zRGB2HSV(const zRGB *rgb, zHSV *hsv);
+__ZEO_EXPORT zRGB *zHSV2RGB(const zHSV *hsv, zRGB *rgb);
+__ZEO_EXPORT void zHSVFPrint(FILE *fp, const zHSV *hsv);
 #define zHSVPrint(hsv) zHSVFPrint( stdout, hsv )
 
 __END_DECLS

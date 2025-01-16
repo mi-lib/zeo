@@ -185,7 +185,7 @@ static bool _zDelaunay2DUpdate(zDelaunayTri2DList *tl, zVec2D *p)
   zDelaunayPair2DStack ps;
 
   if( !( tc = _zDelaunayTri2DListFind( tl, p ) ) ){
-    ZRUNERROR( "fatal error" );
+    ZRUNERROR( ZEO_ERR_FATAL );
     return false;
   }
   zListPurge( tl, tc );

@@ -196,19 +196,6 @@ __ZEO_EXPORT bool zPlane3DPointIsOn(const zPlane3D *plane, const zVec3D *point, 
  */
 __ZEO_EXPORT double zPlane3DProjPoint(const zPlane3D *plane, const zVec3D *v, zVec3D *cp);
 
-/*! \brief mean plane of set of points.
- *
- * zPlane3DMean() calculates the mean plane \a plane of a set of points \a v.
- * \a n is the number of points. Namely, \a plane is the plane to which the
- * mean distance from every points is minimized.
- *
- * the mean point of \a v, which is also on \a plane, is stored where \a pc
- * points.
- * \return
- * zPlane3DMean() returns a pointer \a plane.
- */
-__ZEO_EXPORT zPlane3D *zPlane3DMean(zPlane3D *plane, zVec3D *pc, zVec3D v[], int n);
-
 /*! \brief print a 3D plane.
  *
  * zPlane3DFPrint() prints information of a 3D plane \a plane out

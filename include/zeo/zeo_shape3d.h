@@ -223,6 +223,8 @@ __ZEO_EXPORT zShape3D *zShape3DReadFile(zShape3D *shape, const char filename[]);
 
 __END_DECLS
 
+#include <zeo/zeo_vec3d_data.h>      /* pointcloud */
+
 #include <zeo/zeo_shape3d_box.h>     /* box */
 #include <zeo/zeo_shape3d_sphere.h>  /* sphere */
 #include <zeo/zeo_shape3d_ellips.h>  /* ellipsoid */

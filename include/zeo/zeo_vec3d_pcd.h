@@ -7,8 +7,7 @@
 #ifndef __ZEO_VEC3D_PCD_H__
 #define __ZEO_VEC3D_PCD_H__
 
-#include <zeo/zeo_ep.h>
-#include <zeo/zeo_frame3d.h>
+/* NOTE: never include this header file in user programs. */
 
 __BEGIN_DECLS
 
@@ -23,7 +22,7 @@ __BEGIN_DECLS
  * failure, the false value is returned.
  */
 __ZEO_EXPORT bool zVec3DDataFReadPCD(FILE *fp, zVec3DData *data);
-__ZEO_EXPORT bool zVec3DDataReadPCDFile(zVec3DData *data, char filename[]);
+__ZEO_EXPORT bool zVec3DDataReadPCDFile(zVec3DData *data, const char filename[]);
 
 /*! \brief write point cloud to a PCD file.
  *
@@ -35,7 +34,7 @@ __ZEO_EXPORT bool zVec3DDataReadPCDFile(zVec3DData *data, char filename[]);
  * to output to the PCD file. If they fail in any reason, the false value is returned.
  */
 __ZEO_EXPORT bool zVec3DDataFWritePCD(FILE *fp, zVec3DData *data, const char *format);
-__ZEO_EXPORT bool zVec3DDataWritePCDFile(zVec3DData *data, char filename[], const char *format);
+__ZEO_EXPORT bool zVec3DDataWritePCDFile(zVec3DData *data, const char filename[], const char *format);
 
 #define ZEO_PCD_SUFFIX "pcd"
 

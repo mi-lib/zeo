@@ -39,31 +39,31 @@ __ZEO_EXPORT zAABox3D *zAABox3DInit(zAABox3D *box);
 __ZEO_EXPORT zAABox3D *zAABox3DCreate(zAABox3D *box, double xmin, double ymin, double zmin, double xmax, double ymax, double zmax);
 
 /*! \brief copya a 3D axis-aligned box. */
-__ZEO_EXPORT zAABox3D *zAABox3DCopy(zAABox3D *src, zAABox3D *dst);
+__ZEO_EXPORT zAABox3D *zAABox3DCopy(const zAABox3D *src, zAABox3D *dst);
 
 /*! \brief merge two 3D axis-aligned boxes. */
-__ZEO_EXPORT zAABox3D *zAABox3DMerge(zAABox3D *box, zAABox3D *b1, zAABox3D *b2);
+__ZEO_EXPORT zAABox3D *zAABox3DMerge(zAABox3D *box, const zAABox3D *b1, const zAABox3D *b2);
 
 /*! \brief the closest point from a 3D point to a 3D axis-aligned box. */
 __ZEO_EXPORT double zAABox3DClosest(const zAABox3D *box, const zVec3D *point, zVec3D *cp);
 
 /*! \brief distance from a point to a 3D axis-aligned box. */
-__ZEO_EXPORT double zAABox3DDistFromPoint(zAABox3D *box, zVec3D *point);
+__ZEO_EXPORT double zAABox3DDistFromPoint(const zAABox3D *box, const zVec3D *point);
 
 /*! \brief check if a point is inside of a 3D axis-aligned box. */
-__ZEO_EXPORT bool zAABox3DPointIsInside(zAABox3D *box, zVec3D *p, double margin);
+__ZEO_EXPORT bool zAABox3DPointIsInside(const zAABox3D *box, const zVec3D *p, double margin);
 
 /*! \brief compute volume of a 3D axis-aligned box. */
-__ZEO_EXPORT double zAABox3DVolume(zAABox3D *box);
+__ZEO_EXPORT double zAABox3DVolume(const zAABox3D *box);
 
 /*! \brief print out a 3D axis-aligned box to a file. */
-__ZEO_EXPORT void zAABox3DValueFPrint(FILE *fp, zAABox3D *box);
+__ZEO_EXPORT void zAABox3DValueFPrint(FILE *fp, const zAABox3D *box);
 
 /*! \brief convert a 3D axis-aligned box to a general box. */
-__ZEO_EXPORT zBox3D *zAABox3DToBox3D(zAABox3D *aab, zBox3D *box);
+__ZEO_EXPORT zBox3D *zAABox3DToBox3D(const zAABox3D *aab, zBox3D *box);
 
 /*! \brief compute a 3D axis-aligned box of a 3D box. */
-__ZEO_EXPORT zAABox3D *zBox3DToAABox3D(zBox3D *box, zAABox3D *aabox);
+__ZEO_EXPORT zAABox3D *zBox3DToAABox3D(const zBox3D *box, zAABox3D *aabox);
 
 /*! \brief axis-aligned bounding box of 3D points.
  *

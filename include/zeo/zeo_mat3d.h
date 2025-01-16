@@ -904,6 +904,4 @@ inline zMat3D &zMat3D::rotInv(zMat3D &r){ return *zRotMat3DInvDRC( &r, this ); }
 inline zMat3D &zMat3D::rot(zVec3D &aa){ return *zMat3DRotDRC( this, &aa ); }
 #endif /* __cplusplus */
 
-#include <zeo/zeo_vec3d_pca.h> /* principal component analysis */
-
 #endif /* __ZEO_MAT3D_H__ */

@@ -1,4 +1,4 @@
-#include <zeo/zeo_elem3d.h>
+#include <zeo/zeo_vec3d_data.h>
 
 #define N 1000
 
@@ -36,38 +36,40 @@ void output_projection(FILE *fp, zVec3DData *data, zVec3D *center, zVec3D *norm)
 void output_vert(zVec3DData *data)
 {
   FILE *fp;
-  zVec3D c, d[3];
+  double eval[3];
+  zVec3D evec[3], c;
 
   fp = fopen( "a", "w" );
   zVec3DDataValueFPrint( fp, data );
   fclose( fp );
 
-  zVec3DDataPCA( data, d );
+  zVec3DDataPCA( data, ZVEC3DZERO, eval, evec );
   fp = fopen( "b", "w" );
-  output_projection( fp, data, ZVEC3DZERO, &d[0] );
+  output_projection( fp, data, ZVEC3DZERO, &evec[0] );
   fclose( fp );
   fp = fopen( "c", "w" );
-  output_projection( fp, data, ZVEC3DZERO, &d[1] );
+  output_projection( fp, data, ZVEC3DZERO, &evec[1] );
   fclose( fp );
   fp = fopen( "d", "w" );
-  output_projection( fp, data, ZVEC3DZERO, &d[2] );
+  output_projection( fp, data, ZVEC3DZERO, &evec[2] );
   fclose( fp );
 
-  zVec3DDataBaryPCA( data, &c, d );
+  zVec3DDataBaryPCA( data, &c, eval, evec );
   fp = fopen( "e", "w" );
-  output_projection( fp, data, &c, &d[0] );
+  output_projection( fp, data, &c, &evec[0] );
   fclose( fp );
   fp = fopen( "f", "w" );
-  output_projection( fp, data, &c, &d[1] );
+  output_projection( fp, data, &c, &evec[1] );
   fclose( fp );
   fp = fopen( "g", "w" );
-  output_projection( fp, data, &c, &d[2] );
+  output_projection( fp, data, &c, &evec[2] );
   fclose( fp );
 }
 
 #define X 1
 #define Y 0.5
 #define Z 1.5
+
 int main(void)
 {
   zVec3DData data;

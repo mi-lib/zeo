@@ -36,8 +36,6 @@
 #define ZEO_ERR_ELEM_NPTR_SPECIFIED(XD)       "null pointer specified for position / direction vector of a " #XD " line"
 #define ZEO_ERR_ELEM_ZERO_DIRVEC(XD)          "cannot create a " #XD " line from a zero direction vector"
 
-#define ZEO_WARN_LINE3D_NOT_UNIQUE_COMMONPERP "cannot find a unique common parpendicular of parallel 3D lines, choose a nominal one"
-
 #define ZEO_ERR_NOFACE                        "polyhedron has no face"
 #define ZEO_ERR_TOOMANY_CENTERS               "too many center points"
 #define ZEO_ERR_TOOMANY_RADII                 "too many radii"
@@ -69,7 +67,7 @@
 #define ZEO_ERR_PCD_UNKNOWN_KEY               "unknown key in PCD header: %s"
 #define ZEO_ERR_PCD_INVALID_HEADER            "invalid PCD file header"
 #define ZEO_ERR_PCD_INVALID_DATATYPE          "invalid data type"
-#define ZEO_ERR_PCD_INVALID_FORMAT            "unknown point clound format %s"
+#define ZEO_ERR_PCD_INVALID_FORMAT            "unknown point cloud format: %s"
 #define ZEO_ERR_PCD_FAILED_TO_READ_DATA       "failed to read compressed data (%u/%u byte)"
 #define ZEO_ERR_PCD_FAILED_TO_DECOMPRESS      "failed to decompress data (%u/%u byte)"
 
@@ -129,6 +127,8 @@
 #define ZEO_ERR_COLCHK_PLANE_IDENT            "planes are identical"
 #define ZEO_ERR_COLCHK_PLANE_PARALLEL         "planes are parallel"
 
+#define ZEO_ERR_OCTREE_POINT_OUTOFREGION      "point out of region"
+
 #define ZEO_ERR_TERRA_INVALIDGRIDSIZE         "grid size unspecified"
 #define ZEO_ERR_TERRA_INVALIDRESOLUTION       "too fine (or negative) grid resolution"
 #define ZEO_ERR_TERRA_OUTOFREGION             "out of region (%g,%g): cannot estimate ground height"
@@ -144,6 +144,8 @@
 #define ZEO_WARN_TEXTURE_UNKNOWN_TYPE              "unknown texture type: %s"
 #define ZEO_WARN_TEXTURE_EMPTY                     "empty set of coordinates assigned for a texture."
 #define ZEO_WARN_TEXTURE_READFUNCTION_NOT_ASSIGNED "function to read texture not assigned"
+
+#define ZEO_WARN_LINE3D_NOT_UNIQUE_COMMONPERP      "cannot find a unique common parpendicular of parallel 3D lines, choose a nominal one"
 
 #define ZEO_WARN_PCD_LACKOFDATA                    "short of data"
 
@@ -166,5 +168,8 @@
 #define ZEO_WARN_MSHAPE_EMPTY                      "empty shapes assigned."
 
 #define ZEO_WARN_MAPNET_EMPTY                      "empty map net assigned."
+
+#define ZEO_WARN_POINTCLOUD_NORMAL_TOOFEWPOINTS    "too few points to identify the normal vector"
+#define ZEO_WARN_POINTCLOUD_NORMAL_TOOMANYPOINTS   "too many points to identify the normal vector"
 
 #endif /* __ZEO_ERRMSG_H__ */

@@ -11,44 +11,49 @@
 
 __BEGIN_DECLS
 
-/* matrix-based octree */
-ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zOctree3D ){
-  struct _zOctree3D *octant[8];
+/* octant of matrix-based octree */
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zOctant3D ){
+  zOctant3D *suboctant[8];
   zAABox3D region;
   zVec3DList points;
 };
 
-#define zOctree3DSetRegion(octree,xmin,ymin,zmin,xmax,ymax,zmax) zAABox3DCreate( &(octree)->region, (xmin), (ymin), (zmin), (xmax), (ymax), (zmax) )
+/* matrix-based octree */
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zOctree3D ){
+  double resolution;
+  zOctant3D root;
+};
 
-#define zOctree3DPointIsInside(octree,point) zAABox3DPointIsInside( &(octree)->region, point, zTOL )
-
-#define zOctree3DIsLeaf(octree,xres,yres,zres) \
-  ( zAABox3DDepth( &(octree)->region) < (xres) + zTOL && \
-    zAABox3DWidth( &(octree)->region) < (yres) + zTOL && \
-    zAABox3DHeight(&(octree)->region) < (zres) + zTOL )
+#define zOctree3DSetResolution(octree,res) ( (octree)->resolution = (res) )
 
 /*! \brief initialize 3D octree. */
-__ZEO_EXPORT zOctree3D *zOctree3DInit(zOctree3D *octree);
+__ZEO_EXPORT zOctree3D *zOctree3DInit(zOctree3D *octree, double xmin, double ymin, double zmin, double xmax, double ymax, double zmax, double resolution);
 
 /*! \brief destroy 3D octree. */
 __ZEO_EXPORT void zOctree3DDestroy(zOctree3D *octree);
 
 /*! \brief add a 3D point to 3D octree. */
-__ZEO_EXPORT bool zOctree3DAddPoint(zOctree3D *octree, zVec3D *v, double xres, double yres, double zres);
+__ZEO_EXPORT bool zOctree3DAddPoint(zOctree3D *octree, zVec3D *v);
 
-/*! \brief merge suboctants in 3D octree. */
-__ZEO_EXPORT void zOctree3DMerge(zOctree3D *octree, double xres, double yres, double zres);
+/*! \brief embed pointcloud to 3D octree. */
+__ZEO_EXPORT bool zOctree3DEmbedPoints(zOctree3D *octree, zVec3DData *pointdata);
+
+/*! \brief change resolution of 3D octree. */
+__ZEO_EXPORT bool zOctree3DChangeResolution(zOctree3D *octree, double resolution);
 
 /*! \brief find an octant that contains a 3D point in 3D octree. */
-__ZEO_EXPORT zOctree3D *zOctree3DFindOctant(zOctree3D *octree, zVec3D *point);
+__ZEO_EXPORT const zOctant3D *zOctree3DFindContainer(const zOctree3D *octree, const zVec3D *point);
 
-/*! \brief build 3D octree from pointcloud. */
-__ZEO_EXPORT bool zVec3DDataOctree(zVec3DData *pointdata, double xres, double yres, double zres, zOctree3D *octree);
+/*! \brief find vicinity of a point in 3D octree. */
+__ZEO_EXPORT zVec3DData *zOctree3DVicinity(zOctree3D *octree, const zVec3D *p, double radius, zVec3DData *vicinity);
+
+/*! \brief normal vector cloud of a 3D point cloud. */
+__ZEO_EXPORT zVec3DData *zVec3DDataNormalVec(zVec3DData *pointdata, double radius, zVec3DData *normaldata);
 
 /* for debug */
 
 /*! \brief print out a ZTK file that represents 3D octree. */
-__ZEO_EXPORT void zOctree3DFPrintZTK(FILE *fp, zOctree3D *octree, zOpticalInfo *oi, const char *name);
+__ZEO_EXPORT void zOctree3DFPrintZTK(FILE *fp, const zOctree3D *octree, const zOpticalInfo *oi, const char *name);
 
 __END_DECLS
 

@@ -7,7 +7,7 @@
 #include <zeo/zeo_col.h>
 
 /* check if an edge and a plane intersect with each other. */
-bool zColChkEdgePlane3D(zEdge3D *edge, zPlane3D *plane)
+bool zColChkEdgePlane3D(const zEdge3D *edge, const zPlane3D *plane)
 {
   zVec3D v[2];
 
@@ -18,7 +18,7 @@ bool zColChkEdgePlane3D(zEdge3D *edge, zPlane3D *plane)
 }
 
 /* intersection between 3D edge and 3D plane. */
-int zIntersectEdgePlane3D(zEdge3D *edge, zPlane3D *plane, zVec3D ip[])
+int zIntersectEdgePlane3D(const zEdge3D *edge, const zPlane3D *plane, zVec3D ip[])
 {
   double d;
   zVec3D v;
@@ -38,7 +38,7 @@ int zIntersectEdgePlane3D(zEdge3D *edge, zPlane3D *plane, zVec3D ip[])
 }
 
 /* intersection between two 3D planes */
-int zIntersectPlane3D(zPlane3D *plane1, zPlane3D *plane2, zLine3D *line)
+int zIntersectPlane3D(const zPlane3D *plane1, const zPlane3D *plane2, zLine3D *line)
 {
   zVec3D p, d, dp;
   double n, det, s1, s2, k1, k2;
@@ -67,7 +67,7 @@ int zIntersectPlane3D(zPlane3D *plane1, zPlane3D *plane2, zLine3D *line)
 }
 
 /* check if a plane and a triangle intersect with each other. */
-bool zColChkTriPlane3D(zTri3D *tri, zPlane3D *plane)
+bool zColChkTriPlane3D(const zTri3D *tri, const zPlane3D *plane)
 {
   int i;
   zEdge3D edge;
@@ -80,7 +80,7 @@ bool zColChkTriPlane3D(zTri3D *tri, zPlane3D *plane)
 }
 
 /* intersection of 3D plane and triangle. */
-int zIntersectTriPlane3D(zTri3D *tri, zPlane3D *plane, zVec3D ip[])
+int zIntersectTriPlane3D(const zTri3D *tri, const zPlane3D *plane, zVec3D ip[])
 {
   int i, j, k;
   int n, ne;
@@ -101,7 +101,7 @@ int zIntersectTriPlane3D(zTri3D *tri, zPlane3D *plane, zVec3D ip[])
 }
 
 /* check if an edge and a triangle intersect with each other. */
-bool zColChkEdgeTri3D(zEdge3D *edge, zTri3D *tri)
+bool zColChkEdgeTri3D(const zEdge3D *edge, const zTri3D *tri)
 {
   zVec3D ip[2];
 
@@ -109,7 +109,7 @@ bool zColChkEdgeTri3D(zEdge3D *edge, zTri3D *tri)
 }
 
 /* intersection of 3D edge and triangle. */
-int zIntersectEdgeTri3D(zEdge3D *edge, zTri3D *tri, zVec3D ip[])
+int zIntersectEdgeTri3D(const zEdge3D *edge, const zTri3D *tri, zVec3D ip[])
 {
   int i, ne, n = 0;
   zVec3D v[2];
@@ -125,7 +125,7 @@ int zIntersectEdgeTri3D(zEdge3D *edge, zTri3D *tri, zVec3D ip[])
 }
 
 /* check if two triangles intersect with each other. */
-bool zColChkTri3D(zTri3D *tri1, zTri3D *tri2)
+bool zColChkTri3D(const zTri3D *tri1, const zTri3D *tri2)
 {
   zVec3D ip[2];
 
@@ -133,7 +133,7 @@ bool zColChkTri3D(zTri3D *tri1, zTri3D *tri2)
 }
 
 /* intersection of two 3D triangles. */
-int zIntersectTri3D(zTri3D *tri1, zTri3D *tri2, zVec3D ip[])
+int zIntersectTri3D(const zTri3D *tri1, const zTri3D *tri2, zVec3D ip[])
 {
   int i, j;
   int np[2], n = 0;

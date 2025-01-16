@@ -161,31 +161,6 @@ double zPlane3DProjPoint(const zPlane3D *plane, const zVec3D *p, zVec3D *project
   return d;
 }
 
-/* mean plane of a set of points. */
-zPlane3D *zPlane3DMean(zPlane3D *plane, zVec3D *pc, zVec3D v[], int n)
-{
-  int i;
-  double eval[3];
-  zVec3D p, evec[3];
-  zMat3D m;
-
-  zVec3DZero( &p );
-  zMat3DZero( &m );
-  for( i=0; i<n; i++ ){
-    zVec3DAddDRC( &p, &v[i] );
-    zMat3DAddDyad( &m, &v[i], &v[i] );
-  }
-  zVec3DDiv( &p, n, pc );
-  zMat3DSubDyad( &m, &p, pc );
-  zMat3DSymEig( &m, eval, evec );
-
-  if( eval[0] < eval[1] )
-    i = eval[0] < eval[2] ? 0 : 2;
-  else
-    i = eval[1] < eval[2] ? 1 : 2;
-  return zPlane3DCreate( plane, pc, &evec[i] );
-}
-
 /* print information of a plane to a file. */
 void zPlane3DFPrint(FILE *fp, const zPlane3D *plane)
 {

@@ -4,7 +4,7 @@
  * zeo_vec3d_data - abstract class of a set of 3D vectors.
  */
 
-#include <zeo/zeo_vec3d.h>
+#include <zeo/zeo_vec3d_data.h>
 
 /* methods for individual dataset representations */
 ZEO_VECXD_DATA_DEF_STATIC_METHOD( 3D )

@@ -4,7 +4,7 @@
  * zeo_vec3d_pcd - read/write of PCD format files (3D point cloud).
  */
 
-#include <zeo/zeo_vec3d_pcd.h>
+#include <zeo/zeo_vec3d_data.h>
 
 /* for binary_compressed data type */
 #ifdef __ZEO_USE_PCD_BINARY_COMPRESSED
@@ -95,24 +95,6 @@ static void _zPCDFieldAssignReadASCII(_zPCDField *field)
     field->read_ascii = __z_pcd_read_ascii[field->valuetype*4+field->bitsize];
 }
 
-#if 0
-#define DEF_zPCDFieldReadBINFunc(type,a2v) \
-  static void _zPCDFieldReadBIN##type(_zPCDField *field, FILE *fp, zVec3D *v){\
-    type val;\
-    if( fread( &val, field->size, 1, fp ) == 1 )\
-      v->e[field->fieldtype] = (double)val;\
-  }
-DEF_zPCDFieldReadBINFunc( int8_t, atoi );
-DEF_zPCDFieldReadBINFunc( uint8_t, atoi );
-DEF_zPCDFieldReadBINFunc( int16_t, atoi );
-DEF_zPCDFieldReadBINFunc( uint16_t, atoi );
-DEF_zPCDFieldReadBINFunc( int32_t, atoi );
-DEF_zPCDFieldReadBINFunc( uint32_t, atoi );
-DEF_zPCDFieldReadBINFunc( int64_t, atoi );
-DEF_zPCDFieldReadBINFunc( uint64_t, atoi );
-DEF_zPCDFieldReadBINFunc( float, atof );
-DEF_zPCDFieldReadBINFunc( double, atof );
-#else
 #define DEF_zPCDFieldReadBINFunc(type) \
   static void _zPCDFieldReadBIN##type(_zPCDField *field, FILE *fp, zVec3D *v){\
     type val;\
@@ -129,7 +111,6 @@ DEF_zPCDFieldReadBINFunc( int64_t );
 DEF_zPCDFieldReadBINFunc( uint64_t );
 DEF_zPCDFieldReadBINFunc( float );
 DEF_zPCDFieldReadBINFunc( double );
-#endif
 
 static void (* __z_pcd_read_bin[])(_zPCDField *, FILE *, zVec3D *) = {
   _zPCDFieldReadBINint8_t,
@@ -595,7 +576,7 @@ bool zVec3DDataFReadPCD(FILE *fp, zVec3DData *data)
 }
 
 /* read point cloud from a PCD file. */
-bool zVec3DDataReadPCDFile(zVec3DData *data, char filename[])
+bool zVec3DDataReadPCDFile(zVec3DData *data, const char filename[])
 {
   FILE *fp;
   bool ret;
@@ -660,7 +641,7 @@ bool zVec3DDataFWritePCD(FILE *fp, zVec3DData *data, const char *format)
 }
 
 /* write point cloud to a PCD file. */
-bool zVec3DDataWritePCDFile(zVec3DData *data, char filename[], const char *format)
+bool zVec3DDataWritePCDFile(zVec3DData *data, const char filename[], const char *format)
 {
   FILE *fp;
   char filename_full[BUFSIZ];

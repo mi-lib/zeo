@@ -29,7 +29,6 @@
 
 #include <zeo/zeo_frame2d.h>
 #include <zeo/zeo_mat6d.h>
-#include <zeo/zeo_vec3d_pcd.h>
 #include <zeo/zeo_mshape3d.h>
 #include <zeo/zeo_bv3d.h>
 #include <zeo/zeo_voronoi2d.h>

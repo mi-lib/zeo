@@ -54,18 +54,18 @@ __ZEO_EXPORT zOpticalInfo *zOpticalInfoCreate(zOpticalInfo *oi, float ar, float 
   zOpticalInfoCreate( (o), 0.5*r, 0.5*g, 0.5*b, r, g, b, 0, 0, 0, 0, 0, 1, (n) )
 #define zOpticalInfoInit(o) \
   zOpticalInfoCreate( (o), 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, NULL )
-__ZEO_EXPORT zOpticalInfo *zOpticalInfoCopy(zOpticalInfo *src, zOpticalInfo *dest);
-__ZEO_EXPORT zOpticalInfo *zOpticalInfoClone(zOpticalInfo *src, zOpticalInfo *dest);
+__ZEO_EXPORT zOpticalInfo *zOpticalInfoCopy(const zOpticalInfo *src, zOpticalInfo *dest);
+__ZEO_EXPORT zOpticalInfo *zOpticalInfoClone(const zOpticalInfo *src, zOpticalInfo *dest);
 #define zOpticalInfoDestroy(o) do{\
   zNameFree(o);\
   zOpticalInfoInit(o);\
 } while(0)
 
 /*! \brief multiply a set of optical parameters to another. */
-__ZEO_EXPORT zOpticalInfo *zOpticalInfoMul(zOpticalInfo *oi1, zOpticalInfo *oi2, zOpticalInfo *oi);
+__ZEO_EXPORT zOpticalInfo *zOpticalInfoMul(const zOpticalInfo *oi1, const zOpticalInfo *oi2, zOpticalInfo *oi);
 
 /*! \brief blend a pair of sets of optical parameters at a given ratio. */
-__ZEO_EXPORT zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, double ratio, zOpticalInfo *oi, char *name);
+__ZEO_EXPORT zOpticalInfo *zOpticalInfoBlend(const zOpticalInfo *oi1, const zOpticalInfo *oi2, double ratio, zOpticalInfo *oi, char *name);
 
 /*! \brief tag to identify optical info. */
 #define ZTK_TAG_ZEO_OPTIC           "zeo::optic"
@@ -81,10 +81,10 @@ __ZEO_EXPORT zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi
 /*! \brief read an optical info from a ZTK format processor. */
 __ZEO_EXPORT zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk);
 /*! \brief add an optical info to a ZTK format processor. */
-__ZEO_EXPORT ZTK *zOpticalInfoToZTK(zOpticalInfo *oi, ZTK *ztk);
+__ZEO_EXPORT ZTK *zOpticalInfoToZTK(const zOpticalInfo *oi, ZTK *ztk);
 
 /*! \brief print out an optical info to the current stream of a file. */
-__ZEO_EXPORT void zOpticalInfoFPrintZTK(FILE *fp, zOpticalInfo *oi);
+__ZEO_EXPORT void zOpticalInfoFPrintZTK(FILE *fp, const zOpticalInfo *oi);
 
 /*! \struct zOpticalInfoArray
  * \brief array class of a set of optical parameters.

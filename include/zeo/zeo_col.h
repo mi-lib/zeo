@@ -33,8 +33,8 @@ __BEGIN_DECLS
  *
  * zIntersectEdgePlane3D() returns the number of intersection points, 0, 1, or 2.
  */
-__ZEO_EXPORT bool zColChkEdgePlane3D(zEdge3D *edge, zPlane3D *plane);
-__ZEO_EXPORT int zIntersectEdgePlane3D(zEdge3D *edge, zPlane3D *plane, zVec3D ip[]);
+__ZEO_EXPORT bool zColChkEdgePlane3D(const zEdge3D *edge, const zPlane3D *plane);
+__ZEO_EXPORT int zIntersectEdgePlane3D(const zEdge3D *edge, const zPlane3D *plane, zVec3D ip[]);
 
 /*! \brief intersection between two 3D planes.
  *
@@ -49,7 +49,7 @@ __ZEO_EXPORT int zIntersectEdgePlane3D(zEdge3D *edge, zPlane3D *plane, zVec3D ip
  * 0 is returned.
  * In the above two exceptional cases, nothing happens on \a line.
  */
-__ZEO_EXPORT int zIntersectPlane3D(zPlane3D *plane1, zPlane3D *plane2, zLine3D *line);
+__ZEO_EXPORT int zIntersectPlane3D(const zPlane3D *plane1, const zPlane3D *plane2, zLine3D *line);
 
 /*! \brief collision and intersection of plane, edge and triangle.
  *
@@ -84,12 +84,12 @@ __ZEO_EXPORT int zIntersectPlane3D(zPlane3D *plane1, zPlane3D *plane2, zLine3D *
  * zIntersectTriPlane3D(), zIntersectEdgeTri3D() and zIntersectTri3D() return the number of
  * intersection points.
  */
-__ZEO_EXPORT bool zColChkTriPlane3D(zTri3D *tri, zPlane3D *plane);
-__ZEO_EXPORT int zIntersectTriPlane3D(zTri3D *tri, zPlane3D *plane, zVec3D ip[]);
-__ZEO_EXPORT bool zColChkEdgeTri3D(zEdge3D *edge, zTri3D *tri);
-__ZEO_EXPORT int zIntersectEdgeTri3D(zEdge3D *edge, zTri3D *tri, zVec3D ip[]);
-__ZEO_EXPORT bool zColChkTri3D(zTri3D *tri1, zTri3D *tri2);
-__ZEO_EXPORT int zIntersectTri3D(zTri3D *tri1, zTri3D *tri2, zVec3D ip[]);
+__ZEO_EXPORT bool zColChkTriPlane3D(const zTri3D *tri, const zPlane3D *plane);
+__ZEO_EXPORT int zIntersectTriPlane3D(const zTri3D *tri, const zPlane3D *plane, zVec3D ip[]);
+__ZEO_EXPORT bool zColChkEdgeTri3D(const zEdge3D *edge, const zTri3D *tri);
+__ZEO_EXPORT int zIntersectEdgeTri3D(const zEdge3D *edge, const zTri3D *tri, zVec3D ip[]);
+__ZEO_EXPORT bool zColChkTri3D(const zTri3D *tri1, const zTri3D *tri2);
+__ZEO_EXPORT int zIntersectTri3D(const zTri3D *tri1, const zTri3D *tri2, zVec3D ip[]);
 
 /*! \brief intersection between a loop of vertices and 3D plane.
  *

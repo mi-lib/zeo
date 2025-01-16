@@ -27,7 +27,7 @@ zAABox3D *zAABox3DCreate(zAABox3D *box, double x1, double y1, double z1, double 
 }
 
 /* copy a 3D axis-aligned box to another. */
-zAABox3D *zAABox3DCopy(zAABox3D *src, zAABox3D *dst)
+zAABox3D *zAABox3DCopy(const zAABox3D *src, zAABox3D *dst)
 {
   zVec3DCopy( &src->min, &dst->min );
   zVec3DCopy( &src->max, &dst->max );
@@ -35,7 +35,7 @@ zAABox3D *zAABox3DCopy(zAABox3D *src, zAABox3D *dst)
 }
 
 /* merge two axis-aligned boxes. */
-zAABox3D *zAABox3DMerge(zAABox3D *dst, zAABox3D *src1, zAABox3D *src2)
+zAABox3D *zAABox3DMerge(zAABox3D *dst, const zAABox3D *src1, const zAABox3D *src2)
 {
   return zAABox3DCreate( dst,
     _zMin( src1->min.e[zX], src2->min.e[zX] ),
@@ -57,14 +57,14 @@ double zAABox3DClosest(const zAABox3D *box, const zVec3D *point, zVec3D *cp)
 }
 
 /* distance from a point to a 3D axis-aligned box. */
-double zAABox3DDistFromPoint(zAABox3D *box, zVec3D *point)
+double zAABox3DDistFromPoint(const zAABox3D *box, const zVec3D *point)
 {
   zVec3D cp;
   return zAABox3DClosest( box, point, &cp );
 }
 
 /* check if a point is inside of a 3D axis-aligned box. */
-bool zAABox3DPointIsInside(zAABox3D *box, zVec3D *p, double margin)
+bool zAABox3DPointIsInside(const zAABox3D *box, const zVec3D *p, double margin)
 {
   return p->e[zX] > box->min.e[zX] - margin && p->e[zX] <= box->max.e[zX] + margin &&
          p->e[zY] > box->min.e[zY] - margin && p->e[zY] <= box->max.e[zY] + margin &&
@@ -72,7 +72,7 @@ bool zAABox3DPointIsInside(zAABox3D *box, zVec3D *p, double margin)
 }
 
 /* compute volume of a 3D axis-aligned box. */
-double zAABox3DVolume(zAABox3D *box)
+double zAABox3DVolume(const zAABox3D *box)
 {
   return fabs( ( box->max.e[zX] - box->min.e[zX] )
              * ( box->max.e[zY] - box->min.e[zY] )
@@ -80,7 +80,7 @@ double zAABox3DVolume(zAABox3D *box)
 }
 
 /* convert a 3D axis-aligned box to a general box. */
-zBox3D *zAABox3DToBox3D(zAABox3D *aab, zBox3D *box)
+zBox3D *zAABox3DToBox3D(const zAABox3D *aab, zBox3D *box)
 {
   zVec3DMid( &aab->max, &aab->min, zBox3DCenter(box) );
   zVec3DSub( &aab->max, &aab->min, &box->dia );
@@ -91,7 +91,7 @@ zBox3D *zAABox3DToBox3D(zAABox3D *aab, zBox3D *box)
 }
 
 /* compute a 3D axis-aligned box of a 3D box. */
-zAABox3D *zBox3DToAABox3D(zBox3D *box, zAABox3D *aabox)
+zAABox3D *zBox3DToAABox3D(const zBox3D *box, zAABox3D *aabox)
 {
   zVec3D v[8];
   zVec3DData data;
@@ -104,7 +104,7 @@ zAABox3D *zBox3DToAABox3D(zBox3D *box, zAABox3D *aabox)
 }
 
 /* print out a 3D axis-aligned box to a file in a format to be plotted. */
-void zAABox3DValueFPrint(FILE *fp, zAABox3D *box)
+void zAABox3DValueFPrint(FILE *fp, const zAABox3D *box)
 {
   double x0, y0, z0, x1, y1, z1;
 

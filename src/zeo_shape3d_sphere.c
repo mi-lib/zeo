@@ -5,6 +5,7 @@
  */
 
 #include <zeo/zeo_shape3d.h>
+#include <zeo/zeo_vec3d_pcd.h>
 
 /* ********************************************************** */
 /* CLASS: zSphere3D

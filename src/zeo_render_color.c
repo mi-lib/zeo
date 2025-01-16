@@ -25,13 +25,13 @@ zRGB *zRGBSet(zRGB *rgb, float red, float green, float blue)
 }
 
 /* multiply a set of RGB parameters by another. */
-zRGB *zRGBMul(zRGB *rgb1, zRGB *rgb2, zRGB *rgb)
+zRGB *zRGBMul(const zRGB *rgb1, const zRGB *rgb2, zRGB *rgb)
 {
   return zRGBSet( rgb, rgb1->r*rgb2->r, rgb1->g*rgb2->g, rgb1->b*rgb2->b );
 }
 
 /* blend a pair of RGB parameters at a given ratio. */
-zRGB *zRGBBlend(zRGB *rgb1, zRGB *rgb2, double ratio, zRGB *rgb)
+zRGB *zRGBBlend(const zRGB *rgb1, const zRGB *rgb2, double ratio, zRGB *rgb)
 {
   double rn;
 
@@ -88,7 +88,7 @@ zRGB *zRGBFromZTK(zRGB *rgb, ZTK *ztk)
 }
 
 /* add RGB values to a ZTK format processor. */
-ZTK *zRGBToZTK(zRGB *rgb, ZTK *ztk)
+ZTK *zRGBToZTK(const zRGB *rgb, ZTK *ztk)
 {
   if( !ZTKAddDouble( ztk, rgb->r ) ) return NULL;
   if( !ZTKAddDouble( ztk, rgb->g ) ) return NULL;
@@ -108,7 +108,7 @@ zRGB *zRGBFScan(FILE *fp, zRGB *rgb)
 }
 
 /* print a set of RGB parameters out to a file. */
-void zRGBFPrint(FILE *fp, zRGB *rgb)
+void zRGBFPrint(FILE *fp, const zRGB *rgb)
 {
   fprintf( fp, "%.7g, %.7g, %.7g\n", rgb->r, rgb->g, rgb->b );
 }
@@ -119,7 +119,7 @@ void zRGBFPrint(FILE *fp, zRGB *rgb)
  * ********************************************************** */
 
 /* convert RGB to HSV. */
-zHSV *zRGB2HSV(zRGB *rgb, zHSV *hsv)
+zHSV *zRGB2HSV(const zRGB *rgb, zHSV *hsv)
 {
   float max, min, d, phase, phase0;
 
@@ -159,7 +159,7 @@ zHSV *zRGB2HSV(zRGB *rgb, zHSV *hsv)
 }
 
 /* convert HSV to RGB. */
-zRGB *zHSV2RGB(zHSV *hsv, zRGB *rgb)
+zRGB *zHSV2RGB(const zHSV *hsv, zRGB *rgb)
 {
   float h, f, p, q, t;
   int i;
@@ -183,7 +183,7 @@ zRGB *zHSV2RGB(zHSV *hsv, zRGB *rgb)
 }
 
 /* print a set of HSV parameters out to a file. */
-void zHSVFPrint(FILE *fp, zHSV *hsv)
+void zHSVFPrint(FILE *fp, const zHSV *hsv)
 {
   fprintf( fp, "%.7g, %.7g, %.7g\n", hsv->hue, hsv->sat, hsv->val );
 }

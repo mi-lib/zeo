@@ -25,7 +25,7 @@ zOpticalInfo *zOpticalInfoCreate(zOpticalInfo *oi, float ar, float ag, float ab,
 }
 
 /* copy a set of optical parameters. */
-zOpticalInfo *zOpticalInfoCopy(zOpticalInfo *src, zOpticalInfo *dest)
+zOpticalInfo *zOpticalInfoCopy(const zOpticalInfo *src, zOpticalInfo *dest)
 {
   zRGBCopy( &src->ambient, &dest->ambient );
   zRGBCopy( &src->diffuse, &dest->diffuse );
@@ -37,14 +37,14 @@ zOpticalInfo *zOpticalInfoCopy(zOpticalInfo *src, zOpticalInfo *dest)
 }
 
 /* clone a set of optical parameters. */
-zOpticalInfo *zOpticalInfoClone(zOpticalInfo *src, zOpticalInfo *dest)
+zOpticalInfo *zOpticalInfoClone(const zOpticalInfo *src, zOpticalInfo *dest)
 {
   return zNameSet( dest, zName(src) ) ?
     zOpticalInfoCopy( src, dest ) : NULL;
 }
 
 /* multiply a set of optical parameters to another. */
-zOpticalInfo *zOpticalInfoMul(zOpticalInfo *oi1, zOpticalInfo *oi2, zOpticalInfo *oi)
+zOpticalInfo *zOpticalInfoMul(const zOpticalInfo *oi1, const zOpticalInfo *oi2, zOpticalInfo *oi)
 {
   zRGBMul( &oi1->ambient, &oi2->ambient, &oi->ambient );
   zRGBMul( &oi1->diffuse, &oi2->diffuse, &oi->diffuse );
@@ -56,7 +56,7 @@ zOpticalInfo *zOpticalInfoMul(zOpticalInfo *oi1, zOpticalInfo *oi2, zOpticalInfo
 }
 
 /* blend a pair of sets of optical parameters at a given ratio. */
-zOpticalInfo *zOpticalInfoBlend(zOpticalInfo *oi1, zOpticalInfo *oi2, double ratio, zOpticalInfo *oi, char *name)
+zOpticalInfo *zOpticalInfoBlend(const zOpticalInfo *oi1, const zOpticalInfo *oi2, double ratio, zOpticalInfo *oi, char *name)
 {
   double rn;
 
@@ -139,7 +139,7 @@ zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk)
 }
 
 /* add an optical info to a ZTK format processor. */
-ZTK *zOpticalInfoToZTK(zOpticalInfo *oi, ZTK *ztk)
+ZTK *zOpticalInfoToZTK(const zOpticalInfo *oi, ZTK *ztk)
 {
   if( !ZTKAddKey( ztk, ZTK_KEY_ZEO_OPTIC_NAME ) ) return NULL;
   if( !ZTKAddVal( ztk, zName(oi) ) ) return NULL;
@@ -171,8 +171,8 @@ ZTK *zOpticalInfoToZTK(zOpticalInfo *oi, ZTK *ztk)
 }
 
 /* print information of the optical parameter set out to a file. */
-void zOpticalInfoFPrintZTK(FILE *fp, zOpticalInfo *oi)
+void zOpticalInfoFPrintZTK(FILE *fp, const zOpticalInfo *oi)
 {
-  ZTKPrpKeyFPrint( fp, oi, __ztk_prp_optic );
+  ZTKPrpKeyFPrint( fp, (void *)oi, __ztk_prp_optic );
   fprintf( fp, "\n" );
 }

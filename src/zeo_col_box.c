@@ -9,7 +9,7 @@
 /* axis-aligned box */
 
 /* check if an edge of an axis-aligned box intersects with a plane. */
-static int _zIntersectPlaneAABox3DEdge(zPlane3D *p, zAxis axis, double w1min, double w1max, double w2, double w3, zVec3D *ip)
+static int _zIntersectPlaneAABox3DEdge(const zPlane3D *p, zAxis axis, double w1min, double w1max, double w2, double w3, zVec3D *ip)
 {
   zAxis a2, a3;
   double w1;
@@ -30,7 +30,7 @@ static int _zIntersectPlaneAABox3DEdge(zPlane3D *p, zAxis axis, double w1min, do
 }
 
 /* check if a plane and an axis-aligned boxes intersect with each other. */
-bool zColChkPlaneAABox3D(zPlane3D *p, zAABox3D *box)
+bool zColChkPlaneAABox3D(const zPlane3D *p, const zAABox3D *box)
 {
   double x1, y1, z1, x2, y2, z2;
   zVec3D ip;
@@ -57,7 +57,7 @@ bool zColChkPlaneAABox3D(zPlane3D *p, zAABox3D *box)
 }
 
 /* get an intersection between an axis-aligned box and a plane. */
-int zIntersectPlaneAABox3D(zPlane3D *p, zAABox3D *box, zVec3D ip[])
+int zIntersectPlaneAABox3D(const zPlane3D *p, const zAABox3D *box, zVec3D ip[])
 {
   int n = 0;
   double x1, y1, z1, x2, y2, z2;
@@ -84,7 +84,7 @@ int zIntersectPlaneAABox3D(zPlane3D *p, zAABox3D *box, zVec3D ip[])
 }
 
 /* check if an edge of a triangle intersects with a face of an axis-aligned box. */
-static bool _zColChkTriAABox3DEdgeAxOne(zVec3D *v1, zVec3D *v2, zAxis axis, zVec3D *p, zAABox3D *box, zVec3D *ip)
+static bool _zColChkTriAABox3DEdgeAxOne(const zVec3D *v1, const zVec3D *v2, zAxis axis, const zVec3D *p, const zAABox3D *box, zVec3D *ip)
 {
   double d1, d2, s1, s2;
   int a1, a2;
@@ -109,7 +109,7 @@ static bool _zColChkTriAABox3DEdgeAxOne(zVec3D *v1, zVec3D *v2, zAxis axis, zVec
 }
 
 /* check if an edge of a triangle intersects with a pair of parallel faces of an axis-aligned box. */
-static bool _zColChkTriAABox3DEdgeAx(zVec3D *v1, zVec3D *v2, zAxis axis, zAABox3D *box)
+static bool _zColChkTriAABox3DEdgeAx(const zVec3D *v1, const zVec3D *v2, zAxis axis, const zAABox3D *box)
 {
   return _zColChkTriAABox3DEdgeAxOne( v1, v2, axis, &box->min, box, NULL ) ||
          _zColChkTriAABox3DEdgeAxOne( v1, v2, axis, &box->max, box, NULL ) ?
@@ -117,7 +117,7 @@ static bool _zColChkTriAABox3DEdgeAx(zVec3D *v1, zVec3D *v2, zAxis axis, zAABox3
 }
 
 /* check if an edge of a triangle intersects with an axis-aligned box. */
-static bool _zColChkTriAABox3DEdge(zVec3D *v1, zVec3D *v2, zAABox3D *box)
+static bool _zColChkTriAABox3DEdge(const zVec3D *v1, const zVec3D *v2, const zAABox3D *box)
 {
   return _zColChkTriAABox3DEdgeAx( v1, v2, zX, box ) ||
          _zColChkTriAABox3DEdgeAx( v1, v2, zY, box ) ||
@@ -125,7 +125,7 @@ static bool _zColChkTriAABox3DEdge(zVec3D *v1, zVec3D *v2, zAABox3D *box)
 }
 
 /* check if a triangle intersects with edges of an axis-aligned box. */
-static bool _zColChkTriAABox3DPlane(zTri3D *t, zAABox3D *box)
+static bool _zColChkTriAABox3DPlane(const zTri3D *t, const zAABox3D *box)
 {
   zPlane3D p;
   zVec3D ip[6];
@@ -139,7 +139,7 @@ static bool _zColChkTriAABox3DPlane(zTri3D *t, zAABox3D *box)
 }
 
 /* check if a triangle intersects with an axis-aligned box. */
-bool zColChkTriAABox3D(zTri3D *t, zAABox3D *box)
+bool zColChkTriAABox3D(const zTri3D *t, const zAABox3D *box)
 {
   if( zAABox3DPointIsInside( box, zTri3DVert(t,0), -zTOL ) ||
       zAABox3DPointIsInside( box, zTri3DVert(t,1), -zTOL ) ||
@@ -153,14 +153,14 @@ bool zColChkTriAABox3D(zTri3D *t, zAABox3D *box)
 }
 
 /* intersection of an edge of a triangle and a face of an axis-aligned box. */
-static int _zIntersectTriAABox3DEdgeAxOne(zVec3D *v1, zVec3D *v2, zAxis axis, zVec3D *p, zAABox3D *box, zVec3D ip[], int n)
+static int _zIntersectTriAABox3DEdgeAxOne(const zVec3D *v1, const zVec3D *v2, zAxis axis, const zVec3D *p, const zAABox3D *box, zVec3D ip[], int n)
 {
   if( _zColChkTriAABox3DEdgeAxOne( v1, v2, axis, p, box, &ip[n] ) ) n++;
   return n;
 }
 
 /* intersection of an edge of a triangle and a pair of parallel faces of an axis-aligned box. */
-static int _zIntersectTriAABox3DEdgeAx(zVec3D *v1, zVec3D *v2, zAxis axis, zAABox3D *box, zVec3D ip[], int n)
+static int _zIntersectTriAABox3DEdgeAx(const zVec3D *v1, const zVec3D *v2, zAxis axis, const zAABox3D *box, zVec3D ip[], int n)
 {
   n = _zIntersectTriAABox3DEdgeAxOne( v1, v2, axis, &box->min, box, ip, n );
   n = _zIntersectTriAABox3DEdgeAxOne( v1, v2, axis, &box->max, box, ip, n );
@@ -168,7 +168,7 @@ static int _zIntersectTriAABox3DEdgeAx(zVec3D *v1, zVec3D *v2, zAxis axis, zAABo
 }
 
 /* intersection of an edge of a triangle and an axis-aligned box. */
-static int _zIntersectTriAABox3DEdge(zVec3D *v1, zVec3D *v2, zAABox3D *box, zVec3D ip[], int n)
+static int _zIntersectTriAABox3DEdge(const zVec3D *v1, const zVec3D *v2, const zAABox3D *box, zVec3D ip[], int n)
 {
   n = _zIntersectTriAABox3DEdgeAx( v1, v2, zX, box, ip, n );
   n = _zIntersectTriAABox3DEdgeAx( v1, v2, zY, box, ip, n );
@@ -177,7 +177,7 @@ static int _zIntersectTriAABox3DEdge(zVec3D *v1, zVec3D *v2, zAABox3D *box, zVec
 }
 
 /* intersection of a triangle and edges of an axis-aligned box. */
-static int _zIntersectTriAABox3DPlane(zTri3D *t, zAABox3D *box, zVec3D ip[], int n)
+static int _zIntersectTriAABox3DPlane(const zTri3D *t, const zAABox3D *box, zVec3D ip[], int n)
 {
   zPlane3D p;
   zVec3D pip[6];
@@ -192,7 +192,7 @@ static int _zIntersectTriAABox3DPlane(zTri3D *t, zAABox3D *box, zVec3D ip[], int
 }
 
 /* intersection of a triangle and an axis-aligned box. */
-int zIntersectTriAABox3D(zTri3D *t, zAABox3D *box, zVec3D ip[])
+int zIntersectTriAABox3D(const zTri3D *t, const zAABox3D *box, zVec3D ip[])
 {
   int n = 0;
 
@@ -204,7 +204,7 @@ int zIntersectTriAABox3D(zTri3D *t, zAABox3D *box, zVec3D ip[])
 }
 
 /* check if two axis-aligned boxes intersect with each other. */
-bool zColChkAABox3D(zAABox3D *b1, zAABox3D *b2)
+bool zColChkAABox3D(const zAABox3D *b1, const zAABox3D *b2)
 {
   return b1->min.e[zX] < b2->max.e[zX] &&
          b2->min.e[zX] < b1->max.e[zX] &&
@@ -216,7 +216,7 @@ bool zColChkAABox3D(zAABox3D *b1, zAABox3D *b2)
 }
 
 /* intersection of two axis-aligned boxes. */
-zAABox3D *zIntersectAABox3D(zAABox3D *dst, zAABox3D *src1, zAABox3D *src2)
+zAABox3D *zIntersectAABox3D(zAABox3D *dst, const zAABox3D *src1, const zAABox3D *src2)
 {
   if( !zColChkAABox3D( src1, src2 ) ) return NULL;
   return zAABox3DCreate( dst,
@@ -229,7 +229,7 @@ zAABox3D *zIntersectAABox3D(zAABox3D *dst, zAABox3D *src1, zAABox3D *src2)
 }
 
 /* intersection of AABBs of two polyhedra. */
-zAABox3D *zIntersectPH3DBox(zPH3D *ph1, zPH3D *ph2, zAABox3D *box)
+zAABox3D *zIntersectPH3DBox(const zPH3D *ph1, const zPH3D *ph2, zAABox3D *box)
 {
   zAABox3D b1, b2;
   zVec3DData data1, data2;
@@ -244,9 +244,9 @@ zAABox3D *zIntersectPH3DBox(zPH3D *ph1, zPH3D *ph2, zAABox3D *box)
 /* box vs box */
 
 /* deflated collision checking along an axis on a box. */
-static bool _zColChkBox3DAlong(zBox3D *b1, zDir axis, zBox3D *b2, zVec3D *l)
+static bool _zColChkBox3DAlong(const zBox3D *b1, zDir axis, const zBox3D *b2, const zVec3D *l)
 {
-  zVec3D *a;
+  const zVec3D *a;
   double d;
 
   a = zBox3DAxis( b1, (int)axis );
@@ -259,7 +259,7 @@ static bool _zColChkBox3DAlong(zBox3D *b1, zDir axis, zBox3D *b2, zVec3D *l)
 }
 
 /* deflated collision checking along an axis perpendicular to edges on boxes. */
-static bool _zColChkBox3DPerp(zBox3D *b1, zDir ax1, zBox3D *b2, zDir ax2, zVec3D *l)
+static bool _zColChkBox3DPerp(const zBox3D *b1, zDir ax1, const zBox3D *b2, zDir ax2, const zVec3D *l)
 {
   zVec3D p;
   zDir ax12, ax13, ax22, ax23;
@@ -282,7 +282,7 @@ static bool _zColChkBox3DPerp(zBox3D *b1, zDir ax1, zBox3D *b2, zDir ax2, zVec3D
 }
 
 /* check if two (oriented) boxes intersect with each other. */
-bool zColChkBox3D(zBox3D *b1, zBox3D *b2)
+bool zColChkBox3D(const zBox3D *b1, const zBox3D *b2)
 {
   zVec3D l;
 
@@ -307,13 +307,13 @@ bool zColChkBox3D(zBox3D *b1, zBox3D *b2)
 /* box vs sphere */
 
 /* check collision between a 3D sphere and a 3D axis-aligned box. */
-bool zColChkSphereAABox3D(zSphere3D *sphere, zAABox3D *box)
+bool zColChkSphereAABox3D(const zSphere3D *sphere, const zAABox3D *box)
 {
   return zAABox3DDistFromPoint( box, zSphere3DCenter(sphere) ) < zSphere3DRadius(sphere);
 }
 
 /* check collision between a 3D sphere and a 3D box. */
-bool zColChkSphereBox3D(zSphere3D *sphere, zBox3D *box)
+bool zColChkSphereBox3D(const zSphere3D *sphere, const zBox3D *box)
 {
   return zBox3DDistFromPoint( box, zSphere3DCenter(sphere) ) < zSphere3DRadius(sphere);
 }
