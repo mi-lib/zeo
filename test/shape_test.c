@@ -1,5 +1,35 @@
 #include <zeo/zeo_shape3d.h>
 
+void assert_box_to_aabox(void)
+{
+  zAABox3D aabox;
+  zBox3D box;
+  zVec3D vert_aabox;
+  zVec3D vert_box;
+  zVec3D ax, ay;
+  int i;
+  bool result = true;
+
+  zAABox3DCreate( &aabox, -10, -20, -30, 30, 20, 10 );
+  zAABox3DToBox3D( &aabox, &box );
+  for( i=0; i<8; i++ ){
+    zAABox3DVert( &aabox, i, &vert_aabox );
+    zBox3DVert( &box, i, &vert_box );
+    if( !zVec3DEqual( &vert_aabox, &vert_box ) ) result = false;
+  }
+  zAssert( zAABox3DVert + zBox3DVert + zAABox3DToBox3D, result );
+
+  zVec3DCreate( &ax, 1, 1, 0 );
+  zVec3DCreate( &ay,-1, 1, 0 );
+  zBox3DCreate( &box, ZVEC3DZERO, &ax, &ay, ZVEC3DZ, sqrt(2), sqrt(2), 2 );
+  zBox3DToAABox3D( &box, &aabox );
+  zVec3DCreate( &vert_aabox,-1,-1,-1 );
+  if( !zVec3DEqual( &vert_aabox, &aabox.min ) ) result = false;
+  zVec3DCreate( &vert_aabox, 1, 1, 1 );
+  if( !zVec3DEqual( &vert_aabox, &aabox.max) ) result = false;
+  zAssert( zBox3DToAABox3D, result );
+}
+
 void generate_box_rand(zShape3D *box)
 {
   zVec3D center, ax, ay, az, tmp;
@@ -39,6 +69,7 @@ void assert_shape_inertia(void)
 
 int main(int argc, char *argv[])
 {
+  assert_box_to_aabox();
   assert_shape_inertia();
   return 0;
 }

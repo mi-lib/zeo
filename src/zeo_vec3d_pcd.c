@@ -581,7 +581,7 @@ bool zVec3DDataReadPCDFile(zVec3DData *data, const char filename[])
   FILE *fp;
   bool ret;
 
-  if( !( fp = zOpenFile( filename, (char *)ZEO_PCD_SUFFIX, (char *)"r" ) ) )
+  if( !( fp = zOpenFile( filename, ZEO_PCD_SUFFIX, "r" ) ) )
     return false;
   ret = zVec3DDataFReadPCD( fp, data );
   fclose( fp );
@@ -644,12 +644,9 @@ bool zVec3DDataFWritePCD(FILE *fp, zVec3DData *data, const char *format)
 bool zVec3DDataWritePCDFile(zVec3DData *data, const char filename[], const char *format)
 {
   FILE *fp;
-  char filename_full[BUFSIZ];
   bool ret;
 
-  zAddSuffix( filename, ZEO_PCD_SUFFIX, filename_full, BUFSIZ );
-  if( !( fp = fopen( filename_full, "w" ) ) )
-    return false;
+  if( !( fp = zOpenFile( filename, ZEO_PCD_SUFFIX, "w" ) ) ) return false;
   ret = zVec3DDataFWritePCD( fp, data, format );
   fclose( fp );
   return ret;

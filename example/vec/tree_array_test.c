@@ -1,4 +1,4 @@
-#include <zeo/zeo_vec3d.h>
+#include <zeo/zeo_vec3d_data.h>
 
 void array_print(zVec3DArray *array)
 {

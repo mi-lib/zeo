@@ -1,7 +1,7 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_vec3d_tree - 3D vector tree.
+ * zeo_vec3d_tree - 3D vector tree (kd-tree with k=3).
  */
 
 #ifndef __ZEO_VEC3D_TREE_H__
@@ -40,10 +40,10 @@ zTreeClass( __ZEO_EXPORT, zVec3DTree, zVec3DTreeData );
  * zVec3DTreeAdd() adds a 3D vector \a v to a tree \a tree.
  * \a v is copied to a node of \a tree.
  */
-__ZEO_EXPORT zVec3DTree *zVec3DTreeAdd(zVec3DTree *tree, zVec3D *v);
+__ZEO_EXPORT zVec3DTree *zVec3DTreeAdd(zVec3DTree *tree, zVec3D *point);
 
 /*! \brief add a new 3D vector to a tree with an identifier. */
-__ZEO_EXPORT zVec3DTree *zVec3DTreeAddID(zVec3DTree *tree, zVec3D *v, int id);
+__ZEO_EXPORT zVec3DTree *zVec3DTreeAddID(zVec3DTree *tree, zVec3D *point, int id);
 
 /*! \brief find the partition in which a 3D vector is contained.
  *
@@ -52,7 +52,7 @@ __ZEO_EXPORT zVec3DTree *zVec3DTreeAddID(zVec3DTree *tree, zVec3D *v, int id);
  * This function is mainly for debug.
  * \return a pointer to the node found in the tree is returned.
  */
-__ZEO_EXPORT zVec3DTree *zVec3DTreePart(zVec3DTree *tree, zVec3D *v);
+__ZEO_EXPORT const zVec3DTree *zVec3DTreePart(const zVec3DTree *node, const zVec3D *point);
 
 /*! \brief find the nearest neighbor to a 3D vector in a tree.
  *
@@ -61,22 +61,39 @@ __ZEO_EXPORT zVec3DTree *zVec3DTreePart(zVec3DTree *tree, zVec3D *v);
  * node found is stored into \a nn.
  * \return the distance from \a v to the nearest neighbor.
  */
-__ZEO_EXPORT double zVec3DTreeNN(zVec3DTree *tree, zVec3D *v, zVec3DTree **nn);
+__ZEO_EXPORT double zVec3DTreeNN(const zVec3DTree *tree, const zVec3D *point, zVec3DTree **nn);
+
+/*! \brief find vicinity of a 3D point in a 3D vector tree.
+ *
+ * zVec3DTreeVicinity() finds vicinity of a 3D point \a point in a 3D vector tree \a tree.
+ * \a radius defines the boundary of the vicinity, which is a sphere with the radius.
+ * The result is stored in a list of addresses of 3D vectors \a vicinity.
+ * \return
+ * zVec3DTreeVicinity() returns the pointer \a vicinity, if it succeeds. If it fails to
+ * allocate memory for the list to store the result, it returns the null pointer.
+ */
+__ZEO_EXPORT zVec3DData *zVec3DTreeVicinity(const zVec3DTree *tree, const zVec3D *point, double radius, zVec3DData *vicinity);
 
 /*! \brief convert an array of 3D vectors to a 3D vector tree. */
-__ZEO_EXPORT zVec3DTree *zVec3DArrayToTree(zVec3DArray *array, zVec3DTree *tree);
+__ZEO_EXPORT zVec3DTree *zVec3DArrayToTree(const zVec3DArray *array, zVec3DTree *tree);
 
 /*! \brief convert a 3D vector tree to an array of 3D vectors. */
-__ZEO_EXPORT zVec3DArray *zVec3DTreeToArray(zVec3DTree *tree, zVec3DArray *array);
+__ZEO_EXPORT zVec3DArray *zVec3DTreeToArray(const zVec3DTree *tree, zVec3DArray *array);
 
 /*! \brief convert a 3D vector tree to a 3D vector list. */
-__ZEO_EXPORT zVec3DList *zVec3DTreeToList(zVec3DTree *tree, zVec3DList *list);
+__ZEO_EXPORT zVec3DList *zVec3DTreeToList(const zVec3DTree *tree, zVec3DList *list);
 
 /*! \brief convert a 3D vector list to a 3D vector tree. */
-__ZEO_EXPORT zVec3DTree *zVec3DListToTree(zVec3DList *list, zVec3DTree *tree);
+__ZEO_EXPORT zVec3DTree *zVec3DListToTree(const zVec3DList *list, zVec3DTree *tree);
+
+/*! \brief convert a set of 3D vectors to a 3D vector tree. */
+__ZEO_EXPORT zVec3DTree *zVec3DDataToTree(zVec3DData *data, zVec3DTree *tree);
 
 /*! \brief print out a 3D vector tree (for debug). */
-__ZEO_EXPORT void zVec3DTreeFPrint(FILE *fp, zVec3DTree *tree);
+__ZEO_EXPORT void zVec3DTreeFPrint(FILE *fp, const zVec3DTree *tree);
+
+/*! \brief print out values of a 3D vector tree. */
+__ZEO_EXPORT void zVec3DTreeValueFPrint(FILE *fp, const zVec3DTree *tree);
 
 __END_DECLS
 

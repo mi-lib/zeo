@@ -3,23 +3,21 @@
 
  Zeo is a handy library for computational geometry and optics
  including:
- - color and optics computations
+ - color, optics, and texture computations
  - 2D/3D vectors and matrices
- - read/write of PCD format file (point cloud)
  - 6D spatial vectors and matrices
  - 2D/3D frame and coordinate transformation
  - Euler parameter (unit quaternion)
  - 3D shape elements (plane, edge and triangle)
- - 3D shape primitives (box, sphere, cylinder, cone, ellipsoid,
-   elliptic cylinder, polyhedron)
+ - 3D point cloud operations (principal component analysis, read/write of PCD format file, vicinity search)
+ - 3D shape primitives (box, sphere, cylinder, cone, ellipsoid, elliptic cylinder, polyhedron)
  - multiple 3D shapes
  - read/write of PLY/STL/OBJ/DAE format files
  - NURBS curve / surface
  - trianglation of non-convex
- - bounding volume (AABB, OBB, boundin ball, convex-hull)
+ - bounding volume (AABB, OBB, bounding ball, convex-hull)
  - 2D Delaunay triangulation and Voronoi diagram
  - collision checking (GJK, Muller-Preparata)
- - principal component analysis of point cloud
  - B-Rep (boundary representation) and boolean operations
  - elevation map
  */
@@ -31,6 +29,7 @@
 #include <zeo/zeo_mat6d.h>
 #include <zeo/zeo_mshape3d.h>
 #include <zeo/zeo_bv3d.h>
+#include <zeo/zeo_vec3d_profile.h>
 #include <zeo/zeo_voronoi2d.h>
 #include <zeo/zeo_brep.h>
 #include <zeo/zeo_mapnet.h>

@@ -305,4 +305,6 @@ __ZEO_EXPORT bool zEllips2DPointIsInside(const zEllips2D *ellips, const zVec2D *
 
 __END_DECLS
 
+#include <zeo/zeo_elem2d_aabox.h> /* 2D axis-aligned box */
+
 #endif /* __ZEO_ELEM2D_H__ */

@@ -6,18 +6,15 @@
 
 #include <zeo/zeo_shape3d.h>
 
-/* ********************************************************** */
-/* CLASS: zBox3D
- * 3D box class
- * ********************************************************** */
-
 /* create a 3D box. */
 zBox3D *zBox3DCreate(zBox3D *box, const zVec3D *c, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double d, double w, double h)
 {
+  zVec3D ux, uy, uz;
+
   zBox3DSetCenter( box, c );
-  zBox3DSetAxis( box, 0, ax );
-  zBox3DSetAxis( box, 1, ay );
-  zBox3DSetAxis( box, 2, az );
+  zVec3DNormalize( ax, &ux ); zBox3DSetAxis( box, 0, &ux );
+  zVec3DNormalize( ay, &uy ); zBox3DSetAxis( box, 1, &uy );
+  zVec3DNormalize( az, &uz ); zBox3DSetAxis( box, 2, &uz );
   zBox3DSetDepth( box, fabs(d) );
   zBox3DSetWidth( box, fabs(w) );
   zBox3DSetHeight( box, fabs(h) );
@@ -160,6 +157,44 @@ zVec3D *zBox3DVert(const zBox3D *box, int i, zVec3D *v)
   zTri3DCreate( zPH3DFace(p,i),   zPH3DVert(p,i1), zPH3DVert(p,i2), zPH3DVert(p,i3) );\
   zTri3DCreate( zPH3DFace(p,i+1), zPH3DVert(p,i1), zPH3DVert(p,i3), zPH3DVert(p,i4) );\
 } while(0)
+
+/* convert a 3D axis-aligned box to a general box. */
+zBox3D *zAABox3DToBox3D(const zAABox3D *aab, zBox3D *box)
+{
+  zVec3DMid( &aab->max, &aab->min, zBox3DCenter(box) );
+  zVec3DSub( &aab->max, &aab->min, &box->dia );
+  zBox3DSetAxis( box, 0, ZVEC3DX );
+  zBox3DSetAxis( box, 1, ZVEC3DY );
+  zBox3DSetAxis( box, 2, ZVEC3DZ );
+  return box;
+}
+
+/* enlarge a 3D axis-aligned box. */
+static zAABox3D *_zAABox3DEnlarge(zAABox3D *aabox, zVec3D *v)
+{
+  if( zAABox3DXMin(aabox) > v->c.x ) zAABox3DXMin(aabox) = v->c.x;
+  if( zAABox3DXMax(aabox) < v->c.x ) zAABox3DXMax(aabox) = v->c.x;
+  if( zAABox3DYMin(aabox) > v->c.y ) zAABox3DYMin(aabox) = v->c.y;
+  if( zAABox3DYMax(aabox) < v->c.y ) zAABox3DYMax(aabox) = v->c.y;
+  if( zAABox3DZMin(aabox) > v->c.z ) zAABox3DZMin(aabox) = v->c.z;
+  if( zAABox3DZMax(aabox) < v->c.z ) zAABox3DZMax(aabox) = v->c.z;
+  return aabox;
+}
+
+/* compute a 3D axis-aligned bounding box of a 3D box. */
+zAABox3D *zBox3DToAABox3D(const zBox3D *box, zAABox3D *aabox)
+{
+  zVec3D v;
+  int i;
+
+  zVec3DCreate( &aabox->min, HUGE_VAL, HUGE_VAL, HUGE_VAL );
+  zVec3DCreate( &aabox->max,-HUGE_VAL,-HUGE_VAL,-HUGE_VAL );
+  for( i=0; i<8; i++ ){
+    zBox3DVert( box, i, &v );
+    _zAABox3DEnlarge( aabox, &v );
+  }
+  return aabox;
+}
 
 /* convert a box to a polyhedron. */
 zPH3D* zBox3DToPH(const zBox3D *box, zPH3D *ph)

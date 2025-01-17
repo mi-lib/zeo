@@ -137,6 +137,12 @@ __ZEO_EXPORT zMat3D *zBox3DBaryInertia(const zBox3D *box, double density, zMat3D
  */
 __ZEO_EXPORT zVec3D *zBox3DVert(const zBox3D *box, int i, zVec3D *v);
 
+/*! \brief convert a 3D axis-aligned box to a general box. */
+__ZEO_EXPORT zBox3D *zAABox3DToBox3D(const zAABox3D *aab, zBox3D *box);
+
+/*! \brief compute a 3D axis-aligned box of a 3D box. */
+__ZEO_EXPORT zAABox3D *zBox3DToAABox3D(const zBox3D *box, zAABox3D *aabox);
+
 /*! \brief convert a box to a polyhedron.
  *
  * zBox3DToPH() converts a box \a box to a polyhedron \a ph as a

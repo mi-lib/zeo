@@ -425,6 +425,8 @@ zArrayClass( zTri3DArray, zTri3D );
 
 __END_DECLS
 
+#include <zeo/zeo_elem3d_aabox.h> /* 3D axis-aligned box */
+
 #include <zeo/zeo_elem3d_list.h> /* 3D shape element list */
 
 #endif /* __ZEO_ELEM3D_H__ */

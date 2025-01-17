@@ -130,8 +130,70 @@ void assert_vec3ddata_addrlist_ptr(void)
   zAssert( zVec3DData (address list pointer), result );
 }
 
+#define NP 1000
+
+int cmp(void *a, void *b, void *dummy)
+{
+  zVec3D *v1, *v2;
+
+  v1 = &((zVec3DListCell*)a)->data;
+  v2 = &((zVec3DListCell*)b)->data;
+  if( v1->e[zX] > v2->e[zX] ) return 1;
+  if( v1->e[zX] < v2->e[zX] ) return -1;
+  if( v1->e[zY] > v2->e[zY] ) return 1;
+  if( v1->e[zY] < v2->e[zY] ) return -1;
+  if( v1->e[zZ] > v2->e[zZ] ) return 1;
+  if( v1->e[zZ] < v2->e[zZ] ) return -1;
+  return 0;
+}
+
+void assert_vicinity(void)
+{
+  zVec3DTree tree;
+  zVec3DOctree octree;
+  zVec3DData vicinity_tree, vicinity_octree;
+  zVec3DAddrListCell *cp1, *cp2;
+  zVec3D v;
+  bool result = true;
+  int i;
+
+  zVec3DTreeInit( &tree );
+  zVec3DCreate( &tree.data.vmin, -10, -10, -10 );
+  zVec3DCreate( &tree.data.vmax, 10, 10, 10 );
+  zVec3DOctreeInit( &octree, -10, -10, -10, 10, 10, 10, 1 );
+  for( i=0; i<NP; i++ ){
+    zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    zVec3DTreeAdd( &tree, &v );
+    zVec3DOctreeAddPoint( &octree, &v );
+  }
+
+  zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+
+  zVec3DDataInitAddrList( &vicinity_tree );
+  zVec3DTreeVicinity( &tree, &v, 5, &vicinity_tree );
+  zVec3DAddrListQuickSort( &vicinity_tree.data.addrlist, cmp, NULL );
+
+  zVec3DDataInitAddrList( &vicinity_octree );
+  zVec3DOctreeVicinity( &octree, &v, 5, &vicinity_octree );
+  zVec3DAddrListQuickSort( &vicinity_octree.data.addrlist, cmp, NULL );
+
+  for( cp1=zListTail(&vicinity_tree.data.addrlist), cp2=zListTail(&vicinity_octree.data.addrlist);
+       cp1!=zListRoot(&vicinity_tree.data.addrlist) && cp2!=zListRoot(&vicinity_octree.data.addrlist);
+       cp1=zListCellNext(cp1), cp2=zListCellNext(cp2) ){
+    if( !zVec3DEqual( cp1->data, cp2->data ) ) result = false;
+  }
+
+  zVec3DDataDestroy( &vicinity_tree );
+  zVec3DDataDestroy( &vicinity_octree );
+  zVec3DTreeDestroy( &tree );
+  zVec3DOctreeDestroy( &octree );
+
+  zAssert( zVec3DTreeVicinity + zVec3DOctreeVicinity, result );
+}
+
 int main(int argc, char *argv[])
 {
+  zRandInit();
   assert_vec3ddata_empty();
   assert_vec3ddata_array();
   assert_vec3ddata_list();
@@ -139,5 +201,6 @@ int main(int argc, char *argv[])
   assert_vec3ddata_array_ptr();
   assert_vec3ddata_list_ptr();
   assert_vec3ddata_addrlist_ptr();
+  assert_vicinity();
   return 0;
 }

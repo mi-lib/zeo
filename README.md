@@ -7,23 +7,23 @@ Copyright (C) Tomomichi Sugihara (Zhidao) since 2005
 
 Zeo is a handy library for computational geometry and optics
 including:
-- color and optics computations
-- 2D/3D vectors and matrices
-- 6D spatial vectors and matrices
-- 3D frame and coordinate transportation
-- Euler parameter (unit quaternion)
-- 3D shape elements (plane, edge and triangle)
-- 3D shape primitives (box, sphere, cylinder, cone, ellipsoid,
-  elliptic cylinder, polyhedron)
-- multiple 3D shapes
-- point cloud
-- trianglation of non-convex
-- bounding volume (AABB, OBB, boundin ball, convex-hull)
-- 2D Delaunay triangulation and Voronoi diagram
-- collision checking (AABB tree, GJK, Muller-Preparata)
-- principal component analysis of point cloud
-- B-Rep (boundary representation) and boolean operations
-- elevation map
+ - color, optics, and texture computations
+ - 2D/3D vectors and matrices
+ - 6D spatial vectors and matrices
+ - 2D/3D frame and coordinate transformation
+ - Euler parameter (unit quaternion)
+ - 3D shape elements (plane, edge and triangle)
+ - 3D point cloud operations (principal component analysis, read/write of PCD format file, vicinity search)
+ - 3D shape primitives (box, sphere, cylinder, cone, ellipsoid, elliptic cylinder, polyhedron)
+ - multiple 3D shapes
+ - read/write of PLY/STL/OBJ/DAE format files
+ - NURBS curve / surface
+ - trianglation of non-convex
+ - bounding volume (AABB, OBB, bounding ball, convex-hull)
+ - 2D Delaunay triangulation and Voronoi diagram
+ - collision checking (GJK, Muller-Preparata)
+ - B-Rep (boundary representation) and boolean operations
+ - elevation map
 
 ZEDA and ZM are required to be installed.
 

@@ -11,60 +11,6 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/*! \brief 3D axis-aligned box class.
- *//* ******************************************************* */
-ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zAABox3D ){
-  zVec3D min; /*!< minimum coordinates */
-  zVec3D max; /*!< maximum coordinates */
-};
-
-#define zAABox3DXMin(box)   (box)->min.c.x
-#define zAABox3DYMin(box)   (box)->min.c.y
-#define zAABox3DZMin(box)   (box)->min.c.z
-#define zAABox3DXMax(box)   (box)->max.c.x
-#define zAABox3DYMax(box)   (box)->max.c.y
-#define zAABox3DZMax(box)   (box)->max.c.z
-
-#define zAABox3DDepth(box)  ( zAABox3DXMax(box) - zAABox3DXMin(box) )
-#define zAABox3DWidth(box)  ( zAABox3DYMax(box) - zAABox3DYMin(box) )
-#define zAABox3DHeight(box) ( zAABox3DZMax(box) - zAABox3DZMin(box) )
-
-#define zAABox3DCenter(box,center) zVec3DMid( &(box)->min, &(box)->max, center )
-
-/*! \brief initializea a 3D axis-aligned box */
-__ZEO_EXPORT zAABox3D *zAABox3DInit(zAABox3D *box);
-
-/*! \brief createa a 3D axis-aligned box */
-__ZEO_EXPORT zAABox3D *zAABox3DCreate(zAABox3D *box, double xmin, double ymin, double zmin, double xmax, double ymax, double zmax);
-
-/*! \brief copya a 3D axis-aligned box. */
-__ZEO_EXPORT zAABox3D *zAABox3DCopy(const zAABox3D *src, zAABox3D *dst);
-
-/*! \brief merge two 3D axis-aligned boxes. */
-__ZEO_EXPORT zAABox3D *zAABox3DMerge(zAABox3D *box, const zAABox3D *b1, const zAABox3D *b2);
-
-/*! \brief the closest point from a 3D point to a 3D axis-aligned box. */
-__ZEO_EXPORT double zAABox3DClosest(const zAABox3D *box, const zVec3D *point, zVec3D *cp);
-
-/*! \brief distance from a point to a 3D axis-aligned box. */
-__ZEO_EXPORT double zAABox3DDistFromPoint(const zAABox3D *box, const zVec3D *point);
-
-/*! \brief check if a point is inside of a 3D axis-aligned box. */
-__ZEO_EXPORT bool zAABox3DPointIsInside(const zAABox3D *box, const zVec3D *p, double margin);
-
-/*! \brief compute volume of a 3D axis-aligned box. */
-__ZEO_EXPORT double zAABox3DVolume(const zAABox3D *box);
-
-/*! \brief print out a 3D axis-aligned box to a file. */
-__ZEO_EXPORT void zAABox3DValueFPrint(FILE *fp, const zAABox3D *box);
-
-/*! \brief convert a 3D axis-aligned box to a general box. */
-__ZEO_EXPORT zBox3D *zAABox3DToBox3D(const zAABox3D *aab, zBox3D *box);
-
-/*! \brief compute a 3D axis-aligned box of a 3D box. */
-__ZEO_EXPORT zAABox3D *zBox3DToAABox3D(const zBox3D *box, zAABox3D *aabox);
-
 /*! \brief axis-aligned bounding box of 3D points.
  *
  * zVec3DDataAABB() computes the axis-aligned bounding box of a set of 3D points \a data.

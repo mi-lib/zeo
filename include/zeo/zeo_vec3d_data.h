@@ -66,6 +66,9 @@ __ZEO_EXPORT ZEO_VECXD_DATA_VALUE_FPRINT_PROTOTYPE( 3D );
 
 __END_DECLS
 
+#include <zeo/zeo_vec3d_tree.h>   /* kd-tree with k=3 */
+#include <zeo/zeo_vec3d_octree.h> /* octree */
+
 #include <zeo/zeo_vec3d_pca.h>
 #include <zeo/zeo_vec3d_pcd.h>
 
