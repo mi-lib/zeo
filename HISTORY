@@ -1,3 +1,6 @@
+2025. 1.18. Added const qualifiers to some functions. [zeo_render_texture, zeo_coord2d]
+2025. 1.18. Renamed zRGBDec to zRGBDecodeStr. [zeo_render_color]
+2025. 1.18. Applied ZDEF_STRUCT to zRGB and zTexture. [zeo_render_color, zeo_render_texture]
 2025. 1.17. Added zVec3DDataNormalVec_Tree. [zeo_vec3d_profile]
 2025. 1.17. Renamed zVec3DDataNormalVec to zVec3DDataNormalVec_Octree. [zeo_vec3d_profile]
 2025. 1.17. Modified zVec3DDataWritePCDFile. [zeo_vec3d_pcd]

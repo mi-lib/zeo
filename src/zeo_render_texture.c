@@ -7,7 +7,7 @@
 #include <zeo/zeo_render_texture.h>
 
 /* texture file reader */
-bool (* __z_texture_read_file)(zTexture *, char *) = NULL;
+bool (* __z_texture_read_file)(zTexture *, const char *) = NULL;
 
 /* allocate coordinates and faces of a texture data */
 zTexture *zTextureAlloc(zTexture *texture, int nc, int nt)
@@ -29,7 +29,7 @@ zVec2D *zTextureSetCoord(zTexture *texture, int i, double u, double v)
 }
 
 /* set a triangular face in a texure image */
-zTri2D *zTextureSetFace(zTexture *texture, int i, zVec2D *v1, zVec2D *v2, zVec2D *v3)
+zTri2D *zTextureSetFace(zTexture *texture, int i, const zVec2D *v1, const zVec2D *v2, const zVec2D *v3)
 {
   if( !zArrayPosIsValid( &texture->face, i ) ) return NULL;
   return zTri2DCreate( zTextureFace(texture,i), v1, v2, v3 );
@@ -46,7 +46,7 @@ void zTextureDestroy(zTexture *texture)
 }
 
 /* clone a texture */
-zTexture *zTextureClone(zTexture *org, zTexture *cln)
+zTexture *zTextureClone(const zTexture *org, zTexture *cln)
 {
   zTextureInit( cln );
   if( zNamePtr(org) && !zNameSet( cln, zNamePtr(org) ) ) goto FAILURE;
@@ -66,7 +66,7 @@ zTexture *zTextureClone(zTexture *org, zTexture *cln)
 /* bump mapping */
 
 /* bump map file reader */
-bool (* __z_texture_bump_read_file)(zTexture *, char *) = NULL;
+bool (* __z_texture_bump_read_file)(zTexture *, const char *) = NULL;
 
 /* parsing a ZTK format. */
 
@@ -197,12 +197,12 @@ zTexture *zTextureFromZTK(zTexture *texture, ZTK *ztk)
 }
 
 /* print information of the texture parameter set out to a file. */
-void zTextureFPrintZTK(FILE *fp, zTexture *texture)
+void zTextureFPrintZTK(FILE *fp, const zTexture *texture)
 {
   int i;
 
   if( !texture ) return;
-  ZTKPrpKeyFPrint( fp, texture, __ztk_prp_texture );
+  ZTKPrpKeyFPrint( fp, (void *)texture, __ztk_prp_texture );
   for( i=0; i<zTextureCoordNum(texture); i++ ){
     fprintf( fp, "%s: %d ", ZTK_KEY_ZEO_TEXTURE_COORD, i );
     zVec2DFPrint( fp, zTextureCoord(texture,i) );

@@ -36,20 +36,20 @@ __ZEO_EXPORT zCoord2D *zCoord2DCreate(zCoord2D *coord, double x, double y, doubl
 #define _zCoord2DEqual(coord1,coord2) \
   ( _zVec2DEqual( zCoord2DPos(coord1), zCoord2DPos(coord2) ) && \
     zIsEqual( zCoord2DAngle(coord1), zCoord2DAngle(coord2), zTOL ) )
-__ZEO_EXPORT bool zCoord2DEqual(zCoord2D *coord1, zCoord2D *coord2);
+__ZEO_EXPORT bool zCoord2DEqual(const zCoord2D *coord1, const zCoord2D *coord2);
 
 /*! \brief interior division of two 2D coordinates. */
-__ZEO_EXPORT zCoord2D *zCoord2DInterDiv(zCoord2D *coord1, zCoord2D *coord2, double ratio, zCoord2D *coord);
+__ZEO_EXPORT zCoord2D *zCoord2DInterDiv(const zCoord2D *coord1, const zCoord2D *coord2, double ratio, zCoord2D *coord);
 
 /*! \brief find a transformation of a 2D coordinate to another. */
-__ZEO_EXPORT zCoord2D *zCoord2DXform(zCoord2D *src, zCoord2D *dest, zCoord2D *xform);
+__ZEO_EXPORT zCoord2D *zCoord2DXform(const zCoord2D *src, const zCoord2D *target, zCoord2D *xform);
 
 /*! \brief cascade a 2D coordinate to another. */
-__ZEO_EXPORT zCoord2D *zCoord2DCascade(zCoord2D *src, zCoord2D *xform, zCoord2D *dest);
+__ZEO_EXPORT zCoord2D *zCoord2DCascade(const zCoord2D *src, const zCoord2D *xform, zCoord2D *dest);
 #define zCoord2DCascadeDRC(coord,dc) zCoord2DCascade( coord, dc, coord );
 
 /*! \brief print a 2D coordinate out to a file. */
-__ZEO_EXPORT void zCoord2DFPrint(FILE *fp, zCoord2D *coord);
+__ZEO_EXPORT void zCoord2DFPrint(FILE *fp, const zCoord2D *coord);
 #define zCoord2DPrint(coord) zCoord2DFPrint( stdout, (coord) )
 
 __END_DECLS

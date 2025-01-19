@@ -7,10 +7,10 @@ int main(void)
   zRGB rgb, rgb_hsv;
   zHSV hsv, hsv_rgb;
 
-  zRGBDec( &rgb, "#0f3df8" );
-  zAssert( zRGBDec, zIsTol(rgb.r-(double)0x0f/0xff,RGB_TOL) &&
-                    zIsTol(rgb.g-(double)0x3d/0xff,RGB_TOL) &&
-                    zIsTol(rgb.b-(double)0xf8/0xff,RGB_TOL) );
+  zRGBDecodeStr( &rgb, "#0f3df8" );
+  zAssert( zRGBDecodeStr, zIsTol(rgb.r-(double)0x0f/0xff,RGB_TOL) &&
+                          zIsTol(rgb.g-(double)0x3d/0xff,RGB_TOL) &&
+                          zIsTol(rgb.b-(double)0xf8/0xff,RGB_TOL) );
   zRGB2HSV( &rgb, &hsv );
   zHSV2RGB( &hsv, &rgb_hsv );
   zAssert( zRGB2HSV, zIsTol(rgb.r-rgb_hsv.r,RGB_TOL) &&

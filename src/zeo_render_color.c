@@ -71,7 +71,7 @@ static zRGB *_zRGBHex(zRGB *rgb, const char *hex)
 }
 
 /* decode a string to RGB. */
-zRGB *zRGBDec(zRGB *rgb, const char *str)
+zRGB *zRGBDecodeStr(zRGB *rgb, const char *str)
 {
   return str[0] == '#' ? _zRGBHex( rgb, str+1 ) : _zRGBRatio( rgb, str );
 }
@@ -80,7 +80,7 @@ zRGB *zRGBDec(zRGB *rgb, const char *str)
 zRGB *zRGBFromZTK(zRGB *rgb, ZTK *ztk)
 {
   if( ZTKVal(ztk)[0] == '#' )
-    return zRGBDec( rgb, ZTKVal(ztk) );
+    return zRGBDecodeStr( rgb, ZTKVal(ztk) );
   rgb->r = ZTKDouble(ztk);
   rgb->g = ZTKDouble(ztk);
   rgb->b = ZTKDouble(ztk);

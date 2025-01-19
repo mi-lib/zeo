@@ -16,11 +16,11 @@ __BEGIN_DECLS
  * \brief color expression with RGB intensity set.
  * ********************************************************** */
 
-typedef struct{
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zRGB ){
   float r; /* red */
   float g; /* green */
   float b; /* blue */
-} zRGB;
+};
 
 /*! \brief black and white RGB set. */
 __ZEO_EXPORT const zRGB zrgbblack; /*!< RGB set for black */
@@ -45,17 +45,17 @@ __ZEO_EXPORT const zRGB zrgbwhite; /*!< RGB set for white */
  * zRGBCopy() returns no value.
  */
 __ZEO_EXPORT zRGB *zRGBSet(zRGB *rgb, float red, float green, float blue);
-#define zRGBCopy(s,d) ( *(d) = *(s) )
+#define zRGBCopy(src,dest) ( *(dest) = *(src) )
 
-#define zRGB2fv(rgb,c) do{\
-  (c)[0] = (rgb)->r;\
-  (c)[1] = (rgb)->g;\
-  (c)[2] = (rgb)->b;\
+#define zRGB2fv(rgb,colorv) do{\
+  (colorv)[0] = (rgb)->r;\
+  (colorv)[1] = (rgb)->g;\
+  (colorv)[2] = (rgb)->b;\
 } while(0)
 
 /*! \brief grayscale color */
-#define zGS(c)       ( ( (c)->r + (c)->g + (c)->b ) / 3.0 )
-#define zGSSet(c,i)  ( (c)->r = (c)->g = (c)->b = (i) )
+#define zGS(color)              ( ( (color)->r + (color)->g + (color)->b ) / 3.0 )
+#define zGSSet(color,intensity) ( (color)->r = (color)->g = (color)->b = (intensity) )
 
 /*! \brief multiply a set of RGB parameters by another. */
 __ZEO_EXPORT zRGB *zRGBMul(const zRGB *rgb1, const zRGB *rgb2, zRGB *rgb);
@@ -65,27 +65,24 @@ __ZEO_EXPORT zRGB *zRGBBlend(const zRGB *rgb1, const zRGB *rgb2, double ratio, z
 
 /*! \brief decode a string to RGB.
  *
- * zRGBDec() decodes a string \a str and converts it to a set of
- * RGB parameters. If the string begins from '#', the string is
- * decoded as hexadecimal expression.
- * Otherwise, it is decoded as floating-point value expression.
+ * zRGBDecodeStr() decodes a string \a str and converts it to a set of RGB parameters. If the
+ * string begins from '#', the string is decoded as hexadecimal expression. Otherwise, it is
+ * decoded as floating-point value expression.
  *
- * For hexadecimal expression, the string has to be a sequence
- * of 0-9 or a-f/A-F, and will be segmented into three values
- * with the same length. Consequently, the length of the string
+ * For hexadecimal expression, the string has to be a sequence of 0-9 or a-f/A-F, and will be
+ * segmented into three values with the same length. Consequently, the length of the string
  * should be a multiple of three.
  * Ex. "0f3df8" will be a vivid bluish color.
  *
- * For floating-point value expression, the string has to be
- * a sequence of three floating-point values segmented by ':',
- * each of which should be in the range of 0-1.
- * Ex. "0.1:0.3:0.8" will be a smoky bluish color.
+ * For floating-point value expression, the string has to be a sequence of three floating-point
+ * values segmented by ':', each of which should be in the range of 0-1. Ex. "0.1:0.3:0.8" will
+ * be a smoky bluish color.
  *
- * The resulted RGB is set where \a rgb points.
+ * The result RGB is set where \a rgb points.
  * \return
- * zRGBDec() returns a pointer \a rgb.
+ * zRGBDecodeStr() returns a pointer \a rgb.
  */
-__ZEO_EXPORT zRGB *zRGBDec(zRGB *rgb, const char *str);
+__ZEO_EXPORT zRGB *zRGBDecodeStr(zRGB *rgb, const char *str);
 
 /*! \brief read a set of RGB from a ZTK format processor. */
 __ZEO_EXPORT zRGB *zRGBFromZTK(zRGB *rgb, ZTK *ztk);

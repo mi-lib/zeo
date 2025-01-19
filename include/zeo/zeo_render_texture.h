@@ -18,7 +18,7 @@ enum{
 };
 
 /*! \struct a texture class */
-typedef struct{
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zTexture ){
   Z_NAMED_CLASS;
   uint id;           /*!< \brief identifier (for visualization) */
   uint id_bump;      /*!< \brief identifier for bump mapping */
@@ -29,14 +29,14 @@ typedef struct{
   int width;         /*!< \brief width of the texture image */
   int height;        /*!< \brief height of the texture image */
   double depth;      /*!< \brief depth of bumps (for bump mapping only) */
-} zTexture;
+};
 
-#define zTextureCoordNum(t)      zArraySize(&(t)->coord)
-#define zTextureCoordBuf(t)      zArrayBuf(&(t)->coord)
-#define zTextureCoord(t,i)       zArrayElemNC(&(t)->coord,i)
-#define zTextureFaceNum(t)       zArraySize(&(t)->face)
-#define zTextureFace(t,i)        zArrayElemNC(&(t)->face,i)
-#define zTextureFaceCoord(t,i,j) zTri2DVert( zTextureFace(t,i), j )
+#define zTextureCoordNum(tex)      zArraySize(&(tex)->coord)
+#define zTextureCoordBuf(tex)      zArrayBuf(&(tex)->coord)
+#define zTextureCoord(tex,i)       zArrayElemNC(&(tex)->coord,i)
+#define zTextureFaceNum(tex)       zArraySize(&(tex)->face)
+#define zTextureFace(tex,i)        zArrayElemNC(&(tex)->face,i)
+#define zTextureFaceCoord(tex,i,j) zTri2DVert( zTextureFace(tex,i), j )
 
 /*! \brief initialize a texture */
 #define zTextureInit(tex) do{\
@@ -52,7 +52,7 @@ typedef struct{
 } while(0)
 
 /*! \brief texture file reader */
-__ZEO_EXPORT bool (* __z_texture_read_file)(zTexture *, char *);
+__ZEO_EXPORT bool (* __z_texture_read_file)(zTexture *, const char *);
 
 /*! \brief set a texture file reader */
 #define zTextureSetReadFunc(f)       ( __z_texture_read_file = (f) )
@@ -70,18 +70,18 @@ __ZEO_EXPORT zTexture *zTextureAlloc(zTexture *texture, int nc, int nt);
 __ZEO_EXPORT zVec2D *zTextureSetCoord(zTexture *texture, int i, double u, double v);
 
 /*! \brief set a triangular face in a texure image */
-__ZEO_EXPORT zTri2D *zTextureSetFace(zTexture *texture, int i, zVec2D *v1, zVec2D *v2, zVec2D *v3);
+__ZEO_EXPORT zTri2D *zTextureSetFace(zTexture *texture, int i, const zVec2D *v1, const zVec2D *v2, const zVec2D *v3);
 
 /*! \brief destroy a texture */
 __ZEO_EXPORT void zTextureDestroy(zTexture *texture);
 
 /*! \brief clone a texture */
-__ZEO_EXPORT zTexture *zTextureClone(zTexture *org, zTexture *cln);
+__ZEO_EXPORT zTexture *zTextureClone(const zTexture *org, zTexture *cln);
 
 /* bump mapping */
 
 /*! \brief bump map file reader */
-__ZEO_EXPORT bool (* __z_texture_bump_read_file)(zTexture *, char *);
+__ZEO_EXPORT bool (* __z_texture_bump_read_file)(zTexture *, const char *);
 
 /*! \brief set a bump map texture file reader */
 #define zTextureSetBumpReadFunc(f)   ( __z_texture_bump_read_file = (f) )
@@ -106,7 +106,7 @@ __ZEO_EXPORT bool (* __z_texture_bump_read_file)(zTexture *, char *);
 __ZEO_EXPORT zTexture *zTextureFromZTK(zTexture *texture, ZTK *ztk);
 
 /* print out a texture to the current stream of a file. */
-__ZEO_EXPORT void zTextureFPrintZTK(FILE *fp, zTexture *texture);
+__ZEO_EXPORT void zTextureFPrintZTK(FILE *fp, const zTexture *texture);
 
 /*! \struct zTextureArray
  * \brief array class of a set of textures.
