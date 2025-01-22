@@ -24,7 +24,7 @@ void assert_line2D_point(void)
     zIsTiny( zVec2DInnerProd( zLine2DDir(&line), &dp ) ) && zLine2DPointIsOn( &line, &p_result, zTOL ) &&
     zLine2DPointIsOn( &line, &p_result, zTOL ) );
   zAssert( zLine2DDistFromPoint,
-    zIsEqual( zVec2DNorm( &dp ), zLine2DDistFromPoint( &line, &p_test ), zTOL ) );
+    zEqual( zVec2DNorm( &dp ), zLine2DDistFromPoint( &line, &p_test ), zTOL ) );
 }
 
 void assert_line2D_intersection(void)
@@ -53,7 +53,7 @@ void assert_edge2D(void)
   zVec2DAdd( &p1, &v, &p2 );
   zEdge2DCreate( &edge, &p1, &p2 );
   zAssert( zEdge2DCreate, zVec2DEqual( zEdge2DVec(&edge), &v ) );
-  zAssert( zEdge2DLen, zIsEqual( zEdge2DLen(&edge), r, zTOL ) );
+  zAssert( zEdge2DLen, zEqual( zEdge2DLen(&edge), r, zTOL ) );
 
   zVec2DCreate( &p, zRandF(-10,10), zRandF(-10,10) );
   zEdge2DProjPoint( &edge, &p, &pp );

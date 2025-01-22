@@ -35,7 +35,7 @@ __ZEO_EXPORT zCoord2D *zCoord2DCreate(zCoord2D *coord, double x, double y, doubl
 /*! \brief check if two 2D coordinates are same or not. */
 #define _zCoord2DEqual(coord1,coord2) \
   ( _zVec2DEqual( zCoord2DPos(coord1), zCoord2DPos(coord2) ) && \
-    zIsEqual( zCoord2DAngle(coord1), zCoord2DAngle(coord2), zTOL ) )
+    zEqual( zCoord2DAngle(coord1), zCoord2DAngle(coord2), zTOL ) )
 __ZEO_EXPORT bool zCoord2DEqual(const zCoord2D *coord1, const zCoord2D *coord2);
 
 /*! \brief interior division of two 2D coordinates. */

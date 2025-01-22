@@ -57,7 +57,7 @@ void assert_box(void)
   create_box_points( p2, N, &box2 );
   zGJK( &data1, &data2, &c1, &c2 );
   zAssert( zGJK (degraded volume case 4),
-    zIsEqual( c1.c.z, 1.0, zTOL ) && zIsEqual( c2.c.z, 1.0, zTOL ) && c1.c.x > -1 && c1.c.x < 2 && c1.c.y > -1 && c1.c.y < 2 );
+    zEqual( c1.c.z, 1.0, zTOL ) && zEqual( c2.c.z, 1.0, zTOL ) && c1.c.x > -1 && c1.c.x < 2 && c1.c.y > -1 && c1.c.y < 2 );
   /* case 5 */
   /* NOTE: This test fails, meaning that zGJK has an obvious bug. */
   zAABox3DCreate( &box1, 1, 1, 1, 3, 3, 3 );

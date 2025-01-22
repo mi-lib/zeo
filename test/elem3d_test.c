@@ -149,7 +149,7 @@ void assert_edge3D(void)
   zVec3DAdd( &p1, &v, &p2 );
   zEdge3DCreate( &edge, &p1, &p2 );
   zAssert( zEdge3DCreate, zVec3DEqual( zEdge3DVec(&edge), &v ) );
-  zAssert( zEdge3DLen, zIsEqual( zEdge3DLen(&edge), r, zTOL ) );
+  zAssert( zEdge3DLen, zEqual( zEdge3DLen(&edge), r, zTOL ) );
 
   zVec3DCreate( &p, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
   zEdge3DProjPoint( &edge, &p, &pp );
@@ -258,7 +258,7 @@ void assert_plane3D_create(void)
   zVec3DCreate( &pos,  zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
   zVec3DCreate( &norm, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
   zPlane3DCreate( &plane, &pos, &norm );
-  zAssert( zPlane3DCreate, zIsEqual( zVec3DNorm(zPlane3DNorm(&plane)), 1.0, zTOL ) );
+  zAssert( zPlane3DCreate, zEqual( zVec3DNorm(zPlane3DNorm(&plane)), 1.0, zTOL ) );
 }
 
 void assert_plane3D_proj_point(void)
