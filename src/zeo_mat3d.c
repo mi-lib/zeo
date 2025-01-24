@@ -848,6 +848,23 @@ void zMat3DSymEig(const zMat3D *m, double eval[], zVec3D evec[])
   }
 }
 
+/* singular value decomposition of a 3x3 matrix. */
+void zMat3DSVD(const zMat3D *m, zMat3D *u, double s[3], zMat3D *v)
+{
+  zMat3D m2;
+  int i;
+
+  zMulMat3DMat3DT( m, m, &m2 );
+  zMat3DSymEig( &m2, s, u->v );
+  for( i=0; i<3; i++ )
+    s[i] = zIsTiny( s[i] ) ? 0 : sqrt( s[i] );
+  zMulMat3DTMat3D( m, u, v );
+  for( i=0; i<3; i++ ){
+    if( !zIsTiny( s[i] ) )
+      zVec3DDivDRC( zMat3DVec(v,i), s[i] );
+  }
+}
+
 /* ********************************************************** */
 /* I/O
  * ********************************************************** */

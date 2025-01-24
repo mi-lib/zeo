@@ -40,6 +40,17 @@ __ZEO_EXPORT zVec3D *zVec3DDataBarycenter(zVec3DData *data, zVec3D *center);
 __ZEO_EXPORT bool zVec3DDataPCA(zVec3DData *data, const zVec3D *center, double eval[3], zVec3D evec[3]);
 __ZEO_EXPORT bool zVec3DDataBaryPCA(zVec3DData *data, zVec3D *center, double eval[3], zVec3D evec[3]);
 
+/*! \brief find a coordinate frame that spans principal components of a set of 3D points from its barycenter.
+ *
+ * zVec3DDataPCAFrame() finds a coordinate frame that spans principal components of a set of 3D points
+ * \a data from its barycenter. The result is stored in \a frame.
+ * \return
+ * zVec3DDataPCAFrame() returns the pointer \a frame.
+ * \sa
+ * zVec3DDataBaryPCA
+ */
+__ZEO_EXPORT zFrame3D *zVec3DDataPCAFrame(zVec3DData *data, zFrame3D *frame);
+
 /*! \brief mean plane of a set of points.
  *
  * zVec3DDataMeanNormal() computes the mean normal vector of a set of 3D points \a data.

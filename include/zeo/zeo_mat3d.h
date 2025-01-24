@@ -785,7 +785,7 @@ __ZEO_EXPORT zVec3D *zAAError(const zVec3D *a1, const zVec3D *a2, zVec3D *err);
 __ZEO_EXPORT zVec3D *zMat3DDif(const zMat3D *m, const zMat3D *mnew, double dt, zVec3D *omega);
 
 /* ********************************************************** */
-/* eigensystem
+/* eigensystem and singular value decomposition
  * ********************************************************** */
 
 /*! \brief eigensystem of a symmetric 3x3 matrix by Jacobi's method.
@@ -799,6 +799,16 @@ __ZEO_EXPORT zVec3D *zMat3DDif(const zMat3D *m, const zMat3D *mnew, double dt, z
  * \a m must be symmetric. Otherwise, the correct result will not be expected.
  */
 __ZEO_EXPORT void zMat3DSymEig(const zMat3D *m, double eval[], zVec3D evec[]);
+
+/*! \brief singular value decomposition of a 3x3 matrix.
+ *
+ * zMat3DSVD() conducts singular value decomposition on a 3x3 matrix \a m, namely, finds 3x3 matrices
+ * \a u and \a v and a trio of scalar values \a s that satisfy
+ * \a m = \a u diag{ \a s[0], \a s[1], \a s[2] } \a v ^T.
+ * \return
+ * zMat3DSVD() does not return any value.
+ */
+__ZEO_EXPORT void zMat3DSVD(const zMat3D *m, zMat3D *u, double s[3], zMat3D *v);
 
 /* ********************************************************** */
 /* I/O

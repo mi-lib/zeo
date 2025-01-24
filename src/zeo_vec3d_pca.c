@@ -73,6 +73,16 @@ bool zVec3DDataBaryPCA(zVec3DData *data, zVec3D *center, double eval[3], zVec3D 
   return true;
 }
 
+/* find a coordinate frame that spans principal components of a set of 3D points from its barycenter. */
+zFrame3D *zVec3DDataPCAFrame(zVec3DData *data, zFrame3D *frame)
+{
+  double eval[3];
+
+  if( !zVec3DDataBaryPCA( data, zFrame3DPos(frame), eval, zFrame3DAtt(frame)->v ) ) return NULL;
+  zVec3DOuterProd( zFrame3DVec(frame,zX), zFrame3DVec(frame,zY), zFrame3DVec(frame,zZ) );
+  return frame;
+}
+
 /* mean normal of a set of 3D points. */
 zVec3D *zVec3DDataMeanNormal(zVec3DData *data, const zVec3D *center, zVec3D *normal)
 {

@@ -71,6 +71,9 @@
 #define ZEO_ERR_PCD_FAILED_TO_READ_DATA       "failed to read compressed data (%u/%u byte)"
 #define ZEO_ERR_PCD_FAILED_TO_DECOMPRESS      "failed to decompress data (%u/%u byte)"
 
+#define ZEO_ERR_VEC3DDATA_SIZEMISMATCH        "size mismatch between two sets of 3D points %d / %d"
+#define ZEO_ERR_VEC3DDATA_IDENTFRAME_TOOFEWPOINTS "too few points to identify the transformation: %d"
+
 #define ZEO_ERR_STL_UNREADABLE                "unreadable file. probably not a STL file."
 #define ZEO_ERR_STL_INCOMPLETE                "incomplete STL file"
 
@@ -85,7 +88,7 @@
 
 #define ZEO_ERR_DAE_UNSUPPORTED               "DAE file not supported"
 #define ZEO_ERR_DAE_ACCESSOR_UNASSIGNED       "accessor unassigned to source %s"
-#define ZEO_ERR_DAE_SIZEMISMATCH_ARRAY        "inconsistent size of array %d/%d"      
+#define ZEO_ERR_DAE_SIZEMISMATCH_ARRAY        "size mismatch between arrays %d / %d"      
 #define ZEO_ERR_DAE_STRIDEMISMATCH            "inconsistent stride %d/%d"
 #define ZEO_ERR_DAE_EMPTY_URI                 "empty URI specified"
 #define ZEO_ERR_DAE_INVALID_URI               "invalid URI: %s"
@@ -102,7 +105,7 @@
 #define ZEO_ERR_DAE_FAILURE                   "failed to create a polyhedron from a DAE file %s"
 
 #define ZEO_ERR_NURBS_INVALID_ORDER           "invalid order specified for NURBS, or lack of control points"
-#define ZEO_ERR_NURBS_SIZEMISMATCH            "size mismatch of NURBS surfaces"
+#define ZEO_ERR_NURBS_SIZEMISMATCH            "size mismatch between control points of two NURBS surfaces"
 #define ZEO_ERR_NURBS_KNOTALREADY             "knot already allocated"
 #define ZEO_ERR_NURBS_CPALREADY               "control point already allocated"
 #define ZEO_ERR_NURBS_INVALID_CP              "invalid index of control point specified"
@@ -169,7 +172,7 @@
 
 #define ZEO_WARN_MAPNET_EMPTY                      "empty map net assigned."
 
-#define ZEO_WARN_POINTCLOUD_NORMAL_TOOFEWPOINTS    "too few points to identify the normal vector"
-#define ZEO_WARN_POINTCLOUD_NORMAL_TOOMANYPOINTS   "too many points to identify the normal vector"
+#define ZEO_WARN_VEC3DDATA_NORMAL_TOOFEWPOINTS     "too few points to identify the normal vector"
+#define ZEO_WARN_VEC3DDATA_NORMAL_TOOMANYPOINTS    "too many points to identify the normal vector"
 
 #endif /* __ZEO_ERRMSG_H__ */

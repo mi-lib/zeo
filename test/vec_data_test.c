@@ -1,4 +1,5 @@
 #include <zeo/zeo_vec3d_data.h>
+#include <zeo/zeo_vec3d_profile.h>
 
 bool vec_data_test(zVec3DData *data)
 {
@@ -191,6 +192,53 @@ void assert_vicinity(void)
   zAssert( zVec3DTreeVicinity + zVec3DOctreeVicinity, result );
 }
 
+void generate_frame(zFrame3D *frame)
+{
+  zVec3DCreate( zFrame3DPos(frame), zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
+  zMat3DFromZYX( zFrame3DAtt(frame), zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+}
+
+void generate_points(zVec3DData *src, zVec3DData *dest, zFrame3D *frame, int n, double tol)
+{
+  zVec3D po, p, noise;
+
+  while( --n >= 0 ){
+    zVec3DCreate( &po, zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
+    zVec3DCreate( &noise, zRandF(-tol,tol), zRandF(-tol,tol), zRandF(-tol,tol) );
+    zXform3D( frame, &po, &p );
+    zVec3DAddDRC( &p, &noise );
+    zVec3DDataAdd( src, &po );
+    zVec3DDataAdd( dest, &p );
+  }
+}
+
+bool check_frame_error(zFrame3D *frame, zFrame3D *frame_ident, double tol)
+{
+  zVec6D error;
+
+  zFrame3DError( frame, frame_ident, &error );
+  return zVec6DIsTol( &error, tol );
+}
+
+void assert_frame_ident(void)
+{
+  int testnum = 1000;
+  double tol = 1.0e-4;
+  zVec3DData src, dest;
+  zFrame3D frame, frame_ident;
+  bool result;
+
+  zVec3DDataInitList( &src );
+  zVec3DDataInitList( &dest );
+  generate_frame( &frame );
+  generate_points( &src, &dest, &frame, testnum, tol );
+  zVec3DDataIdentFrame( &src, &dest, &frame_ident );
+  result = check_frame_error( &frame, &frame_ident, tol );
+  zVec3DDataDestroy( &dest );
+  zVec3DDataDestroy( &src );
+  zAssert( zVec3DDataIdentFrame, result );
+}
+
 int main(int argc, char *argv[])
 {
   zRandInit();
@@ -202,5 +250,6 @@ int main(int argc, char *argv[])
   assert_vec3ddata_list_ptr();
   assert_vec3ddata_addrlist_ptr();
   assert_vicinity();
+  assert_frame_ident();
   return 0;
 }

@@ -464,6 +464,38 @@ void assert_sym_eig(void)
   zAssert( zMat3DSymEig, result );
 }
 
+bool check_svd(const zMat3D *m, const zMat3D *u, const double s[3], const zMat3D *v)
+{
+  zMat3D us, m2;
+  int i;
+
+  for( i=0; i<3; i++ )
+    zVec3DMul( zMat3DVec(u,i), s[i], zMat3DVec(&us,i) );
+  zMulMat3DMat3DT( &us, v, &m2 );
+  return zMat3DEqual( m, &m2 );
+}
+
+void assert_mat_svd(void)
+{
+  zMat3D m, u, v;
+  double s[3];
+  int i, testnum = 1000;
+  bool result = true;
+
+  for( i=0; i<testnum; i++ ){
+    zMat3DCreate( &m,
+      zRandF(-5,5), zRandF(-5,5), zRandF(-5,5),
+      zRandF(-5,5), zRandF(-5,5), zRandF(-5,5),
+      zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
+    zMat3DSVD( &m, &u, s, &v );
+    if( !check_svd( &m, &u, s, &v ) ) result = false;
+  }
+  zAssert( zMat3DSVD, result );
+  zMat3DCreate( &m, zRandF(-5,5), 0, 0, 0, zRandF(-5,5), 0, 0, 0, 0 );
+  zMat3DSVD( &m, &u, s, &v );
+  zAssert( zMat3DSVD (singular case), check_svd( &m, &u, s, &v ) );
+}
+
 int main(void)
 {
   zRandInit();
@@ -475,5 +507,6 @@ int main(void)
   assert_mat_inv();
   assert_rot();
   assert_sym_eig();
+  assert_mat_svd();
   return EXIT_SUCCESS;
 }
