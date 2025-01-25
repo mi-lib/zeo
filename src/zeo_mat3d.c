@@ -856,12 +856,12 @@ void zMat3DSVD(const zMat3D *m, zMat3D *u, double s[3], zMat3D *v)
 
   zMulMat3DMat3DT( m, m, &m2 );
   zMat3DSymEig( &m2, s, u->v );
-  for( i=0; i<3; i++ )
-    s[i] = zIsTiny( s[i] ) ? 0 : sqrt( s[i] );
   zMulMat3DTMat3D( m, u, v );
   for( i=0; i<3; i++ ){
-    if( !zIsTiny( s[i] ) )
-      zVec3DDivDRC( zMat3DVec(v,i), s[i] );
+    if( zIsTiny( s[i] ) )
+      s[i] = 0;
+    else
+      zVec3DDivDRC( zMat3DVec(v,i), ( s[i] = sqrt( s[i] ) ) );
   }
 }
 
