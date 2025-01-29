@@ -1,5 +1,6 @@
 ifeq ($(CONFIG_USE_PCD_BINARY_COMPRESSED),y)
 	LINK+=-llzf
+	LINKCPP+=-llzf
 endif
 
 INCLUDE+=`zm-config -I`

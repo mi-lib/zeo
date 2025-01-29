@@ -232,7 +232,7 @@ static void _zPLYPrpInit(zPLY *ply)
   }
   for( i=ZEO_PLY_DATA_CHAR; i<ZEO_PLY_DATA_TYPE_NUM; i++ ){
     ply->prp_ref[i].typestr = zeo_ply_prp_type_name[i];
-    ply->prp_ref[i].type = i;
+    ply->prp_ref[i].type = (zPLYDATA)i;
     ply->prp_ref[i].read_double = read_double[i];
     ply->prp_ref[i].read_int = read_int[i];
   }
@@ -311,16 +311,16 @@ static bool _zPLYFReadElement(zPLY *ply, char *buf)
 {
   char tkn[BUFSIZ];
   int num;
+  int i;
 
   if( ++ply->elemnum >= ZEO_PLY_ELEM_MAX_NUM ){
     ZRUNERROR( ZEO_ERR_PLY_TOOMANYELEM );
     return false;
   }
   zSToken( buf, tkn, BUFSIZ );
-  int i;
   for( i=ZEO_PLY_ELEM_VERTEX; i<ZEO_PLY_ELEM_NUM; i++ ){
     if( strcmp( tkn, zeo_ply_elem[i] ) == 0 ){
-      ply->elem[ply->elemnum].type = i;
+      ply->elem[ply->elemnum].type = (zPLYElemType)i;
       break;
     }
   }

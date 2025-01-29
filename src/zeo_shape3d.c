@@ -283,7 +283,7 @@ static void *_zShape3DMirrorFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  if( ( obj = zShape3DReadFile( obj, ZTKVal(ztk) ) ) ){
+  if( ( obj = zShape3DReadFile( (zShape3D*)obj, ZTKVal(ztk) ) ) ){
     ((_zShape3DRefPrp*)arg)->imported = true;
     if( ZTKValNext(ztk) )
       zPH3DScale( zShape3DPH((zShape3D*)obj), atof(ZTKVal(ztk)) );
