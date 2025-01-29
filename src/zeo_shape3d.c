@@ -224,6 +224,37 @@ zShape3D *zShape3DReadFileDAE(zShape3D *shape, const char *filename)
 }
 #endif /* __ZEO_USE_DAE */
 
+/* read a 3D shape from a file in an external format. */
+static zShape3D *_zShape3DReadFileEXT(zShape3D *shape, const char filename[])
+{
+  char *suffix, suffix_lower[BUFSIZ];
+
+  if( !( suffix = zGetSuffix( filename ) ) ) return NULL;
+  zStrToLower( suffix, BUFSIZ, suffix_lower );
+  if( strcmp( suffix_lower, "ztk" ) == 0 ){
+    return zShape3DReadZTK( shape, filename );
+  } else
+  if( strcmp( suffix_lower, "stl" ) == 0 ){
+    return zShape3DReadFileSTL( shape, filename );
+  } else
+  if( strcmp( suffix_lower, "obj" ) == 0 ){
+    return zShape3DReadFileOBJ( shape, filename );
+  } else
+  if( strcmp( suffix_lower, "ply" ) == 0 ){
+    return zShape3DReadFilePLY( shape, filename );
+  } else
+  if( strcmp( suffix_lower, "dae" ) == 0 ){
+#ifdef __ZEO_USE_DAE
+    return zShape3DReadFileDAE( shape, filename );
+#else
+    ZRUNWARN( ZEO_ERR_DAE_UNSUPPORTED );
+#endif
+  } else{
+    ZRUNERROR( ZEO_WARN_SHAPE_UNKNOWNFORMAT, suffix );
+  }
+  return NULL;
+}
+
 /* parse ZTK format */
 
 /* read the number of division for smooth primitives from a ZTK format processor. */
@@ -283,7 +314,7 @@ static void *_zShape3DMirrorFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  if( ( obj = zShape3DReadFile( (zShape3D*)obj, ZTKVal(ztk) ) ) ){
+  if( ( obj = _zShape3DReadFileEXT( (zShape3D*)obj, ZTKVal(ztk) ) ) ){
     ((_zShape3DRefPrp*)arg)->imported = true;
     if( ZTKValNext(ztk) )
       zPH3DScale( zShape3DPH((zShape3D*)obj), atof(ZTKVal(ztk)) );
@@ -415,28 +446,10 @@ zShape3D *zShape3DReadFile(zShape3D *shape, const char filename[])
 
   zShape3DInit( shape );
   suffix = zGetSuffix( filename );
-  if( strcmp( suffix, "ztk" ) == 0 || strcmp( suffix, "ZTK" ) == 0 ){
+  if( strcmp( suffix, ZEDA_ZTK_SUFFIX ) == 0 ){
     shape = zShape3DReadZTK( shape, filename );
-  } else
-  if( strcmp( suffix, "stl" ) == 0 || strcmp( suffix, "STL" ) == 0 ){
-    shape = zShape3DReadFileSTL( shape, filename );
-  } else
-  if( strcmp( suffix, "obj" ) == 0 || strcmp( suffix, "OBJ" ) == 0 ){
-    shape = zShape3DReadFileOBJ( shape, filename );
-  } else
-  if( strcmp( suffix, "ply" ) == 0 || strcmp( suffix, "PLY" ) == 0 ){
-    shape = zShape3DReadFilePLY( shape, filename );
-  } else
-  if( strcmp( suffix, "dae" ) == 0 || strcmp( suffix, "DAE" ) == 0 ){
-#ifdef __ZEO_USE_DAE
-    shape = zShape3DReadFileDAE( shape, filename );
-#else
-    ZRUNWARN( ZEO_ERR_DAE_UNSUPPORTED );
-    shape = NULL;
-#endif
   } else{
-    ZRUNERROR( ZEO_WARN_SHAPE_UNKNOWNFORMAT, suffix );
-    shape = NULL;
+    shape = _zShape3DReadFileEXT( shape, filename );
   }
   return shape;
 }

@@ -1,3 +1,5 @@
+2025. 1.29. Debugged _zShape3DImportFromZTK (thanks to Kenta Imanishi). [zeo_shape3d]
+2025. 1.29. Added _zShape3DReadFileEXT, and modified zShape3DReadFile. [zeo_shape3d]
 2025. 1.29. Modified _zShape3DImportFromZTK to cast an argument obj to a zShape3D pointer (thanks to Kenta Imanishi). [zeo_shape3d]
 2025. 1.29. Modified _zPLYFReadElement to cast a counter to zPLYElemType (thanks to Kenta Imanishi). [zeo_ph_ply]
 2025. 1.29. Modified _zPLYPrpInit to cast a counter to zPLYDATA (thanks to Kenta Imanishi). [zeo_ph_ply]
