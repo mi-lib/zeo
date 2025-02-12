@@ -800,7 +800,7 @@ static bool _zMat3DSymEigRot(zMat3D *m, zMat3D *r, int i, int j)
   if( zIsTiny( m->e[j][i] ) ) return true;
   v = 0.5 * ( m->e[j][j] - m->e[i][i] ) / m->e[j][i];
   ti = sqrt( v * v + 1 ); /* sqrt */
-  t = -v + ( v < 0 ? -ti : ti );
+  t = -v + ( v < 0 ? ti : -ti );
   s = t * ( c = 1 / sqrt( t*t + 1 ) );
   tmp1 = t * m->e[j][i];
   m->e[j][i] = m->e[i][j] = 0;

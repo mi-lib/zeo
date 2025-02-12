@@ -1,3 +1,4 @@
+2025. 2.12. Modified _zMat3DSymEigRot to choose a tangent value with smaller loss of significant digits. [zeo_mat3d]
 2025. 1.29. Debugged _zShape3DImportFromZTK (thanks to Kenta Imanishi). [zeo_shape3d]
 2025. 1.29. Added _zShape3DReadFileEXT, and modified zShape3DReadFile. [zeo_shape3d]
 2025. 1.29. Modified _zShape3DImportFromZTK to cast an argument obj to a zShape3D pointer (thanks to Kenta Imanishi). [zeo_shape3d]
