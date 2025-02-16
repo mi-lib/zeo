@@ -791,13 +791,13 @@ zVec3D *zMat3DDif(const zMat3D *m, const zMat3D *mnew, double dt, zVec3D *omega)
  * ********************************************************** */
 
 /* transformation of a symmetric matrix by Jacobi's rotation. */
-static bool _zMat3DSymEigRot(zMat3D *m, zMat3D *r, int i, int j)
+static void _zMat3DSymEigRot(zMat3D *m, zMat3D *r, int i, int j)
 {
   int k;
   double v, t, ti, c, s;
   double tmp1, tmp2;
 
-  if( zIsTiny( m->e[j][i] ) ) return true;
+  if( zIsTiny( m->e[j][i] ) ) return;
   v = 0.5 * ( m->e[j][j] - m->e[i][i] ) / m->e[j][i];
   ti = sqrt( v * v + 1 ); /* sqrt */
   t = -v + ( v < 0 ? ti : -ti );
@@ -816,53 +816,62 @@ static bool _zMat3DSymEigRot(zMat3D *m, zMat3D *r, int i, int j)
     if( k == i || k == j ) continue;
     tmp1 = m->e[k][i];
     tmp2 = m->e[k][j];
-    m->e[k][i] = m->e[i][k] = c * ( tmp1 - t * tmp2 );
-    m->e[k][j] = m->e[j][k] = c * ( tmp2 + t * tmp1 );
+    m->e[k][i] = m->e[i][k] = c * tmp1 - s * tmp2;
+    m->e[k][j] = m->e[j][k] = s * tmp1 + c * tmp2;
   }
-  return false;
 }
 
 /* eigensystem of a symmetric 3x3 matrix by Jacobi's method. */
-void zMat3DSymEig(const zMat3D *m, double eval[], zVec3D evec[])
+int zMat3DSymEig(const zMat3D *m, double eval[], zVec3D evec[])
 {
-  int n = 0;
+  int iter = 0;
+  int i, j, i1, j1, i2, j2;
   zMat3D l, r;
-  bool ok;
 
   zMat3DCopy( m, &l );
   zMat3DIdent( &r );
   /* iterative elimination of non-diagonal components */
-  do{
-    ok = true;
-    if( !_zMat3DSymEigRot( &l, &r, 1, 0 ) ) ok = false;
-    if( !_zMat3DSymEigRot( &l, &r, 2, 0 ) ) ok = false;
-    if( !_zMat3DSymEigRot( &l, &r, 2, 1 ) ) ok = false;
-    if( n++ > Z_MAX_ITER_NUM ){
+  i = 0; j = 1;
+  while( 1 ){
+    _zMat3DSymEigRot( &l, &r, i, j );
+    i1 = ( i + 1 ) % 3; j1 = ( j + 1 ) % 3;
+    i2 = ( i + 2 ) % 3; j2 = ( j + 2 ) % 3;
+    if( fabs(l.e[j1][i1]) > fabs(l.e[j2][i2]) ){
+      i = i1; j = j1;
+    } else{
+      i = i2; j = j2;
+    }
+    if( zIsTiny( l.e[j][i] ) ) break;
+    if( iter++ > Z_MAX_ITER_NUM ){
       ZITERWARN( Z_MAX_ITER_NUM );
       break;
     }
-  } while( !ok );
-  for( n=0; n<3; n++ ){
-    eval[n] = l.e[n][n];
-    zVec3DCopy( &r.v[n], &evec[n] );
   }
+  for( i=0; i<3; i++ ){
+    eval[i] = l.e[i][i];
+    zVec3DCopy( &r.v[i], &evec[i] );
+  }
+  return iter;
 }
 
 /* singular value decomposition of a 3x3 matrix. */
-void zMat3DSVD(const zMat3D *m, zMat3D *u, double s[3], zMat3D *v)
+int zMat3DSVD(const zMat3D *m, zMat3D *u, double s[3], zMat3D *v)
 {
   zMat3D m2;
-  int i;
+  int i, rank;
 
   zMulMat3DMat3DT( m, m, &m2 );
   zMat3DSymEig( &m2, s, u->v );
   zMulMat3DTMat3D( m, u, v );
-  for( i=0; i<3; i++ ){
+  for( rank=0, i=0; i<3; i++ ){
     if( zIsTiny( s[i] ) )
       s[i] = 0;
-    else
+    else{
       zVec3DDivDRC( zMat3DVec(v,i), ( s[i] = sqrt( s[i] ) ) );
+      rank++;
+    }
   }
+  return rank;
 }
 
 /* ********************************************************** */

@@ -150,6 +150,22 @@ zVec3DOctree *zVec3DOctreeInit(zVec3DOctree *octree, double xmin, double ymin, d
   return octree;
 }
 
+/* initialize 3D octree as a cubed region with resolution multiplied by power of two. */
+zVec3DOctree *zVec3DOctreeInitAuto(zVec3DOctree *octree, zAABox3D *region, double resolution)
+{
+  double h;
+  zVec3D center;
+
+  h = resolution * zMax( pow( 2, zMax3(
+    ceil( zLog( 2, zAABox3DDepth(region) / resolution ) ),
+    ceil( zLog( 2, zAABox3DWidth(region) / resolution ) ),
+    ceil( zLog( 2, zAABox3DHeight(region) / resolution ) ) ) - 1 ), 1 );
+  zAABox3DCenter( region, &center );
+  return zVec3DOctreeInit( octree,
+    center.c.x - h, center.c.y - h, center.c.z - h,
+    center.c.x + h, center.c.y + h, center.c.z + h, resolution );
+}
+
 /* destroy 3D octree. */
 void zVec3DOctreeDestroy(zVec3DOctree *octree)
 {

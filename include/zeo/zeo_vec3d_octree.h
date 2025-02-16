@@ -28,6 +28,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec3DOctree ){
 
 /*! \brief initialize 3D octree. */
 __ZEO_EXPORT zVec3DOctree *zVec3DOctreeInit(zVec3DOctree *octree, double xmin, double ymin, double zmin, double xmax, double ymax, double zmax, double resolution);
+/*! \brief initialize 3D octree as a cubed region with resolution multiplied by power of two. */
+__ZEO_EXPORT zVec3DOctree *zVec3DOctreeInitAuto(zVec3DOctree *octree, zAABox3D *region, double resolution);
 
 /*! \brief destroy 3D octree. */
 __ZEO_EXPORT void zVec3DOctreeDestroy(zVec3DOctree *octree);

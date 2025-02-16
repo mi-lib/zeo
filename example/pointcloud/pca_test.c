@@ -1,3 +1,4 @@
+#include <time.h>
 #include <zeo/zeo_vec3d_data.h>
 
 #define N 1000

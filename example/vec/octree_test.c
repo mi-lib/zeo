@@ -75,13 +75,13 @@ static void output_box(const zVec3DOctant *octant, const zOpticalInfo *oi, const
   fclose( fp );
 }
 
-
-#define RESOLUTION 0.01
+#define RESOLUTION 0.02
 
 int main(int argc, char *argv[])
 {
   zVec3DOctree octree;
   const zVec3DOctant *octant;
+  zOpticalInfo oi_green;
   zOpticalInfo oi;
   zVec3DData pointdata;
   zAABox3D aabb;
@@ -94,17 +94,34 @@ int main(int argc, char *argv[])
   }
   zVec3DDataReadPCDFile( &pointdata, argv[1] );
   zVec3DDataAABB( &pointdata, &aabb, NULL );
-
-  zVec3DOctreeInit( &octree, zAABox3DXMin(&aabb), zAABox3DYMin(&aabb), zAABox3DZMin(&aabb), zAABox3DXMax(&aabb), zAABox3DYMax(&aabb), zAABox3DZMax(&aabb), RESOLUTION );
+  zVec3DOctreeInitAuto( &octree, &aabb, RESOLUTION );
   zVec3DOctreeEmbedPoints( &octree, &pointdata );
 
-  if( ( fp = fopen( "octree.ztk", "w" ) ) ){
-    zOpticalInfoCreate( &oi, 0.5, 0.5, 0.5, 0.6, 1.0, 0.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.8, "lightgreen" );
-    output_opticalinfo( fp, &oi );
-    output_octree( fp, &octree, &oi, "octant" );
-    zOpticalInfoDestroy( &oi );
+  zOpticalInfoCreate( &oi_green, 0.5, 0.5, 0.5, 0.3, 1.0, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, "green" );
+  if( ( fp = fopen( "octree04.ztk", "w" ) ) ){
+    output_opticalinfo( fp, &oi_green );
+    output_octree( fp, &octree, &oi_green, "octant" );
     fclose( fp );
   }
+  zVec3DOctreeChangeResolution( &octree, RESOLUTION/4 );
+  if( ( fp = fopen( "octree16.ztk", "w" ) ) ){
+    output_opticalinfo( fp, &oi_green );
+    output_octree( fp, &octree, &oi_green, "octant_fine" );
+    fclose( fp );
+  }
+  zVec3DOctreeChangeResolution( &octree, RESOLUTION/8 );
+  if( ( fp = fopen( "octree32.ztk", "w" ) ) ){
+    output_opticalinfo( fp, &oi_green );
+    output_octree( fp, &octree, &oi_green, "octant_merged" );
+    fclose( fp );
+  }
+  zVec3DOctreeChangeResolution( &octree, RESOLUTION/2 );
+  if( ( fp = fopen( "octree08.ztk", "w" ) ) ){
+    output_opticalinfo( fp, &oi_green );
+    output_octree( fp, &octree, &oi_green, "octant_divided" );
+    fclose( fp );
+  }
+  zOpticalInfoDestroy( &oi_green );
 
   zVec3DCreate( &point,
     zRandF(zAABox3DXMin(&octree.root.region),zAABox3DXMax(&octree.root.region)),
@@ -114,27 +131,9 @@ int main(int argc, char *argv[])
   output_point( &point, RESOLUTION, &oi, "point.ztk" );
   zOpticalInfoDestroy( &oi );
   if( ( octant = zVec3DOctreeFindContainer( &octree, &point ) ) ){
-    zOpticalInfoCreate( &oi, 0.5, 0.5, 0.5, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6, "magenta" );
+    zOpticalInfoCreate( &oi, 0.5, 0.5, 0.5, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, "magenta" );
     output_box( octant, &oi, "box.ztk" );
     zOpticalInfoDestroy( &oi );
-  }
-
-  zVec3DOctreeChangeResolution( &octree, RESOLUTION/2 );
-  if( ( fp = fopen( "octree_divided.ztk", "w" ) ) ){
-    zOpticalInfoCreate( &oi, 0.5, 0.5, 0.5, 0.4, 0.4, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, "blue" );
-    output_opticalinfo( fp, &oi );
-    output_octree( fp, &octree, &oi, "octant_divided" );
-    zOpticalInfoDestroy( &oi );
-    fclose( fp );
-  }
-
-  zVec3DOctreeChangeResolution( &octree, RESOLUTION*2 );
-  if( ( fp = fopen( "octree_merged.ztk", "w" ) ) ){
-    zOpticalInfoCreate( &oi, 0.5, 0.5, 0.5, 0.6, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, "yellow" );
-    output_opticalinfo( fp, &oi );
-    output_octree( fp, &octree, &oi, "octant_merged" );
-    zOpticalInfoDestroy( &oi );
-    fclose( fp );
   }
 
   zVec3DOctreeDestroy( &octree );

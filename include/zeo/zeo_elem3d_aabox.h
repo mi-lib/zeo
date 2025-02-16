@@ -60,6 +60,8 @@ __ZEO_EXPORT double zAABox3DVolume(const zAABox3D *box);
 __ZEO_EXPORT zVec3D *zAABox3DVert(const zAABox3D *box, int i, zVec3D *v);
 
 /*! \brief print out a 3D axis-aligned box to a file. */
+__ZEO_EXPORT void zAABox3DFPrint(FILE *fp, const zAABox3D *box);
+/*! \brief print out a 3D axis-aligned box to a file in a gnuplot-friendly format. */
 __ZEO_EXPORT void zAABox3DValueFPrint(FILE *fp, const zAABox3D *box);
 
 __END_DECLS

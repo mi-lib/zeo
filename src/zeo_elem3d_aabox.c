@@ -85,7 +85,14 @@ zVec3D *zAABox3DVert(const zAABox3D *box, int i, zVec3D *v)
   return v;
 }
 
-/* print out a 3D axis-aligned box to a file in a format to be plotted. */
+/* print out a 3D axis-aligned box to a file. */
+void zAABox3DFPrint(FILE *fp, const zAABox3D *box)
+{
+  fprintf( fp, "min: " ); zVec3DFPrint( fp, &box->min );
+  fprintf( fp, "max: " ); zVec3DFPrint( fp, &box->max );
+}
+
+/* print out a 3D axis-aligned box to a file in a gnuplot-friendly format. */
 void zAABox3DValueFPrint(FILE *fp, const zAABox3D *box)
 {
   double x0, y0, z0, x1, y1, z1;

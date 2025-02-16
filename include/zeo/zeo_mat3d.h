@@ -794,11 +794,11 @@ __ZEO_EXPORT zVec3D *zMat3DDif(const zMat3D *m, const zMat3D *mnew, double dt, z
  * 3x3 matrix \a m with Jacobi's method. Each eigenvalue and eigenvector
  * are stored in \a eval and \a evec in the corresponding order.
  * \return
- * zMat3DSymEig() returns no value.
+ * zMat3DSymEig() returns the number of iterations.
  * \notes
  * \a m must be symmetric. Otherwise, the correct result will not be expected.
  */
-__ZEO_EXPORT void zMat3DSymEig(const zMat3D *m, double eval[], zVec3D evec[]);
+__ZEO_EXPORT int zMat3DSymEig(const zMat3D *m, double eval[], zVec3D evec[]);
 
 /*! \brief singular value decomposition of a 3x3 matrix.
  *
@@ -806,9 +806,9 @@ __ZEO_EXPORT void zMat3DSymEig(const zMat3D *m, double eval[], zVec3D evec[]);
  * \a u and \a v and a trio of scalar values \a s that satisfy
  * \a m = \a u diag{ \a s[0], \a s[1], \a s[2] } \a v ^T.
  * \return
- * zMat3DSVD() does not return any value.
+ * zMat3DSVD() returns the rank, namely, the number of non-zero singular values of \a m.
  */
-__ZEO_EXPORT void zMat3DSVD(const zMat3D *m, zMat3D *u, double s[3], zMat3D *v);
+__ZEO_EXPORT int zMat3DSVD(const zMat3D *m, zMat3D *u, double s[3], zMat3D *v);
 
 /* ********************************************************** */
 /* I/O
