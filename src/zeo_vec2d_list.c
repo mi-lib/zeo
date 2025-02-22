@@ -32,6 +32,20 @@ ZEO_VECXD_LIST_FIND( 2D )
 /* quick sort of a list of 2D vectors. */
 ZEO_VECXD_LIST_QUICKSORT( 2D )
 
+static int _zVec2DListQuickSortDefaultCmp(void *a, void *b, void *dummy)
+{
+  zVec2D *v1, *v2;
+
+  v1 = &((zVec2DListCell*)a)->data;
+  v2 = &((zVec2DListCell*)b)->data;
+  if( v1->e[zX] > v2->e[zX] ) return 1;
+  if( v1->e[zX] < v2->e[zX] ) return -1;
+  if( v1->e[zY] > v2->e[zY] ) return 1;
+  if( v1->e[zY] < v2->e[zY] ) return -1;
+  return 0;
+}
+ZEO_VECXD_LIST_QUICKSORT_DEFAULT( 2D )
+
 /* print a list of 2D vectors to a file. */
 ZEO_VECXD_LIST_FPRINT( 2D )
 

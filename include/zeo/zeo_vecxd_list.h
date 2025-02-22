@@ -99,6 +99,13 @@ __BEGIN_DECLS
   zVec##XD##List *zVec##XD##ListQuickSort(zVec##XD##List *list, int (*cmp)(void*,void*,void*), void *util)
 #define ZEO_VECXD_LIST_QUICKSORT(XD) zListQuickSortDef( zVec##XD##List, zVec##XD##ListCell )
 
+#define ZEO_VECXD_LIST_QUICKSORT_DEFAULT_PROTOTYPE(XD) \
+  zVec##XD##List *zVec##XD##ListQuickSortDefault(zVec##XD##List *list)
+#define ZEO_VECXD_LIST_QUICKSORT_DEFAULT(XD) \
+  ZEO_VECXD_LIST_QUICKSORT_DEFAULT_PROTOTYPE(XD){\
+    return zVec##XD##ListQuickSort( list, _zVec##XD##ListQuickSortDefaultCmp, NULL );\
+  }
+
 /* print a list of 2D/3D vectors. */
 #define ZEO_VECXD_LIST_FPRINT_PROTOTYPE(XD) \
   void zVec##XD##ListFPrint(FILE *fp, const zVec##XD##List *list)

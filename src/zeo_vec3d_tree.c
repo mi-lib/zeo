@@ -42,14 +42,14 @@ static int _zVec3DTreeChooseBranch(const zVec3DTree *node, const zVec3D *point)
 }
 
 /* add a new 3D vector to a tree. */
-static zVec3DTree *_zVec3DTreeAdd(zVec3DTree *node, const zVec3D *point, int id)
+static zVec3DTree *_zVec3DTreeAddPoint(zVec3DTree *node, const zVec3D *point, int id)
 {
   int b;
   zVec3DTree *leaf;
 
   node->size++;
   if( node->child[( b = _zVec3DTreeChooseBranch( node, point ) )] )
-    return _zVec3DTreeAdd( node->child[b], point, id );
+    return _zVec3DTreeAddPoint( node->child[b], point, id );
   if( !( leaf = _zVec3DTreeCreateLeaf( ( node->data.split + 1 ) % 3, point, id ) ) )
     return NULL;
   node->child[b] = leaf;
@@ -63,7 +63,7 @@ static zVec3DTree *_zVec3DTreeAdd(zVec3DTree *node, const zVec3D *point, int id)
 }
 
 /* add a new 3D vector to a tree with an identifier. */
-zVec3DTree *zVec3DTreeAddID(zVec3DTree *tree, zVec3D *point, int id)
+zVec3DTree *zVec3DTreeAddPointID(zVec3DTree *tree, const zVec3D *point, int id)
 {
   if( tree->data.split == zAxisInvalid ){
     tree->size = 1;
@@ -72,13 +72,13 @@ zVec3DTree *zVec3DTreeAddID(zVec3DTree *tree, zVec3D *point, int id)
     zVec3DCopy( point, &tree->data.v );
     return tree;
   }
-  return _zVec3DTreeAdd( tree, point, id );
+  return _zVec3DTreeAddPoint( tree, point, id );
 }
 
 /* add a new 3D vector to a tree. */
-zVec3DTree *zVec3DTreeAdd(zVec3DTree *tree, zVec3D *point)
+zVec3DTree *zVec3DTreeAddPoint(zVec3DTree *tree, const zVec3D *point)
 {
-  return zVec3DTreeAddID( tree, point, tree->size );
+  return zVec3DTreeAddPointID( tree, point, tree->size );
 }
 
 /* find the partition in which a 3D vector is contained (for debug). */
@@ -196,7 +196,7 @@ zVec3DTree *zVec3DArrayToTree(const zVec3DArray *array, zVec3DTree *tree)
 
   zVec3DTreeInit( tree );
   for( i=0; i<zArraySize(array); i++ )
-    if( !zVec3DTreeAdd( tree, zArrayElem(array,i) ) ) return NULL;
+    if( !zVec3DTreeAddPoint( tree, zArrayElem(array,i) ) ) return NULL;
   return tree;
 }
 
@@ -247,22 +247,41 @@ zVec3DTree *zVec3DListToTree(const zVec3DList *list, zVec3DTree *tree)
 
   zVec3DTreeInit( tree );
   zListForEach( list, vc ){
-    if( !zVec3DTreeAdd( tree, &vc->data ) ) return NULL;
+    if( !zVec3DTreeAddPoint( tree, &vc->data ) ) return NULL;
   }
   return tree;
 }
 
 /* convert a set of 3D vectors to a 3D vector tree. */
-zVec3DTree *zVec3DDataToTree(zVec3DData *data, zVec3DTree *tree)
+zVec3DTree *zVec3DTreeAddData(zVec3DTree *tree, zVec3DData *data)
 {
   zVec3D *v;
 
-  zVec3DTreeInit( tree );
   zVec3DDataRewind( data );
   while( ( v = zVec3DDataFetch( data ) ) ){
-    if( !zVec3DTreeAdd( tree, v ) ) return NULL;
+    if( !zVec3DTreeAddPoint( tree, v ) ) return NULL;
   }
   return tree;
+}
+
+/* recursively convert a 3D vector node to a set of 3D vectors. */
+static zVec3DData *_zVec3DTreeToData(const zVec3DTree *tree, zVec3DData *data)
+{
+  bool ret0, ret1;
+
+  ret0 = ret1 = true;
+  if( !zVec3DDataAdd( data, &tree->data.v ) ) return NULL;
+  if( tree->child[0] )
+    ret0 = _zVec3DTreeToData( tree->child[0], data ) ? true : false;
+  if( tree->child[1] )
+    ret1 = _zVec3DTreeToData( tree->child[1], data ) ? true : false;
+  return ret0 && ret1 ? data : NULL;
+}
+
+/* convert a 3D vector tree to a set of 3D vectors. */
+zVec3DData *zVec3DTreeToData(const zVec3DTree *tree, zVec3DData *data)
+{
+  return _zVec3DTreeToData( tree, data );
 }
 
 /* print out a 3D vector tree (for debug). */

@@ -38,13 +38,16 @@ __ZEO_EXPORT void zVec3DOctreeDestroy(zVec3DOctree *octree);
 __ZEO_EXPORT bool zVec3DOctreeAddPoint(zVec3DOctree *octree, zVec3D *point);
 
 /*! \brief embed pointcloud to 3D octree. */
-__ZEO_EXPORT bool zVec3DOctreeEmbedPoints(zVec3DOctree *octree, zVec3DData *pointdata);
+__ZEO_EXPORT bool zVec3DOctreeAddData(zVec3DOctree *octree, zVec3DData *pointdata);
 
 /*! \brief change resolution of 3D octree. */
 __ZEO_EXPORT bool zVec3DOctreeChangeResolution(zVec3DOctree *octree, double resolution);
 
 /*! \brief find an octant that contains a 3D point in 3D octree. */
 __ZEO_EXPORT const zVec3DOctant *zVec3DOctreeFindContainer(const zVec3DOctree *octree, const zVec3D *point);
+
+/*! \brief find nearest neighbor of a 3D point in a 3D octree. */
+__ZEO_EXPORT double zVec3DOctreeNN(const zVec3DOctree *octree, const zVec3D *point, zVec3D **nn);
 
 /*! \brief find vicinity of a point in 3D octree. */
 __ZEO_EXPORT zVec3DData *zVec3DOctreeVicinity(zVec3DOctree *octree, const zVec3D *point, double radius, zVec3DData *vicinity);

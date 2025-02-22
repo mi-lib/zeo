@@ -32,6 +32,22 @@ ZEO_VECXD_LIST_FIND( 3D )
 /* quick sort of a list of 3D vectors. */
 ZEO_VECXD_LIST_QUICKSORT( 3D )
 
+static int _zVec3DListQuickSortDefaultCmp(void *a, void *b, void *dummy)
+{
+  zVec3D *v1, *v2;
+
+  v1 = &((zVec3DListCell*)a)->data;
+  v2 = &((zVec3DListCell*)b)->data;
+  if( v1->e[zX] > v2->e[zX] ) return 1;
+  if( v1->e[zX] < v2->e[zX] ) return -1;
+  if( v1->e[zY] > v2->e[zY] ) return 1;
+  if( v1->e[zY] < v2->e[zY] ) return -1;
+  if( v1->e[zZ] > v2->e[zZ] ) return 1;
+  if( v1->e[zZ] < v2->e[zZ] ) return -1;
+  return 0;
+}
+ZEO_VECXD_LIST_QUICKSORT_DEFAULT( 3D )
+
 /* print a list of 3D vectors to a file. */
 ZEO_VECXD_LIST_FPRINT( 3D )
 

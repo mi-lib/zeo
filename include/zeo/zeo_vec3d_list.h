@@ -85,16 +85,21 @@ __ZEO_EXPORT ZEO_VECXD_LIST_FIND_PROTOTYPE( 3D );
 /*! \brief a quick sort routine for vector list class.
  *
  * zVec3DListQuickSort() is a quick sort routine for zVec3DList class.
- *
- * The cells of \a list will be sorted in ascending order according to the comparison function \a cmp.
+ * The cells of \a list is sorted in ascending order according to the comparison function \a cmp.
  * (The factor a in \a list is put after another factor b when \a cmp(a,b,p) > 0, where p is for
  * programmer's utility, given by \a priv.)
+ *
+ * zVec3DListQuickSortDefault() is a quick sort routine that uses simple comparison of vector components.
+ * The cells of \a list is sorted in ascending order of x components. Regarding cells with the same
+ * x component values, they are sorted in ascending order of y components. If the y component values
+ * are same, then it compares z component values likewise.
  * \return
- * zVec3DListQuickSort() returns a pointer \a list.
+ * zVec3DListQuickSort() and zVec3DListQuickSortDefault() return a pointer \a list.
  * \sa
  * zListQuickSortDef
  */
 __ZEO_EXPORT ZEO_VECXD_LIST_QUICKSORT_PROTOTYPE( 3D );
+__ZEO_EXPORT ZEO_VECXD_LIST_QUICKSORT_DEFAULT_PROTOTYPE( 3D );
 
 /*! \brief print a list of 3D vectors.
  *

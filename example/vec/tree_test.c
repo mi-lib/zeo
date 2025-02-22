@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
   zVec3DCreate( &tree.data.vmax, 10, 10, 10 );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-    zVec3DTreeAdd( &tree, &v );
+    zVec3DTreeAddPoint( &tree, &v );
   }
   zVec3DTreeFPrint( stdout, &tree );
   zVec3DTreeDestroy( &tree );

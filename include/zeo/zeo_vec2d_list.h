@@ -85,16 +85,20 @@ __ZEO_EXPORT ZEO_VECXD_LIST_FIND_PROTOTYPE( 2D );
 /*! \brief a quick sort routine for vector list class.
  *
  * zVec2DListQuickSort() is a quick sort routine for zVec2DList class.
- *
  * The cells of \a list will be sorted in ascending order according to the comparison function \a cmp.
  * (The factor a in \a list is put after another factor b when \a cmp(a,b,p) > 0, where p is for
  * programmer's utility, given by \a priv.)
+ *
+ * zVec2DListQuickSortDefault() is a quick sort routine that uses simple comparison of vector components.
+ * The cells of \a list is sorted in ascending order of x components. Regarding cells with the same
+ * x component values, they are sorted in ascending order of y components.
  * \return
- * zVec2DListQuickSort() returns a pointer \a list.
+ * zVec2DListQuickSort() and zVec2DListQuickSortDefault() return a pointer \a list.
  * \sa
  * zListQuickSortDef
  */
 __ZEO_EXPORT ZEO_VECXD_LIST_QUICKSORT_PROTOTYPE( 2D );
+__ZEO_EXPORT ZEO_VECXD_LIST_QUICKSORT_DEFAULT_PROTOTYPE( 2D );
 
 /*! \brief print a list of 2D vectors.
  *

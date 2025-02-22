@@ -13,7 +13,7 @@ static zVec3DTree *_zSTLVertReg(zVec3DTree *tree, zVec3D *v)
 
   zVec3DTreeNN( tree, v, &node );
   if( node && zVec3DEqual( v, &node->data.v ) ) return node;
-  return zVec3DTreeAdd( tree, v );
+  return zVec3DTreeAddPoint( tree, v );
 }
 
 /* STL facet list */
@@ -71,8 +71,9 @@ static zTri3DArray *_zSTLFacetListToTri3DArray(_zSTLFacetList *list, zVec3DArray
 static zPH3D *_zSTLToPH3D(zVec3DTree *vert_tree, _zSTLFacetList *facet_list, zPH3D *ph)
 {
   if( !zVec3DTreeToArray( vert_tree, &ph->vert ) ||
-      !_zSTLFacetListToTri3DArray( facet_list, &ph->vert, &ph->face ) )
+      !_zSTLFacetListToTri3DArray( facet_list, &ph->vert, &ph->face ) ){
     ph = NULL;
+  }
   zVec3DTreeDestroy( vert_tree );
   zListDestroy( _zSTLFacetListCell, facet_list );
   return ph;

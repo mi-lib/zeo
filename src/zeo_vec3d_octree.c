@@ -183,7 +183,7 @@ bool zVec3DOctreeAddPoint(zVec3DOctree *octree, zVec3D *point)
 }
 
 /* build 3D octree from pointcloud. */
-bool zVec3DOctreeEmbedPoints(zVec3DOctree *octree, zVec3DData *pointdata)
+bool zVec3DOctreeAddData(zVec3DOctree *octree, zVec3DData *pointdata)
 {
   zVec3D *v;
 
@@ -210,6 +210,47 @@ bool zVec3DOctreeChangeResolution(zVec3DOctree *octree, double resolution)
 const zVec3DOctant *zVec3DOctreeFindContainer(const zVec3DOctree *octree, const zVec3D *point)
 {
   return _zVec3DOctantFindContainer( &octree->root, point );
+}
+
+/* find nearest neighbor of a 3D point in a 3D leaf octant. */
+static double _zVec3DOctantLeafNN(const zVec3DOctant *octant, const zVec3D *point, zVec3D **nn, double *dmin)
+{
+  zVec3DListCell *cp;
+  double d;
+
+  zListForEach( &octant->points, cp ){
+    if( ( d = zVec3DDist( &cp->data, point ) ) < *dmin ){
+      *nn = &cp->data;
+      *dmin = d;
+    }
+  }
+  return *dmin;
+}
+
+/* find nearest neighbor of a 3D point in a 3D octant. */
+static double _zVec3DOctantNN(const zVec3DOctant *octant, const zVec3D *point, zVec3D **nn, double *dmin)
+{
+  int i;
+
+  if( !zListIsEmpty( &octant->points ) )
+    return _zVec3DOctantLeafNN( octant, point, nn, dmin );
+  for( i=0; i<8; i++ ){
+    if( !octant->suboctant[i] ) continue;
+    if( zAABox3DDistFromPoint( &octant->suboctant[i]->region, point ) > *dmin ) continue;
+    _zVec3DOctantNN( octant->suboctant[i], point, nn, dmin );
+  }
+  return *dmin;
+}
+
+/* find nearest neighbor of a 3D point in a 3D octree. */
+double zVec3DOctreeNN(const zVec3DOctree *octree, const zVec3D *point, zVec3D **nn)
+{
+  double dmin = HUGE_VAL;
+  const zVec3DOctant *container;
+
+  if( ( container = zVec3DOctreeFindContainer( octree, point ) ) )
+    _zVec3DOctantLeafNN( container, point, nn, &dmin );
+  return _zVec3DOctantNN( &octree->root, point, nn, &dmin );
 }
 
 /* find vicinity of a point in a 3D octant. */

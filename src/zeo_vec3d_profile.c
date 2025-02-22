@@ -18,7 +18,8 @@ zVec3DData *zVec3DDataNormalVec_Tree(zVec3DData *pointdata, double radius, zVec3
 
   zVec3DDataInitList( normaldata );
   zVec3DDataAABB( pointdata, &aabb, NULL );
-  zVec3DDataToTree( pointdata, &tree );
+  zVec3DTreeInit( &tree );
+  zVec3DTreeAddData( &tree, pointdata );
   zVec3DDataBarycenter( pointdata, &center );
   zVec3DDataRewind( pointdata );
   while( ( v = zVec3DDataFetch( pointdata ) ) ){
@@ -50,7 +51,7 @@ zVec3DData *zVec3DDataNormalVec_Octree(zVec3DData *pointdata, double radius, zVe
   zVec3DDataInitList( normaldata );
   zVec3DDataAABB( pointdata, &aabb, NULL );
   zVec3DOctreeInit( &octree, zAABox3DXMin(&aabb), zAABox3DYMin(&aabb), zAABox3DZMin(&aabb), zAABox3DXMax(&aabb), zAABox3DYMax(&aabb), zAABox3DZMax(&aabb), radius );
-  zVec3DOctreeEmbedPoints( &octree, pointdata );
+  zVec3DOctreeAddData( &octree, pointdata );
   zVec3DDataBarycenter( pointdata, &center );
   zVec3DDataRewind( pointdata );
   while( ( v = zVec3DDataFetch( pointdata ) ) ){
@@ -139,7 +140,8 @@ zFrame3D *zVec3DDataICP(zVec3DData *src, zVec3DData *dest, zFrame3D *frame, doub
   int i, iter = ZEO_VEC3DDATA_ICP_MAXITERNUM;
   double error_max, error;
 
-  if( !zVec3DDataToTree( dest, &dest_tree ) ){
+  zVec3DTreeInit( &dest_tree );
+  if( !zVec3DTreeAddData( &dest_tree, dest ) ){
     zVec3DTreeDestroy( &dest_tree );
     return NULL;
   }

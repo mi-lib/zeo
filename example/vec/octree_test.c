@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
   zVec3DDataReadPCDFile( &pointdata, argv[1] );
   zVec3DDataAABB( &pointdata, &aabb, NULL );
   zVec3DOctreeInitAuto( &octree, &aabb, RESOLUTION );
-  zVec3DOctreeEmbedPoints( &octree, &pointdata );
+  zVec3DOctreeAddData( &octree, &pointdata );
 
   zOpticalInfoCreate( &oi_green, 0.5, 0.5, 0.5, 0.3, 1.0, 0.3, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, "green" );
   if( ( fp = fopen( "octree04.ztk", "w" ) ) ){
