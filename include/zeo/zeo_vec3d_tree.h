@@ -42,9 +42,6 @@ zTreeClass( __ZEO_EXPORT, zVec3DTree, zVec3DTreeData );
  */
 __ZEO_EXPORT zVec3DTree *zVec3DTreeAddPoint(zVec3DTree *tree, const zVec3D *point);
 
-/*! \brief add a new 3D point to a 3D vector tree with an identifier. */
-__ZEO_EXPORT zVec3DTree *zVec3DTreeAddPointID(zVec3DTree *tree, const zVec3D *point, int id);
-
 /*! \brief find the partition in which a 3D point is contained.
  *
  * zVec3DTreePart() finds a partition in which a 3D point \a point is contained of a 3D vector tree \a tree.

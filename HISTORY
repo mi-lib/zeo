@@ -1,3 +1,4 @@
+2025.02.23. Abolished zVec3DTreeAddPointID. [zeo_vec3d_tree]
 2025.02.22. Added _zVec3DOctantLeafNN, _zVec3DOctantNN, and zVec3DOctreeNN. [zeo_vec3d_octree]
 2025.02.21. Added _zVec2D/3DListQuickSortDefaultCmp, and defined default quicksort functions by using ZEO_VECXD_LIST_QUICKSORT_DEFAULT. [zeo_vec2d_list, zeo_vec3d_list]
 2025.02.21. Added ZEO_VECXD_LIST_QUICKSORT_DEFAULT_PROTOTYPE and ZEO_VECXD_LIST_QUICKSORT_DEFAULT. [zeo_vecxd_list]

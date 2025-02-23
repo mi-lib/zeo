@@ -62,23 +62,17 @@ static zVec3DTree *_zVec3DTreeAddPoint(zVec3DTree *node, const zVec3D *point, in
   return leaf;
 }
 
-/* add a new 3D vector to a tree with an identifier. */
-zVec3DTree *zVec3DTreeAddPointID(zVec3DTree *tree, const zVec3D *point, int id)
+/* add a new 3D vector to a tree. */
+zVec3DTree *zVec3DTreeAddPoint(zVec3DTree *tree, const zVec3D *point)
 {
   if( tree->data.split == zAxisInvalid ){
     tree->size = 1;
-    tree->data.id = id;
+    tree->data.id = 0;
     tree->data.split = zX;
     zVec3DCopy( point, &tree->data.v );
     return tree;
   }
-  return _zVec3DTreeAddPoint( tree, point, id );
-}
-
-/* add a new 3D vector to a tree. */
-zVec3DTree *zVec3DTreeAddPoint(zVec3DTree *tree, const zVec3D *point)
-{
-  return zVec3DTreeAddPointID( tree, point, tree->size );
+  return _zVec3DTreeAddPoint( tree, point, tree->size );
 }
 
 /* find the partition in which a 3D vector is contained (for debug). */
