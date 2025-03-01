@@ -259,7 +259,7 @@ static zVec3DData *_zVec3DOctantVicinity(zVec3DOctant *octant, const zVec3D *poi
   int i;
   zVec3DListCell *cp;
 
-  if( zAABox3DDistFromPoint( &octant->region, point ) > radius ) return vicinity;
+  if( zAABox3DDistFromPoint( &octant->region, point ) >= radius ) return vicinity;
   if( !zListIsEmpty( &octant->points ) ){
     zListForEach( &octant->points, cp )
       if( zVec3DDist( &cp->data, point ) < radius )

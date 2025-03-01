@@ -88,18 +88,19 @@ const zVec3DTree *zVec3DTreePart(const zVec3DTree *node, const zVec3D *point)
 /* nearest neighbor search */
 
 /* check if a sphere is overlapped with a bounding box of a node. */
-static bool _zVec3DTreeIsOverlap(const zVec3DTree *node, const zVec3D *point, double r)
+static bool _zVec3DTreeIsOverlap(const zVec3DTree *node, const zVec3D *point, double radius)
 {
   int i;
-  double d;
+  double d2;
 
-  for( d=0, i=zX; i<=zZ; i++ ){
+  for( d2=0, i=zX; i<=zZ; i++ ){
     if( point->e[i] < node->data.vmin.e[i] )
-      d += zSqr( point->e[i] - node->data.vmin.e[i] );
+      d2 += zSqr( point->e[i] - node->data.vmin.e[i] );
+    else
     if( point->e[i] > node->data.vmax.e[i] )
-      d += zSqr( point->e[i] - node->data.vmax.e[i] );
+      d2 += zSqr( point->e[i] - node->data.vmax.e[i] );
   }
-  return d <= r*r + zTOL ? true : false;
+  return d2 < radius*radius ? true : false;
 }
 
 /* test if a node is the current nearest neighbor to a 3D vector. */
