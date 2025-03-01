@@ -53,6 +53,9 @@ __ZEO_EXPORT ZEO_VECXD_DATA_TO_ADDRLIST_PROTOTYPE( 3D );
 /*! \brief a naive algorithm to find the nearest neighbor in a set of 3D vectors. */
 __ZEO_EXPORT ZEO_VECXD_DATA_NN_PROTOTYPE( 3D );
 
+/*! \brief a naive algorithm to find vicinity of a point in a set of 3D vectors. */
+__ZEO_EXPORT ZEO_VECXD_DATA_VICINITY_PROTOTYPE( 3D );
+
 /*! \brief support map of a set of 3D points with respect to a direction vector. */
 __ZEO_EXPORT ZEO_VECXD_DATA_SUPPORTMAP_PROTOTYPE( 3D );
 

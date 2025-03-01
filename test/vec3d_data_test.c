@@ -159,8 +159,7 @@ void assert_vicinity(void)
   int i;
 
   zVec3DTreeInit( &tree );
-  zVec3DCreate( &tree.data.vmin, -10, -10, -10 );
-  zVec3DCreate( &tree.data.vmax, 10, 10, 10 );
+  zAABox3DCreate( &tree.data.region, -10, -10, -10, 10, 10, 10 );
   zVec3DOctreeInit( &octree, -10, -10, -10, 10, 10, 10, 1 );
   for( i=0; i<NP; i++ ){
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );

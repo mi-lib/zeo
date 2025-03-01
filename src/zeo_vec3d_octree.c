@@ -216,12 +216,12 @@ const zVec3DOctant *zVec3DOctreeFindContainer(const zVec3DOctree *octree, const 
 static double _zVec3DOctantLeafNN(const zVec3DOctant *octant, const zVec3D *point, zVec3D **nn, double *dmin)
 {
   zVec3DListCell *cp;
-  double d;
+  double d2;
 
   zListForEach( &octant->points, cp ){
-    if( ( d = zVec3DDist( &cp->data, point ) ) < *dmin ){
+    if( ( d2 = zVec3DSqrDist( &cp->data, point ) ) < _zSqr(*dmin) ){
       *nn = &cp->data;
-      *dmin = d;
+      *dmin = sqrt( d2 );
     }
   }
   return *dmin;
@@ -236,7 +236,7 @@ static double _zVec3DOctantNN(const zVec3DOctant *octant, const zVec3D *point, z
     return _zVec3DOctantLeafNN( octant, point, nn, dmin );
   for( i=0; i<8; i++ ){
     if( !octant->suboctant[i] ) continue;
-    if( zAABox3DDistFromPoint( &octant->suboctant[i]->region, point ) > *dmin ) continue;
+    if( zAABox3DSqrDistFromPoint( &octant->suboctant[i]->region, point ) > _zSqr(*dmin) ) continue;
     _zVec3DOctantNN( octant->suboctant[i], point, nn, dmin );
   }
   return *dmin;
@@ -254,21 +254,21 @@ double zVec3DOctreeNN(const zVec3DOctree *octree, const zVec3D *point, zVec3D **
 }
 
 /* find vicinity of a point in a 3D octant. */
-static zVec3DData *_zVec3DOctantVicinity(zVec3DOctant *octant, const zVec3D *point, double radius, zVec3DData *vicinity)
+static zVec3DData *_zVec3DOctantVicinity(zVec3DOctant *octant, const zVec3D *point, double radius_sqr, zVec3DData *vicinity)
 {
   int i;
   zVec3DListCell *cp;
 
-  if( zAABox3DDistFromPoint( &octant->region, point ) >= radius ) return vicinity;
+  if( zAABox3DSqrDistFromPoint( &octant->region, point ) >= radius_sqr ) return vicinity;
   if( !zListIsEmpty( &octant->points ) ){
     zListForEach( &octant->points, cp )
-      if( zVec3DDist( &cp->data, point ) < radius )
+      if( zVec3DSqrDist( &cp->data, point ) < radius_sqr )
         if( !zVec3DDataAdd( vicinity, &cp->data ) ) return NULL;
     return vicinity;
   }
   for( i=0; i<8; i++ ){
     if( !octant->suboctant[i] ) continue;
-    if( !_zVec3DOctantVicinity( octant->suboctant[i], point, radius, vicinity ) ) return NULL;
+    if( !_zVec3DOctantVicinity( octant->suboctant[i], point, radius_sqr, vicinity ) ) return NULL;
   }
   return vicinity;
 }
@@ -276,5 +276,6 @@ static zVec3DData *_zVec3DOctantVicinity(zVec3DOctant *octant, const zVec3D *poi
 /* find vicinity of a point in 3D octree. */
 zVec3DData *zVec3DOctreeVicinity(zVec3DOctree *octree, const zVec3D *point, double radius, zVec3DData *vicinity)
 {
-  return _zVec3DOctantVicinity( &octree->root, point, radius, vicinity );
+  zVec3DDataInitAddrList( vicinity );
+  return _zVec3DOctantVicinity( &octree->root, point, _zSqr(radius), vicinity );
 }

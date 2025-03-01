@@ -13,15 +13,15 @@ __BEGIN_DECLS
 
 /* octant of matrix-based octree */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec3DOctant ){
-  zVec3DOctant *suboctant[8];
-  zAABox3D region;
-  zVec3DList points;
+  zVec3DOctant *suboctant[8]; /*!< \brief 8 suboctants */
+  zAABox3D region;            /*!< \brief region to cover */
+  zVec3DList points;          /*!< \brief list of points */
 };
 
 /* matrix-based octree */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec3DOctree ){
-  double resolution;
-  zVec3DOctant root;
+  double resolution; /*!< \brief spatial resolution */
+  zVec3DOctant root; /*!< \brief root node of octree */
 };
 
 #define zVec3DOctreeSetResolution(octree,res) ( (octree)->resolution = (res) )

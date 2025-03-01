@@ -67,7 +67,7 @@ void assert_nn(void)
   zVec3DData pointdata;
   int i;
   zVec3D v, *nn_octree, *nn_data;
-  bool result;
+  bool result_kdtree, result_octree;
   const double xmin = -10, xmax = 10, ymin = -10, ymax = 10, zmin = -10, zmax = 10;
 
   zRandInit();
@@ -86,13 +86,20 @@ void assert_nn(void)
   zVec3DTreeNN( &tree, &v, &node_nn );
   zVec3DOctreeNN( &octree, &v, &nn_octree );
   zVec3DDataNN( &pointdata, &v, &nn_data );
-  result = zVec3DEqual( &node_nn->data.v, nn_octree ) && zVec3DEqual( nn_data, nn_octree );
-
+  if( !( result_kdtree = zVec3DEqual( &node_nn->data.point, nn_data ) ) ){
+    eprintf( "kd-tree:     %g ", zVec3DDist( &node_nn->data.point, &v ) ); zVec3DFPrint( stderr, &node_nn->data.point );
+    eprintf( "brute-force: %g ", zVec3DDist( nn_data, &v ) ); zVec3DFPrint( stderr, nn_data );
+  }
+  if( !( result_octree = zVec3DEqual( nn_octree, nn_data ) ) ){
+    eprintf( "octree:      %g ", zVec3DDist( nn_octree, &v ) ); zVec3DFPrint( stderr, nn_octree );
+    eprintf( "brute-force: %g ", zVec3DDist( nn_data, &v ) ); zVec3DFPrint( stderr, nn_data );
+  }
   zVec3DTreeDestroy( &tree );
   zVec3DOctreeDestroy( &octree );
   zVec3DDataDestroy( &pointdata );
 
-  zAssert( zVec3DTreeNN / zVec3DOctreeNN, result );
+  zAssert( zVec3DTreeNN, result_kdtree );
+  zAssert( zVec3DOctreeNN, result_octree );
 }
 
 void assert_vicinity(void)
@@ -100,10 +107,10 @@ void assert_vicinity(void)
   zVec3DOctree octree;
   zVec3DTree tree;
   zVec3DData pointdata;
-  zVec3DData vicinity1, vicinity2;
+  zVec3DData vicinity1, vicinity2, vicinity3;
   int i;
   zVec3D v;
-  bool result;
+  bool result_kdtree, result_octree;
   const double xmin = -10, xmax = 10, ymin = -10, ymax = 10, zmin = -10, zmax = 10;
   const double radius = 5.0;
 
@@ -119,18 +126,20 @@ void assert_vicinity(void)
 
   zVec3DCreate( &v, zRandF(xmin,xmax), zRandF(ymin,ymax), zRandF(zmin,zmax) );
 
-  zVec3DDataInitAddrList( &vicinity1 );
-  zVec3DTreeVicinity( &tree, &v, radius, &vicinity1 );
-  zVec3DDataInitAddrList( &vicinity2 );
-  zVec3DOctreeVicinity( &octree, &v, radius, &vicinity2 );
-  result = cmp_vec_data( &vicinity1, &vicinity2 );
+  zVec3DDataVicinity( &pointdata, &v, radius, &vicinity1 );
+  zVec3DTreeVicinity( &tree, &v, radius, &vicinity2 );
+  zVec3DOctreeVicinity( &octree, &v, radius, &vicinity3 );
+  result_kdtree = cmp_vec_data( &vicinity1, &vicinity2 );
+  result_octree = cmp_vec_data( &vicinity1, &vicinity3 );
 
   zVec3DDataDestroy( &vicinity1 );
   zVec3DDataDestroy( &vicinity2 );
+  zVec3DDataDestroy( &vicinity3 );
   zVec3DTreeDestroy( &tree );
   zVec3DOctreeDestroy( &octree );
   zVec3DDataDestroy( &pointdata );
-  zAssert( zVec3DTreeVicinity / zVec3DOctreeVicinity, result );
+  zAssert( zVec3DTreeVicinity, result_kdtree );
+  zAssert( zVec3DOctreeVicinity, result_octree );
 }
 
 void assert_vec_tree_to_array(void)

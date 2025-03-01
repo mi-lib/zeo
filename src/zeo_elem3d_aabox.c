@@ -23,11 +23,11 @@ zAABox3D *zAABox3DCreate(zAABox3D *box, double x1, double y1, double z1, double 
 }
 
 /* copy a 3D axis-aligned box to another. */
-zAABox3D *zAABox3DCopy(const zAABox3D *src, zAABox3D *dst)
+zAABox3D *zAABox3DCopy(const zAABox3D *src, zAABox3D *dest)
 {
-  zVec3DCopy( &src->min, &dst->min );
-  zVec3DCopy( &src->max, &dst->max );
-  return dst;
+  zVec3DCopy( &src->min, &dest->min );
+  zVec3DCopy( &src->max, &dest->max );
+  return dest;
 }
 
 /* merge two axis-aligned boxes. */
@@ -53,10 +53,19 @@ double zAABox3DClosest(const zAABox3D *box, const zVec3D *point, zVec3D *cp)
 }
 
 /* distance from a point to a 3D axis-aligned box. */
-double zAABox3DDistFromPoint(const zAABox3D *box, const zVec3D *point)
+double zAABox3DSqrDistFromPoint(const zAABox3D *box, const zVec3D *point)
 {
-  zVec3D cp;
-  return zAABox3DClosest( box, point, &cp );
+  int i;
+  double d2 = 0;
+
+  for( d2=0, i=zX; i<=zZ; i++ ){
+    if( point->e[i] < box->min.e[i] )
+      d2 += zSqr( point->e[i] - box->min.e[i] );
+    else
+    if( point->e[i] > box->max.e[i] )
+      d2 += zSqr( point->e[i] - box->max.e[i] );
+  }
+  return d2;
 }
 
 /* check if a point is inside of a 3D axis-aligned box. */

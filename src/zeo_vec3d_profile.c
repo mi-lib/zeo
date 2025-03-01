@@ -156,7 +156,7 @@ zFrame3D *zVec3DDataICP(zVec3DData *src, zVec3DData *dest, zFrame3D *frame, doub
       zXform3D( frame, po, &p );
       if( ( error = zVec3DTreeNN( &dest_tree, &p, &nn ) ) > error_max ) error_max = error;
       zVec3DDataAdd( &sample_src, po );
-      zVec3DDataAdd( &sample_dest, &nn->data.v );
+      zVec3DDataAdd( &sample_dest, &nn->data.point );
     }
     if( error_max < tol ) break;
     zVec3DDataIdentFrame( &sample_src, &sample_dest, frame );

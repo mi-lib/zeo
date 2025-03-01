@@ -12,7 +12,7 @@ static zVec3DTree *_zSTLVertReg(zVec3DTree *tree, zVec3D *v)
   zVec3DTree *node;
 
   zVec3DTreeNN( tree, v, &node );
-  if( node && zVec3DEqual( v, &node->data.v ) ) return node;
+  if( node && zVec3DEqual( v, &node->data.point ) ) return node;
   return zVec3DTreeAddPoint( tree, v );
 }
 
@@ -40,7 +40,7 @@ static _zSTLFacetListCell *_zSTLFacetListReg(_zSTLFacetList *flist, zVec3DTree *
   cp->data.v1 = vc1;
   cp->data.v2 = vc2;
   cp->data.v3 = vc3;
-  zTri3DCreate( &facet, &vc1->data.v, &vc2->data.v, &vc3->data.v );
+  zTri3DCreate( &facet, &vc1->data.point, &vc2->data.point, &vc3->data.point );
   zVec3DCopy( zTri3DNorm(&facet), &cp->data.normal );
   zListInsertHead( flist, cp );
   return cp;

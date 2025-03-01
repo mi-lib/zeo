@@ -390,6 +390,22 @@ __BEGIN_DECLS
     return sqrt( dmin ); \
   }
 
+/* a naive algorithm to find vicinity of a point in a set of 2D/3D vectors. */
+#define ZEO_VECXD_DATA_VICINITY_PROTOTYPE(XD) \
+  zVec##XD##Data *zVec##XD##DataVicinity(zVec##XD##Data *data, const zVec##XD *point, double radius, zVec##XD##Data *vicinity)
+#define ZEO_VECXD_DATA_VICINITY(XD) \
+  ZEO_VECXD_DATA_VICINITY_PROTOTYPE( XD ){ \
+    zVec##XD *v; \
+    double r2; \
+    r2 = _zSqr( radius ); \
+    zVec##XD##DataInitAddrList( vicinity ); \
+    zVec##XD##DataRewind( data ); \
+    while( ( v = zVec##XD##DataFetch( data ) ) ){ \
+      if( zVec##XD##SqrDist( v, point ) < r2 ) zVec##XD##DataAdd( vicinity, v ); \
+    } \
+    return vicinity; \
+  }
+
 /* support map of a set of 2D/3D points with respect to a direction vector. */
 #define ZEO_VECXD_DATA_SUPPORTMAP_PROTOTYPE(XD) \
   const zVec##XD *zVec##XD##DataSupportMap(zVec##XD##Data *data, const zVec##XD *direction)

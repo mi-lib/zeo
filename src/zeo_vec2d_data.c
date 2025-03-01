@@ -36,6 +36,9 @@ ZEO_VECXD_DATA_TO_ADDRLIST( 2D )
 /* a naive algorithm to find the nearest neighbor in a set of 2D vectors. */
 ZEO_VECXD_DATA_NN( 2D )
 
+/* a naive algorithm to find vicinity of a point in a set of 2D vectors. */
+ZEO_VECXD_DATA_VICINITY( 2D )
+
 /* support map of a set of 2D points with respect to a direction vector. */
 ZEO_VECXD_DATA_SUPPORTMAP( 2D )
 

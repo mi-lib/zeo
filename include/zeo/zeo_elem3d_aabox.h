@@ -39,7 +39,7 @@ __ZEO_EXPORT zAABox3D *zAABox3DInit(zAABox3D *box);
 __ZEO_EXPORT zAABox3D *zAABox3DCreate(zAABox3D *box, double xmin, double ymin, double zmin, double xmax, double ymax, double zmax);
 
 /*! \brief copya a 3D axis-aligned box. */
-__ZEO_EXPORT zAABox3D *zAABox3DCopy(const zAABox3D *src, zAABox3D *dst);
+__ZEO_EXPORT zAABox3D *zAABox3DCopy(const zAABox3D *src, zAABox3D *dest);
 
 /*! \brief merge two 3D axis-aligned boxes. */
 __ZEO_EXPORT zAABox3D *zAABox3DMerge(zAABox3D *box, const zAABox3D *b1, const zAABox3D *b2);
@@ -48,7 +48,8 @@ __ZEO_EXPORT zAABox3D *zAABox3DMerge(zAABox3D *box, const zAABox3D *b1, const zA
 __ZEO_EXPORT double zAABox3DClosest(const zAABox3D *box, const zVec3D *point, zVec3D *cp);
 
 /*! \brief distance from a point to a 3D axis-aligned box. */
-__ZEO_EXPORT double zAABox3DDistFromPoint(const zAABox3D *box, const zVec3D *point);
+__ZEO_EXPORT double zAABox3DSqrDistFromPoint(const zAABox3D *box, const zVec3D *point);
+#define zAABox3DDistFromPoint(box,point) sqrt( zAABox3DSqrDistFromPoint( box, point ) )
 
 /*! \brief check if a point is inside of a 3D axis-aligned box. */
 __ZEO_EXPORT bool zAABox3DPointIsInside(const zAABox3D *box, const zVec3D *p, double margin);

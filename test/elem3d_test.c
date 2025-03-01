@@ -468,6 +468,30 @@ void assert_tri3D_center(void)
   zAssert( zTri3DOrthocenter, ret );
 }
 
+double aabox_dist_from_point_base(const zAABox3D *box, const zVec3D *point)
+{
+  zVec3D cp;
+  return zAABox3DClosest( box, point, &cp );
+}
+
+void assert_aabox_dist(void)
+{
+  zAABox3D box;
+  zVec3D point;
+  double dist1, dist2;
+  int i;
+  bool result = true;
+
+  for( i=0; i<N; i++ ){
+    zAABox3DCreate( &box, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    zVec3DCreate( &point, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    dist1 = zAABox3DDistFromPoint( &box, &point );
+    dist2 = aabox_dist_from_point_base( &box, &point );
+    if( !zEqual( dist1, dist2, zTOL ) ) result = false;
+  }
+  zAssert( zAABox3DPointDist, result );
+}
+
 int main(void)
 {
   zRandInit();
@@ -484,5 +508,6 @@ int main(void)
   assert_tri3D_point_is_inside();
   assert_tri3D_closest();
   assert_tri3D_center();
+  assert_aabox_dist();
   return 0;
 }

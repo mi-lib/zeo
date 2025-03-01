@@ -11,25 +11,21 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
 /*! \struct zVec3DTree
  * \brief 3D vector tree class
  *
  * zVec3DTree represents a binary tree composed from 3D vectors.
  * It is particularly utilized for the nearest neighbor search.
- * Initialize a tree by zVec3DTreeInit() and then incrementally
- * add 3D vectors by zVec3DTreeAdd().
- * The nearest neighbor to a vector in the tree is found by
- * zVec3DTreeNN().
+ * Initialize a tree by zVec3DTreeInit() and then incrementally add 3D vectors by zVec3DTreeAdd().
+ * The nearest neighbor to a vector in the tree is found by zVec3DTreeNN().
  * The tree is freed by calling zVec3DTreeDestroy().
- *//* ******************************************************* */
-typedef struct{
-  int id;        /*!< identifier of a tree node */
-  zAxis split;   /*!< split axis index */
-  zVec3D v;      /*!< spliting vertex */
-  zVec3D vmin;   /*!< minimum corner of bounding box */
-  zVec3D vmax;   /*!< maximum corner of bounding box */
-} zVec3DTreeData;
+ */
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec3DTreeData ){
+  int id;          /*!< identifier of a tree node */
+  zAxis split;     /*!< split axis index */
+  zVec3D point;    /*!< spliting vertex */
+  zAABox3D region; /*!< region to cover */
+};
 
 __ZEO_EXPORT zVec3DTreeData *zVec3DTreeDataInit(zVec3DTreeData *data);
 
