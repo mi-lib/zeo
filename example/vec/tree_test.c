@@ -10,8 +10,7 @@ int main(int argc, char *argv[])
 
   zRandInit();
   zVec3DTreeInit( &tree );
-  zVec3DCreate( &tree.data.vmin, -10, -10, -10);
-  zVec3DCreate( &tree.data.vmax, 10, 10, 10 );
+  zAABox3DCreate( &tree.data.region, -10, -10, -10, 10, 10, 10 );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
     zVec3DTreeAddPoint( &tree, &v );
