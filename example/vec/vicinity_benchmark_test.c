@@ -1,9 +1,13 @@
 #include <zeo/zeo_vec3d_data.h>
 #include <time.h>
 
-#define TEST 0
+#define TEST 1
 
+#if TEST == 0
 #define NS      100000
+#else
+#define NS       10000
+#endif
 #define  N         100
 #define RESOLUTION   1
 
@@ -25,6 +29,9 @@ void try_one(int num_points)
     zVec3DCreate( &v, zRandF(xmin,xmax), zRandF(ymin,ymax), zRandF(zmin,zmax) );
 #else
     zVec3DCreatePolar( &v, 4, zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    v.c.x += 5.0;
+    v.c.y += 5.0;
+    v.c.z += 5.0;
 #endif
     zVec3DDataAdd( &pointdata, &v );
   }
@@ -46,7 +53,8 @@ void try_one(int num_points)
   c1 = clock();
   zVec3DDataVicinity( &pointdata, &v, radius, &vicinity3 );
   c2 = clock();
-  printf( " %ld\n", (long)( c2 - c1 ) );
+  printf( " %ld", (long)( c2 - c1 ) );
+  printf( " %d\n", zVec3DDataSize(&vicinity1) );
 
   zVec3DDataDestroy( &vicinity1 );
   zVec3DDataDestroy( &vicinity2 );

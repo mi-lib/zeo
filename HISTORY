@@ -1,3 +1,4 @@
+2025.03.03. Reflected new specifications of zVec3DTree to some examples. [examples]
 2025.03.02. Modified _zVec3DTreeNNTest and _zVec3DOctantLeafNN. [zeo_vec3d_tree, zeo_vec3d_octree]
 2025.03.02. Added ZEO_VECXD_DATA_VICINITY_PROTOTYPE and ZEO_VECXD_DATA_VICINITY. [zeo_vecxd_data, zeo_vec2d_data, zeo_vec3d_data]
 2025.03.01. Modified _zVec3DTreeIsOverlap, _zVec3DTreeNNTest, and _zVec3DTreeVicinityTest to evaluate squared distance. [zeo_vec3d_tree]
