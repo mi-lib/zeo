@@ -1,11 +1,11 @@
 #include <zeo/zeo_vec3d_data.h>
 #include <time.h>
 
-#define TEST 1
+#define TEST 0
 
-#define NS       10000
+#define NS      100000
 #define  N         100
-#define RESOLUTION   0.5
+#define RESOLUTION   1
 
 void try_one(int num_points)
 {

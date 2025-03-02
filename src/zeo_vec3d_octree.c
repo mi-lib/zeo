@@ -216,12 +216,12 @@ const zVec3DOctant *zVec3DOctreeFindContainer(const zVec3DOctree *octree, const 
 static double _zVec3DOctantLeafNN(const zVec3DOctant *octant, const zVec3D *point, zVec3D **nn, double *dmin)
 {
   zVec3DListCell *cp;
-  double d2;
+  double d_sqr;
 
   zListForEach( &octant->points, cp ){
-    if( ( d2 = zVec3DSqrDist( &cp->data, point ) ) < _zSqr(*dmin) ){
+    if( ( d_sqr = zVec3DSqrDist( &cp->data, point ) ) < _zSqr(*dmin) ){
       *nn = &cp->data;
-      *dmin = sqrt( d2 );
+      *dmin = sqrt( d_sqr );
     }
   }
   return *dmin;

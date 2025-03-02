@@ -91,11 +91,11 @@ const zVec3DTree *zVec3DTreePart(const zVec3DTree *node, const zVec3D *point)
 /* test if a node is the current nearest neighbor to a 3D vector. */
 static void _zVec3DTreeNNTest(const zVec3DTree *node, const zVec3D *point, zVec3DTree **nn, double *dmin)
 {
-  double d2;
+  double d_sqr;
 
-  if( ( d2 = zVec3DSqrDist( &node->data.point, point ) ) < _zSqr(*dmin) ){
+  if( ( d_sqr = zVec3DSqrDist( &node->data.point, point ) ) < _zSqr(*dmin) ){
     *nn = (zVec3DTree *)node;
-    *dmin = sqrt( d2 );
+    *dmin = sqrt( d_sqr );
   }
 }
 
