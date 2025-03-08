@@ -82,9 +82,9 @@ zVec3DData *(* zVec3DDataNormalVec)(zVec3DData*, double, zVec3DData*) = zVec3DDa
 zFrame3D *zVec3DDataIdentFrame(zVec3DData *src, zVec3DData *dest, zFrame3D *frame)
 {
   zVec3D *po, *p;
-  zVec3D pgo, pg, dpo, dp;
+  zVec3D pgo, pg, dpo, dp, d;
   zMat3D cov, u, v;
-  double so = 0, d[3];
+  double so = 0;
   int n = 0;
 
   if( zVec3DDataSize(src) != zVec3DDataSize(dest) ){
@@ -111,10 +111,10 @@ zFrame3D *zVec3DDataIdentFrame(zVec3DData *src, zVec3DData *dest, zFrame3D *fram
   zVec3DDivDRC( &dp,  n );
   so /= n;
   zMat3DDivDRC( &cov, n );
-  zMat3DSVD( &cov, &u, d, &v );
+  zMat3DSVD( &cov, &u, &d, &v );
   zMulMat3DMat3DT( &v, &u, zFrame3DAtt(frame) );
   zMulMat3DVec3D( zFrame3DAtt(frame), &pgo, &dp );
-  zVec3DMulDRC( &dp, ( d[0] + d[1] + d[2] ) / so );
+  zVec3DMulDRC( &dp, ( d.c.x + d.c.y + d.c.z ) / so );
   zVec3DSub( &pg, &dp, zFrame3DPos(frame) );
   return frame;
 }

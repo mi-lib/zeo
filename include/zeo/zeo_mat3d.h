@@ -790,15 +790,16 @@ __ZEO_EXPORT zVec3D *zMat3DDif(const zMat3D *m, const zMat3D *mnew, double dt, z
 
 /*! \brief eigensystem of a symmetric 3x3 matrix by Jacobi's method.
  *
- * zMat3DSymEig() calculates eigenvalues and eigenvectors of a symmetric
- * 3x3 matrix \a m with Jacobi's method. Each eigenvalue and eigenvector
- * are stored in \a eval and \a evec in the corresponding order.
+ * zMat3DSymEig() calculates eigenvalues and eigenvectors of a symmetric 3x3 matrix \a m with Jacobi's
+ * method. Each eigenvalue and eigenvector are stored in \a eigval and \a eigbase, respectively, in the
+ * corresponding order.
  * \return
- * zMat3DSymEig() returns the number of iterations.
+ * zMat3DSymEig() returns the false value if it does not converge within Z_MAX_ITER_NUM. Otherwise,
+ * it returns the true value.
  * \notes
  * \a m must be symmetric. Otherwise, the correct result will not be expected.
  */
-__ZEO_EXPORT int zMat3DSymEig(const zMat3D *m, double eval[], zVec3D evec[]);
+__ZEO_EXPORT bool zMat3DSymEig(const zMat3D *m, zVec3D *eigval, zMat3D *eigbase);
 
 /*! \brief singular value decomposition of a 3x3 matrix.
  *
@@ -808,7 +809,7 @@ __ZEO_EXPORT int zMat3DSymEig(const zMat3D *m, double eval[], zVec3D evec[]);
  * \return
  * zMat3DSVD() returns the rank, namely, the number of non-zero singular values of \a m.
  */
-__ZEO_EXPORT int zMat3DSVD(const zMat3D *m, zMat3D *u, double s[3], zMat3D *v);
+__ZEO_EXPORT int zMat3DSVD(const zMat3D *m, zMat3D *u, zVec3D *sv, zMat3D *v);
 
 /* ********************************************************** */
 /* I/O

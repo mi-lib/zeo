@@ -439,10 +439,9 @@ void assert_rot(void)
 void assert_sym_eig(void)
 {
   int i, testnum = 100;
-  zMat3D m;
+  zMat3D m, eigbase;
   double xx, yy, zz, xy, yz, zx;
-  double eval[3];
-  zVec3D evec[3], v[3];
+  zVec3D eigval, v[3];
   bool result = true;
   double test_tol = 1.0e-6;
 
@@ -454,23 +453,23 @@ void assert_sym_eig(void)
     yz = zRandF(-10,10);
     zx = zRandF(-10,10);
     zMat3DCreate( &m, xx, xy, zx, xy, yy, yz, zx, yz, zz );
-    zMat3DSymEig( &m, eval, evec );
+    zMat3DSymEig( &m, &eigval, &eigbase );
     for( i=0; i<3; i++ ){
-      zMulMat3DVec3D( &m, &evec[i], &v[i] );
-      zVec3DCatDRC( &v[i], -eval[i], &evec[i] );
+      zMulMat3DVec3D( &m, &eigbase.v[i], &v[i] );
+      zVec3DCatDRC( &v[i], -eigval.e[i], &eigbase.v[i] );
       if( !zVec3DIsTol( &v[i], test_tol ) ) result = false;
     }
   }
   zAssert( zMat3DSymEig, result );
 }
 
-bool check_svd(const zMat3D *m, const zMat3D *u, const double s[3], const zMat3D *v)
+bool check_svd(const zMat3D *m, const zMat3D *u, const zVec3D *s, const zMat3D *v)
 {
   zMat3D us, m2;
   int i;
 
   for( i=0; i<3; i++ )
-    zVec3DMul( zMat3DVec(u,i), s[i], zMat3DVec(&us,i) );
+    zVec3DMul( zMat3DVec(u,i), s->e[i], zMat3DVec(&us,i) );
   zMulMat3DMat3DT( &us, v, &m2 );
   return zMat3DEqual( m, &m2 );
 }
@@ -478,7 +477,7 @@ bool check_svd(const zMat3D *m, const zMat3D *u, const double s[3], const zMat3D
 void assert_mat_svd(void)
 {
   zMat3D m, u, v;
-  double s[3];
+  zVec3D s;
   int i, testnum = 1000;
   bool result = true;
 
@@ -487,13 +486,13 @@ void assert_mat_svd(void)
       zRandF(-5,5), zRandF(-5,5), zRandF(-5,5),
       zRandF(-5,5), zRandF(-5,5), zRandF(-5,5),
       zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
-    zMat3DSVD( &m, &u, s, &v );
-    if( !check_svd( &m, &u, s, &v ) ) result = false;
+    zMat3DSVD( &m, &u, &s, &v );
+    if( !check_svd( &m, &u, &s, &v ) ) result = false;
   }
   zAssert( zMat3DSVD, result );
   zMat3DCreate( &m, zRandF(-5,5), 0, 0, 0, zRandF(-5,5), 0, 0, 0, 0 );
-  zMat3DSVD( &m, &u, s, &v );
-  zAssert( zMat3DSVD (singular case), check_svd( &m, &u, s, &v ) );
+  zMat3DSVD( &m, &u, &s, &v );
+  zAssert( zMat3DSVD (singular case), check_svd( &m, &u, &s, &v ) );
 }
 
 int main(void)
