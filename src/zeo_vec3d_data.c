@@ -33,6 +33,9 @@ ZEO_VECXD_DATA_ASSIGN_ADDRLIST( 3D )
 /* create a list of addresses of 3D vectors of data. */
 ZEO_VECXD_DATA_TO_ADDRLIST( 3D )
 
+/* find an identical vector in a set of 3D vectors. */
+ZEO_VECXD_DATA_FIND( 3D )
+
 /* a naive algorithm to find the nearest neighbor in a set of 3D vectors. */
 ZEO_VECXD_DATA_NN( 3D )
 

@@ -3,22 +3,50 @@
 
 #define N 1000
 
+void output_boundingbox(zFrame3D *frame, double wx, double wy, double wz)
+{
+  zVec3D v[8];
+  FILE *fp;
+  uint i;
+
+  for( i=0; i<8; i++ ){
+    zVec3DCreate( &v[i], i & 0x1 ? -wx : wx, i & 0x2 ? -wy : wy, i & 0x4 ? -wz : wz );
+    zXform3DDRC( frame, &v[i] );
+  }
+  fp = fopen( "s", "w" );
+  zVec3DValueNLFPrint( fp, &v[0] );
+  zVec3DValueNLFPrint( fp, &v[1] );
+  zVec3DValueNLFPrint( fp, &v[3] );
+  zVec3DValueNLFPrint( fp, &v[2] );
+  zVec3DValueNLFPrint( fp, &v[0] );
+  fprintf( fp, "\n" );
+  zVec3DValueNLFPrint( fp, &v[0] ); zVec3DValueNLFPrint( fp, &v[4] ); fprintf( fp, "\n" );
+  zVec3DValueNLFPrint( fp, &v[1] ); zVec3DValueNLFPrint( fp, &v[5] ); fprintf( fp, "\n" );
+  zVec3DValueNLFPrint( fp, &v[3] ); zVec3DValueNLFPrint( fp, &v[7] ); fprintf( fp, "\n" );
+  zVec3DValueNLFPrint( fp, &v[2] ); zVec3DValueNLFPrint( fp, &v[6] ); fprintf( fp, "\n" );
+
+  zVec3DValueNLFPrint( fp, &v[4] );
+  zVec3DValueNLFPrint( fp, &v[5] );
+  zVec3DValueNLFPrint( fp, &v[7] );
+  zVec3DValueNLFPrint( fp, &v[6] );
+  zVec3DValueNLFPrint( fp, &v[4] );
+  fclose( fp );
+}
+
 void test_vert(zVec3DData *data, double x, double y, double z, double a, double b, double c, double wx, double wy, double wz)
 {
-  zMat3D ori;
+  zFrame3D frame;
   zVec3D v;
   int i;
 
   zVec3DDataInitArray( data, N );
-  zMat3DFromZYX( &ori, zDeg2Rad(a), zDeg2Rad(b), zDeg2Rad(c) );
+  zFrame3DFromZYX( &frame, x, y, z, zDeg2Rad(a), zDeg2Rad(b), zDeg2Rad(c) );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v, zRandF(-wx,wx), zRandF(-wy,wy), zRandF(-wz,wz) );
-    zMulMat3DVec3DDRC( &ori, &v );
-    v.e[zX] += x;
-    v.e[zY] += y;
-    v.e[zZ] += z;
+    zXform3DDRC( &frame, &v );
     zVec3DDataAdd( data, &v );
   }
+  output_boundingbox( &frame, wx, wy, wz );
 }
 
 void output_projection(FILE *fp, zVec3DData *data, zVec3D *center, zVec3D *norm)
@@ -65,6 +93,8 @@ void output_vert(zVec3DData *data)
   fp = fopen( "g", "w" );
   output_projection( fp, data, &c, &evec[2] );
   fclose( fp );
+  printf( "center: " );
+  zVec3DPrint( &c );
 }
 
 #define X 1

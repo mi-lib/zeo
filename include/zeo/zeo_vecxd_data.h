@@ -363,6 +363,18 @@ __BEGIN_DECLS
     return true; \
   }
 
+/* find an identical vector in a set of 2D/3D vectors. */
+#define ZEO_VECXD_DATA_FIND_PROTOTYPE(XD) \
+  zVec##XD *zVec##XD##DataFind(zVec##XD##Data *data, const zVec##XD *point)
+#define ZEO_VECXD_DATA_FIND(XD) \
+  ZEO_VECXD_DATA_FIND_PROTOTYPE( XD ){ \
+    zVec##XD *v; \
+    zVec##XD##DataRewind( data ); \
+    while( ( v = zVec##XD##DataFetch( data ) ) ) \
+      if( zVec##XD##Equal( point, v ) ) return v; \
+    return NULL; \
+  }
+
 /* a naive algorithm to find the nearest neighbor in a set of 2D/3D vectors. */
 #define ZEO_VECXD_DATA_NN_PROTOTYPE(XD) \
   double zVec##XD##DataNN(zVec##XD##Data *data, const zVec##XD *point, zVec##XD **nn)

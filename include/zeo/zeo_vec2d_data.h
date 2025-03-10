@@ -50,6 +50,9 @@ __ZEO_EXPORT ZEO_VECXD_DATA_ASSIGN_ADDRLIST_PROTOTYPE( 2D );
 /*! \brief create a list of addresses of 2D vectors of data. */
 __ZEO_EXPORT ZEO_VECXD_DATA_TO_ADDRLIST_PROTOTYPE( 2D );
 
+/*! \brief find an identical vector in a set of 2D vectors. */
+__ZEO_EXPORT ZEO_VECXD_DATA_FIND_PROTOTYPE( 2D );
+
 /*! \brief a naive algorithm to find the nearest neighbor in a set of 2D vectors. */
 __ZEO_EXPORT ZEO_VECXD_DATA_NN_PROTOTYPE( 2D );
 

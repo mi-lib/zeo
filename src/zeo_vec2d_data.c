@@ -33,6 +33,9 @@ ZEO_VECXD_DATA_ASSIGN_ADDRLIST( 2D )
 /* create a list of addresses of 2D vectors of data. */
 ZEO_VECXD_DATA_TO_ADDRLIST( 2D )
 
+/* find an identical vector in a set of 2D vectors. */
+ZEO_VECXD_DATA_FIND( 2D )
+
 /* a naive algorithm to find the nearest neighbor in a set of 2D vectors. */
 ZEO_VECXD_DATA_NN( 2D )
 

@@ -153,8 +153,7 @@ void assert_vicinity(void)
   zVec3DTree tree;
   zVec3DOctree octree;
   zVec3DData vicinity_tree, vicinity_octree;
-  zVec3DAddrListCell *cp1, *cp2;
-  zVec3D v;
+  zVec3D point, *v;
   bool result = true;
   int i;
 
@@ -162,32 +161,44 @@ void assert_vicinity(void)
   zAABox3DCreate( &tree.data.region, -10, -10, -10, 10, 10, 10 );
   zVec3DOctreeInit( &octree, -10, -10, -10, 10, 10, 10, 1 );
   for( i=0; i<NP; i++ ){
-    zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-    zVec3DTreeAddPoint( &tree, &v );
-    zVec3DOctreeAddPoint( &octree, &v );
+    zVec3DCreate( &point, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    zVec3DTreeAddPoint( &tree, &point );
+    zVec3DOctreeAddPoint( &octree, &point );
   }
 
-  zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  zVec3DCreate( &point, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
 
   zVec3DDataInitAddrList( &vicinity_tree );
-  zVec3DTreeVicinity( &tree, &v, 5, &vicinity_tree );
-  zVec3DAddrListQuickSort( &vicinity_tree.data.addrlist, cmp, NULL );
+  zVec3DTreeVicinity( &tree, &point, 5, &vicinity_tree );
 
   zVec3DDataInitAddrList( &vicinity_octree );
-  zVec3DOctreeVicinity( &octree, &v, 5, &vicinity_octree );
-  zVec3DAddrListQuickSort( &vicinity_octree.data.addrlist, cmp, NULL );
+  zVec3DOctreeVicinity( &octree, &point, 5, &vicinity_octree );
 
-  for( cp1=zListTail(&vicinity_tree.data.addrlist), cp2=zListTail(&vicinity_octree.data.addrlist);
-       cp1!=zListRoot(&vicinity_tree.data.addrlist) && cp2!=zListRoot(&vicinity_octree.data.addrlist);
-       cp1=zListCellNext(cp1), cp2=zListCellNext(cp2) ){
-    if( !zVec3DEqual( cp1->data, cp2->data ) ) result = false;
+  if( zVec3DDataSize(&vicinity_tree) != zVec3DDataSize(&vicinity_octree) ){
+    eprintf( "size of vicinity (by kd-tree) = %d\n", zVec3DDataSize(&vicinity_tree) );
+    eprintf( "size of vicinity (by kd-tree) = %d\n", zVec3DDataSize(&vicinity_octree) );
+    result = false;
   }
+  /* brute-force confirmation */
+  zVec3DDataRewind( &vicinity_tree );
+  while( ( v = zVec3DDataFetch( &vicinity_tree ) ) )
+    if( !zVec3DDataFind( &vicinity_octree, v ) ){
+      eprintf( "point not found in the octree: " );
+      zVec3DFPrint( stderr, v );
+      result = false;
+    }
+  zVec3DDataRewind( &vicinity_octree );
+  while( ( v = zVec3DDataFetch( &vicinity_octree ) ) )
+    if( !zVec3DDataFind( &vicinity_tree, v ) ){
+      eprintf( "point not found in the kd-tree: " );
+      zVec3DFPrint( stderr, v );
+      result = false;
+    }
 
   zVec3DDataDestroy( &vicinity_tree );
   zVec3DDataDestroy( &vicinity_octree );
   zVec3DTreeDestroy( &tree );
   zVec3DOctreeDestroy( &octree );
-
   zAssert( zVec3DTreeVicinity + zVec3DOctreeVicinity, result );
 }
 
