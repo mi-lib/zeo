@@ -67,20 +67,19 @@ static zVec3DOctant *_zVec3DOctantAllocSuboctant(zVec3DOctant *octant, byte xb, 
 }
 
 /* add a 3D point to a 3D octant. */
-static bool _zVec3DOctantAddPoint(zVec3DOctant *octant, const zVec3D *point, double resolution)
+static zVec3DOctant *_zVec3DOctantAddPoint(zVec3DOctant *octant, const zVec3D *point, double resolution)
 {
   zVec3D mid;
   byte xb, yb, zb;
   zVec3DOctant *suboctant;
 
-  if( _zVec3DOctantIsSmallest( octant, resolution ) ){
-    return zVec3DListAdd( &octant->points, point ) ? true : false;
-  }
+  if( _zVec3DOctantIsSmallest( octant, resolution ) )
+    return zVec3DListAdd( &octant->points, point ) ? octant : NULL;
   zAABox3DCenter( &octant->region, &mid );
   xb = point->c.x > mid.c.x ? 1 : 0;
   yb = point->c.y > mid.c.y ? 1 : 0;
   zb = point->c.z > mid.c.z ? 1 : 0;
-  if( !( suboctant = _zVec3DOctantAllocSuboctant( octant, xb, yb, zb, &mid ) ) ) return false;
+  if( !( suboctant = _zVec3DOctantAllocSuboctant( octant, xb, yb, zb, &mid ) ) ) return NULL;
   return _zVec3DOctantAddPoint( suboctant, point, resolution );
 }
 
@@ -103,9 +102,8 @@ static bool _zVec3DOctantDivide(zVec3DOctant *octant, double resolution)
     if( !( suboctant = _zVec3DOctantAllocSuboctant( octant, xb, yb, zb, &mid ) ) ) return false;
     zListInsertHead( &suboctant->points, cp );
   }
-  for( i=0; i<8; i++ ){
+  for( i=0; i<8; i++ )
     if( !_zVec3DOctantDivide( octant->suboctant[i], resolution ) ) return false;
-  }
   return true;
 }
 
@@ -173,25 +171,32 @@ void zVec3DOctreeDestroy(zVec3DOctree *octree)
 }
 
 /* add a 3D point to 3D octree. */
-bool zVec3DOctreeAddPoint(zVec3DOctree *octree, zVec3D *point)
+zVec3DOctant *zVec3DOctreeAddPoint(zVec3DOctree *octree, zVec3D *point)
 {
   if( !_zVec3DOctantPointIsInside( &octree->root, point ) ){
     ZRUNERROR( ZEO_ERR_OCTREE_POINT_OUTOFREGION );
-    return false;
+    return NULL;
   }
   return _zVec3DOctantAddPoint( &octree->root, point, octree->resolution );
 }
 
-/* build 3D octree from pointcloud. */
-bool zVec3DOctreeAddData(zVec3DOctree *octree, zVec3DData *pointdata)
+/* add a set of 3D vectors to a 3D octree. */
+zVec3DOctree *zVec3DOctreeAddData(zVec3DOctree *octree, zVec3DData *pointdata)
 {
   zVec3D *v;
 
   zVec3DDataRewind( pointdata );
   while( ( v = zVec3DDataFetch( pointdata ) ) ){
-    if( !zVec3DOctreeAddPoint( octree, v ) ) return false;
+    if( !zVec3DOctreeAddPoint( octree, v ) ) return NULL;
   }
-  return true;
+  return octree;
+}
+
+/* convert a set of 3D vectors to a 3D octree. */
+zVec3DOctree *zVec3DDataToOctree(zVec3DData *pointdata, zVec3DOctree *octree, double xmin, double ymin, double zmin, double xmax, double ymax, double zmax, double resolution)
+{
+  zVec3DOctreeInit( octree, xmin, ymin, zmin, xmax, ymax, zmax, resolution );
+  return zVec3DOctreeAddData( octree, pointdata );
 }
 
 /* change resolution of 3D octree. */

@@ -78,8 +78,10 @@ __ZEO_EXPORT zVec3DList *zVec3DTreeToList(const zVec3DTree *tree, zVec3DList *li
 /*! \brief convert a 3D vector list to a 3D vector tree. */
 __ZEO_EXPORT zVec3DTree *zVec3DListToTree(const zVec3DList *list, zVec3DTree *tree);
 
+/*! \brief add a set of 3D vectors to a 3D vector tree. */
+__ZEO_EXPORT zVec3DTree *zVec3DTreeAddData(zVec3DTree *tree, zVec3DData *pointdata);
 /*! \brief convert a set of 3D vectors to a 3D vector tree. */
-__ZEO_EXPORT zVec3DTree *zVec3DTreeAddData(zVec3DTree *tree, zVec3DData *data);
+__ZEO_EXPORT zVec3DTree *zVec3DDataToTree(zVec3DData *pointdata, zVec3DTree *tree);
 /*! \brief convert a 3D vector tree to a set of 3D vectors. */
 __ZEO_EXPORT zVec3DData *zVec3DTreeToData(const zVec3DTree *tree, zVec3DData *data);
 

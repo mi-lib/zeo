@@ -1,3 +1,8 @@
+2025.03.11. Modified zVec3DDataNormalVec_Tree and zVec3DDataNormalVec_Octree. [zeo_vec3d_profile]
+2025.03.11. Added _zVec3DDataNormalVecFromVicinity. [zeo_vec3d_profile]
+2025.03.11. Added zVec3DDataToTree. [zeo_vec3d_tree]
+2025.03.11. Added zVec3DDataToOctree. [zeo_vec3d_octree]
+2025.03.11. Modified types of return values of _zVec3DOctantAddPoint, zVec3DOctreeAddPoint, and zVec3DOctreeAddData. [zeo_vec3d_octree]
 2025.03.10. Added ZEO_VECXD_DATA_FIND and zVec2D/3DDataFind. [zeo_vecxd_data, zeo_vec2d_data, zeo_vec3d_data]
 2025.03.10. Removed an unnecessary counter of points in zVec3DDataIdentFrame. [zeo_vec3d_profile]
 2025.03.08. Modified the type of return value of zMat3DSymEig. [zeo_mat3d]

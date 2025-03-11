@@ -35,10 +35,12 @@ __ZEO_EXPORT zVec3DOctree *zVec3DOctreeInitAuto(zVec3DOctree *octree, zAABox3D *
 __ZEO_EXPORT void zVec3DOctreeDestroy(zVec3DOctree *octree);
 
 /*! \brief add a 3D point to 3D octree. */
-__ZEO_EXPORT bool zVec3DOctreeAddPoint(zVec3DOctree *octree, zVec3D *point);
+__ZEO_EXPORT zVec3DOctant *zVec3DOctreeAddPoint(zVec3DOctree *octree, zVec3D *point);
 
-/*! \brief embed pointcloud to 3D octree. */
-__ZEO_EXPORT bool zVec3DOctreeAddData(zVec3DOctree *octree, zVec3DData *pointdata);
+/*! \brief add a set of 3D vectors to a 3D octree. */
+__ZEO_EXPORT zVec3DOctree *zVec3DOctreeAddData(zVec3DOctree *octree, zVec3DData *pointdata);
+/*! \brief convert a set of 3D vectors to a 3D octree. */
+__ZEO_EXPORT zVec3DOctree *zVec3DDataToOctree(zVec3DData *pointdata, zVec3DOctree *octree, double xmin, double ymin, double zmin, double xmax, double ymax, double zmax, double resolution);
 
 /*! \brief change resolution of 3D octree. */
 __ZEO_EXPORT bool zVec3DOctreeChangeResolution(zVec3DOctree *octree, double resolution);

@@ -8,36 +8,46 @@
 
 /* normal vector estimation */
 
+/* estimate the normal vector at a 3D point from a set of vicinity points. */
+static zVec3D *_zVec3DDataNormalVecFromVicinity(zVec3DData *vicinity, const zVec3D *point, const zVec3D *center, zVec3D *normal)
+{
+  zVec3D d;
+
+  if( zVec3DDataSize(vicinity) < ZEO_VEC3DDATA_NORMALVEC_NUM_MIN )
+    ZRUNWARN( ZEO_WARN_VEC3DDATA_NORMAL_TOOFEWPOINTS );
+  if( zVec3DDataSize(vicinity) > ZEO_VEC3DDATA_NORMALVEC_NUM_MAX )
+    ZRUNWARN( ZEO_WARN_VEC3DDATA_NORMAL_TOOMANYPOINTS );
+  zVec3DDataMeanNormal( vicinity, point, normal );
+  zVec3DSub( point, center, &d );
+  if( zVec3DInnerProd( normal, &d ) < 0 )
+    zVec3DRevDRC( normal ); /* flip the normal vector to be outward (not a strict way) */
+  return normal;
+}
+
 /* normal vector cloud of a 3D point cloud that uses kd-tree with k=3. */
 zVec3DData *zVec3DDataNormalVec_Tree(zVec3DData *pointdata, double radius, zVec3DData *normaldata)
 {
   zVec3DTree tree;
   zAABox3D aabb;
-  zVec3DData vicinity;
-  zVec3D *v, normal, center, d;
+  zVec3DData vicinity, *retval = NULL;
+  zVec3D *v, normal, center;
 
-  zVec3DDataInitList( normaldata );
   zVec3DDataAABB( pointdata, &aabb, NULL );
-  zVec3DTreeInit( &tree );
-  zVec3DTreeAddData( &tree, pointdata );
+  if( !zVec3DDataToTree( pointdata, &tree ) ) goto TERMINATE;
   zVec3DDataBarycenter( pointdata, &center );
+  zVec3DDataInitList( normaldata );
   zVec3DDataRewind( pointdata );
   while( ( v = zVec3DDataFetch( pointdata ) ) ){
     zVec3DDataInitAddrList( &vicinity );
-    zVec3DTreeVicinity( &tree, v, radius, &vicinity );
-    if( zVec3DDataSize(&vicinity) < ZEO_VEC3DDATA_NORMALVEC_NUM_MIN )
-      ZRUNWARN( ZEO_WARN_VEC3DDATA_NORMAL_TOOFEWPOINTS );
-    if( zVec3DDataSize(&vicinity) > ZEO_VEC3DDATA_NORMALVEC_NUM_MAX )
-      ZRUNWARN( ZEO_WARN_VEC3DDATA_NORMAL_TOOMANYPOINTS );
-    zVec3DDataMeanNormal( &vicinity, v, &normal );
-    zVec3DSub( v, &center, &d );
-    if( zVec3DInnerProd( &normal, &d ) < 0 )
-      zVec3DRevDRC( &normal ); /* flip the normal vector to be outward (not a strict way) */
-    zVec3DDataAdd( normaldata, &normal );
+    if( !zVec3DTreeVicinity( &tree, v, radius, &vicinity ) ) goto TERMINATE;
+    _zVec3DDataNormalVecFromVicinity( &vicinity, v, &center, &normal );
+    if( !zVec3DDataAdd( normaldata, &normal ) ) goto TERMINATE;
     zVec3DDataDestroy( &vicinity );
   }
+  retval = normaldata;
+ TERMINATE:
   zVec3DTreeDestroy( &tree );
-  return normaldata;
+  return retval;
 }
 
 /* normal vector cloud of a 3D point cloud that uses 3D octree.  */
@@ -45,31 +55,26 @@ zVec3DData *zVec3DDataNormalVec_Octree(zVec3DData *pointdata, double radius, zVe
 {
   zVec3DOctree octree;
   zAABox3D aabb;
-  zVec3DData vicinity;
-  zVec3D *v, normal, center, d;
+  zVec3DData vicinity, *retval = NULL;
+  zVec3D *v, normal, center;
 
-  zVec3DDataInitList( normaldata );
   zVec3DDataAABB( pointdata, &aabb, NULL );
-  zVec3DOctreeInit( &octree, zAABox3DXMin(&aabb), zAABox3DYMin(&aabb), zAABox3DZMin(&aabb), zAABox3DXMax(&aabb), zAABox3DYMax(&aabb), zAABox3DZMax(&aabb), radius );
-  zVec3DOctreeAddData( &octree, pointdata );
+  if( !zVec3DDataToOctree( pointdata, &octree, zAABox3DXMin(&aabb), zAABox3DYMin(&aabb), zAABox3DZMin(&aabb), zAABox3DXMax(&aabb), zAABox3DYMax(&aabb), zAABox3DZMax(&aabb), radius ) )
+    goto TERMINATE;
   zVec3DDataBarycenter( pointdata, &center );
+  zVec3DDataInitList( normaldata );
   zVec3DDataRewind( pointdata );
   while( ( v = zVec3DDataFetch( pointdata ) ) ){
     zVec3DDataInitAddrList( &vicinity );
-    zVec3DOctreeVicinity( &octree, v, radius, &vicinity );
-    if( zVec3DDataSize(&vicinity) < ZEO_VEC3DDATA_NORMALVEC_NUM_MIN )
-      ZRUNWARN( ZEO_WARN_VEC3DDATA_NORMAL_TOOFEWPOINTS );
-    if( zVec3DDataSize(&vicinity) > ZEO_VEC3DDATA_NORMALVEC_NUM_MAX )
-      ZRUNWARN( ZEO_WARN_VEC3DDATA_NORMAL_TOOMANYPOINTS );
-    zVec3DDataMeanNormal( &vicinity, v, &normal );
-    zVec3DSub( v, &center, &d );
-    if( zVec3DInnerProd( &normal, &d ) < 0 )
-      zVec3DRevDRC( &normal ); /* flip the normal vector to be outward (not a strict way) */
-    zVec3DDataAdd( normaldata, &normal );
+    if( !zVec3DOctreeVicinity( &octree, v, radius, &vicinity ) ) goto TERMINATE;
+    _zVec3DDataNormalVecFromVicinity( &vicinity, v, &center, &normal );
+    if( !zVec3DDataAdd( normaldata, &normal ) ) goto TERMINATE;
     zVec3DDataDestroy( &vicinity );
   }
+  retval = normaldata;
+ TERMINATE:
   zVec3DOctreeDestroy( &octree );
-  return normaldata;
+  return retval;
 }
 
 zVec3DData *(* zVec3DDataNormalVec)(zVec3DData*, double, zVec3DData*) = zVec3DDataNormalVec_Octree;

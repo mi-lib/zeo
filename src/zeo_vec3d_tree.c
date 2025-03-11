@@ -237,16 +237,23 @@ zVec3DTree *zVec3DListToTree(const zVec3DList *list, zVec3DTree *tree)
   return tree;
 }
 
-/* convert a set of 3D vectors to a 3D vector tree. */
-zVec3DTree *zVec3DTreeAddData(zVec3DTree *tree, zVec3DData *data)
+/* add a set of 3D vectors to a 3D vector tree. */
+zVec3DTree *zVec3DTreeAddData(zVec3DTree *tree, zVec3DData *pointdata)
 {
   zVec3D *v;
 
-  zVec3DDataRewind( data );
-  while( ( v = zVec3DDataFetch( data ) ) ){
+  zVec3DDataRewind( pointdata );
+  while( ( v = zVec3DDataFetch( pointdata ) ) ){
     if( !zVec3DTreeAddPoint( tree, v ) ) return NULL;
   }
   return tree;
+}
+
+/* convert a set of 3D vectors to a 3D vector tree. */
+zVec3DTree *zVec3DDataToTree(zVec3DData *pointdata, zVec3DTree *tree)
+{
+  zVec3DTreeInit( tree );
+  return zVec3DTreeAddData( tree, pointdata );
 }
 
 /* recursively convert a 3D vector node to a set of 3D vectors. */
