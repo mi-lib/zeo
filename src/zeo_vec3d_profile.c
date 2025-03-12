@@ -28,11 +28,9 @@ static zVec3D *_zVec3DDataNormalVecFromVicinity(zVec3DData *vicinity, const zVec
 zVec3DData *zVec3DDataNormalVec_Tree(zVec3DData *pointdata, double radius, zVec3DData *normaldata)
 {
   zVec3DTree tree;
-  zAABox3D aabb;
   zVec3DData vicinity, *retval = NULL;
   zVec3D *v, normal, center;
 
-  zVec3DDataAABB( pointdata, &aabb, NULL );
   if( !zVec3DDataToTree( pointdata, &tree ) ) goto TERMINATE;
   zVec3DDataBarycenter( pointdata, &center );
   zVec3DDataInitList( normaldata );
