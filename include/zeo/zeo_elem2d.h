@@ -8,7 +8,6 @@
 #define __ZEO_ELEM2D_H__
 
 #include <zeo/zeo_vec2d.h>
-
 #include <zeo/zeo_elemxd.h>
 
 __BEGIN_DECLS

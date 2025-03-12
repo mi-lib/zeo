@@ -53,6 +53,9 @@ __ZEO_EXPORT ZEO_VECXD_DATA_TO_ADDRLIST_PROTOTYPE( 3D );
 /*! \brief find an identical vector in a set of 3D vectors. */
 __ZEO_EXPORT ZEO_VECXD_DATA_FIND_PROTOTYPE( 3D );
 
+/*! \brief transform points in a set of 3D vectors. */
+__ZEO_EXPORT ZEO_VECXD_DATA_XFORM_PROTOTYPE( 3D );
+
 /*! \brief a naive algorithm to find the nearest neighbor in a set of 3D vectors. */
 __ZEO_EXPORT ZEO_VECXD_DATA_NN_PROTOTYPE( 3D );
 

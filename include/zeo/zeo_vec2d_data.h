@@ -7,6 +7,8 @@
 #ifndef __ZEO_VEC2D_DATA_H__
 #define __ZEO_VEC2D_DATA_H__
 
+#include <zeo/zeo_frame2d.h>
+#include <zeo/zeo_elem2d.h>
 #include <zeo/zeo_vecxd_data.h>
 
 /* NOTE: never include this header file in user programs. */
@@ -52,6 +54,9 @@ __ZEO_EXPORT ZEO_VECXD_DATA_TO_ADDRLIST_PROTOTYPE( 2D );
 
 /*! \brief find an identical vector in a set of 2D vectors. */
 __ZEO_EXPORT ZEO_VECXD_DATA_FIND_PROTOTYPE( 2D );
+
+/*! \brief transform points in a set of 2D vectors. */
+__ZEO_EXPORT ZEO_VECXD_DATA_XFORM_PROTOTYPE( 2D );
 
 /*! \brief a naive algorithm to find the nearest neighbor in a set of 2D vectors. */
 __ZEO_EXPORT ZEO_VECXD_DATA_NN_PROTOTYPE( 2D );

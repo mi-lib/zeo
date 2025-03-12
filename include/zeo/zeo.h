@@ -9,7 +9,7 @@
  - 2D/3D frame and coordinate transformation
  - Euler parameter (unit quaternion)
  - 3D shape elements (plane, edge and triangle)
- - 3D point cloud operations (principal component analysis, read/write of PCD format file, vicinity search)
+ - 3D point cloud operations (principal component analysis, read/write of PCD format file, vicinity search, normal vector estimation, iterative closest point method)
  - 3D shape primitives (box, sphere, cylinder, cone, ellipsoid, elliptic cylinder, polyhedron)
  - multiple 3D shapes
  - read/write of PLY/STL/OBJ/DAE format files
@@ -25,7 +25,6 @@
 #ifndef __ZEO_H__
 #define __ZEO_H__
 
-#include <zeo/zeo_frame2d.h>
 #include <zeo/zeo_mat6d.h>
 #include <zeo/zeo_mshape3d.h>
 #include <zeo/zeo_bv3d.h>

@@ -1,3 +1,7 @@
+2025.03.12. Added vec2d_data_test. [test]
+2025.03.12. Changed dependency of zeo_vec2d_data. [zeo_vec2d, zeo_vec2d_data, zeo_bv2d]
+2025.03.12. Added zeo_pcdconv. [app]
+2025.03.12. Added ZEO_VECXD_DATA_XFORM and zVec2D/3DDataXform. [zeo_vecxd_data, zeo_vec2d_data, zeo_vec3d_data]
 2025.03.11. Modified zVec3DDataNormalVec_Tree and zVec3DDataNormalVec_Octree. [zeo_vec3d_profile]
 2025.03.11. Added _zVec3DDataNormalVecFromVicinity. [zeo_vec3d_profile]
 2025.03.11. Added zVec3DDataToTree. [zeo_vec3d_tree]

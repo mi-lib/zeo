@@ -375,6 +375,22 @@ __BEGIN_DECLS
     return NULL; \
   }
 
+/* transform points in a set of 2D/3D vectors. */
+#define ZEO_VECXD_DATA_XFORM_PROTOTYPE(XD) \
+  bool zVec##XD##DataXform(zVec##XD##Data *src, const zFrame##XD *frame, double scale, zVec##XD##Data *dest)
+#define ZEO_VECXD_DATA_XFORM(XD) \
+  ZEO_VECXD_DATA_XFORM_PROTOTYPE( XD ){ \
+    zVec##XD *v, p; \
+    zVec##XD##DataInitList( dest ); \
+    zVec##XD##DataRewind( src ); \
+    while( ( v = zVec##XD##DataFetch( src ) ) ){ \
+      zXform##XD( frame, v, &p ); \
+      zVec##XD##MulDRC( &p, scale ); \
+      if( !zVec##XD##DataAdd( dest, &p ) ) return false; \
+    }\
+    return true; \
+  }
+
 /* a naive algorithm to find the nearest neighbor in a set of 2D/3D vectors. */
 #define ZEO_VECXD_DATA_NN_PROTOTYPE(XD) \
   double zVec##XD##DataNN(zVec##XD##Data *data, const zVec##XD *point, zVec##XD **nn)

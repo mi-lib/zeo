@@ -13,7 +13,7 @@ including:
  - 2D/3D frame and coordinate transformation
  - Euler parameter (unit quaternion)
  - 3D shape elements (plane, edge and triangle)
- - 3D point cloud operations (principal component analysis, read/write of PCD format file, vicinity search)
+ - 3D point cloud operations (principal component analysis, read/write of PCD format file, vicinity search, normal vector estimation, iterative closest point method)
  - 3D shape primitives (box, sphere, cylinder, cone, ellipsoid, elliptic cylinder, polyhedron)
  - multiple 3D shapes
  - read/write of PLY/STL/OBJ/DAE format files

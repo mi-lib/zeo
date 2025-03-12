@@ -36,6 +36,9 @@ ZEO_VECXD_DATA_TO_ADDRLIST( 3D )
 /* find an identical vector in a set of 3D vectors. */
 ZEO_VECXD_DATA_FIND( 3D )
 
+/* transform points in a set of 3D vectors. */
+ZEO_VECXD_DATA_XFORM( 3D )
+
 /* a naive algorithm to find the nearest neighbor in a set of 3D vectors. */
 ZEO_VECXD_DATA_NN( 3D )
 

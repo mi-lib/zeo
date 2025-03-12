@@ -4,7 +4,7 @@
  * zeo_vec2d_data - abstract class of a set of 2D vectors.
  */
 
-#include <zeo/zeo_vec2d.h>
+#include <zeo/zeo_vec2d_data.h>
 
 /* methods for individual dataset representations */
 ZEO_VECXD_DATA_DEF_STATIC_METHOD( 2D )
@@ -35,6 +35,9 @@ ZEO_VECXD_DATA_TO_ADDRLIST( 2D )
 
 /* find an identical vector in a set of 2D vectors. */
 ZEO_VECXD_DATA_FIND( 2D )
+
+/* transform points in a set of 2D vectors. */
+ZEO_VECXD_DATA_XFORM( 2D )
 
 /* a naive algorithm to find the nearest neighbor in a set of 2D vectors. */
 ZEO_VECXD_DATA_NN( 2D )

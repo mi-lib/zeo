@@ -7,12 +7,11 @@
 #ifndef __ZEO_BV2D_H__
 #define __ZEO_BV2D_H__
 
-#include <zeo/zeo_elem2d.h>
-
 /* NOTE: the following two lines should be replaced with zeo_elem2d or zeo_pg2d in future. */
 #include <zeo/zeo_vec3d_data.h>
 #include <zeo/zeo_ph.h>
 
+#include <zeo/zeo_vec2d_data.h>
 #include <zeo/zeo_bv2d_aabb.h>
 #include <zeo/zeo_bv2d_boundingball.h>
 #include <zeo/zeo_bv2d_convexhull.h>

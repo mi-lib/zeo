@@ -465,6 +465,4 @@ zArrayClass( zVec2DArray, zVec2D );
 
 #include <zeo/zeo_vec2d_list.h>  /* 2D vector list */
 
-#include <zeo/zeo_vec2d_data.h>  /* abstract class of a set of 2D vectors. */
-
 #endif /* __ZEO_VEC2D_H__ */
