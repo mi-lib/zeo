@@ -2,8 +2,8 @@
 
 void generate_frame(zFrame3D *frame)
 {
-  zVec3DCreate( zFrame3DPos(frame), zRandF(-0.3,0.3), zRandF(-0.3,0.3), zRandF(-0.3,0.3) );
-  zMat3DFromZYX( zFrame3DAtt(frame), 0.1*zPI*zRandF(-1,1), 0.1*zPI*zRandF(-1,1), 0.1*zPI*zRandF(-1,1) );
+  zVec3DCreate( zFrame3DPos(frame), zRandF(-0.2,0.2), zRandF(-0.2,0.2), zRandF(-0.2,0.2) );
+  zMat3DFromZYX( zFrame3DAtt(frame), 0.2*zPI*zRandF(-1,1), 0.2*zPI*zRandF(-1,1), 0.2*zPI*zRandF(-1,1) );
 }
 
 void generate_points(zVec3DData *src, zVec3DData *dest, zFrame3D *frame, const char *filename, int n)

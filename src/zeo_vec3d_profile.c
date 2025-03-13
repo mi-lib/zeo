@@ -139,8 +139,7 @@ zFrame3D *zVec3DDataICP(zVec3DData *src, zVec3DData *dest, zFrame3D *frame, doub
   int i, iter = ZEO_VEC3DDATA_ICP_MAXITERNUM;
   double error_max, error;
 
-  zVec3DTreeInit( &dest_tree );
-  if( !zVec3DTreeAddData( &dest_tree, dest ) ){
+  if( !zVec3DDataToTree( dest, &dest_tree ) ){
     zVec3DTreeDestroy( &dest_tree );
     return NULL;
   }
