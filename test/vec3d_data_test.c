@@ -202,6 +202,40 @@ void assert_vicinity(void)
   zAssert( zVec3DTreeVicinity + zVec3DOctreeVicinity, result );
 }
 
+void assert_vec3d_data_bary_cov(void)
+{
+  zVec3DData data1, data2;
+  zVec3D center1, center2, v;
+  zMat3D cov1, cov2;
+  const int num = 100;
+  int k;
+  bool result = true;
+
+  zVec3DDataInitList( &data1 );
+  zVec3DDataInitList( &data2 );
+  zVec3DZero( &center2 );
+  zMat3DZero( &cov2 );
+  for( k=0; k<num; k++ ){
+    zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    zVec3DDataAdd( &data1, &v );
+    zVec3DDataAddAndUpdateBaryCov( &data2, &v, &center2, &cov2 );
+  }
+  zVec3DDataBaryCov( &data1, &center1, &cov1 );
+  if( !zVec3DEqual( &center1, &center2 ) ){
+    ZRUNERROR( "mismatch barycenters:\n" );
+    zVec3DFPrint( stderr, &center1 );
+    zVec3DFPrint( stderr, &center2 );
+    result = false;
+  }
+  if( !zMat3DEqual( &cov1, &cov2 ) ){
+    ZRUNERROR( "mismatch covariant matrices:\n" );
+    zMat3DFPrint( stderr, &cov1 );
+    zMat3DFPrint( stderr, &cov2 );
+    result = false;
+  }
+  zAssert( zVec3DDataBaryCov & zVec3DDataAddAndUpdateBaryCov, result );
+}
+
 void generate_frame(zFrame3D *frame)
 {
   zVec3DCreate( zFrame3DPos(frame), zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
@@ -260,6 +294,7 @@ int main(int argc, char *argv[])
   assert_vec3ddata_list_ptr();
   assert_vec3ddata_addrlist_ptr();
   assert_vicinity();
+  assert_vec3d_data_bary_cov();
   assert_frame_ident();
   return 0;
 }

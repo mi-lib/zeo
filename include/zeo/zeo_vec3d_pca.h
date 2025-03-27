@@ -21,6 +21,34 @@ __BEGIN_DECLS
  */
 __ZEO_EXPORT zVec3D *zVec3DDataBarycenter(zVec3DData *data, zVec3D *center);
 
+/*! \brief barycenter and covariance matrix of a set of 3D points.
+ *
+ * zVec3DDataCov() computes the variance-covariance matrix of a set of 3D points \a data about
+ * the given center point \a center. The matrix is stored in \a cov.
+ *
+ * zVec3DDataBaryCov() computes the barycenter and the variance-covariance matrix of a set of
+ * 3D points \a data. The barycenter and the matrix are stored in \a center and \a cov, respectively.
+ * \return
+ * zVec3DDataCov() and zVec3DDataBaryCov() return a boolean value. If \a data is empty, they return
+ * the false value. Otherwise, they return the true value.
+ */
+__ZEO_EXPORT bool zVec3DDataCov(zVec3DData *data, const zVec3D *center, zMat3D *cov);
+__ZEO_EXPORT bool zVec3DDataBaryCov(zVec3DData *data, zVec3D *center, zMat3D *cov);
+
+/*! \brief add a new 3D point to a set of 3D points, and update its barycenter and covariance matrix.
+ *
+ * zVec3DDataAddAndUpdateBaryCov() adds a new 3D point \a v to a set of 3D points \a data.
+ * At the same time, it updates the barycenter of \a data \a center and a variance-covariance matrix
+ * \a cov of \a data.
+ * \return
+ * zVec3DDataAddAndUpdateBaryCov() returns the false value if it fails to allocate memory to add the
+ * new 3D point to \a data. Otherwise, it returns the true value.
+ * \notes
+ * It assumes that the barycenter and the variance-covariance matrix of \a data are stored in \a center
+ * and \a cov before update. It this is not true, the result does not make sense.
+ */
+__ZEO_EXPORT bool zVec3DDataAddAndUpdateBaryCov(zVec3DData *data, const zVec3D *v, zVec3D *center, zMat3D *cov);
+
 /*! \brief principal component analysis to 3D points.
  *
  * zVec3DDataPCA() conducts principal component analysis (PCA) on a set of 3D points \a data.

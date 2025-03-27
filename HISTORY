@@ -1,3 +1,5 @@
+2025.03.28. Reimplemented zVec3DDataPCA and zVec3DDataBaryPCA. [zeo_vec3d_pca]
+2025.03.28. Added zVec3DDataCov, zVec3DDataBaryCov and zVec3DDataAddAndUpdateBaryCov. [zeo_vec3d_pca]
 2025.03.13. Modified zVec3DDataICP to use zVec3DDataToTree. [zeo_vec3d_profile]
 2025.03.12. Removed unnecessary computation of AABB in zVec3DDataNormalVec_Tree. [zeo_vec3d_profile]
 2025.03.12. Added vec2d_data_test. [test]
