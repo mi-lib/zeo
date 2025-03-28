@@ -1,3 +1,4 @@
+2025.03.28. Added zVec3DDataAddAndUpdateCov. [zeo_vec3d_pca]
 2025.03.28. Added zMat3DEigPower and zMat3DEigPowerInv. [zeo_mat3d]
 2025.03.28. Reimplemented zVec3DDataPCA and zVec3DDataBaryPCA. [zeo_vec3d_pca]
 2025.03.28. Added zVec3DDataCov, zVec3DDataBaryCov and zVec3DDataAddAndUpdateBaryCov. [zeo_vec3d_pca]
