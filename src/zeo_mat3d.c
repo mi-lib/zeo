@@ -790,6 +790,39 @@ zVec3D *zMat3DDif(const zMat3D *m, const zMat3D *mnew, double dt, zVec3D *omega)
 /* eigensystem
  * ********************************************************** */
 
+/* calculate the dominant eigenvalue. */
+double zMat3DEigPower(const zMat3D *m, zVec3D *eigvec, int iter)
+{
+  zVec3D ev, err;
+  double eigval = 1.0;
+  int i;
+
+  zVec3DCreate( eigvec, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+  ZITERINIT( iter );
+  for( i=0; i<iter; i++ ){
+    zVec3DNormalize( eigvec, &ev );
+    zMulMat3DVec3D( m, &ev, eigvec );
+    eigval = zVec3DInnerProd( &ev, eigvec );
+    zVec3DCat( eigvec, -eigval, &ev, &err );
+    if( zVec3DIsTiny( &err ) ) break;
+  }
+  zVec3DDivDRC( eigvec, eigval );
+  return eigval;
+}
+
+/* calculate the minimal eigenvalue. */
+double zMat3DEigPowerInv(const zMat3D *m, zVec3D *eigvec, int iter)
+{
+  zMat3D m_inv;
+  double eigval = 0;
+
+  if( zMat3DInv( m, &m_inv ) )
+    eigval = zMat3DEigPower( &m_inv, eigvec, iter );
+  else
+    ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
+  return 1.0 / eigval;
+}
+
 /* transformation of a symmetric matrix by Jacobi's rotation. */
 static void _zMat3DSymEigRot(zMat3D *m, zMat3D *r, int i, int j)
 {

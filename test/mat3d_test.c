@@ -436,6 +436,55 @@ void assert_rot(void)
   zAssert( zAAError + zAACascade, result_aa );
 }
 
+void assert_mat_eig_power(void)
+{
+  zMat3D m, eigbase;
+  zVec3D v, eigval, error;
+  double lambda, lambda1, lambda2;
+  const int num = 10, testnum = 100;
+  int i, k;
+  const double tol1 = 1.0e-10, tol2 = 1.0e-6;
+  bool result1 = true, result2 = true;
+
+  for( k=0; k<testnum; k++ ){
+    zMat3DZero( &m );
+    for( i=0; i<num; i++ ){
+      zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+      zMat3DAddDyad( &m, &v, &v );
+    }
+    zMat3DSymEig( &m, &eigval, &eigbase );
+    lambda1 = zMax3( eigval.e[0], eigval.e[1], eigval.e[2] );
+    lambda2 = zMin3( eigval.e[0], eigval.e[1], eigval.e[2] );
+
+    lambda = zMat3DEigPower( &m, &v, 0 );
+    if( !zEqual( lambda, lambda1, zTOL ) ){
+      eprintf( "different largest principal component: %g / %g\n", lambda, lambda1 );
+      result1 = false;
+    }
+    zMulMat3DVec3D( &m, &v, &error );
+    zVec3DCatDRC( &error, -lambda, &v );
+    if( !zVec3DIsTol( &error, tol1 ) ){
+      eprintf( "error for largest principal component: " );
+      zVec3DFPrint( stderr, &error );
+      result1 = false;
+    }
+    lambda = zMat3DEigPowerInv( &m, &v, 0 );
+    if( !zEqual( lambda, lambda2, zTOL ) ){
+      eprintf( "different smallest principal component: %g / %g\n", lambda, lambda2 );
+      result2 = false;
+    }
+    zMulMat3DVec3D( &m, &v, &error );
+    zVec3DCatDRC( &error, -lambda, &v );
+    if( !zVec3DIsTol( &error, tol2 ) ){
+      eprintf( "error for smallest principal component: " );
+      zVec3DFPrint( stderr, &error );
+      result2 = false;
+    }
+  }
+  zAssert( zMat3DEigPower, result1 );
+  zAssert( zMat3DEigPowerInv, result2 );
+}
+
 void assert_sym_eig(void)
 {
   int i, testnum = 100;
@@ -505,6 +554,7 @@ int main(void)
   assert_mul();
   assert_mat_inv();
   assert_rot();
+  assert_mat_eig_power();
   assert_sym_eig();
   assert_mat_svd();
   return EXIT_SUCCESS;

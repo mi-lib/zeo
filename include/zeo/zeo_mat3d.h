@@ -788,6 +788,32 @@ __ZEO_EXPORT zVec3D *zMat3DDif(const zMat3D *m, const zMat3D *mnew, double dt, z
 /* eigensystem and singular value decomposition
  * ********************************************************** */
 
+/*! \brief calculate the dominant eigenvalue.
+ *
+ * zMat3DEigPower() computes the largest eigenvalue and the corresponding eigenvector of a 3x3 matrix
+ * \a m by power method. The eigenvector is stored in \a eigvec.
+ * \a iter is the maximum number of iterations. If 0 is given for the argument, Z_MAX_ITER_NUM defined
+ * in zm_misc.h is applied.
+ * \return
+ * zMat3DEigPower() returns the largest eigenvalue of \a m.
+ * \sa
+ * zMat3DEigPowerInv
+ */
+__ZEO_EXPORT double zMat3DEigPower(const zMat3D *m, zVec3D *eigvec, int iter);
+
+/*! \brief calculate the minimal eigenvalue.
+ *
+ * zMat3DEigPowerInv() computes the smallest eigenvalue and the corresponding eigenvector of a 3x3 matrix
+ * \a m by the inverse power method. The eigenvector is stored in \a eigvec.
+ * \a iter is the maximum number of iterations. If 0 is given for the argument, Z_MAX_ITER_NUM defined
+ * in zm_misc.h is applied.
+ * \return
+ * zMat3DEigPower() returns the smallest eigenvalue of \a m.
+ * \sa
+ * zMat3DEigPower
+ */
+__ZEO_EXPORT double zMat3DEigPowerInv(const zMat3D *m, zVec3D *eigvec, int iter);
+
 /*! \brief eigensystem of a symmetric 3x3 matrix by Jacobi's method.
  *
  * zMat3DSymEig() calculates eigenvalues and eigenvectors of a symmetric 3x3 matrix \a m with Jacobi's
