@@ -512,6 +512,49 @@ void assert_sym_eig(void)
   zAssert( zMat3DSymEig, result );
 }
 
+void assert_sym_eig_min(void)
+{
+  zMat3D m;
+  zVec3D v, *eigvec1, *eigvec2, error;
+  const int testnum = 1000;
+  const int num = 100;
+  int i, k;
+  const double tol = 1.0e-6;
+  clock_t c1, c2;
+  long c_jacobi, c_power;
+  bool result = true;
+
+  eigvec1 = zAlloc( zVec3D, testnum );
+  eigvec2 = zAlloc( zVec3D, testnum );
+  zMat3DZero( &m );
+  for( i=0; i<num; i++ ){
+    zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    zMat3DAddDyad( &m, &v, &v );
+  }
+  c1 = clock();
+  for( k=0; k<testnum; k++ )
+    zMat3DSymEigMin( &m, &eigvec1[k] );
+  c2 = clock();
+  c_jacobi = c2 - c1;
+  c1 = clock();
+  for( k=0; k<testnum; k++ )
+    zMat3DEigPowerInv( &m, &eigvec2[k], 0 );
+  c2 = clock();
+  c_power = c2 - c1;
+  eprintf( "zMat3DSymEigMin   clock=%ld\n", c_jacobi );
+  eprintf( "zMat3DEigPowerInv clock=%ld\n", c_power );
+  for( k=0; k<testnum; k++ )
+    if( !zVec3DIsTol( zVec3DSub( &eigvec1[k], &eigvec2[k], &error ), tol ) &&
+        !zVec3DIsTol( zVec3DAdd( &eigvec1[k], &eigvec2[k], &error ), tol ) ){
+      zVec3DFPrint( stderr, &eigvec1[k] );
+      zVec3DFPrint( stderr, &eigvec2[k] );
+      result = false;
+    }
+  free( eigvec1 );
+  free( eigvec2 );
+  zAssert( zMat3DSymEigMin / zMat3DEigPowerInv, result );
+}
+
 bool check_svd(const zMat3D *m, const zMat3D *u, const zVec3D *s, const zMat3D *v)
 {
   zMat3D us, m2;
@@ -556,6 +599,7 @@ int main(void)
   assert_rot();
   assert_mat_eig_power();
   assert_sym_eig();
+  assert_sym_eig_min();
   assert_mat_svd();
   return EXIT_SUCCESS;
 }

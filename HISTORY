@@ -1,3 +1,5 @@
+2025.03.29. Modified zVec3DDataMeanNormal and zVec3DDataMeanPlane. [zeo_vec3d_pca]
+2025.03.29. Added zMat3DSymEigMin. [zeo_mat3d]
 2025.03.28. Added zVec3DDataAddAndUpdateCov. [zeo_vec3d_pca]
 2025.03.28. Added zMat3DEigPower and zMat3DEigPowerInv. [zeo_mat3d]
 2025.03.28. Reimplemented zVec3DDataPCA and zVec3DDataBaryPCA. [zeo_vec3d_pca]

@@ -125,18 +125,14 @@ zFrame3D *zVec3DDataPCAFrame(zVec3DData *data, zFrame3D *frame)
   return frame;
 }
 
-#define _zMin3ID( val )  ( ( val[0] < val[1] ) ? ( val[0] < val[2] ? 0 : 2 ) : ( val[1] < val[2] ? 1 : 2 ) )
-
 /* mean normal of a set of 3D points. */
 zVec3D *zVec3DDataMeanNormal(zVec3DData *data, const zVec3D *center, zVec3D *normal)
 {
   double pc[3];
   zVec3D pa[3];
-  int i;
 
   if( !zVec3DDataPCA( data, center, pc, pa ) ) return NULL;
-  i = _zMin3ID( pc );
-  return zVec3DCopy( &pa[i], normal );
+  return zVec3DCopy( &pa[_zMat3DEigMinID( pc )], normal );
 }
 
 /* mean plane of a set of 3D points. */
@@ -144,9 +140,7 @@ zPlane3D *zVec3DDataMeanPlane(zVec3DData *data, zVec3D *center, zPlane3D *plane)
 {
   double pc[3];
   zVec3D pa[3];
-  int i;
 
   if( !zVec3DDataBaryPCA( data, center, pc, pa ) ) return NULL;
-  i = _zMin3ID( pc );
-  return zPlane3DCreate( plane, center, &pa[i] );
+  return zPlane3DCreate( plane, center, &pa[_zMat3DEigMinID( pc )] );
 }

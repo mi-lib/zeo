@@ -788,6 +788,9 @@ __ZEO_EXPORT zVec3D *zMat3DDif(const zMat3D *m, const zMat3D *mnew, double dt, z
 /* eigensystem and singular value decomposition
  * ********************************************************** */
 
+/*! \def component identifier corresponding to the minimum eigenvalue. */
+#define _zMat3DEigMinID( val )  ( ( val[0] < val[1] ) ? ( val[0] < val[2] ? 0 : 2 ) : ( val[1] < val[2] ? 1 : 2 ) )
+
 /*! \brief calculate the dominant eigenvalue.
  *
  * zMat3DEigPower() computes the largest eigenvalue and the corresponding eigenvector of a 3x3 matrix
@@ -826,6 +829,17 @@ __ZEO_EXPORT double zMat3DEigPowerInv(const zMat3D *m, zVec3D *eigvec, int iter)
  * \a m must be symmetric. Otherwise, the correct result will not be expected.
  */
 __ZEO_EXPORT bool zMat3DSymEig(const zMat3D *m, zVec3D *eigval, zMat3D *eigbase);
+
+/*! \brief eigenvector of a 3x3 symmetric matrix corresponding to the minimum eigenavlue.
+ *
+ * zMat3DSymEigMin() finds the eigenvector of a 3x3 symmetric matrix \a m corresponding to the minimum
+ * eigenvalue. The result is put into \a eig.
+ * \return
+ * zMat3DSymEigMin() returns a pointer \a eig.
+ * \sa
+ * zMat3DSymEig
+ */
+__ZEO_EXPORT zVec3D *zMat3DSymEigMin(const zMat3D *m, zVec3D *eig);
 
 /*! \brief singular value decomposition of a 3x3 matrix.
  *

@@ -886,6 +886,16 @@ bool zMat3DSymEig(const zMat3D *m, zVec3D *eigval, zMat3D *eigbase)
   return ret;
 }
 
+/* eigenvector of a 3x3 symmetric matrix corresponding to the minimum eigenavlue. */
+zVec3D *zMat3DSymEigMin(const zMat3D *m, zVec3D *eig)
+{
+  zVec3D eigval;
+  zMat3D eigbase;
+
+  zMat3DSymEig( m, &eigval, &eigbase );
+  return zVec3DCopy( &eigbase.v[_zMat3DEigMinID( eigval.e )], eig );
+}
+
 /* singular value decomposition of a 3x3 matrix. */
 int zMat3DSVD(const zMat3D *m, zMat3D *u, zVec3D *sv, zMat3D *v)
 {
