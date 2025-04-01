@@ -15,7 +15,12 @@ __BEGIN_DECLS
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec3DOctant ){
   zVec3DOctant *suboctant[8]; /*!< \brief 8 suboctants */
   zAABox3D region;            /*!< \brief region to cover */
+  zVec3D center;              /*!< \brief center of region */
   zVec3DList points;          /*!< \brief list of points */
+  /*! \cond */
+  zVec3D _norm;               /* unit normal vector */
+  zMat3D _ncov;               /* variance-covariance matrix multiplied by the number of points */
+  /*! \endcond */
 };
 
 /* matrix-based octree */
@@ -39,6 +44,10 @@ __ZEO_EXPORT zVec3DOctant *zVec3DOctreeAddPoint(zVec3DOctree *octree, zVec3D *po
 
 /*! \brief add a set of 3D vectors to a 3D octree. */
 __ZEO_EXPORT zVec3DOctree *zVec3DOctreeAddData(zVec3DOctree *octree, zVec3DData *pointdata);
+
+/*! \brief update normal vector of a 3D octree. */
+__ZEO_EXPORT void zVec3DOctreeUpdateNormal(zVec3DOctree *octree);
+
 /*! \brief convert a set of 3D vectors to a 3D octree. */
 __ZEO_EXPORT zVec3DOctree *zVec3DDataToOctree(zVec3DData *pointdata, zVec3DOctree *octree, double xmin, double ymin, double zmin, double xmax, double ymax, double zmax, double resolution);
 
@@ -52,7 +61,7 @@ __ZEO_EXPORT const zVec3DOctant *zVec3DOctreeFindContainer(const zVec3DOctree *o
 __ZEO_EXPORT double zVec3DOctreeNN(const zVec3DOctree *octree, const zVec3D *point, zVec3D **nn);
 
 /*! \brief find vicinity of a point in 3D octree. */
-__ZEO_EXPORT zVec3DData *zVec3DOctreeVicinity(zVec3DOctree *octree, const zVec3D *point, double radius, zVec3DData *vicinity);
+__ZEO_EXPORT zVec3DData *zVec3DOctreeVicinity(const zVec3DOctree *octree, const zVec3D *point, double radius, zVec3DData *vicinity);
 
 __END_DECLS
 

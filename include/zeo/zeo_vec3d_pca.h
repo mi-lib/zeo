@@ -35,27 +35,6 @@ __ZEO_EXPORT zVec3D *zVec3DDataBarycenter(zVec3DData *data, zVec3D *center);
 __ZEO_EXPORT bool zVec3DDataCov(zVec3DData *data, const zVec3D *center, zMat3D *cov);
 __ZEO_EXPORT bool zVec3DDataBaryCov(zVec3DData *data, zVec3D *center, zMat3D *cov);
 
-/*! \brief add a new 3D point to a set of 3D points, and update its barycenter and covariance matrix.
- *
- * zVec3DDataAddAndUpdateCov() adds a new 3D point \a v to a set of 3D points \a data.
- * At the same time, it updates the variance-covariance matrix \a cov of \a data about a specified
- * 3D point \a center.
- *
- * zVec3DDataAddAndUpdateBaryCov() adds a new 3D point \a v to a set of 3D points \a data.
- * At the same time, it updates the barycenter of \a data \a center and the variance-covariance matrix
- * \a cov of \a data.
- * \return
- * zVec3DDataAddAndUpdateCov() and zVec3DDataAddAndUpdateBaryCov() return the false value if they fail
- * to allocate memory to add the new 3D point to \a data. Otherwise, they return the true value.
- * \notes
- * zVec3DDataAddAndUpdateCov() assumes that the variance-covariance matrix of \a data is stored in \a cov
- * before update. Likewise, zVec3DDataAddAndUpdateBaryCov() assumes that the barycenter and the
- * variance-covariance matrix of \a data are stored in \a center and \a cov before update. If this is not
- * true, the result does not make sense.
- */
-__ZEO_EXPORT bool zVec3DDataAddAndUpdateCov(zVec3DData *data, const zVec3D *v, const zVec3D *center, zMat3D *cov);
-__ZEO_EXPORT bool zVec3DDataAddAndUpdateBaryCov(zVec3DData *data, const zVec3D *v, zVec3D *center, zMat3D *cov);
-
 /*! \brief principal component analysis to 3D points.
  *
  * zVec3DDataPCA() conducts principal component analysis (PCA) on a set of 3D points \a data.

@@ -8,14 +8,18 @@
 
 /* 3D octant */
 
-#define _zVec3DOctantSetRegion(octant,xmin,ymin,zmin,xmax,ymax,zmax) zAABox3DCreate( &(octant)->region, (xmin), (ymin), (zmin), (xmax), (ymax), (zmax) )
-
 #define _zVec3DOctantPointIsInside(octant,point) zAABox3DPointIsInside( &(octant)->region, point, zTOL )
 
 #define _zVec3DOctantIsSmallest(octant,resolution) \
   ( zAABox3DDepth( &(octant)->region) < (resolution) + zTOL && \
     zAABox3DWidth( &(octant)->region) < (resolution) + zTOL && \
     zAABox3DHeight(&(octant)->region) < (resolution) + zTOL )
+
+static void _zVec3DOctantSetRegion(zVec3DOctant *octant, double xmin, double ymin, double zmin, double xmax, double ymax, double zmax)
+{
+  zAABox3DCreate( &octant->region, xmin, ymin, zmin, xmax, ymax, zmax );
+  zAABox3DCenter( &octant->region, &octant->center );
+}
 
 /* initialize a 3D octant. */
 static zVec3DOctant *_zVec3DOctantInit(zVec3DOctant *octant)
@@ -25,7 +29,11 @@ static zVec3DOctant *_zVec3DOctantInit(zVec3DOctant *octant)
   for( i=0; i<8; i++ )
     octant->suboctant[i] = NULL;
   zAABox3DInit( &octant->region );
+  zVec3DZero( &octant->center );
   zListInit( &octant->points );
+
+  zVec3DZero( &octant->_norm );
+  zMat3DZero( &octant->_ncov );
   return octant;
 }
 
@@ -40,15 +48,16 @@ static void _zVec3DOctantDestroy(zVec3DOctant *octant)
     free( octant->suboctant[i] );
   }
   zVec3DListDestroy( &octant->points );
-  _zVec3DOctantInit( octant );
 }
 
 /* allocate a suboctant of a 3D octant. */
-static zVec3DOctant *_zVec3DOctantAllocSuboctant(zVec3DOctant *octant, byte xb, byte yb, byte zb, zVec3D *mid)
+static zVec3DOctant *_zVec3DOctantAllocSuboctant(zVec3DOctant *octant, const zVec3D *point)
 {
-  byte i;
+  byte xb, yb, zb, i;
 
-  i = zb << 2 | yb << 1 | xb;
+  i = ( xb = point->c.x > octant->center.c.x ? 0x1 : 0 ) |
+      ( yb = point->c.y > octant->center.c.y ? 0x2 : 0 ) |
+      ( zb = point->c.z > octant->center.c.z ? 0x4 : 0 );
   if( !octant->suboctant[i] ){
     if( !( octant->suboctant[i] = zAlloc( zVec3DOctant, 1 ) ) ){
       ZALLOCERROR();
@@ -56,50 +65,78 @@ static zVec3DOctant *_zVec3DOctantAllocSuboctant(zVec3DOctant *octant, byte xb, 
     }
     _zVec3DOctantInit( octant->suboctant[i] );
     _zVec3DOctantSetRegion( octant->suboctant[i],
-      xb ? mid->c.x : zAABox3DXMin(&octant->region),
-      yb ? mid->c.y : zAABox3DYMin(&octant->region),
-      zb ? mid->c.z : zAABox3DZMin(&octant->region),
-      xb ? zAABox3DXMax(&octant->region) : mid->c.x,
-      yb ? zAABox3DYMax(&octant->region) : mid->c.y,
-      zb ? zAABox3DZMax(&octant->region) : mid->c.z );
+      xb ? octant->center.c.x : zAABox3DXMin(&octant->region),
+      yb ? octant->center.c.y : zAABox3DYMin(&octant->region),
+      zb ? octant->center.c.z : zAABox3DZMin(&octant->region),
+      xb ? zAABox3DXMax(&octant->region) : octant->center.c.x,
+      yb ? zAABox3DYMax(&octant->region) : octant->center.c.y,
+      zb ? zAABox3DZMax(&octant->region) : octant->center.c.z );
+    zVec3DCopy( &octant->_norm, &octant->suboctant[i]->_norm );
   }
   return octant->suboctant[i];
+}
+
+/* estimate normal vector of a 3D octant. */
+static void _zVec3DOctantEstimateNormal(zVec3DOctant *octant)
+{
+  zVec3D norm_tmp;
+
+  zMat3DSymEigMin( &octant->_ncov, &norm_tmp );
+  _zVec3DInnerProd( &norm_tmp, &octant->_norm ) >= 0 ?
+    zVec3DCopy( &norm_tmp, &octant->_norm ) : zVec3DRev( &norm_tmp, &octant->_norm );
 }
 
 /* add a 3D point to a 3D octant. */
 static zVec3DOctant *_zVec3DOctantAddPoint(zVec3DOctant *octant, const zVec3D *point, double resolution)
 {
-  zVec3D mid;
-  byte xb, yb, zb;
   zVec3DOctant *suboctant;
 
   if( _zVec3DOctantIsSmallest( octant, resolution ) )
     return zVec3DListAdd( &octant->points, point ) ? octant : NULL;
-  zAABox3DCenter( &octant->region, &mid );
-  xb = point->c.x > mid.c.x ? 1 : 0;
-  yb = point->c.y > mid.c.y ? 1 : 0;
-  zb = point->c.z > mid.c.z ? 1 : 0;
-  if( !( suboctant = _zVec3DOctantAllocSuboctant( octant, xb, yb, zb, &mid ) ) ) return NULL;
+  if( !( suboctant = _zVec3DOctantAllocSuboctant( octant, point ) ) ) return NULL;
   return _zVec3DOctantAddPoint( suboctant, point, resolution );
+}
+
+/* update normal vector of a 3D octant. */
+static void _zVec3DOctantUpdateNormal(zVec3DOctant *octant)
+{
+  zVec3DListCell *cp;
+  zVec3D p;
+  int i;
+
+  if( !zListIsEmpty( &octant->points ) ){
+    zMat3DZero( &octant->_ncov );
+    zListForEach( &octant->points, cp ){
+      zVec3DSub( &cp->data, &octant->center, &p );
+      zMat3DAddDyad( &octant->_ncov, &p, &p );
+    }
+    _zVec3DOctantEstimateNormal( octant );
+  }
+  for( i=0; i<8; i++ )
+    if( octant->suboctant[i] )
+      _zVec3DOctantUpdateNormal( octant->suboctant[i] );
 }
 
 /* divide a 3D octant to suboctants. */
 static bool _zVec3DOctantDivide(zVec3DOctant *octant, double resolution)
 {
   zVec3DListCell *cp;
-  zVec3D mid;
-  byte xb, yb, zb, i;
+  zVec3D p;
+  byte i;
   zVec3DOctant *suboctant;
 
   if( !octant ) return true;
-  if( _zVec3DOctantIsSmallest( octant, resolution ) ) return true;
-  zAABox3DCenter( &octant->region, &mid );
+  if( _zVec3DOctantIsSmallest( octant, resolution ) ){
+    zListForEach( &octant->points, cp ){
+      _zVec3DSub( &cp->data, &octant->center, &p );
+      _zMat3DAddDyad( &octant->_ncov, &p, &p );
+    }
+    _zVec3DOctantEstimateNormal( octant );
+    return true;
+  }
   while( !zListIsEmpty( &octant->points ) ){
     zListDeleteHead( &octant->points, &cp );
-    xb = cp->data.c.x > mid.c.x ? 1 : 0;
-    yb = cp->data.c.y > mid.c.y ? 1 : 0;
-    zb = cp->data.c.z > mid.c.z ? 1 : 0;
-    if( !( suboctant = _zVec3DOctantAllocSuboctant( octant, xb, yb, zb, &mid ) ) ) return false;
+    if( !( suboctant = _zVec3DOctantAllocSuboctant( octant, &cp->data ) ) ) return false;
     zListInsertHead( &suboctant->points, cp );
   }
   for( i=0; i<8; i++ )
@@ -115,13 +152,18 @@ static void _zVec3DOctantMerge(zVec3DOctant *octant, double resolution)
   if( !octant ) return;
   for( i=0; i<8; i++ )
     _zVec3DOctantMerge( octant->suboctant[i], resolution );
-  if( _zVec3DOctantIsSmallest( octant, resolution ) )
+  if( _zVec3DOctantIsSmallest( octant, resolution ) ){
     for( i=0; i<8; i++ )
       if( octant->suboctant[i] ){
         zListAppend( &octant->points, &octant->suboctant[i]->points );
+        _zMat3DAddDRC( &octant->_ncov, &octant->suboctant[i]->_ncov );
+        _zVec3DAddDRC( &octant->_norm, &octant->suboctant[i]->_norm );
         _zVec3DOctantDestroy( octant->suboctant[i] );
         zFree( octant->suboctant[i] );
       }
+    if( !zListIsEmpty( &octant->points ) )
+      _zVec3DOctantEstimateNormal( octant );
+  }
 }
 
 /* find an octant that contains a 3D point in 3D octant. */
@@ -192,6 +234,12 @@ zVec3DOctree *zVec3DOctreeAddData(zVec3DOctree *octree, zVec3DData *pointdata)
   return octree;
 }
 
+/* update normal vector of a 3D octree. */
+void zVec3DOctreeUpdateNormal(zVec3DOctree *octree)
+{
+  _zVec3DOctantUpdateNormal( &octree->root );
+}
+
 /* convert a set of 3D vectors to a 3D octree. */
 zVec3DOctree *zVec3DDataToOctree(zVec3DData *pointdata, zVec3DOctree *octree, double xmin, double ymin, double zmin, double xmax, double ymax, double zmax, double resolution)
 {
@@ -259,7 +307,7 @@ double zVec3DOctreeNN(const zVec3DOctree *octree, const zVec3D *point, zVec3D **
 }
 
 /* find vicinity of a point in a 3D octant. */
-static zVec3DData *_zVec3DOctantVicinity(zVec3DOctant *octant, const zVec3D *point, double radius_sqr, zVec3DData *vicinity)
+static zVec3DData *_zVec3DOctantVicinity(const zVec3DOctant *octant, const zVec3D *point, double radius_sqr, zVec3DData *vicinity)
 {
   int i;
   zVec3DListCell *cp;
@@ -279,7 +327,7 @@ static zVec3DData *_zVec3DOctantVicinity(zVec3DOctant *octant, const zVec3D *poi
 }
 
 /* find vicinity of a point in 3D octree. */
-zVec3DData *zVec3DOctreeVicinity(zVec3DOctree *octree, const zVec3D *point, double radius, zVec3DData *vicinity)
+zVec3DData *zVec3DOctreeVicinity(const zVec3DOctree *octree, const zVec3D *point, double radius, zVec3DData *vicinity)
 {
   zVec3DDataInitAddrList( vicinity );
   return _zVec3DOctantVicinity( &octree->root, point, _zSqr(radius), vicinity );

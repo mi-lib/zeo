@@ -37,6 +37,7 @@ bool zVec3DDataCov(zVec3DData *data, const zVec3D *center, zMat3D *cov)
     zVec3DSub( v, center, &p );
     zMat3DAddDyad( cov, &p, &p );
   }
+  zMat3DDivDRC( cov, zVec3DDataSize(data) );
   return true;
 }
 
@@ -58,34 +59,7 @@ bool zVec3DDataBaryCov(zVec3DData *data, zVec3D *center, zMat3D *cov)
   }
   zVec3DDiv( &p, zVec3DDataSize(data), center );
   zMat3DSubDyad( cov, &p, center );
-  return true;
-}
-
-/* add a new 3D point to a set of 3D points, and update its covariance matrix. */
-bool zVec3DDataAddAndUpdateCov(zVec3DData *data, const zVec3D *v, const zVec3D *center, zMat3D *cov)
-{
-  zVec3D p;
-
-  if( !zVec3DDataAdd( data, v ) ) return false;
-  zVec3DSub( v, center, &p );
-  zMat3DAddDyad( cov, &p, &p );
-  return true;
-}
-
-/* add a new 3D point to a set of 3D points, and update its barycenter and covariance matrix. */
-bool zVec3DDataAddAndUpdateBaryCov(zVec3DData *data, const zVec3D *v, zVec3D *center, zMat3D *cov)
-{
-  zVec3D p;
-  int n;
-
-  n = zVec3DDataSize( data );
-  if( !zVec3DDataAdd( data, v ) ) return false;
-  zVec3DMul( center, n, &p );
-  zMat3DAddDyad( cov, &p, center );
-  zMat3DAddDyad( cov, v, v );
-  zVec3DAddDRC( &p, v );
-  zVec3DDiv( &p, n+1, center );
-  zMat3DSubDyad( cov, &p, center );
+  zMat3DDivDRC( cov, zVec3DDataSize(data) );
   return true;
 }
 
