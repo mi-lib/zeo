@@ -256,17 +256,11 @@ zPH3D *zNURBS3DToPH(const zNURBS3D *nurbs, zPH3D *ph)
 
 static zVec _zNURBS3DKnotFromZTK(zNURBS3D *nurbs, int id, ZTK *ztk)
 {
-  int i;
-
-  if( !ZTKValRewind(ztk) ) return NULL;
   if( nurbs->param[id].knot ){
     ZRUNWARN( ZEO_ERR_NURBS_KNOTALREADY );
     zVecFree( nurbs->param[id].knot );
   }
-  if( !( nurbs->param[id].knot = zVecAlloc( ZTKInt(ztk) ) ) ) return NULL;
-  for( i=0; i<zNURBS3DKnotNum(nurbs,id); i++ )
-    zNURBS3DKnot(nurbs,id,i) = ZTKDouble(ztk);
-  return nurbs->param[id].knot;
+  return ( nurbs->param[id].knot = zVecFromZTK( ztk ) );
 }
 
 static void *_zNURBS3DUKnotFromZTK(void *obj, int i, void *arg, ZTK *ztk){
@@ -337,8 +331,11 @@ zNURBS3D *zNURBS3DFromZTK(zNURBS3D *nurbs, ZTK *ztk)
 {
   zNURBS3DInit( nurbs );
   if( !ZTKEvalKey( nurbs, NULL, ztk, __ztk_prp_nurbs ) ) return NULL;
-  zNURBS3DOrder(nurbs,0) = zNURBS3DKnotNum(nurbs,0) - zNURBS3DCPNum(nurbs,0) - 1;
-  zNURBS3DOrder(nurbs,1) = zNURBS3DKnotNum(nurbs,1) - zNURBS3DCPNum(nurbs,1) - 1;
+  if( ( zNURBS3DOrder(nurbs,0) = zNURBS3DKnotNum(nurbs,0) - zNURBS3DCPNum(nurbs,0) - 1 ) <= 0 ||
+      ( zNURBS3DOrder(nurbs,1) = zNURBS3DKnotNum(nurbs,1) - zNURBS3DCPNum(nurbs,1) - 1 ) <= 0 ){
+    ZRUNERROR( ZEO_ERR_NURBS_INVALID_ORDER );
+    return NULL;
+  }
   return nurbs;
 }
 

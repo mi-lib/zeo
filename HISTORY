@@ -1,3 +1,5 @@
+2025.04.15. Redefined ZEO_ERR_NURBS_INVALID_ORDER. [zeo_errmsg]
+2025.04.15. Modified _zNURBS3DKnotFromZTK to use zVecFromZTK. [zeo_nurbs]
 2025.04.15. Modified zNURBS3DFromZTK to compute orders of a NURBS surface from the numbers of knots and control points. [zeo_nurbs]
 2025.04.15. Abolished ZTK_KEY_ZEO_NURBS_ORDER, _zNURBS3DOrderFromZTK, and _zNURBS3DOrderFPrint. [zeo_nurbs]
 2025.03.31. Modified _zVec3DOctantAllocSuboctant to copy the normal vector to suboctants. [zeo_vec3d_octree]

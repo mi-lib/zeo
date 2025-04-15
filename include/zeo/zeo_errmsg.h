@@ -104,7 +104,7 @@
 #define ZEO_ERR_DAE_INVALID_PRIM              "invalid DAE file %s"
 #define ZEO_ERR_DAE_FAILURE                   "failed to create a polyhedron from a DAE file %s"
 
-#define ZEO_ERR_NURBS_INVALID_ORDER           "invalid order specified for NURBS, or lack of control points"
+#define ZEO_ERR_NURBS_INVALID_ORDER           "invalid order for NURBS"
 #define ZEO_ERR_NURBS_SIZEMISMATCH            "size mismatch between control points of two NURBS surfaces"
 #define ZEO_ERR_NURBS_KNOTALREADY             "knot already allocated"
 #define ZEO_ERR_NURBS_CPALREADY               "control point already allocated"
