@@ -269,11 +269,6 @@ static zVec _zNURBS3DKnotFromZTK(zNURBS3D *nurbs, int id, ZTK *ztk)
   return nurbs->param[id].knot;
 }
 
-static void *_zNURBS3DOrderFromZTK(void *obj, int i, void *arg, ZTK *ztk){
-  zNURBS3DOrder((zNURBS3D*)obj,0) = ZTKInt( ztk );
-  zNURBS3DOrder((zNURBS3D*)obj,1) = ZTKInt( ztk );
-  return obj;
-}
 static void *_zNURBS3DUKnotFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return _zNURBS3DKnotFromZTK( (zNURBS3D *)obj, 0, ztk ) ? obj : NULL;
 }
@@ -310,10 +305,6 @@ static void *_zNURBS3DCPFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 
-static bool _zNURBS3DOrderFPrint(FILE *fp, int i, void *obj){
-  fprintf( fp, "%d %d\n", zNURBS3DOrder((zNURBS3D*)obj,0), zNURBS3DOrder((zNURBS3D*)obj,1) );
-  return true;
-}
 static bool _zNURBS3DUKnotFPrint(FILE *fp, int i, void *obj){
   if( zVecSizeNC(((zNURBS3D*)obj)->param[0].knot) <= 0 ) return false;
   zVecFPrint( fp, ((zNURBS3D*)obj)->param[0].knot );
@@ -334,7 +325,6 @@ static bool _zNURBS3DSizeFPrint(FILE *fp, int i, void *obj){
 }
 
 static const ZTKPrp __ztk_prp_nurbs[] = {
-  { ZTK_KEY_ZEO_NURBS_ORDER, 1, _zNURBS3DOrderFromZTK, _zNURBS3DOrderFPrint },
   { ZTK_KEY_ZEO_NURBS_UKNOT, 1, _zNURBS3DUKnotFromZTK, _zNURBS3DUKnotFPrint },
   { ZTK_KEY_ZEO_NURBS_VKNOT, 1, _zNURBS3DVKnotFromZTK, _zNURBS3DVKnotFPrint },
   { ZTK_KEY_ZEO_NURBS_SIZE,  1, _zNURBS3DSizeFromZTK, _zNURBS3DSizeFPrint },
@@ -346,7 +336,10 @@ static const ZTKPrp __ztk_prp_nurbs[] = {
 zNURBS3D *zNURBS3DFromZTK(zNURBS3D *nurbs, ZTK *ztk)
 {
   zNURBS3DInit( nurbs );
-  return (zNURBS3D *)ZTKEvalKey( nurbs, NULL, ztk, __ztk_prp_nurbs );
+  if( !ZTKEvalKey( nurbs, NULL, ztk, __ztk_prp_nurbs ) ) return NULL;
+  zNURBS3DOrder(nurbs,0) = zNURBS3DKnotNum(nurbs,0) - zNURBS3DCPNum(nurbs,0) - 1;
+  zNURBS3DOrder(nurbs,1) = zNURBS3DKnotNum(nurbs,1) - zNURBS3DCPNum(nurbs,1) - 1;
+  return nurbs;
 }
 
 /* print out a 3D NURBS to a file. */

@@ -219,7 +219,6 @@ __ZEO_EXPORT zPH3D *zNURBS3DToPH(const zNURBS3D *nurbs, zPH3D *ph);
 
 /* I/O */
 
-#define ZTK_KEY_ZEO_NURBS_ORDER "order"
 #define ZTK_KEY_ZEO_NURBS_UKNOT "uknot"
 #define ZTK_KEY_ZEO_NURBS_VKNOT "vknot"
 #define ZTK_KEY_ZEO_NURBS_SIZE  "size"
