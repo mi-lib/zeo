@@ -214,6 +214,47 @@ __ZEO_EXPORT zFrame3D *zFrame3DFromZYZ(zFrame3D *frame, double x, double y, doub
 __ZEO_EXPORT zFrame3D *zFrame3DFromAA(zFrame3D *frame, double x, double y, double z, double xa, double ya, double za);
 __ZEO_EXPORT zFrame3D *zFrame3DFromDH(zFrame3D *frame, double a, double alpha, double d, double theta);
 
+/*! \brief translate a 3D view frame with respect to the current view.
+ *
+ * zFrame3DTranslateView() translates a 3D view frame \a frame at (\a x, \a y, \a z) with respect to
+ * the current view, i.e., \a frame itself.
+ * \return
+ * zFrame3DTranslateView() always returns the pointer \a frame.
+ */
+__ZEO_EXPORT zFrame3D *zFrame3DTranslateView(zFrame3D *frame, double x, double y, double z);
+
+/*! \brief rotate a 3D view frame with respect to the current view.
+ *
+ * zFrame3DRotateView() rotates a 3D view frame \a frame at a radian angle \a angle about an axis pointed
+ * by (\a x, \a y, \a z) with respect to the current view, i.e., \a frame itself.
+ * \return
+ * zFrame3DRotateView() always returns the pointer \a frame.
+ */
+__ZEO_EXPORT zFrame3D *zFrame3DRotateView(zFrame3D *frame, double angle, double x, double y, double z);
+
+/*! \brief locate a 3D view frame as to view a 3D point from a another specified point.
+ *
+ * zFrame3DLookAtView() locates a 3D view frame \a frame as to view a 3D point (\a eyex, \a eyey, \a eyez)
+ * from another point (\a centerx, \a centery, \a centerz), where a 3D vector (\a upx, \a upy, \a upz)
+ * points the upper direction. As the result, the x-axis of the updated \a frame is in parallel to
+ * (\a eyex - \a centerx, \a eyey - \a centery, \a eyez - \a centerz), the z-axis of \a frame is on a
+ * plane spanned by the x-axis and (\a upx, \a upy, \a upz) and perpendicular to the x-axis, and the y-axis
+ * is determined from the z- and x-axes based on the right-hand coordinate rule.
+ * \return
+ * zFrame3DLookAtView() always returns the pointer \a frame.
+ */
+__ZEO_EXPORT zFrame3D *zFrame3DLookAtView(zFrame3D *frame, double eyex, double eyey, double eyez, double centerx, double centery, double centerz, double upx, double upy, double upz);
+
+/*! \brief rotate a 3D view frame as to keep gazing a 3D point at a distance.
+ *
+ * zFrame3DGazeAndRotateView() rotates a 3D view frame \a frame as to keep gazing the given 3D point
+ * (\a eyex, \a eyey, \a eyez) at a distance \a distance. The view direction is determined from \a pan
+ * and \a tilt angles in radian, where \a roll is the roll angle.
+ * \return
+ * zFrame3DGazeAndRotateView() always returns the pointer \a frame.
+ */
+__ZEO_EXPORT zFrame3D *zFrame3DGazeAndRotateView(zFrame3D *frame, double eyex, double eyey, double eyez, double distance, double pan, double tilt, double roll);
+
 /*! \brief convert a 3D coordinate frame to an array or a 6D vector.
  *
  * zArrayToFrame3DZYX() converts an array of double-precision floating point values with

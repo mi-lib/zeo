@@ -1,3 +1,4 @@
+2025.04.16. Added zFrame3DTranslateView, zFrame3DRotateView, zFrame3DLookAtView, and zFrame3DGazeAndRotateView. [zeo_frame3d]
 2025.04.15. Redefined ZEO_ERR_NURBS_INVALID_ORDER. [zeo_errmsg]
 2025.04.15. Modified _zNURBS3DKnotFromZTK to use zVecFromZTK. [zeo_nurbs]
 2025.04.15. Modified zNURBS3DFromZTK to compute orders of a NURBS surface from the numbers of knots and control points. [zeo_nurbs]

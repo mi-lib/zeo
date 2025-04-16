@@ -161,6 +161,60 @@ zFrame3D *zFrame3DFromDH(zFrame3D *frame, double a, double alpha, double d, doub
   return frame;
 }
 
+/* translate a 3D view frame with respect to the current view. */
+zFrame3D *zFrame3DTranslateView(zFrame3D *frame, double x, double y, double z)
+{
+  zVec3D trans;
+
+  zVec3DCreate( &trans, x, y, z );
+  zMulMat3DVec3DDRC( zFrame3DAtt(frame), &trans );
+  zVec3DAddDRC( zFrame3DPos(frame), &trans );
+  return frame;
+}
+
+/* rotate a 3D view frame with respect to the current view. */
+zFrame3D *zFrame3DRotateView(zFrame3D *frame, double angle, double x, double y, double z)
+{
+  zVec3D aa;
+  zMat3D r;
+
+  zVec3DCreate( &aa, x, y, z );
+  if( !zIsTiny( zVec3DNormalizeDRC( &aa ) ) ){
+    zVec3DMulDRC( &aa, zDeg2Rad(angle) );
+    zMat3DFromAA( &r, &aa );
+    zMulMat3DMat3D( zFrame3DAtt(frame), &r, zFrame3DAtt(frame) );
+  }
+  return frame;
+}
+
+/* locate a 3D view frame as to view a 3D point from a another specified point. */
+zFrame3D *zFrame3DLookAtView(zFrame3D *frame, double eyex, double eyey, double eyez, double centerx, double centery, double centerz, double upx, double upy, double upz)
+{
+  zVec3D gazevec, uppervec;
+
+  zVec3DCreate( zFrame3DPos(frame), centerx, centery, centerz );
+  zVec3DCreate( &gazevec, centerx - eyex, centery - eyey, centerz - eyez );
+  zVec3DCreate( &uppervec, upx, upy, upz );
+  zVec3DOrthogonalize( &uppervec, &gazevec, &uppervec );
+  zVec3DNormalize( &gazevec, zMat3DVec(zFrame3DAtt(frame),zX) );
+  zVec3DNormalize( &uppervec, zMat3DVec(zFrame3DAtt(frame),zZ) );
+  zVec3DOuterProd( zMat3DVec(zFrame3DAtt(frame),zZ), zMat3DVec(zFrame3DAtt(frame),zX), zMat3DVec(zFrame3DAtt(frame),zY) );
+  return frame;
+}
+
+/* rotate a 3D view frame as to keep gazing a 3D point at a distance. */
+zFrame3D *zFrame3DGazeAndRotateView(zFrame3D *frame, double eyex, double eyey, double eyez, double distance, double pan, double tilt, double roll)
+{
+  zVec3D eye;
+  zMat3D r;
+
+  zMat3DFromZYX( &r, pan, tilt, roll );
+  zMulMat3DMat3D( zFrame3DAtt(frame), &r, zFrame3DAtt(frame) );
+  zVec3DCreate( &eye, eyex, eyey, eyez );
+  zVec3DCat( &eye, distance, zMat3DVec(zFrame3DAtt(frame),zX), zFrame3DPos(frame) );
+  return frame;
+}
+
 /* convert an array of values for position and z-y-x Eulerian angles to a 3D frame. */
 zFrame3D *zArrayToFrame3DZYX(const double *array, zFrame3D *frame)
 {
