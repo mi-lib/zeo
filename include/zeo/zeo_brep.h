@@ -7,7 +7,7 @@
 #ifndef __ZEO_BREP_H__
 #define __ZEO_BREP_H__
 
-#include <zeo/zeo_ph.h>
+#include <zeo/zeo_ph3d.h>
 #include <zeo/zeo_col.h>
 
 __BEGIN_DECLS

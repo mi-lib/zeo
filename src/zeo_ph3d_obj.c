@@ -1,10 +1,10 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_ph_obj - polyhedron I/O on OBJ format
+ * zeo_ph3d_obj - polyhedron I/O on OBJ format.
  */
 
-#include <zeo/zeo_ph.h>
+#include <zeo/zeo_ph3d.h>
 
 static int _zOBJCountKey(FILE *fp, const char *key)
 {

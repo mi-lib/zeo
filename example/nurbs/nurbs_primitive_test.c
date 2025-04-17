@@ -1,4 +1,4 @@
-#include <zeo/zeo_nurbs_shape.h>
+#include <zeo/zeo_nurbs3d_shape.h>
 
 void foutput(FILE *fp, zNURBS3D *nurbs, const char *shapename, const char *opticname, float rd, float gd, float bd)
 {

@@ -1,11 +1,11 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_ph - polyhedron
+ * zeo_ph3d - polyhedron
  */
 
-#ifndef __ZEO_PH_H__
-#define __ZEO_PH_H__
+#ifndef __ZEO_PH3D_H__
+#define __ZEO_PH3D_H__
 
 #include <zeo/zeo_vec3d_data.h>
 
@@ -220,12 +220,12 @@ __ZEO_EXPORT void zPH3DFPrintZTK(FILE *fp, const zPH3D *ph);
 
 __END_DECLS
 
-#include <zeo/zeo_ph_stl.h>
-#include <zeo/zeo_ph_ply.h>
-#include <zeo/zeo_ph_obj.h>
+#include <zeo/zeo_ph3d_stl.h>
+#include <zeo/zeo_ph3d_ply.h>
+#include <zeo/zeo_ph3d_obj.h>
 
 #ifdef __ZEO_USE_DAE
-#include <zeo/zeo_ph_dae.h>
+#include <zeo/zeo_ph3d_dae.h>
 #endif /* __ZEO_USE_DAE */
 
-#endif /* __ZEO_PH_H__ */
+#endif /* __ZEO_PH3D_H__ */

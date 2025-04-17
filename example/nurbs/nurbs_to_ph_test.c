@@ -1,4 +1,3 @@
-#include <zeo/zeo_nurbs.h>
 #include <zeo/zeo_shape3d.h>
 
 #define TEST_ZTK   "test_nurbs.ztk"

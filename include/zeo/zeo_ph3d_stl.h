@@ -1,11 +1,11 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_ph_stl - polyhedron I/O on STL format
+ * zeo_ph3d_stl - polyhedron I/O on STL format
  */
 
-#ifndef __ZEO_PH_STL_H__
-#define __ZEO_PH_STL_H__
+#ifndef __ZEO_PH3D_STL_H__
+#define __ZEO_PH3D_STL_H__
 
 /* NOTE: never include this header file in user programs. */
 
@@ -28,4 +28,4 @@ __ZEO_EXPORT void zPH3DWriteFileSTL(zPH3D *ph, const char *filename, const char 
 
 __END_DECLS
 
-#endif /* __ZEO_PH_STL_H__ */
+#endif /* __ZEO_PH3D_STL_H__ */

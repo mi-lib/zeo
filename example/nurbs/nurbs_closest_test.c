@@ -1,4 +1,4 @@
-#include <zeo/zeo_nurbs.h>
+#include <zeo/zeo_nurbs3d.h>
 
 int main(void)
 {

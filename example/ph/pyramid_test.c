@@ -1,4 +1,4 @@
-#include <zeo/zeo_ph.h>
+#include <zeo/zeo_ph3d.h>
 
 void output(zPH3D *ph)
 {

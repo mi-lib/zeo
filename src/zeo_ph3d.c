@@ -1,16 +1,11 @@
 ﻿/* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_ph - polyhedron
+ * zeo_ph3d - polyhedron.
  */
 
-#include <zeo/zeo_ph.h>
+#include <zeo/zeo_ph3d.h>
 #include <zeo/zeo_vec2d.h>
-
-/* ********************************************************** */
-/* CLASS: zPH3D
- * 3D polyhedron class
- * ********************************************************** */
 
 /* initialize a 3D polyhedron. */
 zPH3D *zPH3DInit(zPH3D *ph)

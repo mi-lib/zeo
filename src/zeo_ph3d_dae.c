@@ -1,10 +1,10 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_ph_dae - polyhedron I/O on DAE format
+ * zeo_ph3d_dae - polyhedron I/O on DAE format.
  */
 
-#include <zeo/zeo_ph.h>
+#include <zeo/zeo_ph3d.h>
 
 /* source geometry in DAE */
 typedef enum{ ZEO_DAE_COORD_INVALID=-1, ZEO_DAE_XYZ, ZEO_DAE_TEXTURE } zDAECoordType;

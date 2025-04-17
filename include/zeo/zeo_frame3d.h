@@ -234,12 +234,12 @@ __ZEO_EXPORT zFrame3D *zFrame3DRotateView(zFrame3D *frame, double angle, double 
 
 /*! \brief locate a 3D view frame as to view a 3D point from a another specified point.
  *
- * zFrame3DLookAtView() locates a 3D view frame \a frame as to view a 3D point (\a eyex, \a eyey, \a eyez)
- * from another point (\a centerx, \a centery, \a centerz), where a 3D vector (\a upx, \a upy, \a upz)
- * points the upper direction. As the result, the x-axis of the updated \a frame is in parallel to
- * (\a eyex - \a centerx, \a eyey - \a centery, \a eyez - \a centerz), the z-axis of \a frame is on a
- * plane spanned by the x-axis and (\a upx, \a upy, \a upz) and perpendicular to the x-axis, and the y-axis
- * is determined from the z- and x-axes based on the right-hand coordinate rule.
+ * zFrame3DLookAtView() locates a 3D view frame \a frame as to look at a specified 3D point
+ * (\a centerx, \a centery, \a centerz) from another point (\a eyex, \a eyey, \a eyez), where a 3D vector
+ * (\a upx, \a upy, \a upz) points the upper direction for the viewer. As the result, the x-axis of the
+ * updated \a frame is in parallel to (\a centerx - \a eyex, \a centery - \a eyey, \a centerz - \a eyez),
+ * the z-axis of \a frame is on a plane spanned by the x-axis and (\a upx, \a upy, \a upz) and perpendicular
+ * to the x-axis, and the y-axis is determined from the z- and x-axes based on the right-hand coordinate rule.
  * \return
  * zFrame3DLookAtView() always returns the pointer \a frame.
  */
@@ -247,13 +247,13 @@ __ZEO_EXPORT zFrame3D *zFrame3DLookAtView(zFrame3D *frame, double eyex, double e
 
 /*! \brief rotate a 3D view frame as to keep gazing a 3D point at a distance.
  *
- * zFrame3DGazeAndRotateView() rotates a 3D view frame \a frame as to keep gazing the given 3D point
- * (\a eyex, \a eyey, \a eyez) at a distance \a distance. The view direction is determined from \a pan
- * and \a tilt angles in radian, where \a roll is the roll angle.
+ * zFrame3DGazeAndRotateView() rotates a 3D view frame \a frame as to look at a specified 3D point
+ * (\a centerx, \a centery, \a centerz) at a distance \a distance. The view direction is determined from
+ * \a pan and \a tilt angles in radian, where \a roll is the roll angle.
  * \return
  * zFrame3DGazeAndRotateView() always returns the pointer \a frame.
  */
-__ZEO_EXPORT zFrame3D *zFrame3DGazeAndRotateView(zFrame3D *frame, double eyex, double eyey, double eyez, double distance, double pan, double tilt, double roll);
+__ZEO_EXPORT zFrame3D *zFrame3DGazeAndRotateView(zFrame3D *frame, double centerx, double centery, double centerz, double distance, double pan, double tilt, double roll);
 
 /*! \brief convert a 3D coordinate frame to an array or a 6D vector.
  *

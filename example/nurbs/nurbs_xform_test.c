@@ -1,4 +1,4 @@
-#include <zeo/zeo_nurbs.h>
+#include <zeo/zeo_nurbs3d.h>
 
 void nurbs_fprint(FILE *fp, zNURBS3D *nurbs)
 {

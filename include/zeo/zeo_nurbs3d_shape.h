@@ -1,10 +1,10 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_nurbs_shape - conversion from 3D shape to NURBS surface
+ * zeo_nurbs3d_shape - conversion from 3D shape to NURBS surface.
  */
-#ifndef __ZEO_NURBS_SHAPE_H__
-#define __ZEO_NURBS_SHAPE_H__
+#ifndef __ZEO_NURBS3D_SHAPE_H__
+#define __ZEO_NURBS3D_SHAPE_H__
 
 #include <zeo/zeo_shape3d.h>
 
@@ -39,4 +39,4 @@ __ZEO_EXPORT zNURBS3D *zNURBS3DTorus(zNURBS3D *nurbs, const zVec3D *center, cons
 
 __END_DECLS
 
-#endif /* __ZEO_NURBS_H__ */
+#endif /* __ZEO_NURBS3D_SHAPE_H__ */

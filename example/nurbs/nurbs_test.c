@@ -1,4 +1,4 @@
-#include <zeo/zeo_nurbs.h>
+#include <zeo/zeo_nurbs3d.h>
 
 zVec3D cp[] = {
   { { 1.0,-2.0, 0.0 } },

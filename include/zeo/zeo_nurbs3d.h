@@ -1,12 +1,12 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_nurbs - NURBS curve / surface
+ * zeo_nurbs3d - NURBS curve / surface.
  */
-#ifndef __ZEO_NURBS_H__
-#define __ZEO_NURBS_H__
+#ifndef __ZEO_NURBS3D_H__
+#define __ZEO_NURBS3D_H__
 
-#include <zeo/zeo_ph.h>
+#include <zeo/zeo_ph3d.h>
 
 __BEGIN_DECLS
 
@@ -233,4 +233,4 @@ __ZEO_EXPORT void zNURBS3DFPrintZTK(FILE *fp, const zNURBS3D *nurbs);
 
 __END_DECLS
 
-#endif /* __ZEO_NURBS_H__ */
+#endif /* __ZEO_NURBS3D_H__ */

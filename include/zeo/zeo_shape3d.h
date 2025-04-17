@@ -7,7 +7,7 @@
 #ifndef __ZEO_SHAPE3D_H__
 #define __ZEO_SHAPE3D_H__
 
-#include <zeo/zeo_nurbs.h>
+#include <zeo/zeo_nurbs3d.h>
 #include <zeo/zeo_render_optic.h>
 #include <zeo/zeo_render_texture.h>
 

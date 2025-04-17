@@ -1,10 +1,10 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_nurbs - NURBS curve / surface
+ * zeo_nurbs3d - NURBS curve / surface.
  */
 
-#include <zeo/zeo_nurbs.h>
+#include <zeo/zeo_nurbs3d.h>
 
 /* allocate a NURBS curve / surface. */
 bool zNURBS3DAlloc(zNURBS3D *nurbs, int size1, int size2, int order1, int order2)

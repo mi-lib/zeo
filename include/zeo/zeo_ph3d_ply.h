@@ -1,15 +1,15 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_ph_ply - polyhedron I/O on PLY (Stanford Triangle) format
+ * zeo_ph3d_ply - polyhedron I/O on PLY (Stanford Triangle) format
  * for specification of the format, refer:
  * http://paulbourke.net/dataformats/ply/
  * for public PLY files, refer:
  * http://graphics.stanford.edu/data/3Dscanrep/
  */
 
-#ifndef __ZEO_PH_PLY_H__
-#define __ZEO_PH_PLY_H__
+#ifndef __ZEO_PH3D_PLY_H__
+#define __ZEO_PH3D_PLY_H__
 
 /* NOTE: never include this header file in user programs. */
 
@@ -28,4 +28,4 @@ __ZEO_EXPORT bool zPH3DWriteFilePLY_Bin(zPH3D *ph, const char *filename);
 
 __END_DECLS
 
-#endif /* __ZEO_PH_PLY_H__ */
+#endif /* __ZEO_PH3D_PLY_H__ */

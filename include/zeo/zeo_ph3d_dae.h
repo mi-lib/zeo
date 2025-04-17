@@ -1,11 +1,11 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_ph_dae - polyhedron I/O on DAE format
+ * zeo_ph3d_dae - polyhedron I/O on DAE format
  */
 
-#ifndef __ZEO_PH_DAE_H__
-#define __ZEO_PH_DAE_H__
+#ifndef __ZEO_PH3D_DAE_H__
+#define __ZEO_PH3D_DAE_H__
 
 /* NOTE: never include this header file in user programs. */
 
@@ -16,4 +16,4 @@ __ZEO_EXPORT zPH3D *zPH3DReadFileDAE(zPH3D *ph, const char *filename);
 
 __END_DECLS
 
-#endif /* __ZEO_PH_DAE_H__ */
+#endif /* __ZEO_PH3D_DAE_H__ */

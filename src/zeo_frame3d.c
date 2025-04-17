@@ -192,8 +192,8 @@ zFrame3D *zFrame3DLookAtView(zFrame3D *frame, double eyex, double eyey, double e
 {
   zVec3D gazevec, uppervec;
 
-  zVec3DCreate( zFrame3DPos(frame), centerx, centery, centerz );
-  zVec3DCreate( &gazevec, centerx - eyex, centery - eyey, centerz - eyez );
+  zVec3DCreate( zFrame3DPos(frame), eyex, eyey, eyez );
+  zVec3DCreate( &gazevec, eyex - centerx, eyey - centery, eyez - centerz );
   zVec3DCreate( &uppervec, upx, upy, upz );
   zVec3DOrthogonalize( &uppervec, &gazevec, &uppervec );
   zVec3DNormalize( &gazevec, zMat3DVec(zFrame3DAtt(frame),zX) );
@@ -203,15 +203,15 @@ zFrame3D *zFrame3DLookAtView(zFrame3D *frame, double eyex, double eyey, double e
 }
 
 /* rotate a 3D view frame as to keep gazing a 3D point at a distance. */
-zFrame3D *zFrame3DGazeAndRotateView(zFrame3D *frame, double eyex, double eyey, double eyez, double distance, double pan, double tilt, double roll)
+zFrame3D *zFrame3DGazeAndRotateView(zFrame3D *frame, double centerx, double centery, double centerz, double distance, double pan, double tilt, double roll)
 {
-  zVec3D eye;
+  zVec3D center;
   zMat3D r;
 
   zMat3DFromZYX( &r, pan, tilt, roll );
   zMulMat3DMat3D( zFrame3DAtt(frame), &r, zFrame3DAtt(frame) );
-  zVec3DCreate( &eye, eyex, eyey, eyez );
-  zVec3DCat( &eye, distance, zMat3DVec(zFrame3DAtt(frame),zX), zFrame3DPos(frame) );
+  zVec3DCreate( &center, centerx, centery, centerz );
+  zVec3DCat( &center, distance, zMat3DVec(zFrame3DAtt(frame),zX), zFrame3DPos(frame) );
   return frame;
 }
 

@@ -1,10 +1,10 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_ph_stl - polyhedron I/O on STL format
+ * zeo_ph3d_stl - polyhedron I/O on STL format.
  */
 
-#include <zeo/zeo_ph.h>
+#include <zeo/zeo_ph3d.h>
 
 /* register a vector to a STL vertex tree. */
 static zVec3DTree *_zSTLVertReg(zVec3DTree *tree, zVec3D *v)

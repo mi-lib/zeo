@@ -1,10 +1,10 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_nurbs_shape - conversion from 3D shape to NURBS surface
+ * zeo_nurbs3d_shape - conversion from 3D shape to NURBS surface.
  */
 
-#include <zeo/zeo_nurbs_shape.h>
+#include <zeo/zeo_nurbs3d_shape.h>
 
 /* convert a sphere to an instance of ellipsoid. */
 zEllips3D *zSphere3DToEllips3D(const zSphere3D *sphere, zEllips3D *ellips)
