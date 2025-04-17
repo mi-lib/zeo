@@ -1,3 +1,4 @@
+2025.04.17. Modified zFrame3DRotateView to specify angle in radian. [zeo_frame3d]
 2025.04.17. Renamed zeo_nurbs* to zeo_nurbs3d*. [zeo_nurbs3d, zeo_nurbs3d_shape]
 2025.04.17. Renamed zeo_ph* to zeo_ph3d*. [zeo_ph3d, zeo_ph3d_stl, zeo_ph3d_ply, zeo_ph3d_obj, zeo_ph3d_dae, zeo_bv2d, zeo_brep]
 2025.04.17. Debugged zFrame3DLookAtView and zFrame3DGazeAndRotateView. [zeo_frame3d]

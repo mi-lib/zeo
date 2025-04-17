@@ -225,7 +225,7 @@ __ZEO_EXPORT zFrame3D *zFrame3DTranslateView(zFrame3D *frame, double x, double y
 
 /*! \brief rotate a 3D view frame with respect to the current view.
  *
- * zFrame3DRotateView() rotates a 3D view frame \a frame at a radian angle \a angle about an axis pointed
+ * zFrame3DRotateView() rotates a 3D view frame \a frame at an angle \a angle in radian about an axis pointed
  * by (\a x, \a y, \a z) with respect to the current view, i.e., \a frame itself.
  * \return
  * zFrame3DRotateView() always returns the pointer \a frame.

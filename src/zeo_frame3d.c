@@ -180,7 +180,7 @@ zFrame3D *zFrame3DRotateView(zFrame3D *frame, double angle, double x, double y, 
 
   zVec3DCreate( &aa, x, y, z );
   if( !zIsTiny( zVec3DNormalizeDRC( &aa ) ) ){
-    zVec3DMulDRC( &aa, zDeg2Rad(angle) );
+    zVec3DMulDRC( &aa, angle );
     zMat3DFromAA( &r, &aa );
     zMulMat3DMat3D( zFrame3DAtt(frame), &r, zFrame3DAtt(frame) );
   }
