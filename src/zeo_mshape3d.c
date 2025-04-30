@@ -225,7 +225,7 @@ zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk)
     ZRUNWARN( ZEO_WARN_MSHAPE_EMPTY );
     return NULL;
   }
-  ZTKEvalTag( ms, NULL, ztk, __ztk_prp_mshape );
+  _ZTKEvalTag( ms, NULL, ztk, __ztk_prp_mshape );
   return ms;
 }
 
@@ -233,17 +233,17 @@ zMShape3D *zMShape3DFromZTK(zMShape3D *ms, ZTK *ztk)
 void zMShape3DFPrintZTK(FILE *fp, zMShape3D *ms)
 {
   ZTKPrp *prp;
-  size_t size;
+  size_t prpnum;
 
-  if( !( prp = ZTKPrpDup( __ztk_prp_mshape ) ) ){
+  prpnum = _ZTKPrpNum( __ztk_prp_mshape );
+  if( !( prp = ZTKPrpDup( __ztk_prp_mshape, prpnum ) ) ){
     ZALLOCERROR();
     return;
   }
-  size = sizeof(__ztk_prp_mshape) / sizeof(ZTKPrp);
-  _ZTKPrpSetNum( prp, size, ZTK_TAG_ZEO_OPTIC,   zMShape3DOpticNum(ms) );
-  _ZTKPrpSetNum( prp, size, ZTK_TAG_ZEO_TEXTURE, zMShape3DTextureNum(ms) );
-  _ZTKPrpSetNum( prp, size, ZTK_TAG_ZEO_SHAPE,   zMShape3DShapeNum(ms) );
-  _ZTKPrpTagFPrint( fp, ms, prp, size );
+  ZTKPrpSetNum( prp, prpnum, ZTK_TAG_ZEO_OPTIC,   zMShape3DOpticNum(ms) );
+  ZTKPrpSetNum( prp, prpnum, ZTK_TAG_ZEO_TEXTURE, zMShape3DTextureNum(ms) );
+  ZTKPrpSetNum( prp, prpnum, ZTK_TAG_ZEO_SHAPE,   zMShape3DShapeNum(ms) );
+  ZTKPrpTagFPrint( fp, ms, prp, prpnum );
   free( prp );
 }
 

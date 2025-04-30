@@ -258,7 +258,7 @@ static const ZTKPrp __ztk_prp_shape_cyl[] = {
 /* print a 3D cylinder out to a file in a ZTK format. */
 void zCyl3DFPrintZTK(FILE *fp, const zCyl3D *cyl)
 {
-  ZTKPrpKeyFPrint( fp, (void*)cyl, __ztk_prp_shape_cyl );
+  _ZTKPrpKeyFPrint( fp, (void*)cyl, __ztk_prp_shape_cyl );
 }
 
 /* methods for abstraction */
@@ -296,7 +296,7 @@ static zPH3D *_zShape3DCylToPH(void *body, zPH3D *ph){
   return zCyl3DToPH( (zCyl3D*)body, ph ); }
 static void *_zShape3DCylParseZTK(void *body, ZTK *ztk){
   zCyl3DInit( (zCyl3D*)body );
-  return ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_cyl ); }
+  return _ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_cyl ); }
 static void _zShape3DCylFPrintZTK(FILE *fp, void *body){
   zCyl3DFPrintZTK( fp, (zCyl3D*)body ); }
 

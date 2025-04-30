@@ -312,7 +312,7 @@ static const ZTKPrp __ztk_prp_shape_ellips[] = {
 /* print a 3D ellipsoid out to a file in a ZTK format. */
 void zEllips3DFPrintZTK(FILE *fp, const zEllips3D *ellips)
 {
-  ZTKPrpKeyFPrint( fp, (void*)ellips, __ztk_prp_shape_ellips );
+  _ZTKPrpKeyFPrint( fp, (void*)ellips, __ztk_prp_shape_ellips );
 }
 
 /* methods for abstraction */
@@ -350,7 +350,7 @@ static zPH3D *_zShape3DEllipsToPH(void *body, zPH3D *ph){
   return zEllips3DToPH( (zEllips3D*)body, ph ); }
 static void *_zShape3DEllipsParseZTK(void *body, ZTK *ztk){
   zEllips3DInit( (zEllips3D*)body );
-  return ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_ellips ); }
+  return _ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_ellips ); }
 static void _zShape3DEllipsFPrintZTK(FILE *fp, void *body){
   zEllips3DFPrintZTK( fp, (zEllips3D*)body ); }
 

@@ -135,7 +135,7 @@ static const ZTKPrp __ztk_prp_optic[] = {
 zOpticalInfo *zOpticalInfoFromZTK(zOpticalInfo *oi, ZTK *ztk)
 {
   zOpticalInfoInit( oi );
-  return (zOpticalInfo *)ZTKEvalKey( oi, NULL, ztk, __ztk_prp_optic );
+  return (zOpticalInfo *)_ZTKEvalKey( oi, NULL, ztk, __ztk_prp_optic );
 }
 
 /* add an optical info to a ZTK format processor. */
@@ -173,6 +173,6 @@ ZTK *zOpticalInfoToZTK(const zOpticalInfo *oi, ZTK *ztk)
 /* print information of the optical parameter set out to a file. */
 void zOpticalInfoFPrintZTK(FILE *fp, const zOpticalInfo *oi)
 {
-  ZTKPrpKeyFPrint( fp, (void *)oi, __ztk_prp_optic );
+  _ZTKPrpKeyFPrint( fp, (void *)oi, __ztk_prp_optic );
   fprintf( fp, "\n" );
 }

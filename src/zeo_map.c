@@ -61,7 +61,7 @@ static const ZTKPrp __ztk_prp_map[] = {
 zMap *zMapFromZTK(zMap *map, ZTK *ztk)
 {
   zMapInit( map );
-  if( !ZTKEvalKey( map, NULL, ztk, __ztk_prp_map ) ) return NULL;
+  if( !_ZTKEvalKey( map, NULL, ztk, __ztk_prp_map ) ) return NULL;
   if( !map->body ){
     ZRUNERROR( ZEO_ERR_MAP_TYPENOTSPECIFIED );
     return NULL;
@@ -71,6 +71,6 @@ zMap *zMapFromZTK(zMap *map, ZTK *ztk)
 
 void zMapFPrintZTK(FILE *fp, zMap *map)
 {
-  ZTKPrpKeyFPrint( fp, map, __ztk_prp_map );
+  _ZTKPrpKeyFPrint( fp, map, __ztk_prp_map );
   map->com->_fprintZTK( fp, map->body );
 }

@@ -279,7 +279,7 @@ static const ZTKPrp __ztk_prp_shape_cone[] = {
 /* print a 3D cone out to a file in a ZTK format. */
 void zCone3DFPrintZTK(FILE *fp, const zCone3D *cone)
 {
-  ZTKPrpKeyFPrint( fp, (void*)cone, __ztk_prp_shape_cone );
+  _ZTKPrpKeyFPrint( fp, (void*)cone, __ztk_prp_shape_cone );
 }
 
 /* methods for abstraction */
@@ -317,7 +317,7 @@ static zPH3D *_zShape3DConeToPH(void *body, zPH3D *ph){
   return zCone3DToPH( (zCone3D*)body, ph ); }
 static void *_zShape3DConeParseZTK(void *body, ZTK *ztk){
   zCone3DInit( (zCone3D*)body );
-  return ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_cone ); }
+  return _ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_cone ); }
 static void _zShape3DConeFPrintZTK(FILE *fp, void *body){
   zCone3DFPrintZTK( fp, (zCone3D*)body ); }
 

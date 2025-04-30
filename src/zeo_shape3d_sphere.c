@@ -281,7 +281,7 @@ static const ZTKPrp __ztk_prp_shape_sphere[] = {
 /* print a 3D sphere out to a file in a ZTK format. */
 void zSphere3DFPrintZTK(FILE *fp, const zSphere3D *sphere)
 {
-  ZTKPrpKeyFPrint( fp, (void*)sphere, __ztk_prp_shape_sphere );
+  _ZTKPrpKeyFPrint( fp, (void*)sphere, __ztk_prp_shape_sphere );
 }
 
 /* methods for abstraction */
@@ -319,7 +319,7 @@ static zPH3D *_zShape3DSphereToPH(void *body, zPH3D *ph){
   return zSphere3DToPH( (zSphere3D*)body, ph ); }
 static void *_zShape3DSphereParseZTK(void *body, ZTK *ztk){
   zSphere3DInit( (zSphere3D*)body );
-  return ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_sphere ); }
+  return _ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_sphere ); }
 static void _zShape3DSphereFPrintZTK(FILE *fp, void *body){
   zSphere3DFPrintZTK( fp, (zSphere3D*)body ); }
 

@@ -390,7 +390,7 @@ zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoAr
   prp.imported = false;
   zFrame3DIdent( &prp.f );
   prp.xformed = false;
-  if( !ZTKEvalKey( shape, &prp, ztk, __ztk_prp_shape ) ) return NULL;
+  if( !_ZTKEvalKey( shape, &prp, ztk, __ztk_prp_shape ) ) return NULL;
   if( !prp.imported ){
     if( !shape->com ){
       ZRUNERROR( ZEO_ERR_SHAPE_INVALID_TYPE );
@@ -408,7 +408,7 @@ zShape3D *zShape3DFromZTK(zShape3D *shape, zShape3DArray *sarray, zOpticalInfoAr
 void zShape3DFPrintZTK(FILE *fp, const zShape3D *shape)
 {
   if( !shape ) return;
-  ZTKPrpKeyFPrint( fp, (void *)shape, __ztk_prp_shape );
+  _ZTKPrpKeyFPrint( fp, (void *)shape, __ztk_prp_shape );
   shape->com->_fprintZTK( fp, shape->body );
   fprintf( fp, "\n" );
 }

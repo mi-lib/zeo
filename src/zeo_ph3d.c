@@ -651,7 +651,7 @@ zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk)
         zPH3DFaceNum(ph) != num_face ) return NULL;
   }
   /* vertices & faces */
-  ph = (zPH3D *)ZTKEvalKey( ph, &varray, ztk, __ztk_prp_ph );
+  ph = (zPH3D *)_ZTKEvalKey( ph, &varray, ztk, __ztk_prp_ph );
   if( zArraySize(&varray) != 0 )
     zArrayFree( &varray );
   return ph;

@@ -281,7 +281,7 @@ static const ZTKPrp __ztk_prp_shape_box[] = {
 /* print a 3D box out to a file in a ZTK format. */
 void zBox3DFPrintZTK(FILE *fp, const zBox3D *box)
 {
-  ZTKPrpKeyFPrint( fp, (void *)box, __ztk_prp_shape_box );
+  _ZTKPrpKeyFPrint( fp, (void *)box, __ztk_prp_shape_box );
 }
 
 /* print a 3D box out to a file in a plottable format. */
@@ -349,7 +349,7 @@ static zPH3D *_zShape3DBoxToPH(void *body, zPH3D *ph){
   return zBox3DToPH( (zBox3D*)body, ph ); }
 static void *_zShape3DBoxParseZTK(void *body, ZTK *ztk){
   zBox3DInit( (zBox3D*)body );
-  return ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_box ); }
+  return _ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_box ); }
 static void _zShape3DBoxFPrintZTK(FILE *fp, void *body){
   zBox3DFPrintZTK( fp, (zBox3D*)body ); }
 

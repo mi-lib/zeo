@@ -398,7 +398,7 @@ static const ZTKPrp __ztk_prp_terra[] = {
 zTerra *zTerraFromZTK(zTerra *terra, ZTK *ztk)
 {
   zTerraInit( terra );
-  return (zTerra *)ZTKEvalKey( terra, NULL, ztk, __ztk_prp_terra );
+  return (zTerra *)_ZTKEvalKey( terra, NULL, ztk, __ztk_prp_terra );
 }
 
 /* print an elevation map out to a file. */
@@ -407,7 +407,7 @@ void zTerraFPrintZTK(FILE *fp, zTerra *terra)
   int i, j;
   zTerraCell *grid;
 
-  ZTKPrpKeyFPrint( fp, terra, __ztk_prp_terra );
+  _ZTKPrpKeyFPrint( fp, terra, __ztk_prp_terra );
   for( i=0; i<zTerraXSize(terra); i++ )
     for( j=0; j<zTerraYSize(terra); j++ ){
       if( !( grid = zTerraGridNC(terra,i,j) ) ) continue;

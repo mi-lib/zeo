@@ -216,7 +216,7 @@ static const ZTKPrp __ztk_prp_shape_capsule[] = {
 /* print a 3D capsule out to a file in a ZTK format. */
 void zCapsule3DFPrintZTK(FILE *fp, const zCapsule3D *capsule)
 {
-  ZTKPrpKeyFPrint( fp, (void *)capsule, __ztk_prp_shape_capsule );
+  _ZTKPrpKeyFPrint( fp, (void *)capsule, __ztk_prp_shape_capsule );
 }
 
 /* methods for abstraction */
@@ -254,7 +254,7 @@ static zPH3D *_zShape3DCapsuleToPH(void *body, zPH3D *ph){
   return zCapsule3DToPH( (zCapsule3D*)body, ph ); }
 static void *_zShape3DCapsuleParseZTK(void *body, ZTK *ztk){
   zCapsule3DInit( (zCapsule3D*)body );
-  return ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_capsule ); }
+  return _ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_capsule ); }
 static void _zShape3DCapsuleFPrintZTK(FILE *fp, void *body){
   zCapsule3DFPrintZTK( fp, (zCapsule3D*)body ); }
 

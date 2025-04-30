@@ -282,7 +282,7 @@ static const ZTKPrp __ztk_prp_shape_ecyl[] = {
 /* print a 3D elliptic cylinder out to a file in a ZTK format. */
 void zECyl3DFPrintZTK(FILE *fp, const zECyl3D *ecyl)
 {
-  ZTKPrpKeyFPrint( fp, (void*)ecyl, __ztk_prp_shape_ecyl );
+  _ZTKPrpKeyFPrint( fp, (void*)ecyl, __ztk_prp_shape_ecyl );
 }
 
 /* methods for abstraction */
@@ -320,7 +320,7 @@ static zPH3D *_zShape3DECylToPH(void *body, zPH3D *ph){
   return zECyl3DToPH( (zECyl3D*)body, ph ); }
 static void *_zShape3DECylParseZTK(void *body, ZTK *ztk){
   zECyl3DInit( (zECyl3D*)body );
-  return ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_ecyl ); }
+  return _ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_ecyl ); }
 static void _zShape3DECylFPrintZTK(FILE *fp, void *body){
   zECyl3DFPrintZTK( fp, (zECyl3D*)body ); }
 

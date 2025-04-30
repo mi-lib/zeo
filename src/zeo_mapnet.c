@@ -53,7 +53,7 @@ zMapNet *zMapNetFromZTK(zMapNet *mn, ZTK *ztk)
   zMapNetInit( mn );
   num_map = ZTKCountTag( ztk, ZTK_TAG_ZEO_MAP );
   if( !zMapNetAlloc( mn, num_map ) ) return NULL;
-  ZTKEvalTag( mn, NULL, ztk, __ztk_prp_mapnet );
+  _ZTKEvalTag( mn, NULL, ztk, __ztk_prp_mapnet );
   return mn;
 }
 

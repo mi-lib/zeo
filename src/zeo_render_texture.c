@@ -181,7 +181,7 @@ zTexture *zTextureFromZTK(zTexture *texture, ZTK *ztk)
   if( zTextureCoordNum(texture) != num_coord ||
       zTextureFaceNum(texture) != num_face ) return NULL;
   /* vertices & faces */
-  if( !ZTKEvalKey( texture, NULL, ztk, __ztk_prp_texture ) ) return NULL;
+  if( !_ZTKEvalKey( texture, NULL, ztk, __ztk_prp_texture ) ) return NULL;
   switch( texture->type ){
   case ZTEXTURE_COLOR:
     if( !zTextureReadFile( texture, texture->filename ) )
@@ -202,7 +202,7 @@ void zTextureFPrintZTK(FILE *fp, const zTexture *texture)
   int i;
 
   if( !texture ) return;
-  ZTKPrpKeyFPrint( fp, (void *)texture, __ztk_prp_texture );
+  _ZTKPrpKeyFPrint( fp, (void *)texture, __ztk_prp_texture );
   for( i=0; i<zTextureCoordNum(texture); i++ ){
     fprintf( fp, "%s: %d ", ZTK_KEY_ZEO_TEXTURE_COORD, i );
     zVec2DFPrint( fp, zTextureCoord(texture,i) );
