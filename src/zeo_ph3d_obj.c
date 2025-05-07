@@ -21,8 +21,8 @@ static int _zOBJCountKey(FILE *fp, const char *key)
 
 static zPH3D *_zOBJFReadPH3D(FILE *fp, zPH3D *ph)
 {
-  char buf[BUFSIZ], tkn[BUFSIZ], *sp;
-  int vi, fi, i[3], j;
+  char buf[BUFSIZ], tkn[BUFSIZ], *sp, *slashmark;
+  int vi, fi, fvi[3], j;
 
   vi = fi = 0;
   rewind( fp );
@@ -47,11 +47,11 @@ static zPH3D *_zOBJFReadPH3D(FILE *fp, zPH3D *ph)
       sp = buf + 2;
       for( j=0; j<3; j++ ){
         sp = zSTokenSkim( sp, tkn, BUFSIZ );
-        *strchr( tkn, '/' ) = '\0';
-        i[j] = atoi( tkn ) - 1; /* indices of vertices start from 1 in OBJ format. */
+        if( ( slashmark = strchr( tkn, '/' ) ) ) *slashmark = '\0';
+        fvi[j] = atoi( tkn ) - 1; /* indices of vertices start from 1 in OBJ format. */
         /* normal and texture coordinates are ignored */
       }
-      zTri3DCreate( zPH3DFace(ph,fi), zPH3DVert(ph,i[0]), zPH3DVert(ph,i[1]), zPH3DVert(ph,i[2]) );
+      zTri3DCreate( zPH3DFace(ph,fi), zPH3DVert(ph,fvi[0]), zPH3DVert(ph,fvi[1]), zPH3DVert(ph,fvi[2]) );
       if( ++fi > zPH3DFaceNum(ph) ){
         ZRUNERROR( "fatal error" );
         ph = NULL;
@@ -72,8 +72,12 @@ zPH3D *zPH3DFReadOBJ(FILE *fp, zPH3D *ph)
 {
   int nv, nf;
 
-  nv = _zOBJCountKey( fp, "v " );
-  nf = _zOBJCountKey( fp, "f " );
+  if( ( nv = _zOBJCountKey( fp, "v " ) ) == 0 ){
+    ZRUNWARN( ZEO_ERR_NOVERT );
+  }
+  if( ( nf = _zOBJCountKey( fp, "f " ) ) == 0 ){
+    ZRUNWARN( ZEO_ERR_NOFACE );
+  }
   zPH3DAlloc( ph, nv, nf );
   _zOBJFReadPH3D( fp, ph );
   return ph;

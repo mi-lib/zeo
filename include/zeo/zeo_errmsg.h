@@ -36,6 +36,7 @@
 #define ZEO_ERR_ELEM_NPTR_SPECIFIED(XD)       "null pointer specified for position / direction vector of a " #XD " line"
 #define ZEO_ERR_ELEM_ZERO_DIRVEC(XD)          "cannot create a " #XD " line from a zero direction vector"
 
+#define ZEO_ERR_NOVERT                        "polyhedron has no vertices"
 #define ZEO_ERR_NOFACE                        "polyhedron has no face"
 #define ZEO_ERR_TOOMANY_CENTERS               "too many center points"
 #define ZEO_ERR_TOOMANY_RADII                 "too many radii"
