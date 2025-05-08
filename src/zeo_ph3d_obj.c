@@ -19,50 +19,91 @@ static int _zOBJCountKey(FILE *fp, const char *key)
   return n;
 }
 
+static zPH3D *_zOBJFReadVert(char *buf, zPH3D *ph, int *vi)
+{
+  char tkn[BUFSIZ];
+  int j;
+
+  for( j=0; j<3; j++ ){
+    buf = zSTokenSkim( buf, tkn, BUFSIZ );
+    zPH3DVert(ph,*vi)->e[j] = atof( tkn );
+  }
+  if( ++*vi > zPH3DVertNum(ph) ){
+    ZRUNERROR( ZEO_ERR_FATAL );
+    return NULL;
+  }
+  return ph;
+}
+
+static int _zOBJFReadFaceIndex(char *tkn, int *fvi, int *fti, int *fni)
+{
+  char *slash1, *slash2, *fts, *fns;
+  int retval = 0;
+
+  if( !( slash1 = strchr( tkn, '/' ) ) ){ /* only vert index */
+    fts = fns = NULL;
+    retval = 1;
+  } else{
+    *slash1 = '\0';
+    fts = slash1 + 1;
+    if( !( slash2 = strrchr( tkn, '/' ) ) ){ /* vert/texture coord indices */
+      fns = NULL;
+      retval = 2;
+    } else{ /* vert/texture coord/normal indices */
+      *slash2 = '\0';
+      fns = slash2 + 1;
+      retval = 3;
+    }
+  }
+   /* indices start from 1 in OBJ format. */
+  *fvi = *tkn ? atoi( tkn ) - 1 : 0; /* vertex */
+  *fti = fts  ? atoi( fts ) - 1 : 0; /* texture */
+  *fni = fns  ? atoi( fns ) - 1 : 0; /* normal vector */
+  return retval;
+}
+
+static zPH3D *_zOBJFReadFace(char *buf, zPH3D *ph, int *fi)
+{
+  char tkn[BUFSIZ];
+  int j, fvi[3], fti, fni;
+
+  for( j=0; j<3; j++ ){
+    buf = zSTokenSkim( buf, tkn, BUFSIZ );
+    _zOBJFReadFaceIndex( tkn, &fvi[j], &fti, &fni );
+    /* normal and texture coordinates are discarded */
+  }
+  zTri3DCreate( zPH3DFace(ph,*fi), zPH3DVert(ph,fvi[0]), zPH3DVert(ph,fvi[1]), zPH3DVert(ph,fvi[2]) );
+  if( ++*fi > zPH3DFaceNum(ph) ){
+    ZRUNERROR( ZEO_ERR_FATAL );
+    return NULL;
+  }
+  return ph;
+}
+
 static zPH3D *_zOBJFReadPH3D(FILE *fp, zPH3D *ph)
 {
-  char buf[BUFSIZ], tkn[BUFSIZ], *sp, *slashmark;
-  int vi, fi, fvi[3], j;
+  char buf[BUFSIZ];
+  int vi, fi;
 
   vi = fi = 0;
   rewind( fp );
   while( fgets( buf, BUFSIZ, fp ) ){
     if( strncmp( buf, "v ", 2 ) == 0 ){ /* vertex */
-      sp = buf + 2;
-      for( j=0; j<3; j++ ){
-        sp = zSTokenSkim( sp, tkn, BUFSIZ );
-        zPH3DVert(ph,vi)->e[j] = atof( tkn );
-      }
-      if( ++vi > zPH3DVertNum(ph) ){
-        ZRUNERROR( "fatal error" );
-        ph = NULL;
-        break;
-      }
+      if( !( ph = _zOBJFReadVert( buf+2, ph, &vi ) ) ) break;
       if( zeo_ph_echo_while_reading ){
         eprintf( "\r%d/%d", vi, zPH3DVertNum(ph) );
         if( vi == zPH3DVertNum(ph) ) eprintf( "\n" );
       }
     } else
     if( strncmp( buf, "f ", 2 ) == 0 ){ /* face */
-      sp = buf + 2;
-      for( j=0; j<3; j++ ){
-        sp = zSTokenSkim( sp, tkn, BUFSIZ );
-        if( ( slashmark = strchr( tkn, '/' ) ) ) *slashmark = '\0';
-        fvi[j] = atoi( tkn ) - 1; /* indices of vertices start from 1 in OBJ format. */
-        /* normal and texture coordinates are ignored */
-      }
-      zTri3DCreate( zPH3DFace(ph,fi), zPH3DVert(ph,fvi[0]), zPH3DVert(ph,fvi[1]), zPH3DVert(ph,fvi[2]) );
-      if( ++fi > zPH3DFaceNum(ph) ){
-        ZRUNERROR( "fatal error" );
-        ph = NULL;
-        break;
-      }
+      if( !( ph = _zOBJFReadFace( buf+2, ph, &fi ) ) ) break;
       if( zeo_ph_echo_while_reading ){
         eprintf( "\r%d/%d", fi, zPH3DFaceNum(ph) );
         if( fi == zPH3DFaceNum(ph) ) eprintf( "\n" );
       }
+    } else{
+      /* only vertices and faces are evaluated. */
     }
-    /* only vertices and faces are picked up. */
   }
   return ph;
 }
