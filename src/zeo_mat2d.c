@@ -55,18 +55,11 @@ bool zMat2DEqual(const zMat2D *m1, const zMat2D *m2)
   return _zMat2DEqual( m1, m2 );
 }
 
-/* abstract row vector from a 2x2 matrix. */
-void zMat2DRow(const zMat2D *m, zVec2D *r1, zVec2D *r2)
+/* abstract a row vector from a 2x2 matrix. */
+zVec2D *zMat2DRow(const zMat2D *m, int i, zVec2D *v)
 {
-  if( r1 ) _zVec2DCreate( r1, m->c.xx, m->c.yx );
-  if( r2 ) _zVec2DCreate( r2, m->c.xy, m->c.yy );
-}
-
-/* abstract column vector from a 2x2 matrix. */
-void zMat2DCol(const zMat2D *m, zVec2D *c1, zVec2D *c2)
-{
-  if( c1 ) _zVec2DCopy( &m->b.x, c1 );
-  if( c2 ) _zVec2DCopy( &m->b.y, c2 );
+  _zMat2DRow( m, i, v );
+  return v;
 }
 
 /* transpose a 2x2 matrix. */
@@ -74,6 +67,13 @@ zMat2D *zMat2DT(const zMat2D *m, zMat2D *tm)
 {
   _zMat2DT( m, tm );
   return tm;
+}
+
+/* directly transpose a 2x2 matrix. */
+zMat2D *zMat2DTDRC(zMat2D *m)
+{
+  _zMat2DTDRC( m );
+  return m;
 }
 
 /* ********************************************************** */
@@ -132,6 +132,12 @@ zMat2D *zMat2DDyad(zMat2D *dyad, const zVec2D *v1, const zVec2D *v2)
 {
   _zMat2DDyad( dyad, v1, v2 );
   return dyad;
+}
+
+/* calculate squared norm of a 2x2 matrix. */
+double zMat2DSqrNorm(const zMat2D *m)
+{
+  return _zMat2DSqrNorm( m );
 }
 
 /* ********************************************************** */
@@ -312,3 +318,11 @@ void zMat2DFPrint(FILE *fp, const zMat2D *m)
   fprintf( fp, " %.10g, %.10g\n", m->c.xy, m->c.yy );
   fprintf( fp, "}\n" );
 }
+
+#ifdef __cplusplus
+std::ostream &operator<<(std::ostream &stream, zMat2D &mat){
+  stream << "|~ " << mat.c.xx << ", " << mat.c.yx << " ~|" << std::endl;
+  stream << "|_ " << mat.c.xy << ", " << mat.c.yy << " _|" << std::endl;
+  return stream;
+}
+#endif /* __cplusplus */

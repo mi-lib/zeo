@@ -227,3 +227,10 @@ const zVec6D *zVec6DFPrint(FILE *fp, const zVec6D *v)
   zVec3DFPrint( fp, zVec6DAng(v) );
   return v;
 }
+
+#ifdef __cplusplus
+std::ostream &operator<<(std::ostream &stream, zVec6D &vec){
+  stream << vec.t.lin << ' ' << vec.t.ang;
+  return stream;
+}
+#endif /* __cplusplus */

@@ -2,7 +2,7 @@
 
 void assert_matstruct(void)
 {
-  zMat2D m, tm;
+  zMat2D m, tm, mc;
   zVec2D v1, v2;
   double a11, a12, a21, a22;
 
@@ -12,12 +12,17 @@ void assert_matstruct(void)
   a22 = zRandF(-10,10);
   zMat2DCreate( &m, a11, a12, a21, a22 );
   zAssert( zMat2DCreate, m.c.xx == a11 && m.c.yx == a12 && m.c.xy == a21 && m.c.yy == a22 );
-  zMat2DRow( &m, &v1, &v2 );
+  zMat2DRow( &m, 0, &v1 );
+  zMat2DRow( &m, 1, &v2 );
   zAssert( zMat2DRow, v1.c.x == m.c.xx && v1.c.y == m.c.yx && v2.c.x == m.c.xy && v2.c.y == m.c.yy );
-  zMat2DCol( &m, &v1, &v2 );
+  zMat2DCol( &m, 0, &v1 );
+  zMat2DCol( &m, 1, &v2 );
   zAssert( zMat2DCol, v1.c.x == m.c.xx && v1.c.y == m.c.xy && v2.c.x == m.c.yx && v2.c.y == m.c.yy );
   zMat2DT( &m, &tm );
   zAssert( zMat2DT, tm.c.xx == m.c.xx && tm.c.yx == m.c.xy && tm.c.xy == m.c.yx && tm.c.yy == m.c.yy );
+  zMat2DCopy( &m, &mc );
+  zMat2DTDRC( &mc );
+  zAssert( zMat2DTDRC, zMat2DEqual( &tm, &mc ) );
 }
 
 void assert_arith(void)
@@ -142,7 +147,8 @@ void assert_rotation(void)
 
   zMat2DIdent( &m1 );
   zMat2DRot( &m1, angle, &m2 );
-  zMat2DCol( &m2, &v1, &v2 );
+  zMat2DCol( &m2, 0, &v1 );
+  zMat2DCol( &m2, 1, &v2 );
   zAssert( zMat2DRot, zIsTiny( zVec2DAngle(&vx,&v1) - angle ) && zIsTiny( zVec2DAngle(&vy,&v2) - angle ) );
   error = zMat2DError( &m2, &m1 );
   zAssert( zMat2DError, zIsTiny( angle - error ) );

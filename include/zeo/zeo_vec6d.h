@@ -364,6 +364,8 @@ inline zVec6D zVec6D::sub(zVec6D &v){ _zVec6DSubDRC( this, &v ); return *this; }
 inline zVec6D zVec6D::rev(){ _zVec6DRevDRC( this ); return *this; }
 inline zVec6D zVec6D::mul(double k){ _zVec6DMulDRC( this, k ); return *this; }
 inline zVec6D zVec6D::div(double k){ return *zVec6DDivDRC( this, k ); }
+
+__ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, zVec6D &vec);
 #endif /* __cplusplus */
 
 #include <zeo/zeo_vec6d_list.h>  /* 6D vector list */

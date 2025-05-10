@@ -451,6 +451,8 @@ inline zVec2D &zVec2D::cat(double k, zVec2D &v){ _zVec2DCatDRC( this, k, &v ); r
 inline double zVec2D::sqrNorm(){ return _zVec2DSqrNorm( this ); }
 inline double zVec2D::norm(){ return sqrt( sqrNorm() ); }
 inline zVec2D &zVec2D::normalize(){ zVec2DNormalizeNCDRC( this ); return *this; }
+
+__ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, zVec2D &vec);
 #endif /* __cplusplus */
 
 /*! \struct zVec2DArray

@@ -350,3 +350,10 @@ const zVec2D *zVec2DFPrint(FILE *fp, const zVec2D *v)
   fprintf( fp, ")\n" );
   return v;
 }
+
+#ifdef __cplusplus
+std::ostream &operator<<(std::ostream &stream, zVec2D &vec){
+  stream << "( " << vec.c.x << ", " << vec.c.y << ")";
+  return stream;
+}
+#endif /* __cplusplus */

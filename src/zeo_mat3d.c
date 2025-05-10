@@ -188,7 +188,7 @@ zMat3D *zMulVec3DOuterProdMat3D(const zVec3D *ohm, const zMat3D *m, zMat3D *mv)
   return mv;
 }
 
-/* calculate squared norm of a 3D matrix. */
+/* calculate squared norm of a 3x3 matrix. */
 double zMat3DSqrNorm(const zMat3D *m)
 {
   return _zMat3DSqrNorm( m );
@@ -978,3 +978,12 @@ zVec3D *zAAFromZTK(zVec3D *aa, ZTK *ztk)
     zVec3DZero( aa );
   return aa;
 }
+
+#ifdef __cplusplus
+std::ostream &operator<<(std::ostream &stream, zMat3D &mat){
+  stream << "|~ " << mat.c.xx << ", " << mat.c.yx << ", " << mat.c.zx << " ~|" << std::endl;
+  stream << "|  " << mat.c.xy << ", " << mat.c.yy << ", " << mat.c.zy << "  |" << std::endl;
+  stream << "|_ " << mat.c.xz << ", " << mat.c.yz << ", " << mat.c.zz << " _|" << std::endl;
+  return stream;
+}
+#endif /* __cplusplus */

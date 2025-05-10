@@ -77,7 +77,6 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat3D ){
   zMat3D &rot(zMat3D &r);
   zMat3D &rotInv(zMat3D &r);
   zMat3D &rot(zVec3D &aa);
-
   static const zMat3D zmat3Dzero;
   static const zMat3D zmat3Dident;
 #endif /* __cplusplus */
@@ -146,18 +145,14 @@ __ZEO_EXPORT bool zMat3DEqual(const zMat3D *m1, const zMat3D *m2);
 #define _zMat3DIsIdent(m) _zMat3DEqual( m, ZMAT3DIDENT )
 __ZEO_EXPORT bool zMat3DIsIdent(const zMat3D *m);
 
-/*! \brief check if a 3D matrix is tiny.
+/*! \brief check if a 3x3 matrix is tiny.
  *
- * zMat3DIsTol() checks if the absolute values of all
- * components of a 3x3 matrix \a m are smaller than \a tol.
+ * zMat3DIsTol() checks if the absolute values of all components of a 3x3 matrix \a m are smaller than \a tol.
  *
- * zMat3DIsTiny() applies zTOL (defined in zm_misc.h) to
- * the tolerance of zMat3DIsTol().
+ * zMat3DIsTiny() applies zTOL (defined in zm_misc.h) to the tolerance of zMat3DIsTol().
  * \return
- * zMat3DIsTol() and zMat3DIsTiny() return the true value if
- * the absolute values of all components of \a m are smaller
- * than \a tol and zTOL, respectively, or the false value,
- * otherwise.
+ * zMat3DIsTol() and zMat3DIsTiny() return the true value if the absolute values of all components of \a m
+ * are smaller than \a tol and zTOL, respectively, or the false value, otherwise.
  * \notes
  * \a tol must be positive.
  * \sa
@@ -170,11 +165,9 @@ __ZEO_EXPORT bool zMat3DIsTol(const zMat3D *m, double tol);
 
 /*! \brief abstract row/column vectors from a 3x3 matrix.
  *
- * zMat3DRow() abstracts the \a i'th row from a 3x3 matrix \a m and puts
- * it into \a v.
+ * zMat3DRow() abstracts the \a i th row from a 3x3 matrix \a m and puts it into \a v.
  *
- * zMat3DCol() abstracts the \a i'th column from a 3x3 matrix \a m and
- * puts it into \a v.
+ * zMat3DCol() abstracts the \a i th column from a 3x3 matrix \a m and puts it into \a v.
  * \return
  * zMat3DRow() and zMat3DCol() return a pointer \a v.
  */
@@ -434,9 +427,9 @@ __ZEO_EXPORT zMat3D *zMat3DCatVec3DDoubleOuterProd(const zMat3D *m, double k, co
 __ZEO_EXPORT zMat3D *zMulVec3DOuterProdMat3D(const zVec3D *ohm, const zMat3D *m, zMat3D *mv);
 #define zMulVec3DOuterProdMat3DDRC(o,m) zMulVec3DOuterProdMat3D( o, m, m )
 
-/*! \brief calculate norm of a 3D matrix.
+/*! \brief calculate norm of a 3x3 matrix.
  *
- * zMat3DNorm() calculates a norm of a 3D matrix \a m.
+ * zMat3DNorm() calculates a norm of a 3x3 matrix \a m.
  * zMat3DSqrNorm() calculates a squared norm of \a m.
  * \return
  * zMat3DNorm() returns a norm of \a m.
@@ -953,6 +946,8 @@ inline zMat3D &zMat3D::createAA(zVec3D &aa){ return *zMat3DFromAA( this, &aa ); 
 inline zMat3D &zMat3D::rot(zMat3D &r){ return *zRotMat3DDRC( &r, this ); }
 inline zMat3D &zMat3D::rotInv(zMat3D &r){ return *zRotMat3DInvDRC( &r, this ); }
 inline zMat3D &zMat3D::rot(zVec3D &aa){ return *zMat3DRotDRC( this, &aa ); }
+
+__ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, zMat3D &mat);
 #endif /* __cplusplus */
 
 #endif /* __ZEO_MAT3D_H__ */
