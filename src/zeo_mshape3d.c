@@ -140,7 +140,7 @@ zVec3DData *zMShape3DVertData(zMShape3D *ms, zVec3DData *data)
     sp = zMShape3DShape(ms,i);
     if( sp->com == &zeo_shape3d_ph_com ){
       for( j=0; j<zShape3DVertNum(sp); j++ ){
-        if( !zVec3DDataAdd( data, zShape3DVert(sp,j) ) ) goto ERROR;
+        if( !zVec3DDataAdd( data, zShape3DVert(sp,j) ) ) goto ZMSHAPE3DVERTDATA_ERROR;
       }
     } else{
       zShape3DClone( sp, &s, NULL );
@@ -151,12 +151,12 @@ zVec3DData *zMShape3DVertData(zMShape3D *ms, zVec3DData *data)
         if( !zVec3DDataAdd( data, zShape3DVert(&s,j) ) ) result = false;
       }
       zShape3DDestroy( &s );
-      if( !result ) goto ERROR;
+      if( !result ) goto ZMSHAPE3DVERTDATA_ERROR;
     }
   }
   return data;
 
- ERROR:
+ ZMSHAPE3DVERTDATA_ERROR:
   zVec3DDataDestroy( data );
   return NULL;
 }
