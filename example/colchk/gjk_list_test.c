@@ -6,7 +6,7 @@
 void vec_create_rand(zVec3DData *data, int n, double x, double y, double z, double r)
 {
   zVec3D v;
-  register int i;
+  int i;
 
   zVec3DDataInitList( data );
   for( i=0; i<n; i++ ){

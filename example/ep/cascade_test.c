@@ -8,7 +8,7 @@ int main(void)
   zVec3D a1, a2, a;
   zMat3D m1, m2, m, ma, me;
   clock_t t1, t2, t3, t4, t5, t6, t7, t8, t9, t0;
-  register int i;
+  int i;
 
   zRandInit();
   zVec3DCreate( &a1, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );

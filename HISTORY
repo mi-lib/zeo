@@ -1,3 +1,4 @@
+2025.05.11. Removed register qualifiers from example codes. [example]
 2025.05.11. Modified zMShape3DVertData to remove an ERROR label. [zeo_mshape3d]
 2025.05.10. Redefined _zMat2DTDRC by using zSwap. [zeo_mat2d]
 2025.05.09. Added operator << to methods of zVec2D, zVec3D, zVec6D, zMat2D, and zMat3D in C++. [zeo_vec2d, zeo_vec3d, zeo_vec6d, zeo_mat2d, zeo_mat3d]

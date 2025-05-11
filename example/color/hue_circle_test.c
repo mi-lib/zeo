@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
   zHSV hsv;
   zRGB rgb;
-  register int i;
+  int i;
 
   hsv.sat = 1.0;
   hsv.val = 1.0;

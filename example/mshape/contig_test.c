@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
   zMShape3D ms;
   zVec3D p, *cp;
-  register int i;
+  int i;
   FILE *fp1, *fp2;
 
   zRandInit();

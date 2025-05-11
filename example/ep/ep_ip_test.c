@@ -8,7 +8,7 @@ int main(void)
   zMat3D m1, m2, m;
   zVec3D e1, e2, e;
   double t;
-  register int i;
+  int i;
 
   zRandInit();
   zMat3DFromZYX( &m1, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );

@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 {
   zVec3D p, u, v, v1, v2, v3, vn;
   zTri3D tri;
-  register int i;
+  int i;
   FILE *fp1, *fp2;
 
   zRandInit();

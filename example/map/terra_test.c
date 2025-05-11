@@ -27,7 +27,7 @@ void terra_gen_sample(zVec3DList *pl)
 {
   double x, y, z;
   zVec3D *p;
-  register int i;
+  int i;
   FILE *fp;
 
   zListInit( pl );
@@ -68,7 +68,7 @@ void terra_output(zTerra *terra, double scale)
 {
   FILE *fp;
   zTerraCell *grid;
-  register int i, j;
+  int i, j;
 
   fp = zOpenZTKFile( TERRAIN_OUT_FILE, "w" );
   fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_MAP );

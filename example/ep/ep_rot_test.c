@@ -4,7 +4,7 @@
 
 int main(void)
 {
-  register int i;
+  int i;
   zEP ep;
   zMat3D m;
   zVec3D aa, v, v1, v2, v3;

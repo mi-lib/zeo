@@ -7,7 +7,7 @@ int main(void)
   zMat3D m1, m2, m;
   zVec3D e1, e2, e, em;
   double t;
-  register int i;
+  int i;
 #if 0
   FILE *fp[2];
 #endif

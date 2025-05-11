@@ -14,7 +14,7 @@ void output(zTri3D *t, zAABox3D *b, zVec3D ip[], int n)
 {
   FILE *fp;
   zBox3D box;
-  register int i;
+  int i;
 
   /* for visualization */
   fp = fopen( "tb.ztk", "w" );
