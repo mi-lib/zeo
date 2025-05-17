@@ -507,18 +507,28 @@ zVec3D *zAngVelToZYZVelSC(const zVec3D *angvel, double sa, double ca, double sb,
 /* read a 3D vector from a ZTK format processor. */
 zVec3D *zVec3DFromZTK(zVec3D *v, ZTK *ztk)
 {
-  v->e[0] = ZTKDouble(ztk);
-  v->e[1] = ZTKDouble(ztk);
-  v->e[2] = ZTKDouble(ztk);
+  char buf[BUFSIZ];
+
+  if( ZTKKeyFieldSize(ztk) == 1 ){
+    strncpy( buf, ZTKVal(ztk), BUFSIZ );
+    zSDouble( buf, &v->e[0] );
+    zSDouble( buf, &v->e[1] );
+    zSDouble( buf, &v->e[2] );
+  } else{
+    v->e[0] = ZTKDouble(ztk);
+    v->e[1] = ZTKDouble(ztk);
+    v->e[2] = ZTKDouble(ztk);
+  }
   return v;
 }
 
 /* add a 3D vector to a ZTK format processor. */
 ZTK *zVec3DToZTK(const zVec3D *v, ZTK *ztk)
 {
-  if( !ZTKAddDouble( ztk, v->e[0] ) ) return NULL;
-  if( !ZTKAddDouble( ztk, v->e[1] ) ) return NULL;
-  if( !ZTKAddDouble( ztk, v->e[2] ) ) return NULL;
+  char buf[BUFSIZ];
+
+  sprintf( buf, "( %.10g, %.10g, %.10g )", v->e[0], v->e[1], v->e[2] );
+  if( !ZTKAddVal( ztk, buf ) ) return NULL;
   return ztk;
 }
 

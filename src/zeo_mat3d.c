@@ -923,22 +923,32 @@ int zMat3DSVD(const zMat3D *m, zMat3D *u, zVec3D *sv, zMat3D *v)
 /* read a 3x3 matrix from a ZTK format processor. */
 zMat3D *zMat3DFromZTK(zMat3D *m, ZTK *ztk)
 {
+  char buf[BUFSIZ];
   int i, j;
 
-  for( i=0; i<3; i++ )
-    for( j=0; j<3; j++ )
-      m->e[j][i] = ZTKDouble(ztk);
+  if( ZTKKeyFieldSize(ztk) == 1 ){
+    strncpy( buf, ZTKVal(ztk), BUFSIZ );
+    for( i=0; i<3; i++ )
+      for( j=0; j<3; j++ )
+        zSDouble( buf, &m->e[j][i] );
+  } else{
+    for( i=0; i<3; i++ )
+      for( j=0; j<3; j++ )
+        m->e[j][i] = ZTKDouble(ztk);
+  }
   return m;
 }
 
 /* add a 3x3 matrix to a ZTK format processor. */
 ZTK *zMat3DToZTK(const zMat3D *m, ZTK *ztk)
 {
-  int i, j;
+  char buf[BUFSIZ];
 
-  for( i=0; i<3; i++ )
-    for( j=0; j<3; j++ )
-      if( !ZTKAddDouble( ztk, m->e[j][i] ) ) return NULL;
+  sprintf( buf, "{\n %.10g, %.10g, %.10g\n %.10g, %.10g, %.10g\n %.10g, %.10g, %.10g\n}",
+    m->c.xx, m->c.yx, m->c.zx,
+    m->c.xy, m->c.yy, m->c.zy,
+    m->c.xz, m->c.yz, m->c.zz );
+  if( !ZTKAddVal( ztk, buf ) ) return NULL;
   return ztk;
 }
 

@@ -321,19 +321,37 @@ zVec6D* zFrame3DToVec6DAA(const zFrame3D *frame, zVec6D *v)
 /* read a 3D frame from a ZTK format processor. */
 zFrame3D *zFrame3DFromZTK(zFrame3D *frame, ZTK *ztk)
 {
-  zFrame3DAtt(frame)->e[0][0] = ZTKDouble(ztk);
-  zFrame3DAtt(frame)->e[1][0] = ZTKDouble(ztk);
-  zFrame3DAtt(frame)->e[2][0] = ZTKDouble(ztk);
-  zFrame3DPos(frame)->e[0]    = ZTKDouble(ztk);
-  zFrame3DAtt(frame)->e[0][1] = ZTKDouble(ztk);
-  zFrame3DAtt(frame)->e[1][1] = ZTKDouble(ztk);
-  zFrame3DAtt(frame)->e[2][1] = ZTKDouble(ztk);
-  zFrame3DPos(frame)->e[1]    = ZTKDouble(ztk);
-  zFrame3DAtt(frame)->e[0][2] = ZTKDouble(ztk);
-  zFrame3DAtt(frame)->e[1][2] = ZTKDouble(ztk);
-  zFrame3DAtt(frame)->e[2][2] = ZTKDouble(ztk);
-  zFrame3DPos(frame)->e[2]    = ZTKDouble(ztk);
+  char buf[BUFSIZ];
+  int i, j;
+
+  if( ZTKKeyFieldSize(ztk) == 1 ){
+    strncpy( buf, ZTKVal(ztk), BUFSIZ );
+    for( i=0; i<3; i++ ){
+      for( j=0; j<3; j++ )
+        zSDouble( buf, &zFrame3DAtt(frame)->e[j][i] );
+      zSDouble( buf, &zFrame3DPos(frame)->e[i] );
+    }
+  } else{
+    for( i=0; i<3; i++ ){
+      for( j=0; j<3; j++ )
+        zFrame3DAtt(frame)->e[j][i] = ZTKDouble(ztk);
+      zFrame3DPos(frame)->e[i] = ZTKDouble(ztk);
+    }
+  }
   return frame;
+}
+
+/* add a 3D frame to a ZTK format processor. */
+ZTK *zFrame3DToZTK(const zFrame3D *frame, ZTK *ztk)
+{
+  char buf[BUFSIZ];
+
+  sprintf( buf, "{\n %.10g, %.10g, %.10g, %.10g\n %.10g, %.10g, %.10g, %.10g\n %.10g, %.10g, %.10g, %.10g\n}",
+    zFrame3DAtt(frame)->c.xx, zFrame3DAtt(frame)->c.yx, zFrame3DAtt(frame)->c.zx, zFrame3DPos(frame)->c.x,
+    zFrame3DAtt(frame)->c.xy, zFrame3DAtt(frame)->c.yy, zFrame3DAtt(frame)->c.zy, zFrame3DPos(frame)->c.y,
+    zFrame3DAtt(frame)->c.xz, zFrame3DAtt(frame)->c.yz, zFrame3DAtt(frame)->c.zz, zFrame3DPos(frame)->c.z );
+  if( !ZTKAddVal( ztk, buf ) ) return NULL;
+  return ztk;
 }
 
 /* read DH parameters from a ZTK format processor. */

@@ -1,6 +1,6 @@
 #include <zeo/zeo.h>
 
-zFrame3D *frame_gen_rand(zFrame3D *f)
+zFrame3D *frame3d_gen_rand(zFrame3D *f)
 {
   return zFrame3DFromZYX( f, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-zPI,zPI), 0.5*zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
 }
@@ -12,11 +12,11 @@ zVec3D *vec_gen_rand(zVec3D *v)
 
 #define N 1000
 
-void assert_frame_misc(void)
+void assert_frame3d_misc(void)
 {
   zFrame3D f;
 
-  frame_gen_rand( &f );
+  frame3d_gen_rand( &f );
   zAssert( zFrame3DPos, zVec3DEqual( zFrame3DPos(&f), &f.pos ) );
   zAssert( zFrame3DAtt, zMat3DEqual( zFrame3DAtt(&f), &f.att ) );
   zAssert( zFrame3DVec,
@@ -33,7 +33,7 @@ void assert_xform(void)
   bool result1 = true, result2 = true;
 
   for( i=0; i<N; i++ ){
-    frame_gen_rand( &f );
+    frame3d_gen_rand( &f );
     vec_gen_rand( &v1 );
 
     _zXform3D( &f, &v1, &v2 );
@@ -55,7 +55,7 @@ void assert_xform(void)
   zAssert( zXform3DInv + zXform3D, result2 );
 }
 
-void assert_frame_inv(void)
+void assert_frame3d_inv(void)
 {
   zFrame3D f1, f2;
   zVec3D v1, v2, v, e;
@@ -63,7 +63,7 @@ void assert_frame_inv(void)
   bool result = true;
 
   for( i=0; i<N; i++ ){
-    frame_gen_rand( &f1 );
+    frame3d_gen_rand( &f1 );
     vec_gen_rand( &v1 );
 
     _zFrame3DInv( &f1, &f2 );
@@ -78,7 +78,7 @@ void assert_frame_inv(void)
   zAssert( zFrame3DInv, result );
 }
 
-void assert_frame_cascade(void)
+void assert_frame3d_cascade(void)
 {
   zFrame3D f1, f2, f3;
   zVec3D v1, v2, v3, v, e;
@@ -86,8 +86,8 @@ void assert_frame_cascade(void)
   bool result = true;
 
   for( i=0; i<N; i++ ){
-    frame_gen_rand( &f1 );
-    frame_gen_rand( &f2 );
+    frame3d_gen_rand( &f1 );
+    frame3d_gen_rand( &f2 );
     vec_gen_rand( &v2 );
 
     _zXform3D( &f2, &v2, &v1 );
@@ -103,7 +103,7 @@ void assert_frame_cascade(void)
   zAssert( zFrame3DCascade, result );
 }
 
-void assert_frame_xform(void)
+void assert_frame3d_xform(void)
 {
   zFrame3D f1, f2, f3;
   zVec3D v1, v2, v, e;
@@ -111,8 +111,8 @@ void assert_frame_xform(void)
   bool result = true;
 
   for( i=0; i<N; i++ ){
-    frame_gen_rand( &f1 );
-    frame_gen_rand( &f2 );
+    frame3d_gen_rand( &f1 );
+    frame3d_gen_rand( &f2 );
     vec_gen_rand( &v2 );
 
     _zXform3D( &f2, &v2, &v );
@@ -128,13 +128,33 @@ void assert_frame_xform(void)
   zAssert( zFrame3DXform, result );
 }
 
+void assert_frame3d_ztk(void)
+{
+  ZTK ztk;
+  zFrame3D src, dest;
+  zVec6D error;
+
+  zMat3DCreate( zFrame3DAtt(&src), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  zVec3DCreate( zFrame3DPos(&src), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  ZTKInit( &ztk );
+  ZTKAddTag( &ztk, "" );
+  ZTKAddKey( &ztk, "" );
+  zFrame3DToZTK( &src, &ztk );
+  ZTKRewind( &ztk );
+  zFrame3DFromZTK( &dest, &ztk );
+  ZTKDestroy( &ztk );
+  zFrame3DError( &src, &dest, &error );
+  zAssert( zFrame3DFromZTK + zFrame3DToZTK, zVec6DIsTol( &error, 1.0e-9 ) );
+}
+
 int main(void)
 {
   zRandInit();
-  assert_frame_misc();
+  assert_frame3d_misc();
   assert_xform();
-  assert_frame_inv();
-  assert_frame_cascade();
-  assert_frame_xform();
+  assert_frame3d_inv();
+  assert_frame3d_cascade();
+  assert_frame3d_xform();
+  assert_frame3d_ztk();
   return 0;
 }

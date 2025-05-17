@@ -587,6 +587,23 @@ void assert_mat_svd(void)
   zAssert( zMat3DSVD (singular case), check_svd( &m, &u, &s, &v ) );
 }
 
+void assert_mat3d_ztk(void)
+{
+  ZTK ztk;
+  zMat3D mat_src, mat_dest;
+
+  zMat3DCreate( &mat_src, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  ZTKInit( &ztk );
+  ZTKAddTag( &ztk, "" );
+  ZTKAddKey( &ztk, "" );
+  zMat3DToZTK( &mat_src, &ztk );
+  ZTKRewind( &ztk );
+  zMat3DFromZTK( &mat_dest, &ztk );
+  ZTKDestroy( &ztk );
+  zMat3DSubDRC( &mat_src, &mat_dest );
+  zAssert( zMat3DFromZTK + zMat3DToZTK, zMat3DIsTol( &mat_src, 1.0e-9 ) );
+}
+
 int main(void)
 {
   zRandInit();
@@ -601,5 +618,6 @@ int main(void)
   assert_sym_eig();
   assert_sym_eig_min();
   assert_mat_svd();
+  assert_mat3d_ztk();
   return EXIT_SUCCESS;
 }

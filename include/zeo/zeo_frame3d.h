@@ -324,6 +324,8 @@ __ZEO_EXPORT zVec6D *zFrame3DToVec6DAA(const zFrame3D *frame, zVec6D *v);
 
 /*! \brief read a 3D coordinate frame from a ZTK format processor. */
 __ZEO_EXPORT zFrame3D *zFrame3DFromZTK(zFrame3D *frame, ZTK *ztk);
+/*! \brief add a 3D frame to a ZTK format processor. */
+__ZEO_EXPORT ZTK *zFrame3DToZTK(const zFrame3D *frame, ZTK *ztk);
 /*! \brief read DH parameters for a 3D coordinate frame from a ZTK format processor. */
 __ZEO_EXPORT zFrame3D *zFrame3DDHFromZTK(zFrame3D *frame, ZTK *ztk);
 
