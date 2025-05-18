@@ -209,18 +209,18 @@ void assert_angvel_zyz_intg(void)
 void assert_vec3d_ztk(void)
 {
   ZTK ztk;
-  zVec3D vec_src, vec_dest;
+  zVec3D src, dest;
 
-  zVec3DCreate( &vec_src, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  zVec3DCreate( &src, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
   ZTKInit( &ztk );
   ZTKAddTag( &ztk, "" );
   ZTKAddKey( &ztk, "" );
-  zVec3DToZTK( &vec_src, &ztk );
+  zVec3DToZTK( &src, &ztk );
   ZTKRewind( &ztk );
-  zVec3DFromZTK( &vec_dest, &ztk );
+  zVec3DFromZTK( &dest, &ztk );
   ZTKDestroy( &ztk );
-  zVec3DSubDRC( &vec_src, &vec_dest );
-  zAssert( zVec3DFromZTK + zVec3DToZTK, zVec3DIsTol( &vec_src, 1.0e-9 ) );
+  zVec3DSubDRC( &src, &dest );
+  zAssert( zVec3DFromZTK + zVec3DToZTK, zVec3DIsTol( &src, 1.0e-9 ) );
 }
 
 int main(void)

@@ -1,3 +1,4 @@
+2025.05.18. Debugged zVec3DFromZTK, zMat3DFromZTK, and zFrame3DFromZTK. [zeo_vec3d, zeo_mat3d, zeo_frame3d]
 2025.05.18. Added zFrame3DToZTK to output a fancy-formatted string. [zeo_frame3d]
 2025.05.17. Modified zVec3DToZTK and zMat3DToZTK to output a fancy-formatted string. [zeo_vec3d, zeo_mat3d]
 2025.05.17. Modified zVec3DFromZTK, zMat3DFromZTK, and zFrame3DFromZTK to be able to read a fancy-formatted string. [zeo_vec3d, zeo_mat3d]

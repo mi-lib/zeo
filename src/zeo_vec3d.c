@@ -509,8 +509,8 @@ zVec3D *zVec3DFromZTK(zVec3D *v, ZTK *ztk)
 {
   char buf[BUFSIZ];
 
-  if( ZTKKeyFieldSize(ztk) == 1 ){
-    strncpy( buf, ZTKVal(ztk), BUFSIZ );
+  if( ZTKVal(ztk)[0] == '(' ){
+    strncpy( buf, ZTKVal(ztk), BUFSIZ-1 );
     zSDouble( buf, &v->e[0] );
     zSDouble( buf, &v->e[1] );
     zSDouble( buf, &v->e[2] );
@@ -565,13 +565,13 @@ const zVec3D *zVec3DFPrint(FILE *fp, const zVec3D *v)
     fprintf( fp, "null 3D vector" );
   else
     zVec3DValueFPrint( fp, v );
-  fprintf( fp, ")\n" );
+  fprintf( fp, " )\n" );
   return v;
 }
 
 #ifdef __cplusplus
 std::ostream &operator<<(std::ostream &stream, zVec3D &vec){
-  stream << "( " << vec.c.x << ", " << vec.c.y << ", " << vec.c.z << ")";
+  stream << "( " << vec.c.x << ", " << vec.c.y << ", " << vec.c.z << " )";
   return stream;
 }
 #endif /* __cplusplus */

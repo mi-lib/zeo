@@ -324,8 +324,8 @@ zFrame3D *zFrame3DFromZTK(zFrame3D *frame, ZTK *ztk)
   char buf[BUFSIZ];
   int i, j;
 
-  if( ZTKKeyFieldSize(ztk) == 1 ){
-    strncpy( buf, ZTKVal(ztk), BUFSIZ );
+  if( ZTKVal(ztk)[0] == '{' ){
+    strncpy( buf, ZTKVal(ztk), BUFSIZ-1 );
     for( i=0; i<3; i++ ){
       for( j=0; j<3; j++ )
         zSDouble( buf, &zFrame3DAtt(frame)->e[j][i] );
