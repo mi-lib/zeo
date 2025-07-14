@@ -38,6 +38,81 @@ __ZEO_EXPORT zCoord2D *zCoord2DCreate(zCoord2D *coord, double x, double y, doubl
     zEqual( zCoord2DAngle(coord1), zCoord2DAngle(coord2), zTOL ) )
 __ZEO_EXPORT bool zCoord2DEqual(const zCoord2D *coord1, const zCoord2D *coord2);
 
+/*! \brief copy a 2D coordinate to another. */
+#define zCoord2DCopy(src,dest) zCopy( zCoord2D, src, dest )
+
+/*! \brief add two 2D coordinates.
+ *
+ * zCoord2DAdd() adds two 2D coordinates \a coord1 and \a coord2, and puts the result into \a coord.
+ * \return
+ * zCoord2DAdd() returns a pointer \a coord.
+ */
+#define _zCoord2DAdd(coord1,coord2,coord) do{ \
+zVec2DAdd( zCoord2DPos(coord1), zCoord2DPos(coord2), zCoord2DPos(coord) ); \
+zCoord2DAngle(coord) = zCoord2DAngle(coord1) + zCoord2DAngle(coord2); \
+} while(0)
+__ZEO_EXPORT zCoord2D *zCoord2DAdd(const zCoord2D *coord1, const zCoord2D *coord2, zCoord2D *coord);
+
+/*! \brief subtract a 2D coordinate from another.
+ *
+ * zCoord2DSub() subtracts a 2D coordinate \a coord2 from another \a coord1, and puts the result into \a coord.
+ * \return
+ * zCoord2DSub() returns a pointer \a coord.
+ */
+#define _zCoord2DSub(coord1,coord2,coord) do{ \
+zVec2DSub( zCoord2DPos(coord1), zCoord2DPos(coord2), zCoord2DPos(coord) ); \
+zCoord2DAngle(coord) = zCoord2DAngle(coord1) - zCoord2DAngle(coord2); \
+} while(0)
+__ZEO_EXPORT zCoord2D *zCoord2DSub(const zCoord2D *coord1, const zCoord2D *coord2, zCoord2D *coord);
+
+/*! \brief concatenate a 2D coordinate to another.
+ *
+ * zCoord2DCat() concatenates a 2D coordinates \a coord2 multiplied by \a k to another \a coord1, and puts the result into \a coord.
+ * \return
+ * zCoord2DCat() returns a pointer \a coord.
+ */
+#define _zCoord2DCat(coord1,k,coord2,coord) do{ \
+  zVec2DCat( zCoord2DPos(coord1), k, zCoord2DPos(coord2), zCoord2DPos(coord) ); \
+  zCoord2DAngle(coord) = zCoord2DAngle(coord1) + (k) * zCoord2DAngle(coord2); \
+} while(0)
+__ZEO_EXPORT zCoord2D *zCoord2DCat(const zCoord2D *coord1, double k, const zCoord2D *coord2, zCoord2D *coord);
+
+/*! \brief add a 2D coordinate directly to another.
+ *
+ * zCoord2DAddDRC() directly adds a 2D coordinate \a coord2 to another \a coord1.
+ * \return
+ * zCoord2DAddDRC() returns a pointer \a coord1.
+ */
+#define _zCoord2DAddDRC(coord1,coord2) do{ \
+  zVec2DAddDRC( zCoord2DPos(coord1), zCoord2DPos(coord2) ); \
+  zCoord2DAngle(coord1) += zCoord2DAngle(coord2); \
+} while(0)
+__ZEO_EXPORT zCoord2D *zCoord2DAddDRC(zCoord2D *coord1, const zCoord2D *coord2);
+
+/*! \brief subtract a 2D coordinate directly from another.
+ *
+ * zCoord2DSubDRC() subtracts a 2D coordinate \a coord2 directly from another \a coord1.
+ * \return
+ * zCoord2DSubDRC() returns a pointer \a coord1.
+ */
+#define _zCoord2DSubDRC(coord1,coord2) do{ \
+  zVec2DSubDRC( zCoord2DPos(coord1), zCoord2DPos(coord2) ); \
+  zCoord2DAngle(coord1) -= zCoord2DAngle(coord2); \
+} while(0)
+__ZEO_EXPORT zCoord2D *zCoord2DSubDRC(zCoord2D *coord1, const zCoord2D *coord2);
+
+/*! \brief concatenate a 2D coordinate directly to another.
+ *
+ * zCoord2DCatDRC() concatenates a 2D coordinates \a coord2 multiplied by \a k directly to another \a coord1.
+ * \return
+ * zCoord2DCatDRC() returns a pointer \a coord1.
+ */
+#define _zCoord2DCatDRC(coord1,k,coord2) do{ \
+  zVec2DCatDRC( zCoord2DPos(coord1), k, zCoord2DPos(coord2) ); \
+  zCoord2DAngle(coord1) += (k) * zCoord2DAngle(coord2); \
+} while(0)
+__ZEO_EXPORT zCoord2D *zCoord2DCatDRC(zCoord2D *coord1, double k, const zCoord2D *coord2);
+
 /*! \brief interior division of two 2D coordinates. */
 __ZEO_EXPORT zCoord2D *zCoord2DInterDiv(const zCoord2D *coord1, const zCoord2D *coord2, double ratio, zCoord2D *coord);
 

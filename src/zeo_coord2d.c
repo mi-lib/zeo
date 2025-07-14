@@ -21,6 +21,48 @@ bool zCoord2DEqual(const zCoord2D *coord1, const zCoord2D *coord2)
   return _zCoord2DEqual( coord1, coord2 );
 }
 
+/* add two 2D coordinates. */
+zCoord2D *zCoord2DAdd(const zCoord2D *coord1, const zCoord2D *coord2, zCoord2D *coord)
+{
+  _zCoord2DAdd( coord1, coord2, coord );
+  return coord;
+}
+
+/* subtract a 2D coordinate from another. */
+zCoord2D *zCoord2DSub(const zCoord2D *coord1, const zCoord2D *coord2, zCoord2D *coord)
+{
+  _zCoord2DSub( coord1, coord2, coord );
+  return coord;
+}
+
+/* concatenate a 2D coordinate to another. */
+zCoord2D *zCoord2DCat(const zCoord2D *coord1, double k, const zCoord2D *coord2, zCoord2D *coord)
+{
+  _zCoord2DCat( coord1, k, coord2, coord );
+  return coord;
+}
+
+/* add a 2D coordinate directly to another. */
+zCoord2D *zCoord2DAddDRC(zCoord2D *coord1, const zCoord2D *coord2)
+{
+  _zCoord2DAddDRC( coord1, coord2 );
+  return coord1;
+}
+
+/* subtract a 2D coordinate directly from another. */
+zCoord2D *zCoord2DSubDRC(zCoord2D *coord1, const zCoord2D *coord2)
+{
+  _zCoord2DSubDRC( coord1, coord2 );
+  return coord1;
+}
+
+/* concatenate a 2D coordinate directly to another. */
+zCoord2D *zCoord2DCatDRC(zCoord2D *coord1, double k, const zCoord2D *coord2)
+{
+  _zCoord2DCatDRC( coord1, k, coord2 );
+  return coord1;
+}
+
 /* interior division of two 2D coordinates. */
 zCoord2D *zCoord2DInterDiv(const zCoord2D *coord1, const zCoord2D *coord2, double ratio, zCoord2D *coord)
 {
