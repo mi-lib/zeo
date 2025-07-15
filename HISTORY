@@ -1,3 +1,5 @@
+2025.07.15. Added C++ methods of zShape3D class. [zeo_shape3d]
+2025.07.15. Modified zShape3DToPH. [zeo_shape3d]
 2025.07.15. Added _zCoord2DMul, _zCoord2DMulDRC, zCoord2DMul, zCoord2DDiv, zCoord2DMulDRC, and zCoord2DDivDRC. [zeo_coord2d]
 2025.07.14. Added zCoord2DCopy, _zCoord2DAdd, _zCoord2DSub, _zCoord2DCat, _zCoord2DAddDRC, _zCoord2DSubDRC, _zCoord2DCatDRC, zCoord2DAdd, zCoord2DSub, zCoord2DCat, zCoord2DAddDRC, zCoord2DSubDRC, and zCoord2DCatDRC. [zeo_coord2d]
 2025.05.20. Added const qualifiers to arguments of functions in zeo_shape3d_list. [zeo_shape3d_list]

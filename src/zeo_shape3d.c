@@ -161,7 +161,7 @@ zShape3D *zShape3DToPH(zShape3D *shape)
 {
   zPH3D *ph;
 
-  if( strcmp( shape->com->typestr, "polyhedron" ) == 0 ) return shape;
+  if( shape->com == &zeo_shape3d_ph_com ) return shape;
   if( !( ph = zAlloc( zPH3D, 1 ) ) ){
     ZALLOCERROR();
     return NULL;

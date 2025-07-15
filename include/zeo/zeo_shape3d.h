@@ -17,23 +17,23 @@ __BEGIN_DECLS
  */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3DCom ){
   const char *typestr;
-  void *(*_init)(void*);
-  void *(*_alloc)(void);
-  void *(*_clone)(void*);
-  void *(*_mirror)(void*,zAxis);
-  void (*_destroy)(void*);
-  void *(*_xform)(void*,const zFrame3D*,void*);
-  void *(*_xforminv)(void*,const zFrame3D*,void*);
-  double (*_closest)(void*,const zVec3D*,zVec3D*);
-  double (*_distfrompoint)(void*,const zVec3D*);
-  bool (*_pointisinside)(void*,const zVec3D*,double);
-  double (*_volume)(void*);
-  zVec3D *(*_barycenter)(void*,zVec3D*);
-  zMat3D *(*_baryinertia_m)(void*,double,zMat3D*);
-  zMat3D *(*_baryinertia_d)(void*,double,zMat3D*);
-  zPH3D *(*_toph)(void*,zPH3D*);
-  void *(*_fromZTK)(void*,ZTK*);
-  void (*_fprintZTK)(FILE*,void*);
+  void *(* _init)(void*);
+  void *(* _alloc)(void);
+  void *(* _clone)(void*);
+  void *(* _mirror)(void*,zAxis);
+  void (* _destroy)(void*);
+  void *(* _xform)(void*,const zFrame3D*,void*);
+  void *(* _xforminv)(void*,const zFrame3D*,void*);
+  double (* _closest)(void*,const zVec3D*,zVec3D*);
+  double (* _distfrompoint)(void*,const zVec3D*);
+  bool (* _pointisinside)(void*,const zVec3D*,double);
+  double (* _volume)(void*);
+  zVec3D *(* _barycenter)(void*,zVec3D*);
+  zMat3D *(* _baryinertia_m)(void*,double,zMat3D*);
+  zMat3D *(* _baryinertia_d)(void*,double,zMat3D*);
+  zPH3D *(* _toph)(void*,zPH3D*);
+  void *(* _fromZTK)(void*,ZTK*);
+  void (* _fprintZTK)(FILE*,void*);
 };
 
 /* ********************************************************** */
@@ -47,6 +47,38 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3D ){
   zOpticalInfo *optic;
   zTexture *texture;
   zShape3DCom *com; /* methods */
+#ifdef __cplusplus
+  zShape3D();
+  zShape3D(const char *str);
+  ~zShape3D();
+  zShape3D *init();
+  void destroy();
+  zShape3D *queryAssign(const char *str);
+  zShape3D *clone(const zShape3D *org, zOpticalInfo *oi);
+  zShape3D *mirror(const zShape3D *org, zAxis axis);
+  zShape3D *xform(const zShape3D *src, const zFrame3D *f);
+  zShape3D *xformInv(const zShape3D *src, const zFrame3D *f);
+  double closest(const zVec3D *p, zVec3D *cp);
+  double distFromPoint(const zVec3D *p);
+  bool pointIsInside(const zVec3D *p, double margin);
+  double volume();
+  zVec3D *barycenter(zVec3D *c);
+  zMat3D *baryInertiaMass(double mass, zMat3D *inertia);
+  zMat3D *baryInertia(double density, zMat3D *inertia);
+  zMat3D *InertiaMass(double mass, zMat3D *inertia);
+  zMat3D *Inertia(double density, zMat3D *inertia);
+  zShape3D *toPH();
+  zShape3D *readSTL(const char *filename);
+  zShape3D *readPLY(const char *filename);
+  zShape3D *readOBJ(const char *filename);
+#ifdef __ZEO_USE_DAE
+  zShape3D *readDAE(const char *filename);
+#endif /* __ZEO_USE_DAE */
+  void fprintZTK(FILE *fp);
+  zShape3D *readZTK(const char *filename);
+  bool writeZTK(const char *filename);
+  zShape3D *read(const char *filename);
+#endif /* __cplusplus */
 };
 
 #define zShape3DOptic(s)        (s)->optic
@@ -222,6 +254,39 @@ __ZEO_EXPORT bool zShape3DWriteZTK(const zShape3D *shape, const char filename[])
 __ZEO_EXPORT zShape3D *zShape3DReadFile(zShape3D *shape, const char filename[]);
 
 __END_DECLS
+
+#ifdef __cplusplus
+inline zShape3D::zShape3D(){ zShape3DInit( this ); }
+inline zShape3D::zShape3D(const char *str){ zShape3DQueryAssign( this, str ); }
+inline zShape3D::~zShape3D(){ zShape3DDestroy( this ); }
+inline zShape3D *zShape3D::init(){ return zShape3DInit( this ); }
+inline void zShape3D::destroy(){ zShape3DDestroy( this ); }
+inline zShape3D *zShape3D::queryAssign(const char *str){ return zShape3DQueryAssign( this, str ); }
+inline zShape3D *zShape3D::clone(const zShape3D *org, zOpticalInfo *oi){ return zShape3DClone( org, this, oi ); }
+inline zShape3D *zShape3D::mirror(const zShape3D *org, zAxis axis = zY){ return zShape3DMirror( org, this, axis ); }
+inline zShape3D *zShape3D::xform(const zShape3D *src, const zFrame3D *f){ return zShape3DXform( src, f, this ); }
+inline zShape3D *zShape3D::xformInv(const zShape3D *src, const zFrame3D *f){ return zShape3DXformInv( src, f, this ); }
+inline double zShape3D::closest(const zVec3D *p, zVec3D *cp){ return zShape3DClosest( this, p, cp ); }
+inline double zShape3D::distFromPoint(const zVec3D *p){ return zShape3DDistFromPoint( this, p ); }
+inline bool zShape3D::pointIsInside(const zVec3D *p, double margin = zTOL){ return zShape3DPointIsInside( this, p, margin ); }
+inline double zShape3D::volume(){ return zShape3DVolume( this ); }
+inline zVec3D *zShape3D::barycenter(zVec3D *c){ return zShape3DBarycenter( this, c ); }
+inline zMat3D *zShape3D::baryInertiaMass(double mass, zMat3D *inertia){ return zShape3DBaryInertiaMass( this, mass, inertia ); }
+inline zMat3D *zShape3D::baryInertia(double density, zMat3D *inertia){ return zShape3DBaryInertia( this, density, inertia ); }
+inline zMat3D *zShape3D::InertiaMass(double mass, zMat3D *inertia){ return zShape3DInertiaMass( this, mass, inertia ); }
+inline zMat3D *zShape3D::Inertia(double density, zMat3D *inertia){ return zShape3DInertia( this, density, inertia ); }
+inline zShape3D *zShape3D::toPH(){ return zShape3DToPH( this ); }
+inline zShape3D *zShape3D::readSTL(const char *filename){ return zShape3DReadFileSTL( this, filename ); }
+inline zShape3D *zShape3D::readPLY(const char *filename){ return zShape3DReadFilePLY( this, filename ); }
+inline zShape3D *zShape3D::readOBJ(const char *filename){ return zShape3DReadFileOBJ( this, filename ); }
+#ifdef __ZEO_USE_DAE
+inline zShape3D *zShape3D::readDAE(const char *filename){ return zShape3DReadFileDAE( this, filename ); }
+#endif /* __ZEO_USE_DAE */
+inline void zShape3D::fprintZTK(FILE *fp = stdout){ zShape3DFPrintZTK( fp, this ); }
+inline zShape3D *zShape3D::readZTK(const char *filename){ return zShape3DReadZTK( this, filename ); }
+inline bool zShape3D::writeZTK(const char *filename){ return zShape3DWriteZTK( this, filename ); }
+inline zShape3D *zShape3D::read(const char *filename){ return zShape3DReadFile( this, filename ); }
+#endif /* __cplusplus */
 
 #include <zeo/zeo_vec3d_data.h>      /* pointcloud */
 
