@@ -35,6 +35,25 @@ zCoord2D *zCoord2DSub(const zCoord2D *coord1, const zCoord2D *coord2, zCoord2D *
   return coord;
 }
 
+/* multiply a 2D coordinate by a scalar. */
+zCoord2D *zCoord2DMul(const zCoord2D *coord1, double k, zCoord2D *coord)
+{
+  _zCoord2DMul( coord1, k, coord );
+  return coord;
+}
+
+/* divide a 2D coordinate by a scalar value. */
+zCoord2D *zCoord2DDiv(const zCoord2D *coord1, double k, zCoord2D *coord)
+{
+  if( k == 0 ){
+    ZRUNERROR( ZEO_ERR_ZERODIV );
+    return NULL;
+  }
+  k = 1.0 / k;
+  _zCoord2DMul( coord1, k, coord );
+  return coord;
+}
+
 /* concatenate a 2D coordinate to another. */
 zCoord2D *zCoord2DCat(const zCoord2D *coord1, double k, const zCoord2D *coord2, zCoord2D *coord)
 {
@@ -54,6 +73,25 @@ zCoord2D *zCoord2DSubDRC(zCoord2D *coord1, const zCoord2D *coord2)
 {
   _zCoord2DSubDRC( coord1, coord2 );
   return coord1;
+}
+
+/* multiply a 2D coordinate directly by a scalar. */
+zCoord2D *zCoord2DMulDRC(zCoord2D *coord, double k)
+{
+  _zCoord2DMulDRC( coord, k );
+  return coord;
+}
+
+/* divide a 2D coordinate directly by a scalar value. */
+zCoord2D *zCoord2DDivDRC(zCoord2D *coord, double k)
+{
+  if( k == 0 ){
+    ZRUNERROR( ZEO_ERR_ZERODIV );
+    return NULL;
+  }
+  k = 1.0 / k;
+  _zCoord2DMulDRC( coord, k );
+  return coord;
 }
 
 /* concatenate a 2D coordinate directly to another. */

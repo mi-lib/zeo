@@ -22,6 +22,17 @@ void assert_coord2d_arithmatics(void)
     zEqual( coord1.angle - coord2.angle, coord.angle, zTOL ) );
   zCoord2DAdd( &coord, &coord2, &coord3 );
   zAssert( zCoord2DAdd + zCoord2DSub, zCoord2DEqual( &coord1, &coord3 ) );
+  zCoord2DMul( &coord1, k, &coord );
+  zAssert( zCoord2DMul,
+    zEqual( coord1.pos.c.x * k, coord.pos.c.x, zTOL ) &&
+    zEqual( coord1.pos.c.y * k, coord.pos.c.y, zTOL ) &&
+    zEqual( coord1.angle * k, coord.angle, zTOL ) );
+  zCoord2DDiv( &coord1, k, &coord );
+  zAssert( zCoord2DDiv,
+    zEqual( coord1.pos.c.x / k, coord.pos.c.x, zTOL ) &&
+    zEqual( coord1.pos.c.y / k, coord.pos.c.y, zTOL ) &&
+    zEqual( coord1.angle / k, coord.angle, zTOL ) );
+  zAssert( zCoord2DDiv (zero-division), !zCoord2DDiv( &coord1, 0, &coord ) );
   zCoord2DCat( &coord1, k, &coord2, &coord );
   zAssert( zCoord2DCat,
     zEqual( coord1.pos.c.x + k * coord2.pos.c.x, coord.pos.c.x, zTOL ) &&
@@ -40,6 +51,20 @@ void assert_coord2d_arithmatics(void)
     zEqual( coord1.pos.c.x - coord2.pos.c.x, coord.pos.c.x, zTOL ) &&
     zEqual( coord1.pos.c.y - coord2.pos.c.y, coord.pos.c.y, zTOL ) &&
     zEqual( coord1.angle - coord2.angle, coord.angle, zTOL ) );
+  zCoord2DCopy( &coord1, &coord );
+  zCoord2DMulDRC( &coord, k );
+  zAssert( zCoord2DMulDRC,
+    zEqual( coord1.pos.c.x * k, coord.pos.c.x, zTOL ) &&
+    zEqual( coord1.pos.c.y * k, coord.pos.c.y, zTOL ) &&
+    zEqual( coord1.angle * k, coord.angle, zTOL ) );
+  zCoord2DCopy( &coord1, &coord );
+  zCoord2DDivDRC( &coord, k );
+  zAssert( zCoord2DDivDRC,
+    zEqual( coord1.pos.c.x / k, coord.pos.c.x, zTOL ) &&
+    zEqual( coord1.pos.c.y / k, coord.pos.c.y, zTOL ) &&
+    zEqual( coord1.angle / k, coord.angle, zTOL ) );
+  zCoord2DCopy( &coord1, &coord );
+  zAssert( zCoord2DDivDRC (zero-division), !zCoord2DDivDRC( &coord, 0 ) );
   zCoord2DCopy( &coord1, &coord );
   zCoord2DCatDRC( &coord, k, &coord2 );
   zAssert( zCoord2DCatDRC,
