@@ -2,6 +2,31 @@
 
 #define N 1000
 
+void assert_coord2d_copy(void)
+{
+  zCoord2D coord1, coord2;
+
+  zCoord2DCreate( &coord1, zRandF(-10,10), zRandF(-10,10), zRandF(-zPI,zPI) );
+  zCoord2DSetPos( &coord2, zCoord2DPos( &coord1 ) );
+  zCoord2DSetAngle( &coord2, zCoord2DAngle( &coord1 ) );
+  zAssert( zCoord2DEqual (zCoord2DSetPos + zCoord2DSetAngle), zCoord2DEqual( &coord1, &coord2 ) );
+  zCoord2DCreate( &coord2, zCoord2DX(&coord1), zCoord2DY(&coord1), zCoord2DAngle(&coord1) );
+  zAssert( zCoord2DEqual (zCoord2DCreate), zCoord2DEqual( &coord1, &coord2 ) );
+
+  zCoord2DCopy( &coord1, &coord2 );
+  zAssert( zCoord2DCopy, zCoord2DEqual( &coord1, &coord2 ) );
+}
+
+void assert_coord2d_is_tiny(void)
+{
+  zCoord2D coord;
+
+  zCoord2DCreate( &coord, zRandF(-zTOL,zTOL), zRandF(-zTOL,zTOL), zRandF(-zTOL,zTOL) );
+  zAssert( zCoord2DIsTiny (positive test), zCoord2DIsTiny( &coord ) );
+  zCoord2DCreate( &coord, zRandF(2*zTOL,10),-zRandF(2*zTOL,10),-zRandF(2*zTOL,10) );
+  zAssert( zCoord2DIsTiny (negative test), !zCoord2DIsTiny( &coord ) );
+}
+
 void assert_coord2d_arithmatics(void)
 {
   zCoord2D coord1, coord2, coord3, coord;
@@ -73,21 +98,6 @@ void assert_coord2d_arithmatics(void)
     zEqual( coord1.angle + k * coord2.angle, coord.angle, zTOL ) );
 }
 
-void assert_coord2d_copy(void)
-{
-  zCoord2D coord1, coord2;
-
-  zCoord2DCreate( &coord1, zRandF(-10,10), zRandF(-10,10), zRandF(-zPI,zPI) );
-  zCoord2DSetPos( &coord2, zCoord2DPos( &coord1 ) );
-  zCoord2DSetAngle( &coord2, zCoord2DAngle( &coord1 ) );
-  zAssert( zCoord2DEqual (zCoord2DSetPos + zCoord2DSetAngle), zCoord2DEqual( &coord1, &coord2 ) );
-  zCoord2DCreate( &coord2, zCoord2DX(&coord1), zCoord2DY(&coord1), zCoord2DAngle(&coord1) );
-  zAssert( zCoord2DEqual (zCoord2DCreate), zCoord2DEqual( &coord1, &coord2 ) );
-
-  zCoord2DCopy( &coord1, &coord2 );
-  zAssert( zCoord2DCopy, zCoord2DEqual( &coord1, &coord2 ) );
-}
-
 void assert_xform_cascade(void)
 {
   zCoord2D c1, c2, c3, c4;
@@ -145,6 +155,7 @@ int main(void)
 {
   zRandInit();
   assert_coord2d_copy();
+  assert_coord2d_is_tiny();
   assert_coord2d_arithmatics();
   assert_xform_cascade();
   assert_frame2d_conv();

@@ -38,6 +38,25 @@ __ZEO_EXPORT zCoord2D *zCoord2DCreate(zCoord2D *coord, double x, double y, doubl
     zEqual( zCoord2DAngle(coord1), zCoord2DAngle(coord2), zTOL ) )
 __ZEO_EXPORT bool zCoord2DEqual(const zCoord2D *coord1, const zCoord2D *coord2);
 
+/*! \brief check if a 2D coordinate is tiny.
+ *
+ * zCoord2DIsTol() checks if the absolute values of all components of a 2D coordinate \a coord are
+ * smaller than \a tol.
+ *
+ * zCoord2DIsTiny() applies zTOL (defined in zm_misc.h) to the tolerance of zCoord2DIsTol().
+ * \return
+ * zCoord2DIsTol() and zCoord2DIsTiny() return the true value if the absolute values of all components
+ * of \a coord are smaller than \a tol and zTOL, respectively, or the false value, otherwise.
+ * \notes
+ * \a tol must be positive.
+ * \sa
+ * zIsTol, zIsTiny
+ */
+#define _zCoord2DIsTol(coord,tol) ( zIsTol( zCoord2DX(coord), (tol) ) && zIsTol( zCoord2DY(coord), (tol) ) && zIsTol( zCoord2DAngle(coord), (tol) ) )
+__ZEO_EXPORT bool zCoord2DIsTol(const zCoord2D *coord, double tol);
+#define _zCoord2DIsTiny(coord) _zCoord2DIsTol( coord, zTOL )
+#define zCoord2DIsTiny(coord)  zCoord2DIsTol( coord, zTOL )
+
 /*! \brief copy a 2D coordinate to another. */
 #define zCoord2DCopy(src,dest) zCopy( zCoord2D, src, dest )
 

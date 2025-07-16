@@ -21,6 +21,12 @@ bool zCoord2DEqual(const zCoord2D *coord1, const zCoord2D *coord2)
   return _zCoord2DEqual( coord1, coord2 );
 }
 
+/* check if a 2D coordinate is smaller than the given tolerance. */
+bool zCoord2DIsTol(const zCoord2D *coord, double tol)
+{
+  return _zCoord2DIsTol( coord, tol );
+}
+
 /* add two 2D coordinates. */
 zCoord2D *zCoord2DAdd(const zCoord2D *coord1, const zCoord2D *coord2, zCoord2D *coord)
 {
