@@ -32,20 +32,23 @@ __ZEO_EXPORT const zRGB zrgbwhite; /*!< RGB set for white */
 
 #define zRGBIsZero(rgb) ( zIsTol((rgb)->r,ZRGB_TOL) && zIsTol((rgb)->g,ZRGB_TOL) && zIsTol((rgb)->b,ZRGB_TOL) )
 
-/*! \brief create and copy a set of RGB parameters.
+/*! \brief create a set of RGB parameters.
  *
  * zRGBSet() sets \a red, \a green and \a blue to a set of RGB
  * parameters \a rgb.
- *
- * zRGBCopy() copies a set of RGB parameters pointed by \a src
- * to the other set pointed by \a dest.
  * \return
  * zRGBSet() returns a pointer \a rgb.
- *
- * zRGBCopy() returns no value.
  */
 __ZEO_EXPORT zRGB *zRGBSet(zRGB *rgb, float red, float green, float blue);
-#define zRGBCopy(src,dest) ( *(dest) = *(src) )
+
+/*! \brief copy a set of RGB parameters.
+ *
+ * zRGBCopy() copies a set of RGB parameters pointed by \a src to the other set pointed by \a dest.
+ * \return
+ * zRGBCopy() returns the pointer \a dest.
+ */
+#define _zRGBCopy(src,dest) ( *(dest) = *(src) )
+__ZEO_EXPORT zRGB *zRGBCopy(const zRGB *src, zRGB *dest);
 
 #define zRGB2fv(rgb,colorv) do{\
   (colorv)[0] = (rgb)->r;\
@@ -83,6 +86,22 @@ __ZEO_EXPORT zRGB *zRGBBlend(const zRGB *rgb1, const zRGB *rgb2, double ratio, z
  * zRGBDecodeStr() returns a pointer \a rgb.
  */
 __ZEO_EXPORT zRGB *zRGBDecodeStr(zRGB *rgb, const char *str);
+
+/*! \brief find RGB by a string.
+ *
+ * zRGBByName() converts a name of color \a name to a set of RGB parameters pointed by \a rgb.
+ * The strings available for this function are "black", "red", "green", "blue", "yellow", "cyan",
+ * "magenta", and "white".
+ *
+ * zRGBByStr() converts a string \a str to a set of RGB parameters pointed by \a rgb.
+ * The string is either that is readable by zRGBDecodeStr() or the name of color.
+ * \return
+ * zRGBByName() and zRGBByStr() return the pointer \a rgb.
+ * \sa
+ * zRGBDecodeStr
+ */
+__ZEO_EXPORT zRGB *zRGBByName(zRGB *rgb, const char *name);
+__ZEO_EXPORT zRGB *zRGBByStr(zRGB *rgb, const char *str);
 
 /*! \brief read a set of RGB from a ZTK format processor. */
 __ZEO_EXPORT zRGB *zRGBFromZTK(zRGB *rgb, ZTK *ztk);

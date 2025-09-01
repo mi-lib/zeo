@@ -1,3 +1,5 @@
+2025.09.01. Added zRGBByName and zRGBByStr. [zeo_render_color]
+2025.09.01. Renamed zRGBCopy to _zRGBCopy, and reimplemented zRGBCopy as a function. [zeo_render_color]
 2025.07.17. Discarded coord2d_test.c in example. [example]
 2025.07.16. Added _zCoord2DIsTol, zCoord2DIsTol, _zCoord2DIsTiny, and zCoord2DIsTiny. [zeo_coord2d]
 2025.07.15. Added C++ methods of zShape3D class. [zeo_shape3d]

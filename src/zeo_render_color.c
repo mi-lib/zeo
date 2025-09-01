@@ -24,6 +24,13 @@ zRGB *zRGBSet(zRGB *rgb, float red, float green, float blue)
   return rgb;
 }
 
+/* copy a set of RGB parameters. */
+zRGB *zRGBCopy(const zRGB *src, zRGB *dest)
+{
+  _zRGBCopy( src, dest );
+  return dest;
+}
+
 /* multiply a set of RGB parameters by another. */
 zRGB *zRGBMul(const zRGB *rgb1, const zRGB *rgb2, zRGB *rgb)
 {
@@ -74,6 +81,43 @@ static zRGB *_zRGBHex(zRGB *rgb, const char *hex)
 zRGB *zRGBDecodeStr(zRGB *rgb, const char *str)
 {
   return str[0] == '#' ? _zRGBHex( rgb, str+1 ) : _zRGBRatio( rgb, str );
+}
+
+/* find RGB by name. */
+zRGB *zRGBByName(zRGB *rgb, const char *name)
+{
+  struct{
+    const char *name;
+    const float red;
+    const float green;
+    const float blue;
+  } color_table[] = {
+    { "black",   0, 0, 0 },
+    { "red",     1, 0, 0 },
+    { "green",   0, 1, 0 },
+    { "blue",    0, 0, 1 },
+    { "yellow",  1, 1, 0 },
+    { "cyan",    0, 1, 1 },
+    { "magenta", 1, 0, 1 },
+    { "white",   1, 1, 1 },
+    { NULL,      0, 0, 0 },
+  };
+  int i;
+
+  if( name ){
+    for( i=0; color_table[i].name; i++ )
+      if( strcmp( color_table[i].name, name ) == 0 ){
+        return zRGBSet( rgb, color_table[i].red, color_table[i].green, color_table[i].blue );
+      }
+  }
+  zRGBCopy( ZRGBBLACK, rgb );
+  return rgb;
+}
+
+/* find RGB by a string. */
+zRGB *zRGBByStr(zRGB *rgb, const char *str)
+{
+  return str && ( str[0] == '#' || isdigit(str[0]) ) ? zRGBDecodeStr( rgb, str ) : zRGBByName( rgb, str );
 }
 
 /* read a set of RGB from a ZTK format processor. */
