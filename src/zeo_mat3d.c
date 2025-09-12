@@ -79,6 +79,19 @@ zMat3D *zMat3DTDRC(zMat3D *m)
   return m;
 }
 
+/* symmetrize a 3x3 matrix. */
+zMat3D *zMat3DSymmetrize(const zMat3D *src, zMat3D *dest)
+{
+  _zMat3DSymmetrize( src, dest );
+  return dest;
+}
+
+/* check if a matrix is square and symmetric. */
+bool zMat3DIsSymmetric(const zMat3D *m)
+{
+  return _zMat3DIsSymmetric( m );
+}
+
 /* ********************************************************** */
 /* arithmetics
  * ********************************************************** */

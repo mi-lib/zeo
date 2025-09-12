@@ -1,3 +1,5 @@
+2025.09.13. Added _zMat3DSymmetrize, zMat3DSymmetrize, zMat3DSymmetrizeDRC, _zMat3DIsSymmetric, and zMat3DIsSymmetric. [zeo_mat3d]
+2025.09.13. Added orthonormalize method to zMat3D for C++. [zeo_mat3d]
 2025.09.12. Debugged zMat3DToAA (thanks to Daishi Kaneta). [zeo_mat3d]
 2025.09.12. Added zMat3DOrthonormalize and zMat3DOrthonormalizeDRC. [zeo_errmsg, zeo_mat3d]
 2025.09.12. Added zMat3DIsOrthonormal and zMat3DIsRightHand. [zeo_mat3d]

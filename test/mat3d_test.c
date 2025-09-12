@@ -70,6 +70,33 @@ void assert_matstruct(void)
   zAssert( zMat3DTDRC, zMat3DEqual( &tm, &m ) );
 }
 
+void assert_mat_symmetrize(void)
+{
+  zMat3D m1, m2;
+  zVec3D v, u;
+  double qval1, qval2;
+  int i;
+  const int n = 1000;
+  bool result1 = true, result2 = true, result3 = true;
+
+  for( i=0; i<n; i++ ){
+    mat_create_rand( &m1 );
+    vec_create_rand( &v );
+    zMulMat3DVec3D( &m1, &v, &u );
+    qval1 = zVec3DInnerProd( &v, &u );
+    zMat3DSymmetrize( &m1, &m2 );
+    if( !zMat3DIsSymmetric( &m2 ) ) result3 = false;
+    zMulMat3DVec3D( &m2, &v, &u );
+    qval2 = zVec3DInnerProd( &v, &u );
+    if( !zIsTiny( qval1 - qval2 ) ) result1 = false;
+    zMat3DSymmetrizeDRC( &m1 );
+    if( !zMat3DEqual( &m1, &m2 ) ) result2 = false;
+  }
+  zAssert( zMat3DSymmetrize, result1 );
+  zAssert( zMat3DSymmetrizeDRC, result2 );
+  zAssert( zMat3DIsSymmetric, result3 );
+}
+
 void assert_arith(void)
 {
   zMat3D m1, m2, m3;
@@ -660,6 +687,7 @@ int main(void)
 {
   zRandInit();
   assert_matstruct();
+  assert_mat_symmetrize();
   assert_arith();
   assert_outerprod();
   assert_mat_is_orthonormal();

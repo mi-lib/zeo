@@ -56,6 +56,7 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat3D ){
   zMat3D &createOuterprod(zVec3D &v);
   zMat3D &createTripleprod(zVec3D &v1, zVec3D &v2);
   zMat3D &createDoubleOuterprod(zVec3D &v);
+  zMat3D &orthonormalize(zAxis axis1, zAxis axis2);
   double squareNorm();
   double norm();
   double det();
@@ -197,6 +198,23 @@ __ZEO_EXPORT zVec3D *zMat3DRow(const zMat3D *m, int i, zVec3D *v);
 } while(0)
 __ZEO_EXPORT zMat3D *zMat3DT(const zMat3D *m, zMat3D *tm);
 __ZEO_EXPORT zMat3D *zMat3DTDRC(zMat3D *m);
+
+/*! \brief symmetrize a 3x3 matrix. */
+#define _zMat3DSymmetrize(src,dest) do{\
+  (dest)->c.xx = (src)->c.xx; \
+  (dest)->c.yy = (src)->c.yy; \
+  (dest)->c.zz = (src)->c.zz; \
+  (dest)->c.xy = (dest)->c.yx = 0.5 * ( (src)->c.xy + (src)->c.yx ); \
+  (dest)->c.yz = (dest)->c.zy = 0.5 * ( (src)->c.yz + (src)->c.zy ); \
+  (dest)->c.zx = (dest)->c.xz = 0.5 * ( (src)->c.zx + (src)->c.xz ); \
+} while(0)
+__ZEO_EXPORT zMat3D *zMat3DSymmetrize(const zMat3D *src, zMat3D *dest);
+
+#define zMat3DSymmetrizeDRC(m) zMat3DSymmetrize( m, m )
+
+#define _zMat3DIsSymmetric(m) ( (m)->c.xy == (m)->c.yx && (m)->c.yz == (m)->c.zy && (m)->c.zx == (m)->c.xz )
+/*! \brief check if a matrix is square and symmetric. */
+__ZEO_EXPORT bool zMat3DIsSymmetric(const zMat3D *m);
 
 /* ********************************************************** */
 /* arithmetics
@@ -934,6 +952,7 @@ inline zMat3D &zMat3D::createDyad(zVec3D &v1, zVec3D &v2){ _zMat3DDyad( this, &v
 inline zMat3D &zMat3D::createOuterprod(zVec3D &v){ _zVec3DOuterProd2Mat3D( &v, this ); return *this; }
 inline zMat3D &zMat3D::createTripleprod(zVec3D &v1, zVec3D &v2){ _zVec3DTripleProd2Mat3D( &v1, &v2, this ); return *this; }
 inline zMat3D &zMat3D::createDoubleOuterprod(zVec3D &v){ _zVec3DDoubleOuterProd2Mat3D( &v, this ); return *this; }
+inline zMat3D &zMat3D::orthonormalize(zAxis axis1, zAxis axis2){ return *zMat3DOrthonormalizeDRC( this, axis1, axis2 ); }
 inline double zMat3D::squareNorm(){ return _zMat3DSqrNorm( this ); }
 inline double zMat3D::norm(){ return _zMat3DNorm( this ); }
 inline double zMat3D::det(){ return _zMat3DDet( this ); }
