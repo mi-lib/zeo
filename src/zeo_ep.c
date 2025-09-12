@@ -229,16 +229,16 @@ zEP *zEPNormalize(zEP *ep)
 }
 
 /* cascade a Euler parameter to another. */
-zEP *zEPCascade(zEP *e1, zEP *e2, zEP *e)
+zEP *zEPCascade(zEP *ep1, zEP *ep2, zEP *ep)
 {
   zEP tmp;
 
-  tmp.ex.w = e1->ex.w * e2->ex.w - _zVec3DInnerProd(&e1->ex.v,&e2->ex.v);
-  _zVec3DOuterProd( &e2->ex.v, &e1->ex.v, &tmp.ex.v );
-  _zVec3DCatDRC( &tmp.ex.v, e1->ex.w, &e2->ex.v );
-  _zVec3DCatDRC( &tmp.ex.v, e2->ex.w, &e1->ex.v );
-  zEPCopy( &tmp, e );
-  return e;
+  tmp.ex.w = ep1->ex.w * ep2->ex.w - _zVec3DInnerProd(&ep1->ex.v,&ep2->ex.v);
+  _zVec3DOuterProd( &ep2->ex.v, &ep1->ex.v, &tmp.ex.v );
+  _zVec3DCatDRC( &tmp.ex.v, ep1->ex.w, &ep2->ex.v );
+  _zVec3DCatDRC( &tmp.ex.v, ep2->ex.w, &ep1->ex.v );
+  zEPCopy( &tmp, ep );
+  return ep;
 }
 
 /* interior division of Euler parameter for SLERP. */

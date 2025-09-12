@@ -194,6 +194,44 @@ double zMat3DSqrNorm(const zMat3D *m)
   return _zMat3DSqrNorm( m );
 }
 
+/* check if a 3x3 matrix is orthonormal. */
+bool zMat3DIsOrthonormal(const zMat3D *m)
+{
+  return zIsTiny( zVec3DInnerProd( zMat3DVec(m,0), zMat3DVec(m,0) ) - 1 ) &&
+         zIsTiny( zVec3DInnerProd( zMat3DVec(m,1), zMat3DVec(m,1) ) - 1 ) &&
+         zIsTiny( zVec3DInnerProd( zMat3DVec(m,2), zMat3DVec(m,2) ) - 1 ) &&
+         zIsTiny( zVec3DInnerProd( zMat3DVec(m,0), zMat3DVec(m,1) ) ) &&
+         zIsTiny( zVec3DInnerProd( zMat3DVec(m,1), zMat3DVec(m,2) ) ) &&
+         zIsTiny( zVec3DInnerProd( zMat3DVec(m,2), zMat3DVec(m,0) ) );
+}
+
+/* check if a 3x3 matrix is a right-hand system. */
+bool zMat3DIsRightHand(const zMat3D *m)
+{
+  return zVec3DGrassmannProd( zMat3DVec(m,0), zMat3DVec(m,1), zMat3DVec(m,2) ) > 0;
+}
+
+/* orthonormalize a 3x3 matrix. */
+zMat3D *zMat3DOrthonormalize(const zMat3D *src, zAxis axis1, zAxis axis2, zMat3D *dest)
+{
+  zAxis axis3;
+
+  axis1 %= 3;
+  axis2 %= 3;
+  if( axis1 == axis2 ){
+    ZRUNERROR( ZEO_ERR_IDENT_AXIS, axis1 );
+    return NULL;
+  }
+  axis3 = ( 3 - axis1 - axis2 ) % 3; /* (X,Y)->Z, (Y,Z)->X, (Z,X)->Y */
+
+  zVec3DNormalize( zMat3DVec(src,axis1), zMat3DVec(dest,axis1) );
+  zVec3DOrthogonalize( zMat3DVec(src,axis2), zMat3DVec(src,axis1), zMat3DVec(dest,axis2) );
+  zVec3DNormalizeDRC( zMat3DVec(dest,axis2) );
+  zVec3DOuterProd( zMat3DVec(dest,axis1), zMat3DVec(dest,axis2), zMat3DVec(dest,axis3) );
+  zVec3DNormalizeDRC( zMat3DVec(dest,axis3) );
+  return dest;
+}
+
 /* ********************************************************** */
 /* inverse of a 3x3 matrix
  * ********************************************************** */

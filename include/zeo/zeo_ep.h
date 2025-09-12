@@ -46,10 +46,9 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zEP ){
 
 /*! \brief create and copy Euler parameter.
  *
- * zEPCreate() creates Euler parameter \a ep from four values. It is
- * automatically normalized.
- *
+ * zEPCreate() creates Euler parameter \a ep from four values.
  * zEPCreateAA() creates Euler parameter \a ep from a combination of angle and axis.
+ * For both functions, \a ep is automatically normalized by zEPNormalize().
  *
  * zEPIdent() creates Euler parameter which is equivalent to the
  * identity transformation, namely, \a ep equals to [ 1, 0, 0, 0 ].
@@ -58,6 +57,8 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zEP ){
  * \return
  * zEPCreate(), zEPCreateAA() and zEPIdent() return a pointer \a ep.
  * zEPCopy() returns a pointer \a dest.
+ * \sa
+ * zEPNormalize
  */
 __ZEO_EXPORT zEP *zEPCreate(zEP *ep, double w, double x, double y, double z);
 __ZEO_EXPORT zEP *zEPCreateAA(zEP *ep, double theta, zVec3D *axis);
@@ -119,56 +120,57 @@ __ZEO_EXPORT zEP *zAngVel2EPVel(zVec3D *angvel, zEP *ep, zEP *epvel);
 
 /*! \brief Euler parameter arithmetics.
  *
- * zEPAdd() add two Euler parameters \a ep1 and \a ep2 and puts it into \a ep.
- * zEPSub() subtracts an Euler parameter \a ep2 from another \a ep1 and puts it into \a ep.
+ * zEPAdd() adds two Euler parameters \a ep1 and \a ep2. The result is put into \a ep.
+ * zEPAddDRC() directly adds an Euler parameter \a ep2 to another \a ep1.
+ * zEPSub() subtracts an Euler parameter \a ep2 from another \a ep1. The result is put into \a ep.
+ * zEPSubDRC() directly subtracts an Euler parameter \a ep2 from another \a ep1.
  *
- * zEPRev() reverses Euler parameter \a ep1 and puts it into \a ep.
- * zEPRevDRC() directly reverses Euler parameter \a ep.
+ * zEPRev() reverses an Euler parameter \a ep1. The result is put into \a ep.
+ * zEPRevDRC() directly reverses an Euler parameter \a ep.
  *
- * zEPMul() multiplies Euler parameter \a ep1 by a scalar value \a k and
- * puts it into \a ep.
- * zEPMulDRC() directly multiplies Euler parameter \a ep by a scalar value \a k.
+ * zEPMul() multiplies an Euler parameter \a ep1 by a scalar value \a k. The result is put into \a ep.
+ * zEPMulDRC() directly multiplies an Euler parameter \a ep by a scalar value \a k.
  *
- * zEPCat() multiplies Euler parameter \a ep2 by a scalar value \a k,
- * concatenates it to the other \a ep1 and puts it into \a ep.
- * zEPCatDRC() directly concatenates Euler parameter \a ep2 multiplied by
- * a scalar value \a k to the other \a ep1.
- *
- * zEPInnerProd() calculates the inner products of two Euler parameters
- * \a ep1 and \a ep2.
- * zEPNorm() calculates the norm of Euler parameter \a ep.
- *
- * zEPNormalize() directly normalizes Euler parameter \a ep.
- * \notes
- * Since Euler parameter is a class of unit quaternions, zEPNormalize() is
- * automatically called in zEPCreateAA() and some other functions.
+ * zEPCat() multiplies an Euler parameter \a ep2 by a scalar value \a k. Namely, it concatenates \a ep2
+ * multiplied by \a k to the other \a ep1. The result is put into \a ep.
+ * zEPCatDRC() directly concatenates an Euler parameter \a ep2 multiplied by a scalar value \a k to the
+ * other \a ep1.
  * \return
- * zEPRev(), zEPMul() and zEPCat() return a pointer \a ep.
- *
- * zEPRevDRC(), zEPMulDRC(), zEPCatDRC() and zEPNormalize() return a pointer
- * to the result Euler parameter.
- *
- * zEPInnerProd() and zEPNorm() return the result value.
+ * zEPAdd(), zEPSub(), zEPRev(), zEPMul(), and zEPCat() return a pointer \a ep.
+ * zEPAddDRC(), zEPSubDRC(), and zEPCatDRC() return a pointer \a ep1.
+ * zEPRevDRC() and zEPMulDRC() return a pointer \a e.
  */
 __ZEO_EXPORT zEP *zEPAdd(zEP *ep1, zEP *ep2, zEP *ep);
 __ZEO_EXPORT zEP *zEPSub(zEP *ep1, zEP *ep2, zEP *ep);
 __ZEO_EXPORT zEP *zEPRev(zEP *ep1, zEP *ep);
 __ZEO_EXPORT zEP *zEPMul(zEP *ep1, double k, zEP *ep);
 __ZEO_EXPORT zEP *zEPCat(zEP *ep1, double k, zEP *ep2, zEP *ep);
-#define zEPSubDRC(e1,e)      zEPSub( e1, e, e1 )
-#define zEPRevDRC(e)         zEPRev( e, e )
-#define zEPMulDRC(e,k)       zEPMul( e, k, e )
+#define zEPAddDRC(ep1,ep2)   zEPAdd( ep1, ep2, ep1 )
+#define zEPSubDRC(ep1,ep2)   zEPSub( ep1, ep2, ep1 )
+#define zEPRevDRC(ep)        zEPRev( ep, ep )
+#define zEPMulDRC(ep,k)      zEPMul( ep, k, ep )
 #define zEPCatDRC(ep1,k,ep2) zEPCat( ep1, k, ep2, ep1 )
 
 __ZEO_EXPORT zEP *zEPDif(zEP *ep1, zEP *ep2, double dt, zEP *ep_vel);
 
+/*! \brief inner product and normalization of the Euler parameter.
+ *
+ * zEPInnerProd() calculates the inner product of two Euler parameters \a ep1 and \a ep2.
+ * zEPNorm() calculates the norm of an Euler parameter \a ep.
+ *
+ * zEPNormalize() directly normalizes an Euler parameter \a ep.
+ * \return
+ * zEPInnerProd() and zEPNorm() return the result value.
+ * zEPNormalize() returns a pointer \a ep if succeeding. If the norm of \a ep is zero, it returns
+ * the null pointer.
+ */
 __ZEO_EXPORT double zEPInnerProd(zEP *ep1, zEP *ep2);
 __ZEO_EXPORT double zEPNorm(zEP *ep);
 __ZEO_EXPORT zEP *zEPNormalize(zEP *ep);
 
 /*! \brief cascade a Euler parameter to another.
  */
-__ZEO_EXPORT zEP *zEPCascade(zEP *e1, zEP *e2, zEP *e);
+__ZEO_EXPORT zEP *zEPCascade(zEP *ep1, zEP *ep2, zEP *ep);
 
 /*! \brief interior division of Euler parameter.
  *

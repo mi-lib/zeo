@@ -340,7 +340,7 @@ zVec3D *zVec3DProj(const zVec3D *v, const zVec3D *n, zVec3D *pv)
 }
 
 /* create an orthonormal 3D vector. */
-zVec3D *zVec3DOrthoNormal(const zVec3D *v, zVec3D *ov)
+zVec3D *zVec3DOrthonormal(const zVec3D *v, zVec3D *ov)
 {
   if( !zIsTiny( v->c.x ) || !zIsTiny( v->c.y ) )
     _zVec3DCreate( ov, v->c.y, -v->c.x, 0 );
@@ -371,13 +371,13 @@ zVec3D *zVec3DOrthogonalize(const zVec3D *v, const zVec3D *n, zVec3D *ov)
 /* create the orthogonal space of a 3D vector. */
 bool zVec3DOrthoSpace(const zVec3D *v, zVec3D *sv1, zVec3D *sv2)
 {
-  if( !zVec3DOrthoNormal( v, sv1 ) ) return false;
+  if( !zVec3DOrthonormal( v, sv1 ) ) return false;
   _zVec3DOuterProd( v, sv1, sv2 );
   return true;
 }
 
 /* create the orthonormal space of a 3D vector. */
-bool zVec3DOrthoNormalSpace(zVec3D *v, zVec3D *sv1, zVec3D *sv2)
+bool zVec3DOrthonormalSpace(zVec3D *v, zVec3D *sv1, zVec3D *sv2)
 {
   if( !zVec3DOrthoSpace( v, sv1, sv2 ) ) return false;
   zVec3DNormalizeDRC( v );

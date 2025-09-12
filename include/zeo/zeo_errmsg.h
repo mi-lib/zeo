@@ -23,6 +23,8 @@
 #define ZEO_ERR_INVALID_DIR                   "invalid direction identifier : %d"
 #define ZEO_ERR_INVALID_DIR_NAME              "invalid direction name : %s"
 
+#define ZEO_ERR_IDENT_AXIS                    "identical axis %d"
+
 #define ZEO_ERR_INVALID_RGBSTR                "invalid size of RGB specification, strlen(%s)=%d"
 
 #define ZEO_ERR_TEXTURE_INVALID_COORD_ID      "%d: invalid identifier of a coordinate specified."

@@ -188,7 +188,7 @@ zMat3D *zCone3DBaryInertiaMass(const zCone3D *cone, double mass, zMat3D *inertia
     0, 0.05*(rr+hh), 0,
     0, 0, 0.1*rr );
   /* rotate */
-  zVec3DOrthoNormalSpace( &att.b.z, &att.b.x, &att.b.y );
+  zVec3DOrthonormalSpace( &att.b.z, &att.b.x, &att.b.y );
   return zRotMat3D( &att, &i, inertia );
 }
 
@@ -217,7 +217,7 @@ zPH3D *zCone3DToPH(const zCone3D *cone, zPH3D *ph)
   }
   zVec3DNormalizeDRC( &d );
   /* one radial vector */
-  zVec3DOrthoNormal( &d, &s );
+  zVec3DOrthonormal( &d, &s );
   zVec3DMulDRC( &s, zCone3DRadius(cone) );
   /* create vertices */
   zVec3DCopy( zCone3DVert(cone), &vert[0] );

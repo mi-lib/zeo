@@ -18,7 +18,7 @@ zECyl3D *zCyl3DToECyl3D(const zCyl3D *cylinder, zECyl3D *ecyl)
   zVec3D axis, ax, ay;
 
   zCyl3DAxis( cylinder, &axis );
-  zVec3DOrthoNormalSpace( &axis, &ax, &ay );
+  zVec3DOrthonormalSpace( &axis, &ax, &ay );
   return zECyl3DCreate( ecyl, zCyl3DCenter(cylinder,0), zCyl3DCenter(cylinder,1), zCyl3DRadius(cylinder), zCyl3DRadius(cylinder), &ax, zCyl3DDiv(cylinder) );
 }
 

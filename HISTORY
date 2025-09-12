@@ -1,3 +1,7 @@
+2025.09.12. Added zMat3DOrthonormalize and zMat3DOrthonormalizeDRC. [zeo_errmsg, zeo_mat3d]
+2025.09.12. Added zMat3DIsOrthonormal and zMat3DIsRightHand. [zeo_mat3d]
+2025.09.12. Added zEPAddDRC. [zeo_ep]
+2025.09.12. Renamed zVec3DOrthoNormal and zVec3DOrthoNormalSpace to zVec3DOrthonormal and zVec3DOrthonormalSpace. [zeo_vec3d, zeo_shape3d_cyl, zeo_shape3d_capsule, zeo_shape3d_cone, zeo_nurbs3d_shape, test]
 2025.09.12. Added flip option to zeo_phconv. [app]
 2025.09.12. Added zPH3DFlip. [zeo_ph3d]
 2025.09.12. Renamed zTri3DCreateRev, zTri3DRev, and zTri3DRevDRC to zTri3DCreateFlip, zTri3DFlip, and zTri3DFlipDRC, respectively. [zeo_elem3d, zeo_elem3d_list, zeo_ph3d]

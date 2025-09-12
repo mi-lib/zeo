@@ -107,7 +107,7 @@ zMat3D *zCapsule3DBaryInertia(const zCapsule3D *capsule, double density, zMat3D 
     0, ixx, 0,
     0, 0, izz );
   /* rotate */
-  zVec3DOrthoNormalSpace( &att.b.z, &att.b.x, &att.b.y );
+  zVec3DOrthonormalSpace( &att.b.z, &att.b.x, &att.b.y );
   return zRotMat3D( &att, &i, inertia );
 }
 
@@ -131,7 +131,7 @@ zPH3D *zCapsule3DToPH(const zCapsule3D *capsule, zPH3D *ph)
   }
   zVec3DNormalizeDRC( &d );
   /* one radial vector */
-  zVec3DOrthoNormal( &d, &s );
+  zVec3DOrthonormal( &d, &s );
   zVec3DMulDRC( &s, zCapsule3DRadius(capsule) );
   zVec3DMul( &d, zCapsule3DRadius(capsule), &dr );
   /* -- vertices -- */

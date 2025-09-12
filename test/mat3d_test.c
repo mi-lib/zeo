@@ -208,6 +208,58 @@ void assert_outerprod(void)
   zAssert( zMulVec3DOuterProdMat3DDRC, zMat3DEqual( &m2, &m4 ) );
 }
 
+void assert_mat_is_orthonormal(void)
+{
+  zMat3D m;
+  zVec3D aa;
+  int i;
+  const int n = 1000;
+  bool result1 = true, result2 = true, result3 = true, result4 = true;
+
+  for( i=0; i<n; i++ ){
+    zVec3DCreate( &aa, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    zMat3DFromAA( &m, &aa );
+    if( !zMat3DIsOrthonormal( &m ) ) result1 = false;
+    if( !zMat3DIsRightHand( &m ) ) result2 = false;
+    zVec3DCatDRC( zMat3DVec(&m,0), 0.5, zMat3DVec(&m,1) );
+    if( zMat3DIsOrthonormal( &m ) ) result3 = false;
+    zVec3DRevDRC( zMat3DVec(&m,2) );
+    if( zMat3DIsRightHand( &m ) ) result4 = false;
+  }
+  zAssert( zMat3DIsOrthonormal (positive cases), result1 );
+  zAssert( zMat3DIsOrthonormal (negative cases), result3 );
+  zAssert( zMat3DIsRightHand (positive cases), result2 );
+  zAssert( zMat3DIsRightHand (negative cases), result4 );
+}
+
+void assert_mat_orthonormalize(void)
+{
+  zMat3D m1, m2, *ret;
+  zAxis axis1, axis2;
+  const int n = 20;
+  int i;
+  bool result1 = true, result2 = true;
+
+  for( i=0; i<n; i++ ){
+    zMat3DCreate( &m1,
+      zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
+      zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
+      zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    axis1 = zRandI( zX, zZ );
+    axis2 = zRandI( zX, zZ );
+    ret = zMat3DOrthonormalize( &m1, axis1, axis2, &m2 );
+    if( ret == &m2 ){
+      if( !zMat3DIsOrthonormal( &m2 ) ) result1 = false;
+      zMat3DOrthonormalizeDRC( &m1, axis1, axis2 );
+      if( !zMat3DEqual( &m1, &m2 ) ) result2 = false;
+    } else{
+      if( axis1 != axis2 ) result1 = false;
+    }
+  }
+  zAssert( zMat3DOrthonormalize, result1 );
+  zAssert( zMat3DOrthonormalizeDRC, result2 );
+}
+
 void assert_inv(void)
 {
   zMat3D m1, m2, m3;
@@ -610,6 +662,8 @@ int main(void)
   assert_matstruct();
   assert_arith();
   assert_outerprod();
+  assert_mat_is_orthonormal();
+  assert_mat_orthonormalize();
   assert_inv();
   assert_mul();
   assert_mat_inv();

@@ -440,6 +440,15 @@ __ZEO_EXPORT double zMat3DSqrNorm(const zMat3D *m);
 #define _zMat3DNorm(m) sqrt( _zMat3DSqrNorm(m) )
 #define zMat3DNorm(m) sqrt( zMat3DSqrNorm(m) )
 
+/*! \brief check if a 3x3 matrix is orthonormal. */
+__ZEO_EXPORT bool zMat3DIsOrthonormal(const zMat3D *m);
+/*! \brief check if a 3x3 matrix is a right-hand system. */
+__ZEO_EXPORT bool zMat3DIsRightHand(const zMat3D *m);
+
+/*! \brief orthonormalize a 3x3 matrix. */
+__ZEO_EXPORT zMat3D *zMat3DOrthonormalize(const zMat3D *src, zAxis axis1, zAxis axis2, zMat3D *dest);
+#define zMat3DOrthonormalizeDRC(m,axis1,axis2) zMat3DOrthonormalize(m,axis1,axis2,m)
+
 /* ********************************************************** */
 /* inverse of a 3x3 matrix
  * ********************************************************** */

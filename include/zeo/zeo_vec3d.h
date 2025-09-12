@@ -481,7 +481,7 @@ __ZEO_EXPORT zVec3D *zVec3DAAError(const zVec3D *v1, const zVec3D *v2, zVec3D *a
  * \a n and the subtraction vector from \a pv to \a v is
  * orthogonal to \a n.
  *
- * zVec3DOrthoNormal() creates a 3D vector \a ov that is orthonormal
+ * zVec3DOrthonormal() creates a 3D vector \a ov that is orthonormal
  * to \a v. The direction of \a ov is uniquely determined based on
  * \a v but cannot be specified.
  *
@@ -508,10 +508,10 @@ __ZEO_EXPORT zVec3D *zVec3DAAError(const zVec3D *v1, const zVec3D *v2, zVec3D *a
  * zVec3DRot() returns a pointer to \a rv.
  */
 __ZEO_EXPORT zVec3D *zVec3DProj(const zVec3D *v, const zVec3D *n, zVec3D *pv);
-__ZEO_EXPORT zVec3D *zVec3DOrthoNormal(const zVec3D *v, zVec3D *ov);
+__ZEO_EXPORT zVec3D *zVec3DOrthonormal(const zVec3D *v, zVec3D *ov);
 __ZEO_EXPORT zVec3D *zVec3DOrthogonalize(const zVec3D *v, const zVec3D *n, zVec3D *ov);
 __ZEO_EXPORT bool zVec3DOrthoSpace(const zVec3D *v, zVec3D *sv1, zVec3D *sv2);
-__ZEO_EXPORT bool zVec3DOrthoNormalSpace(zVec3D *v, zVec3D *sv1, zVec3D *sv2);
+__ZEO_EXPORT bool zVec3DOrthonormalSpace(zVec3D *v, zVec3D *sv1, zVec3D *sv2);
 __ZEO_EXPORT zVec3D *zVec3DRot(const zVec3D *v, const zVec3D *aa, zVec3D *rv);
 
 /* ********************************************************** */

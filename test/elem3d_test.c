@@ -163,7 +163,7 @@ void assert_edge3D(void)
   zAssert( zEdge3DPointIsOn (false case), !zEdge3DPointIsOn( &edge, &p, zTOL ) );
   zVec3DCat( zEdge3DVert(&edge,0),-1, zEdge3DVec(&edge), &p );
   zAssert( zEdge3DPointIsOn (false case), !zEdge3DPointIsOn( &edge, &p, zTOL ) );
-  zVec3DOrthoNormal( zEdge3DVec(&edge), &v );
+  zVec3DOrthonormal( zEdge3DVec(&edge), &v );
   zVec3DAdd( zEdge3DVert(&edge,0), &v, &p );
   zVec3DCatDRC( &p, 0.5, zEdge3DVec(&edge) );
   zAssert( zEdge3DPointIsOn (false case), !zEdge3DPointIsOn( &edge, &p, zTOL ) );
@@ -180,7 +180,7 @@ void assert_edge3D_closest(void)
     zVec3DCreate( &p1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
     zVec3DCreate( &p2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
     zEdge3DCreate( &edge, &p1, &p2 );
-    zVec3DOrthoNormal( zEdge3DVec(&edge), &ov );
+    zVec3DOrthonormal( zEdge3DVec(&edge), &ov );
     zVec3DCat( zEdge3DVert(&edge,0), zRandF(0.1,0.9), zEdge3DVec(&edge), &cp );
     zVec3DCat( &cp, zRandF(-10,10), &ov, &p_test );
     zEdge3DClosest( &edge, &p_test, &cp_test );
@@ -191,7 +191,7 @@ void assert_edge3D_closest(void)
     zVec3DCreate( &p1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
     zVec3DCreate( &p2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
     zEdge3DCreate( &edge, &p1, &p2 );
-    zVec3DOrthoNormal( zEdge3DVec(&edge), &ov );
+    zVec3DOrthonormal( zEdge3DVec(&edge), &ov );
     zVec3DCat( zEdge3DVert(&edge,0), zRandF(1.1,10), zEdge3DVec(&edge), &cp );
     zVec3DCat( &cp, zRandF(-10,10), &ov, &p_test );
     zEdge3DClosest( &edge, &p_test, &cp_test );
@@ -202,7 +202,7 @@ void assert_edge3D_closest(void)
     zVec3DCreate( &p1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
     zVec3DCreate( &p2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
     zEdge3DCreate( &edge, &p1, &p2 );
-    zVec3DOrthoNormal( zEdge3DVec(&edge), &ov );
+    zVec3DOrthonormal( zEdge3DVec(&edge), &ov );
     zVec3DCat( zEdge3DVert(&edge,0), zRandF(-10,-0.1), zEdge3DVec(&edge), &cp );
     zVec3DCat( &cp, zRandF(-10,10), &ov, &p_test );
     zEdge3DClosest( &edge, &p_test, &cp_test );
