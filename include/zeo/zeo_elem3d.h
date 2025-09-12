@@ -229,30 +229,27 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zTri3D ){
 
 /*! \brief initialize and create a 3D triangle.
  *
- * zTri3DInit() initializes a 3D triangle instance \a tri, setting three
- * vertices for the null vector.
+ * zTri3DInit() initializes a 3D triangle instance \a tri by setting the three vertices for the null vector.
  *
- * zTri3DCreate() creates a 3D triangle from three vertices \a v1, \a v2
- * and \a v3.
- * zTri3DCreateRev() creates a 3D triangle from \a v1, \a v2 and \a v3 in
- * reversed order of zTri3DCreate(), i.e. it is equivalent to
- * zTri3DCreate( v1, v3, v2 ).
+ * zTri3DCreate() creates a 3D triangle from three vertices \a v1, \a v2 and \a v3.
+ * zTri3DCreateFlip() creates a 3D triangle from \a v1, \a v2 and \a v3 in a flipped order of zTri3DCreate().
+ * Namely, it is equivalent with zTri3DCreate( v1, v3, v2 ).
  *
- * zTri3DRev() reverses the source triangle \a src, and create the
- * destination triangle \a dest. It is permitted to let \a dest point
- * to the same address with \a src. Actually, zTri3DRevDRC(), which is
- * the destructive version of zTri3DRev() is defined as so.
+ * zTri3DFlip() creates a 3D triangle \a dest by flipping the given triangle \a src.
+ * zTri3DFlipDRC() directly flips a 3D triangle \a tri.
+ *
+ * It allows \a dest to point the same address with \a src. In fact, zTri3DFlipDRC( tri ) is defined as
+ * zTri3DRev( tri, tri ).
  * \return
- * zTri3DInit(), zTri3DCreate(), zTri3DCreateRev() and zTri3DRevDRC()
- * return a pointer \a tri.
+ * zTri3DInit(), zTri3DCreate(), zTri3DCreateFlip(), and zTri3DFlipDRC() return a pointer \a tri.
  *
- * zTri3DRev() returns a pointer \a dest.
+ * zTri3DFlip() returns a pointer \a dest.
  */
 __ZEO_EXPORT zTri3D *zTri3DInit(zTri3D *tri);
 __ZEO_EXPORT zTri3D *zTri3DCreate(zTri3D *tri, const zVec3D *v1, const zVec3D *v2, const zVec3D *v3);
-__ZEO_EXPORT zTri3D *zTri3DCreateRev(zTri3D *tri, const zVec3D *v1, const zVec3D *v2, const zVec3D *v3);
-__ZEO_EXPORT zTri3D *zTri3DRev(const zTri3D *src, zTri3D *dest);
-#define zTri3DRevDRC(tri) zTri3DRev( tri, tri )
+__ZEO_EXPORT zTri3D *zTri3DCreateFlip(zTri3D *tri, const zVec3D *v1, const zVec3D *v2, const zVec3D *v3);
+__ZEO_EXPORT zTri3D *zTri3DFlip(const zTri3D *src, zTri3D *dest);
+#define zTri3DFlipDRC(tri) zTri3DFlip( tri, tri )
 
 /*! \brief area and normal vector of a 3D triangle.
  *

@@ -1,3 +1,6 @@
+2025.09.12. Added flip option to zeo_phconv. [app]
+2025.09.12. Added zPH3DFlip. [zeo_ph3d]
+2025.09.12. Renamed zTri3DCreateRev, zTri3DRev, and zTri3DRevDRC to zTri3DCreateFlip, zTri3DFlip, and zTri3DFlipDRC, respectively. [zeo_elem3d, zeo_elem3d_list, zeo_ph3d]
 2025.09.01. Added zRGBByName and zRGBByStr. [zeo_render_color]
 2025.09.01. Renamed zRGBCopy to _zRGBCopy, and reimplemented zRGBCopy as a function. [zeo_render_color]
 2025.07.17. Discarded coord2d_test.c in example. [example]

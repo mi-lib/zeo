@@ -48,6 +48,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPH3D ){
  * zPH3DScale() directly scales \a ph by multiplying all vertices
  * by \a scale.
  *
+ * zPH3DFlip() directly flips all faces of \a ph.
+ *
  * zPH3DClone() makes a clone of a 3D polyhedron \a src. The
  * result is put into \a dest.
  * zPH3DMirrorClone() makes a clone of \a src mirrored about
@@ -55,7 +57,9 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPH3D ){
  *
  * zPH3DDestroy() destroys a 3D polyhedron \a ph.
  * \return
- * zPH3DInit() and zPH3DAlloc() return a pointer \a ph.
+ * zPH3DInit(), zPH3DAlloc(), zPH3DScale(), and zPH3DFlip() return a pointer \a ph.
+ *
+ * zPH3DClone() and zPH3DMirror() return a pointer \a dest.
  * zPH3DDestroy() returns no value.
  */
 __ZEO_EXPORT zPH3D *zPH3DInit(zPH3D *ph);
@@ -63,6 +67,7 @@ __ZEO_EXPORT zPH3D *zPH3DAlloc(zPH3D *ph, int vn, int fn);
 __ZEO_EXPORT zPH3D *zPH3DClone(const zPH3D *src, zPH3D *dest);
 __ZEO_EXPORT zPH3D *zPH3DMirror(const zPH3D *src, zPH3D *dest, zAxis axis);
 __ZEO_EXPORT zPH3D *zPH3DScale(zPH3D *ph, double scale);
+__ZEO_EXPORT zPH3D *zPH3DFlip(zPH3D *ph);
 __ZEO_EXPORT void zPH3DDestroy(zPH3D *ph);
 
 /*! \brief transform coordinates of a 3D polyhedron.

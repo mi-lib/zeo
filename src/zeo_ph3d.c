@@ -78,6 +78,16 @@ zPH3D *zPH3DScale(zPH3D *ph, double scale)
   return ph;
 }
 
+/* flip all faces of a 3D polyhedron. */
+zPH3D *zPH3DFlip(zPH3D *ph)
+{
+  int i;
+
+  for( i=0; i<zPH3DFaceNum(ph); i++ )
+    zTri3DFlipDRC( zPH3DFace(ph,i) );
+  return ph;
+}
+
 /* destroy a 3D polyhedron. */
 void zPH3DDestroy(zPH3D *ph)
 {
@@ -300,7 +310,7 @@ zPH3D *zPH3DCreatePrism(zPH3D *prism, const zVec3D bottom[], int n, const zVec3D
   i = zPH3DFaceVert(prism,0,0) - zPH3DVertBuf(prism);
   i1 = _zPH3DLoopNext( n, i );
   if( zPH3DFaceVert(prism,0,1)-zPH3DVertBuf(prism) == i1 )
-    _tri = zTri3DCreateRev; /* direct faces outwards */
+    _tri = zTri3DCreateFlip; /* direct faces outwards */
   else if( zPH3DFaceVert(prism,0,2)-zPH3DVertBuf(prism) != i1 )
     goto ZPH3DPRISM_FATAL_ERROR;
   for( i=0; i<n; i++, nf+=2 ){
@@ -347,7 +357,7 @@ zPH3D *zPH3DCreatePyramid(zPH3D *pyr, const zVec3D bottom[], int n, const zVec3D
   i = zPH3DFaceVert(pyr,0,0) - zPH3DVertBuf(pyr);
   i1 = _zPH3DLoopNext( n, i );
   if( zPH3DFaceVert(pyr,0,1)-zPH3DVertBuf(pyr) == i1 )
-    _tri = zTri3DCreateRev; /* direct faces outwards */
+    _tri = zTri3DCreateFlip; /* direct faces outwards */
   else if( zPH3DFaceVert(pyr,0,2)-zPH3DVertBuf(pyr) != i1 )
     goto ZPH3DPYRAMID_FATAL_ERROR;
   for( i=0; i<n; i++, nf++ )
@@ -391,7 +401,7 @@ zPH3D *zPH3DCreateTorus(zPH3D *torus, const zVec3D loop[], int n, int div, const
   /* facet direction correction */
   if( zPH3DVolume(torus) < 0 )
     for( i=0; i<zPH3DFaceNum(torus); i++ )
-      zTri3DRevDRC( zPH3DFace(torus,i) );
+      zTri3DFlipDRC( zPH3DFace(torus,i) );
   return torus;
 }
 
@@ -431,7 +441,7 @@ zPH3D *zPH3DCreateLathe(zPH3D *lathe, const zVec3D rim[], int n, int div, const 
   /* facet direction correction */
   if( zPH3DVolume(lathe) < 0 )
     for( i=0; i<zPH3DFaceNum(lathe); i++ )
-      zTri3DRevDRC( zPH3DFace(lathe,i) );
+      zTri3DFlipDRC( zPH3DFace(lathe,i) );
   return lathe;
 }
 

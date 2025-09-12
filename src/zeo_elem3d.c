@@ -195,14 +195,14 @@ zTri3D *zTri3DCreate(zTri3D *tri, const zVec3D *v1, const zVec3D *v2, const zVec
   return tri;
 }
 
-/* create a 3D triangle in the reversed order. */
-zTri3D *zTri3DCreateRev(zTri3D *tri, const zVec3D *v1, const zVec3D *v2, const zVec3D *v3)
+/* create a 3D triangle in the flipped order. */
+zTri3D *zTri3DCreateFlip(zTri3D *tri, const zVec3D *v1, const zVec3D *v2, const zVec3D *v3)
 {
   return zTri3DCreate( tri, v1, v3, v2 );
 }
 
-/* reverse a 3D triangle. */
-zTri3D *zTri3DRev(const zTri3D *src, zTri3D *dest)
+/* flip a 3D triangle. */
+zTri3D *zTri3DFlip(const zTri3D *src, zTri3D *dest)
 {
   return zTri3DCreate( dest, zTri3DVert(src,0), zTri3DVert(src,2), zTri3DVert(src,1) );
 }

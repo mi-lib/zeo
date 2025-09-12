@@ -32,7 +32,7 @@ void zTri3DListAlign(zTri3DList *list, const zVec3D *ref)
 
   zListForEach( list, tp )
     if( zVec3DInnerProd( ref, zTri3DNorm(&tp->data) ) < 0 )
-      zTri3DRevDRC( &tp->data );
+      zTri3DFlipDRC( &tp->data );
 }
 
 /* copy triangles in a list to array. */

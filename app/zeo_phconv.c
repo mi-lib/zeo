@@ -8,6 +8,7 @@ enum{
   PHCONV_TRANSLATE,
   PHCONV_ROTATE,
   PHCONV_SCALE,
+  PHCONV_FLIP,
   PHCONV_HELP,
   PHCONV_INVALID
 };
@@ -19,6 +20,7 @@ zOption phconv_option[] = {
   { "t", "translate", "<x> <y> <z>",   "translate geometry", (char *)"0.0 0.0 0.0", false },
   { "r", "rotate", "<rxx> <rxy> <rxz> <ryz> <ryy> <ryz> <rzx> <rzy> <rzz>", "rotate geometry", (char *)"1.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0", false },
   { "s", "scale", "<factor>",      "scale geometry", (char *)"1.0", false },
+  { "f", "flip",  NULL,            "flip all polygons", NULL, false },
   { "h", "help",  NULL,            "show this message", NULL, false },
   { NULL, NULL, NULL, NULL, NULL, false },
 };
@@ -158,6 +160,8 @@ bool phconv_write(zShape3D *shape)
 
   if( phconv_option[PHCONV_TRANSLATE].flag || phconv_option[PHCONV_ROTATE].flag )
     phconv_xform( shape );
+  if( phconv_option[PHCONV_FLIP].flag )
+    zPH3DFlip( zShape3DPH(shape) );
   if( phconv_option[PHCONV_SCALE].flag )
     zPH3DScale( zShape3DPH(shape), atof( phconv_option[PHCONV_SCALE].arg ) );
   suffix = zGetSuffix( phconv_option[PHCONV_OUTPUTFILE].arg );
