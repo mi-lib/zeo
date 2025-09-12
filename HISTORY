@@ -1,3 +1,4 @@
+2025.09.12. Debugged zMat3DToAA (thanks to Daishi Kaneta). [zeo_mat3d]
 2025.09.12. Added zMat3DOrthonormalize and zMat3DOrthonormalizeDRC. [zeo_errmsg, zeo_mat3d]
 2025.09.12. Added zMat3DIsOrthonormal and zMat3DIsRightHand. [zeo_mat3d]
 2025.09.12. Added zEPAddDRC. [zeo_ep]

@@ -734,8 +734,8 @@ zMat3D *zMat3DFromAA(zMat3D *m, const zVec3D *aa)
 /* convert a 3D attitude matrix to an angle-axis vector. */
 zVec3D *zMat3DToAA(const zMat3D *m, zVec3D *aa)
 {
-  int i;
-  double l, a;
+  int i, axis_id = zAxisInvalid;
+  double l, a, eigerrmin;
   zVec3D eigval;
   zMat3D eigbase;
 
@@ -744,9 +744,15 @@ zVec3D *zMat3DToAA(const zMat3D *m, zVec3D *aa)
   a = atan2( l, m->c.xx+m->c.yy+m->c.zz-1 );
   if( zIsTiny( l ) ){ /* singular case */
     zMat3DSymEig( m, &eigval, &eigbase );
+    eigerrmin = HUGE_VAL;
     for( i=0; i<3; i++ )
-      if( zIsTiny( eigval.e[i] - 1.0 ) )
-        return zVec3DMul( &eigbase.v[i], a, aa );
+      if( ( l = fabs( eigval.e[i] - 1.0 ) ) < eigerrmin ){
+        eigerrmin = l;
+        axis_id = i;
+      }
+    if( !zIsTiny( eigerrmin ) )
+      ZRUNWARN( ZEO_ERR_MAT_NOTSO3 );
+    return zVec3DMul( &eigbase.v[axis_id], a, aa );
   }
   return zVec3DMulDRC( aa, a/l );
 }
