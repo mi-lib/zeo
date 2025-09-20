@@ -7,14 +7,14 @@
 #include <zeo/zeo_bv3d.h>
 
 /* enlarge bounding box if a 3D point is out of the current box. */
-static int _zAABB3DTest(zAABox3D *bb, zVec3D *p, zDir u)
+static int _zAABB3DTest(zAABox3D *bb, zVec3D *p, zAxis axis)
 {
-  if( p->e[(int)u] > bb->max.e[(int)u] ){
-    bb->max.e[(int)u] = p->e[(int)u];
+  if( p->e[(int)axis] > bb->max.e[(int)axis] ){
+    bb->max.e[(int)axis] = p->e[(int)axis];
     return 0;
   }
-  if( p->e[(int)u] < bb->min.e[(int)u] ){
-    bb->min.e[(int)u] = p->e[(int)u];
+  if( p->e[(int)axis] < bb->min.e[(int)axis] ){
+    bb->min.e[(int)axis] = p->e[(int)axis];
     return 3;
   }
   return -1;

@@ -12,10 +12,8 @@
 __BEGIN_DECLS
 
 /* ********************************************************** */
-/* CLASS: zEllips3D
- * 3D ellipsoid class
- * ********************************************************** */
-
+/*! \brief 3D ellipsoid class
+ *//* ******************************************************* */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEllips3D ){
   zVec3D radius;
   zFrame3D f;
@@ -127,6 +125,9 @@ __ZEO_EXPORT double zEllips3DVolume(const zEllips3D *ellips);
  */
 __ZEO_EXPORT zMat3D *zEllips3DBaryInertiaMass(const zEllips3D *ellips, double mass, zMat3D *inertia);
 __ZEO_EXPORT zMat3D *zEllips3DBaryInertia(const zEllips3D *ellips, double density, zMat3D *inertia);
+
+/*! \brief convert a sphere to an instance of ellipsoid. */
+__ZEO_EXPORT zEllips3D *zSphere3DToEllips3D(const zSphere3D *sphere, zEllips3D *ellips);
 
 /*! \brief convert an ellipsoid to a polyhedron.
  *

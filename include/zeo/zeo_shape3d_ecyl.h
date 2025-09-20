@@ -12,10 +12,8 @@
 __BEGIN_DECLS
 
 /* ********************************************************** */
-/* CLASS: zECyl3D
- * 3D elliptic cylinder class
- * ********************************************************** */
-
+/*! \brief 3D elliptic cylinder class
+ *//* ******************************************************* */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zECyl3D ){
   zVec3D center[2];
   double radius[2];
@@ -87,6 +85,9 @@ __ZEO_EXPORT zVec3D *zECyl3DBarycenter(const zECyl3D *cyl, zVec3D *c);
  */
 __ZEO_EXPORT zMat3D *zECyl3DBaryInertiaMass(const zECyl3D *cyl, double mass, zMat3D *inertia);
 __ZEO_EXPORT zMat3D *zECyl3DBaryInertia(const zECyl3D *cyl, double density, zMat3D *inertia);
+
+/*! \brief convert a cylinder to an instance of elliptic cylinder. */
+__ZEO_EXPORT zECyl3D *zCyl3DToECyl3D(const zCyl3D *cylinder, zECyl3D *ecyl);
 
 /*! \brief convert an elliptic cylinder to a polyhedron. */
 __ZEO_EXPORT zPH3D *zECyl3DToPH(const zECyl3D *cyl, zPH3D *ph);

@@ -1,11 +1,11 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_elem2d_aabox - 2D axis-aligned box.
+ * zeo_elem2d_box - 2D box.
  */
 
-#ifndef __ZEO_ELEM2D_AABOX_H__
-#define __ZEO_ELEM2D_AABOX_H__
+#ifndef __ZEO_ELEM2D_BOX_H__
+#define __ZEO_ELEM2D_BOX_H__
 
 /* NOTE: never include this header file in user programs. */
 
@@ -42,4 +42,4 @@ __ZEO_EXPORT void zAABox2DValueFPrint(FILE *fp, zAABox2D *box);
 
 __END_DECLS
 
-#endif /* __ZEO_ELEM2D_AABOX_H__ */
+#endif /* __ZEO_ELEM2D_BOX_H__ */

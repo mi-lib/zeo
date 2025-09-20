@@ -6,22 +6,6 @@
 
 #include <zeo/zeo_nurbs3d_shape.h>
 
-/* convert a sphere to an instance of ellipsoid. */
-zEllips3D *zSphere3DToEllips3D(const zSphere3D *sphere, zEllips3D *ellips)
-{
-  return zEllips3DCreateAlign( ellips, zSphere3DCenter(sphere), zSphere3DRadius(sphere), zSphere3DRadius(sphere), zSphere3DRadius(sphere), zSphere3DDiv(sphere) );
-}
-
-/* convert a cylinder to an instance of elliptic cylinder. */
-zECyl3D *zCyl3DToECyl3D(const zCyl3D *cylinder, zECyl3D *ecyl)
-{
-  zVec3D axis, ax, ay;
-
-  zCyl3DAxis( cylinder, &axis );
-  zVec3DOrthonormalSpace( &axis, &ax, &ay );
-  return zECyl3DCreate( ecyl, zCyl3DCenter(cylinder,0), zCyl3DCenter(cylinder,1), zCyl3DRadius(cylinder), zCyl3DRadius(cylinder), &ax, zCyl3DDiv(cylinder) );
-}
-
 /* initialize knots for elliptic intersection. */
 static bool _zNURBS3DEllipsInitKnot(zNURBS3D *nurbs, int i)
 {

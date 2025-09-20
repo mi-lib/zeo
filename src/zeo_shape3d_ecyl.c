@@ -7,8 +7,7 @@
 #include <zeo/zeo_shape3d.h>
 
 /* ********************************************************** */
-/* CLASS: zECyl3D
- * 3D elliptic cylinder class
+/* 3D elliptic cylinder class
  * ********************************************************** */
 
 /* create a 3D elliptic cylinder. */
@@ -194,6 +193,16 @@ zMat3D *zECyl3DBaryInertiaMass(const zECyl3D *cyl, double mass, zMat3D *inertia)
 zMat3D *zECyl3DBaryInertia(const zECyl3D *cyl, double density, zMat3D *inertia)
 {
   return zECyl3DBaryInertiaMass( cyl, density * zECyl3DVolume( cyl ), inertia );
+}
+
+/* convert a cylinder to an instance of elliptic cylinder. */
+zECyl3D *zCyl3DToECyl3D(const zCyl3D *cylinder, zECyl3D *ecyl)
+{
+  zVec3D axis, ax, ay;
+
+  zCyl3DAxis( cylinder, &axis );
+  zVec3DOrthonormalSpace( &axis, &ax, &ay );
+  return zECyl3DCreate( ecyl, zCyl3DCenter(cylinder,0), zCyl3DCenter(cylinder,1), zCyl3DRadius(cylinder), zCyl3DRadius(cylinder), &ax, zCyl3DDiv(cylinder) );
 }
 
 /* convert an elliptic cylinder to a polyhedron. */

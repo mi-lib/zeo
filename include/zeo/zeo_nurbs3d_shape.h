@@ -10,12 +10,6 @@
 
 __BEGIN_DECLS
 
-/*! \brief convert a sphere to an instance of ellipsoid. */
-__ZEO_EXPORT zEllips3D *zSphere3DToEllips3D(const zSphere3D *sphere, zEllips3D *ellips);
-
-/*! \brief convert a cylinder to an instance of elliptic cylinder. */
-__ZEO_EXPORT zECyl3D *zCyl3DToECyl3D(const zCyl3D *cylinder, zECyl3D *ecyl);
-
 /* closed NURBS surface that represents a box. */
 __ZEO_EXPORT zNURBS3D *zNURBS3DBox(zNURBS3D *nurbs, const zBox3D *box);
 

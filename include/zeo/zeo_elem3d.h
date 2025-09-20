@@ -8,7 +8,6 @@
 #define __ZEO_ELEM3D_H__
 
 #include <zeo/zeo_frame3d.h>
-
 #include <zeo/zeo_elemxd.h>
 
 __BEGIN_DECLS
@@ -422,7 +421,8 @@ zArrayClass( zTri3DArray, zTri3D );
 
 __END_DECLS
 
-#include <zeo/zeo_elem3d_aabox.h> /* 3D axis-aligned box */
+#include <zeo/zeo_elem3d_box.h>    /* 3D box */
+#include <zeo/zeo_elem3d_sphere.h> /* 3D sphere */
 
 #include <zeo/zeo_elem3d_list.h> /* 3D shape element list */
 

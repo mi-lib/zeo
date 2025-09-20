@@ -1,7 +1,7 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_elem2d_aabox - 2D axis-aligned box.
+ * zeo_elem2d_box - 2D box.
  */
 
 #include <zeo/zeo_elem2d.h>

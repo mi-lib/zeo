@@ -201,7 +201,7 @@ zArrayClass( zShape3DArray, zShape3D );
 #define ZTK_KEY_ZEO_SHAPE3D_DIV     "div"
 
 /*! \brief default number of division in conversion from smooth curves to polygonal models. */
-#define ZEO_SHAPE_DEFAULT_DIV 32
+#define ZEO_SHAPE_DEFAULT_DIV ZEO_ELEM_DEFAULT_DIV
 
 /*! \brief scan the number of division for smooth primitives from a ZTK format processor. */
 __ZEO_EXPORT int zShape3DDivFromZTK(ZTK *ztk);

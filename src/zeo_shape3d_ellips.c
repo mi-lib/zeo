@@ -7,8 +7,7 @@
 #include <zeo/zeo_shape3d.h>
 
 /* ********************************************************** */
-/* CLASS: zEllips3D
- * 3D ellipsoid class
+/* 3D ellipsoid class
  * ********************************************************** */
 
 /* create a 3D ellipsoid. */
@@ -181,6 +180,12 @@ zMat3D *zEllips3DBaryInertiaMass(const zEllips3D *ellips, double mass, zMat3D *i
 zMat3D *zEllips3DBaryInertia(const zEllips3D *ellips, double density, zMat3D *inertia)
 {
   return zEllips3DBaryInertiaMass( ellips, density * zEllips3DVolume( ellips ), inertia );
+}
+
+/* convert a sphere to an instance of ellipsoid. */
+zEllips3D *zSphere3DToEllips3D(const zSphere3D *sphere, zEllips3D *ellips)
+{
+  return zEllips3DCreateAlign( ellips, zSphere3DCenter(sphere), zSphere3DRadius(sphere), zSphere3DRadius(sphere), zSphere3DRadius(sphere), zSphere3DDiv(sphere) );
 }
 
 /* convert an ellipsoid to a polyhedron. */

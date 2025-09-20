@@ -7,7 +7,8 @@
 #ifndef __ZEO_BV3D_H__
 #define __ZEO_BV3D_H__
 
-#include <zeo/zeo_shape3d.h>
+#include <zeo/zeo_elem3d.h>
+#include <zeo/zeo_ph3d.h>
 
 #include <zeo/zeo_bv3d_aabb.h>
 #include <zeo/zeo_bv3d_obb.h>

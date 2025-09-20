@@ -2,23 +2,23 @@ OBJ=zeo_misc.o\
 	zeo_render_color.o zeo_render_optic.o\
 	zeo_vec2d.o zeo_vec2d_list.o\
 	zeo_mat2d.o zeo_coord2d.o zeo_frame2d.o\
-	zeo_elem2d.o zeo_elem2d_aabox.o\
+	zeo_elem2d.o zeo_elem2d_box.o zeo_elem2d_disk.o\
 	zeo_vec2d_data.o\
 	zeo_vec3d.o zeo_vec3d_list.o\
 	zeo_vec6d.o zeo_vec6d_list.o\
 	zeo_mat3d.o zeo_ep.o zeo_frame3d.o zeo_mat6d.o\
-	zeo_elem3d.o zeo_elem3d_aabox.o zeo_elem3d_list.o\
+	zeo_elem3d.o zeo_elem3d_box.o zeo_elem3d_sphere.o zeo_elem3d_list.o\
 	zeo_vec3d_data.o zeo_vec3d_tree.o zeo_vec3d_octree.o zeo_vec3d_pca.o zeo_vec3d_pcd.o\
+	zeo_vec3d_profile.o\
+	zeo_voronoi2d.o\
 	zeo_render_texture.o\
 	zeo_ph3d.o zeo_ph3d_stl.o zeo_ph3d_ply.o zeo_ph3d_obj.o\
 	zeo_nurbs3d.o\
+	zeo_bv2d_aabb.o zeo_bv2d_boundingball.o zeo_bv2d_convexhull.o\
+	zeo_bv3d_aabb.o zeo_bv3d_obb.o zeo_bv3d_boundingball.o zeo_bv3d_convexhull.o\
 	zeo_shape3d.o zeo_shape3d_list.o\
 	zeo_shape3d_box.o zeo_shape3d_sphere.o zeo_shape3d_ellips.o zeo_shape3d_cyl.o zeo_shape3d_capsule.o zeo_shape3d_ecyl.o zeo_shape3d_cone.o zeo_shape3d_ph.o zeo_shape3d_nurbs.o\
 	zeo_nurbs3d_shape.o\
-	zeo_bv2d_aabb.o zeo_bv2d_boundingball.o zeo_bv2d_convexhull.o\
-	zeo_bv3d_aabb.o zeo_bv3d_obb.o zeo_bv3d_boundingball.o zeo_bv3d_convexhull.o\
-	zeo_vec3d_profile.o\
-	zeo_voronoi2d.o\
 	zeo_brep.o zeo_brep_trunc.o zeo_brep_bool.o\
 	zeo_col.o zeo_col_box.o zeo_col_minkowski.o zeo_col_gjk.o zeo_col_mpr.o zeo_col_ph.o\
 	zeo_mshape3d.o\
