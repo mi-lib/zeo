@@ -7,68 +7,67 @@
 #include <zeo/zeo_shape3d.h>
 
 /* ********************************************************** */
-/* CLASS: zCapsule3D
- * 3D capsule class
+/* 3D capsule class
  * ********************************************************** */
 
-static void _zCapsule3DClosestPrep(const zCapsule3D *capsule, const zVec3D *p, zVec3D *axis, zVec3D *v, double *l, double *r, double *d)
+static void _zCapsule3DClosestPrep(const zCapsule3D *capsule, const zVec3D *point, zVec3D *axis, zVec3D *v, double *l, double *r, double *d)
 {
   zCapsule3DAxis( capsule, axis );
-  _zVec3DSub( p, zCapsule3DCenter(capsule,0), v );
+  _zVec3DSub( point, zCapsule3DCenter(capsule,0), v );
   *l = zVec3DNormalizeDRC( axis );
   *r = zVec3DOuterProdNorm( v, axis );
   *d = zVec3DInnerProd( axis, v ) ;
 }
 
 /* the closest point to a 3D capsule. */
-double zCapsule3DClosest(const zCapsule3D *capsule, const zVec3D *p, zVec3D *cp)
+double zCapsule3DClosest(const zCapsule3D *capsule, const zVec3D *point, zVec3D *closestpoint)
 {
   zVec3D axis, v, cr;
   const zVec3D *c;
   double l, r, d;
 
-  _zCapsule3DClosestPrep( capsule, p, &axis, &v, &l, &r, &d );
+  _zCapsule3DClosestPrep( capsule, point, &axis, &v, &l, &r, &d );
   if( d >= 0 && d <= l ){
     if( r <= zCapsule3DRadius(capsule) ){
-      zVec3DCopy( p, cp );
+      zVec3DCopy( point, closestpoint );
       return 0;
     }
     zVec3DMul( &axis, d, &cr );
     zVec3DSubDRC( &v, &cr );
-    zVec3DCat( p, -(r-zCapsule3DRadius(capsule))/zVec3DNorm(&v), &v, cp );
+    zVec3DCat( point, -(r-zCapsule3DRadius(capsule))/zVec3DNorm(&v), &v, closestpoint );
     return r - zCapsule3DRadius(capsule);
   }
   if( d > l ){
     c = zCapsule3DCenter(capsule,1);
   } else
     c = zCapsule3DCenter(capsule,0);
-  zVec3DSub( p, c, &cr );
+  zVec3DSub( point, c, &cr );
   if( ( r = zVec3DNorm( &cr ) ) <= zCapsule3DRadius(capsule) ){
-    zVec3DCopy( p, cp );
+    zVec3DCopy( point, closestpoint );
     return 0;
   }
-  zVec3DCat( c, zCapsule3DRadius(capsule)/r, &cr, cp );
+  zVec3DCat( c, zCapsule3DRadius(capsule)/r, &cr, closestpoint );
   return r - zCapsule3DRadius(capsule);
 }
 
 /* distance from a point to a 3D capsule. */
-double zCapsule3DDistFromPoint(const zCapsule3D *capsule, const zVec3D *p)
+double zCapsule3DDistFromPoint(const zCapsule3D *capsule, const zVec3D *point)
 {
   zVec3D axis, v;
   double l, r, d;
 
-  _zCapsule3DClosestPrep( capsule, p, &axis, &v, &l, &r, &d );
+  _zCapsule3DClosestPrep( capsule, point, &axis, &v, &l, &r, &d );
   if( d >= 0 && d <= l )
     return r <= zCapsule3DRadius(capsule) ? 0 : r - zCapsule3DRadius(capsule);
   if( d > l )
-    return ( r = zVec3DDist( p, zCapsule3DCenter(capsule,1) ) ) < zCapsule3DRadius(capsule) ? 0 : zCapsule3DRadius(capsule) - r;
-  return ( r = zVec3DDist( p, zCapsule3DCenter(capsule,0) ) ) < zCapsule3DRadius(capsule) ? 0 : zCapsule3DRadius(capsule) - r;
+    return ( r = zVec3DDist( point, zCapsule3DCenter(capsule,1) ) ) < zCapsule3DRadius(capsule) ? 0 : zCapsule3DRadius(capsule) - r;
+  return ( r = zVec3DDist( point, zCapsule3DCenter(capsule,0) ) ) < zCapsule3DRadius(capsule) ? 0 : zCapsule3DRadius(capsule) - r;
 }
 
 /* check if a point is inside of a capsule. */
-bool zCapsule3DPointIsInside(const zCapsule3D *capsule, const zVec3D *p, double margin)
+bool zCapsule3DPointIsInside(const zCapsule3D *capsule, const zVec3D *point, double margin)
 {
-  return zCapsule3DDistFromPoint( capsule, p ) < margin ? true : false;
+  return zCapsule3DDistFromPoint( capsule, point ) < margin ? true : false;
 }
 
 /* height of a 3D capsule. */
@@ -280,11 +279,11 @@ zShape3DCom zeo_shape3d_capsule_com = {
 };
 
 /* create a 3D shape as a capsule. */
-zShape3D *zShape3DCapsuleCreate(zShape3D *shape, const zVec3D *c1, const zVec3D *c2, double r, int div)
+zShape3D *zShape3DCapsuleCreate(zShape3D *shape, const zVec3D *center1, const zVec3D *center2, double radius, int div)
 {
   zShape3DInit( shape );
   if( !( shape->body = zCapsule3DAlloc() ) ) return NULL;
-  zCapsule3DCreate( zShape3DCapsule(shape), c1, c2, r, div );
+  zCapsule3DCreate( zShape3DCapsule(shape), center1, center2, radius, div );
   shape->com = &zeo_shape3d_capsule_com;
   return shape;
 }

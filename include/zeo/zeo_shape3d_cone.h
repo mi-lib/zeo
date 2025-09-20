@@ -4,6 +4,10 @@
  * zeo_shape3d_cone - 3D shapes: cone.
  */
 
+#ifdef ZEO_SHAPE_DECL_METHOD
+zShape3D *createCone(const zVec3D *center, const zVec3D *vert, double radius, int div = 0);
+#else
+
 #ifndef __ZEO_SHAPE3D_CONE_H__
 #define __ZEO_SHAPE3D_CONE_H__
 
@@ -12,10 +16,8 @@
 __BEGIN_DECLS
 
 /* ********************************************************** */
-/* CLASS: zCone3D
- * 3D cone class
- * ********************************************************** */
-
+/*! \brief 3D cone class
+ *//* ******************************************************* */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zCone3D ){
   zVec3D center;
   zVec3D vert;
@@ -23,23 +25,23 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zCone3D ){
   int div;
 };
 
-#define zCone3DCenter(c)        ( &(c)->center )
-#define zCone3DVert(c)          ( &(c)->vert )
-#define zCone3DRadius(c)        (c)->radius
-#define zCone3DDiv(c)           (c)->div
+#define zCone3DCenter(cone)        ( &(cone)->center )
+#define zCone3DVert(cone)          ( &(cone)->vert )
+#define zCone3DRadius(cone)        (cone)->radius
+#define zCone3DDiv(cone)           (cone)->div
 
-#define zCone3DSetCenter(c,p)   zVec3DCopy( p, zCone3DCenter(c) )
-#define zCone3DSetVert(c,v)     zVec3DCopy( v, zCone3DVert(c) )
-#define zCone3DSetRadius(c,r)   ( zCone3DRadius(c) = (r) )
-#define zCone3DSetDiv(c,d)      ( zCone3DDiv(c) = (d) )
+#define zCone3DSetCenter(cone,p)   zVec3DCopy( p, zCone3DCenter(cone) )
+#define zCone3DSetVert(cone,v)     zVec3DCopy( v, zCone3DVert(cone) )
+#define zCone3DSetRadius(cone,r)   ( zCone3DRadius(cone) = (r) )
+#define zCone3DSetDiv(cone,d)      ( zCone3DDiv(cone) = (d) )
 
 /*! \brief initialization, creation and copy of 3D cone.
  *
  * zCone3DInit() initializes a 3D cone \a cone by setting both the center on the
  * base and the vertex for the original point and radius of the base for zero.
  *
- * zCone3DCreate() creates a 3D cone whose center point on the base is \a c,
- * vertex is \a v, and radius of the base is \a r.
+ * zCone3DCreate() creates a 3D cone whose center point on the base is \a center,
+ * vertex is \a vert, and radius of the base is \a radius.
  * \a div is the number of division for polyhedral approximation.
  * When zero is given for \a div, ZEO_SHAPE_DEFAULT_DIV is set instead.
  *
@@ -48,7 +50,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zCone3D ){
  * Each of zCone3DInit() and zCone3DCreate() returns a pointer \a cone.
  * zCone3DCopy() returns a pointer the copied \a dest.
  */
-__ZEO_EXPORT zCone3D *zCone3DCreate(zCone3D *cone, const zVec3D *c, const zVec3D *v, double r, int div);
+__ZEO_EXPORT zCone3D *zCone3DCreate(zCone3D *cone, const zVec3D *center, const zVec3D *vert, double radius, int div);
 __ZEO_EXPORT zCone3D *zCone3DInit(zCone3D *cone);
 __ZEO_EXPORT ZDEF_ALLOC_FUNCTION_PROTOTYPE( zCone3D );
 __ZEO_EXPORT zCone3D *zCone3DCopy(const zCone3D *src, zCone3D *dest);
@@ -56,29 +58,27 @@ __ZEO_EXPORT zCone3D *zCone3DMirror(const zCone3D *src, zCone3D *dest, zAxis axi
 
 /*! \brief transformation of a 3D cone.
  *
- * zCone3DXform() transforms a 3D cone \a src by a frame \a f, and
- * puts it into \a dest.
+ * zCone3DXform() transforms a 3D cone \a src by a frame \a frame, and puts it into \a dest.
  *
- * zCone3DXformInv() transforms \a src by the inverse of a frame
- * \a f and puts it into \a dest.
+ * zCone3DXformInv() transforms \a src by the inverse of a frame \a frame and puts it into \a dest.
  * \return
  * zCone3DXform() and zCone3DXformInv() return a pointer \a dest.
  */
-__ZEO_EXPORT zCone3D *zCone3DXform(const zCone3D *src, const zFrame3D *f, zCone3D *dest);
-__ZEO_EXPORT zCone3D *zCone3DXformInv(const zCone3D *src, const zFrame3D *f, zCone3D *dest);
+__ZEO_EXPORT zCone3D *zCone3DXform(const zCone3D *src, const zFrame3D *frame, zCone3D *dest);
+__ZEO_EXPORT zCone3D *zCone3DXformInv(const zCone3D *src, const zFrame3D *frame, zCone3D *dest);
 
 /*! \brief check if a point is inside of a cone.
  *
- * zCone3DPointIsInside() checks if a 3D point \a p is inside of a 3D cone
+ * zCone3DPointIsInside() checks if a 3D point \a point is inside of a 3D cone
  * \a cone. \a margin is a margin of the inside area outward from the
  * boundary of \a cone.
  * \return
- * zCone3DPointIsInside() returns the true value when \a p is inside of \a cone,
+ * zCone3DPointIsInside() returns the true value when \a point is inside of \a cone,
  * or the false value otherwise.
  */
-__ZEO_EXPORT double zCone3DClosest(const zCone3D *cone, const zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zCone3DDistFromPoint(const zCone3D *cone, const zVec3D *p);
-__ZEO_EXPORT bool zCone3DPointIsInside(const zCone3D *cone, const zVec3D *p, double margin);
+__ZEO_EXPORT double zCone3DClosest(const zCone3D *cone, const zVec3D *point, zVec3D *closestpoint);
+__ZEO_EXPORT double zCone3DDistFromPoint(const zCone3D *cone, const zVec3D *point);
+__ZEO_EXPORT bool zCone3DPointIsInside(const zCone3D *cone, const zVec3D *point, double margin);
 
 /*! \brief axis vector and height of a 3D cone.
  *
@@ -90,7 +90,7 @@ __ZEO_EXPORT bool zCone3DPointIsInside(const zCone3D *cone, const zVec3D *p, dou
  * zCone3DAxis() returns a pointer \a axis.
  * zCone3DHeight() returns the height calculated.
  */
-#define zCone3DAxis(c,a) zVec3DSub( zCone3DVert(c), zCone3DCenter(c), a )
+#define zCone3DAxis(cone,axis) zVec3DSub( zCone3DVert(cone), zCone3DCenter(cone), axis )
 __ZEO_EXPORT double zCone3DHeight(const zCone3D *cone);
 
 /*! \brief volume of a cone.
@@ -108,7 +108,7 @@ __ZEO_EXPORT double zCone3DVolume(const zCone3D *cone);
  * \return
  * zCone3DBarycenter() returns a pointer \a c.
  */
-__ZEO_EXPORT zVec3D *zCone3DBarycenter(const zCone3D *cone, zVec3D *c);
+__ZEO_EXPORT zVec3D *zCone3DBarycenter(const zCone3D *cone, zVec3D *center);
 
 /*! \brief inertia tensor of a cone.
  *
@@ -146,8 +146,14 @@ __ZEO_EXPORT zShape3DCom zeo_shape3d_cone_com;
 
 #define zShape3DCone(s) ( (zCone3D*)(s)->body )
 
-__ZEO_EXPORT zShape3D *zShape3DConeCreate(zShape3D *shape, const zVec3D *c, const zVec3D *v, double r, int div);
+__ZEO_EXPORT zShape3D *zShape3DConeCreate(zShape3D *shape, const zVec3D *center, const zVec3D *vert, double radius, int div);
 
 __END_DECLS
 
+#ifdef __cplusplus
+inline zShape3D *zShape3D::createCone(const zVec3D *center, const zVec3D *vert, double radius, int div){ return zShape3DConeCreate( this, center, vert, radius, div ); }
+#endif /* __cplusplus */
+
 #endif /* __ZEO_SHAPE3D_CONE_H__ */
+
+#endif /* ZEO_SHAPE_DECL_METHOD */

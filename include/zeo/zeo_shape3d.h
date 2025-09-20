@@ -37,10 +37,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3DCom ){
 };
 
 /* ********************************************************** */
-/* CLASS: zShape3D
- * 3D unit shape class
+/*! \brief 3D unit shape class
  * ********************************************************** */
-
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3D ){
   Z_NAMED_CLASS;
   void *body;
@@ -55,18 +53,18 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3D ){
   void destroy();
   zShape3D *queryAssign(const char *str);
   zShape3D *clone(const zShape3D *org, zOpticalInfo *oi);
-  zShape3D *mirror(const zShape3D *org, zAxis axis);
-  zShape3D *xform(const zShape3D *src, const zFrame3D *f);
-  zShape3D *xformInv(const zShape3D *src, const zFrame3D *f);
-  double closest(const zVec3D *p, zVec3D *cp);
-  double distFromPoint(const zVec3D *p);
-  bool pointIsInside(const zVec3D *p, double margin);
+  zShape3D *mirror(const zShape3D *org, zAxis axis = zY);
+  zShape3D *xform(const zShape3D *src, const zFrame3D *frame);
+  zShape3D *xformInv(const zShape3D *src, const zFrame3D *frame);
+  double closest(const zVec3D *point, zVec3D *closestpoint);
+  double distanceFromPoint(const zVec3D *point);
+  bool pointIsInside(const zVec3D *point, double margin = zTOL);
   double volume();
-  zVec3D *barycenter(zVec3D *c);
+  zVec3D *barycenter(zVec3D *center);
   zMat3D *baryInertiaMass(double mass, zMat3D *inertia);
   zMat3D *baryInertia(double density, zMat3D *inertia);
-  zMat3D *InertiaMass(double mass, zMat3D *inertia);
-  zMat3D *Inertia(double density, zMat3D *inertia);
+  zMat3D *inertiaMass(double mass, zMat3D *inertia);
+  zMat3D *inertia(double density, zMat3D *inertia);
   zShape3D *toPH();
   zShape3D *readSTL(const char *filename);
   zShape3D *readPLY(const char *filename);
@@ -74,17 +72,26 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3D ){
 #ifdef __ZEO_USE_DAE
   zShape3D *readDAE(const char *filename);
 #endif /* __ZEO_USE_DAE */
-  void fprintZTK(FILE *fp);
+  void fprintZTK(FILE *fp = stdout);
   zShape3D *readZTK(const char *filename);
   bool writeZTK(const char *filename);
   zShape3D *read(const char *filename);
+#define ZEO_SHAPE_DECL_METHOD
+#include <zeo/zeo_shape3d_box.h>     /* box */
+#include <zeo/zeo_shape3d_sphere.h>  /* sphere */
+#include <zeo/zeo_shape3d_ellips.h>  /* ellipsoid */
+#include <zeo/zeo_shape3d_cyl.h>     /* cylinder */
+#include <zeo/zeo_shape3d_capsule.h> /* capsule */
+#include <zeo/zeo_shape3d_ecyl.h>    /* elliptic cylinder */
+#include <zeo/zeo_shape3d_cone.h>    /* cone */
+#undef ZEO_SHAPE_DECL_METHOD
 #endif /* __cplusplus */
 };
 
-#define zShape3DOptic(s)        (s)->optic
-#define zShape3DSetOptic(s,o)   ( (s)->optic = (o) )
-#define zShape3DTexture(s)      (s)->texture
-#define zShape3DSetTexture(s,t) ( (s)->texture = (t) )
+#define zShape3DOptic(shape)        (shape)->optic
+#define zShape3DSetOptic(shape,o)   ( (shape)->optic = (o) )
+#define zShape3DTexture(shape)      (shape)->texture
+#define zShape3DSetTexture(shape,t) ( (shape)->texture = (t) )
 
 /*! \brief initialize a 3D shape instance.
  *
@@ -117,30 +124,28 @@ __ZEO_EXPORT zShape3D *zShape3DMirror(const zShape3D *src, zShape3D *dest, zAxis
  * \return
  * zShape3DXform() and zShape3DXformInv() return a pointer to \a dest.
  */
-__ZEO_EXPORT zShape3D *zShape3DXform(const zShape3D *src, const zFrame3D *f, zShape3D *dest);
-__ZEO_EXPORT zShape3D *zShape3DXformInv(const zShape3D *src, const zFrame3D *f, zShape3D *dest);
+__ZEO_EXPORT zShape3D *zShape3DXform(const zShape3D *src, const zFrame3D *frame, zShape3D *dest);
+__ZEO_EXPORT zShape3D *zShape3DXformInv(const zShape3D *src, const zFrame3D *frame, zShape3D *dest);
 
-#define zShape3DContigVert(s,p,d) zPH3DContigVert( zShape3DPH(s), p, d )
+#define zShape3DContigVert(shape,point,distance) zPH3DContigVert( zShape3DPH(shape), point, distance )
 
 /*! \brief check if a point is inside of a shape.
  *
- * zShape3DPointIsInside() checks if a point \a p is inside of
- * a shape \a shape. \a margin is a margin of the inside area outward
- * from the boundary of \a shape.
+ * zShape3DPointIsInside() checks if a point \a p is inside of a shape \a shape. \a margin is a margin
+ * of the inside area outward from the boundary of \a shape.
  * \return
- * zShape3DPointIsInside() returns the true value if \a p is inside of
- * \a shape, or the false value otherwise.
+ * zShape3DPointIsInside() returns the true value if \a p is inside of \a shape, or the false value otherwise.
  * \sa
  * zPH3DPointIsInside
  */
-__ZEO_EXPORT double zShape3DClosest(const zShape3D *shape, const zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zShape3DDistFromPoint(const zShape3D *shape, const zVec3D *p);
-__ZEO_EXPORT bool zShape3DPointIsInside(const zShape3D *shape, const zVec3D *p, double margin);
+__ZEO_EXPORT double zShape3DClosest(const zShape3D *shape, const zVec3D *point, zVec3D *closestpoint);
+__ZEO_EXPORT double zShape3DDistFromPoint(const zShape3D *shape, const zVec3D *point);
+__ZEO_EXPORT bool zShape3DPointIsInside(const zShape3D *shape, const zVec3D *point, double margin);
 
 /*! \brief volume of a 3D shape. */
 __ZEO_EXPORT double zShape3DVolume(const zShape3D *shape);
 /*! \brief barycenter of a 3D shape. */
-__ZEO_EXPORT zVec3D *zShape3DBarycenter(const zShape3D *shape, zVec3D *c);
+__ZEO_EXPORT zVec3D *zShape3DBarycenter(const zShape3D *shape, zVec3D *center);
 
 /*! \brief inertia tensor about barycenter of a 3D shape from mass. */
 __ZEO_EXPORT zMat3D *zShape3DBaryInertiaMass(const zShape3D *shape, double mass, zMat3D *inertia);
@@ -263,18 +268,18 @@ inline zShape3D *zShape3D::init(){ return zShape3DInit( this ); }
 inline void zShape3D::destroy(){ zShape3DDestroy( this ); }
 inline zShape3D *zShape3D::queryAssign(const char *str){ return zShape3DQueryAssign( this, str ); }
 inline zShape3D *zShape3D::clone(const zShape3D *org, zOpticalInfo *oi){ return zShape3DClone( org, this, oi ); }
-inline zShape3D *zShape3D::mirror(const zShape3D *org, zAxis axis = zY){ return zShape3DMirror( org, this, axis ); }
-inline zShape3D *zShape3D::xform(const zShape3D *src, const zFrame3D *f){ return zShape3DXform( src, f, this ); }
-inline zShape3D *zShape3D::xformInv(const zShape3D *src, const zFrame3D *f){ return zShape3DXformInv( src, f, this ); }
-inline double zShape3D::closest(const zVec3D *p, zVec3D *cp){ return zShape3DClosest( this, p, cp ); }
-inline double zShape3D::distFromPoint(const zVec3D *p){ return zShape3DDistFromPoint( this, p ); }
-inline bool zShape3D::pointIsInside(const zVec3D *p, double margin = zTOL){ return zShape3DPointIsInside( this, p, margin ); }
+inline zShape3D *zShape3D::mirror(const zShape3D *org, zAxis axis){ return zShape3DMirror( org, this, axis ); }
+inline zShape3D *zShape3D::xform(const zShape3D *src, const zFrame3D *frame){ return zShape3DXform( src, frame, this ); }
+inline zShape3D *zShape3D::xformInv(const zShape3D *src, const zFrame3D *frame){ return zShape3DXformInv( src, frame, this ); }
+inline double zShape3D::closest(const zVec3D *point, zVec3D *closestpoint){ return zShape3DClosest( this, point, closestpoint ); }
+inline double zShape3D::distanceFromPoint(const zVec3D *point){ return zShape3DDistFromPoint( this, point ); }
+inline bool zShape3D::pointIsInside(const zVec3D *point, double margin){ return zShape3DPointIsInside( this, point, margin ); }
 inline double zShape3D::volume(){ return zShape3DVolume( this ); }
-inline zVec3D *zShape3D::barycenter(zVec3D *c){ return zShape3DBarycenter( this, c ); }
+inline zVec3D *zShape3D::barycenter(zVec3D *center){ return zShape3DBarycenter( this, center ); }
 inline zMat3D *zShape3D::baryInertiaMass(double mass, zMat3D *inertia){ return zShape3DBaryInertiaMass( this, mass, inertia ); }
 inline zMat3D *zShape3D::baryInertia(double density, zMat3D *inertia){ return zShape3DBaryInertia( this, density, inertia ); }
-inline zMat3D *zShape3D::InertiaMass(double mass, zMat3D *inertia){ return zShape3DInertiaMass( this, mass, inertia ); }
-inline zMat3D *zShape3D::Inertia(double density, zMat3D *inertia){ return zShape3DInertia( this, density, inertia ); }
+inline zMat3D *zShape3D::inertiaMass(double mass, zMat3D *inertia){ return zShape3DInertiaMass( this, mass, inertia ); }
+inline zMat3D *zShape3D::inertia(double density, zMat3D *inertia){ return zShape3DInertia( this, density, inertia ); }
 inline zShape3D *zShape3D::toPH(){ return zShape3DToPH( this ); }
 inline zShape3D *zShape3D::readSTL(const char *filename){ return zShape3DReadFileSTL( this, filename ); }
 inline zShape3D *zShape3D::readPLY(const char *filename){ return zShape3DReadFilePLY( this, filename ); }
@@ -282,13 +287,11 @@ inline zShape3D *zShape3D::readOBJ(const char *filename){ return zShape3DReadFil
 #ifdef __ZEO_USE_DAE
 inline zShape3D *zShape3D::readDAE(const char *filename){ return zShape3DReadFileDAE( this, filename ); }
 #endif /* __ZEO_USE_DAE */
-inline void zShape3D::fprintZTK(FILE *fp = stdout){ zShape3DFPrintZTK( fp, this ); }
+inline void zShape3D::fprintZTK(FILE *fp){ zShape3DFPrintZTK( fp, this ); }
 inline zShape3D *zShape3D::readZTK(const char *filename){ return zShape3DReadZTK( this, filename ); }
 inline bool zShape3D::writeZTK(const char *filename){ return zShape3DWriteZTK( this, filename ); }
 inline zShape3D *zShape3D::read(const char *filename){ return zShape3DReadFile( this, filename ); }
 #endif /* __cplusplus */
-
-#include <zeo/zeo_vec3d_data.h>      /* pointcloud */
 
 #include <zeo/zeo_shape3d_box.h>     /* box */
 #include <zeo/zeo_shape3d_sphere.h>  /* sphere */
@@ -304,12 +307,13 @@ __BEGIN_DECLS
 
 /* add the handle to the following list when you create a new shape class. */
 #define ZEO_SHAPE_COM_ARRAY \
-  zShape3DCom *_zeo_shape_com[] = {\
-    &zeo_shape3d_ph_com, &zeo_shape3d_box_com,\
-    &zeo_shape3d_sphere_com, &zeo_shape3d_ellips_com,\
-    &zeo_shape3d_cyl_com, &zeo_shape3d_capsule_com, &zeo_shape3d_ecyl_com, &zeo_shape3d_cone_com,\
-    &zeo_shape3d_nurbs_com,\
-    NULL,\
+  zShape3DCom *_zeo_shape_com[] = { \
+    &zeo_shape3d_ph_com, \
+    &zeo_shape3d_box_com, \
+    &zeo_shape3d_sphere_com, &zeo_shape3d_ellips_com, \
+    &zeo_shape3d_cyl_com, &zeo_shape3d_capsule_com, &zeo_shape3d_ecyl_com, &zeo_shape3d_cone_com, \
+    &zeo_shape3d_nurbs_com, \
+    NULL, \
   }
 
 __END_DECLS

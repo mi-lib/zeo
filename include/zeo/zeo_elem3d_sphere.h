@@ -24,13 +24,14 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zSphere3D ){
 #ifdef __cplusplus
  public:
   zSphere3D() : center{*ZVEC3DZERO}, radius{0}, div{ZEO_ELEM_DEFAULT_DIV} {}
-  zSphere3D *create(const zVec3D *_center, double _radius, int _div=0);
+  zSphere3D *create(const zVec3D *_center, double _radius, int _div = 0);
+  zSphere3D *create(double _radius, int _div = 0);
   zSphere3D *init();
   zSphere3D *xform(const zFrame3D *frame, zSphere3D *dest);
   zSphere3D *xformInv(const zFrame3D *frame, zSphere3D *dest);
   double closest(const zVec3D *point, zVec3D *closestpoint);
   double distanceFromPoint(const zVec3D *point);
-  bool pointIsInside(const zVec3D *point, double margin);
+  bool pointIsInside(const zVec3D *point, double margin = zTOL);
   double volume();
   zMat3D *baryInertiaMass(double mass, zMat3D *inertia);
   zMat3D *baryInertia(double density, zMat3D *inertia);
@@ -134,6 +135,7 @@ __END_DECLS
 
 #ifdef __cplusplus
 inline zSphere3D *zSphere3D::create(const zVec3D *_center, double _radius, int _div){ return zSphere3DCreate( this, _center, _radius, _div ); }
+inline zSphere3D *zSphere3D::create(double _radius, int _div){ return zSphere3DCreate( this, ZVEC3DZERO, _radius, _div ); }
 inline zSphere3D *zSphere3D::init(){ return zSphere3DInit( this ); }
 inline zSphere3D *zSphere3D::xform(const zFrame3D *frame, zSphere3D *dest){ return zSphere3DXform( this, frame, dest ); }
 inline zSphere3D *zSphere3D::xformInv(const zFrame3D *frame, zSphere3D *dest){ return zSphere3DXformInv( this, frame, dest ); }

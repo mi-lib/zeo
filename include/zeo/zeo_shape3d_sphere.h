@@ -4,6 +4,10 @@
  * zeo_shape3d_sphere - 3D shapes: sphere.
  */
 
+#ifdef ZEO_SHAPE_DECL_METHOD
+zShape3D *createSphere(const zVec3D *center, double radius, int div = 0);
+#else
+
 #ifndef __ZEO_SHAPE3D_SPHERE_H__
 #define __ZEO_SHAPE3D_SPHERE_H__
 
@@ -46,4 +50,10 @@ __ZEO_EXPORT zShape3D *zShape3DSphereCreate(zShape3D *shape, const zVec3D *cente
 
 __END_DECLS
 
+#ifdef __cplusplus
+inline zShape3D *zShape3D::createSphere(const zVec3D *center, double radius, int div){ return zShape3DSphereCreate( this, center, radius, div ); }
+#endif /* __cplusplus */
+
 #endif /* __ZEO_SHAPE3D_SPHERE_H__ */
+
+#endif /* ZEO_SHAPE_DECL_METHOD */

@@ -1,3 +1,6 @@
+2025.09.20. Added C++ methods to create shapes to zShape3D. [zeo_shape3d, zeo_shape3d_box, zeo_shape3d_sphere, zeo_shape3d_ellips, zeo_shape3d_cyl, zeo_shape3d_capsule, zeo_shape3d_ecyl, zeo_shape3d_cone]
+2025.09.20. Renamed Inertia and InertiaMass methods of zShape3D to inertia and inertiaMass, respectively. [zeo_shape3d]
+2025.09.20. Added default values of arguments of methods of zAABox3D, zBox3D, zSphere3D, zPH3D, and zShape3D. [zeo_elem3d_box, zeo_elem3d_sphere, zeo_ph3d, zeo_shape3d]
 2025.09.20. Defined zPH3DVertArray and zPH3DFaceArray. [zeo_ph3d, zeo_ph3d_stl, zeo_ph3d_ply, zeo_bv3d_obb, zeo_col_box, zeo_col_ph]
 2025.09.20. Renamed zPH3DScale and zPH3DFlip to zPH3DScaleDRC and zPH3DFlipDRC, respectively, and reimplemented zPH3DScale and zPH3DFlip with modified specifications. [zeo_ph3d, zeo_shape3d, app]
 2025.09.20. Added zPH3DAllocVert and zPH3DAllocFace, and reimplemented zPH3DAlloc and zPH3DFromZTK. [zeo_ph3d, zeo_ph3d_stl, zeo_ph3d_ply]

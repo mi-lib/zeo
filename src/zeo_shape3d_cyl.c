@@ -7,16 +7,15 @@
 #include <zeo/zeo_shape3d.h>
 
 /* ********************************************************** */
-/* CLASS: zCyl3D
- * 3D cylinder class
+/* 3D cylinder class
  * ********************************************************** */
 
 /* create a 3D cylinder. */
-zCyl3D *zCyl3DCreate(zCyl3D *cyl, const zVec3D *c1, const zVec3D *c2, double r, int div)
+zCyl3D *zCyl3DCreate(zCyl3D *cyl, const zVec3D *center1, const zVec3D *center2, double radius, int div)
 {
-  zCyl3DSetCenter( cyl, 0, c1 );
-  zCyl3DSetCenter( cyl, 1, c2 );
-  zCyl3DSetRadius( cyl, r );
+  zCyl3DSetCenter( cyl, 0, center1 );
+  zCyl3DSetCenter( cyl, 1, center2 );
+  zCyl3DSetRadius( cyl, radius );
   zCyl3DSetDiv( cyl, div == 0 ? ZEO_SHAPE_DEFAULT_DIV : div );
   return cyl;
 }
@@ -48,51 +47,51 @@ zCyl3D *zCyl3DMirror(const zCyl3D *src, zCyl3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D cylinder. */
-zCyl3D *zCyl3DXform(const zCyl3D *src, const zFrame3D *f, zCyl3D *dest)
+zCyl3D *zCyl3DXform(const zCyl3D *src, const zFrame3D *frame, zCyl3D *dest)
 {
-  zXform3D( f, zCyl3DCenter(src,0), zCyl3DCenter(dest,0) );
-  zXform3D( f, zCyl3DCenter(src,1), zCyl3DCenter(dest,1) );
+  zXform3D( frame, zCyl3DCenter(src,0), zCyl3DCenter(dest,0) );
+  zXform3D( frame, zCyl3DCenter(src,1), zCyl3DCenter(dest,1) );
   zCyl3DSetRadius( dest, zCyl3DRadius(src) );
   zCyl3DSetDiv( dest, zCyl3DDiv(src) );
   return dest;
 }
 
 /* inversely transform coordinates of a 3D cylinder. */
-zCyl3D *zCyl3DXformInv(const zCyl3D *src, const zFrame3D *f, zCyl3D *dest)
+zCyl3D *zCyl3DXformInv(const zCyl3D *src, const zFrame3D *frame, zCyl3D *dest)
 {
-  zXform3DInv( f, zCyl3DCenter(src,0), zCyl3DCenter(dest,0) );
-  zXform3DInv( f, zCyl3DCenter(src,1), zCyl3DCenter(dest,1) );
+  zXform3DInv( frame, zCyl3DCenter(src,0), zCyl3DCenter(dest,0) );
+  zXform3DInv( frame, zCyl3DCenter(src,1), zCyl3DCenter(dest,1) );
   zCyl3DSetRadius( dest, zCyl3DRadius(src) );
   zCyl3DSetDiv( dest, zCyl3DDiv(src) );
   return dest;
 }
 
-static void _zCyl3DClosestPrep(const zCyl3D *cyl, const zVec3D *p, zVec3D *axis, zVec3D *v, double *l, double *r, double *d)
+static void _zCyl3DClosestPrep(const zCyl3D *cyl, const zVec3D *point, zVec3D *axis, zVec3D *v, double *l, double *r, double *d)
 {
   zCyl3DAxis( cyl, axis );
-  _zVec3DSub( p, zCyl3DCenter(cyl,0), v );
+  _zVec3DSub( point, zCyl3DCenter(cyl,0), v );
   *l = zVec3DNormalizeDRC( axis );
   *r = zVec3DOuterProdNorm( v, axis );
   *d = zVec3DInnerProd( axis, v ) ;
 }
 
 /* the closest point to a 3D cylinder. */
-double zCyl3DClosest(const zCyl3D *cyl, const zVec3D *p, zVec3D *cp)
+double zCyl3DClosest(const zCyl3D *cyl, const zVec3D *point, zVec3D *closestpoint)
 {
   zVec3D axis, v, cr;
   const zVec3D *c;
   double l, r, d;
 
-  _zCyl3DClosestPrep( cyl, p, &axis, &v, &l, &r, &d );
+  _zCyl3DClosestPrep( cyl, point, &axis, &v, &l, &r, &d );
 
   if( d >= 0 && d <= l ){
     if( r <= zCyl3DRadius(cyl) ){
-      zVec3DCopy( p, cp );
+      zVec3DCopy( point, closestpoint );
       return 0;
     }
     zVec3DMul( &axis, d, &cr );
     zVec3DSubDRC( &v, &cr );
-    zVec3DCat( p, -(r-zCyl3DRadius(cyl))/zVec3DNorm(&v), &v, cp );
+    zVec3DCat( point, -(r-zCyl3DRadius(cyl))/zVec3DNorm(&v), &v, closestpoint );
     return r - zCyl3DRadius(cyl);
   }
   if( d > l ){
@@ -101,20 +100,20 @@ double zCyl3DClosest(const zCyl3D *cyl, const zVec3D *p, zVec3D *cp)
   } else
     c = zCyl3DCenter(cyl,0);
 
-  zVec3DCat( p, -d, &axis, cp );
+  zVec3DCat( point, -d, &axis, closestpoint );
   if( r <= zCyl3DRadius(cyl) ) return -d;
-  zVec3DSub( cp, c, &cr );
-  zVec3DCat( c, zCyl3DRadius(cyl)/r, &cr, cp );
+  zVec3DSub( closestpoint, c, &cr );
+  zVec3DCat( c, zCyl3DRadius(cyl)/r, &cr, closestpoint );
   return sqrt( zSqr( r - zCyl3DRadius(cyl) ) + zSqr(d) );
 }
 
 /* distance from a point to a 3D cylinder. */
-double zCyl3DDistFromPoint(const zCyl3D *cyl, const zVec3D *p)
+double zCyl3DDistFromPoint(const zCyl3D *cyl, const zVec3D *point)
 {
   zVec3D axis, v;
   double l, r, d;
 
-  _zCyl3DClosestPrep( cyl, p, &axis, &v, &l, &r, &d );
+  _zCyl3DClosestPrep( cyl, point, &axis, &v, &l, &r, &d );
   if( d >= 0 && d <= l )
     return r <= zCyl3DRadius(cyl) ? 0 : r - zCyl3DRadius(cyl);
   if( d > l ) d -= l;
@@ -123,12 +122,12 @@ double zCyl3DDistFromPoint(const zCyl3D *cyl, const zVec3D *p)
 }
 
 /* check if a point is inside of a cylinder. */
-bool zCyl3DPointIsInside(const zCyl3D *cyl, const zVec3D *p, double margin)
+bool zCyl3DPointIsInside(const zCyl3D *cyl, const zVec3D *point, double margin)
 {
   zVec3D axis, v;
   double l, r, d;
 
-  _zCyl3DClosestPrep( cyl, p, &axis, &v, &l, &r, &d );
+  _zCyl3DClosestPrep( cyl, point, &axis, &v, &l, &r, &d );
   if( r - zCyl3DRadius(cyl) >= margin ) return false;
   return d > -margin && d < l + margin ? true : false;
 }
@@ -148,9 +147,9 @@ double zCyl3DVolume(const zCyl3D *cyl)
 }
 
 /* barycenter of a 3D cylinder. */
-zVec3D *zCyl3DBarycenter(const zCyl3D *cyl, zVec3D *c)
+zVec3D *zCyl3DBarycenter(const zCyl3D *cyl, zVec3D *center)
 {
-  return zVec3DMid( zCyl3DCenter(cyl,0), zCyl3DCenter(cyl,1), c );
+  return zVec3DMid( zCyl3DCenter(cyl,0), zCyl3DCenter(cyl,1), center );
 }
 
 /* inertia tensor about barycenter of a 3D cylinder from mass. */
@@ -322,11 +321,11 @@ zShape3DCom zeo_shape3d_cyl_com = {
 };
 
 /* create a 3D shape as a cylinder. */
-zShape3D *zShape3DCylCreate(zShape3D *shape, const zVec3D *c1, const zVec3D *c2, double r, int div)
+zShape3D *zShape3DCylCreate(zShape3D *shape, const zVec3D *center1, const zVec3D *center2, double radius, int div)
 {
   zShape3DInit( shape );
   if( !( shape->body = zCyl3DAlloc() ) ) return NULL;
-  zCyl3DCreate( zShape3DCyl(shape), c1, c2, r, div );
+  zCyl3DCreate( zShape3DCyl(shape), center1, center2, radius, div );
   shape->com = &zeo_shape3d_cyl_com;
   return shape;
 }

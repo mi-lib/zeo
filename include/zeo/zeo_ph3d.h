@@ -35,7 +35,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPH3D ){
   zPH3D *alloc(int num_vert, int num_face);
   void destroy();
   zPH3D *clone(const zPH3D *src);
-  zPH3D *mirror(const zPH3D *src, zAxis axis);
+  zPH3D *mirror(const zPH3D *src, zAxis axis = zY);
   zPH3D *scale(const zPH3D *src, double scale);
   zPH3D *scale(double scale);
   zPH3D *flip(const zPH3D *src);
@@ -45,7 +45,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPH3D ){
   zVec3D *contigVert(const zVec3D *p, double *d);
   double closest(const zVec3D *point, zVec3D *closestpoint);
   double distanceFromPoint(const zVec3D *point);
-  bool pointIsInside(const zVec3D *point, double margin);
+  bool pointIsInside(const zVec3D *point, double margin = zTOL);
   double volume();
   zVec3D barycenter();
   zMat3D *inertia(double density, zMat3D *inertia);
@@ -58,7 +58,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPH3D ){
   zPH3D *createTorus(const zVec3D loop[], int n, int div, const zVec3D *center, const zVec3D *axis);
   zPH3D *createLathe(const zVec3D rim[], int n, int div, const zVec3D *center, const zVec3D *axis);
   zPH3D *fromZTK(ZTK *ztk);
-  void fprintZTK(FILE *fp);
+  void fprintZTK(FILE *fp = stdout);
 #endif
 };
 

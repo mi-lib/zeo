@@ -4,6 +4,11 @@
  * zeo_shape3d_box - 3D shapes: box.
  */
 
+#ifdef ZEO_SHAPE_DECL_METHOD
+zShape3D *createBox(const zVec3D *center, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double depth, double width, double height);
+zShape3D *createBox(const zVec3D *center, double depth, double width, double height);
+#else
+
 #ifndef __ZEO_SHAPE3D_BOX_H__
 #define __ZEO_SHAPE3D_BOX_H__
 
@@ -33,10 +38,17 @@ __ZEO_EXPORT zShape3DCom zeo_shape3d_box_com;
 
 #define zShape3DBox(s) ( (zBox3D*)(s)->body )
 
-__ZEO_EXPORT zShape3D *zShape3DBoxCreate(zShape3D *shape, const zVec3D *c, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double d, double w, double h);
+__ZEO_EXPORT zShape3D *zShape3DBoxCreate(zShape3D *shape, const zVec3D *center, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double depth, double width, double height);
 
-__ZEO_EXPORT zShape3D *zShape3DBoxCreateAlign(zShape3D *shape, const zVec3D *c, double d, double w, double h);
+__ZEO_EXPORT zShape3D *zShape3DBoxCreateAlign(zShape3D *shape, const zVec3D *center, double depth, double width, double height);
 
 __END_DECLS
 
+#ifdef __cplusplus
+inline zShape3D *zShape3D::createBox(const zVec3D *center, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double depth, double width, double height){ return zShape3DBoxCreate( this, center, ax, ay, az, depth, width, height ); }
+inline zShape3D *zShape3D::createBox(const zVec3D *center, double depth, double width, double height){ return zShape3DBoxCreateAlign( this, center, depth, width, height ); }
+#endif /* __cplusplus */
+
 #endif /* __ZEO_SHAPE3D_BOX_H__ */
+
+#endif /* ZEO_SHAPE_DECL_METHOD */

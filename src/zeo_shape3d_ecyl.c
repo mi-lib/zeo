@@ -11,12 +11,12 @@
  * ********************************************************** */
 
 /* create a 3D elliptic cylinder. */
-zECyl3D *zECyl3DCreate(zECyl3D *cyl, const zVec3D *c1, const zVec3D *c2, double r1, double r2, const zVec3D *ref, int div)
+zECyl3D *zECyl3DCreate(zECyl3D *cyl, const zVec3D *center1, const zVec3D *center2, double radius1, double radius2, const zVec3D *ref, int div)
 {
-  zECyl3DSetCenter( cyl, 0, c1 );
-  zECyl3DSetCenter( cyl, 1, c2 );
-  zECyl3DSetRadius( cyl, 0, r1 );
-  zECyl3DSetRadius( cyl, 1, r2 );
+  zECyl3DSetCenter( cyl, 0, center1 );
+  zECyl3DSetCenter( cyl, 1, center2 );
+  zECyl3DSetRadius( cyl, 0, radius1 );
+  zECyl3DSetRadius( cyl, 1, radius2 );
   zECyl3DDefAxis( cyl, ref );
   zECyl3DSetDiv( cyl, div == 0 ? ZEO_SHAPE_DEFAULT_DIV : div );
   return cyl;
@@ -80,65 +80,65 @@ void zECyl3DDefAxis(zECyl3D *cyl, const zVec3D *ref)
 }
 
 /* transform coordinates of a 3D elliptic cylinder. */
-zECyl3D *zECyl3DXform(const zECyl3D *src, const zFrame3D *f, zECyl3D *dest)
+zECyl3D *zECyl3DXform(const zECyl3D *src, const zFrame3D *frame, zECyl3D *dest)
 {
-  zXform3D( f, zECyl3DCenter(src,0), zECyl3DCenter(dest,0) );
-  zXform3D( f, zECyl3DCenter(src,1), zECyl3DCenter(dest,1) );
+  zXform3D( frame, zECyl3DCenter(src,0), zECyl3DCenter(dest,0) );
+  zXform3D( frame, zECyl3DCenter(src,1), zECyl3DCenter(dest,1) );
   zECyl3DSetRadius( dest, 0, zECyl3DRadius(src,0) );
   zECyl3DSetRadius( dest, 1, zECyl3DRadius(src,1) );
-  zMulMat3DVec3D( zFrame3DAtt(f), zECyl3DRadVec(src,0), zECyl3DRadVec(dest,0) );
-  zMulMat3DVec3D( zFrame3DAtt(f), zECyl3DRadVec(src,1), zECyl3DRadVec(dest,1) );
+  zMulMat3DVec3D( zFrame3DAtt(frame), zECyl3DRadVec(src,0), zECyl3DRadVec(dest,0) );
+  zMulMat3DVec3D( zFrame3DAtt(frame), zECyl3DRadVec(src,1), zECyl3DRadVec(dest,1) );
   zECyl3DSetDiv( dest, zECyl3DDiv(src) );
   return dest;
 }
 
 /* inversely transform coordinates of a 3D elliptic cylinder. */
-zECyl3D *zECyl3DXformInv(const zECyl3D *src, const zFrame3D *f, zECyl3D *dest)
+zECyl3D *zECyl3DXformInv(const zECyl3D *src, const zFrame3D *frame, zECyl3D *dest)
 {
-  zXform3DInv( f, zECyl3DCenter(src,0), zECyl3DCenter(dest,0) );
-  zXform3DInv( f, zECyl3DCenter(src,1), zECyl3DCenter(dest,1) );
+  zXform3DInv( frame, zECyl3DCenter(src,0), zECyl3DCenter(dest,0) );
+  zXform3DInv( frame, zECyl3DCenter(src,1), zECyl3DCenter(dest,1) );
   zECyl3DSetRadius( dest, 0, zECyl3DRadius(src,0) );
   zECyl3DSetRadius( dest, 1, zECyl3DRadius(src,1) );
-  zMulMat3DTVec3D( zFrame3DAtt(f), zECyl3DRadVec(src,0), zECyl3DRadVec(dest,0) );
-  zMulMat3DTVec3D( zFrame3DAtt(f), zECyl3DRadVec(src,1), zECyl3DRadVec(dest,1) );
+  zMulMat3DTVec3D( zFrame3DAtt(frame), zECyl3DRadVec(src,0), zECyl3DRadVec(dest,0) );
+  zMulMat3DTVec3D( zFrame3DAtt(frame), zECyl3DRadVec(src,1), zECyl3DRadVec(dest,1) );
   zECyl3DSetDiv( dest, zECyl3DDiv(src) );
   return dest;
 }
 
 /* the closest point to a 3D elliptic cylinder. */
-double zECyl3DClosest(const zECyl3D *cyl, const zVec3D *p, zVec3D *cp)
+double zECyl3DClosest(const zECyl3D *cyl, const zVec3D *point, zVec3D *closestpoint)
 {
   zEllips2D ellips2d;
   zVec3D v, axis, vs, vc;
 
-  zVec3DSub( p, zECyl3DCenter(cyl,0), &v );
+  zVec3DSub( point, zECyl3DCenter(cyl,0), &v );
   zECyl3DAxis( cyl, &axis );
   zVec3DCatRatio( zECyl3DRadVec(cyl,0), zECyl3DRadVec(cyl,1), &axis, &v, vs.e );
   zEllips2DCreate( &ellips2d, ZVEC2DZERO, zECyl3DRadius(cyl,0), zECyl3DRadius(cyl,1) );
   zEllips2DClosest( &ellips2d, (zVec2D*)vs.e, (zVec2D*)vc.e );
   vc.e[zZ] = zLimit( vs.e[zZ], 0, 1 );
-  zVec3DCat( zECyl3DCenter(cyl,0), vc.e[zZ], &axis, cp );
-  zVec3DCatDRC( cp, vc.e[zX], zECyl3DRadVec(cyl,0) );
-  zVec3DCatDRC( cp, vc.e[zY], zECyl3DRadVec(cyl,1) );
-  return zVec3DDist( cp, p );
+  zVec3DCat( zECyl3DCenter(cyl,0), vc.e[zZ], &axis, closestpoint );
+  zVec3DCatDRC( closestpoint, vc.e[zX], zECyl3DRadVec(cyl,0) );
+  zVec3DCatDRC( closestpoint, vc.e[zY], zECyl3DRadVec(cyl,1) );
+  return zVec3DDist( closestpoint, point );
 }
 
 /* distance from a point to a 3D elliptic cylinder. */
-double zECyl3DDistFromPoint(const zECyl3D *cyl, const zVec3D *p)
+double zECyl3DDistFromPoint(const zECyl3D *cyl, const zVec3D *point)
 {
   zVec3D cp;
 
-  return zECyl3DClosest( cyl, p, &cp );
+  return zECyl3DClosest( cyl, point, &cp );
 }
 
 /* check if a point is inside of an elliptic cylinder. */
-bool zECyl3DPointIsInside(const zECyl3D *ecyl, const zVec3D *p, double margin)
+bool zECyl3DPointIsInside(const zECyl3D *ecyl, const zVec3D *point, double margin)
 {
   zEllips2D ellips2d;
   zVec3D v, axis, vs;
   double l;
 
-  zVec3DSub( p, zECyl3DCenter(ecyl,0), &v );
+  zVec3DSub( point, zECyl3DCenter(ecyl,0), &v );
   zECyl3DAxis( ecyl, &axis );
   l = zVec3DNormalizeDRC( &axis );
   zVec3DCatRatio( zECyl3DRadVec(ecyl,0), zECyl3DRadVec(ecyl,1), &axis, &v, vs.e );
@@ -162,9 +162,9 @@ double zECyl3DVolume(const zECyl3D *cyl)
 }
 
 /* barycenter of a 3D elliptic cylinder. */
-zVec3D *zECyl3DBarycenter(const zECyl3D *cyl, zVec3D *c)
+zVec3D *zECyl3DBarycenter(const zECyl3D *cyl, zVec3D *center)
 {
-  return zVec3DMid( zECyl3DCenter(cyl,0), zECyl3DCenter(cyl,1), c );
+  return zVec3DMid( zECyl3DCenter(cyl,0), zECyl3DCenter(cyl,1), center );
 }
 
 /* inertia tensor about barycenter of a 3D elliptic cylinder from mass. */
@@ -355,11 +355,11 @@ zShape3DCom zeo_shape3d_ecyl_com = {
 };
 
 /* create a 3D shape as an elliptic cylinder. */
-zShape3D *zShape3DECylCreate(zShape3D *shape, const zVec3D *c1, const zVec3D *c2, double r1, double r2, const zVec3D *ref, int div)
+zShape3D *zShape3DECylCreate(zShape3D *shape, const zVec3D *center1, const zVec3D *center2, double radius1, double radius2, const zVec3D *ref, int div)
 {
   zShape3DInit( shape );
   if( !( shape->body = zECyl3DAlloc() ) ) return NULL;
-  zECyl3DCreate( zShape3DECyl(shape), c1, c2, r1, r2, ref, div );
+  zECyl3DCreate( zShape3DECyl(shape), center1, center2, radius1, radius2, ref, div );
   shape->com = &zeo_shape3d_ecyl_com;
   return shape;
 }

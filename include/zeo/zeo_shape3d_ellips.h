@@ -4,6 +4,11 @@
  * zeo_shape3d_ellips - 3D shapes: ellipsoid.
  */
 
+#ifdef ZEO_SHAPE_DECL_METHOD
+zShape3D *createEllips(const zVec3D *center, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double rx, double ry, double rz, int div = 0);
+zShape3D *createEllips(const zVec3D *center, double rx, double ry, double rz, int div = 0);
+#else
+
 #ifndef __ZEO_SHAPE3D_ELLIPS_H__
 #define __ZEO_SHAPE3D_ELLIPS_H__
 
@@ -152,10 +157,16 @@ __ZEO_EXPORT zShape3DCom zeo_shape3d_ellips_com;
 
 #define zShape3DEllips(s) ( (zEllips3D*)(s)->body )
 
-__ZEO_EXPORT zShape3D *zShape3DEllipsCreate(zShape3D *shape, const zVec3D *c, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double rx, double ry, double rz, int div);
-
+__ZEO_EXPORT zShape3D *zShape3DEllipsCreate(zShape3D *shape, const zVec3D *center, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double rx, double ry, double rz, int div);
 __ZEO_EXPORT zShape3D *zShape3DEllipsCreateAlign(zShape3D *shape, const zVec3D *c, double rx, double ry, double rz, int div);
 
 __END_DECLS
 
+#ifdef __cplusplus
+inline zShape3D *zShape3D::createEllips(const zVec3D *center, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double rx, double ry, double rz, int div){ return zShape3DEllipsCreate( this, center, ax, ay, az, rx, ry, rz, div ); }
+inline zShape3D *zShape3D::createEllips(const zVec3D *center, double rx, double ry, double rz, int div){ return zShape3DEllipsCreateAlign( this, center, rx, ry, rz, div ); }
+#endif /* __cplusplus */
+
 #endif /* __ZEO_SHAPE3D_ELLIPS_H__ */
+
+#endif /* ZEO_SHAPE_DECL_METHOD */

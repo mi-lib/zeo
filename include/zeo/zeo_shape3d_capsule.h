@@ -4,7 +4,9 @@
  * zeo_shape3d_capsule - 3D shapes: capsule.
  */
 
-#include <zeo/zeo_shape3d.h>
+#ifdef ZEO_SHAPE_DECL_METHOD
+zShape3D *createCapsule(const zVec3D *center1, const zVec3D *center2, double radius, int div = 0);
+#else
 
 #ifndef __ZEO_SHAPE3D_CAPSULE_H__
 #define __ZEO_SHAPE3D_CAPSULE_H__
@@ -14,19 +16,18 @@
 __BEGIN_DECLS
 
 /* ********************************************************** */
-/* CLASS: zCapsule3D
- * 3D capsule class
- * ********************************************************** */
+/*! \brief 3D capsule class
+ *//* ******************************************************* */
 
 typedef zCyl3D zCapsule3D;
 
-#define zCapsule3DCenter(c,i)      zCyl3DCenter( c, i )
-#define zCapsule3DRadius(c)        zCyl3DRadius( c )
-#define zCapsule3DDiv(c)           zCyl3DDiv( c )
+#define zCapsule3DCenter(cap,i)      zCyl3DCenter( cap, i )
+#define zCapsule3DRadius(cap)        zCyl3DRadius( cap )
+#define zCapsule3DDiv(cap)           zCyl3DDiv( cap )
 
-#define zCapsule3DSetCenter(c,i,p) zCyl3DSetCenter( c, i, p )
-#define zCapsule3DSetRadius(c,r)   zCyl3DSetRadius( c, r )
-#define zCapsule3DSetDiv(c,d)      zCyl3DSetDiv( c, d )
+#define zCapsule3DSetCenter(cap,i,p) zCyl3DSetCenter( cap, i, p )
+#define zCapsule3DSetRadius(cap,r)   zCyl3DSetRadius( cap, r )
+#define zCapsule3DSetDiv(cap,d)      zCyl3DSetDiv( cap, d )
 
 /*! \brief initialize, create and copy a 3D capsule.
  *
@@ -34,7 +35,7 @@ typedef zCyl3D zCapsule3D;
  * centers on the bases for the original point and radius for zero.
  *
  * zCapsule3DCreate() creates a 3D capsule whose two center points on the
- * bases are \a c1 and \a c2, and radius is \a r.
+ * bases are \a center1 and \a center2, and radius is \a radius.
  * \a div is the number of division for polyhedral approximation.
  * When zero is given for \a div, ZEO_SHAPE_DEFAULT_DIV is set instead.
  *
@@ -43,37 +44,37 @@ typedef zCyl3D zCapsule3D;
  * zCapsule3DInit() and zCapsule3DCreate() return a pointer \a capsule.
  * zCapsule3DCopy() returns a pointer \a dest.
  */
-#define zCapsule3DCreate(c,c1,c2,r,div) zCyl3DCreate( c, c1, c2, r, div )
-#define zCapsule3DInit(c)               zCyl3DInit( c )
-#define zCapsule3DAlloc()               zCyl3DAlloc()
-#define zCapsule3DCopy(s,d)             zCyl3DCopy( s, d )
-#define zCapsule3DMirror(s,d,a)         zCyl3DMirror( s, d, a )
+#define zCapsule3DCreate(cap,center1,center2,radius,div) zCyl3DCreate( cap, center1, center2, radius, div )
+#define zCapsule3DInit(cap)                              zCyl3DInit( cap )
+#define zCapsule3DAlloc()                                zCyl3DAlloc()
+#define zCapsule3DCopy(src,dest)                         zCyl3DCopy( src, dest )
+#define zCapsule3DMirror(src,dest,axis)                  zCyl3DMirror( src, dest, axis )
 
 /*! \brief transform a 3D capsule.
  *
- * zCapsule3DXform() transforms a 3D capsule \a src by a frame \a f and
+ * zCapsule3DXform() transforms a 3D capsule \a src by a frame \a frame and
  * puts it into \a dest.
  *
- * zCapsule3DXformInv() transforms \a src by the inverse of a frame \a f
+ * zCapsule3DXformInv() transforms \a src by the inverse of a frame \a frame
  * and puts it into \a dest.
  * \return
  * zCapsule3DXform() and zCapsule3DXformInv() return a pointer \a dest.
  */
-#define zCapsule3DXform(s,f,d)    zCyl3DXform( s, f, d )
-#define zCapsule3DXformInv(s,f,d) zCyl3DXformInv( s, f, d )
+#define zCapsule3DXform(src,frame,dest)    zCyl3DXform( src, frame, dest )
+#define zCapsule3DXformInv(src,frame,dest) zCyl3DXformInv( src, frame, dest )
 
 /*! \brief check if a point is inside of a 3D capsule.
  *
- * zCapsule3DPointIsInside() checks if a 3D point \a p is inside of a 3D
+ * zCapsule3DPointIsInside() checks if a 3D point \a point is inside of a 3D
  * capsule \a capsule. \a margin is a margin of the inside area outward
  * from the boundary of \a capsule.
  * \return
- * zCapsule3DPointIsInside() returns the true value if \a p is inside of \a capsule,
+ * zCapsule3DPointIsInside() returns the true value if \a point is inside of \a capsule,
  * or the false value otherwise.
  */
-__ZEO_EXPORT double zCapsule3DClosest(const zCapsule3D *capsule, const zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zCapsule3DDistFromPoint(const zCapsule3D *capsule, const zVec3D *p);
-__ZEO_EXPORT bool zCapsule3DPointIsInside(const zCapsule3D *capsule, const zVec3D *p, double margin);
+__ZEO_EXPORT double zCapsule3DClosest(const zCapsule3D *capsule, const zVec3D *point, zVec3D *closestpoint);
+__ZEO_EXPORT double zCapsule3DDistFromPoint(const zCapsule3D *capsule, const zVec3D *point);
+__ZEO_EXPORT bool zCapsule3DPointIsInside(const zCapsule3D *capsule, const zVec3D *point, double margin);
 
 /*! \brief axis vector and height of a 3D capsule.
  *
@@ -87,7 +88,7 @@ __ZEO_EXPORT bool zCapsule3DPointIsInside(const zCapsule3D *capsule, const zVec3
  * zCapsule3DAxis() returns a pointer \a axis.
  * zCapsule3DHeight() returns the calculated height.
  */
-#define zCapsule3DAxis(c,a) zCyl3DAxis( c, a )
+#define zCapsule3DAxis(cap,axis) zCyl3DAxis( cap, axis )
 __ZEO_EXPORT double zCapsule3DHeight(const zCapsule3D *capsule);
 
 /*! \brief volume of a 3D capsule.
@@ -101,11 +102,11 @@ __ZEO_EXPORT double zCapsule3DVolume(const zCapsule3D *capsule);
 /*! \brief barycenter of a capsule.
  *
  * zCapsule3DBarycenter() calculates the barycenter of a 3D capsule \a capsule.
- * The result is put into \a c.
+ * The result is put into \a center.
  * \return
- * zCapsule3DBarycenter() returns a pointer \a c.
+ * zCapsule3DBarycenter() returns a pointer \a center.
  */
-#define zCapsule3DBarycenter(c,p) zCyl3DBarycenter( c, p )
+#define zCapsule3DBarycenter(cap,center) zCyl3DBarycenter( cap, center )
 
 /*! \brief inertia tensor of a capsule.
  *
@@ -145,8 +146,14 @@ __ZEO_EXPORT zShape3DCom zeo_shape3d_capsule_com;
 
 #define zShape3DCapsule(s) ( (zCapsule3D*)(s)->body )
 
-__ZEO_EXPORT zShape3D *zShape3DCapsuleCreate(zShape3D *shape, const zVec3D *c1, const zVec3D *c2, double r, int div);
+__ZEO_EXPORT zShape3D *zShape3DCapsuleCreate(zShape3D *shape, const zVec3D *center1, const zVec3D *center2, double radius, int div);
 
 __END_DECLS
 
+#ifdef __cplusplus
+inline zShape3D *zShape3D::createCapsule(const zVec3D *center1, const zVec3D *center2, double radius, int div){ return zShape3DCapsuleCreate( this, center1, center2, radius, div ); }
+#endif /* __cplusplus */
+
 #endif /* __ZEO_SHAPE3D_CAPSULE_H__ */
+
+#endif /* ZEO_SHAPE_DECL_METHOD */

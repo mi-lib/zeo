@@ -32,18 +32,19 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zAABox3D ){
   zVec3D center();
   zAABox3D *init();
   zAABox3D *create(double _xmin, double _ymin, double _zmin, double _xmax, double _ymax, double _zmax);
-  zAABox3D *createFromSize(zVec3D *center, double _depth, double _width, double _height);
+  zAABox3D *create(zVec3D *center, double _depth, double _width, double _height);
+  zAABox3D *create(double _depth, double _width, double _height);
   zAABox3D *merge(const zAABox3D *box1, const zAABox3D *box2);
   zAABox3D *expand(const zAABox3D *src, double magnitude);
-  zAABox3D *expandDirect(double magnitude);
+  zAABox3D *expand(double magnitude);
   double closest(const zVec3D *point, zVec3D *closestpoint);
   double distanceFromPoint(const zVec3D *point);
-  bool pointIsInside(const zVec3D *point, double margin);
+  bool pointIsInside(const zVec3D *point, double margin = zTOL);
   double volume();
   zVec3D vert(int i);
   zAABox3D *enlarge(const zVec3D *v);
-  void fprint(FILE *fp);
-  void fprintValue(FILE *fp);
+  void fprint(FILE *fp = stdout);
+  void fprintValue(FILE *fp = stdout);
 #endif /* __cplusplus */
 };
 
@@ -123,10 +124,11 @@ inline double zAABox3D::height(){ return zAABox3DHeight( this ); }
 inline zVec3D zAABox3D::center(){ zVec3D c; zAABox3DCenter( this, &c ); return c; }
 inline zAABox3D *zAABox3D::init(){ return zAABox3DInit( this ); }
 inline zAABox3D *zAABox3D::create(double _xmin, double _ymin, double _zmin, double _xmax, double _ymax, double _zmax){ return zAABox3DCreate( this, _xmin, _ymin, _zmin, _xmax, _ymax, _zmax ); }
-inline zAABox3D *zAABox3D::createFromSize(zVec3D *center, double _depth, double _width, double _height){ return zAABox3DCreateFromSize( this, center, _depth, _width, _height ); }
+inline zAABox3D *zAABox3D::create(zVec3D *center, double _depth, double _width, double _height){ return zAABox3DCreateFromSize( this, center, _depth, _width, _height ); }
+inline zAABox3D *zAABox3D::create(double _depth, double _width, double _height){ return zAABox3DCreateFromSize( this, ZVEC3DZERO, _depth, _width, _height ); }
 inline zAABox3D *zAABox3D::merge(const zAABox3D *box1, const zAABox3D *box2){ return zAABox3DMerge( this, box1, box2 ); }
 inline zAABox3D *zAABox3D::expand(const zAABox3D *src, double magnitude){ return zAABox3DExpand( src, magnitude, this ); }
-inline zAABox3D *zAABox3D::expandDirect(double magnitude){ return zAABox3DExpandDRC( this, magnitude ); }
+inline zAABox3D *zAABox3D::expand(double magnitude){ return zAABox3DExpandDRC( this, magnitude ); }
 inline double zAABox3D::closest(const zVec3D *point, zVec3D *closestpoint){ return zAABox3DClosest( this, point, closestpoint ); }
 inline double zAABox3D::distanceFromPoint(const zVec3D *point){ return zAABox3DDistFromPoint( this, point ); }
 inline bool zAABox3D::pointIsInside(const zVec3D *point, double margin){ return zAABox3DPointIsInside( this, point, margin ); }
@@ -156,18 +158,19 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zBox3D ){
   zVec3D *center();
   zVec3D *axis(zAxis _axis);
   zBox3D *create(const zVec3D *center, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double _depth, double _width, double _height);
-  zBox3D *createAlign(const zVec3D *center, double _depth, double _width, double _height);
+  zBox3D *create(const zVec3D *center, double _depth, double _width, double _height);
+  zBox3D *create(double _depth, double _width, double _height);
   zBox3D *xform(const zFrame3D *frame, zBox3D *dest);
   zBox3D *xformInv(const zFrame3D *frame, zBox3D *dest);
   double closest(const zVec3D *point, zVec3D *closestpoint);
   double distanceFromPoint(const zVec3D *point);
-  bool pointIsInside(const zVec3D *point, double margin);
+  bool pointIsInside(const zVec3D *point, double margin = zTOL);
   double volume();
   zMat3D *baryInertiaMass(double mass, zMat3D *inertia);
   zMat3D *baryInertia(double density, zMat3D *inertia);
   zVec3D vert(int i);
   zAABox3D toAABox3D();
-  void fprintValue(FILE *fp);
+  void fprintValue(FILE *fp = stdout);
 #endif /* __cplusplus */
 };
 
@@ -294,7 +297,8 @@ inline double zBox3D::height(){ return zBox3DHeight( this ); }
 inline zVec3D *zBox3D::center(){ return zBox3DCenter( this ); }
 inline zVec3D *zBox3D::axis(zAxis _axis){ return zBox3DAxis( this, (int)_axis ); }
 inline zBox3D *zBox3D::create(const zVec3D *center, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double _depth, double _width, double _height){ return zBox3DCreate( this, center, ax, ay, az, _depth, _width, _height ); }
-inline zBox3D *zBox3D::createAlign(const zVec3D *center, double _depth, double _width, double _height){ return zBox3DCreateAlign( this, center, _depth, _width, _height ); }
+inline zBox3D *zBox3D::create(const zVec3D *center, double _depth, double _width, double _height){ return zBox3DCreateAlign( this, center, _depth, _width, _height ); }
+inline zBox3D *zBox3D::create(double _depth, double _width, double _height){ return zBox3DCreateAlign( this, ZVEC3DZERO, _depth, _width, _height ); }
 inline zBox3D *zBox3D::xform(const zFrame3D *frame, zBox3D *dest){ return zBox3DXform( this, frame, dest ); }
 inline zBox3D *zBox3D::xformInv(const zFrame3D *frame, zBox3D *dest){ return zBox3DXformInv( this, frame, dest ); }
 inline double zBox3D::closest(const zVec3D *point, zVec3D *closestpoint){ return zBox3DClosest( this, point, closestpoint ); }

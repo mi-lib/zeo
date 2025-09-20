@@ -160,21 +160,21 @@ zShape3DCom zeo_shape3d_box_com = {
 };
 
 /* create a 3D shape as a box. */
-zShape3D *zShape3DBoxCreate(zShape3D *shape, const zVec3D *c, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double d, double w, double h)
+zShape3D *zShape3DBoxCreate(zShape3D *shape, const zVec3D *center, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double depth, double width, double height)
 {
   zShape3DInit( shape );
   if( !( shape->body = zBox3DAlloc() ) ) return NULL;
-  zBox3DCreate( zShape3DBox(shape), c, ax, ay, az, d, w, h );
+  zBox3DCreate( zShape3DBox(shape), center, ax, ay, az, depth, width, height );
   shape->com = &zeo_shape3d_box_com;
   return shape;
 }
 
 /* create a 3D shape as an axis-aligned box. */
-zShape3D *zShape3DBoxCreateAlign(zShape3D *shape, const zVec3D *c, double d, double w, double h)
+zShape3D *zShape3DBoxCreateAlign(zShape3D *shape, const zVec3D *center, double depth, double width, double height)
 {
   zShape3DInit( shape );
   if( !( shape->body = zBox3DAlloc() ) ) return NULL;
-  zBox3DCreateAlign( zShape3DBox(shape), c, d, w, h );
+  zBox3DCreateAlign( zShape3DBox(shape), center, depth, width, height );
   shape->com = &zeo_shape3d_box_com;
   return shape;
 }

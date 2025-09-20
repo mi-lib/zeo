@@ -79,35 +79,35 @@ zShape3D *zShape3DMirror(const zShape3D *src, zShape3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D shape. */
-zShape3D *zShape3DXform(const zShape3D *src, const zFrame3D *f, zShape3D *dest)
+zShape3D *zShape3DXform(const zShape3D *src, const zFrame3D *frame, zShape3D *dest)
 {
-  src->com->_xform( src->body, f, dest->body );
+  src->com->_xform( src->body, frame, dest->body );
   return dest;
 }
 
 /* inversely transform coordinates of a 3D shape. */
-zShape3D *zShape3DXformInv(const zShape3D *src, const zFrame3D *f, zShape3D *dest)
+zShape3D *zShape3DXformInv(const zShape3D *src, const zFrame3D *frame, zShape3D *dest)
 {
-  src->com->_xforminv( src->body, f, dest->body );
+  src->com->_xforminv( src->body, frame, dest->body );
   return dest;
 }
 
 /* closest point to a 3D shape. */
-double zShape3DClosest(const zShape3D *shape, const zVec3D *p, zVec3D *cp)
+double zShape3DClosest(const zShape3D *shape, const zVec3D *point, zVec3D *closestpoint)
 {
-  return shape->com->_closest( shape->body, p, cp );
+  return shape->com->_closest( shape->body, point, closestpoint );
 }
 
 /* distance from a point to a 3D shape. */
-double zShape3DDistFromPoint(const zShape3D *shape, const zVec3D *p)
+double zShape3DDistFromPoint(const zShape3D *shape, const zVec3D *point)
 {
-  return shape->com->_distfrompoint( shape->body, p );
+  return shape->com->_distfrompoint( shape->body, point );
 }
 
 /* check if a point is inside of a 3D shape. */
-bool zShape3DPointIsInside(const zShape3D *shape, const zVec3D *p, double margin)
+bool zShape3DPointIsInside(const zShape3D *shape, const zVec3D *point, double margin)
 {
-  return shape->com->_pointisinside( shape->body, p, margin );
+  return shape->com->_pointisinside( shape->body, point, margin );
 }
 
 /* volume of a 3D shape. */
@@ -117,9 +117,9 @@ double zShape3DVolume(const zShape3D *shape)
 }
 
 /* barycenter of a 3D shape. */
-zVec3D *zShape3DBarycenter(const zShape3D *shape, zVec3D *c)
+zVec3D *zShape3DBarycenter(const zShape3D *shape, zVec3D *center)
 {
-  return shape->com->_barycenter( shape->body, c );
+  return shape->com->_barycenter( shape->body, center );
 }
 
 /* inertia tensor about barycenter of a 3D shape from mass. */

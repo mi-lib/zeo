@@ -14,17 +14,17 @@ __BEGIN_DECLS
 /* methods for abstraction */
 __ZEO_EXPORT zShape3DCom zeo_shape3d_ph_com;
 
-#define zShape3DPH(s) ( (zPH3D*)(s)->body )
+#define zShape3DPH(shape) ( (zPH3D*)(shape)->body )
 
-#define zShape3DVertNum(s)      zPH3DVertNum(zShape3DPH(s))
-#define zShape3DVertBuf(s)      zPH3DVertBuf(zShape3DPH(s))
-#define zShape3DVert(s,i)       zPH3DVert(zShape3DPH(s),i)
-#define zShape3DFaceNum(s)      zPH3DFaceNum(zShape3DPH(s))
-#define zShape3DFaceBuf(s)      zPH3DFaceBuf(zShape3DPH(s))
-#define zShape3DFace(s,i)       zPH3DFace(zShape3DPH(s),i)
+#define zShape3DVertNum(shape)      zPH3DVertNum(zShape3DPH(shape))
+#define zShape3DVertBuf(shape)      zPH3DVertBuf(zShape3DPH(shape))
+#define zShape3DVert(shape,i)       zPH3DVert(zShape3DPH(shape),i)
+#define zShape3DFaceNum(shape)      zPH3DFaceNum(zShape3DPH(shape))
+#define zShape3DFaceBuf(shape)      zPH3DFaceBuf(zShape3DPH(shape))
+#define zShape3DFace(shape,i)       zPH3DFace(zShape3DPH(shape),i)
 
-#define zShape3DFaceVert(s,i,j) zPH3DFaceVert(zShape3DPH(s),i,j)
-#define zShape3DFaceNorm(s,i)   zPH3DFaceNorm(zShape3DPH(s),i)
+#define zShape3DFaceVert(shape,i,j) zPH3DFaceVert(zShape3DPH(shape),i,j)
+#define zShape3DFaceNorm(shape,i)   zPH3DFaceNorm(zShape3DPH(shape),i)
 
 __END_DECLS
 

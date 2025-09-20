@@ -7,16 +7,15 @@
 #include <zeo/zeo_shape3d.h>
 
 /* ********************************************************** */
-/* CLASS: zCone3D
- * 3D cone class
+/* 3D cone class
  * ********************************************************** */
 
 /* create a 3D cone. */
-zCone3D *zCone3DCreate(zCone3D *cone, const zVec3D *c, const zVec3D *v, double r, int div)
+zCone3D *zCone3DCreate(zCone3D *cone, const zVec3D *center, const zVec3D *vert, double radius, int div)
 {
-  zCone3DSetCenter( cone, c );
-  zCone3DSetVert( cone, v );
-  zCone3DSetRadius( cone, r );
+  zCone3DSetCenter( cone, center );
+  zCone3DSetVert( cone, vert );
+  zCone3DSetRadius( cone, radius );
   zCone3DSetDiv( cone, div == 0 ? ZEO_SHAPE_DEFAULT_DIV : div );
   return cone;
 }
@@ -47,73 +46,73 @@ zCone3D *zCone3DMirror(const zCone3D *src, zCone3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D cone. */
-zCone3D *zCone3DXform(const zCone3D *src, const zFrame3D *f, zCone3D *dest)
+zCone3D *zCone3DXform(const zCone3D *src, const zFrame3D *frame, zCone3D *dest)
 {
-  zXform3D( f, zCone3DCenter(src), zCone3DCenter(dest) );
-  zXform3D( f, zCone3DVert(src), zCone3DVert(dest) );
+  zXform3D( frame, zCone3DCenter(src), zCone3DCenter(dest) );
+  zXform3D( frame, zCone3DVert(src), zCone3DVert(dest) );
   zCone3DSetRadius( dest, zCone3DRadius(src) );
   zCone3DSetDiv( dest, zCone3DDiv(src) );
   return dest;
 }
 
 /* inversely transform coordinates of a 3D cone. */
-zCone3D *zCone3DXformInv(const zCone3D *src, const zFrame3D *f, zCone3D *dest)
+zCone3D *zCone3DXformInv(const zCone3D *src, const zFrame3D *frame, zCone3D *dest)
 {
-  zXform3DInv( f, zCone3DCenter(src), zCone3DCenter(dest) );
-  zXform3DInv( f, zCone3DVert(src), zCone3DVert(dest) );
+  zXform3DInv( frame, zCone3DCenter(src), zCone3DCenter(dest) );
+  zXform3DInv( frame, zCone3DVert(src), zCone3DVert(dest) );
   zCone3DSetRadius( dest, zCone3DRadius(src) );
   zCone3DSetDiv( dest, zCone3DDiv(src) );
   return dest;
 }
 
 /* the closest point to a 3D cone. */
-double zCone3DClosest(const zCone3D *cone, const zVec3D *p, zVec3D *cp)
+double zCone3DClosest(const zCone3D *cone, const zVec3D *point, zVec3D *closestpoint)
 {
   zVec3D axis, v, s, g;
   double l, r, d;
 
   zCone3DAxis( cone, &axis );
   l = zVec3DNormalizeDRC( &axis );
-  zVec3DSub( p, zCone3DCenter(cone), &v );
+  zVec3DSub( point, zCone3DCenter(cone), &v );
   d = zVec3DInnerProd( &axis, &v );
   zVec3DCat( &v, -d, &axis, &s );
   r = zVec3DNormalizeDRC( &s );
   if( d < 0 ){
     if( r < zCone3DRadius(cone) ){
-      zVec3DCat( p, -d, &axis, cp );
+      zVec3DCat( point, -d, &axis, closestpoint );
       return -d;
     }
   } else{
     if( r < l*(d-l)/zCone3DRadius(cone) ){
-      zVec3DCopy( zCone3DVert(cone), cp );
+      zVec3DCopy( zCone3DVert(cone), closestpoint );
       return sqrt( zSqr(d-l) + r*r );
     }
     if( d/l + r/zCone3DRadius(cone) <= 1 ){
-      zVec3DCopy( p, cp );
+      zVec3DCopy( point, closestpoint );
       return 0;
     }
     if( r <= l*d/zCone3DRadius(cone) + zCone3DRadius(cone) ){
       zVec3DMul( &s, zCone3DRadius(cone), &g );
       zVec3DCatDRC( &g, -l, &axis );
       zVec3DNormalizeDRC( &g );
-      zVec3DSub( p, zCone3DVert(cone), &v );
-      zVec3DCat( zCone3DVert(cone), zVec3DInnerProd(&v,&g), &g, cp );
-      return zVec3DDist( p, cp );
+      zVec3DSub( point, zCone3DVert(cone), &v );
+      zVec3DCat( zCone3DVert(cone), zVec3DInnerProd(&v,&g), &g, closestpoint );
+      return zVec3DDist( point, closestpoint );
     }
   }
-  zVec3DCat( zCone3DCenter(cone), zCone3DRadius(cone), &s, cp );
+  zVec3DCat( zCone3DCenter(cone), zCone3DRadius(cone), &s, closestpoint );
   return sqrt( d*d + zSqr(r-zCone3DRadius(cone)) );
 }
 
 /* distance from a point to a 3D cone. */
-double zCone3DDistFromPoint(const zCone3D *cone, const zVec3D *p)
+double zCone3DDistFromPoint(const zCone3D *cone, const zVec3D *point)
 {
   zVec3D axis, v, s, g;
   double l, r, d;
 
   zCone3DAxis( cone, &axis );
   l = zVec3DNormalizeDRC( &axis );
-  zVec3DSub( p, zCone3DCenter(cone), &v );
+  zVec3DSub( point, zCone3DCenter(cone), &v );
   d = zVec3DInnerProd( &axis, &v );
   zVec3DCat( &v, -d, &axis, &s );
   r = zVec3DNormalizeDRC( &s );
@@ -128,7 +127,7 @@ double zCone3DDistFromPoint(const zCone3D *cone, const zVec3D *p)
       zVec3DMul( &s, zCone3DRadius(cone), &g );
       zVec3DCatDRC( &g, -l, &axis );
       zVec3DNormalizeDRC( &g );
-      zVec3DSub( p, zCone3DVert(cone), &v );
+      zVec3DSub( point, zCone3DVert(cone), &v );
       return zVec3DOuterProdNorm( &v, &g );
     }
   }
@@ -136,14 +135,14 @@ double zCone3DDistFromPoint(const zCone3D *cone, const zVec3D *p)
 }
 
 /* check if a point is inside of a cone. */
-bool zCone3DPointIsInside(const zCone3D *cone, const zVec3D *p, double margin)
+bool zCone3DPointIsInside(const zCone3D *cone, const zVec3D *point, double margin)
 {
   zVec3D axis, v;
   zVec2D p2d, l2d;
   double l, d;
 
   zCone3DAxis( cone, &axis );
-  zVec3DSub( p, zCone3DVert(cone), &v );
+  zVec3DSub( point, zCone3DVert(cone), &v );
   l = zVec3DNormalizeDRC( &axis );
   d = -zVec3DInnerProd( &axis, &v );
   if( d <= -margin || d >= l + margin ) return false;
@@ -168,9 +167,9 @@ double zCone3DVolume(const zCone3D *cone)
 }
 
 /* barycenter of a 3D cone. */
-zVec3D *zCone3DBarycenter(const zCone3D *cone, zVec3D *c)
+zVec3D *zCone3DBarycenter(const zCone3D *cone, zVec3D *center)
 {
-  return zVec3DInterDiv( zCone3DCenter(cone), zCone3DVert(cone), 0.25, c );
+  return zVec3DInterDiv( zCone3DCenter(cone), zCone3DVert(cone), 0.25, center );
 }
 
 /* inertia tensor about barycenter of a 3D cone from mass. */
@@ -343,11 +342,11 @@ zShape3DCom zeo_shape3d_cone_com = {
 };
 
 /* create a 3D shape as a cone. */
-zShape3D *zShape3DConeCreate(zShape3D *shape, const zVec3D *c, const zVec3D *v, double r, int div)
+zShape3D *zShape3DConeCreate(zShape3D *shape, const zVec3D *center, const zVec3D *vert, double radius, int div)
 {
   zShape3DInit( shape );
   if( !( shape->body = zCone3DAlloc() ) ) return NULL;
-  zCone3DCreate( zShape3DCone(shape), c, v, r, div );
+  zCone3DCreate( zShape3DCone(shape), center, vert, radius, div );
   shape->com = &zeo_shape3d_cone_com;
   return shape;
 }
