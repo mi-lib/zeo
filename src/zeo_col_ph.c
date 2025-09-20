@@ -14,8 +14,8 @@ bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, zVec3D *p1, zVec3D *p2)
 
   if( p1 == NULL ) p1 = &_p1;
   if( p2 == NULL ) p2 = &_p2;
-  zVec3DDataAssignArray( &data1, &ph1->vert );
-  zVec3DDataAssignArray( &data2, &ph2->vert );
+  zVec3DDataAssignArray( &data1, zPH3DVertArray(ph1) );
+  zVec3DDataAssignArray( &data2, zPH3DVertArray(ph2) );
   return zGJK( &data1, &data2, p1, p2 );
 }
 
@@ -69,8 +69,8 @@ static zPH3D *_zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol, zAABox3D *ib
   zTri3D *tri1, *tri2;
 
   zPH3DInit( phcol );
-  zVec3DDataAssignArray( &data1, &ph1->vert );
-  zVec3DDataAssignArray( &data2, &ph2->vert );
+  zVec3DDataAssignArray( &data1, zPH3DVertArray(ph1) );
+  zVec3DDataAssignArray( &data2, zPH3DVertArray(ph2) );
   /* the base point with an ad-hoc modulation */
   if( !zGJKDepth( &data1, &data2, &p1, &p2 ) ) return NULL;
   zVec3DMid( &p1, &p2, &p_temp );

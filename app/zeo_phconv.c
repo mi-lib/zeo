@@ -161,9 +161,9 @@ bool phconv_write(zShape3D *shape)
   if( phconv_option[PHCONV_TRANSLATE].flag || phconv_option[PHCONV_ROTATE].flag )
     phconv_xform( shape );
   if( phconv_option[PHCONV_FLIP].flag )
-    zPH3DFlip( zShape3DPH(shape) );
+    zPH3DFlipDRC( zShape3DPH(shape) );
   if( phconv_option[PHCONV_SCALE].flag )
-    zPH3DScale( zShape3DPH(shape), atof( phconv_option[PHCONV_SCALE].arg ) );
+    zPH3DScaleDRC( zShape3DPH(shape), atof( phconv_option[PHCONV_SCALE].arg ) );
   suffix = zGetSuffix( phconv_option[PHCONV_OUTPUTFILE].arg );
   if( strcmp( suffix, "stl" ) == 0 || strcmp( suffix, "STL" ) == 0 )
     return phconv_write_stl( shape );

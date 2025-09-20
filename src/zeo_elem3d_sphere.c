@@ -11,10 +11,10 @@
  * ********************************************************** */
 
 /* create a 3D sphere. */
-zSphere3D *zSphere3DCreate(zSphere3D *sphere, const zVec3D *c, double r, int div)
+zSphere3D *zSphere3DCreate(zSphere3D *sphere, const zVec3D *center, double radius, int div)
 {
-  zSphere3DSetCenter( sphere, c );
-  zSphere3DSetRadius( sphere, r );
+  zSphere3DSetCenter( sphere, center );
+  zSphere3DSetRadius( sphere, radius );
   zSphere3DSetDiv( sphere, div == 0 ? ZEO_ELEM_DEFAULT_DIV : div );
   return sphere;
 }
@@ -44,52 +44,52 @@ zSphere3D *zSphere3DMirror(const zSphere3D *src, zSphere3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D sphere. */
-zSphere3D *zSphere3DXform(const zSphere3D *src, const zFrame3D *f, zSphere3D *dest)
+zSphere3D *zSphere3DXform(const zSphere3D *src, const zFrame3D *frame, zSphere3D *dest)
 {
-  zXform3D( f, zSphere3DCenter(src), zSphere3DCenter(dest) );
+  zXform3D( frame, zSphere3DCenter(src), zSphere3DCenter(dest) );
   zSphere3DSetRadius( dest, zSphere3DRadius(src) );
   zSphere3DSetDiv( dest, zSphere3DDiv(src) );
   return dest;
 }
 
 /* inversely transform coordinates of a 3D sphere. */
-zSphere3D *zSphere3DXformInv(const zSphere3D *src, const zFrame3D *f, zSphere3D *dest)
+zSphere3D *zSphere3DXformInv(const zSphere3D *src, const zFrame3D *frame, zSphere3D *dest)
 {
-  zXform3DInv( f, zSphere3DCenter(src), zSphere3DCenter(dest) );
+  zXform3DInv( frame, zSphere3DCenter(src), zSphere3DCenter(dest) );
   zSphere3DSetRadius( dest, zSphere3DRadius(src) );
   zSphere3DSetDiv( dest, zSphere3DDiv(src) );
   return dest;
 }
 
 /* closest point from a point to a sphere. */
-double zSphere3DClosest(const zSphere3D *sphere, const zVec3D *p, zVec3D *cp)
+double zSphere3DClosest(const zSphere3D *sphere, const zVec3D *point, zVec3D *closestpoint)
 {
   zVec3D d;
   double l;
 
-  zVec3DSub( p, zSphere3DCenter(sphere), &d );
+  zVec3DSub( point, zSphere3DCenter(sphere), &d );
   if( ( l = zVec3DNorm(&d) ) < zSphere3DRadius(sphere) )
-    zVec3DCopy( p, cp );
+    zVec3DCopy( point, closestpoint );
   else{
     zVec3DMulDRC( &d, zSphere3DRadius(sphere)/l );
-    zVec3DAdd( zSphere3DCenter(sphere), &d, cp );
+    zVec3DAdd( zSphere3DCenter(sphere), &d, closestpoint );
   }
   return l - zSphere3DRadius(sphere);
 }
 
 /* distance between a 3D sphere and a point. */
-double zSphere3DDistFromPoint(const zSphere3D *sphere, const zVec3D *p)
+double zSphere3DDistFromPoint(const zSphere3D *sphere, const zVec3D *point)
 {
   zVec3D d;
 
-  zVec3DSub( p, zSphere3DCenter(sphere), &d );
+  zVec3DSub( point, zSphere3DCenter(sphere), &d );
   return zVec3DNorm(&d) - zSphere3DRadius(sphere);
 }
 
 /* judge if a point is inside of a 3D sphere. */
-bool zSphere3DPointIsInside(const zSphere3D *sphere, const zVec3D *p, double margin)
+bool zSphere3DPointIsInside(const zSphere3D *sphere, const zVec3D *point, double margin)
 {
-  return zSphere3DDistFromPoint( sphere, p ) < margin ? true : false;
+  return zSphere3DDistFromPoint( sphere, point ) < margin ? true : false;
 }
 
 /* create a 3D sphere from two points at both ends of diameter. */

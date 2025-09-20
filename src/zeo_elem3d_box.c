@@ -79,13 +79,13 @@ zAABox3D *zAABox3DExpand(const zAABox3D *src, double magnitude, zAABox3D *dest)
 }
 
 /* the closest point from a 3D point to a 3D axis-aligned box. */
-double zAABox3DClosest(const zAABox3D *box, const zVec3D *point, zVec3D *cp)
+double zAABox3DClosest(const zAABox3D *box, const zVec3D *point, zVec3D *closestpoint)
 {
-  zVec3DCreate( cp,
+  zVec3DCreate( closestpoint,
     zLimit( point->c.x, zAABox3DXMin(box), zAABox3DXMax(box) ),
     zLimit( point->c.y, zAABox3DYMin(box), zAABox3DYMax(box) ),
     zLimit( point->c.z, zAABox3DZMin(box), zAABox3DZMax(box) ) );
-  return zVec3DDist( point, cp );
+  return zVec3DDist( point, closestpoint );
 }
 
 /* distance from a point to a 3D axis-aligned box. */
@@ -105,11 +105,11 @@ double zAABox3DSqrDistFromPoint(const zAABox3D *box, const zVec3D *point)
 }
 
 /* check if a point is inside of a 3D axis-aligned box. */
-bool zAABox3DPointIsInside(const zAABox3D *box, const zVec3D *p, double margin)
+bool zAABox3DPointIsInside(const zAABox3D *box, const zVec3D *point, double margin)
 {
-  return p->e[zX] > box->min.e[zX] - margin && p->e[zX] <= box->max.e[zX] + margin &&
-         p->e[zY] > box->min.e[zY] - margin && p->e[zY] <= box->max.e[zY] + margin &&
-         p->e[zZ] > box->min.e[zZ] - margin && p->e[zZ] <= box->max.e[zZ] + margin ? true : false;
+  return point->e[zX] > box->min.e[zX] - margin && point->e[zX] <= box->max.e[zX] + margin &&
+         point->e[zY] > box->min.e[zY] - margin && point->e[zY] <= box->max.e[zY] + margin &&
+         point->e[zZ] > box->min.e[zZ] - margin && point->e[zZ] <= box->max.e[zZ] + margin ? true : false;
 }
 
 /* compute volume of a 3D axis-aligned box. */
@@ -131,7 +131,7 @@ zVec3D *zAABox3DVert(const zAABox3D *box, int i, zVec3D *v)
 }
 
 /* enlarge a 3D axis-aligned box. */
-zAABox3D *zAABox3DEnlarge(zAABox3D *aabox, zVec3D *v)
+zAABox3D *zAABox3DEnlarge(zAABox3D *aabox, const zVec3D *v)
 {
   if( zAABox3DXMin(aabox) > v->c.x ) zAABox3DXMin(aabox) = v->c.x;
   if( zAABox3DXMax(aabox) < v->c.x ) zAABox3DXMax(aabox) = v->c.x;
@@ -187,17 +187,17 @@ void zAABox3DValueFPrint(FILE *fp, const zAABox3D *box)
  *//* ******************************************************* */
 
 /* create a 3D box. */
-zBox3D *zBox3DCreate(zBox3D *box, const zVec3D *c, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double d, double w, double h)
+zBox3D *zBox3DCreate(zBox3D *box, const zVec3D *center, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double depth, double width, double height)
 {
   zVec3D ux, uy, uz;
 
-  zBox3DSetCenter( box, c );
+  zBox3DSetCenter( box, center );
   zVec3DNormalize( ax, &ux ); zBox3DSetAxis( box, 0, &ux );
   zVec3DNormalize( ay, &uy ); zBox3DSetAxis( box, 1, &uy );
   zVec3DNormalize( az, &uz ); zBox3DSetAxis( box, 2, &uz );
-  zBox3DSetDepth( box, fabs(d) );
-  zBox3DSetWidth( box, fabs(w) );
-  zBox3DSetHeight( box, fabs(h) );
+  zBox3DSetDepth( box, fabs(depth) );
+  zBox3DSetWidth( box, fabs(width) );
+  zBox3DSetHeight( box, fabs(height) );
   return box;
 }
 
@@ -230,12 +230,12 @@ zBox3D *zBox3DMirror(const zBox3D *src, zBox3D *dest, zAxis axis)
 }
 
 /* transform coordinates of a 3D box. */
-zBox3D *zBox3DXform(const zBox3D *src, const zFrame3D *f, zBox3D *dest)
+zBox3D *zBox3DXform(const zBox3D *src, const zFrame3D *frame, zBox3D *dest)
 {
-  zXform3D( f, zBox3DCenter(src), zBox3DCenter(dest) );
-  zMulMat3DVec3D( zFrame3DAtt(f), zBox3DAxis(src,zX), zBox3DAxis(dest,zX) );
-  zMulMat3DVec3D( zFrame3DAtt(f), zBox3DAxis(src,zY), zBox3DAxis(dest,zY) );
-  zMulMat3DVec3D( zFrame3DAtt(f), zBox3DAxis(src,zZ), zBox3DAxis(dest,zZ) );
+  zXform3D( frame, zBox3DCenter(src), zBox3DCenter(dest) );
+  zMulMat3DVec3D( zFrame3DAtt(frame), zBox3DAxis(src,zX), zBox3DAxis(dest,zX) );
+  zMulMat3DVec3D( zFrame3DAtt(frame), zBox3DAxis(src,zY), zBox3DAxis(dest,zY) );
+  zMulMat3DVec3D( zFrame3DAtt(frame), zBox3DAxis(src,zZ), zBox3DAxis(dest,zZ) );
   zBox3DSetDepth( dest, zBox3DDepth(src) );
   zBox3DSetWidth( dest, zBox3DWidth(src) );
   zBox3DSetHeight( dest, zBox3DHeight(src) );
@@ -243,12 +243,12 @@ zBox3D *zBox3DXform(const zBox3D *src, const zFrame3D *f, zBox3D *dest)
 }
 
 /* inversely transform coordinates of a 3D box. */
-zBox3D *zBox3DXformInv(const zBox3D *src, const zFrame3D *f, zBox3D *dest)
+zBox3D *zBox3DXformInv(const zBox3D *src, const zFrame3D *frame, zBox3D *dest)
 {
-  zXform3DInv( f, zBox3DCenter(src), zBox3DCenter(dest) );
-  zMulMat3DTVec3D( zFrame3DAtt(f), zBox3DAxis(src,zX), zBox3DAxis(dest,zX) );
-  zMulMat3DTVec3D( zFrame3DAtt(f), zBox3DAxis(src,zY), zBox3DAxis(dest,zY) );
-  zMulMat3DTVec3D( zFrame3DAtt(f), zBox3DAxis(src,zZ), zBox3DAxis(dest,zZ) );
+  zXform3DInv( frame, zBox3DCenter(src), zBox3DCenter(dest) );
+  zMulMat3DTVec3D( zFrame3DAtt(frame), zBox3DAxis(src,zX), zBox3DAxis(dest,zX) );
+  zMulMat3DTVec3D( zFrame3DAtt(frame), zBox3DAxis(src,zY), zBox3DAxis(dest,zY) );
+  zMulMat3DTVec3D( zFrame3DAtt(frame), zBox3DAxis(src,zZ), zBox3DAxis(dest,zZ) );
   zBox3DSetDepth( dest, zBox3DDepth(src) );
   zBox3DSetWidth( dest, zBox3DWidth(src) );
   zBox3DSetHeight( dest, zBox3DHeight(src) );
@@ -260,15 +260,15 @@ double zBox3DClosest(const zBox3D *box, const zVec3D *p, zVec3D *cp)
 {
   zVec3D _p;
   double min, max;
-  zDir d;
+  zAxis axis;
 
-  zXform3DInv( &box->f, p, &_p );
-  for( d=zX; d<=zZ; d++ ){
-    min =-0.5 * zBox3DDia(box,(int)d);
-    max = 0.5 * zBox3DDia(box,(int)d);
-    cp->e[(int)d] = _zLimit( _p.e[(int)d], min, max );
+  zXform3DInv( &box->frame, p, &_p );
+  for( axis=zX; axis<=zZ; axis++ ){
+    min =-0.5 * zBox3DSpan(box,axis);
+    max = 0.5 * zBox3DSpan(box,axis);
+    cp->e[(int)axis] = _zLimit( _p.e[(int)axis], min, max );
   }
-  zXform3DDRC( &box->f, cp );
+  zXform3DDRC( &box->frame, cp );
   return zVec3DDist( p, cp );
 }
 
@@ -282,14 +282,14 @@ double zBox3DDistFromPoint(const zBox3D *box, const zVec3D *p)
 /* check if a point is inside of a box. */
 bool zBox3DPointIsInside(const zBox3D *box, const zVec3D *p, double margin)
 {
-  zDir dir;
+  zAxis axis;
   zVec3D pl;
   double l;
 
-  zXform3DInv( &box->f, p, &pl );
-  for( dir=zX; dir<=zZ; dir++ ){
-    l = 0.5 * zBox3DDia(box,(int)dir) + margin;
-    if( pl.e[(int)dir] >= l || pl.e[(int)dir] <= -l ) return false;
+  zXform3DInv( &box->frame, p, &pl );
+  for( axis=zX; axis<=zZ; axis++ ){
+    l = 0.5 * zBox3DSpan(box,axis) + margin;
+    if( pl.e[(int)axis] >= l || pl.e[(int)axis] <= -l ) return false;
   }
   return true;
 }
@@ -314,7 +314,7 @@ zMat3D *zBox3DBaryInertiaMass(const zBox3D *box, double mass, zMat3D *inertia)
     yy+zz, 0, 0,
     0, zz+xx, 0,
     0, 0, xx+yy );
-  return zRotMat3D( zFrame3DAtt(&box->f), &i, inertia );
+  return zRotMat3D( zFrame3DAtt(&box->frame), &i, inertia );
 }
 
 /* inertia tensor about barycenter of a 3D box. */
@@ -330,14 +330,14 @@ zVec3D *zBox3DVert(const zBox3D *box, int i, zVec3D *v)
     ( (i&0x1)^(i>>1&0x1) ) ? -0.5*zBox3DDepth(box) : 0.5*zBox3DDepth(box),
     (  i&0x2             ) ? -0.5*zBox3DWidth(box) : 0.5*zBox3DWidth(box),
     (  i&0x4             ) ? -0.5*zBox3DHeight(box): 0.5*zBox3DHeight(box) );
-  return zXform3DDRC( &box->f, v );
+  return zXform3DDRC( &box->frame, v );
 }
 
 /* convert a 3D axis-aligned box to a general box. */
 zBox3D *zAABox3DToBox3D(const zAABox3D *aab, zBox3D *box)
 {
   zVec3DMid( &aab->max, &aab->min, zBox3DCenter(box) );
-  zVec3DSub( &aab->max, &aab->min, &box->dia );
+  zVec3DSub( &aab->max, &aab->min, &box->edgespan );
   zBox3DSetAxis( box, 0, ZVEC3DX );
   zBox3DSetAxis( box, 1, ZVEC3DY );
   zBox3DSetAxis( box, 2, ZVEC3DZ );

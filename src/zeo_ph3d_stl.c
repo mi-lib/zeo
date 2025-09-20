@@ -70,8 +70,8 @@ static zTri3DArray *_zSTLFacetListToTri3DArray(_zSTLFacetList *list, zVec3DArray
 /* convert a vertex tree and a facet list to a polyhedron (and destroy the tree and the list). */
 static zPH3D *_zSTLToPH3D(zVec3DTree *vert_tree, _zSTLFacetList *facet_list, zPH3D *ph)
 {
-  if( !zVec3DTreeToArray( vert_tree, &ph->vert ) ||
-      !_zSTLFacetListToTri3DArray( facet_list, &ph->vert, &ph->face ) ){
+  if( !zVec3DTreeToArray( vert_tree, zPH3DVertArray(ph) ) ||
+      !_zSTLFacetListToTri3DArray( facet_list, zPH3DVertArray(ph), zPH3DFaceArray(ph) ) ){
     ph = NULL;
   }
   zVec3DTreeDestroy( vert_tree );

@@ -17,108 +17,174 @@ __BEGIN_DECLS
  * ********************************************************** */
 
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPH3D ){
-  zVec3DArray vert;
-  zTri3DArray face;
+  zVec3DArray vert_array;
+  zTri3DArray face_array;
+#ifdef __cplusplus
+ public:
+  zPH3D();
+  ~zPH3D();
+  int numVert();
+  int numFace();
+  zVec3D *vert(int i);
+  zTri3D *face(int i);
+  zVec3D *faceVert(int i, int j);
+  zVec3D *faceNorm(int i);
+  zPH3D *init();
+  bool allocVert(int num);
+  bool allocFace(int num);
+  zPH3D *alloc(int num_vert, int num_face);
+  void destroy();
+  zPH3D *clone(const zPH3D *src);
+  zPH3D *mirror(const zPH3D *src, zAxis axis);
+  zPH3D *scale(const zPH3D *src, double scale);
+  zPH3D *scale(double scale);
+  zPH3D *flip(const zPH3D *src);
+  zPH3D *flip();
+  zPH3D *xform(const zFrame3D *frame, zPH3D *dest);
+  zPH3D *xformInv(const zFrame3D *frame, zPH3D *dest);
+  zVec3D *contigVert(const zVec3D *p, double *d);
+  double closest(const zVec3D *point, zVec3D *closestpoint);
+  double distanceFromPoint(const zVec3D *point);
+  bool pointIsInside(const zVec3D *point, double margin);
+  double volume();
+  zVec3D barycenter();
+  zMat3D *inertia(double density, zMat3D *inertia);
+  zMat3D *inertiaMass(double mass, zMat3D *inertia);
+  zMat3D *baryInertia(double density, zMat3D *inertia);
+  zMat3D *baryInertiaMass(double mass, zMat3D *inertia);
+  zAABox3D *aabb(zAABox3D *box);
+  zPH3D *createPrism(const zVec3D bottom[], int n, const zVec3D *shift);
+  zPH3D *createPyramid(const zVec3D bottom[], int n, const zVec3D *vert);
+  zPH3D *createTorus(const zVec3D loop[], int n, int div, const zVec3D *center, const zVec3D *axis);
+  zPH3D *createLathe(const zVec3D rim[], int n, int div, const zVec3D *center, const zVec3D *axis);
+  zPH3D *fromZTK(ZTK *ztk);
+  void fprintZTK(FILE *fp);
+#endif
 };
 
-#define zPH3DVertNum(ph)      zArraySize(&(ph)->vert)
-#define zPH3DVertBuf(ph)      zArrayBuf(&(ph)->vert)
-#define zPH3DVert(ph,i)       zArrayElemNC(&(ph)->vert,i)
-#define zPH3DSetVertNum(ph,n) ( zArraySize(&(ph)->vert) = (n) )
-#define zPH3DSetVertBuf(ph,b) ( zArrayBuf(&(ph)->vert) = (b) )
+#define zPH3DVertArray(ph)    ( &(ph)->vert_array )
+#define zPH3DVertNum(ph)      zArraySize(zPH3DVertArray(ph))
+#define zPH3DVertBuf(ph)      zArrayBuf(zPH3DVertArray(ph))
+#define zPH3DVert(ph,i)       zArrayElemNC(zPH3DVertArray(ph),i)
+#define zPH3DSetVertNum(ph,n) ( zPH3DVertNum(ph) = (n) )
+#define zPH3DSetVertBuf(ph,b) ( zPH3DVertBuf(ph) = (b) )
 
-#define zPH3DFaceNum(ph)      zArraySize(&(ph)->face)
-#define zPH3DFaceBuf(ph)      zArrayBuf(&(ph)->face)
-#define zPH3DFace(ph,i)       zArrayElemNC(&(ph)->face,i)
-#define zPH3DSetFaceNum(ph,n) ( zArraySize(&(ph)->face) = (n) )
-#define zPH3DSetFaceBuf(ph,b) ( zArrayBuf(&(ph)->face) = (b) )
+#define zPH3DFaceArray(ph)    ( &(ph)->face_array )
+#define zPH3DFaceNum(ph)      zArraySize(zPH3DFaceArray(ph))
+#define zPH3DFaceBuf(ph)      zArrayBuf(zPH3DFaceArray(ph))
+#define zPH3DFace(ph,i)       zArrayElemNC(zPH3DFaceArray(ph),i)
+#define zPH3DSetFaceNum(ph,n) ( zPH3DFaceNum(ph) = (n) )
+#define zPH3DSetFaceBuf(ph,b) ( zPH3DFaceBuf(ph) = (b) )
 
 #define zPH3DFaceVert(ph,i,j) zTri3DVert(zPH3DFace(ph,i),j)
 #define zPH3DFaceNorm(ph,i)   zTri3DNorm(zPH3DFace(ph,i))
 
-/*! \brief initialize, copy and destroy a 3D polyhedron.
+/*! \brief initialize a 3D polyhedron.
  *
- * zPH3DInit() initializes a 3D polyhedron \a ph by nullifying
- * the array of vertices and faces in it.
- *
- * zPH3DAlloc() allocates memory for the array of vertices with
- * the size \a vn and triangular faces with the size \a fn in
- * \a ph.
- *
- * zPH3DScale() directly scales \a ph by multiplying all vertices
- * by \a scale.
- *
- * zPH3DFlip() directly flips all faces of \a ph.
- *
- * zPH3DClone() makes a clone of a 3D polyhedron \a src. The
- * result is put into \a dest.
- * zPH3DMirrorClone() makes a clone of \a src mirrored about
- * the axis \a axis. The result is put into \a dest.
- *
- * zPH3DDestroy() destroys a 3D polyhedron \a ph.
+ * zPH3DInit() initializes a 3D polyhedron \a ph by nullifying the array of vertices and faces of it.
  * \return
- * zPH3DInit(), zPH3DAlloc(), zPH3DScale(), and zPH3DFlip() return a pointer \a ph.
- *
- * zPH3DClone() and zPH3DMirror() return a pointer \a dest.
- * zPH3DDestroy() returns no value.
+ * zPH3DInit() returns a pointer \a ph.
  */
 __ZEO_EXPORT zPH3D *zPH3DInit(zPH3D *ph);
-__ZEO_EXPORT zPH3D *zPH3DAlloc(zPH3D *ph, int vn, int fn);
+
+/*! \brief allocate vertices and faces of a 3D polyhedron.
+ *
+ * zPH3DAllocVert() allocates memory for the array of vertices with the size \a num_vert of a 3D
+ * polyhedron \a ph.
+ *
+ * zPH3DAllocFace() allocates memory for the array of faces with the size \a num_face of a 3D
+ * polyhedron \a ph.
+ *
+ * zPH3DAlloc() allocates memory for the array of vertices with the size \a num_vert and triangular
+ * faces with the size \a num_face of \a ph.
+ * \return
+ * zPH3DAllocVert() and zPH3DAllocFace() return the true value if they succeed to allocate memory.
+ * Otherwise, they return the false value.
+ *
+ * zPH3DAlloc() return a pointer \a ph if it succeeds to allocate memory. Otherwise, it returns the
+ * null pointer.
+ */
+__ZEO_EXPORT bool zPH3DAllocVert(zPH3D *ph, int num_vert);
+__ZEO_EXPORT bool zPH3DAllocFace(zPH3D *ph, int num_face);
+__ZEO_EXPORT zPH3D *zPH3DAlloc(zPH3D *ph, int num_vert, int num_face);
+
+/*! \brief destroy a 3D polyhedron.
+ *
+ * zPH3DDestroy() destroys a 3D polyhedron \a ph. Namely, it frees internal memory for vertices and
+ * faces of \a ph.
+ * \return
+ * zPH3DDestroy() returns no value.
+ */
+__ZEO_EXPORT void zPH3DDestroy(zPH3D *ph);
+
+/*! \brief copy a 3D polyhedron.
+ *
+ * zPH3DClone() clones a 3D polyhedron \a src to \a dest.
+ *
+ * zPH3DMirror() creates a 3D polylhedron \a dest which is a clone of \a src with all vertices mirrored
+ * about the axis \a axis.
+ *
+ * zPH3DScale() creates a 3D polylhedron \a dest which is a clone of \a src with all vertices multiplied
+ * by \a scale.
+ *
+ * zPH3DFlip() creates a 3D polylhedron \a dest which is a clone of \a src with all faces flipped.
+ *
+ * zPH3DScaleDRC() directly scales \a ph by multiplying all vertices by \a scale.
+ *
+ * zPH3DFlipDRC() directly flips all faces of \a ph.
+ * \a dest.
+ * \return
+ * zPH3DClone(), zPH3DMirror(), zPH3DScale(), and zPH3DFlip() return a pointer \a dest.
+ * zPH3DScaleDRC() and zPH3DFlipDRC() return a pointer \a ph.
+ */
 __ZEO_EXPORT zPH3D *zPH3DClone(const zPH3D *src, zPH3D *dest);
 __ZEO_EXPORT zPH3D *zPH3DMirror(const zPH3D *src, zPH3D *dest, zAxis axis);
-__ZEO_EXPORT zPH3D *zPH3DScale(zPH3D *ph, double scale);
-__ZEO_EXPORT zPH3D *zPH3DFlip(zPH3D *ph);
-__ZEO_EXPORT void zPH3DDestroy(zPH3D *ph);
+__ZEO_EXPORT zPH3D *zPH3DScale(const zPH3D *src, zPH3D *dest, double scale);
+__ZEO_EXPORT zPH3D *zPH3DFlip(const zPH3D *src, zPH3D *dest);
+__ZEO_EXPORT zPH3D *zPH3DScaleDRC(zPH3D *ph, double scale);
+__ZEO_EXPORT zPH3D *zPH3DFlipDRC(zPH3D *ph);
 
 /*! \brief transform coordinates of a 3D polyhedron.
  *
- * zPH3DXform() transforms coordinates of vertices that form
- * a 3D polyhedron \a src by a frame \a f. The result is put
- * into \a dest.
+ * zPH3DXform() transforms coordinates of vertices of a 3D polyhedron \a src by a frame \a frame.
+ * The result is put into \a dest.
  *
- * zPH3DXformInv() transforms \a src by the inversely of a
- * frame \a f. The result is put into \a dest.
- *
- * In these functions, not only vertices are transformed, but
- * the information of correspondency between vertices and faces
- * is also copied.
+ * zPH3DXformInv() transforms coordinates of vertices of \a src by the inverse of a frame \a frame.
+ * The result is put into \a dest.
  * \notes
- * \a dest must have the same size of internal arrays with \a src.
+ * \a dest has to have the same size of internal arrays with \a src.
  * \return
  * zPH3DXform() and zPH3DXformInv() return a pointer \a dest.
  */
-__ZEO_EXPORT zPH3D *zPH3DXform(const zPH3D *src, const zFrame3D *f, zPH3D *dest);
-__ZEO_EXPORT zPH3D *zPH3DXformInv(const zPH3D *src, const zFrame3D *f, zPH3D *dest);
+__ZEO_EXPORT zPH3D *zPH3DXform(const zPH3D *src, const zFrame3D *frame, zPH3D *dest);
+__ZEO_EXPORT zPH3D *zPH3DXformInv(const zPH3D *src, const zFrame3D *frame, zPH3D *dest);
 
-/*! \brief return the contiguous vertex to another on a 3D polyhedron.
+/*! \brief return the contiguous vertex of a 3D polyhedron to a point.
  *
- * zPH3DClosest() finds the closest point from a point \a p on a 3D
- * polyhedron \a ph and sets it into \a cp.
- * \notes
- * \a ph is treated as a surface model, namely, only the relationship
- * between \a p and the faces are examined.
+ * zPH3DContigVert() finds the closest vertex of a 3D polyhedron to the given point \a point.
+ * The distance from \a point to the vertex is stored where \a d points if it is not the null pointer.
  * \return
- * zPH3DClosest() returns the distance between \a p and \a cp.
+ * zPH3DContigVert() returns a pointer to the contiguous vertex of \a ph.
  */
-__ZEO_EXPORT zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *p, double *d);
+__ZEO_EXPORT zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *point, double *d);
 
 /*! \brief check if a point is inside of a 3D polyhedron.
  *
- * zPH3DPointIsInside() checks if a point \a p is inside of a 3D polyhedron
- * \a ph. \a margin is a margin of the inside area outward from the boundary
- * of \a ph.
+ * zPH3DClosest() finds the closest point from a point \a point on a 3D polyhedron \a ph. The result is
+ * put into \a closestpoint.
+ *
+ * zPH3DPointIsInside() checks if a point \a point is inside of a 3D polyhedron \a ph. \a margin is a
+ * margin of the inside area outward from the boundary of \a ph.
  * \return
- * zPH3DPointIsInside() returns the true value if \a p is inside of \a ph.
- * Otherwise, the false value is returned.
+ * zPH3DPointIsInside() returns the true value if \a point is inside of \a ph. Otherwise, it returns
+ * the false value.
  * \notes
- * zPH3DPointIsInside() assumes that
- *  - \a ph is convex
- *  - \a ph is closed
- *  - normal vectors of all facets of \a ph direct outward.
+ * zPH3DPointIsInside() assumes that \a ph is convex, \a ph is closed, and the normal vectors of all facets
+ * of \a ph direct outward.
  */
-__ZEO_EXPORT double zPH3DClosest(const zPH3D *ph, const zVec3D *p, zVec3D *cp);
-__ZEO_EXPORT double zPH3DDistFromPoint(const zPH3D *ph, const zVec3D *p);
-__ZEO_EXPORT bool zPH3DPointIsInside(const zPH3D *ph, const zVec3D *p, double margin);
+__ZEO_EXPORT double zPH3DClosest(const zPH3D *ph, const zVec3D *point, zVec3D *closestpoint);
+__ZEO_EXPORT double zPH3DDistFromPoint(const zPH3D *ph, const zVec3D *point);
+__ZEO_EXPORT bool zPH3DPointIsInside(const zPH3D *ph, const zVec3D *point, double margin);
 
 /*! \brief volume of a 3D polyhedron.
  *
@@ -139,40 +205,44 @@ __ZEO_EXPORT zVec3D *zPH3DBarycenter(const zPH3D *ph, zVec3D *c);
 
 /*! \brief inertia tensor of a 3D polyhedron.
  *
- * zPH3DInertia() calculates the inertial tensor of a polyhedron \a ph about
- * the original point, given its density by \a density.
- * zPH3DInertiaMass() calculates the inertia tensor of \a ph about the
- * original point, given its mass by \a mass instead of density.
- * For the both functions, the result is put into \a inertia.
+ * zPH3DInertia() calculates the inertial tensor of a polyhedron \a ph about the original point, given
+ * its density by \a density.
+ * zPH3DInertiaMass() calculates the inertia tensor of \a ph about the original point, given its mass
+ * by \a mass instead of density.
  *
- * zPH3DBaryInertia() calculates the inertia tensor about barycenter of \a ph,
- * given its density by \a density, and puts it into \a i.
+ * zPH3DBaryInertia() calculates the inertia tensor about barycenter of \a ph, given its density by
+ * \a density.
+ * zPH3DBaryInertiaMass() calculates the inertia tensor about barycenter of \a ph, given its mass by
+ * \a mass instead of density.
+ *
+ * These four functions put the result into \a inertia.
  * \return
- * zPH3DInertia(), zPH3DInertiaMass(), zPH3DBaryInertia() and zPH3DBaryInertiaMass()
- * return a pointer \a inertia.
+ * zPH3DInertia(), zPH3DInertiaMass(), zPH3DBaryInertia() and zPH3DBaryInertiaMass() return a pointer
+ * \a inertia.
  */
 __ZEO_EXPORT zMat3D *zPH3DInertia(const zPH3D *ph, double density, zMat3D *inertia);
 __ZEO_EXPORT zMat3D *zPH3DInertiaMass(const zPH3D *ph, double mass, zMat3D *inertia);
 __ZEO_EXPORT zMat3D *zPH3DBaryInertia(const zPH3D *ph, double density, zMat3D *inertia);
 __ZEO_EXPORT zMat3D *zPH3DBaryInertiaMass(const zPH3D *ph, double mass, zMat3D *inertia);
 
+/*! \brief axis-aligned bounding box of a 3D polyhedron. */
+__ZEO_EXPORT zAABox3D *zPH3DAABB(const zPH3D *ph, zAABox3D *aabb);
+
 /* solid modeling */
 
 /*! \brief create prism and pyramid by extrusion.
  *
- * zPH3DCreatePrism() creates a prism by extruding the bottom loop.
- * The bottom face to be extruded forms a loop of \a n vertices
- * given by \a bottom.
+ * zPH3DCreatePrism() creates a prism by extruding the bottom loop. The bottom face to be extruded forms
+ * a loop of \a n vertices given by \a bottom.
  * \a shift is a shifting vector of the bottom for extrusion.
  * The result is put into \a prism.
  *
- * zPH3DCreatePyramid() creates a pyramid from the vertex \a vert and
- * The bottom face to be extruded forms a loop of \a n vertices
- * given by \a bottom.
+ * zPH3DCreatePyramid() creates a pyramid from the vertex \a vert and the bottom face to be extruded forms
+ * a loop of \a n vertices given by \a bottom.
  * The result is put into \a pyr.
  * \notes
- * A non-convex shape is acceptable for the bottom to these
- * functions, while crossing loops are not acceptable.
+ * A non-convex shape is acceptable for the bottom to these functions, while crossing loops are not
+ * acceptable.
  * \return
  * zPH3DCreatePrism() returns a pointer \a prism.
  * zPH3DCreatePyramid() returns a pointer \a pyr.
@@ -182,25 +252,20 @@ __ZEO_EXPORT zPH3D *zPH3DCreatePyramid(zPH3D *pyr, const zVec3D bottom[], int n,
 
 /*! \brief create solid revolution.
  *
- * zPH3DCreateTorus() creates a torus which has a cross-section
- * represented by a loop of \a n vertices given by \a loop.
- * The result is put into \a torus.
+ * zPH3DCreateTorus() creates a torus which has a cross-section represented by a loop of \a n vertices
+ * given by \a loop. The result is put into \a torus.
  *
- * zPH3DCreateLathe() creates a solid revolution which has a rim
- * represented by \a rim with \a n vertices. The result is
- * put into \a lathe. It is different from zPH3DCreateTorus() at
- * a point that \a rim does not have to be a closed loop.
+ * zPH3DCreateLathe() creates a solid revolution which has a rim represented by \a rim with \a n vertices.
+ * The result is put into \a lathe. It is different from zPH3DCreateTorus() at a point that \a rim does
+ * not have to be a closed loop.
  *
- * For the both functions, the cross-section is revolved
- * about the unit axis vector \a axis which passes the point
- * \a center.
- * \a div is the number of division of rotation.
+ * For the both functions, the cross-section is revolved about the unit axis vector \a axis which passes
+ * the point \a center. \a div is the number of division of rotation.
  * \return
  * zPH3DCreateTorus() returns a pointer \a torus.
  * zPH3DCreateLathe() returns a pointer \a lathe.
  * \notes
- * These functions do not check the validity of the shape
- * of cross-sections.
+ * These functions do not check the validity of the shape of cross-sections.
  */
 __ZEO_EXPORT zPH3D *zPH3DCreateTorus(zPH3D *torus, const zVec3D loop[], int n, int div, const zVec3D *center, const zVec3D *axis);
 __ZEO_EXPORT zPH3D *zPH3DCreateLathe(zPH3D *lathe, const zVec3D rim[], int n, int div, const zVec3D *center, const zVec3D *axis);
@@ -224,6 +289,47 @@ __ZEO_EXPORT zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk);
 __ZEO_EXPORT void zPH3DFPrintZTK(FILE *fp, const zPH3D *ph);
 
 __END_DECLS
+
+#ifdef __cplusplus
+inline zPH3D::zPH3D(){ zPH3DInit( this ); }
+inline zPH3D::~zPH3D(){ zPH3DDestroy( this ); }
+inline int zPH3D::numVert(){ return zPH3DVertNum( this ); }
+inline int zPH3D::numFace(){ return zPH3DFaceNum( this ); }
+inline zVec3D *zPH3D::vert(int i){ return zPH3DVert( this, i ); }
+inline zTri3D *zPH3D::face(int i){ return zPH3DFace( this, i ); }
+inline zVec3D *zPH3D::faceVert(int i, int j){ return zPH3DFaceVert( this, i, j ); }
+inline zVec3D *zPH3D::faceNorm(int i){ return zPH3DFaceNorm( this, i ); }
+inline zPH3D *zPH3D::init(){ return zPH3DInit( this ); }
+inline bool zPH3D::allocVert(int num){ return zPH3DAllocVert( this, num ); }
+inline bool zPH3D::allocFace(int num){ return zPH3DAllocFace( this, num ); }
+inline zPH3D *zPH3D::alloc(int num_vert, int num_face){ return zPH3DAlloc( this, num_vert, num_face ); }
+inline void zPH3D::destroy(){ zPH3DDestroy( this ); }
+inline zPH3D *zPH3D::clone(const zPH3D *src){ return zPH3DClone( src, this ); }
+inline zPH3D *zPH3D::mirror(const zPH3D *src, zAxis axis){ return zPH3DMirror( src, this, axis ); }
+inline zPH3D *zPH3D::scale(const zPH3D *src, double scale){ return zPH3DScale( src, this, scale ); }
+inline zPH3D *zPH3D::scale(double scale){ return zPH3DScaleDRC( this, scale ); }
+inline zPH3D *zPH3D::flip(const zPH3D *src){ return zPH3DFlip( src, this ); }
+inline zPH3D *zPH3D::flip(){ return zPH3DFlipDRC( this ); }
+inline zPH3D *zPH3D::xform(const zFrame3D *frame, zPH3D *dest){ return zPH3DXform( this, frame, dest ); }
+inline zPH3D *zPH3D::xformInv(const zFrame3D *frame, zPH3D *dest){ return zPH3DXformInv( this, frame, dest ); }
+inline zVec3D *zPH3D::contigVert(const zVec3D *point, double *d){ return zPH3DContigVert( this, point, d ); }
+inline double zPH3D::closest(const zVec3D *point, zVec3D *closestpoint){ return zPH3DClosest( this, point, closestpoint ); }
+inline double zPH3D::distanceFromPoint(const zVec3D *point){ return zPH3DDistFromPoint( this, point ); }
+inline bool zPH3D::pointIsInside(const zVec3D *point, double margin){ return zPH3DPointIsInside( this, point, margin ); }
+inline double zPH3D::volume(){ return zPH3DVolume( this ); }
+inline zVec3D zPH3D::barycenter(){ zVec3D center; zPH3DBarycenter( this, &center ); return center; }
+inline zMat3D *zPH3D::inertia(double density, zMat3D *inertia){ return zPH3DInertia( this, density, inertia ); }
+inline zMat3D *zPH3D::inertiaMass(double mass, zMat3D *inertia){ return zPH3DInertiaMass( this, mass, inertia); }
+inline zMat3D *zPH3D::baryInertia(double density, zMat3D *inertia){ return zPH3DBaryInertia( this, density, inertia ); }
+inline zMat3D *zPH3D::baryInertiaMass(double mass, zMat3D *inertia){ return zPH3DBaryInertiaMass( this, mass, inertia ); }
+inline zAABox3D *zPH3D::aabb(zAABox3D *box){ return zPH3DAABB( this, box ); }
+inline zPH3D *zPH3D::createPrism(const zVec3D bottom[], int n, const zVec3D *shift){ return zPH3DCreatePrism( this, bottom, n, shift ); }
+inline zPH3D *zPH3D::createPyramid(const zVec3D bottom[], int n, const zVec3D *vert){ return zPH3DCreatePyramid( this, bottom, n, vert ); }
+inline zPH3D *zPH3D::createTorus(const zVec3D loop[], int n, int div, const zVec3D *center, const zVec3D *axis){ return zPH3DCreateTorus( this, loop, n, div, center, axis ); }
+inline zPH3D *zPH3D::createLathe(const zVec3D rim[], int n, int div, const zVec3D *center, const zVec3D *axis){ return zPH3DCreateLathe( this, rim, n, div, center, axis ); }
+inline zPH3D *zPH3D::fromZTK(ZTK *ztk){ return zPH3DFromZTK( this, ztk ); }
+inline void zPH3D::fprintZTK(FILE *fp){ zPH3DFPrintZTK( fp, this ); }
+#endif
 
 #include <zeo/zeo_ph3d_stl.h>
 #include <zeo/zeo_ph3d_ply.h>

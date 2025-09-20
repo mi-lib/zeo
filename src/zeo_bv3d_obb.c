@@ -70,7 +70,7 @@ static bool _zOBB3DMaxDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
     /* shift to the plane passing the original point */
     zVec3DSubDRC( zPH3DVert(ch,i), zBox3DCenter(obb) );
   }
-  zVec3DDataAssignArray( &data, &ch->vert );
+  zVec3DDataAssignArray( &data, zPH3DVertArray(ch) );
   if( !zVec3DDataConvexHull2D( &data, &rim ) ) return false;
   /* minimum rectangle on minimum-eigenvalue plane */
   vp1 = zListTail(&rim);

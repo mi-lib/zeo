@@ -10,22 +10,34 @@
 /* initialize a 3D polyhedron. */
 zPH3D *zPH3DInit(zPH3D *ph)
 {
-  zArrayInit( &ph->vert );
-  zArrayInit( &ph->face );
+  zArrayInit( zPH3DVertArray(ph) );
+  zArrayInit( zPH3DFaceArray(ph) );
   return ph;
 }
 
+/* allocate vertices of a 3D polyhedron. */
+bool zPH3DAllocVert(zPH3D *ph, int num_vert)
+{
+  zArrayAlloc( zPH3DVertArray(ph), zVec3D, num_vert );
+  return zPH3DVertNum(ph) == num_vert;
+}
+
+/* allocate faces of a 3D polyhedron. */
+bool zPH3DAllocFace(zPH3D *ph, int num_face)
+{
+  zArrayAlloc( zPH3DFaceArray(ph), zTri3D, num_face );
+  return zPH3DFaceNum(ph) == num_face;
+}
+
 /* allocate a 3D polyhedron. */
-zPH3D *zPH3DAlloc(zPH3D *ph, int vn, int fn)
+zPH3D *zPH3DAlloc(zPH3D *ph, int num_vert, int num_face)
 {
   zPH3DInit( ph );
-  if( vn > 0 ){ /* vertices */
-    zArrayAlloc( &ph->vert, zVec3D, vn );
-    if( !zPH3DVertBuf(ph) ) goto ZPH3DALLOC_ERROR;
+  if( num_vert > 0 ){ /* vertices */
+    if( !zPH3DAllocVert( ph, num_vert ) ) goto ZPH3DALLOC_ERROR;
   }
-  if( fn > 0 ){ /* faces */
-    zArrayAlloc( &ph->face, zTri3D, fn );
-    if( !zPH3DFaceBuf(ph) ) goto ZPH3DALLOC_ERROR;
+  if( num_face > 0 ){ /* faces */
+    if( !zPH3DAllocFace( ph, num_face ) ) goto ZPH3DALLOC_ERROR;
   }
   return ph;
 
@@ -33,6 +45,15 @@ zPH3D *zPH3DAlloc(zPH3D *ph, int vn, int fn)
   ZALLOCERROR();
   zPH3DDestroy( ph );
   return NULL;
+}
+
+/* destroy a 3D polyhedron. */
+void zPH3DDestroy(zPH3D *ph)
+{
+  if( !ph ) return;
+  zFree( zPH3DVertBuf(ph) );
+  zFree( zPH3DFaceBuf(ph) );
+  zPH3DInit( ph );
 }
 
 /* clone a 3D polyhedron. */
@@ -68,8 +89,8 @@ zPH3D *zPH3DMirror(const zPH3D *src, zPH3D *dest, zAxis axis)
   return dest;
 }
 
-/* scale a 3D polyhedron. */
-zPH3D *zPH3DScale(zPH3D *ph, double scale)
+/* directly scale a 3D polyhedron. */
+zPH3D *zPH3DScaleDRC(zPH3D *ph, double scale)
 {
   int i;
 
@@ -78,8 +99,15 @@ zPH3D *zPH3DScale(zPH3D *ph, double scale)
   return ph;
 }
 
-/* flip all faces of a 3D polyhedron. */
-zPH3D *zPH3DFlip(zPH3D *ph)
+/* scale a 3D polyhedron. */
+zPH3D *zPH3DScale(const zPH3D *src, zPH3D *dest, double scale)
+{
+  if( !zPH3DClone( src, dest ) ) return NULL;
+  return zPH3DScaleDRC( dest, scale );
+}
+
+/* directly flip all faces of a 3D polyhedron. */
+zPH3D *zPH3DFlipDRC(zPH3D *ph)
 {
   int i;
 
@@ -88,43 +116,39 @@ zPH3D *zPH3DFlip(zPH3D *ph)
   return ph;
 }
 
-/* destroy a 3D polyhedron. */
-void zPH3DDestroy(zPH3D *ph)
+/* flip all faces of a 3D polyhedron. */
+zPH3D *zPH3DFlip(const zPH3D *src, zPH3D *dest)
 {
-  if( !ph ) return;
-  zFree( zPH3DVertBuf( ph ) );
-  zFree( zPH3DFaceBuf( ph ) );
-  zPH3DInit( ph );
+  if( !zPH3DClone( src, dest ) ) return NULL;
+  return zPH3DFlipDRC( dest );
 }
 
-/* transform coordinates of a 3D polyhedron.
- * NOTE: it assumes that 'src' is already cloned to 'dest'. */
-zPH3D *zPH3DXform(const zPH3D *src, const zFrame3D *f, zPH3D *dest)
+/* transform coordinates of vertices of a 3D polyhedron. */
+zPH3D *zPH3DXform(const zPH3D *src, const zFrame3D *frame, zPH3D *dest)
 {
   int i;
 
   for( i=0; i<zPH3DVertNum(dest); i++ )
-    zXform3D( f, zPH3DVert(src,i), zPH3DVert(dest,i) );
+    zXform3D( frame, zPH3DVert(src,i), zPH3DVert(dest,i) );
   for( i=0; i<zPH3DFaceNum(dest); i++ )
     zTri3DCalcNorm( zPH3DFace(dest,i) );
   return dest;
 }
 
-/* inversely transform coordinates of a 3D polyhedron.
- * NOTE: it assumes that src is already cloned to dest. */
-zPH3D *zPH3DXformInv(const zPH3D *src, const zFrame3D *f, zPH3D *dest)
+/* inversely transforms coordinates of vertices of a 3D polyhedron. */
+zPH3D *zPH3DXformInv(const zPH3D *src, const zFrame3D *frame, zPH3D *dest)
 {
   int i;
 
   for( i=0; i<zPH3DVertNum(dest); i++ )
-    zXform3DInv( f, zPH3DVert(src,i), zPH3DVert(dest,i) );
+    zXform3DInv( frame, zPH3DVert(src,i), zPH3DVert(dest,i) );
   for( i=0; i<zPH3DFaceNum(dest); i++ )
     zTri3DCalcNorm( zPH3DFace(dest,i) );
   return dest;
 }
 
-/* contiguous vertix of a 3D polyhedron to a point. */
-zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *p, double *d)
+/* find the contiguous vertix of a 3D polyhedron to a point. */
+zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *point, double *d)
 {
   int i;
   zVec3D *v, *nv;
@@ -133,9 +157,9 @@ zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *p, double *d)
   if( zPH3DVertNum(ph) == 0 ) return NULL;
   if( !d ) d = &_d;
   v = zPH3DVert(ph,0);
-  dmin = zVec3DDist( p, v );
+  dmin = zVec3DDist( point, v );
   for( i=1; i<zPH3DVertNum(ph); i++ ){
-    if( ( *d = zVec3DDist( ( nv = zPH3DVert(ph,i) ), p ) ) < dmin ){
+    if( ( *d = zVec3DDist( ( nv = zPH3DVert(ph,i) ), point ) ) < dmin ){
       v = nv;
       dmin = *d;
     }
@@ -150,7 +174,7 @@ zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *p, double *d)
  *  - the polyhedron is closed
  *  - normal vectors of all facets of the polyhedron direct outward.
  */
-double zPH3DClosest(const zPH3D *ph, const zVec3D *p, zVec3D *cp)
+double zPH3DClosest(const zPH3D *ph, const zVec3D *point, zVec3D *closestpoint)
 {
   int i;
   zVec3D ncp;
@@ -158,32 +182,32 @@ double zPH3DClosest(const zPH3D *ph, const zVec3D *p, zVec3D *cp)
 
   if( zPH3DFaceNum(ph) == 0 ){
     ZRUNWARN( ZEO_ERR_NOFACE );
-    zVec3DCopy( p, cp );
+    zVec3DCopy( point, closestpoint );
     return 0;
   }
-  dmin = zTri3DClosest( zPH3DFace(ph,0), p, cp );
+  dmin = zTri3DClosest( zPH3DFace(ph,0), point, closestpoint );
   for( i=1; i<zPH3DFaceNum(ph); i++ )
-    if( ( d = zTri3DClosest( zPH3DFace(ph,i), p, &ncp ) ) < dmin ){
-      zVec3DCopy( &ncp, cp );
+    if( ( d = zTri3DClosest( zPH3DFace(ph,i), point, &ncp ) ) < dmin ){
+      zVec3DCopy( &ncp, closestpoint );
       dmin = d;
     }
   return dmin;
 }
 
 /* distance from a point to a 3D polyhedron. */
-double zPH3DDistFromPoint(const zPH3D *ph, const zVec3D *p)
+double zPH3DDistFromPoint(const zPH3D *ph, const zVec3D *point)
 {
   zVec3D cp;
-  return zPH3DClosest( ph, p, &cp );
+  return zPH3DClosest( ph, point, &cp );
 }
 
 /* check if a point is inside of a polyhedron. */
-bool zPH3DPointIsInside(const zPH3D *ph, const zVec3D *p, double margin)
+bool zPH3DPointIsInside(const zPH3D *ph, const zVec3D *point, double margin)
 {
   int i;
 
   for( i=0; i<zPH3DFaceNum(ph); i++ )
-    if( zTri3DDistFromPointToPlane( zPH3DFace(ph,i), p ) >= margin ) return false;
+    if( zTri3DDistFromPointToPlane( zPH3DFace(ph,i), point ) >= margin ) return false;
   return true;
 }
 
@@ -257,6 +281,17 @@ zMat3D *zPH3DBaryInertiaMass(const zPH3D *ph, double mass, zMat3D *i)
   zPH3DBarycenter( ph, &c );
   _zMat3DCatVec3DDoubleOuterProdDRC( i, mass, &c );
   return i;
+}
+
+/* axis-aligned bounding box of a 3D polyhedron. */
+zAABox3D *zPH3DAABB(const zPH3D *ph, zAABox3D *aabb)
+{
+  int i;
+
+  zAABox3DInit( aabb );
+  for( i=0; i<zPH3DVertNum(ph); i++ )
+    zAABox3DEnlarge( aabb, zPH3DVert(ph,i) );
+  return aabb;
 }
 
 /* solid modeling */
@@ -655,10 +690,7 @@ zPH3D *zPH3DFromZTK(zPH3D *ph, ZTK *ztk)
       if( zArraySize(&varray) != num_vert ) return NULL;
     }
   } else{
-    zArrayAlloc( &ph->vert, zVec3D, num_vert );
-    zArrayAlloc( &ph->face, zTri3D, num_face );
-    if( zPH3DVertNum(ph) != num_vert ||
-        zPH3DFaceNum(ph) != num_face ) return NULL;
+    if( !zPH3DAllocVert( ph, num_vert ) || !zPH3DAllocFace( ph, num_face ) ) return NULL;
   }
   /* vertices & faces */
   ph = (zPH3D *)_ZTKEvalKey( ph, &varray, ztk, __ztk_prp_ph );

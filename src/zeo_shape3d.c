@@ -317,7 +317,7 @@ static void *_zShape3DImportFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   if( ( obj = _zShape3DReadFileEXT( (zShape3D*)obj, ZTKVal(ztk) ) ) ){
     ((_zShape3DRefPrp*)arg)->imported = true;
     if( ZTKValNext(ztk) )
-      zPH3DScale( zShape3DPH((zShape3D*)obj), atof(ZTKVal(ztk)) );
+      zPH3DScaleDRC( zShape3DPH((zShape3D*)obj), atof(ZTKVal(ztk)) );
   }
   return obj;
 }

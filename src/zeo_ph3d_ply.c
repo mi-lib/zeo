@@ -416,8 +416,7 @@ static bool _zPH3DFReadPLYVert(FILE *fp, zPH3D *ph, zPLY *ply, zPLYElement *elem
   double val;
 
   if( elem->num > 0 ){ /* vertices */
-    zArrayAlloc( &ph->vert, zVec3D, elem->num );
-    if( !zPH3DVertBuf(ph) ) return false;
+    if( !zPH3DAllocVert( ph, elem->num ) ) return false;
   }
   for( i=0; i<elem->num; i++ ){
     for( j=0; j<elem->prpnum; j++ ){
@@ -456,8 +455,7 @@ static bool _zPH3DFReadPLYFace(FILE *fp, zPH3D *ph, zPLY *ply, zPLYElement *elem
     }
   }
   if( nf > 0 ){
-    zArrayAlloc( &ph->face, zTri3D, nf );
-    if( !zPH3DFaceBuf(ph) ) return false;
+    if( !zPH3DAllocFace( ph, nf ) ) return false;
   }
   fseek( fp, pos, SEEK_SET );
   nf = 0;

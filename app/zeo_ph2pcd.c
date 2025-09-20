@@ -68,7 +68,7 @@ bool ph2pcd_write(zShape3D *shape)
     zReplaceSuffix( ph2pcd_option[PH2PCD_INPUTFILE].arg, ZEO_PCD_SUFFIX, filename, BUFSIZ );
     ph2pcd_option[PH2PCD_OUTPUTFILE].arg = filename;
   }
-  zVec3DDataAssignArray( &pointdata, &zShape3DPH(shape)->vert );
+  zVec3DDataAssignArray( &pointdata, &zShape3DPH(shape)->vert_array );
   return zVec3DDataWritePCDFile( &pointdata, ph2pcd_option[PH2PCD_OUTPUTFILE].arg, "binary" );
 }
 
