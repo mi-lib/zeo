@@ -153,6 +153,8 @@
 
 #define ZEO_WARN_LINE3D_NOT_UNIQUE_COMMONPERP      "cannot find a unique common parpendicular of parallel 3D lines, choose a nominal one"
 
+#define ZEO_WARN_AABOX3D_NEGATIVE_MAGNITUDE        "negative magnitude assigned for expansion, reversed"
+
 #define ZEO_WARN_PCD_LACKOFDATA                    "short of data"
 
 #define ZEO_WARN_PH_VERT_UNMATCH                   "%d: unmatched identifier of a vertex"

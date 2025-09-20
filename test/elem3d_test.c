@@ -468,6 +468,55 @@ void assert_tri3D_center(void)
   zAssert( zTri3DOrthocenter, ret );
 }
 
+void assert_aabox_create(void)
+{
+  zAABox3D box;
+  int i;
+  const int n = 10;
+  bool result = true;
+
+  for( i=0; i<n; i++ ){
+    zAABox3DCreate( &box, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    if( zAABox3DXMin(&box) > zAABox3DXMax(&box) ||
+        zAABox3DYMin(&box) > zAABox3DYMax(&box) ||
+        zAABox3DZMin(&box) > zAABox3DZMax(&box) ) result = false;
+  }
+  zAssert( zAABox3DCreate, result );
+}
+
+
+void assert_aabox_equal(void)
+{
+  zAABox3D box1, box2;
+
+  zAABox3DCreate( &box1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  zAABox3DCopy( &box1, &box2 );
+  zAssert( zAABox3DCopy, zAABox3DEqual( &box1, &box2 ) );
+}
+
+void assert_aabox_expand(void)
+{
+  zAABox3D box1, box2, box3, box_test;
+  zVec3D center;
+  double depth, width, height;
+
+  zVec3DCreate( &center, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  depth  = zRandF( 0.1, 10.0 );
+  width  = zRandF( 0.1, 10.0 );
+  height = zRandF( 0.1, 10.0 );
+  zAABox3DCreateFromSize( &box1, &center, depth, width, height );
+  zAABox3DExpand( &box1, 0.5, &box2 );
+  zAABox3DExpand( &box1, 2.0, &box3 );
+  zAssert( zAABox3DExpand,
+    zAABox3DEqual( zAABox3DExpand( &box2, 2.0, &box_test ), &box1 ) &&
+    zAABox3DEqual( zAABox3DExpand( &box3, 0.5, &box_test ), &box1 ) &&
+    zAABox3DEqual( zAABox3DExpand( &box2, 4.0, &box_test ), &box3 ) );
+  zAABox3DCopy( &box1, &box_test );
+  zAssert( zAABox3DExpandDRC,
+    zAABox3DEqual( zAABox3DExpandDRC( &box1, 0.5 ), &box2 ) &&
+    zAABox3DEqual( zAABox3DExpandDRC( &box_test, 2.0 ), &box3 ) );
+}
+
 double aabox_dist_from_point_base(const zAABox3D *box, const zVec3D *point)
 {
   zVec3D cp;
@@ -508,6 +557,9 @@ int main(void)
   assert_tri3D_point_is_inside();
   assert_tri3D_closest();
   assert_tri3D_center();
+  assert_aabox_create();
+  assert_aabox_equal();
+  assert_aabox_expand();
   assert_aabox_dist();
   return 0;
 }

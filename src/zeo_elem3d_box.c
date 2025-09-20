@@ -10,7 +10,7 @@
 /* 3D axis-aligned box class.
  *//* ******************************************************* */
 
-/* initialize a 3D axis-aligned box */
+/* initialize a 3D axis-aligned box. */
 zAABox3D *zAABox3DInit(zAABox3D *box)
 {
   zVec3DZero( &box->min );
@@ -18,12 +18,30 @@ zAABox3D *zAABox3DInit(zAABox3D *box)
   return box;
 }
 
-/* create a 3D axis-aligned box */
+/* create a 3D axis-aligned box. */
 zAABox3D *zAABox3DCreate(zAABox3D *box, double x1, double y1, double z1, double x2, double y2, double z2)
 {
   zVec3DCreate( &box->min, _zMin(x1,x2), _zMin(y1,y2), _zMin(z1,z2) );
   zVec3DCreate( &box->max, _zMax(x1,x2), _zMax(y1,y2), _zMax(z1,z2) );
   return box;
+}
+
+/* create a 3D axis-aligned box from its center, depth, width, and height. */
+zAABox3D *zAABox3DCreateFromSize(zAABox3D *box, zVec3D *center, double depth, double width, double height)
+{
+  zAABox3DXMin(box) = center->c.x - 0.5 * fabs(depth);
+  zAABox3DYMin(box) = center->c.y - 0.5 * fabs(width);
+  zAABox3DZMin(box) = center->c.z - 0.5 * fabs(height);
+  zAABox3DXMax(box) = center->c.x + 0.5 * fabs(depth);
+  zAABox3DYMax(box) = center->c.y + 0.5 * fabs(width);
+  zAABox3DZMax(box) = center->c.z + 0.5 * fabs(height);
+  return box;
+}
+
+/* check if two 3D axis-aligned boxes are equal. */
+bool zAABox3DEqual(const zAABox3D *box1, const zAABox3D *box2)
+{
+  return zVec3DEqual( &box1->min, &box2->min ) && zVec3DEqual( &box1->max, &box2->max );
 }
 
 /* copy a 3D axis-aligned box to another. */
@@ -44,6 +62,20 @@ zAABox3D *zAABox3DMerge(zAABox3D *dst, const zAABox3D *src1, const zAABox3D *src
     _zMax( src1->max.e[zX], src2->max.e[zX] ),
     _zMax( src1->max.e[zY], src2->max.e[zY] ),
     _zMax( src1->max.e[zZ], src2->max.e[zZ] ) );
+}
+
+/* expand a 3D axis-aligned box. */
+zAABox3D *zAABox3DExpand(const zAABox3D *src, double magnitude, zAABox3D *dest)
+{
+  zVec3D center;
+
+  if( magnitude < 0 ){
+    ZRUNWARN( ZEO_WARN_AABOX3D_NEGATIVE_MAGNITUDE );
+    magnitude *= -1;
+  }
+  zAABox3DCenter( src, &center );
+  return zAABox3DCreateFromSize( dest, &center,
+    zAABox3DDepth(src) * magnitude, zAABox3DWidth(src) * magnitude, zAABox3DHeight(src) * magnitude );
 }
 
 /* the closest point from a 3D point to a 3D axis-aligned box. */

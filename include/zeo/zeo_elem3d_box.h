@@ -38,11 +38,23 @@ __ZEO_EXPORT zAABox3D *zAABox3DInit(zAABox3D *box);
 /*! \brief createa a 3D axis-aligned box */
 __ZEO_EXPORT zAABox3D *zAABox3DCreate(zAABox3D *box, double xmin, double ymin, double zmin, double xmax, double ymax, double zmax);
 
+/*! \brief create a 3D axis-aligned box from its center, depth, width, and height. */
+__ZEO_EXPORT zAABox3D *zAABox3DCreateFromSize(zAABox3D *box, zVec3D *center, double depth, double width, double height);
+
+/*! \brief check if two 3D axis-aligned boxes are equal. */
+__ZEO_EXPORT bool zAABox3DEqual(const zAABox3D *box1, const zAABox3D *box2);
+
 /*! \brief copya a 3D axis-aligned box. */
 __ZEO_EXPORT zAABox3D *zAABox3DCopy(const zAABox3D *src, zAABox3D *dest);
 
 /*! \brief merge two 3D axis-aligned boxes. */
 __ZEO_EXPORT zAABox3D *zAABox3DMerge(zAABox3D *box, const zAABox3D *b1, const zAABox3D *b2);
+
+/*! \brief expand a 3D axis-aligned box. */
+__ZEO_EXPORT zAABox3D *zAABox3DExpand(const zAABox3D *src, double magnitude, zAABox3D *dest);
+
+/*! \brief directly expand a 3D axis-aligned box. */
+#define zAABox3DExpandDRC(box,magnitude) zAABox3DExpand( box, magnitude, box )
 
 /*! \brief the closest point from a 3D point to a 3D axis-aligned box. */
 __ZEO_EXPORT double zAABox3DClosest(const zAABox3D *box, const zVec3D *point, zVec3D *cp);

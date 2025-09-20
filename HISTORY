@@ -1,3 +1,4 @@
+2025.09.20. Added zAABox3DCreateFromSize, zAABox3DEqual, zAABox3DExpand, and zAABox3DExpandDRC. [zeo_elem3d_box]
 2025.09.20. Moved zCyl3DToECyl3D from zeo_nurbs3d_shape to zeo_shape3d_ecyl. [zeo_nurbs3d_shape, zeo_shape3d_ecyl]
 2025.09.20. Moved zSphere3DToEllips3D from zeo_nurbs3d_shape to zeo_shape3d_ellips. [zeo_nurbs3d_shape, zeo_shape3d_ellips]
 2025.09.20. Replaced inclusion of zeo_shape3d.h with zeo_elem3d.h and zeo_ph3d.h in zeo_bv3d. [zeo_bv3d]
