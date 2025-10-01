@@ -10,11 +10,11 @@ OBJ=zeo_misc.o\
 	zeo_elem3d.o zeo_elem3d_box.o zeo_elem3d_sphere.o zeo_elem3d_list.o\
 	zeo_vec3d_data.o zeo_vec3d_tree.o zeo_vec3d_octree.o zeo_vec3d_pca.o zeo_vec3d_pcd.o\
 	zeo_vec3d_profile.o\
-	zeo_voronoi2d.o\
 	zeo_render_texture.o\
 	zeo_ph3d.o zeo_ph3d_stl.o zeo_ph3d_ply.o zeo_ph3d_obj.o\
 	zeo_nurbs3d.o\
 	zeo_bv2d_aabb.o zeo_bv2d_boundingball.o zeo_bv2d_convexhull.o\
+	zeo_voronoi2d.o\
 	zeo_bv3d_aabb.o zeo_bv3d_obb.o zeo_bv3d_boundingball.o zeo_bv3d_convexhull.o\
 	zeo_shape3d.o zeo_shape3d_list.o\
 	zeo_shape3d_box.o zeo_shape3d_sphere.o zeo_shape3d_ellips.o zeo_shape3d_cyl.o zeo_shape3d_capsule.o zeo_shape3d_ecyl.o zeo_shape3d_cone.o zeo_shape3d_ph.o zeo_shape3d_nurbs.o\

@@ -10,9 +10,8 @@
 /* NOTE: never include this header file in user programs. */
 
 /* ********************************************************** */
-/* XD line class
+/* commonized definition of 2D/3D line class.
  * ********************************************************** */
-
 #define ZEO_ELEM_LINEXD_DEF_STRUCT(XD) \
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
   zVec##XD *origin; \
@@ -24,6 +23,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
 #define zLineXDSetOrg(XD,line,p)  ( zLine##XD##Org(line) = (p) )
 #define zLineXDSetDir(XD,line,d)  zVec##XD##Copy( d, zLine##XD##Dir(line) )
 
+/* initilize a 2D/3D line. */
 #define ZEO_ELEM_LINEXD_INIT_PROTOTYPE(XD) \
   zLine##XD *zLine##XD##Init(zLine##XD *line)
 #define ZEO_ELEM_LINEXD_INIT(XD) \
@@ -33,6 +33,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
     return line; \
   }
 
+/* create a 2D/3D line. */
 #define ZEO_ELEM_LINEXD_CREATE_PROTOTYPE(XD) \
   zLine##XD *zLine##XD##Create(zLine##XD *line, const zVec##XD *p, const zVec##XD *direction)
 #define ZEO_ELEM_LINEXD_CREATE(XD) \
@@ -50,6 +51,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
     return line; \
   }
 
+/* create a 2D/3D line from that passes given two points. */
 #define ZEO_ELEM_LINEXD_CREATE_TWOPOINT_PROTOTYPE(XD) \
   zLine##XD *zLine##XD##CreateTwoPoints(zLine##XD *line, const zVec##XD *p1, const zVec##XD *p2)
 #define ZEO_ELEM_LINEXD_CREATE_TWOPOINT(XD) \
@@ -60,6 +62,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
     return line; \
   }
 
+/* find a point on a 2D/3D line. */
 #define ZEO_ELEM_LINEXD_POINT_PROTOTYPE(XD) \
   zVec##XD *zLine##XD##Point(const zLine##XD *line, double magnitude, zVec##XD *p)
 #define ZEO_ELEM_LINEXD_POINT(XD) \
@@ -68,6 +71,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
     return p; \
   }
 
+/* project a point onto a 2D/3D line. */
 #define ZEO_ELEM_LINEXD_PROJ_POINT_PROTOTYPE(XD) \
   zVec##XD *zLine##XD##ProjPoint(const zLine##XD *line, const zVec##XD *src, zVec##XD *projection)
 #define ZEO_ELEM_LINEXD_PROJ_POINT(XD) \
@@ -76,6 +80,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
     return zLine##XD##Point( line, zVec##XD##InnerProd( zLine##XD##Dir(line), zVec##XD##Sub( src, zLine##XD##Org(line), &v ) ), projection ); \
   }
 
+/* calculate distance from a point to a 2D/3D line. */
 #define ZEO_ELEM_LINEXD_DIST_FROM_POINT_PROTOTYPE(XD) \
   double zLine##XD##DistFromPoint(const zLine##XD *line, const zVec##XD *p)
 #define ZEO_ELEM_LINEXD_DIST_FROM_POINT(XD) \
@@ -85,6 +90,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
     return zVec##XD##OuterProdNorm( &v, zLine##XD##Dir(line) ); \
   }
 
+/* check if a point is on a 2D/3D line. */
 #define ZEO_ELEM_LINEXD_POINT_IS_ON_PROTOTYPE(XD) \
   bool zLine##XD##PointIsOn(const zLine##XD *line, const zVec##XD *p, double margin)
 #define ZEO_ELEM_LINEXD_POINT_IS_ON(XD) \
@@ -93,13 +99,12 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
   }
 
 /* ********************************************************** */
-/* XD edge class
+/* commonized definition of 2D/3D edge class.
  * ********************************************************** */
-
 #define ZEO_ELEM_EDGEXD_DEF_STRUCT(XD) \
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   zVec##XD *vert[2]; /*!< \brief two vertices */ \
-  zVec##XD vec;      /*!< \brief edge vector */ \
+  zVec##XD vec;      /*!< \brief difference vector */ \
 }
 
 #define zEdgeXDVert(XD,edge,i)        (edge)->vert[(i)]
@@ -108,6 +113,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
 #define zEdgeXDSetVert(XD,edge,i,ptr) ( (edge)->vert[(i)] = (ptr) )
 #define zEdgeXDSetVec(XD,edge,vec)    zVec##XD##Copy( vec, zEdge##XD##Vec(edge) )
 
+/* initialize a 2D/3D edge. */
 #define ZEO_ELEM_EDGEXD_INIT_PROTOTYPE(XD) \
   zEdge##XD *zEdge##XD##Init(zEdge##XD *edge)
 #define ZEO_ELEM_EDGEXD_INIT(XD) \
@@ -118,6 +124,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
     return edge; \
   }
 
+/* create a 2D/3D edge from two endpoints. */
 #define ZEO_ELEM_EDGEXD_CREATE_PROTOTYPE(XD) \
   zEdge##XD *zEdge##XD##Create(zEdge##XD *edge, const zVec##XD *v1, const zVec##XD *v2)
 #define ZEO_ELEM_EDGEXD_CREATE(XD) \
@@ -128,6 +135,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
     return edge; \
   }
 
+/* calculate the difference vector of a 2D/3D edge. */
 #define ZEO_ELEM_EDGEXD_CALC_VEC_PROTOTYPE(XD) \
   zVec##XD *zEdge##XD##CalcVec(zEdge##XD *edge)
 #define ZEO_ELEM_EDGEXD_CALC_VEC(XD) \
@@ -135,9 +143,13 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
     return zVec##XD##Sub( zEdge##XD##Vert(edge,1), zEdge##XD##Vert(edge,0), zEdge##XD##Vec(edge) ); \
   }
 
+/* length of a 2D/3D edge. */
 #define ZEO_ELEM_EDGEXD_LEN(XD,edge)     zVec##XD##Norm( zEdge##XD##Vec(edge) )
+
+/* find the direction vector of a 2D/3D edge. */
 #define ZEO_ELEM_EDGEXD_DIR(XD,edge,dir) zVec##XD##Normalize( zEdge##XD##Vec(edge), dir )
 
+/* TO BE REMOVED. */
 /* unit_dir  ... unit direction vector of the edge
  * rel_point ... relative position vector of the point from the 1st vertex of the edge
  * len       ... length of the edge
@@ -149,6 +161,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
     return !zVec##XD##IsTiny( rel_point ); \
   }
 
+/* TO BE REMOVED. */
 #define ZEO_ELEM_EDGEXD_PROJ_POINT_PROTOTYPE(XD) \
   zVec##XD *zEdge##XD##ProjPoint(const zEdge##XD *edge, const zVec##XD *point, zVec##XD *cp)
 #define ZEO_ELEM_EDGEXD_PROJ_POINT(XD) \
@@ -159,14 +172,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
     return zVec##XD##Cat( zEdge##XD##Vert(edge,0), zVec##XD##InnerProd( &rel_point, &unit_dir ), &unit_dir, cp ); \
   }
 
-#define ZEO_ELEM_EDGEXD_DIST_FROM_POINT_PROTOTYPE(XD) \
-  double zEdge##XD##DistFromPoint(const zEdge##XD *edge, const zVec##XD *point)
-#define ZEO_ELEM_EDGEXD_DIST_FROM_POINT(XD) \
-  ZEO_ELEM_EDGEXD_DIST_FROM_POINT_PROTOTYPE( XD ){ \
-    zVec##XD cp; \
-    return zEdge##XD##Closest( edge, point, &cp ); \
-  }
-
+/* TO BE REMOVED. */
 #define ZEO_ELEM_EDGEXD_POINT_IS_ON_LINE_PROTOTYPE(XD) \
   bool zEdge##XD##PointIsOnLine(const zEdge##XD *edge, const zVec##XD *point, double margin)
 #define ZEO_ELEM_EDGEXD_POINT_IS_ON_LINE(XD) \
@@ -177,13 +183,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
     return zVec##XD##OuterProdNorm( &rel_point, &unit_dir ) < margin; \
   }
 
-#define ZEO_ELEM_EDGEXD_POINT_IS_ON_PROTOTYPE(XD) \
-  bool zEdge##XD##PointIsOn(const zEdge##XD *edge, const zVec##XD *point, double margin)
-#define ZEO_ELEM_EDGEXD_POINT_IS_ON(XD) \
-  ZEO_ELEM_EDGEXD_POINT_IS_ON_PROTOTYPE( XD ){ \
-    return zEdge##XD##DistFromPoint( edge, point ) < margin; \
-  }
-
+/* TO BE REMOVED. */
 #define _ZEO_ELEM_EDGEXD_LINSCALE(XD) \
   static double _zEdge##XD##LinScale(const zEdge##XD *edge, const zVec##XD *point, double *l0, double *l1, zVec##XD *cp){ \
     zVec##XD dp0, dp1, v; \
@@ -219,24 +219,6 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
     return 0; \
   }
 
-#define ZEO_ELEM_EDGEXD_CLOSEST_PROTOTYPE(XD) \
-  double zEdge##XD##Closest(const zEdge##XD *edge, const zVec##XD *point, zVec##XD *cp)
-#define ZEO_ELEM_EDGEXD_CLOSEST(XD) \
-  ZEO_ELEM_EDGEXD_CLOSEST_PROTOTYPE( XD ){ \
-    zVec##XD unit_dir, rel_point; \
-    double len, len_proj; \
-    _zEdge##XD##ProjSet( edge, point, &unit_dir, &rel_point, &len ); \
-    len_proj = zVec##XD##InnerProd( &rel_point, &unit_dir ); \
-    if( len_proj <= 0 ){ \
-      zVec##XD##Copy( zEdge##XD##Vert(edge,0), cp ); \
-    } else \
-    if( len_proj > 0 && len_proj < len ){ \
-      zVec##XD##Cat( zEdge##XD##Vert(edge,0), zVec##XD##InnerProd( &rel_point, &unit_dir ), &unit_dir, cp ); \
-    } else \
-      zVec##XD##Copy( zEdge##XD##Vert(edge,1), cp ); \
-    return zVec##XD##Dist( point, cp ); \
-  }
-
 #define ZEO_ELEM_EDGEXD_CONTIG_VERT_PROTOTYPE(XD) \
   zVec##XD *zEdge##XD##ContigVert(const zEdge##XD *edge, const zVec##XD *point, double *distance)
 #define ZEO_ELEM_EDGEXD_CONTIG_VERT(XD) \
@@ -252,6 +234,61 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
       if( distance ) *distance = sqrt( d1 ); \
       return zEdge##XD##Vert(edge,1); \
     } \
+  }
+
+#define ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN(XD) \
+  static double _zEdge##XD##ClosestFromOrigin(const zVec##XD *vert0, const zVec##XD *vert1, double *s0, double *s1, zVec##XD *closestpoint){ \
+    zVec2D l = { { 1.0, 1.0 } }, u; \
+    zMat2D vtv; \
+    double d; \
+    vtv.c.xx = zVec##XD##SqrNorm(vert0); \
+    vtv.c.xy = vtv.c.yx = zVec##XD##InnerProd(vert0,vert1); \
+    vtv.c.yy = zVec##XD##SqrNorm(vert1); \
+    zMulAdjMat2DVec2D( &vtv, &l, &u ); \
+    d = 1.0 / ( u.c.x + u.c.y ); \
+    *s0 = u.c.x * d; \
+    *s1 = u.c.y * d; \
+    if( *s0 < 0 ){ \
+      *s0 = 0; *s1 = 1; \
+      zVec##XD##Copy( vert1, closestpoint ); \
+    } else\
+    if( *s1 < 0 ){ \
+      *s0 = 1; *s1 = 0; \
+      zVec##XD##Copy( vert0, closestpoint ); \
+    } else{\
+      zVec##XD##Mul( vert0, *s0, closestpoint ); \
+      zVec##XD##CatDRC( closestpoint, *s1, vert1 ); \
+    } \
+    return zVec##XD##Norm( closestpoint ); \
+  }
+
+#define ZEO_ELEM_EDGEXD_CLOSEST_PROTOTYPE(XD) \
+  double zEdge##XD##Closest(const zEdge##XD *edge, const zVec##XD *point, zVec##XD *closestpoint)
+#define ZEO_ELEM_EDGEXD_CLOSEST(XD) \
+  ZEO_ELEM_EDGEXD_CLOSEST_PROTOTYPE( XD ){ \
+    zVec##XD v0, v1; \
+    double dist; \
+    double s0, s1; \
+    zVec##XD##Sub( zEdge##XD##Vert(edge,0), point, &v0 ); \
+    zVec##XD##Sub( zEdge##XD##Vert(edge,1), point, &v1 ); \
+    dist = _zEdge##XD##ClosestFromOrigin( &v0, &v1, &s0, &s1, closestpoint ); \
+    zVec##XD##AddDRC( closestpoint, point ); \
+    return dist; \
+  }
+
+#define ZEO_ELEM_EDGEXD_DIST_FROM_POINT_PROTOTYPE(XD) \
+  double zEdge##XD##DistFromPoint(const zEdge##XD *edge, const zVec##XD *point)
+#define ZEO_ELEM_EDGEXD_DIST_FROM_POINT(XD) \
+  ZEO_ELEM_EDGEXD_DIST_FROM_POINT_PROTOTYPE( XD ){ \
+    zVec##XD cp; \
+    return zEdge##XD##Closest( edge, point, &cp ); \
+  }
+
+#define ZEO_ELEM_EDGEXD_POINT_IS_ON_PROTOTYPE(XD) \
+  bool zEdge##XD##PointIsOn(const zEdge##XD *edge, const zVec##XD *point, double margin)
+#define ZEO_ELEM_EDGEXD_POINT_IS_ON(XD) \
+  ZEO_ELEM_EDGEXD_POINT_IS_ON_PROTOTYPE( XD ){ \
+    return zEdge##XD##DistFromPoint( edge, point ) < margin; \
   }
 
 #define ZEO_ELEM_EDGEXD_FPRINT_PROTOTYPE(XD) \
@@ -271,7 +308,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   }
 
 /* ********************************************************** */
-/* XD triangle class
+/* commonized definition of 2D/3D triangle class.
  * ********************************************************** */
 
 #define ZEO_ELEM_TRIXD_BARYCENTER_PROTOTYPE(XD) \
@@ -353,34 +390,19 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
     } \
   }
 
-#define ZEO_ELEM_TRIXD_CLOSEST_PROTOTYPE(XD) \
-  double zTri##XD##Closest(const zTri##XD *tri, const zVec##XD *p, zVec##XD *cp)
-#define ZEO_ELEM_TRIXD_CLOSEST(XD) \
-  ZEO_ELEM_TRIXD_CLOSEST_PROTOTYPE( XD ){ \
-    zEdge##XD edge; \
-    zVec##XD cp_tmp; \
-    double d, d_tmp; \
-    int i; \
-    zTri##XD##ProjPoint( tri, p, cp ); \
-    if( zTri##XD##PointIsInside( tri, cp, zTOL ) ) return 0; \
-    zEdge##XD##Create( &edge, zTri##XD##Vert(tri,0), zTri##XD##Vert(tri,1) ); \
-    d = zEdge##XD##Closest( &edge, p, cp ); \
-    for( i=1; i<=2; i++ ){ \
-      zEdge##XD##Create( &edge, zTri##XD##Vert(tri,i), zTri##XD##Vert(tri,(i+1)%3) ); \
-      if( ( d_tmp = zEdge##XD##Closest( &edge, p, &cp_tmp ) ) < d ){ \
-        zVec##XD##Copy( &cp_tmp, cp ); \
-        d = d_tmp; \
-      } \
-    } \
-    return d; \
-  }
-
 #define ZEO_ELEM_TRIXD_DIST_FROM_POINT_PROTOTYPE(XD) \
-  double zTri##XD##DistFromPoint(const zTri##XD *tri, const zVec##XD *p)
+  double zTri##XD##DistFromPoint(const zTri##XD *tri, const zVec##XD *point)
 #define ZEO_ELEM_TRIXD_DIST_FROM_POINT(XD) \
   ZEO_ELEM_TRIXD_DIST_FROM_POINT_PROTOTYPE( XD ){ \
     zVec##XD cp; \
-    return zTri##XD##Closest( tri, p, &cp ); \
+    return zTri##XD##Closest( tri, point, &cp ); \
+  }
+
+#define ZEO_ELEM_TRIXD_POINT_IS_INSIDE_PROTOTYPE(XD) \
+  bool zTri##XD##PointIsInside(const zTri##XD *tri, const zVec##XD *point, double margin)
+#define ZEO_ELEM_TRIXD_POINT_IS_INSIDE(XD) \
+  ZEO_ELEM_TRIXD_POINT_IS_INSIDE_PROTOTYPE( XD ){ \
+    return zTri##XD##DistFromPoint( tri, point ) < margin; \
   }
 
 #endif /* __ZEO_ELEMXD_H__ */

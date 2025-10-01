@@ -2,21 +2,21 @@
 
 void output_header(FILE *fp)
 {
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: white\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.8\n" );
   fprintf( fp, "diffuse: 1.0 1.0 1.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.8\n" );
   fprintf( fp, "esr: 1.0\n\n" );
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: red\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.8\n" );
   fprintf( fp, "diffuse: 1.0 0.0 0.0\n" );
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 1.0\n" );
   fprintf( fp, "esr: 1.0\n\n" );
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: cyan\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.8\n" );
   fprintf( fp, "diffuse: 0.4 1.0 1.0\n" );
@@ -27,7 +27,7 @@ void output_header(FILE *fp)
 
 void output_ph(FILE *fp, zPH3D *ph)
 {
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: polyhedron\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: cyan\n" );
@@ -36,7 +36,7 @@ void output_ph(FILE *fp, zPH3D *ph)
 
 void output_point_inside(FILE *fp, zVec3D *p, int i)
 {
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: point%d\n", i );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: red\n" );
@@ -47,7 +47,7 @@ void output_point_inside(FILE *fp, zVec3D *p, int i)
 
 void output_point_outside(FILE *fp, zVec3D *p, int i)
 {
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: point%d\n", i );
   fprintf( fp, "type: sphere\n" );
   fprintf( fp, "optic: white\n" );

@@ -79,46 +79,54 @@ void assert_edge2D(void)
   zAssert( zEdge2DContigVert (case 2), zEdge2DContigVert( &edge, &p, NULL ) == zEdge2DVert(&edge,1) );
 }
 
-void assert_edge2D_closest(void)
+void assert_edge2d_closest(void)
 {
   zEdge2D edge;
-  zVec2D p1, p2, ov, p_test, cp_test, cp;
-  bool result;
-  int i;
+  zVec2D vert[2], point, closestpoint, test_point;
+  int i, j;
+  const int n = 1000;
+  double dist;
+  bool result = true;
 
-  for( result=true, i=0; i<N; i++ ){
-    zVec2DCreate( &p1, zRandF(-10,10), zRandF(-10,10) );
-    zVec2DCreate( &p2, zRandF(-10,10), zRandF(-10,10) );
-    zEdge2DCreate( &edge, &p1, &p2 );
-    zVec2DRot90CW( zEdge2DVec(&edge), &ov );
-    zVec2DCat( zEdge2DVert(&edge,0), zRandF(0.1,0.9), zEdge2DVec(&edge), &cp );
-    zVec2DCat( &cp, zRandF(-10,10), &ov, &p_test );
-    zEdge2DClosest( &edge, &p_test, &cp_test );
-    if( !zVec2DEqual( &cp_test, &cp ) ) result = false;
+  /* trivial case 1 */
+  zVec2DCreate( &vert[0],-1, 1 );
+  zVec2DCreate( &vert[1], 1, 1 );
+  zEdge2DCreate( &edge, &vert[0], &vert[1] );
+  zEdge2DClosest( &edge, ZVEC2DZERO, &closestpoint );
+  zAssert( zEdge2DClosest (trivial case 1), closestpoint.c.x == 0 && closestpoint.c.y == 1 );
+  /* trivial case 2 */
+  zVec2DCreate( &point,-2, 0 );
+  zEdge2DClosest( &edge, &point, &closestpoint );
+  zAssert( zEdge2DClosest (trivial case 2), zVec2DEqual( &closestpoint, &vert[0] ) );
+  /* trivial case 3 */
+  zVec2DCreate( &point, 2, 0 );
+  zEdge2DClosest( &edge, &point, &closestpoint );
+  zAssert( zEdge2DClosest (trivial case 3), zVec2DEqual( &closestpoint, &vert[1] ) );
+  /* trivial case 4 */
+  zVec2DCreate( &point, 0, 1 );
+  zEdge2DClosest( &edge, &point, &closestpoint );
+  zAssert( zEdge2DClosest (trivial case 4), closestpoint.c.x == 0 && closestpoint.c.y == 1 );
+  /* trivial case 5 */
+  zVec2DCreate( &point,-2, 1 );
+  zEdge2DClosest( &edge, &point, &closestpoint );
+  zAssert( zEdge2DClosest (trivial case 5), zVec2DEqual( &closestpoint, &vert[0] ) );
+  /* trivial case 6 */
+  zVec2DCreate( &point, 2, 1 );
+  zEdge2DClosest( &edge, &point, &closestpoint );
+  zAssert( zEdge2DClosest (trivial case 6), zVec2DEqual( &closestpoint, &vert[1] ) );
+  /* general case */
+  zVec2DCreate( &vert[0], zRandF(-5,5), zRandF(-5,5) );
+  zVec2DCreate( &vert[1], zRandF(-5,5), zRandF(-5,5) );
+  zEdge2DCreate( &edge, &vert[0], &vert[1] );
+  for( i=0; i<n; i++ ){
+    zVec2DCreate( &point, zRandF(-10,10), zRandF(-10,10) );
+    dist = zEdge2DClosest( &edge, &point, &closestpoint );
+    for( j=0; j<2; j++ ){
+      zVec2DInterDiv( &closestpoint, zEdge2DVert(&edge,j), 0.1, &test_point );
+      if( zVec2DDist( &point, &test_point ) < dist ) result = false;
+    }
   }
-  zAssert( zEdge2DClosest (on-edge case), result );
-  for( result=true, i=0; i<N; i++ ){
-    zVec2DCreate( &p1, zRandF(-10,10), zRandF(-10,10) );
-    zVec2DCreate( &p2, zRandF(-10,10), zRandF(-10,10) );
-    zEdge2DCreate( &edge, &p1, &p2 );
-    zVec2DRot90CW( zEdge2DVec(&edge), &ov );
-    zVec2DCat( zEdge2DVert(&edge,0), zRandF(1.1,10), zEdge2DVec(&edge), &cp );
-    zVec2DCat( &cp, zRandF(-10,10), &ov, &p_test );
-    zEdge2DClosest( &edge, &p_test, &cp_test );
-    if( !zVec2DEqual( &cp_test, zEdge2DVert(&edge,1) ) ) result = false;
-  }
-  zAssert( zEdge2DClosest (beyond-vertex-1 case), result );
-  for( result=true, i=0; i<N; i++ ){
-    zVec2DCreate( &p1, zRandF(-10,10), zRandF(-10,10) );
-    zVec2DCreate( &p2, zRandF(-10,10), zRandF(-10,10) );
-    zEdge2DCreate( &edge, &p1, &p2 );
-    zVec2DRot90CW( zEdge2DVec(&edge), &ov );
-    zVec2DCat( zEdge2DVert(&edge,0), zRandF(-10,-0.1), zEdge2DVec(&edge), &cp );
-    zVec2DCat( &cp, zRandF(-10,10), &ov, &p_test );
-    zEdge2DClosest( &edge, &p_test, &cp_test );
-    if( !zVec2DEqual( &cp_test, zEdge2DVert(&edge,0) ) ) result = false;
-  }
-  zAssert( zEdge2DClosest (beyond-vertex-0 case), result );
+  zAssert( zEdge2DClosest, result );
 }
 
 void create_tri2D_rand(zVec2D v[], zTri2D *t, double min, double max)
@@ -212,6 +220,60 @@ void assert_tri2D_center(void)
   zAssert( zTri2DOrthocenter, ret );
 }
 
+void assert_tri2d_closest_trivial(void)
+{
+  zTri2D tri;
+  zVec2D vert[3], point, closestpoint;
+
+  zVec2DCreate( &vert[0],-0.5*cos(zPI/6), -0.5 );
+  zVec2DCreate( &vert[1], 0.5*cos(zPI/6), -0.5 );
+  zVec2DCreate( &vert[2],              0,    1 );
+  zTri2DCreate( &tri, &vert[0], &vert[1], &vert[2] );
+  /* trivial case 1 */
+  zTri2DClosest( &tri, ZVEC2DZERO, &closestpoint );
+  zAssert( zTri2DClosest (trivial case 1), zVec2DEqual( &closestpoint, ZVEC2DZERO ) );
+  /* trivial case 2 */
+  zVec2DCreate( &point, 0, -2 );
+  zTri2DClosest( &tri, &point, &closestpoint );
+  zAssert( zTri2DClosest (trivial case 2), closestpoint.c.x == 0 && closestpoint.c.y == -0.5 );
+  /* trivial case 3 */
+  zVec2DCreate( &point, 0, 2 );
+  zTri2DClosest( &tri, &point, &closestpoint );
+  zAssert( zTri2DClosest (trivial case 3), closestpoint.c.x == 0 && closestpoint.c.y == 1 );
+  /* trivial case 4 */
+  zVec2DCreate( &point, 2, -2 );
+  zTri2DClosest( &tri, &point, &closestpoint );
+  zAssert( zTri2DClosest (trivial case 4), zVec2DEqual( &closestpoint, &vert[1] ) );
+  /* trivial case 5 */
+  zVec2DCreate( &point,-2, -2 );
+  zTri2DClosest( &tri, &point, &closestpoint );
+  zAssert( zTri2DClosest (trivial case 5), zVec2DEqual( &closestpoint, &vert[0] ) );
+}
+
+void assert_tri2d_closest(void)
+{
+  zTri2D tri;
+  zVec2D vert[3], point, closestpoint, test_point;
+  int i, j;
+  const int n = 1000;
+  double dist;
+  bool result = true;
+
+  for( i=0; i<3; i++ )
+    zVec2DCreate( &vert[i], zRandF(-5,5), zRandF(-5,5) );
+  zTri2DCreate( &tri, &vert[0], &vert[1], &vert[2] );
+
+  for( i=0; i<n; i++ ){
+    zVec2DCreate( &point, zRandF(-10,10), zRandF(-10,10) );
+    dist = zTri2DClosest( &tri, &point, &closestpoint );
+    for( j=0; j<3; j++ ){
+      zVec2DInterDiv( &closestpoint, zTri2DVert(&tri,j), 0.1, &test_point );
+      if( zVec2DDist( &point, &test_point ) < dist ) result = false;
+    }
+  }
+  zAssert( zTri2DClosest, result );
+}
+
 zVec2D *test_ellips2D_norm(zEllips2D *e, zVec2D *p, zVec2D *n)
 {
   zVec2DCreate( n,
@@ -257,8 +319,10 @@ int main(void)
   assert_line2D_point();
   assert_line2D_intersection();
   assert_edge2D();
-  assert_tri2D_contig();
   assert_tri2D_center();
+  assert_tri2D_contig();
+  assert_tri2d_closest_trivial();
+  assert_tri2d_closest();
   assert_ellips2D_inside();
   return 0;
 }

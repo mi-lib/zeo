@@ -275,24 +275,31 @@ __ZEO_EXPORT double zMat2DSqrNorm(const zMat2D *m);
 
 /*! \brief determinant of a 2x2 matrix.
  *
- * zMat2DDet() computes the determinant of a 2x2 matrix \a m.
+ * zMat2DDet() computes the determinant of a 2x2 matrix \a mat.
  * \return
- * zMat2DDet() returns the determinant of \a m.
+ * zMat2DDet() returns the determinant of \a mat.
  */
-#define _zMat2DDet(m) ( m->c.xx*m->c.yy - m->c.yx*m->c.xy )
-__ZEO_EXPORT double zMat2DDet(const zMat2D *m);
+#define _zMat2DDet(mat) ( (mat)->c.xx*(mat)->c.yy - (mat)->c.yx*(mat)->c.xy )
+__ZEO_EXPORT double zMat2DDet(const zMat2D *mat);
+
+/*! \brief adjugate of a 2x2 matrix.
+ *
+ * zMat2DAdj() computes the adjugate matrix of a 2x2 matrix \a mat. The rseult is put into \a adj.
+ * \return
+ * zMat2DAdj() returns a pointer \a adj.
+ */
+#define _zMat2DAdj(mat,adj) _zMat2DCreate( adj, (mat)->c.yy, -(mat)->c.yx, -(mat)->c.xy, (mat)->c.xx )
+__ZEO_EXPORT zMat2D *zMat2DAdj(const zMat2D *mat, zMat2D *adj);
 
 /*! \brief inverse of a 2x2 matrix.
  *
- * zMat2DInv() computes the inverse of an arbitrary 2x2 matrix \a m and
- * puts it into \a im.
+ * zMat2DInv() computes the inverse of a 2x2 matrix \a mat. The result is put into \a invmat.
  * \return
- * zMat2DInv() returns a pointer \a im.
+ * zMat2DInv() returns a pointer \a invmat.
  * \notes
- * \a im has to be different from \a m. If \a tm is equal to \a m,
- * anything might happen.
+ * \a invmat has to be different from \a mat. If \a invmat is identical with \a mat, anything might happen.
  */
-__ZEO_EXPORT zMat2D *zMat2DInv(const zMat2D *m, zMat2D *im);
+__ZEO_EXPORT zMat2D *zMat2DInv(const zMat2D *mat, zMat2D *invmat);
 
 /* ********************************************************** */
 /* multiplication of a 2D vector by a 2x2 matrix
@@ -328,13 +335,29 @@ __ZEO_EXPORT zVec2D *zMulMat2DTVec2D(const zMat2D *m, const zVec2D *v, zVec2D *m
 #define _zMulMat2DTVec2DDRC(m,v) _zMulMat2DTVec2D(m,v,v)
 __ZEO_EXPORT zVec2D *zMulMat2DTVec2DDRC(const zMat2D *m, zVec2D *v);
 
+/*! \brief multiply a 2D vector by the adjugate of a 2x2 matrix.
+ *
+ * zMulAdjMat2DVec2D() multiplies a 2D vector \a vec by the adjugate matrix of a 2x2 matrix \a mat.
+ * The result is put into \a adj_vec.
+ * \return
+ * zMulAdjMat2DVec2D() returns a pointer \a adj_vec.
+ */
+#define _zMulAdjMat2DVec2D(mat,vec,adj_vec) do{\
+  double __x, __y;\
+  __x = (mat)->c.yy*(vec)->c.x - (mat)->c.yx*(vec)->c.y; \
+  __y =-(mat)->c.xy*(vec)->c.x + (mat)->c.xx*(vec)->c.y; \
+  _zVec2DCreate( adj_vec, __x, __y );\
+} while(0)
+__ZEO_EXPORT zVec2D *zMulAdjMat2DVec2D(const zMat2D *mat, const zVec2D *vec, zVec2D *adj_vec);
+
 /*! \brief multiply a 2D vector and the inverse of a 2x2 matrix.
  *
- * zMulInvMat2DVec2D() multiplies \a v by the inverse matrix of a 2x2 matrix \a m and puts it into \a mv.
+ * zMulInvMat2DVec2D() multiplies a 2D \a vec by the inverse matrix of a 2x2 matrix \a mat.
+ * The result is put into \a inv_vec.
  * \return
- * zMulInvMat2DVec2D() returns a pointer \a mv.
+ * zMulInvMat2DVec2D() returns a pointer \a inv_vec.
  */
-__ZEO_EXPORT zVec2D *zMulInvMat2DVec2D(const zMat2D *m, const zVec2D *v, zVec2D *mv);
+__ZEO_EXPORT zVec2D *zMulInvMat2DVec2D(const zMat2D *mat, const zVec2D *vec, zVec2D *inv_vec);
 
 /* ********************************************************** */
 /* multiplication of a 2x2 matrix by another 2x2 matrix

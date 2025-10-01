@@ -96,22 +96,27 @@ __ZEO_EXPORT ZEO_ELEM_EDGEXD_CALC_VEC_PROTOTYPE( 3D );
  * zEdge3DDistFromPoint() returns the distance calculated, nameyl, the length
  * of the perpendicular from \a p to \a e.
  */
+/* TO BE REMOVED. */
 __ZEO_EXPORT ZEO_ELEM_EDGEXD_PROJ_POINT_PROTOTYPE( 3D );
 __ZEO_EXPORT ZEO_ELEM_EDGEXD_DIST_FROM_POINT_PROTOTYPE( 3D );
 
+/* TO BE REMOVED. */
 /*! \brief check if a point is on the identical line with a 3D edge. */
 __ZEO_EXPORT ZEO_ELEM_EDGEXD_POINT_IS_ON_LINE_PROTOTYPE( 3D );
 
 /*! \brief check if a point is on a 3D edge. */
 __ZEO_EXPORT ZEO_ELEM_EDGEXD_POINT_IS_ON_PROTOTYPE( 3D );
 
-/*! \brief closest point to a 3D edge.
+/*! \brief closest point from a 3D point to a 3D edge.
  *
- * zEdge3DClosest() finds the closest point on \a edge from \a point and sets it into \a cp.
- * When the perpendicular from \a point to \a edge is not on \a edge, it returns the closest
- * endpoint of \a edge from \a point.
+ * zEdge3DClosest() finds the closest point from a 3D point \a point to a 3D edge \a edge.
+ * The result is put into \a closestpoint.
+ * When the perpendicular from \a point to \a edge is not on \a edge, it returns the contiguous
+ * endpoint of \a edge to \a point.
  * \return
- * zEdge3DClosest() returns the distance between \a point and \a cp.
+ * zEdge3DClosest() returns the distance between \a point and \a closestpoint.
+ * \sa
+ * zEdge3DClosestFromOrigin
  */
 __ZEO_EXPORT ZEO_ELEM_EDGEXD_CLOSEST_PROTOTYPE( 3D );
 
@@ -300,48 +305,29 @@ __ZEO_EXPORT ZEO_ELEM_TRIXD_CONTIG_VERT_PROTOTYPE( 3D );
 
 /*! \brief geometric relation between a 3D point and the identical plane of a 3D triangle.
  *
- * zTri3DDistFromPointToPlane() calculates the signed distance from a 3D point \a v to the identical plane
- * of a 3D triangle \a tri. The result is
- *  - a positive value when \a v is above \a tri (\a v exists in the direction of the normal vector of \a tri),
- *  - a negative value when \a v is below \a tri (\a v exists in the opposite direction of the normal vector
+ * zTri3DDistFromPointToPlane() calculates the signed distance from a 3D point \a point to the identical
+ * plane of a 3D triangle \a tri. The result is
+ *  - a positive value when \a point is above \a tri (\a point exists in the direction of the normal vector of \a tri),
+ *  - a negative value when \a point is below \a tri (\a point exists in the opposite direction of the normal vector
  *    of \a tri),
- *  - zero when \a v is on \a tri.
- * The funciton does not care if the projection point of \a v is inside of \a tri or not, but only calculates
- * the length of the perpendicular from \a v to the identical 3D plae with \a tri.
+ *  - zero when \a point is on \a tri.
+ * The funciton does not care if the projection point of \a point is inside of \a tri or not, but only
+ * calculates the length of the perpendicular from \a point to the identical 3D plae with \a tri.
  *
- * zTri3DPointIsOnPlane() checks if a 3D point \a v is on the identical plane with a 3D triangle \a tri,
- * namely, whether the distance from \a v to the plane is less than a given margin \a margin.
+ * zTri3DPointIsOnPlane() checks if a 3D point \a point is on the identical plane with a 3D triangle \a tri,
+ * namely, whether the distance from \a point to the plane is less than a given margin \a margin.
  *
- * zTri3DProjPoint() calculates the projection point of \a v into a triangle
- * \a tri - the footpoint of the perpendicular from \a v to \a tri, and sets
- * it into \a cp.
- *
- * zTri3DDistFromPoint() calculates the signed distance between a triangle
- * \a tri and a point \a v.
- *
+ * zTri3DProjPoint() calculates the projection point of \a point into a triangle \a tri - the footpoint
+ * of the perpendicular from \a point to \a tri, and sets it into \a projection.
  * \return
- * zTri3DDistFromPointToPlane() and zTri3DProjPoint() return the signed distance between \a v and \a tri.
+ * zTri3DDistFromPointToPlane() and zTri3DProjPoint() return the signed distance between \a point and \a tri.
  *
  * zTri3DPointIsOnPlane() returns the true value if the signed distance is larger than \a margin.
  * Otherwise, it returns the false value.
  */
-__ZEO_EXPORT double zTri3DDistFromPointToPlane(const zTri3D *tri, const zVec3D *v);
-__ZEO_EXPORT bool zTri3DPointIsOnPlane(const zTri3D *tri, const zVec3D *v, double margin);
-__ZEO_EXPORT double zTri3DProjPoint(const zTri3D *tri, const zVec3D *v, zVec3D *cp);
-
-/*! \brief check if a point is inside of a triangle.
- *
- * zTri3DPointIsInside() checks if the given point \a v is inside of
- * a triangle \a tri. "\a v is inside of \a p" means that the projection
- * point of \a v to \a tri is inside of \a tri.
- *
- * \a margin is a margin of the inside area outward from the boundary
- * of \a tri.
- * \return
- * zTri3DPointIsInside() returns the true value if \a v is inside of \a tri
- * with a margin \a margin. Otherwise, the false value is returned.
- */
-__ZEO_EXPORT bool zTri3DPointIsInside(const zTri3D *tri, const zVec3D *v, double margin);
+__ZEO_EXPORT double zTri3DDistFromPointToPlane(const zTri3D *tri, const zVec3D *point);
+__ZEO_EXPORT bool zTri3DPointIsOnPlane(const zTri3D *tri, const zVec3D *point, double margin);
+__ZEO_EXPORT double zTri3DProjPoint(const zTri3D *tri, const zVec3D *point, zVec3D *projection);
 
 /* TO BE REMOVED. */
 __ZEO_EXPORT double zTri3DLinScale(const zTri3D *tri, const zVec3D *p, double *l0, double *l1, double *l2, zVec3D *cp);
@@ -355,16 +341,32 @@ __ZEO_EXPORT double zTri3DLinScale(const zTri3D *tri, const zVec3D *p, double *l
  * zTri3DClosest() returns the distance from \a v to the closest point
  * calculated.
  */
-__ZEO_EXPORT ZEO_ELEM_TRIXD_CLOSEST_PROTOTYPE( 3D );
+__ZEO_EXPORT double zTri3DClosest(const zTri3D *tri, const zVec3D *point, zVec3D *closestpoint);
 
 /*! \brief destance between a 3D point and a 3D triangle.
  *
- * zTri3DDistFromPoint() calculates the distance from a 3D point \a v to a 3D triangle \a tri, namely
- * the distance between the closest point on \a tri to \a v.
+ * zTri3DDistFromPoint() calculates the distance from a 3D point \a point to a 3D triangle \a tri, namely
+ * the distance between the closest point on \a tri to \a point.
  * \return
- * zTri3DDistFromPoint() returns the distance between \a v and \a tri.
+ * zTri3DDistFromPoint() returns the distance between \a point and \a tri.
  */
 __ZEO_EXPORT ZEO_ELEM_TRIXD_DIST_FROM_POINT_PROTOTYPE( 3D );
+
+/*! \brief signed closest point to a 3D triangle. */
+__ZEO_EXPORT double zTri3DSignedClosest(const zTri3D *tri, const zVec3D *point, zVec3D *closestpoint);
+/*! \brief signed distance from a 3D point to a 3D triangle. */
+__ZEO_EXPORT double zTri3DSignedDistFromPoint(const zTri3D *tri, const zVec3D *point);
+
+/*! \brief check if a point is inside of a triangle.
+ *
+ * zTri3DPointIsInside() checks if the given point \a point is inside of a triangle \a tri.
+ * "\a point is inside of \a tri" means that the projection point of \a point to \a tri is inside of \a tri.
+ * \a margin is a margin of the inside area outward from the boundary of \a tri.
+ * \return
+ * zTri3DPointIsInside() returns the true value if \a point is inside of \a tri with a margin \a margin.
+ * Otherwise, it returns the false value.
+ */
+__ZEO_EXPORT ZEO_ELEM_TRIXD_POINT_IS_INSIDE_PROTOTYPE( 3D );
 
 /*! \brief volume, inertia, barycenter and circumcenter of cone.
  *
@@ -418,6 +420,15 @@ __ZEO_EXPORT void zTri3DFPrint(FILE *fp, const zTri3D *tri);
  * \brief array class of 3D triangles.
  */
 zArrayClass( zTri3DArray, zTri3D );
+
+/* ********************************************************** */
+/* 3D tetrahedron.
+ * ********************************************************** */
+
+/*! \brief closest point on a tetrahedron composed by four given 3D points to the origin. */
+__ZEO_EXPORT double zTetra3DClosestFromOrigin(const zVec3D *vert0, const zVec3D *vert1, const zVec3D *vert2, const zVec3D *vert3, double *s0, double *s1, double *s2, double *s3, zVec3D *closestpoint);
+/*! \brief closest point on a tetrahedron composed by four given 3D points to a 3D point. */
+__ZEO_EXPORT double zTetra3DClosest(const zVec3D *vert0, const zVec3D *vert1, const zVec3D *vert2, const zVec3D *vert3, const zVec3D *point, zVec3D *closestpoint);
 
 __END_DECLS
 

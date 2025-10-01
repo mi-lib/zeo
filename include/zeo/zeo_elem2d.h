@@ -7,7 +7,7 @@
 #ifndef __ZEO_ELEM2D_H__
 #define __ZEO_ELEM2D_H__
 
-#include <zeo/zeo_vec2d.h>
+#include <zeo/zeo_mat2d.h>
 #include <zeo/zeo_elemxd.h>
 
 __BEGIN_DECLS
@@ -78,6 +78,7 @@ __ZEO_EXPORT ZEO_ELEM_EDGEXD_CALC_VEC_PROTOTYPE( 2D );
 /*! \brief unit direction vector of a 2D edge. */
 #define zEdge2DDir(edge,dir) ZEO_ELEM_EDGEXD_DIR( 2D, edge, dir )
 
+/* TO BE REMOVED. */
 /*! \brief check if a point is on the identical line with a 2D edge. */
 __ZEO_EXPORT ZEO_ELEM_EDGEXD_POINT_IS_ON_LINE_PROTOTYPE( 2D );
 
@@ -102,16 +103,18 @@ __ZEO_EXPORT ZEO_ELEM_EDGEXD_POINT_IS_ON_PROTOTYPE( 2D );
  *
  * zEdge2DClosest() returns the distance between \a p and \a cp.
  */
+/* TO BE REMOVED. */
 __ZEO_EXPORT ZEO_ELEM_EDGEXD_PROJ_POINT_PROTOTYPE( 2D );
 __ZEO_EXPORT ZEO_ELEM_EDGEXD_DIST_FROM_POINT_PROTOTYPE( 2D );
 
-/*! \brief closest point to a 2D edge.
+/*! \brief closest point from a 2D point to a 2D edge.
  *
- * zEdge2DClosest() finds the closest point on \a edge from \a point and sets it into \a cp.
- * When the perpendicular from \a point to \a edge is not on \a edge, it returns the closest
- * endpoint of \a edge from \a point.
+ * zEdge2DClosest() finds the closest point from a 2D point \a point to a 2D edge \a edge.
+ * The result is put into \a closestpoint.
+ * When the perpendicular from \a point to \a edge is not on \a edge, it returns the contiguous
+ * endpoint of \a edge to \a point.
  * \return
- * zEdge3DClosest() returns the distance between \a point and \a cp.
+ * zEdge3DClosest() returns the distance between \a point and \a closestpoint.
  */
 __ZEO_EXPORT ZEO_ELEM_EDGEXD_CLOSEST_PROTOTYPE( 2D );
 
@@ -192,17 +195,6 @@ __ZEO_EXPORT ZEO_ELEM_TRIXD_ORTHOCENTER_PROTOTYPE( 2D );
  */
 __ZEO_EXPORT ZEO_ELEM_TRIXD_CONTIG_VERT_PROTOTYPE( 2D );
 
-/*! \brief check if a point is inside of a triangle.
- *
- * zTri2DPointIsInside() checks if a point \a v is inside of a 2D
- * triangle \a tri. \a margin is a margin of the inside area outward from
- * the boundary of \a tri.
- * \return
- * zTri2DPointIsInside() returns the true value if \a v is inside of \a tri
- * with a margin \a margin. Otherwise, the false value is returned.
- */
-__ZEO_EXPORT bool zTri2DPointIsInside(const zTri2D *tri, const zVec2D *v, double margin);
-
 /*! \brief the closest point from a point to a 2D triangle.
  *
  * zTri2DClosest() calculates the closest point on a triangle \a tri from
@@ -212,7 +204,7 @@ __ZEO_EXPORT bool zTri2DPointIsInside(const zTri2D *tri, const zVec2D *v, double
  * zTri2DClosest() returns the distance from \a v to the closest point
  * calculated.
  */
-__ZEO_EXPORT ZEO_ELEM_TRIXD_CLOSEST_PROTOTYPE( 2D );
+__ZEO_EXPORT double zTri2DClosest(const zTri2D *tri, const zVec2D *point, zVec2D *closestpoint);
 
 /*! \brief destance between a 2D point and a 2D triangle.
  *
@@ -222,6 +214,16 @@ __ZEO_EXPORT ZEO_ELEM_TRIXD_CLOSEST_PROTOTYPE( 2D );
  * zTri2DDistFromPoint() returns the distance between \a v and \a tri.
  */
 __ZEO_EXPORT ZEO_ELEM_TRIXD_DIST_FROM_POINT_PROTOTYPE( 2D );
+
+/*! \brief check if a point is inside of a triangle.
+ *
+ * zTri2DPointIsInside() checks if a point \a point is inside of a 2D triangle \a tri.
+ * \a margin is a margin of the inside area outward from the boundary of \a tri.
+ * \return
+ * zTri2DPointIsInside() returns the true value if \a point is inside of \a tri with a margin \a margin.
+ * Otherwise, the false value is returned.
+ */
+__ZEO_EXPORT ZEO_ELEM_TRIXD_POINT_IS_INSIDE_PROTOTYPE( 2D );
 
 /*! \brief print a 2D triangle.
  *

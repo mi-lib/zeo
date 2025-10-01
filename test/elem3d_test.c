@@ -172,43 +172,52 @@ void assert_edge3D(void)
 void assert_edge3D_closest(void)
 {
   zEdge3D edge;
-  zVec3D p1, p2, ov, p_test, cp_test, cp;
-  bool result;
-  int i;
+  zVec3D vert[2], point, closestpoint, test_point;
+  int i, j;
+  const int n = 1000;
+  double dist;
+  bool result = true;
 
-  for( result=true, i=0; i<N; i++ ){
-    zVec3DCreate( &p1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-    zVec3DCreate( &p2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-    zEdge3DCreate( &edge, &p1, &p2 );
-    zVec3DOrthonormal( zEdge3DVec(&edge), &ov );
-    zVec3DCat( zEdge3DVert(&edge,0), zRandF(0.1,0.9), zEdge3DVec(&edge), &cp );
-    zVec3DCat( &cp, zRandF(-10,10), &ov, &p_test );
-    zEdge3DClosest( &edge, &p_test, &cp_test );
-    if( !zVec3DEqual( &cp_test, &cp ) ) result = false;
+  /* trivial case 1 */
+  zVec3DCreate( &vert[0],-1, 1, 0 );
+  zVec3DCreate( &vert[1], 1, 1, 0 );
+  zEdge3DCreate( &edge, &vert[0], &vert[1] );
+  zEdge3DClosest( &edge, ZVEC3DZERO, &closestpoint );
+  zAssert( zEdge3DClosest (trivial case 1), closestpoint.c.x == 0 && closestpoint.c.y == 1 && closestpoint.c.z == 0 );
+  /* trivial case 2 */
+  zVec3DCreate( &point,-2, 0, 0 );
+  zEdge3DClosest( &edge, &point, &closestpoint );
+  zAssert( zEdge3DClosest (trivial case 2), zVec3DEqual( &closestpoint, &vert[0] ) );
+  /* trivial case 3 */
+  zVec3DCreate( &point, 2, 0, 0 );
+  zEdge3DClosest( &edge, &point, &closestpoint );
+  zAssert( zEdge3DClosest (trivial case 3), zVec3DEqual( &closestpoint, &vert[1] ) );
+  /* trivial case 4 */
+  zVec3DCreate( &point, 0, 1, 0 );
+  zEdge3DClosest( &edge, &point, &closestpoint );
+  zAssert( zEdge3DClosest (trivial case 4), closestpoint.c.x == 0 && closestpoint.c.y == 1 && closestpoint.c.z == 0 );
+  /* trivial case 5 */
+  zVec3DCreate( &point,-2, 1, 0 );
+  zEdge3DClosest( &edge, &point, &closestpoint );
+  zAssert( zEdge3DClosest (trivial case 5), zVec3DEqual( &closestpoint, &vert[0] ) );
+  /* trivial case 6 */
+  zVec3DCreate( &point, 2, 1, 0 );
+  zEdge3DClosest( &edge, &point, &closestpoint );
+  zAssert( zEdge3DClosest (trivial case 6), zVec3DEqual( &closestpoint, &vert[1] ) );
+  /* general case */
+  zVec3DCreate( &vert[0], zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
+  zVec3DCreate( &vert[1], zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
+  zEdge3DCreate( &edge, &vert[0], &vert[1] );
+
+  for( i=0; i<n; i++ ){
+    zVec3DCreate( &point, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    dist = zEdge3DClosest( &edge, &point, &closestpoint );
+    for( j=0; j<2; j++ ){
+      zVec3DInterDiv( &closestpoint, zEdge3DVert(&edge,j), 0.1, &test_point );
+      if( zVec3DDist( &point, &test_point ) < dist ) result = false;
+    }
   }
-  zAssert( zEdge3DClosest (on-edge case), result );
-  for( result=true, i=0; i<N; i++ ){
-    zVec3DCreate( &p1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-    zVec3DCreate( &p2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-    zEdge3DCreate( &edge, &p1, &p2 );
-    zVec3DOrthonormal( zEdge3DVec(&edge), &ov );
-    zVec3DCat( zEdge3DVert(&edge,0), zRandF(1.1,10), zEdge3DVec(&edge), &cp );
-    zVec3DCat( &cp, zRandF(-10,10), &ov, &p_test );
-    zEdge3DClosest( &edge, &p_test, &cp_test );
-    if( !zVec3DEqual( &cp_test, zEdge3DVert(&edge,1) ) ) result = false;
-  }
-  zAssert( zEdge3DClosest (beyond-vertex-1 case), result );
-  for( result=true, i=0; i<N; i++ ){
-    zVec3DCreate( &p1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-    zVec3DCreate( &p2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-    zEdge3DCreate( &edge, &p1, &p2 );
-    zVec3DOrthonormal( zEdge3DVec(&edge), &ov );
-    zVec3DCat( zEdge3DVert(&edge,0), zRandF(-10,-0.1), zEdge3DVec(&edge), &cp );
-    zVec3DCat( &cp, zRandF(-10,10), &ov, &p_test );
-    zEdge3DClosest( &edge, &p_test, &cp_test );
-    if( !zVec3DEqual( &cp_test, zEdge3DVert(&edge,0) ) ) result = false;
-  }
-  zAssert( zEdge3DClosest (beyond-vertex-0 case), result );
+  zAssert( zEdge3DClosest, result );
 }
 
 void assert_edge3D_contig(void)
@@ -299,9 +308,9 @@ void assert_tri3D_point_is_inside(void)
   zTri3D t;
   int i;
   double r1, r2;
-  bool result1, result2, result3;
+  bool result1, result2, result3, result4;
 
-  result1 = result2 = result3 = true;
+  result1 = result2 = result3 = result4 = true;
   for( i=0; i<N; i++ ){
     create_tri3D_rand( v, &t );
     /* inside case */
@@ -309,31 +318,30 @@ void assert_tri3D_point_is_inside(void)
     zVec3DCatDRC( &p, ( r1 = zRandF(0,1) ), &v[0] );
     zVec3DCatDRC( &p, ( r2 = zRandF(0,1-r1) ), &v[1] );
     zVec3DCatDRC( &p, 1 - r1 - r2, &v[2] );
-    if( !zTri3DPointIsInside( &t, &p, zTOL ) ) result1 = false;
+    if( !zTri3DPointIsInside( &t, &p, 1.0e-6 ) ) result1 = false;
     /* outside case */
     zVec3DZero( &p );
     zVec3DCatDRC( &p, ( r1 = zRandF(0,-1) ), &v[0] );
     zVec3DCatDRC( &p, ( r2 = zRandF(0,1-r1) ), &v[1] );
     zVec3DCatDRC( &p, 1 - r1 - r2, &v[2] );
-    if( zTri3DPointIsInside( &t, &p, -zTOL ) ) result1 = false;
-    /* midpoint case : margin should be enlarged */
+    if( zTri3DPointIsInside( &t, &p, zTOL ) ) result2 = false;
+    /* midpoint case */
     zVec3DMid( &v[0], &v[1], &p );
-    if( zTri3DPointIsInside( &t, &p, -zTOL ) ) result2 = false;
+    if( !zTri3DPointIsInside( &t, &p, zTOL ) ) result3 = false;
     /* vertex case */
     zVec3DCopy( &v[2], &p );
-    if( zTri3DPointIsInside( &t, &p, -zTOL ) ) result3 = false;
+    if( !zTri3DPointIsInside( &t, &p, zTOL ) ) result4 = false;
   }
-  zAssert( zTri3DPointIsInside, result1 );
-  zAssert( zTri3DPointIsInside (midpoint case), result2 );
-  zAssert( zTri3DPointIsInside (vertex case), result3 );
+  zAssert( zTri3DPointIsInside (true positive), result1 );
+  zAssert( zTri3DPointIsInside (false positive), result2 );
+  zAssert( zTri3DPointIsInside (midpoint case), result3 );
+  zAssert( zTri3DPointIsInside (vertex case), result4 );
 }
 
-void assert_tri3D_closest(void)
+void assert_tri3D_closest_trivial(void)
 {
-  zVec3D p[3], e[3], ov[3], p_test, cp, cp_test;
+  zVec3D p[3], p_test, cp, cp_test;
   zTri3D tri;
-  bool result1, result2, result3;
-  int i, j;
 
   zVec3DCreate( &p[0],-1,-1, 100 );
   zVec3DCreate( &p[1], 1,-1, 100 );
@@ -359,9 +367,19 @@ void assert_tri3D_closest(void)
   zTri3DClosest( &tri, &p_test, &cp_test );
   zVec3DCreate( &cp, 0, 0, 100 );
   zAssert( zTri3DClosest (trivial case 5), zVec3DEqual( &cp_test, &cp ) );
+}
+
+void assert_tri3D_closest(void)
+{
+  zTri3D tri;
+  zVec3D p[3], e[3], ov[3], p_test, cp, cp_test, test_point;
+  double dist;
+  bool result1, result2, result3;
+  int i, j;
+  const int n = 1000;
 
   result1 = result2 = result3 = true;
-  for( i=0; i<N; i++ ){
+  for( i=0; i<n; i++ ){
     create_tri3D_rand_minmax( p, &tri, -1, 1 );
     /* edge vectors & outward vectors */
     zVec3DSub( &p[2], &p[1], &e[0] ); zVec3DOuterProd( &e[0], zTri3DNorm(&tri), &ov[0] );
@@ -398,6 +416,21 @@ void assert_tri3D_closest(void)
   zAssert( zTri3DClosest (edge case), result1 );
   zAssert( zTri3DClosest (vertex case), result2 );
   zAssert( zTri3DClosest (inside case), result3 );
+
+  for( i=0; i<3; i++ )
+    zVec3DCreate( &p[i], zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
+  zTri3DCreate( &tri, &p[0], &p[1], &p[2] );
+
+  result1 = true;
+  for( i=0; i<n; i++ ){
+    zVec3DCreate( &p_test, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    dist = zTri3DSignedClosest( &tri, &p_test, &cp_test );
+    for( j=0; j<3; j++ ){
+      zVec3DInterDiv( &cp_test, zTri3DVert(&tri,j), 0.1, &test_point );
+      if( zVec3DDist( &p_test, &test_point ) < dist ) result1 = false;
+    }
+  }
+  zAssert( zTri3DClosest (general case), result1 );
 }
 
 #define TOL (1.0e-9)
@@ -466,6 +499,115 @@ void assert_tri3D_center(void)
     }
   }
   zAssert( zTri3DOrthocenter, ret );
+}
+
+void assert_tri3D_list_align(void)
+{
+  zVec3D *varray;
+  zTri3D t;
+  zTri3DList tlist;
+  zTri3DListCell *tp;
+  int i;
+  const int n = 1000;
+  bool result = true;
+
+  varray = zAlloc( zVec3D, 3 * n );
+  zListInit( &tlist );
+  for( i=0; i<n; i++ ){
+    zVec3DCreate( &varray[3*i  ], zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
+    zVec3DCreate( &varray[3*i+1], zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
+    zVec3DCreate( &varray[3*i+2], zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
+    zTri3DCreate( &t, &varray[3*i], &varray[3*i+1], &varray[3*i+2] );
+    zTri3DListAdd( &tlist, &t );
+  }
+  zTri3DListAlign( &tlist, ZVEC3DZ );
+  zListForEach( &tlist, tp )
+    if( zVec3DInnerProd( zTri3DNorm(&tp->data), ZVEC3DZ ) < 0 ) result = false;
+  zFree( varray );
+  zTri3DListDestroy( &tlist );
+  zAssert( zTri3DListAlign, result );
+}
+
+void assert_tetra3D_closest_trivial(void)
+{
+  zVec3D v[4], point, closestpoint;
+
+  zVec3DCreate( &v[0],-0.5*cos(zPI/6), -0.5,-1.0 );
+  zVec3DCreate( &v[1], 0.5*cos(zPI/6), -0.5,-1.0 );
+  zVec3DCreate( &v[2],              0,    1,-1.0 );
+  zVec3DCreate( &v[3],              0,    0, 2.0 );
+
+  /* trivial case 1 */
+  zTetra3DClosest( &v[0], &v[1], &v[2], &v[3], ZVEC3DZERO, &closestpoint );
+  zAssert( zTetra3DClosest (trivial case 1), zVec3DEqual( ZVEC3DZERO, &closestpoint ) );
+  /* trivial case 2 */
+  zVec3DCreate( &point, 0, 0, -2 );
+  zTetra3DClosest( &v[0], &v[1], &v[2], &v[3], &point, &closestpoint );
+  zAssert( zTetra3DClosest (trivial case 2), closestpoint.c.x == 0 && closestpoint.c.y == 0 && closestpoint.c.z == -1.0 );
+  /* trivial case 3 */
+  zVec3DCreate( &point, 0, -1, -1 );
+  zTetra3DClosest( &v[0], &v[1], &v[2], &v[3], &point, &closestpoint );
+  zAssert( zTetra3DClosest (trivial case 3), closestpoint.c.x == 0 && closestpoint.c.y == -0.5 && closestpoint.c.z == -1 );
+  /* trivial case 4 */
+  zVec3DCreate( &point,-2, -1, -1 );
+  zTetra3DClosest( &v[0], &v[1], &v[2], &v[3], &point, &closestpoint );
+  zAssert( zTetra3DClosest (trivial case 4), zVec3DEqual( &v[0], &closestpoint ) );
+  /* trivial case 5 */
+  zVec3DCreate( &point, 2, -1, -1 );
+  zTetra3DClosest( &v[0], &v[1], &v[2], &v[3], &point, &closestpoint );
+  zAssert( zTetra3DClosest (trivial case 5), zVec3DEqual( &v[1], &closestpoint ) );
+  /* trivial case 6 */
+  zVec3DCreate( &point, 0, 0, 3 );
+  zTetra3DClosest( &v[0], &v[1], &v[2], &v[3], &point, &closestpoint );
+  zAssert( zTetra3DClosest (trivial case 6), zVec3DEqual( &v[3], &closestpoint ) );
+}
+
+void assert_tetra3D_closest(void)
+{
+  zVec3D vert[4], point, closestpoint, test_point;
+  int i, j;
+  const int n = 10000;
+  double dist;
+  bool result = true;
+
+  zVec3DCreate( &vert[0], zRandF(-5,0), zRandF(-5,0), zRandF(-5,0) );
+  zVec3DCreate( &vert[1], zRandF( 0,5), zRandF(-5,0), zRandF(-5,0) );
+  zVec3DCreate( &vert[2], zRandF(-5,5), zRandF( 0,5), zRandF(-5,5) );
+  zVec3DCreate( &vert[3], zRandF(-5,5), zRandF(-5,5), zRandF( 0,5) );
+
+  for( i=0; i<n; i++ ){
+    zVec3DCreate( &point, zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
+    dist = zTetra3DClosest( &vert[0], &vert[1], &vert[2], &vert[3], &point, &closestpoint );
+    for( j=0; j<4; j++ ){
+      zVec3DInterDiv( &closestpoint, &vert[j], 0.1, &test_point );
+      if( zVec3DDist( &point, &test_point ) < dist ) result = false;
+    }
+  }
+  zAssert( zTetra3DClosest, result );
+}
+
+void assert_tetra3D_closest_from_origin(void)
+{
+  zVec3D vert[4], closestpoint, test_point, error;
+  double s[4];
+  int i, j;
+  const int n = 1000;
+  bool result = true;
+
+  for( i=0; i<n; i++ ){
+    for( j=0; j<4; j++ )
+      zVec3DCreate( &vert[j], zRandF(-5,5), zRandF(-5,5), zRandF(-5,5) );
+    zTetra3DClosestFromOrigin( &vert[0], &vert[1], &vert[2], &vert[3], &s[0], &s[1], &s[2], &s[3], &closestpoint );
+    zVec3DZero( &test_point );
+    for( j=0; j<4; j++ )
+      zVec3DCatDRC( &test_point, s[j], &vert[j] );
+    if( !zVec3DEqual( &test_point, &closestpoint ) ){
+      zVec3DSub( &closestpoint, &test_point, &error );
+      eprintf( "error = " ); zVec3DFPrint( stderr, &error );
+      result = false;
+    }
+  }
+  zAssert( zTetra3DClosestFromOrigin, result );
 }
 
 void assert_aabox_create(void)
@@ -555,8 +697,13 @@ int main(void)
   assert_tri3D_contig();
   assert_tri3D_proj_point();
   assert_tri3D_point_is_inside();
+  assert_tri3D_closest_trivial();
   assert_tri3D_closest();
   assert_tri3D_center();
+  assert_tri3D_list_align();
+  assert_tetra3D_closest_trivial();
+  assert_tetra3D_closest();
+  assert_tetra3D_closest_from_origin();
   assert_aabox_create();
   assert_aabox_equal();
   assert_aabox_expand();

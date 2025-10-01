@@ -55,6 +55,12 @@ bool zMat2DEqual(const zMat2D *m1, const zMat2D *m2)
   return _zMat2DEqual( m1, m2 );
 }
 
+/* check if a 2x2 matrix is the identity matrix. */
+bool zMat2DIsIdent(const zMat2D *m)
+{
+  return _zMat2DIsIdent( m );
+}
+
 /* abstract a row vector from a 2x2 matrix. */
 zVec2D *zMat2DRow(const zMat2D *m, int i, zVec2D *v)
 {
@@ -145,23 +151,31 @@ double zMat2DSqrNorm(const zMat2D *m)
  * ********************************************************** */
 
 /* determinant of a 2x2 matrix. */
-double zMat2DDet(const zMat2D *m)
+double zMat2DDet(const zMat2D *mat)
 {
-  return _zMat2DDet( m );
+  return _zMat2DDet( mat );
 }
 
-/* inverse matrix of a 3x3 matrix. */
-zMat2D *zMat2DInv(const zMat2D *m, zMat2D *im)
+/* adjoint matrix of a 3x3 matrix. */
+zMat2D *zMat2DAdj(const zMat2D *mat, zMat2D *adj)
+{
+  _zMat2DAdj( mat, adj );
+  return adj;
+}
+
+/* inverse matrix of a 2x2 matrix. */
+zMat2D *zMat2DInv(const zMat2D *mat, zMat2D *invmat)
 {
   double det;
 
-  if( zIsTiny( ( det = _zMat2DDet( m ) ) ) ){
+  if( zIsTiny( ( det = _zMat2DDet( mat ) ) ) ){
     ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
     return NULL;
   }
   det = 1.0 / det;
-  _zMat2DCreate( im, m->c.yy*det, -m->c.yx*det, -m->c.xy*det, m->c.xx*det );
-  return im;
+  _zMat2DAdj( mat, invmat );
+  _zMat2DMulDRC( invmat, det );
+  return invmat;
 }
 
 /* ********************************************************** */
@@ -196,17 +210,26 @@ zVec2D *zMulMat2DTVec2DDRC(const zMat2D *m, zVec2D *v)
   return v;
 }
 
+/* multiply a 2D vector by the adjoint of a 2x2 matrix. */
+zVec2D *zMulAdjMat2DVec2D(const zMat2D *mat, const zVec2D *vec, zVec2D *adj_vec)
+{
+  _zMulAdjMat2DVec2D( mat, vec, adj_vec );
+  return adj_vec;
+}
+
 /* multiply a 2D vector by the inverse of a 2x2 matrix. */
-zVec2D *zMulInvMat2DVec2D(const zMat2D *m, const zVec2D *v, zVec2D *mv)
+zVec2D *zMulInvMat2DVec2D(const zMat2D *mat, const zVec2D *vec, zVec2D *inv_vec)
 {
   double det;
 
-  if( zIsTiny( ( det = _zMat2DDet( m ) ) ) ){
+  if( zIsTiny( ( det = _zMat2DDet( mat ) ) ) ){
     ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
     return NULL;
   }
-  _zVec2DCreate( mv, (m->c.yy*v->c.x-m->c.yx*v->c.y)/det, (-m->c.xy*v->c.x+m->c.xx*v->c.y)/det );
-  return mv;
+  det = 1.0 / det;
+  _zMulAdjMat2DVec2D( mat, vec, inv_vec );
+  _zVec2DMulDRC( inv_vec, det );
+  return inv_vec;
 }
 
 /* ********************************************************** */
@@ -256,9 +279,10 @@ zMat2D *zMulInvMat2DMat2D(const zMat2D *m1, const zMat2D *m2, zMat2D *m)
     ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
     return NULL;
   }
-  _zMat2DCreate( m,
-    (m1->c.yy*m2->c.xx-m1->c.yx*m2->c.xy)/det, (m1->c.yy*m2->c.yx-m1->c.yx*m2->c.yy)/det,
-   (-m1->c.xy*m2->c.xx+m1->c.xx*m2->c.xy)/det,(-m1->c.xy*m2->c.yx+m1->c.xx*m2->c.yy)/det );
+  det = 1.0 / det;
+  _zMulAdjMat2DVec2D( m1, &m2->b.x, &m->b.x );
+  _zMulAdjMat2DVec2D( m1, &m2->b.y, &m->b.y );
+  _zMat2DMulDRC( m, det );
   return m;
 }
 

@@ -5,7 +5,6 @@
  */
 
 #include <zeo/zeo_elem2d.h>
-#include <zeo/zeo_mat2d.h>
 
 /* ********************************************************** */
 /* 2D line class
@@ -61,15 +60,18 @@ ZEO_ELEM_EDGEXD_CREATE( 2D )
 /* path vector of a 2D edge. */
 ZEO_ELEM_EDGEXD_CALC_VEC( 2D )
 
+/* TO BE REMOVED. */
 /* a set of unit edge direction vector and displacement vector. */
 _ZEO_ELEM_EDGEXD_PROJ_SET( 2D )
 
+/* TO BE REMOVED. */
 /* project a point to a 2D edge. */
 ZEO_ELEM_EDGEXD_PROJ_POINT( 2D )
 
 /* distance between a point and a 2D edge. */
 ZEO_ELEM_EDGEXD_DIST_FROM_POINT( 2D )
 
+/* TO BE REMOVED. */
 /* check if a point is on the identical line with a 2D edge. */
 ZEO_ELEM_EDGEXD_POINT_IS_ON_LINE( 2D )
 
@@ -77,6 +79,8 @@ ZEO_ELEM_EDGEXD_POINT_IS_ON_LINE( 2D )
 ZEO_ELEM_EDGEXD_POINT_IS_ON( 2D )
 
 /* the closest point from point to a 2D edge. */
+ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN( 2D )
+
 ZEO_ELEM_EDGEXD_CLOSEST( 2D )
 
 /* contiguous vertix of a 2D edge to a point. */
@@ -120,28 +124,67 @@ ZEO_ELEM_TRIXD_ORTHOCENTER( 2D )
 /* contiguous vertix of a 2D triangle to a 2D point. */
 ZEO_ELEM_TRIXD_CONTIG_VERT( 2D )
 
-/* check if a point is inside of a triangle. */
-bool zTri2DPointIsInside(const zTri2D *tri, const zVec2D *v, double margin)
+static bool _zTri2DClosestFromOrigin_TestEdge(const zVec2D *vert0, const zVec2D *vert1, double *s0, double *s1, double *s2, zVec2D *closestpoint, double *dist_min)
 {
-  int i;
-  zVec2D e, n, d;
-
-  for( i=0; i<3; i++ ){
-    zVec2DSub( zTri2DVert(tri,(i+1)%3), zTri2DVert(tri,i), &e );
-    zVec2DRot90CW( &e, &n );
-    zVec2DNormalizeDRC( &n );
-    zVec2DSub( v, zTri2DVert(tri,i), &d );
-    if( zVec2DInnerProd( &n, &d ) > margin ) return false;
+  double dist;
+  zVec2D cp;
+  if( ( dist = _zEdge2DClosestFromOrigin( vert0, vert1, s0, s1, &cp ) ) < *dist_min ){
+    *s2 = 0;
+    *dist_min = dist;
+    zVec2DCopy( &cp, closestpoint );
+    return true;
   }
-  return true;
+  return false;
 }
 
 /* the closest point from a 2D point to a 2D triangle. */
-#define zTri2DProjPoint(tri,v,cp) zVec2DCopy( v, cp )
-ZEO_ELEM_TRIXD_CLOSEST( 2D )
+static double _zTri2DClosestFromOrigin(const zVec2D *vert0, const zVec2D *vert1, const zVec2D *vert2, double *s0, double *s1, double *s2, zVec2D *closestpoint)
+{
+  double inv_det, dist_min = HUGE_VAL;
+  double s[3][3];
+  int edge_case = -1;
+
+  *s0 = _zVec2DOuterProd( vert1, vert2 );
+  *s1 = _zVec2DOuterProd( vert2, vert0 );
+  *s2 = _zVec2DOuterProd( vert0, vert1 );
+  inv_det = 1.0 / ( *s0 + *s1 + *s2 );
+  *s0 *= inv_det;
+  *s1 *= inv_det;
+  *s2 *= inv_det;
+  if( *s0 < 0 && _zTri2DClosestFromOrigin_TestEdge( vert1, vert2, &s[0][1], &s[0][2], &s[0][0], closestpoint, &dist_min ) )
+    edge_case = 0;
+  if( *s1 < 0 && _zTri2DClosestFromOrigin_TestEdge( vert2, vert0, &s[1][2], &s[1][0], &s[1][1], closestpoint, &dist_min ) )
+    edge_case = 1;
+  if( *s2 < 0 && _zTri2DClosestFromOrigin_TestEdge( vert0, vert1, &s[2][0], &s[2][1], &s[2][2], closestpoint, &dist_min ) )
+    edge_case = 2;
+  if( edge_case == -1 ){
+    zVec2DZero( closestpoint );
+    return 0;
+  }
+  *s0 = s[edge_case][0];
+  *s1 = s[edge_case][1];
+  *s2 = s[edge_case][2];
+  return zVec2DNorm( closestpoint );
+}
+
+double zTri2DClosest(const zTri2D *tri, const zVec2D *point, zVec2D *closestpoint)
+{
+  zVec2D vert[3];
+  double s0, s1, s2, dist;
+
+  zVec2DSub( zTri2DVert(tri,0), point, &vert[0] );
+  zVec2DSub( zTri2DVert(tri,1), point, &vert[1] );
+  zVec2DSub( zTri2DVert(tri,2), point, &vert[2] );
+  dist = _zTri2DClosestFromOrigin( &vert[0], &vert[1], &vert[2], &s0, &s1, &s2, closestpoint );
+  zVec2DAddDRC( closestpoint, point );
+  return dist;
+}
 
 /* distance from a 2D point to a 2D triangle. */
 ZEO_ELEM_TRIXD_DIST_FROM_POINT( 2D )
+
+/* check if a 2D point is inside of a 2D triangle. */
+ZEO_ELEM_TRIXD_POINT_IS_INSIDE( 2D )
 
 /* print information of a triangle to a file. */
 void zTri2DFPrint(FILE *fp, const zTri2D *tri)

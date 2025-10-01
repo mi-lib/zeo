@@ -123,7 +123,7 @@ void assert_mul(void)
   zAssert( zMulMat2DMat2DTDRC, zMat2DEqual( &m3, &m4 ) );
 
   zMulInvMat2DMat2D( &m1, &m1, &m3 );
-  zAssert( zMat2DInvMat2DMat2D, zIsTiny(m3.c.xx-1) && zIsTiny(m3.c.yx) && zIsTiny(m3.c.xy) && zIsTiny(m3.c.yy-1) );
+  zAssert( zMat2DInvMat2DMat2D, zMat2DIsIdent(&m3) );
 }
 
 void assert_rotation(void)

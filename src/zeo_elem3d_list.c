@@ -7,8 +7,7 @@
 #include <zeo/zeo_elem3d.h>
 
 /* ********************************************************** */
-/* CLASS: zTri3DList
- * 3D triangle list
+/* 3D triangle list.
  * ********************************************************** */
 
 /* add a 3D triangle list cell. */

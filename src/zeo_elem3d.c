@@ -103,6 +103,7 @@ ZEO_ELEM_EDGEXD_POINT_IS_ON_LINE( 3D )
 ZEO_ELEM_EDGEXD_POINT_IS_ON( 3D )
 
 /* the closest point from point to a 3D edge. */
+ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN( 3D )
 ZEO_ELEM_EDGEXD_CLOSEST( 3D )
 
 /* contiguous vertix of a 3D edge to a point. */
@@ -111,6 +112,7 @@ ZEO_ELEM_EDGEXD_CONTIG_VERT( 3D )
 /* print information of a 3D edge to a file. */
 ZEO_ELEM_EDGEXD_FPRINT( 3D )
 
+/* TO BE REMOVED. */
 /* compute a pair of linear scale factors of a point on a 3D edge.
  * if the point is on the edge, p = l0*e->v0 + l1*e->v1. Otherwise, the result does not make sense. */
 _ZEO_ELEM_EDGEXD_LINSCALE( 3D )
@@ -259,55 +261,132 @@ ZEO_ELEM_TRIXD_ORTHOCENTER( 3D )
 ZEO_ELEM_TRIXD_CONTIG_VERT( 3D )
 
 /* signed distance from a 3D point to the identical plane of a 3D triangle. */
-double zTri3DDistFromPointToPlane(const zTri3D *tri, const zVec3D *v)
+double zTri3DDistFromPointToPlane(const zTri3D *tri, const zVec3D *point)
 {
   zVec3D tmp;
   double d[3];
   int i;
 
   for( i=0; i<3; i++ ){
-    zVec3DSub( v, zTri3DVert(tri,i), &tmp );
+    zVec3DSub( point, zTri3DVert(tri,i), &tmp );
     d[i] = zVec3DInnerProd( &tmp, zTri3DNorm(tri) );
   }
   return ( d[0] + d[1] + d[2] ) / 3;
 }
 
+/* project a 3D point to a 3D triangle. */
+double zTri3DProjPoint(const zTri3D *tri, const zVec3D *point, zVec3D *projection)
+{
+  double d;
+
+  d = zTri3DDistFromPointToPlane( tri, point );
+  zVec3DCat( point, -d, zTri3DNorm(tri), projection );
+  return d;
+}
+
 /* check if a 3D point is on the identical plane of a 3D triangle. */
-bool zTri3DPointIsOnPlane(const zTri3D *tri, const zVec3D *v, double margin)
+bool zTri3DPointIsOnPlane(const zTri3D *tri, const zVec3D *point, double margin)
 {
   zVec3D tmp;
 
-  zVec3DSub( v, zTri3DVert(tri,0), &tmp );
+  zVec3DSub( point, zTri3DVert(tri,0), &tmp );
   if( zVec3DIsTiny( &tmp ) ) return true;
+  /* ARGUMENT: Is this normalization necessary? */
   zVec3DNormalizeDRC( &tmp );
   return zIsTol( zVec3DInnerProd( &tmp, zTri3DNorm(tri) ), margin );
 }
 
-/* project a 3D point to a 3D triangle. */
-double zTri3DProjPoint(const zTri3D *tri, const zVec3D *v, zVec3D *cp)
-{
-  double d;
-
-  d = zTri3DDistFromPointToPlane( tri, v );
-  zVec3DCat( v, -d, zTri3DNorm(tri), cp );
-  return d;
-}
-
-/* check if a 3D point is inside of a 3D triangle. */
-bool zTri3DPointIsInside(const zTri3D *tri, const zVec3D *v, double margin)
+/* check if the projection of a 3D point to a 3D triangle is inside of the triangle (without margin). */
+static bool _zTri3DProjIsInside(const zTri3D *tri, const zVec3D *point, zVec3D *projection)
 {
   int i;
-  zVec3D vp, e, n, d;
+  zVec3D edge, n, d;
 
-  zTri3DProjPoint( tri, v, &vp );
+  zTri3DProjPoint( tri, point, projection );
   for( i=0; i<3; i++ ){
-    zVec3DSub( zTri3DVertNext(tri,i), zTri3DVert(tri,i), &e );
-    zVec3DOuterProd( &e, zTri3DNorm(tri), &n );
+    zVec3DSub( zTri3DVertNext(tri,i), zTri3DVert(tri,i), &edge );
+    zVec3DOuterProd( &edge, zTri3DNorm(tri), &n );
     zVec3DNormalizeDRC( &n );
-    zVec3DSub( &vp, zTri3DVert(tri,i), &d );
-    if( zVec3DInnerProd( &n, &d ) > margin ) return false;
+    zVec3DSub( projection, zTri3DVert(tri,i), &d );
+    if( zVec3DInnerProd( &n, &d ) > 0 ) return false;
   }
   return true;
+}
+
+/* test if the closest point on a triangle composed by three given 3D points to the origin is on an edge. */
+static bool _zTri3DClosestFromOrigin_TestEdge(const zVec3D *vert0, const zVec3D *vert1, double *s0, double *s1, double *s2, zVec3D *closestpoint, double *dist_min)
+{
+  double dist;
+  zVec3D cp;
+  if( ( dist = _zEdge3DClosestFromOrigin( vert0, vert1, s0, s1, &cp ) ) < *dist_min ){
+    *s2 = 0;
+    *dist_min = dist;
+    zVec3DCopy( &cp, closestpoint );
+    return true;
+  }
+  return false;
+}
+
+/* closest point on a triangle composed by three given 3D points to the origin. */
+static double _zTri3DClosestFromOrigin(const zVec3D *vert0, const zVec3D *vert1, const zVec3D *vert2, double *s0, double *s1, double *s2, zVec3D *closestpoint)
+{
+  zTri3D tri;
+  double inv_det, dist_min = HUGE_VAL;
+  zVec3D s, t1, t2;
+  zVec2D v[3];
+  int i;
+
+  zTri3DCreate( &tri, vert0, vert1, vert2 );
+  if( _zTri3DProjIsInside( &tri, ZVEC3DZERO, closestpoint ) ){
+    zVec3DOrthoSpace( zTri3DNorm(&tri), &t1, &t2 );
+    for( i=0; i<3; i++ ){
+      zVec3DSub( zTri3DVert(&tri,i), closestpoint, &s );
+      zVec2DCreate( &v[i], zVec3DInnerProd( &t1, &s ), zVec3DInnerProd( &t2, &s ) );
+    }
+    *s0 = _zVec2DOuterProd( &v[1], &v[2] );
+    *s1 = _zVec2DOuterProd( &v[2], &v[0] );
+    *s2 = _zVec2DOuterProd( &v[0], &v[1] );
+    inv_det = 1.0 / ( *s0 + *s1 + *s2 );
+    *s0 *= inv_det;
+    *s1 *= inv_det;
+    *s2 *= inv_det;
+    return zVec3DNorm( closestpoint );
+  }
+  for( i=0; i<3; i++ )
+    if( _zTri3DClosestFromOrigin_TestEdge( zTri3DVert(&tri,i), zTri3DVertNext(&tri,i), &s.e[i], &s.e[(i+1)%3], &s.e[(i+2)%3], closestpoint, &dist_min ) ){
+      *s0 = s.e[0]; *s1 = s.e[1]; *s2 = s.e[2];
+    }
+  return dist_min;
+}
+
+/* closest point to a 3D triangle. */
+double zTri3DClosest(const zTri3D *tri, const zVec3D *point, zVec3D *closestpoint)
+{
+  zVec3D v[3];
+  double dist, s[3];
+
+  zVec3DSub( zTri3DVert(tri,0), point, &v[0] );
+  zVec3DSub( zTri3DVert(tri,1), point, &v[1] );
+  zVec3DSub( zTri3DVert(tri,2), point, &v[2] );
+  dist = _zTri3DClosestFromOrigin( &v[0], &v[1], &v[2], &s[0], &s[1], &s[2], closestpoint );
+  zVec3DAddDRC( closestpoint, point );
+  return dist;
+}
+
+/* signed closest point to a 3D triangle. */
+double zTri3DSignedClosest(const zTri3D *tri, const zVec3D *point, zVec3D *closestpoint)
+{
+  double dist;
+
+  dist = zTri3DClosest( tri, point, closestpoint );
+  return zTri3DDistFromPointToPlane( tri, point ) >= 0 ? dist : -dist;
+}
+
+/* signed distance from a 3D point to a 3D triangle. */
+double zTri3DSignedDistFromPoint(const zTri3D *tri, const zVec3D *point)
+{
+  zVec3D cp;
+  return zTri3DSignedClosest( tri, point, &cp );
 }
 
 /* compute a trio of linear scale factors of a point on a 3D triangle.
@@ -378,11 +457,11 @@ double zTri3DLinScale(const zTri3D *tri, const zVec3D *p, double *l0, double *l1
   return zVec3DDist( p, cp );
 }
 
-/* the closest point from a 3D point to a 3D triangle. */
-ZEO_ELEM_TRIXD_CLOSEST( 3D )
-
 /* distance from a 3D point to a 3D triangle. */
 ZEO_ELEM_TRIXD_DIST_FROM_POINT( 3D )
+
+/* check if a 3D point is inside of a 3D triangle. */
+ZEO_ELEM_TRIXD_POINT_IS_INSIDE( 3D )
 
 /* volume of a 3D cone. */
 double zTri3DConeVolume(const zTri3D *tri, const zVec3D *v)
@@ -455,4 +534,71 @@ void zTri3DFPrint(FILE *fp, const zTri3D *tri)
     fprintf( fp, "norm: " );
     zVec3DFPrint( fp, zTri3DNorm(tri) );
   }
+}
+
+/* ********************************************************** */
+/* 3D tetrahedron.
+ * ********************************************************** */
+
+/* test if the closest point on a tetrahedron composed by four given 3D points to the origin is on a facet. */
+static bool _zTetra3DClosestFromOrigin_TestTri(const zVec3D *vert0, const zVec3D *vert1, const zVec3D *vert2, double *s0, double *s1, double *s2, double *s3, zVec3D *closestpoint, double *dist_min)
+{
+  double dist;
+  zVec3D cp;
+  if( ( dist = _zTri3DClosestFromOrigin( vert0, vert1, vert2, s0, s1, s2, &cp ) ) < *dist_min ){
+    *s3 = 0;
+    *dist_min = dist;
+    zVec3DCopy( &cp, closestpoint );
+    return true;
+  }
+  return false;
+}
+
+/* closest point on a tetrahedron composed by four given 3D points to the origin. */
+double zTetra3DClosestFromOrigin(const zVec3D *vert0, const zVec3D *vert1, const zVec3D *vert2, const zVec3D *vert3, double *s0, double *s1, double *s2, double *s3, zVec3D *closestpoint)
+{
+  double s[4][4], inv_det, dist_min = HUGE_VAL;
+  int tri_case = -1;
+
+  *s0 = zVec3DGrassmannProd( vert3, vert2, vert1 );
+  *s1 = zVec3DGrassmannProd( vert2, vert3, vert0 );
+  *s2 = zVec3DGrassmannProd( vert1, vert0, vert3 );
+  *s3 = zVec3DGrassmannProd( vert0, vert1, vert2 );
+  inv_det = 1.0 / ( *s0 + *s1 + *s2 + *s3 );
+  *s0 *= inv_det;
+  *s1 *= inv_det;
+  *s2 *= inv_det;
+  *s3 *= inv_det;
+  if( *s0 < 0 && _zTetra3DClosestFromOrigin_TestTri( vert1, vert2, vert3, &s[0][1], &s[0][2], &s[0][3], &s[0][0], closestpoint, &dist_min ) )
+    tri_case = 0;
+  if( *s1 < 0 && _zTetra3DClosestFromOrigin_TestTri( vert2, vert3, vert0, &s[1][2], &s[1][3], &s[1][0], &s[1][1], closestpoint, &dist_min ) )
+    tri_case = 1;
+  if( *s2 < 0 && _zTetra3DClosestFromOrigin_TestTri( vert3, vert0, vert1, &s[2][3], &s[2][0], &s[2][1], &s[2][2], closestpoint, &dist_min ) )
+    tri_case = 2;
+  if( *s3 < 0 && _zTetra3DClosestFromOrigin_TestTri( vert0, vert1, vert2, &s[3][0], &s[3][1], &s[3][2], &s[3][3], closestpoint, &dist_min ) )
+    tri_case = 3;
+  if( tri_case == -1 ){
+    zVec3DZero( closestpoint );
+    return 0;
+  }
+  *s0 = s[tri_case][0];
+  *s1 = s[tri_case][1];
+  *s2 = s[tri_case][2];
+  *s3 = s[tri_case][3];
+  return zVec3DNorm( closestpoint );
+}
+
+/* closest point on a tetrahedron composed by four given 3D points to a 3D point. */
+double zTetra3DClosest(const zVec3D *vert0, const zVec3D *vert1, const zVec3D *vert2, const zVec3D *vert3, const zVec3D *point, zVec3D *closestpoint)
+{
+  zVec3D v[4];
+  double dist, s[4];
+
+  zVec3DSub( vert0, point, &v[0] );
+  zVec3DSub( vert1, point, &v[1] );
+  zVec3DSub( vert2, point, &v[2] );
+  zVec3DSub( vert3, point, &v[3] );
+  dist = zTetra3DClosestFromOrigin( &v[0], &v[1], &v[2], &v[3], &s[0], &s[1], &s[2], &s[3], closestpoint );
+  zVec3DAddDRC( closestpoint, point );
+  return dist;
 }

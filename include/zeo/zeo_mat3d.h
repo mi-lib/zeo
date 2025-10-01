@@ -84,7 +84,7 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat3D ){
 };
 
 /*! \brief a column vector of a 3x3 matrix. */
-#define zMat3DVec(m,a) ( &(m)->v[(a)] )
+#define zMat3DVec(mat,axis) ( &(mat)->v[(axis)] )
 
 /*! \brief 3D zero matrix and identity matrix */
 #ifdef __cplusplus
@@ -99,7 +99,7 @@ __ZEO_EXPORT const zMat3D zmat3Dident;
 
 /*! \brief create, copy and cleanup a 3x3 matrix.
  *
- * zMat3DCreate() creates a 3x3 matrix from nine values as follows.
+ * zMat3DCreate() creates a 3x3 matrix \a mat from nine values as follows.
  *  |~ \a a11  \a a12  \a a13 ~|
  *  |  \a a21  \a a22  \a a23  |
  *  |_ \a a31  \a a32  \a a33 _|
@@ -114,90 +114,93 @@ __ZEO_EXPORT const zMat3D zmat3Dident;
  *
  * zMat3DCopy() returns a pointer \a m.
  */
-#define _zMat3DCreate(m,a11,a12,a13,a21,a22,a23,a31,a32,a33) do{\
-  _zVec3DCreate( &(m)->b.x, a11, a21, a31 );\
-  _zVec3DCreate( &(m)->b.y, a12, a22, a32 );\
-  _zVec3DCreate( &(m)->b.z, a13, a23, a33 );\
+#define _zMat3DCreate(mat,a11,a12,a13,a21,a22,a23,a31,a32,a33) do{\
+  _zVec3DCreate( &(mat)->b.x, a11, a21, a31 );\
+  _zVec3DCreate( &(mat)->b.y, a12, a22, a32 );\
+  _zVec3DCreate( &(mat)->b.z, a13, a23, a33 );\
 } while(0)
-__ZEO_EXPORT zMat3D *zMat3DCreate(zMat3D *m,
+__ZEO_EXPORT zMat3D *zMat3DCreate(zMat3D *mat,
   double a11, double a12, double a13,
   double a21, double a22, double a23,
   double a31, double a32, double a33);
-#define zMat3DCopy(s,d) zCopy( zMat3D, s, d )
-#define zMat3DZero(m)   zMat3DCopy( ZMAT3DZERO, m )
-#define zMat3DIdent(m)  zMat3DCopy( ZMAT3DIDENT, m )
+#define zMat3DCopy(src,dest) zCopy( zMat3D, src, dest )
+#define zMat3DZero(mat)   zMat3DCopy( ZMAT3DZERO, mat )
+#define zMat3DIdent(mat)  zMat3DCopy( ZMAT3DIDENT, mat )
 
 /*! \brief check if two 3x3 matrices are equal.
  *
- * zMat3DMatch() and zMat3DEqual() check if two 3x3 matrices \a m1 and \a m2 are equal.
+ * zMat3DMatch() and zMat3DEqual() check if two 3x3 matrices \a mat1 and \a mat2 are equal.
  * They return a boolean value.
  *
  * zMat3DMatch() strictly compares the two matrices, while zMat3DEqual() checks if the error between
- * \a m1 and \a m2 are sufficiently small.
+ * \a mat1 and \a mat2 are sufficiently small.
  * \return
- * zMat3DMatch() and zMat3DEqual() return the true value if \a m1 and \a m2 are equal, or false otherwise.
+ * zMat3DMatch() and zMat3DEqual() return the true value if \a mat1 and \a mat2 are equal, or false otherwise.
  */
-#define _zMat3DMatch(m1,m2) ( _zVec3DMatch(&(m1)->b.x,&(m2)->b.x) && _zVec3DMatch(&(m1)->b.y,&(m2)->b.y) && _zVec3DMatch(&(m1)->b.z,&(m2)->b.z) )
-__ZEO_EXPORT bool zMat3DMatch(const zMat3D *m1, const zMat3D *m2);
-#define _zMat3DEqual(m1,m2) ( _zVec3DEqual(&(m1)->b.x,&(m2)->b.x) && _zVec3DEqual(&(m1)->b.y,&(m2)->b.y) && _zVec3DEqual(&(m1)->b.z,&(m2)->b.z) )
-__ZEO_EXPORT bool zMat3DEqual(const zMat3D *m1, const zMat3D *m2);
+#define _zMat3DMatch(mat1,mat2) ( _zVec3DMatch(&(mat1)->b.x,&(mat2)->b.x) && _zVec3DMatch(&(mat1)->b.y,&(mat2)->b.y) && _zVec3DMatch(&(mat1)->b.z,&(mat2)->b.z) )
+__ZEO_EXPORT bool zMat3DMatch(const zMat3D *mat1, const zMat3D *mat2);
+#define _zMat3DEqual(mat1,mat2) ( _zVec3DEqual(&(mat1)->b.x,&(mat2)->b.x) && _zVec3DEqual(&(mat1)->b.y,&(mat2)->b.y) && _zVec3DEqual(&(mat1)->b.z,&(mat2)->b.z) )
+__ZEO_EXPORT bool zMat3DEqual(const zMat3D *mat1, const zMat3D *mat2);
 
 /*! \brief check if a 3x3 matrix is the identity matrix. */
-#define _zMat3DIsIdent(m) _zMat3DEqual( m, ZMAT3DIDENT )
-__ZEO_EXPORT bool zMat3DIsIdent(const zMat3D *m);
+#define _zMat3DIsIdent(mat) _zMat3DEqual( mat, ZMAT3DIDENT )
+__ZEO_EXPORT bool zMat3DIsIdent(const zMat3D *mat);
 
 /*! \brief check if a 3x3 matrix is tiny.
  *
- * zMat3DIsTol() checks if the absolute values of all components of a 3x3 matrix \a m are smaller than \a tol.
+ * zMat3DIsTol() checks if the absolute values of all components of a 3x3 matrix \a mat are smaller than \a tol.
  *
  * zMat3DIsTiny() applies zTOL (defined in zm_misc.h) to the tolerance of zMat3DIsTol().
  * \return
- * zMat3DIsTol() and zMat3DIsTiny() return the true value if the absolute values of all components of \a m
+ * zMat3DIsTol() and zMat3DIsTiny() return the true value if the absolute values of all components of \a mat
  * are smaller than \a tol and zTOL, respectively, or the false value, otherwise.
  * \notes
  * \a tol must be positive.
  * \sa
  * zIsTol, zIsTiny
  */
-#define _zMat3DIsTol(m,tol) ( _zVec3DIsTol( &(m)->b.x, tol ) && _zVec3DIsTol( &(m)->b.y, tol ) && _zVec3DIsTol( &(m)->b.z, tol ) )
-__ZEO_EXPORT bool zMat3DIsTol(const zMat3D *m, double tol);
-#define _zMat3DIsTiny(m) _zMat3DIsTol( m, zTOL )
-#define zMat3DIsTiny(m)  zMat3DIsTol( m, zTOL )
+#define _zMat3DIsTol(mat,tol) ( _zVec3DIsTol( &(mat)->b.x, tol ) && _zVec3DIsTol( &(mat)->b.y, tol ) && _zVec3DIsTol( &(mat)->b.z, tol ) )
+__ZEO_EXPORT bool zMat3DIsTol(const zMat3D *mat, double tol);
+#define _zMat3DIsTiny(mat) _zMat3DIsTol( mat, zTOL )
+#define zMat3DIsTiny(mat)  zMat3DIsTol( mat, zTOL )
 
 /*! \brief abstract row/column vectors from a 3x3 matrix.
  *
- * zMat3DRow() abstracts the \a i th row from a 3x3 matrix \a m and puts it into \a v.
+ * zMat3DRow() abstracts the \a i th row from a 3x3 matrix \a mat and puts it into \a vec.
  *
- * zMat3DCol() abstracts the \a i th column from a 3x3 matrix \a m and puts it into \a v.
+ * zMat3DCol() abstracts the \a i th column from a 3x3 matrix \a mat and puts it into \a vec.
  * \return
- * zMat3DRow() and zMat3DCol() return a pointer \a v.
+ * zMat3DRow() and zMat3DCol() return a pointer \a vec.
  */
-#define _zMat3DRow(m,i,r) _zVec3DCreate( (r), (m)->e[0][(i)], (m)->e[1][(i)], (m)->e[2][(i)] )
-__ZEO_EXPORT zVec3D *zMat3DRow(const zMat3D *m, int i, zVec3D *v);
-#define zMat3DCol(m,i,c)  zVec3DCopy( (&(m)->v[(i)]), c )
+#define _zMat3DRow(mat,i,vec) _zVec3DCreate( (vec), (mat)->e[0][(i)], (mat)->e[1][(i)], (mat)->e[2][(i)] )
+__ZEO_EXPORT zVec3D *zMat3DRow(const zMat3D *mat, int i, zVec3D *vec);
+#define zMat3DCol(mat,i,vec)  zVec3DCopy( zMat3DVec(mat,i), vec )
 
 /*! \brief transpose of a 3x3 matrix.
  *
- * zMat3DT() transposes a 3x3 matrix \a m and puts it into \a tm.
+ * zMat3DT() transposes a 3x3 matrix \a mat, and puts it into \a tmat.
+ *
+ * zMat3DTDRC() directly transposes  3x3 matrix \a mat.
  * \return
- * zMat3DT() returns a pointer \a tm.
+ * zMat3DT() returns a pointer \a tmat.
+ * zMat3DTDRC() returns a pointer \a mat.
  * \notes
- * It is not allowed to let \a tm point to the same address with \a m.
- * When \a tm is the same with \a m, anything might happen.
+ * It is not allowed to let \a tmat point to the same address with \a mat.
+ * When \a tmat is the same with \a mat, anything might happen.
  */
-#define _zMat3DT(m,tm) do{\
-  _zMat3DRow( m, 0, &(tm)->b.x );\
-  _zMat3DRow( m, 1, &(tm)->b.y );\
-  _zMat3DRow( m, 2, &(tm)->b.z );\
+#define _zMat3DT(mat,tmat) do{\
+  _zMat3DRow( mat, 0, &(tmat)->b.x );\
+  _zMat3DRow( mat, 1, &(tmat)->b.y );\
+  _zMat3DRow( mat, 2, &(tmat)->b.z );\
 } while(0)
-#define _zMat3DTDRC(m) do{\
+#define _zMat3DTDRC(mat) do{\
   double __tmp;\
-  __tmp = (m)->e[1][0]; (m)->e[1][0] = (m)->e[0][1]; (m)->e[0][1] = __tmp;\
-  __tmp = (m)->e[2][0]; (m)->e[2][0] = (m)->e[0][2]; (m)->e[0][2] = __tmp;\
-  __tmp = (m)->e[2][1]; (m)->e[2][1] = (m)->e[1][2]; (m)->e[1][2] = __tmp;\
+  __tmp = (mat)->e[1][0]; (mat)->e[1][0] = (mat)->e[0][1]; (mat)->e[0][1] = __tmp;\
+  __tmp = (mat)->e[2][0]; (mat)->e[2][0] = (mat)->e[0][2]; (mat)->e[0][2] = __tmp;\
+  __tmp = (mat)->e[2][1]; (mat)->e[2][1] = (mat)->e[1][2]; (mat)->e[1][2] = __tmp;\
 } while(0)
-__ZEO_EXPORT zMat3D *zMat3DT(const zMat3D *m, zMat3D *tm);
-__ZEO_EXPORT zMat3D *zMat3DTDRC(zMat3D *m);
+__ZEO_EXPORT zMat3D *zMat3DT(const zMat3D *mat, zMat3D *tmat);
+__ZEO_EXPORT zMat3D *zMat3DTDRC(zMat3D *mat);
 
 /*! \brief symmetrize a 3x3 matrix. */
 #define _zMat3DSymmetrize(src,dest) do{\
@@ -210,11 +213,11 @@ __ZEO_EXPORT zMat3D *zMat3DTDRC(zMat3D *m);
 } while(0)
 __ZEO_EXPORT zMat3D *zMat3DSymmetrize(const zMat3D *src, zMat3D *dest);
 
-#define zMat3DSymmetrizeDRC(m) zMat3DSymmetrize( m, m )
+#define zMat3DSymmetrizeDRC(mat) zMat3DSymmetrize( mat, mat )
 
-#define _zMat3DIsSymmetric(m) ( (m)->c.xy == (m)->c.yx && (m)->c.yz == (m)->c.zy && (m)->c.zx == (m)->c.xz )
+#define _zMat3DIsSymmetric(mat) ( (mat)->c.xy == (mat)->c.yx && (mat)->c.yz == (mat)->c.zy && (mat)->c.zx == (mat)->c.xz )
 /*! \brief check if a matrix is square and symmetric. */
-__ZEO_EXPORT bool zMat3DIsSymmetric(const zMat3D *m);
+__ZEO_EXPORT bool zMat3DIsSymmetric(const zMat3D *mat);
 
 /* ********************************************************** */
 /* arithmetics
@@ -468,54 +471,52 @@ __ZEO_EXPORT zMat3D *zMat3DOrthonormalize(const zMat3D *src, zAxis axis1, zAxis 
 #define zMat3DOrthonormalizeDRC(m,axis1,axis2) zMat3DOrthonormalize(m,axis1,axis2,m)
 
 /* ********************************************************** */
-/* inverse of a 3x3 matrix
+/* adjugate & inverse of a 3x3 matrix
  * ********************************************************** */
+
+/* adjugate matrix of a 3x3 matrix. */
+__ZEO_EXPORT zMat3D *zMat3DAdj(const zMat3D *mat, zMat3D *adj_mat);
 
 /*! \brief determinant of a 3x3 matrix.
  *
- * zMat3DDet() computes the determinant of an arbitrary 3x3 matrix \a m.
- * \retval the determinant of \a m
+ * zMat3DDet() computes the determinant of an arbitrary 3x3 matrix \a mat.
+ * \retval the determinant of \a mat
  */
-#define _zMat3DDet(m) ( ( m->c.yy*m->c.zz - m->c.yz*m->c.zy ) * m->c.xx \
-                      + ( m->c.xz*m->c.zy - m->c.xy*m->c.zz ) * m->c.yx \
-                      + ( m->c.xy*m->c.yz - m->c.xz*m->c.yy ) * m->c.zx )
-__ZEO_EXPORT double zMat3DDet(const zMat3D *m);
+#define _zMat3DDet(mat) ( ( (mat)->c.yy*(mat)->c.zz - (mat)->c.yz*(mat)->c.zy ) * (mat)->c.xx \
+                        + ( (mat)->c.xz*(mat)->c.zy - (mat)->c.xy*(mat)->c.zz ) * (mat)->c.yx \
+                        + ( (mat)->c.xy*(mat)->c.yz - (mat)->c.xz*(mat)->c.yy ) * (mat)->c.zx )
+__ZEO_EXPORT double zMat3DDet(const zMat3D *mat);
 
 /*! \brief inverse of a 3x3 matrix.
  *
- * zMat3DInv() computes the inverse matrix of an arbitrary 3x3 matrix \a m
- * and puts it into \a im. It does not assume that \a m is an orthonormal
- * matrix.
+ * zMat3DInv() computes the inverse matrix of an arbitrary 3x3 matrix \a mat, and puts it into \a inv_mat.
+* It does not assume that \a mat is an orthonormal matrix.
  * \return
- * zMat3DInv() returns a pointer \a im, if it succeeds. If \a m is singular,
- * it returns the null pointer.
+ * zMat3DInv() returns a pointer \a inv_mat, if it succeeds.
+ * If \a mat is singular, it returns the null pointer.
  * \notes
- * \a im has to point to a different address from \a m. If \a im is the
- * same with \a m, anything might happen.
+ * \a inv_mat has to point to a different address from \a mat. If \a inv_mat is the same with \a mat,
+ * anything might happen.
  */
-__ZEO_EXPORT zMat3D *zMat3DInv(const zMat3D *m, zMat3D *im);
+__ZEO_EXPORT zMat3D *zMat3DInv(const zMat3D *mat, zMat3D *inv_mat);
 
 /* ********************************************************** */
 /* multiplication of a 3D vector by a 3x3 matrix
  * ********************************************************** */
 
-/*! \brief multiply a 3D vector and a 3x3 matrix.
+/*! \brief multiply a 3x3 matrix and a 3D vector.
  *
- * zMulMat3DVec3D() multiplies a 3D vector \a v by a 3x3 matrix \a m and puts
- * it into \a mv.
+ * zMulMat3DVec3D() multiplies a 3D vector \a v by a 3x3 matrix \a m and puts it into \a mv.
  *
- * zMulMat3DTVec3D() multiplies a 3D vector \a v by the transpose matrix of
- * a 3x3 matrix \a m and puts it into \a mv.
+ * zMulMat3DTVec3D() multiplies a 3D vector \a v by the transpose matrix of a 3x3 matrix \a m
+ * and puts it into \a mv.
  *
  * zMulMat3DVec3DDRC() directly multiplies a 3D vector \a v by a 3x3 matrix \a m.
  *
- * zMulMat3DTVec3DDRC() directly multiplies a 3D vector v by the transpose
- * of a 3x3 matrix \a m.
- *
- * zMulInvMat3DVec3D() multiplies a 3D vector \a v by the inverse of a 3x3
- * matrix \a m and puts it into \a miv.
+ * zMulMat3DTVec3DDRC() directly multiplies a 3D vector v by the transpose of a 3x3 matrix \a m.
  * \return
- * Each function returns a pointer to the result.
+ * zMulMat3DVec3D() and zMulMat3DTVec3D() return a pointer \a mv.
+ * zMulMat3DVec3DDRC() and zMulMat3DTVec3DDRC() return a pointer \a v.
  */
 #define _zMulMat3DVec3D(m,v,mv) do{\
   double __x, __y, __z;\
@@ -534,19 +535,32 @@ __ZEO_EXPORT zVec3D *zMulMat3DVec3D(const zMat3D *m, const zVec3D *v, zVec3D *mv
 } while(0)
 __ZEO_EXPORT zVec3D *zMulMat3DTVec3D(const zMat3D *m, const zVec3D *v, zVec3D *mv);
 
-/*! \brief directly multiply a 3D vector by a 3x3 matrix.
- */
+/*! \brief directly multiply a 3D vector by a 3x3 matrix. */
 #define _zMulMat3DVec3DDRC(m,v) _zMulMat3DVec3D(m,v,v)
 __ZEO_EXPORT zVec3D *zMulMat3DVec3DDRC(const zMat3D *m, zVec3D *v);
 
-/*! \brief directly multiply a 3D vector by transpose of a 3x3 matrix.
- */
+/*! \brief directly multiply a 3D vector by transpose of a 3x3 matrix. */
 #define _zMulMat3DTVec3DDRC(m,v) _zMulMat3DTVec3D(m,v,v)
 __ZEO_EXPORT zVec3D *zMulMat3DTVec3DDRC(const zMat3D *m, zVec3D *v);
 
-/*! \brief multiply a 3D vector by inverse of a 3x3 matrix.
+/*! \brief multiply a 3D vector by adjugate of a 3x3 matrix.
+ *
+ * zMulInvMat3DVec3D() multiplies a 3D vector \a vec by the adjugate of a 3x3 matrix \a mat,
+ * and puts it into \a adj_vec.
+ * \return
+ * zMulInvMat3DVec3D() returns a pointer \a adj_vec.
  */
-__ZEO_EXPORT zVec3D *zMulInvMat3DVec3D(const zMat3D *m, const zVec3D *v, zVec3D *imv);
+__ZEO_EXPORT zVec3D *zMulAdjMat3DVec3D(const zMat3D *mat, const zVec3D *vec, zVec3D *adj_vec);
+
+/*! \brief multiply a 3D vector by inverse of a 3x3 matrix.
+ *
+ * zMulInvMat3DVec3D() multiplies a 3D vector \a vec by the inverse of a 3x3 matrix \a mat,
+ * and puts it into \a inv_vec.
+ * \return
+ * zMulInvMat3DVec3D() returns a pointer \a inv_vec, if \a mat is regular. If \a mat is not regular,
+ * it returns the null pointer.
+ */
+__ZEO_EXPORT zVec3D *zMulInvMat3DVec3D(const zMat3D *mat, const zVec3D *vec, zVec3D *inv_vec);
 
 /*! \brief inversely compute the concatenate ratio of a 3D vector.
  *
@@ -602,12 +616,22 @@ __ZEO_EXPORT zMat3D *zMulMat3DMat3DT(const zMat3D *m1, const zMat3D *m2, zMat3D 
 #define zMulMat3DTMat3DDRC(m1,m2) zMulMat3DTMat3D(m1,m2,m2)
 #define zMulMat3DMat3DTDRC(m1,m2) zMulMat3DMat3DT(m1,m2,m1)
 
+/*! \brief multiply a 3x3 matrix by adjugate of another 3x3 matrix.
+ *
+ * zMulAdjMat3DMat3D() multiplies a 3x3 matrix \a m2 by the adjugate of the other 3x3 matrix \a m1
+ * from the leftside, and puts it into \a m.
+ * \return
+ * zMulAdjMat3DMat3D() returns the pointer \a m.
+ */
+__ZEO_EXPORT zMat3D *zMulAdjMat3DMat3D(const zMat3D *m1, const zMat3D *m2, zMat3D *m);
+
 /*! \brief multiply the inverse of a 3x3 matrix to another.
  *
  * zMulInvMat3DMat3D() multiplies a 3x3 matrix \a m2 by the inverse of the other 3x3 matrix \a m1
  * from the leftside, and puts it into \a m.
  * \return
- * zMulInvMat3DMat3D() returns the pointer \a m.
+ * zMulInvMat3DMat3D() returns the pointer \a m, if \a m1 is regular.
+ * If \a m1 is not regular, it returns the null pointer.
  */
 __ZEO_EXPORT zMat3D *zMulInvMat3DMat3D(const zMat3D *m1, const zMat3D *m2, zMat3D *m);
 

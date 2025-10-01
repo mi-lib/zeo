@@ -178,20 +178,22 @@ double zPH3DClosest(const zPH3D *ph, const zVec3D *point, zVec3D *closestpoint)
 {
   int i;
   zVec3D ncp;
-  double d, dmin;
+  double dist, dist_min = HUGE_VAL;
 
+  zVec3DCopy( point, closestpoint );
   if( zPH3DFaceNum(ph) == 0 ){
     ZRUNWARN( ZEO_ERR_NOFACE );
-    zVec3DCopy( point, closestpoint );
     return 0;
   }
-  dmin = zTri3DClosest( zPH3DFace(ph,0), point, closestpoint );
-  for( i=1; i<zPH3DFaceNum(ph); i++ )
-    if( ( d = zTri3DClosest( zPH3DFace(ph,i), point, &ncp ) ) < dmin ){
-      zVec3DCopy( &ncp, closestpoint );
-      dmin = d;
+  for( i=0; i<zPH3DFaceNum(ph); i++ ){
+    if( ( dist = zTri3DSignedClosest( zPH3DFace(ph,i), point, &ncp ) ) > 0 ){
+      if( dist < dist_min ){
+        zVec3DCopy( &ncp, closestpoint );
+        dist_min = dist;
+      }
     }
-  return dmin;
+  }
+  return dist_min == HUGE_VAL ? 0 : dist_min;
 }
 
 /* distance from a point to a 3D polyhedron. */
