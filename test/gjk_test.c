@@ -65,8 +65,8 @@ void assert_box(void)
   create_box_points( p1, N, &box1 );
   create_box_points( p2, N, &box2 );
   zGJK( &data1, &data2, &c1, &c2 );
-  zVec3DPrint( &c1 );
-  zVec3DPrint( &c2 );
+  zVec3DFPrint( stderr, &c1 );
+  zVec3DFPrint( stderr, &c2 );
   zVec3DCreate( &c1_ans, 1, 1, 1 );
   zVec3DCreate( &c2_ans, 1, 1, 1 );
   /* zAssert( zGJK (degraded volume case 5), zVec3DEqual( &c1, &c1_ans ) && zVec3DEqual( &c2, &c2_ans ) ); */

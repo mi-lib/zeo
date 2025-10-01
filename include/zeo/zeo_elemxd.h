@@ -236,8 +236,10 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
     } \
   }
 
+#define ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN_PROTOTYPE(XD) \
+  double zEdge##XD##ClosestFromOrigin(const zVec##XD *vert0, const zVec##XD *vert1, double *s0, double *s1, zVec##XD *closestpoint)
 #define ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN(XD) \
-  static double _zEdge##XD##ClosestFromOrigin(const zVec##XD *vert0, const zVec##XD *vert1, double *s0, double *s1, zVec##XD *closestpoint){ \
+  ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN_PROTOTYPE( XD ){ \
     zVec2D l = { { 1.0, 1.0 } }, u; \
     zMat2D vtv; \
     double d; \
@@ -271,7 +273,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
     double s0, s1; \
     zVec##XD##Sub( zEdge##XD##Vert(edge,0), point, &v0 ); \
     zVec##XD##Sub( zEdge##XD##Vert(edge,1), point, &v1 ); \
-    dist = _zEdge##XD##ClosestFromOrigin( &v0, &v1, &s0, &s1, closestpoint ); \
+    dist = zEdge##XD##ClosestFromOrigin( &v0, &v1, &s0, &s1, closestpoint ); \
     zVec##XD##AddDRC( closestpoint, point ); \
     return dist; \
   }

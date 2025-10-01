@@ -78,9 +78,10 @@ ZEO_ELEM_EDGEXD_POINT_IS_ON_LINE( 2D )
 /* check if a point is on a 2D edge. */
 ZEO_ELEM_EDGEXD_POINT_IS_ON( 2D )
 
-/* the closest point from point to a 2D edge. */
+/* the closest point from the origin to a 2D edge, and find coefficents of linear sum. */
 ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN( 2D )
 
+/* the closest point from point to a 2D edge. */
 ZEO_ELEM_EDGEXD_CLOSEST( 2D )
 
 /* contiguous vertix of a 2D edge to a point. */
@@ -128,7 +129,7 @@ static bool _zTri2DClosestFromOrigin_TestEdge(const zVec2D *vert0, const zVec2D 
 {
   double dist;
   zVec2D cp;
-  if( ( dist = _zEdge2DClosestFromOrigin( vert0, vert1, s0, s1, &cp ) ) < *dist_min ){
+  if( ( dist = zEdge2DClosestFromOrigin( vert0, vert1, s0, s1, &cp ) ) < *dist_min ){
     *s2 = 0;
     *dist_min = dist;
     zVec2DCopy( &cp, closestpoint );
@@ -137,8 +138,8 @@ static bool _zTri2DClosestFromOrigin_TestEdge(const zVec2D *vert0, const zVec2D 
   return false;
 }
 
-/* the closest point from a 2D point to a 2D triangle. */
-static double _zTri2DClosestFromOrigin(const zVec2D *vert0, const zVec2D *vert1, const zVec2D *vert2, double *s0, double *s1, double *s2, zVec2D *closestpoint)
+/* the closest point from the origin to a 2D triangle. */
+double zTri2DClosestFromOrigin(const zVec2D *vert0, const zVec2D *vert1, const zVec2D *vert2, double *s0, double *s1, double *s2, zVec2D *closestpoint)
 {
   double inv_det, dist_min = HUGE_VAL;
   double s[3][3];
@@ -167,6 +168,7 @@ static double _zTri2DClosestFromOrigin(const zVec2D *vert0, const zVec2D *vert1,
   return zVec2DNorm( closestpoint );
 }
 
+/* the closest point from a 2D point to a 2D triangle. */
 double zTri2DClosest(const zTri2D *tri, const zVec2D *point, zVec2D *closestpoint)
 {
   zVec2D vert[3];
@@ -175,7 +177,7 @@ double zTri2DClosest(const zTri2D *tri, const zVec2D *point, zVec2D *closestpoin
   zVec2DSub( zTri2DVert(tri,0), point, &vert[0] );
   zVec2DSub( zTri2DVert(tri,1), point, &vert[1] );
   zVec2DSub( zTri2DVert(tri,2), point, &vert[2] );
-  dist = _zTri2DClosestFromOrigin( &vert[0], &vert[1], &vert[2], &s0, &s1, &s2, closestpoint );
+  dist = zTri2DClosestFromOrigin( &vert[0], &vert[1], &vert[2], &s0, &s1, &s2, closestpoint );
   zVec2DAddDRC( closestpoint, point );
   return dist;
 }

@@ -102,8 +102,10 @@ ZEO_ELEM_EDGEXD_POINT_IS_ON_LINE( 3D )
 /* check if a point is on the edge (to be debugged). */
 ZEO_ELEM_EDGEXD_POINT_IS_ON( 3D )
 
-/* the closest point from point to a 3D edge. */
+/* the closest point from the origin to a 3D edge, and find coefficents of linear sum. */
 ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN( 3D )
+
+/* the closest point from point to a 3D edge. */
 ZEO_ELEM_EDGEXD_CLOSEST( 3D )
 
 /* contiguous vertix of a 3D edge to a point. */
@@ -318,7 +320,7 @@ static bool _zTri3DClosestFromOrigin_TestEdge(const zVec3D *vert0, const zVec3D 
 {
   double dist;
   zVec3D cp;
-  if( ( dist = _zEdge3DClosestFromOrigin( vert0, vert1, s0, s1, &cp ) ) < *dist_min ){
+  if( ( dist = zEdge3DClosestFromOrigin( vert0, vert1, s0, s1, &cp ) ) < *dist_min ){
     *s2 = 0;
     *dist_min = dist;
     zVec3DCopy( &cp, closestpoint );
@@ -328,7 +330,7 @@ static bool _zTri3DClosestFromOrigin_TestEdge(const zVec3D *vert0, const zVec3D 
 }
 
 /* closest point on a triangle composed by three given 3D points to the origin. */
-static double _zTri3DClosestFromOrigin(const zVec3D *vert0, const zVec3D *vert1, const zVec3D *vert2, double *s0, double *s1, double *s2, zVec3D *closestpoint)
+double zTri3DClosestFromOrigin(const zVec3D *vert0, const zVec3D *vert1, const zVec3D *vert2, double *s0, double *s1, double *s2, zVec3D *closestpoint)
 {
   zTri3D tri;
   double inv_det, dist_min = HUGE_VAL;
@@ -368,7 +370,7 @@ double zTri3DClosest(const zTri3D *tri, const zVec3D *point, zVec3D *closestpoin
   zVec3DSub( zTri3DVert(tri,0), point, &v[0] );
   zVec3DSub( zTri3DVert(tri,1), point, &v[1] );
   zVec3DSub( zTri3DVert(tri,2), point, &v[2] );
-  dist = _zTri3DClosestFromOrigin( &v[0], &v[1], &v[2], &s[0], &s[1], &s[2], closestpoint );
+  dist = zTri3DClosestFromOrigin( &v[0], &v[1], &v[2], &s[0], &s[1], &s[2], closestpoint );
   zVec3DAddDRC( closestpoint, point );
   return dist;
 }
@@ -545,7 +547,7 @@ static bool _zTetra3DClosestFromOrigin_TestTri(const zVec3D *vert0, const zVec3D
 {
   double dist;
   zVec3D cp;
-  if( ( dist = _zTri3DClosestFromOrigin( vert0, vert1, vert2, s0, s1, s2, &cp ) ) < *dist_min ){
+  if( ( dist = zTri3DClosestFromOrigin( vert0, vert1, vert2, s0, s1, s2, &cp ) ) < *dist_min ){
     *s3 = 0;
     *dist_min = dist;
     zVec3DCopy( &cp, closestpoint );

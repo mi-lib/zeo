@@ -109,6 +109,20 @@ __ZEO_EXPORT ZEO_ELEM_EDGEXD_POINT_IS_ON_PROTOTYPE( 3D );
 
 /*! \brief closest point from a 3D point to a 3D edge.
  *
+ * zEdge3DClosestFromOrigin() finds the closest point from the origin to a 3D edge composed of two
+ * 3D points \a vert0 and \a vert1. The result is put into \a closestpoint.
+ * When the perpendicular from the origin to the edge is not in the edge span, it returns the closest
+ * point of \a vert0 and \a vert1 to the origin.
+ * Moreover, zEdge3DClosestFromOrigin() finds coefficients of the linear sum of the closest point,
+ * namely, s0 and s1 that satisfy \a closestpoint = s0 \a vert0 + s1 \a vert1. The values are stored
+ * where \a s0 and \a s1 point, respectively.
+ * \return
+ * zEdge3DClosestFromOrigin() returns the distance between the origin and \a closestpoint.
+ */
+__ZEO_EXPORT ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN_PROTOTYPE( 3D );
+
+/*! \brief closest point from a 3D point to a 3D edge.
+ *
  * zEdge3DClosest() finds the closest point from a 3D point \a point to a 3D edge \a edge.
  * The result is put into \a closestpoint.
  * When the perpendicular from \a point to \a edge is not on \a edge, it returns the contiguous
@@ -331,6 +345,20 @@ __ZEO_EXPORT double zTri3DProjPoint(const zTri3D *tri, const zVec3D *point, zVec
 
 /* TO BE REMOVED. */
 __ZEO_EXPORT double zTri3DLinScale(const zTri3D *tri, const zVec3D *p, double *l0, double *l1, double *l2, zVec3D *cp);
+
+/*! \brief closest point from a 3D point to a 3D triangle.
+ *
+ * zTri3DClosestFromOrigin() finds the closest point from the origin to a 3D triangle composed of three
+ * 3D points \a vert0, \a vert1, and \a vert2. The result is put into \a closestpoint.
+ * When the perpendicular from the origin to the triangle is outside of the area, it returns the closest
+ * vertex of \a vert0, \a vert1, and \a vert2 to the origin.
+ * Moreover, zTri3DClosestFromOrigin() finds coefficients of the linear sum of the closest point,
+ * namely, s0, s1, and s2 that satisfy \a closestpoint = s0 \a vert0 + s1 \a vert1 + s2 \a vert2.
+ * The values are stored where \a s0, \a s1, and \a s2 point, respectively.
+ * \return
+ * zTri3DClosestFromOrigin() returns the distance between the origin and \a closestpoint.
+ */
+__ZEO_EXPORT double zTri3DClosestFromOrigin(const zVec3D *vert0, const zVec3D *vert1, const zVec3D *vert2, double *s0, double *s1, double *s2, zVec3D *closestpoint);
 
 /*! \brief the closest point from a point to a 3D triangle.
  *

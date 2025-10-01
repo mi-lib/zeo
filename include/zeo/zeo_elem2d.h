@@ -109,6 +109,20 @@ __ZEO_EXPORT ZEO_ELEM_EDGEXD_DIST_FROM_POINT_PROTOTYPE( 2D );
 
 /*! \brief closest point from a 2D point to a 2D edge.
  *
+ * zEdge2DClosestFromOrigin() finds the closest point from the origin to a 2D edge composed of two
+ * 2D points \a vert0 and \a vert1. The result is put into \a closestpoint.
+ * When the perpendicular from the origin to the edge is not in the edge span, it returns the closest
+ * point of \a vert0 and \a vert1 to the origin.
+ * Moreover, zEdge2DClosestFromOrigin() finds coefficients of the linear sum of the closest point,
+ * namely, s0 and s1 that satisfy \a closestpoint = s0 \a vert0 + s1 \a vert1. The values are stored
+ * where \a s0 and \a s1 point, respectively.
+ * \return
+ * zEdge3DClosestFromOrigin() returns the distance between the origin and \a closestpoint.
+ */
+__ZEO_EXPORT ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN_PROTOTYPE( 2D );
+
+/*! \brief closest point from a 2D point to a 2D edge.
+ *
  * zEdge2DClosest() finds the closest point from a 2D point \a point to a 2D edge \a edge.
  * The result is put into \a closestpoint.
  * When the perpendicular from \a point to \a edge is not on \a edge, it returns the contiguous
@@ -194,6 +208,20 @@ __ZEO_EXPORT ZEO_ELEM_TRIXD_ORTHOCENTER_PROTOTYPE( 2D );
  * zTri2DContigVert() returns a pointer to the found vertix.
  */
 __ZEO_EXPORT ZEO_ELEM_TRIXD_CONTIG_VERT_PROTOTYPE( 2D );
+
+/*! \brief closest point from a 2D point to a 2D triangle.
+ *
+ * zTri2DClosestFromOrigin() finds the closest point from the origin to a 2D triangle composed of three
+ * 2D points \a vert0, \a vert1, and \a vert2. The result is put into \a closestpoint.
+ * When the perpendicular from the origin to the triangle is outside of the area, it returns the closest
+ * vertex of \a vert0, \a vert1, and \a vert2 to the origin.
+ * Moreover, zTri2DClosestFromOrigin() finds coefficients of the linear sum of the closest point,
+ * namely, s0, s1, and s2 that satisfy \a closestpoint = s0 \a vert0 + s1 \a vert1 + s2 \a vert2.
+ * The values are stored where \a s0, \a s1, and \a s2 point, respectively.
+ * \return
+ * zTri3DClosestFromOrigin() returns the distance between the origin and \a closestpoint.
+ */
+__ZEO_EXPORT double zTri2DClosestFromOrigin(const zVec2D *vert0, const zVec2D *vert1, const zVec2D *vert2, double *s0, double *s1, double *s2, zVec2D *closestpoint);
 
 /*! \brief the closest point from a point to a 2D triangle.
  *
