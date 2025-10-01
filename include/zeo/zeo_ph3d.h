@@ -12,9 +12,8 @@
 __BEGIN_DECLS
 
 /* ********************************************************** */
-/* CLASS: zPH3D
- * 3D polyhedron class
- * ********************************************************** */
+/*! \brief 3D polyhedron class.
+ *//* ******************************************************* */
 
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPH3D ){
   zVec3DArray vert_array;

@@ -1,3 +1,4 @@
+#include <zeo/zeo_shape3d.h>
 #include <zeo/zeo_col.h>
 
 #define S 0.3
@@ -7,7 +8,7 @@ void box_create(zBox3D *box)
 {
   zBox3DInit( box );
   zVec3DCreate( zBox3DCenter(box), zRandF(-S,S), zRandF(-S,S), zRandF(-S,S) );
-  zMat3DFromZYX( zFrame3DAtt(&box->f), zRandF(-zPI,zPI),zRandF(-zPI_2,zPI_2),zRandF(-zPI,zPI) );
+  zMat3DFromZYX( zFrame3DAtt(&box->frame), zRandF(-zPI,zPI),zRandF(-zPI_2,zPI_2),zRandF(-zPI,zPI) );
   zBox3DSetWidth( box, zRandF(0.5*W,W) );
   zBox3DSetHeight( box, zRandF(0.5*W,W) );
   zBox3DSetDepth( box, zRandF(0.5*W,W) );

@@ -1,3 +1,4 @@
+#include <zeo/zeo_shape3d.h>
 #include <zeo/zeo_col.h>
 
 void test_tri_box(zVec3D p[], zTri3D *t, zAABox3D *b)

@@ -20,6 +20,7 @@ void output_ph(FILE *fp, zPH3D *ph, int i)
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: color%d\n", i );
   zPH3DFPrintZTK( fp, ph );
+  fprintf( fp, "\n" );
   zOpticalInfoDestroy( &oi );
 }
 
@@ -32,8 +33,9 @@ void create_ph(shape_t *shape, int ns, int nv)
   FILE *fp;
 
   zVec3DDataInitArray( &data_src, nv );
-  fp = fopen( "vast_src", "w" );
+  fp = fopen( "vast_src.ztk", "w" );
   for( i=0; i<ns; i++ ){
+    zVec3DDataRewind( &data_src );
     x0 = zRandF(-0.4,0.4);
     y0 = zRandF(-0.4,0.4);
     z0 = zRandF(-0.4,0.4);
@@ -42,7 +44,7 @@ void create_ph(shape_t *shape, int ns, int nv)
       zVec3DDataAdd( &data_src, &v );
     }
     zVec3DDataConvexHull( &data_src, &shape[i].ph );
-    zVec3DDataAssignArray( &data_ph, &shape[i].ph.vert );
+    zVec3DDataAssignArray( &data_ph, zPH3DVertArray(&shape[i].ph) );
     zVec3DDataOBB( &data_ph, &shape[i].obb );
     zVec3DDataAABB( &data_ph, &shape[i].aabb, NULL );
     output_ph( fp, &shape[i].ph, i );
@@ -61,11 +63,11 @@ void colchk_bruteforce_gjk(shape_t *shape, int ns)
   zVec3DData data1, data2;
   FILE *fp;
 
-  fp = fopen( "vast_GJK", "w" );
+  fp = fopen( "vast_pair_GJK", "w" );
   for( i=0; i<ns; i++ ){
-    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
+    zVec3DDataAssignArray( &data1, zPH3DVertArray(&shape[i].ph) );
     for( j=i+1; j<ns; j++ ){
-      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
+      zVec3DDataAssignArray( &data2, zPH3DVertArray(&shape[j].ph) );
       if( zGJK( &data1, &data2, &ca, &cb ) ){
         fprintf( fp, "%d-%d\n", i, j );
       }
@@ -83,11 +85,11 @@ void colchk_obb_gjk(shape_t *shape, int ns)
   zVec3DData data1, data2;
   FILE *fp;
 
-  fp = fopen( "vast_OBB", "w" );
+  fp = fopen( "vast_pair_OBB", "w" );
   for( i=0; i<ns; i++ ){
-    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
+    zVec3DDataAssignArray( &data1, zPH3DVertArray(&shape[i].ph) );
     for( j=i+1; j<ns; j++ ){
-      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
+      zVec3DDataAssignArray( &data2, zPH3DVertArray(&shape[j].ph) );
       if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
         if( zGJK( &data1, &data2, &ca, &cb ) ){
           fprintf( fp, "%d-%d\n", i, j );
@@ -108,15 +110,15 @@ void colchk_aabb_gjk(shape_t *shape, int ns)
   FILE *fp;
 
   for( i=0; i<ns; i++ ){
-    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
+    zVec3DDataAssignArray( &data1, zPH3DVertArray(&shape[i].ph) );
     zVec3DDataAABB( &data1, &shape[i].aabb, NULL );
   }
 
-  fp = fopen( "vast_AABB", "w" );
+  fp = fopen( "vast_pair_AABB", "w" );
   for( i=0; i<ns; i++ ){
-    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
+    zVec3DDataAssignArray( &data1, zPH3DVertArray(&shape[i].ph) );
     for( j=i+1; j<ns; j++ ){
-      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
+      zVec3DDataAssignArray( &data2, zPH3DVertArray(&shape[j].ph) );
       if( zColChkAABox3D( &shape[i].aabb, &shape[j].aabb ) ){
         if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
           if( zGJK( &data1, &data2, &ca, &cb ) ){
@@ -141,11 +143,11 @@ void colchk_obb_aabb_gjk(shape_t *shape, int ns)
   for( i=0; i<ns; i++ )
     zBox3DToAABox3D( &shape[i].obb, &shape[i].aabb );
 
-  fp = fopen( "vast_OBB_AABB", "w" );
+  fp = fopen( "vast_pair_OBB_AABB", "w" );
   for( i=0; i<ns; i++ ){
-    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
+    zVec3DDataAssignArray( &data1, zPH3DVertArray(&shape[i].ph) );
     for( j=i+1; j<ns; j++ ){
-      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
+      zVec3DDataAssignArray( &data2, zPH3DVertArray(&shape[j].ph) );
       if( zColChkAABox3D( &shape[i].aabb, &shape[j].aabb ) ){
         if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
           if( zGJK( &data1, &data2, &ca, &cb ) ){
@@ -168,11 +170,11 @@ void colchk_bruteforce_mpr(shape_t *shape, int ns)
   zVec3DData data1, data2;
   FILE *fp;
 
-  fp = fopen( "vast_MPR", "w" );
+  fp = fopen( "vast_pair_MPR", "w" );
   for( i=0; i<ns; i++ ){
-    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
+    zVec3DDataAssignArray( &data1, zPH3DVertArray(&shape[i].ph) );
     for( j=i+1; j<ns; j++ ){
-      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
+      zVec3DDataAssignArray( &data2, zPH3DVertArray(&shape[j].ph) );
       if( zMPR( &data1, &data2 ) ){
         fprintf( fp, "%d-%d\n", i, j );
       }
@@ -189,11 +191,11 @@ void colchk_obb_mpr(shape_t *shape, int ns)
   zVec3DData data1, data2;
   FILE *fp;
 
-  fp = fopen( "vast_OBB", "w" );
+  fp = fopen( "vast_pair_OBB", "w" );
   for( i=0; i<ns; i++ ){
-    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
+    zVec3DDataAssignArray( &data1, zPH3DVertArray(&shape[i].ph) );
     for( j=i+1; j<ns; j++ ){
-      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
+      zVec3DDataAssignArray( &data2, zPH3DVertArray(&shape[j].ph) );
       if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
         if( zMPR( &data1, &data2 ) ){
           fprintf( fp, "%d-%d\n", i, j );
@@ -213,15 +215,15 @@ void colchk_aabb_mpr(shape_t *shape, int ns)
   FILE *fp;
 
   for( i=0; i<ns; i++ ){
-    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
+    zVec3DDataAssignArray( &data1, zPH3DVertArray(&shape[i].ph) );
     zVec3DDataAABB( &data1, &shape[i].aabb, NULL );
   }
 
-  fp = fopen( "vast_AABB", "w" );
+  fp = fopen( "vast_pair_AABB", "w" );
   for( i=0; i<ns; i++ ){
-    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
+    zVec3DDataAssignArray( &data1, zPH3DVertArray(&shape[i].ph) );
     for( j=i+1; j<ns; j++ ){
-      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
+      zVec3DDataAssignArray( &data2, zPH3DVertArray(&shape[j].ph) );
       if( zColChkAABox3D( &shape[i].aabb, &shape[j].aabb ) ){
         if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
           if( zMPR( &data1, &data2 ) ){
@@ -245,11 +247,11 @@ void colchk_obb_aabb_mpr(shape_t *shape, int ns)
   for( i=0; i<ns; i++ )
     zBox3DToAABox3D( &shape[i].obb, &shape[i].aabb );
 
-  fp = fopen( "vast_OBB_AABB", "w" );
+  fp = fopen( "vast_pair_OBB_AABB", "w" );
   for( i=0; i<ns; i++ ){
-    zVec3DDataAssignArray( &data1, &shape[i].ph.vert );
+    zVec3DDataAssignArray( &data1, zPH3DVertArray(&shape[i].ph) );
     for( j=i+1; j<ns; j++ ){
-      zVec3DDataAssignArray( &data2, &shape[j].ph.vert );
+      zVec3DDataAssignArray( &data2, zPH3DVertArray(&shape[j].ph) );
       if( zColChkAABox3D( &shape[i].aabb, &shape[j].aabb ) ){
         if( zColChkBox3D( &shape[i].obb, &shape[j].obb ) ){
           if( zMPR( &data1, &data2 ) ){

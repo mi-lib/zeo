@@ -1,3 +1,4 @@
+2025.10.02. Debugged the benchmark test of GJK / MPR in example/colchk. [example]
 2025.10.01. Debugged zPH3DClosest by using zTri3DSignedClosest. [zeo_ph3d]
 2025.10.01. Abolished ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN_CACHED, and reimplemented ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN. [zeo_elemxd, zeo_elem2d, zeo_elem3d]
 2025.10.01. Modified _zTri3DClosestFromOrigin to use geometric approach instead of quadratic programming. [zeo_elem3d]

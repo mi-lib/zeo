@@ -1,7 +1,7 @@
+#include <zeo/zeo_shape3d.h>
 #include <zeo/zeo_col.h>
-#include <zeo/zeo_bv3d.h>
 
-#define DEGENERATE
+#define DEGENERATE 0
 
 void vec_create_rand(zVec3DData *data, int n, double x, double y, double z, double r)
 {
@@ -10,7 +10,7 @@ void vec_create_rand(zVec3DData *data, int n, double x, double y, double z, doub
 
   zVec3DDataInitList( data );
   for( i=0; i<n; i++ ){
-#ifdef DEGENERATE
+#if DEGENERATE == 1
     zVec2DCreatePolar( (zVec2D *)&v, zRandF(0,r), zRandF(-zPI,zPI) );
     v.e[zX] += x;
     v.e[zY] += y;
@@ -80,6 +80,7 @@ void output(char filename[], zVec3DData *data1, zVec3DData *data2, zVec3D *c1, z
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
   zPH3DFPrintZTK( fp, &ch );
+  fprintf( fp, "\n" );
   zPH3DDestroy( &ch );
   /* convex set 2 */
   zVec3DDataConvexHull( data2, &ch );
@@ -108,7 +109,8 @@ int main(int argc, char *argv[])
   vec_create_rand( &a, N, 0, 0, 0, 0.2 );
   vec_create_rand( &b, N, x, y, z, 0.2 );
   printf( "in collision? %s\n", zBoolStr( zGJK( &a, &b, &ca, &cb ) ) );
-  output( "a", &a, &b, &ca, &cb );
+  output( "gjk_result.ztk", &a, &b, &ca, &cb );
+  printf( "The result can be seen by\n%% rk_view gjk_result.ztk -auto\n" );
   zVec3DDataDestroy( &a );
   zVec3DDataDestroy( &b );
   return 0;

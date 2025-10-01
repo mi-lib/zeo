@@ -1,3 +1,4 @@
+#include <zeo/zeo_shape3d.h>
 #include <zeo/zeo_col.h>
 
 void test_plane_box(zVec3D *p0, zPlane3D *p, zAABox3D *b)

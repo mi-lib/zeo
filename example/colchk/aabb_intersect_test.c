@@ -1,3 +1,4 @@
+#include <zeo/zeo_mshape3d.h>
 #include <zeo/zeo_col.h>
 
 void test_box(zAABox3D *b1, zAABox3D *b2)

@@ -1,3 +1,4 @@
+#include <zeo/zeo_shape3d.h>
 #include <zeo/zeo_col.h>
 
 void output_src(zVec3DData *data1, zVec3DData *data2)

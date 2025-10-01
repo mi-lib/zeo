@@ -1,3 +1,4 @@
+#include <zeo/zeo_shape3d.h>
 #include <zeo/zeo_col.h>
 
 void output_sphere_aabox(zSphere3D *sphere, zAABox3D *aabox)
