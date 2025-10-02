@@ -23,6 +23,7 @@ __BEGIN_DECLS
     bool (* is_empty)(zVec##XD##Data *); \
     bool (* add)(zVec##XD##Data *, const zVec##XD *); \
     void (* rewind)(zVec##XD##Data *); \
+    zVec##XD *(* peek)(zVec##XD##Data *); \
     zVec##XD *(* fetch)(zVec##XD##Data *); \
   }
 
@@ -73,6 +74,7 @@ __BEGIN_DECLS
 #define zVecXDDataIsEmpty(data)  (data)->method->is_empty( data )
 #define zVecXDDataAdd(data,v)    (data)->method->add( data, v )
 #define zVecXDDataRewind(data)   (data)->method->rewind( data )
+#define zVecXDDataPeek(data)     (data)->method->peek( data )
 #define zVecXDDataFetch(data)    (data)->method->fetch( data )
 
 /* methods for individual dataset representations */
@@ -83,6 +85,7 @@ __BEGIN_DECLS
   static bool _zVec##XD##DataDummyIsEmpty(zVec##XD##Data *data){ return true; } \
   static bool _zVec##XD##DataDummyAdd(zVec##XD##Data *data, const zVec##XD *vec){ return false; } \
   static void _zVec##XD##DataDummyRewind(zVec##XD##Data *data){} \
+  static zVec##XD *_zVec##XD##DataDummyPeek(zVec##XD##Data *data){ return NULL; } \
   static zVec##XD *_zVec##XD##DataDummyFetch(zVec##XD##Data *data){ return NULL; } \
   static const zVec##XD##DataMethod zeo_vec##XD##_data_method_dummy = { \
     destroy:  _zVec##XD##DataDummyDestroy, \
@@ -90,6 +93,7 @@ __BEGIN_DECLS
     is_empty: _zVec##XD##DataDummyIsEmpty, \
     add:      _zVec##XD##DataDummyAdd, \
     rewind:   _zVec##XD##DataDummyRewind, \
+    peek:     _zVec##XD##DataDummyPeek, \
     fetch:    _zVec##XD##DataDummyFetch, \
   }; \
   \
@@ -106,10 +110,13 @@ __BEGIN_DECLS
     return true; \
   } \
   static void _zVec##XD##DataArrayRewind(zVec##XD##Data *data){ data->pointer.i = 0; } \
+  static zVec##XD *_zVec##XD##DataArrayPeek(zVec##XD##Data *data){ \
+    if( data->pointer.i >= zArraySize(&data->data.array) ) return NULL; \
+    return zArrayElemNC(&data->data.array,data->pointer.i); \
+  } \
   static zVec##XD *_zVec##XD##DataArrayFetch(zVec##XD##Data *data){ \
     zVec##XD *ret; \
-    if( data->pointer.i >= zArraySize(&data->data.array) ) return NULL; \
-    ret = zArrayElemNC(&data->data.array,data->pointer.i); \
+    ret = _zVec##XD##DataArrayPeek( data ); \
     data->pointer.i++; \
     return ret; \
   } \
@@ -119,6 +126,7 @@ __BEGIN_DECLS
     is_empty: _zVec##XD##DataArrayIsEmpty, \
     add:      _zVec##XD##DataArrayAdd, \
     rewind:   _zVec##XD##DataArrayRewind, \
+    peek:     _zVec##XD##DataArrayPeek, \
     fetch:    _zVec##XD##DataArrayFetch, \
   }; \
   \
@@ -132,6 +140,7 @@ __BEGIN_DECLS
     is_empty: _zVec##XD##DataArrayIsEmpty, \
     add:      _zVec##XD##DataDummyAdd, \
     rewind:   _zVec##XD##DataArrayRewind, \
+    peek:     _zVec##XD##DataArrayPeek, \
     fetch:    _zVec##XD##DataArrayFetch, \
   }; \
   \
@@ -143,10 +152,13 @@ __BEGIN_DECLS
   static bool _zVec##XD##DataListIsEmpty(zVec##XD##Data *data){ return zListIsEmpty( &data->data.list ); } \
   static bool _zVec##XD##DataListAdd(zVec##XD##Data *data, const zVec##XD *vec){ return zVec##XD##ListAdd( &data->data.list, vec ) ? true: false; } \
   static void _zVec##XD##DataListRewind(zVec##XD##Data *data){ data->pointer.cp = zListTail(&data->data.list); } \
+  static zVec##XD *_zVec##XD##DataListPeek(zVec##XD##Data *data){ \
+    if( data->pointer.cp == zListRoot(&data->data.list) ) return NULL; \
+    return &data->pointer.cp->data; \
+  } \
   static zVec##XD *_zVec##XD##DataListFetch(zVec##XD##Data *data){ \
     zVec##XD *ret; \
-    if( data->pointer.cp == zListRoot(&data->data.list) ) return NULL; \
-    ret = &data->pointer.cp->data; \
+    ret = _zVec##XD##DataListPeek( data ); \
     data->pointer.cp = zListCellNext(data->pointer.cp); \
     return ret; \
   } \
@@ -156,6 +168,7 @@ __BEGIN_DECLS
     is_empty: _zVec##XD##DataListIsEmpty, \
     add:      _zVec##XD##DataListAdd, \
     rewind:   _zVec##XD##DataListRewind, \
+    peek:     _zVec##XD##DataListPeek, \
     fetch:    _zVec##XD##DataListFetch, \
   }; \
   \
@@ -167,10 +180,13 @@ __BEGIN_DECLS
   static bool _zVec##XD##DataAddrListIsEmpty(zVec##XD##Data *data){ return zListIsEmpty( &data->data.addrlist ); } \
   static bool _zVec##XD##DataAddrListAdd(zVec##XD##Data *data, const zVec##XD *vec){ return zVec##XD##AddrListAdd( &data->data.addrlist, vec ) ? true: false; } \
   static void _zVec##XD##DataAddrListRewind(zVec##XD##Data *data){ data->pointer.ap = zListTail(&data->data.addrlist); } \
+  static zVec##XD *_zVec##XD##DataAddrListPeek(zVec##XD##Data *data){ \
+    if( data->pointer.ap == zListRoot(&data->data.addrlist) ) return NULL; \
+    return data->pointer.ap->data; \
+  } \
   static zVec##XD *_zVec##XD##DataAddrListFetch(zVec##XD##Data *data){ \
     zVec##XD *ret; \
-    if( data->pointer.ap == zListRoot(&data->data.addrlist) ) return NULL; \
-    ret = data->pointer.ap->data; \
+    ret = _zVec##XD##DataAddrListPeek( data ); \
     data->pointer.ap = zListCellNext(data->pointer.ap); \
     return ret; \
   } \
@@ -180,6 +196,7 @@ __BEGIN_DECLS
     is_empty: _zVec##XD##DataAddrListIsEmpty, \
     add:      _zVec##XD##DataAddrListAdd, \
     rewind:   _zVec##XD##DataAddrListRewind, \
+    peek:     _zVec##XD##DataAddrListPeek, \
     fetch:    _zVec##XD##DataAddrListFetch, \
   }; \
   \
@@ -190,10 +207,13 @@ __BEGIN_DECLS
   static int  _zVec##XD##DataArrayPtrSize(zVec##XD##Data *data){ return zArraySize( data->data.array_ptr ); } \
   static bool _zVec##XD##DataArrayPtrIsEmpty(zVec##XD##Data *data){ return zArraySize( data->data.array_ptr ) == 0; } \
   static bool _zVec##XD##DataArrayPtrAdd(zVec##XD##Data *data, const zVec##XD *vec){ return false; } \
+  static zVec##XD *_zVec##XD##DataArrayPtrPeek(zVec##XD##Data *data){ \
+    if( data->pointer.i >= zArraySize(data->data.array_ptr) ) return NULL; \
+    return zArrayElemNC(data->data.array_ptr,data->pointer.i); \
+  } \
   static zVec##XD *_zVec##XD##DataArrayPtrFetch(zVec##XD##Data *data){ \
     zVec##XD *ret; \
-    if( data->pointer.i >= zArraySize(data->data.array_ptr) ) return NULL; \
-    ret = zArrayElemNC(data->data.array_ptr,data->pointer.i); \
+    ret = _zVec##XD##DataArrayPtrPeek( data ); \
     data->pointer.i++; \
     return ret; \
   } \
@@ -203,6 +223,7 @@ __BEGIN_DECLS
     is_empty: _zVec##XD##DataArrayPtrIsEmpty, \
     add:      _zVec##XD##DataArrayPtrAdd, \
     rewind:   _zVec##XD##DataArrayRewind, \
+    peek:     _zVec##XD##DataArrayPtrPeek, \
     fetch:    _zVec##XD##DataArrayPtrFetch, \
   }; \
   \
@@ -213,10 +234,13 @@ __BEGIN_DECLS
   static int  _zVec##XD##DataListPtrSize(zVec##XD##Data *data){ return zListSize( data->data.list_ptr ); } \
   static bool _zVec##XD##DataListPtrIsEmpty(zVec##XD##Data *data){ return zListIsEmpty( data->data.list_ptr ); } \
   static void _zVec##XD##DataListPtrRewind(zVec##XD##Data *data){ data->pointer.cp = zListTail(data->data.list_ptr); } \
+  static zVec##XD *_zVec##XD##DataListPtrPeek(zVec##XD##Data *data){ \
+    if( data->pointer.cp == zListRoot(data->data.list_ptr) ) return NULL; \
+    return &data->pointer.cp->data; \
+  } \
   static zVec##XD *_zVec##XD##DataListPtrFetch(zVec##XD##Data *data){ \
     zVec##XD *ret; \
-    if( data->pointer.cp == zListRoot(data->data.list_ptr) ) return NULL; \
-    ret = &data->pointer.cp->data; \
+    ret = _zVec##XD##DataListPtrPeek( data ); \
     data->pointer.cp = zListCellNext(data->pointer.cp); \
     return ret; \
   } \
@@ -226,6 +250,7 @@ __BEGIN_DECLS
     is_empty: _zVec##XD##DataListPtrIsEmpty, \
     add:      _zVec##XD##DataDummyAdd, \
     rewind:   _zVec##XD##DataListPtrRewind, \
+    peek:     _zVec##XD##DataListPtrPeek, \
     fetch:    _zVec##XD##DataListPtrFetch, \
   }; \
   \
@@ -236,10 +261,13 @@ __BEGIN_DECLS
   static int  _zVec##XD##DataAddrListPtrSize(zVec##XD##Data *data){ return zListSize( data->data.addrlist_ptr ); } \
   static bool _zVec##XD##DataAddrListPtrIsEmpty(zVec##XD##Data *data){ return zListIsEmpty( data->data.addrlist_ptr ); } \
   static void _zVec##XD##DataAddrListPtrRewind(zVec##XD##Data *data){ data->pointer.ap = zListTail(data->data.addrlist_ptr); } \
+  static zVec##XD *_zVec##XD##DataAddrListPtrPeek(zVec##XD##Data *data){ \
+    if( data->pointer.ap == zListRoot(data->data.addrlist_ptr) ) return NULL; \
+    return data->pointer.ap->data; \
+  } \
   static zVec##XD *_zVec##XD##DataAddrListPtrFetch(zVec##XD##Data *data){ \
     zVec##XD *ret; \
-    if( data->pointer.ap == zListRoot(data->data.addrlist_ptr) ) return NULL; \
-    ret = data->pointer.ap->data; \
+    ret = _zVec##XD##DataAddrListPtrPeek( data ); \
     data->pointer.ap = zListCellNext(data->pointer.ap); \
     return ret; \
   } \
@@ -249,6 +277,7 @@ __BEGIN_DECLS
     is_empty: _zVec##XD##DataAddrListPtrIsEmpty, \
     add:      _zVec##XD##DataDummyAdd, \
     rewind:   _zVec##XD##DataAddrListPtrRewind, \
+    peek:     _zVec##XD##DataAddrListPtrPeek, \
     fetch:    _zVec##XD##DataAddrListPtrFetch, \
   };
 

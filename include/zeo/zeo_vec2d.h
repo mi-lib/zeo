@@ -36,6 +36,12 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zVec2D ){
   zVec2D operator*(zVec2D &v);
   zVec2D operator/(double k);
   zVec2D operator/(zVec2D &v);
+  zVec2D &operator+=(zVec2D &v);
+  zVec2D &operator-=(zVec2D &v);
+  zVec2D &operator*=(double k);
+  zVec2D &operator*=(zVec2D &v);
+  zVec2D &operator/=(double k);
+  zVec2D &operator/=(zVec2D &v);
   zVec2D &add(zVec2D &v);
   zVec2D &sub(zVec2D &v);
   zVec2D &rev();
@@ -440,6 +446,12 @@ inline zVec2D zVec2D::operator*(double k){ zVec2D ret; _zVec2DMul( this, k, &ret
 inline zVec2D zVec2D::operator*(zVec2D &v){ zVec2D ret; _zVec2DAmp( this, &v, &ret ); return ret; }
 inline zVec2D zVec2D::operator/(double k){ zVec2D ret; zVec2DDiv( this, k, &ret ); return ret; }
 inline zVec2D zVec2D::operator/(zVec2D &v){ zVec2D ret; _zVec2DDem( this, &v, &ret ); return ret; }
+inline zVec2D &zVec2D::operator+=(zVec2D &v){ _zVec2DAddDRC( this, &v ); return *this; }
+inline zVec2D &zVec2D::operator-=(zVec2D &v){ _zVec2DSubDRC( this, &v ); return *this; }
+inline zVec2D &zVec2D::operator*=(double k){ _zVec2DMulDRC( this, k ); return *this; }
+inline zVec2D &zVec2D::operator*=(zVec2D &v){ _zVec2DAmpDRC( this, &v ); return *this; }
+inline zVec2D &zVec2D::operator/=(double k){ zVec2DDivDRC( this, k ); return *this; }
+inline zVec2D &zVec2D::operator/=(zVec2D &v){ _zVec2DDemDRC( this, &v ); return *this; }
 inline zVec2D &zVec2D::add(zVec2D &v){ _zVec2DAddDRC( this, &v ); return *this; }
 inline zVec2D &zVec2D::sub(zVec2D &v){ _zVec2DSubDRC( this, &v ); return *this; }
 inline zVec2D &zVec2D::rev(){ _zVec2DRevDRC( this ); return *this; }

@@ -375,15 +375,13 @@ static bool _zGJK(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2, 
 {
   zGJKSimplex _s; /* simplex */
   zGJKSlot slot;
-  zVec3D proximity, *v1, *v2;
+  zVec3D proximity;
   double dv2norm = HUGE_VAL;
 
   if( s == NULL ) s = &_s;
   zVec3DDataRewind( data1 );
   zVec3DDataRewind( data2 );
-  v1 = zVec3DDataFetch( data1 );
-  v2 = zVec3DDataFetch( data2 );
-  zVec3DSub( v1, v2, &proximity );
+  zVec3DSub( zVec3DDataPeek( data1 ), zVec3DDataPeek( data2 ), &proximity );
   _zGJKSimplexInit( s );
   do{
     _zGJKSupportMap( &slot, data1, data2, &proximity );
@@ -441,13 +439,12 @@ bool zGJKPoint(zVec3DData *data, zVec3D *p, zVec3D *c)
 {
   zGJKSimplex s; /* simplex */
   zGJKSlot slot;
-  zVec3D proximity, *v;
+  zVec3D proximity;
   double dv2norm = HUGE_VAL;
 
   slot.p2 = p;
   zVec3DDataRewind( data );
-  v = zVec3DDataFetch( data );
-  zVec3DSub( v, p, &proximity );
+  zVec3DSub( zVec3DDataPeek( data ), p, &proximity );
   _zGJKSimplexInit( &s );
   do{
     _zGJKPointSupportMap( &slot, data, &proximity );

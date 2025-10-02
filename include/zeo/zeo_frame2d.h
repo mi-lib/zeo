@@ -28,11 +28,15 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zFrame2D ){
   zFrame2D &ident();
   bool isEqual(zFrame2D &f);
   bool isIdent();
+  zVec2D operator*(zVec2D &v);
+  zFrame2D operator*(zFrame2D &f);
+  zFrame2D &operator*=(zFrame2D &f);
   zVec2D xform(zVec2D &v);
   zVec2D xformInv(zVec2D &v);
   zVec2D &xformDRC(zVec2D &v);
   zVec2D &xformInvDRC(zVec2D &v);
   zFrame2D inv();
+  zFrame2D cascade(zFrame2D &f);
   static const zFrame2D zframe2Dident;
 #endif /* __cplusplus */
 };
@@ -206,11 +210,15 @@ inline zFrame2D &zFrame2D::copy(zFrame2D &src){ zFrame2DCopy( &src, this ); retu
 inline zFrame2D &zFrame2D::ident(){ zFrame2DIdent( this ); return *this; }
 inline bool zFrame2D::isEqual(zFrame2D &f){ return _zFrame2DEqual( this, &f ); }
 inline bool zFrame2D::isIdent(){ return _zFrame2DIsIdent( this ); }
+inline zVec2D zFrame2D::operator*(zVec2D &v){ zVec2D ret; zXform2D( this, &v, &ret ); return ret; }
+inline zFrame2D zFrame2D::operator*(zFrame2D &f){ zFrame2D ret; zFrame2DCascade( this, &f, &ret ); return ret; }
+inline zFrame2D &zFrame2D::operator*=(zFrame2D &f){ zFrame2D tmp; zFrame2DCascade( this, &f, &tmp ); zFrame2DCopy( &tmp, this ); return *this; }
 inline zVec2D zFrame2D::xform(zVec2D &v){ zVec2D ret; _zXform2D( this, &v, &ret ); return ret; }
 inline zVec2D zFrame2D::xformInv(zVec2D &v){ zVec2D ret; _zXform2DInv( this, &v, &ret ); return ret; }
 inline zVec2D &zFrame2D::xformDRC(zVec2D &v){ zXform2DDRC( this, &v ); return v; }
 inline zVec2D &zFrame2D::xformInvDRC(zVec2D &v){ zXform2DInvDRC( this, &v ); return v; }
 inline zFrame2D zFrame2D::inv(){ zFrame2D ret; _zFrame2DInv( this, &ret ); return ret; }
+inline zFrame2D zFrame2D::cascade(zFrame2D &f){ zFrame2D ret; zFrame2DCascade( this, &f, &ret ); return ret; }
 #endif /* __cplusplus */
 
 #endif /* __ZEO_FRAME2D_H__ */

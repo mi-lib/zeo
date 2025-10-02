@@ -39,11 +39,15 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zFrame3D ){
   bool match(zFrame3D &f);
   bool isEqual(zFrame3D &f);
   bool isIdent();
+  zVec3D operator*(zVec3D &v);
+  zFrame3D operator*(zFrame3D &f);
+  zFrame3D &operator*=(zFrame3D &f);
   zVec3D xform(zVec3D &v);
   zVec3D xformInv(zVec3D &v);
   zVec3D &xformDRC(zVec3D &v);
   zVec3D &xformInvDRC(zVec3D &v);
   zFrame3D inv();
+  zFrame3D casecade(zFrame3D &f);
   zVec6D xformLin(zVec6D &v);
   zVec6D xformAng(zVec6D &v);
   zFrame3D twist(zVec6D &t);
@@ -382,11 +386,15 @@ inline zFrame3D &zFrame3D::ident(){ zFrame3DIdent( this ); return *this; }
 inline bool zFrame3D::match(zFrame3D &f){ return _zFrame3DMatch( this, &f ); }
 inline bool zFrame3D::isEqual(zFrame3D &f){ return _zFrame3DEqual( this, &f ); }
 inline bool zFrame3D::isIdent(){ return _zFrame3DIsIdent( this ); }
+inline zVec3D zFrame3D::operator*(zVec3D &v){ zVec3D ret; zXform3D( this, &v, &ret ); return ret; }
+inline zFrame3D zFrame3D::operator*(zFrame3D &f){ zFrame3D ret; zFrame3DCascade( this, &f, &ret ); return ret; }
+inline zFrame3D &zFrame3D::operator*=(zFrame3D &f){ zFrame3D tmp; zFrame3DCascade( this, &f, &tmp ); zFrame3DCopy( &tmp, this ); return *this; }
 inline zVec3D zFrame3D::xform(zVec3D &v){ zVec3D ret; _zXform3D( this, &v, &ret ); return ret; }
 inline zVec3D zFrame3D::xformInv(zVec3D &v){ zVec3D ret; _zXform3DInv( this, &v, &ret ); return ret; }
 inline zVec3D &zFrame3D::xformDRC(zVec3D &v){ zXform3DDRC( this, &v ); return v; }
 inline zVec3D &zFrame3D::xformInvDRC(zVec3D &v){ zXform3DInvDRC( this, &v ); return v; }
 inline zFrame3D zFrame3D::inv(){ zFrame3D ret; _zFrame3DInv( this, &ret ); return ret; }
+inline zFrame3D zFrame3D::casecade(zFrame3D &f){ zFrame3D ret; zFrame3DCascade( this, &f, &ret ); return ret; }
 inline zVec6D zFrame3D::xformLin(zVec6D &v){ zVec6D ret; zXform6DLin( this, &v, &ret ); return ret; }
 inline zVec6D zFrame3D::xformAng(zVec6D &v){ zVec6D ret; zXform6DAng( this, &v, &ret ); return ret; }
 inline zFrame3D zFrame3D::twist(zVec6D &t){ zFrame3D ret; zFrame3DTwist( this, &t, &ret ); return ret; }

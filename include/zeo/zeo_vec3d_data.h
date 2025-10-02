@@ -14,9 +14,8 @@
 __BEGIN_DECLS
 
 /* ********************************************************** */
-/* CLASS: zVec3DData
- * a set of 3D vectors
- * ********************************************************** */
+/* a set of 3D vectors.
+ *//* ******************************************************* */
 ZEO_VECXD_DATA_DEF_STRUCT( 3D );
 
 #define zVec3DDataDestroy(data)  zVecXDDataDestroy(data)
@@ -24,6 +23,7 @@ ZEO_VECXD_DATA_DEF_STRUCT( 3D );
 #define zVec3DDataIsEmpty(data)  zVecXDDataIsEmpty(data)
 #define zVec3DDataAdd(data,v)    zVecXDDataAdd(data,v)
 #define zVec3DDataRewind(data)   zVecXDDataRewind(data)
+#define zVec3DDataPeek(data)     zVecXDDataFetch(data)
 #define zVec3DDataFetch(data)    zVecXDDataFetch(data)
 
 /*! \brief initialize 3D vector data as an array. */

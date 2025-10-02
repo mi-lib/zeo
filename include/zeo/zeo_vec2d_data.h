@@ -16,9 +16,8 @@
 __BEGIN_DECLS
 
 /* ********************************************************** */
-/* CLASS: zVec2DData
- * a set of 2D vectors
- * ********************************************************** */
+/* a set of 2D vectors.
+ *//* ******************************************************* */
 ZEO_VECXD_DATA_DEF_STRUCT( 2D );
 
 #define zVec2DDataDestroy(data)  zVecXDDataDestroy(data)
@@ -26,6 +25,7 @@ ZEO_VECXD_DATA_DEF_STRUCT( 2D );
 #define zVec2DDataIsEmpty(data)  zVecXDDataIsEmpty(data)
 #define zVec2DDataAdd(data,v)    zVecXDDataAdd(data,v)
 #define zVec2DDataRewind(data)   zVecXDDataRewind(data)
+#define zVec2DDataPeek(data)     zVecXDDataPeek(data)
 #define zVec2DDataFetch(data)    zVecXDDataFetch(data)
 
 /*! \brief initialize 2D vector data as an array. */
