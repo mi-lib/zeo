@@ -79,7 +79,7 @@ void assert_edge2D(void)
   zAssert( zEdge2DContigVert (case 2), zEdge2DContigVert( &edge, &p, NULL ) == zEdge2DVert(&edge,1) );
 }
 
-void assert_edge2d_closest(void)
+void assert_edge2D_closest(void)
 {
   zEdge2D edge;
   zVec2D vert[2], point, closestpoint, test_point;
@@ -220,7 +220,7 @@ void assert_tri2D_center(void)
   zAssert( zTri2DOrthocenter, ret );
 }
 
-void assert_tri2d_closest_trivial(void)
+void assert_tri2D_closest_trivial(void)
 {
   zTri2D tri;
   zVec2D vert[3], point, closestpoint;
@@ -250,7 +250,7 @@ void assert_tri2d_closest_trivial(void)
   zAssert( zTri2DClosest (trivial case 5), zVec2DEqual( &closestpoint, &vert[0] ) );
 }
 
-void assert_tri2d_closest(void)
+void assert_tri2D_closest(void)
 {
   zTri2D tri;
   zVec2D vert[3], point, closestpoint, test_point;
@@ -272,6 +272,76 @@ void assert_tri2d_closest(void)
     }
   }
   zAssert( zTri2DClosest, result );
+}
+
+void assert_aabox2D_create(void)
+{
+  zAABox2D box;
+  int i;
+  const int n = 10;
+  bool result = true;
+
+  for( i=0; i<n; i++ ){
+    zAABox2DCreate( &box, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    if( zAABox2DXMin(&box) > zAABox2DXMax(&box) ||
+        zAABox2DYMin(&box) > zAABox2DYMax(&box) ) result = false;
+  }
+  zAssert( zAABox2DCreate, result );
+}
+
+void assert_aabox2D_equal(void)
+{
+  zAABox2D box1, box2;
+
+  zAABox2DCreate( &box1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  zAABox2DCopy( &box1, &box2 );
+  zAssert( zAABox2DCopy, zAABox2DEqual( &box1, &box2 ) );
+}
+
+void assert_aabox2D_expand(void)
+{
+  zAABox2D box1, box2, box3, box_test;
+  zVec2D center;
+  double depth, width;
+
+  zVec2DCreate( &center, zRandF(-10,10), zRandF(-10,10) );
+  depth  = zRandF( 0.1, 10.0 );
+  width  = zRandF( 0.1, 10.0 );
+  zAABox2DCreateFromSize( &box1, &center, depth, width );
+  zAABox2DExpand( &box1, 0.5, &box2 );
+  zAABox2DExpand( &box1, 2.0, &box3 );
+  zAssert( zAABox2DExpand,
+    zAABox2DEqual( zAABox2DExpand( &box2, 2.0, &box_test ), &box1 ) &&
+    zAABox2DEqual( zAABox2DExpand( &box3, 0.5, &box_test ), &box1 ) &&
+    zAABox2DEqual( zAABox2DExpand( &box2, 4.0, &box_test ), &box3 ) );
+  zAABox2DCopy( &box1, &box_test );
+  zAssert( zAABox2DExpandDRC,
+    zAABox2DEqual( zAABox2DExpandDRC( &box1, 0.5 ), &box2 ) &&
+    zAABox2DEqual( zAABox2DExpandDRC( &box_test, 2.0 ), &box3 ) );
+}
+
+double aabox2D_dist_from_point_base(const zAABox2D *box, const zVec2D *point)
+{
+  zVec2D cp;
+  return zAABox2DClosest( box, point, &cp );
+}
+
+void assert_aabox2D_dist(void)
+{
+  zAABox2D box;
+  zVec2D point;
+  double dist1, dist2;
+  int i;
+  bool result = true;
+
+  for( i=0; i<N; i++ ){
+    zAABox2DCreate( &box, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    zVec2DCreate( &point, zRandF(-10,10), zRandF(-10,10) );
+    dist1 = zAABox2DDistFromPoint( &box, &point );
+    dist2 = aabox2D_dist_from_point_base( &box, &point );
+    if( !zEqual( dist1, dist2, zTOL ) ) result = false;
+  }
+  zAssert( zAABox2DPointDist, result );
 }
 
 zVec2D *test_ellips2D_norm(zEllips2D *e, zVec2D *p, zVec2D *n)
@@ -319,10 +389,15 @@ int main(void)
   assert_line2D_point();
   assert_line2D_intersection();
   assert_edge2D();
+  assert_edge2D_closest();
   assert_tri2D_center();
   assert_tri2D_contig();
-  assert_tri2d_closest_trivial();
-  assert_tri2d_closest();
+  assert_tri2D_closest_trivial();
+  assert_tri2D_closest();
+  assert_aabox2D_create();
+  assert_aabox2D_equal();
+  assert_aabox2D_expand();
+  assert_aabox2D_dist();
   assert_ellips2D_inside();
   return 0;
 }

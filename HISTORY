@@ -1,3 +1,6 @@
+2025.10.03. Modified zAABox3DEqual to use _zVec3DEqual instead of zVec3DEqual. [zeo_elem3d_box]
+2025.10.03. Added zAABox2DXMin, zAABox2DYMin, zAABox2DXMax, zAABox2DYMax, zAABox2DDepth, zAABox2DWidth, zAABox2DCenter, zAABox2DCreateFromSize, zAABox2DEqual, zAABox2DExpand, zAABox2DExpandDRC, zAABox2DClosest, zAABox2DSqrDistFromPoint, zAABox2DDistFromPoint, zAABox2DVert, zAABox2DEnlarge, zAABox2DFPrint, and C++ methods. [zeo_elem2d_box]
+2025.10.03. Applied ZDEF_STRUCT to zAABox2D. [zeo_elem2d_box]
 2025.10.02. Modified _zGJK and zGJKPoint to use zVec3DDataPeek. [zeo_col_gjk]
 2025.10.02. Added an interface of peek method of zVec2D/3DDataMethod class to ZEO_VECXD_DATA_METHOD_DEF_STRUCT. [zeo_vecxd_data, zeo_vec2d_data, zeo_vec3d_data]
 2025.10.02. Added some operators of zFrame2D and zFrame3D for C++. [zeo_frame2d, zeo_frame3d]

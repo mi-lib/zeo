@@ -610,7 +610,7 @@ void assert_tetra3D_closest_from_origin(void)
   zAssert( zTetra3DClosestFromOrigin, result );
 }
 
-void assert_aabox_create(void)
+void assert_aabox3D_create(void)
 {
   zAABox3D box;
   int i;
@@ -626,8 +626,7 @@ void assert_aabox_create(void)
   zAssert( zAABox3DCreate, result );
 }
 
-
-void assert_aabox_equal(void)
+void assert_aabox3D_equal(void)
 {
   zAABox3D box1, box2;
 
@@ -636,7 +635,7 @@ void assert_aabox_equal(void)
   zAssert( zAABox3DCopy, zAABox3DEqual( &box1, &box2 ) );
 }
 
-void assert_aabox_expand(void)
+void assert_aabox3D_expand(void)
 {
   zAABox3D box1, box2, box3, box_test;
   zVec3D center;
@@ -659,13 +658,13 @@ void assert_aabox_expand(void)
     zAABox3DEqual( zAABox3DExpandDRC( &box_test, 2.0 ), &box3 ) );
 }
 
-double aabox_dist_from_point_base(const zAABox3D *box, const zVec3D *point)
+double aabox3D_dist_from_point_base(const zAABox3D *box, const zVec3D *point)
 {
   zVec3D cp;
   return zAABox3DClosest( box, point, &cp );
 }
 
-void assert_aabox_dist(void)
+void assert_aabox3D_dist(void)
 {
   zAABox3D box;
   zVec3D point;
@@ -677,7 +676,7 @@ void assert_aabox_dist(void)
     zAABox3DCreate( &box, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
     zVec3DCreate( &point, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
     dist1 = zAABox3DDistFromPoint( &box, &point );
-    dist2 = aabox_dist_from_point_base( &box, &point );
+    dist2 = aabox3D_dist_from_point_base( &box, &point );
     if( !zEqual( dist1, dist2, zTOL ) ) result = false;
   }
   zAssert( zAABox3DPointDist, result );
@@ -704,9 +703,9 @@ int main(void)
   assert_tetra3D_closest_trivial();
   assert_tetra3D_closest();
   assert_tetra3D_closest_from_origin();
-  assert_aabox_create();
-  assert_aabox_equal();
-  assert_aabox_expand();
-  assert_aabox_dist();
+  assert_aabox3D_create();
+  assert_aabox3D_equal();
+  assert_aabox3D_expand();
+  assert_aabox3D_dist();
   return 0;
 }

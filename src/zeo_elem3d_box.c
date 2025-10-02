@@ -41,7 +41,7 @@ zAABox3D *zAABox3DCreateFromSize(zAABox3D *box, zVec3D *center, double depth, do
 /* check if two 3D axis-aligned boxes are equal. */
 bool zAABox3DEqual(const zAABox3D *box1, const zAABox3D *box2)
 {
-  return zVec3DEqual( &box1->min, &box2->min ) && zVec3DEqual( &box1->max, &box2->max );
+  return _zVec3DEqual( &box1->min, &box2->min ) && _zVec3DEqual( &box1->max, &box2->max );
 }
 
 /* copy a 3D axis-aligned box to another. */
@@ -94,7 +94,7 @@ double zAABox3DSqrDistFromPoint(const zAABox3D *box, const zVec3D *point)
   int i;
   double d2 = 0;
 
-  for( d2=0, i=zX; i<=zZ; i++ ){
+  for( i=zX; i<=zZ; i++ ){
     if( point->e[i] < box->min.e[i] )
       d2 += zSqr( point->e[i] - box->min.e[i] );
     else
