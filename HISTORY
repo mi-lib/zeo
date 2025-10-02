@@ -1,3 +1,7 @@
+2025.10.02. Debugged the initial procedure of _zGJK and _zGJKPoint. [zeo_col_gjk]
+2025.10.02. Debugged _zGJKSimplexMinimize, and include it into _zGJKSimplexClosest. Abolished _zGJKSimplexMinimize. [zeo_col_gjk]
+2025.10.02. Renamed _zGJKSimplexCheckSlot to _zGJKSimplexCheckDupSlot. [zeo_col_gjk]
+2025.10.02. Modified _zGJKSimplexClosest to use z*3DClosestFromOrigin instead of zQPSolveLemke. [zeo_col_gjk]
 2025.10.02. Renamed _zTri2DClosestFromOrigin and _zTri3DClosestFromOrigin to zTri2DClosestFromOrigin and zTri3DClosestFromOrigin, respectively, and made it public. [zeo_elem2d, zeo_elem3d]
 2025.10.02. Redefined ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN to make the function public, and added ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN_PROTOTYPE. [zeo_elemxd, zeo_elem2d, zeo_elem3d]
 2025.10.02. Debugged the benchmark test of GJK / MPR in example/colchk. [example]

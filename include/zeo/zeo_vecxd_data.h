@@ -12,8 +12,7 @@
 __BEGIN_DECLS
 
 /* ********************************************************** */
-/* CLASS: zVec2D/3DData
- * a set of 2D/3D vectors
+/* commonized class of a set of 2D/3D vectors.
  * ********************************************************** */
 
 #define ZEO_VECXD_DATA_METHOD_DEF_STRUCT(XD) \

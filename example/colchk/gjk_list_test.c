@@ -25,7 +25,7 @@ void vec_create_rand(zVec3DData *data, int n, double x, double y, double z, doub
   }
 }
 
-void output(char filename[], zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2)
+void output(char filename[], bool result, zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2)
 {
   zPH3D ch;
   FILE *fp;
@@ -66,13 +66,15 @@ void output(char filename[], zVec3DData *data1, zVec3DData *data2, zVec3D *c1, z
   fprintf( fp, "optic: yellow\n" );
   fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, c2 );
   fprintf( fp, "radius: 0.01\n" );
-  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
-  fprintf( fp, "name: rod\n" );
-  fprintf( fp, "type: cylinder\n" );
-  fprintf( fp, "optic: yellow\n" );
-  fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, c1 );
-  fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, c2 );
-  fprintf( fp, "radius: 0.005\n" );
+  if( !result ){
+    fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
+    fprintf( fp, "name: rod\n" );
+    fprintf( fp, "type: cylinder\n" );
+    fprintf( fp, "optic: yellow\n" );
+    fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, c1 );
+    fprintf( fp, "center: " ); zVec3DValueNLFPrint( fp, c2 );
+    fprintf( fp, "radius: 0.005\n" );
+  }
   /* convex set 1 */
   zVec3DDataConvexHull( data1, &ch );
   fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
@@ -101,6 +103,7 @@ int main(int argc, char *argv[])
   zVec3DData a, b;
   zVec3D ca, cb;
   double x, y, z;
+  bool result;
 
   zRandInit();
   x = argc > 1 ? atof(argv[1]) : zRandF(0.1,0.4);
@@ -108,8 +111,8 @@ int main(int argc, char *argv[])
   z = argc > 3 ? atof(argv[3]) : zRandF(0.1,0.4);
   vec_create_rand( &a, N, 0, 0, 0, 0.2 );
   vec_create_rand( &b, N, x, y, z, 0.2 );
-  printf( "in collision? %s\n", zBoolStr( zGJK( &a, &b, &ca, &cb ) ) );
-  output( "gjk_result.ztk", &a, &b, &ca, &cb );
+  printf( "in collision? %s\n", zBoolStr( ( result = zGJK( &a, &b, &ca, &cb ) ) ) );
+  output( "gjk_result.ztk", result, &a, &b, &ca, &cb );
   printf( "The result can be seen by\n%% rk_view gjk_result.ztk -auto\n" );
   zVec3DDataDestroy( &a );
   zVec3DDataDestroy( &b );

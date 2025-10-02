@@ -6,6 +6,8 @@
 
 #include <zeo/zeo_col.h>
 
+#define DEBUG 0
+
 typedef struct{
   bool sw_w;  /* included in W (the smallest simplex) */
   bool sw_y;  /* included in Y (the updated simplex) */
@@ -29,7 +31,7 @@ static void _zGJKSlotInit(zGJKSlot *slot)
   slot->s = 0;
 }
 
-#ifdef DEBUG
+#if defined( DEBUG ) && DEBUG == 1
 /* print out slot information. */
 static void _zGJKSlotPrint(zGJKSlot *slot)
 {
@@ -57,7 +59,7 @@ static void _zGJKSimplexInit(zGJKSimplex *s)
   _zGJKSlotInit( &s->slot[3] );
 }
 
-#ifdef DEBUG
+#if defined( DEBUG ) && DEBUG == 1
 /* print out GJK simplex set Y (non-minimum simplex) */
 static void _zGJKSimplexYPrint(zGJKSimplex *s)
 {
@@ -106,7 +108,7 @@ static void _zGJKSimplexWVertFPrint(FILE *fp, zGJKSimplex *s)
 #endif
 
 /* check if the specified slot is already in the previous testing simplex. */
-static bool _zGJKSimplexCheckSlot(zGJKSimplex *s, zGJKSlot *slot)
+static bool _zGJKSimplexCheckDupSlot(zGJKSimplex *s, zGJKSlot *slot)
 {
   int i;
 
@@ -139,52 +141,33 @@ static int _zGJKSimplexAddSlot(zGJKSimplex *s, zGJKSlot *slot)
 /* find the closest point in/on the testing simplex. */
 static zVec3D *_zGJKSimplexClosest(zGJKSimplex *s, zVec3D *v)
 {
-  double _q[9], _c[3];
-  double _a[] = { -1.0, -1.0, -1.0 }, _b[] = { -1.0 }, _l[3];
-  zMatStruct q, a;
-  zVecStruct c, b, l;
-  zVec3D dp[3];
-  double s0, cost;
-  int i, j, n, n1, index[4];
+  zGJKSlot *slot[4];
+  int i, n;
 
   /* create index */
   for( n=0, i=0; i<4; i++ )
-    if( s->slot[i].sw_y ) index[n++] = i;
-  /* setup & solve QP */
-  n1 = n - 1;
-  zMatBufNC(&q) = _q; zMatSetSizeNC(&q,n1,n1);
-  zVecBufNC(&c) = _c; zVecSetSizeNC(&c,n1);
-  zMatBufNC(&a) = _a; zMatSetSizeNC(&a,1,n1);
-  zVecBufNC(&b) = _b; zVecSetSizeNC(&b,1);
-  zVecBufNC(&l) = _l; zVecSetSizeNC(&l,n1);
-  for( i=1; i<n; i++ )
-    zVec3DSub( &s->slot[index[i]].w, &s->slot[index[0]].w, &dp[i-1] );
-  for( i=0; i<n1; i++ ){
-    for( j=0; j<n1; j++ )
-      zMatElemNC(&q,i,j) = zVec3DInnerProd(&dp[i],&dp[j]);
-    zVecElemNC(&c,i) = zVec3DInnerProd(&s->slot[index[0]].w,&dp[i]);
+    if( s->slot[i].sw_y ) slot[n++] = &s->slot[i];
+  switch( n ){
+  case 1:
+    zVec3DCopy( &slot[0]->w, v );
+    slot[0]->s = 1;
+    break;
+  case 2:
+    zEdge3DClosestFromOrigin( &slot[0]->w, &slot[1]->w, &slot[0]->s, &slot[1]->s, v );
+    break;
+  case 3:
+    zTri3DClosestFromOrigin( &slot[0]->w, &slot[1]->w, &slot[2]->w, &slot[0]->s, &slot[1]->s, &slot[2]->s, v );
+    break;
+  case 4:
+    zTetra3DClosestFromOrigin( &slot[0]->w, &slot[1]->w, &slot[2]->w, &slot[3]->w, &slot[0]->s, &slot[1]->s, &slot[2]->s, &slot[3]->s, v );
+    break;
+  default:
+    ZRUNERROR( ZEO_ERR_FATAL );
+    return NULL;
   }
-  zQPSolveLemke( &q, &c, &a, &b, &l, &cost );
-  /* solve QP */
-  zVec3DCopy( &s->slot[index[0]].w, v );
-  s0 = 0;
-  for( i=0; i<n1; i++ ){
-    zVec3DCatDRC( v, zVecElemNC(&l,i), &dp[i] );
-    s0 += ( s->slot[index[i+1]].s = zVecElemNC(&l,i) );
-  }
-  s->slot[index[0]].s = 1.0 - s0;
-  return v;
-}
-
-/* minimize the testing simplex. */
-static void _zGJKSimplexMinimize(zGJKSimplex *s)
-{
-  int i;
-  zVec3D ws;
-
+  /* minimize the simplex. */
   for( s->n=0, i=0; i<4; i++ ){
-    zVec3DMul( &s->slot[i].w, s->slot[i].s, &ws );
-    if( zVec3DIsTiny( &ws ) ){
+    if( zIsTiny( s->slot[i].s ) ){
       s->slot[i].s = 0;
       s->slot[i].sw_w = false;
     } else{
@@ -192,18 +175,19 @@ static void _zGJKSimplexMinimize(zGJKSimplex *s)
       s->n++;
     }
   }
+  return v;
 }
 
 /* support map of Minkowski difference. */
-static zVec3D *_zGJKSupportMap(zGJKSlot *s, zVec3DData *data1, zVec3DData *data2, zVec3D *v)
+static zVec3D *_zGJKSupportMap(zGJKSlot *slot, zVec3DData *data1, zVec3DData *data2, zVec3D *v)
 {
   zVec3D nv;
 
   zVec3DRev( v, &nv );
-  s->p1 = zVec3DDataSupportMap( data1, &nv );
-  s->p2 = zVec3DDataSupportMap( data2,   v );
-  zVec3DSub( s->p1, s->p2, &s->w );
-  return &s->w;
+  slot->p1 = zVec3DDataSupportMap( data1, &nv );
+  slot->p2 = zVec3DDataSupportMap( data2,   v );
+  zVec3DSub( slot->p1, slot->p2, &slot->w );
+  return &slot->w;
 }
 
 /* a pair of points on the original convex hulls. */
@@ -392,27 +376,23 @@ static bool _zGJK(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2, 
   zGJKSimplex _s; /* simplex */
   zGJKSlot slot;
   zVec3D proximity, *v1, *v2;
-  double dv2norm = 0;
+  double dv2norm = HUGE_VAL;
 
   if( s == NULL ) s = &_s;
   zVec3DDataRewind( data1 );
   zVec3DDataRewind( data2 );
-  while( ( v1 = zVec3DDataFetch( data1 ) ) ){
-    while( ( v2 = zVec3DDataFetch( data2 ) ) ){
-      zVec3DSub( v1, v2, &proximity );
-      if( !zIsTiny( ( dv2norm = zVec3DSqrNorm( &proximity ) ) ) ) break;
-    }
-  }
+  v1 = zVec3DDataFetch( data1 );
+  v2 = zVec3DDataFetch( data2 );
+  zVec3DSub( v1, v2, &proximity );
   _zGJKSimplexInit( s );
   do{
     _zGJKSupportMap( &slot, data1, data2, &proximity );
-    if( _zGJKSimplexCheckSlot( s, &slot ) ||
+    if( _zGJKSimplexCheckDupSlot( s, &slot ) ||
         dv2norm - zVec3DInnerProd(&slot.w,&proximity) <= zTOL ){
       break; /* succeed */
     }
     _zGJKSimplexAddSlot( s, &slot );
     _zGJKSimplexClosest( s, &proximity );
-    _zGJKSimplexMinimize( s );
     dv2norm = zVec3DSqrNorm( &proximity );
   } while( s->n < 4 );
   _zGJKPair( s, c1, c2 );
@@ -462,24 +442,21 @@ bool zGJKPoint(zVec3DData *data, zVec3D *p, zVec3D *c)
   zGJKSimplex s; /* simplex */
   zGJKSlot slot;
   zVec3D proximity, *v;
-  double dv2norm = 0;
+  double dv2norm = HUGE_VAL;
 
   slot.p2 = p;
   zVec3DDataRewind( data );
-  while( ( v = zVec3DDataFetch( data ) ) ){
-    zVec3DSub( v, p, &proximity );
-    if( !zIsTiny( ( dv2norm = zVec3DSqrNorm( &proximity ) ) ) ) break;
-  }
+  v = zVec3DDataFetch( data );
+  zVec3DSub( v, p, &proximity );
   _zGJKSimplexInit( &s );
   do{
     _zGJKPointSupportMap( &slot, data, &proximity );
-    if( _zGJKSimplexCheckSlot( &s, &slot ) ||
+    if( _zGJKSimplexCheckDupSlot( &s, &slot ) ||
         dv2norm - zVec3DInnerProd(&slot.w,&proximity) <= zTOL ){
       break; /* succeed */
     }
     _zGJKSimplexAddSlot( &s, &slot );
     _zGJKSimplexClosest( &s, &proximity );
-    _zGJKSimplexMinimize( &s );
     dv2norm = zVec3DSqrNorm( &proximity );
   } while( s.n < 4 );
   _zGJKPointClosest( &s, c );

@@ -59,17 +59,14 @@ void assert_box(void)
   zAssert( zGJK (degraded volume case 4),
     zEqual( c1.c.z, 1.0, zTOL ) && zEqual( c2.c.z, 1.0, zTOL ) && c1.c.x > -1 && c1.c.x < 2 && c1.c.y > -1 && c1.c.y < 2 );
   /* case 5 */
-  /* NOTE: This test fails, meaning that zGJK has an obvious bug. */
   zAABox3DCreate( &box1, 1, 1, 1, 3, 3, 3 );
   zAABox3DCreate( &box2,-3,-3,-3, 1, 1, 1 );
   create_box_points( p1, N, &box1 );
   create_box_points( p2, N, &box2 );
   zGJK( &data1, &data2, &c1, &c2 );
-  zVec3DFPrint( stderr, &c1 );
-  zVec3DFPrint( stderr, &c2 );
   zVec3DCreate( &c1_ans, 1, 1, 1 );
   zVec3DCreate( &c2_ans, 1, 1, 1 );
-  /* zAssert( zGJK (degraded volume case 5), zVec3DEqual( &c1, &c1_ans ) && zVec3DEqual( &c2, &c2_ans ) ); */
+  zAssert( zGJK (degraded volume case 5), zVec3DEqual( &c1, &c1_ans ) && zVec3DEqual( &c2, &c2_ans ) );
 }
 
 void assert_point_volume(void)
@@ -88,14 +85,6 @@ void assert_point_volume(void)
   zVec3DCreate( &pg[7],-1,-1,-1 );
   zVec3DDataAssignArrayDirect( &data, pg, 8 );
 
-#if 0
-  zVec3DCreate( &p,  2, 2, 2 );
-  zVec3DCreate( &c_answer, 1, 1, 1 );
-zGJKPoint( &data, &p, &c );
-zVec3DPrint( &c );
-  zAssert( zGJKPoint (volume case 4), zGJKPoint( &data, &p, &c ) == false && zVec3DEqual( &c, &c_answer ) );
-#endif
-
   zVec3DCreate( &p, -2, 0, -1 );
   zVec3DCreate( &c_answer, -1, 0, -1 );
   zAssert( zGJKPoint (volume case 1), zGJKPoint( &data, &p, &c ) == false && zVec3DEqual( &c, &c_answer ) );
@@ -105,6 +94,9 @@ zVec3DPrint( &c );
   zVec3DCreate( &p,  2, 1, 0 );
   zVec3DCreate( &c_answer, 1, 1, 0 );
   zAssert( zGJKPoint (volume case 3), zGJKPoint( &data, &p, &c ) == false && zVec3DEqual( &c, &c_answer ) );
+  zVec3DCreate( &p,  2, 2, 2 );
+  zVec3DCreate( &c_answer, 1, 1, 1 );
+  zAssert( zGJKPoint (volume case 4), zGJKPoint( &data, &p, &c ) == false && zVec3DEqual( &c, &c_answer ) );
 }
 
 void assert_point_plane(void)
@@ -128,14 +120,9 @@ void assert_point_plane(void)
   zVec3DCreate( &p, 2, 0, 0 );
   zVec3DCreate( &c_answer, 1, 0, 0 );
   zAssert( zGJKPoint (plane case 3), zGJKPoint( &data, &p, &c ) == false && zVec3DEqual( &c, &c_answer ) );
-
-#if 0
   zVec3DCreate( &p, 2, 1, 0 );
   zVec3DCreate( &c_answer, 1, 1, 0 );
-zGJKPoint( &data, &p, &c );
-zVec3DPrint( &c );
   zAssert( zGJKPoint (plane case 4), zGJKPoint( &data, &p, &c ) == false && zVec3DEqual( &c, &c_answer ) );
-#endif
 }
 
 int main(int argc, char *argv[])
