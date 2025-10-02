@@ -1,3 +1,4 @@
+2025.10.03. Added aabb method without any arguments (overload) of zPH3D for C++. [zeo_ph3d]
 2025.10.03. Modified zAABox3DEqual to use _zVec3DEqual instead of zVec3DEqual. [zeo_elem3d_box]
 2025.10.03. Added zAABox2DXMin, zAABox2DYMin, zAABox2DXMax, zAABox2DYMax, zAABox2DDepth, zAABox2DWidth, zAABox2DCenter, zAABox2DCreateFromSize, zAABox2DEqual, zAABox2DExpand, zAABox2DExpandDRC, zAABox2DClosest, zAABox2DSqrDistFromPoint, zAABox2DDistFromPoint, zAABox2DVert, zAABox2DEnlarge, zAABox2DFPrint, and C++ methods. [zeo_elem2d_box]
 2025.10.03. Applied ZDEF_STRUCT to zAABox2D. [zeo_elem2d_box]

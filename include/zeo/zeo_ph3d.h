@@ -52,6 +52,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPH3D ){
   zMat3D *baryInertia(double density, zMat3D *inertia);
   zMat3D *baryInertiaMass(double mass, zMat3D *inertia);
   zAABox3D *aabb(zAABox3D *box);
+  zAABox3D aabb();
   zPH3D *createPrism(const zVec3D bottom[], int n, const zVec3D *shift);
   zPH3D *createPyramid(const zVec3D bottom[], int n, const zVec3D *vert);
   zPH3D *createTorus(const zVec3D loop[], int n, int div, const zVec3D *center, const zVec3D *axis);
@@ -322,6 +323,7 @@ inline zMat3D *zPH3D::inertiaMass(double mass, zMat3D *inertia){ return zPH3DIne
 inline zMat3D *zPH3D::baryInertia(double density, zMat3D *inertia){ return zPH3DBaryInertia( this, density, inertia ); }
 inline zMat3D *zPH3D::baryInertiaMass(double mass, zMat3D *inertia){ return zPH3DBaryInertiaMass( this, mass, inertia ); }
 inline zAABox3D *zPH3D::aabb(zAABox3D *box){ return zPH3DAABB( this, box ); }
+inline zAABox3D zPH3D::aabb(){ zAABox3D box; zPH3DAABB( this, &box ); return box; }
 inline zPH3D *zPH3D::createPrism(const zVec3D bottom[], int n, const zVec3D *shift){ return zPH3DCreatePrism( this, bottom, n, shift ); }
 inline zPH3D *zPH3D::createPyramid(const zVec3D bottom[], int n, const zVec3D *vert){ return zPH3DCreatePyramid( this, bottom, n, vert ); }
 inline zPH3D *zPH3D::createTorus(const zVec3D loop[], int n, int div, const zVec3D *center, const zVec3D *axis){ return zPH3DCreateTorus( this, loop, n, div, center, axis ); }
