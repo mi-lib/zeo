@@ -183,6 +183,24 @@ void zAABox3DValueFPrint(FILE *fp, const zAABox3D *box)
 }
 
 /* ********************************************************** */
+/* list of 3D axis-aligned boxes.
+ *//* ******************************************************* */
+
+/* add a 3D axis-aligned box to a list. */
+zAABox3DListCell *zAABox3DListAdd(zAABox3DList *list, const zAABox3D *box)
+{
+  zAABox3DListCell *cell;
+
+  if( !( cell = zAlloc( zAABox3DListCell, 1 ) ) ){
+    ZALLOCERROR();
+    return NULL;
+  }
+  zAABox3DCopy( box, &cell->data );
+  zListInsertHead( list, cell );
+  return cell;
+}
+
+/* ********************************************************** */
 /* 3D box class.
  *//* ******************************************************* */
 

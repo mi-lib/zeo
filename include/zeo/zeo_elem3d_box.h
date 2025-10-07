@@ -143,6 +143,17 @@ inline bool operator==(zAABox3D &box1, zAABox3D &box2){ return zAABox3DEqual( &b
 __BEGIN_DECLS
 
 /* ********************************************************** */
+/*! \brief list of 3D axis-aligned boxes.
+ *//* ******************************************************* */
+zListClass( zAABox3DList, zAABox3DListCell, zAABox3D );
+
+/*! \brief add a 3D axis-aligned box to a list. */
+__ZEO_EXPORT zAABox3DListCell *zAABox3DListAdd(zAABox3DList *list, const zAABox3D *box);
+
+/*! \brief destroy a list of 3D axis-aligned boxes. */
+#define zAABox3DListDestroy(list) zListDestroy( zAABox3DListCell, list )
+
+/* ********************************************************** */
 /*! \brief 3D box class.
  *//* ******************************************************* */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zBox3D ){

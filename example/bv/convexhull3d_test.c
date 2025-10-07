@@ -1,4 +1,6 @@
 #include <zeo/zeo_bv3d.h>
+#include <zeo/zeo_shape3d.h>
+#include <zeo/zeo_render_optic.h>
 
 #define N 100
 

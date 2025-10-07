@@ -8,13 +8,6 @@
 
 /* 3D octant */
 
-#define _zVec3DOctantPointIsInside(octant,point) zAABox3DPointIsInside( &(octant)->region, point, zTOL )
-
-#define _zVec3DOctantIsSmallest(octant,resolution) \
-  ( zAABox3DDepth( &(octant)->region) < (resolution) + zTOL && \
-    zAABox3DWidth( &(octant)->region) < (resolution) + zTOL && \
-    zAABox3DHeight(&(octant)->region) < (resolution) + zTOL )
-
 static void _zVec3DOctantSetRegion(zVec3DOctant *octant, double xmin, double ymin, double zmin, double xmax, double ymax, double zmax)
 {
   zAABox3DCreate( &octant->region, xmin, ymin, zmin, xmax, ymax, zmax );
@@ -91,7 +84,7 @@ static zVec3DOctant *_zVec3DOctantAddPoint(zVec3DOctant *octant, const zVec3D *p
 {
   zVec3DOctant *suboctant;
 
-  if( _zVec3DOctantIsSmallest( octant, resolution ) )
+  if( zVec3DOctantIsSmallest( octant, resolution ) )
     return zVec3DListAdd( &octant->points, point ) ? octant : NULL;
   if( !( suboctant = _zVec3DOctantAllocSuboctant( octant, point ) ) ) return NULL;
   return _zVec3DOctantAddPoint( suboctant, point, resolution );
@@ -126,7 +119,7 @@ static bool _zVec3DOctantDivide(zVec3DOctant *octant, double resolution)
   zVec3DOctant *suboctant;
 
   if( !octant ) return true;
-  if( _zVec3DOctantIsSmallest( octant, resolution ) ){
+  if( zVec3DOctantIsSmallest( octant, resolution ) ){
     zListForEach( &octant->points, cp ){
       _zVec3DSub( &cp->data, &octant->center, &p );
       _zMat3DAddDyad( &octant->_ncov, &p, &p );
@@ -144,7 +137,17 @@ static bool _zVec3DOctantDivide(zVec3DOctant *octant, double resolution)
   return true;
 }
 
-/* merge suboctants into a 3D octant. */
+/* merge a suboctant into the parent octant. */
+static void _zVec3DOctantMergeSuboctant(zVec3DOctant *octant, int i)
+{
+  zListAppend( &octant->points, &octant->suboctant[i]->points );
+  _zMat3DAddDRC( &octant->_ncov, &octant->suboctant[i]->_ncov );
+  _zVec3DAddDRC( &octant->_norm, &octant->suboctant[i]->_norm );
+  _zVec3DOctantDestroy( octant->suboctant[i] );
+  zFree( octant->suboctant[i] );
+}
+
+/* merge suboctants into the parent octant. */
 static void _zVec3DOctantMerge(zVec3DOctant *octant, double resolution)
 {
   int i;
@@ -152,18 +155,31 @@ static void _zVec3DOctantMerge(zVec3DOctant *octant, double resolution)
   if( !octant ) return;
   for( i=0; i<8; i++ )
     _zVec3DOctantMerge( octant->suboctant[i], resolution );
-  if( _zVec3DOctantIsSmallest( octant, resolution ) ){
+  if( zVec3DOctantIsSmallest( octant, resolution ) ){
     for( i=0; i<8; i++ )
-      if( octant->suboctant[i] ){
-        zListAppend( &octant->points, &octant->suboctant[i]->points );
-        _zMat3DAddDRC( &octant->_ncov, &octant->suboctant[i]->_ncov );
-        _zVec3DAddDRC( &octant->_norm, &octant->suboctant[i]->_norm );
-        _zVec3DOctantDestroy( octant->suboctant[i] );
-        zFree( octant->suboctant[i] );
-      }
+      if( octant->suboctant[i] )
+        _zVec3DOctantMergeSuboctant( octant, i );
     if( !zListIsEmpty( &octant->points ) )
       _zVec3DOctantEstimateNormal( octant );
   }
+}
+
+/* unify suboctants of an octant if all of them are non-empty. */
+static bool _zVec3DOctantUnify(zVec3DOctant *octant)
+{
+  uint8_t exist_suboctant = 0;
+  int i;
+
+  for( i=0; i<8; i++ ){
+    exist_suboctant <<= 1;
+    if( octant->suboctant[i] )
+      exist_suboctant |= _zVec3DOctantUnify( octant->suboctant[i] ) ? 0x1 : 0;
+  }
+  if( exist_suboctant == 0 ) return true; /* leaf octant can always be merged. */
+  if( exist_suboctant != 0xff ) return false; /* at least one of the suboctants is empty. */
+  for( i=0; i<8; i++ ) /* suboctants are unified only if all of them are non-empty. */
+    _zVec3DOctantMergeSuboctant( octant, i );
+  return true;
 }
 
 /* find an octant that contains a 3D point in 3D octant. */
@@ -173,10 +189,26 @@ static const zVec3DOctant *_zVec3DOctantFindContainer(const zVec3DOctant *octant
   const zVec3DOctant *suboctant;
 
   if( !octant ) return NULL;
-  if( !_zVec3DOctantPointIsInside( octant, point ) ) return NULL;
+  if( !zVec3DOctantPointIsInside( octant, point ) ) return NULL;
   for( i=0; i<8; i++ )
     if( ( suboctant = _zVec3DOctantFindContainer( octant->suboctant[i], point ) ) ) return suboctant;
   return octant;
+}
+
+/* convert an octant to a list of axis-aligned boxes. */
+static int _zVec3DOctantToAABox3DList(const zVec3DOctant *octant, zAABox3DList *list)
+{
+  bool have_suboctant = false;
+  int i, ret = 0;
+
+  for( i=0; i<8; i++ ){
+    if( octant->suboctant[i] ){
+      have_suboctant = true;
+      ret += _zVec3DOctantToAABox3DList( octant->suboctant[i], list );
+    }
+  }
+  if( have_suboctant ) return ret;
+  return zAABox3DListAdd( list, &octant->region ) ? 1 : 0;
 }
 
 /* octree */
@@ -215,7 +247,7 @@ void zVec3DOctreeDestroy(zVec3DOctree *octree)
 /* add a 3D point to 3D octree. */
 zVec3DOctant *zVec3DOctreeAddPoint(zVec3DOctree *octree, zVec3D *point)
 {
-  if( !_zVec3DOctantPointIsInside( &octree->root, point ) ){
+  if( !zVec3DOctantPointIsInside( &octree->root, point ) ){
     ZRUNERROR( ZEO_ERR_OCTREE_POINT_OUTOFREGION );
     return NULL;
   }
@@ -257,6 +289,13 @@ bool zVec3DOctreeChangeResolution(zVec3DOctree *octree, double resolution)
   zVec3DOctreeSetResolution( octree, resolution );
   _zVec3DOctantMerge( &octree->root, octree->resolution );
   return true;
+}
+
+/* unify octants whose suboctants are all non-empty. */
+zVec3DOctree *zVec3DOctreeUnifyOctant(zVec3DOctree *octree)
+{
+  _zVec3DOctantUnify( &octree->root );
+  return octree;
 }
 
 /* find an octant that contains a 3D point in 3D octant. */
@@ -331,4 +370,12 @@ zVec3DData *zVec3DOctreeVicinity(const zVec3DOctree *octree, const zVec3D *point
 {
   zVec3DDataInitAddrList( vicinity );
   return _zVec3DOctantVicinity( &octree->root, point, _zSqr(radius), vicinity );
+}
+
+/* convert a 3D octree to a list of axis-aligned boxes. */
+int zVec3DOctreeToAABox3DList(const zVec3DOctree *octree, zAABox3DList *list)
+{
+  int num;
+  num = _zVec3DOctantToAABox3DList( &octree->root, list );
+  return num == zListSize(list) ? num : 0;
 }

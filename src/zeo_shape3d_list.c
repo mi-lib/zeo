@@ -36,42 +36,42 @@ zShape3D *zShapeListPop(zShapeList *list)
 }
 
 /* contiguous vertix of shapes in a list to a point. */
-zVec3D *zShapeListContigVert(const zShapeList *list, const zVec3D *p, double *d)
+const zVec3D *zShapeListContigVert(const zShapeList *list, const zVec3D *point, double *distance)
 {
   zShapeListCell *cp;
-  zVec3D *v, *nv;
-  double _d, dmin;
+  const zVec3D *v, *nv;
+  double _d, dist_min;
 
-  if( !d ) d = &_d;
+  if( !distance ) distance = &_d;
   cp = zListTail( list );
-  v = zShape3DContigVert( zShapeListCellShape(cp), p, d );
-  dmin = *d;
+  v = zShape3DContigVert( zShapeListCellShape(cp), point, distance );
+  dist_min = *distance;
   for( cp=zListCellNext(cp); cp!=zListRoot(list); cp=zListCellNext(cp) ){
-    nv = zShape3DContigVert( zShapeListCellShape(cp), p, d );
-    if( *d < dmin ){
+    nv = zShape3DContigVert( zShapeListCellShape(cp), point, distance );
+    if( *distance < dist_min ){
       v = nv;
-      dmin = *d;
+      dist_min = *distance;
     }
   }
-  *d = dmin;
+  *distance = dist_min;
   return v;
 }
 
 /* the closest point to a shape in a list. */
-double zShapeListClosest(const zShapeList *list, const zVec3D *p, zVec3D *cp)
+double zShapeListClosest(const zShapeList *list, const zVec3D *point, zVec3D *closestpoint)
 {
   zShapeListCell *c;
-  zVec3D ncp;
-  double d, dmin;
+  zVec3D cp;
+  double dist, dist_min;
 
   c = zListTail( list );
-  dmin = zShape3DClosest( zShapeListCellShape(c), p, cp );
+  dist_min = zShape3DClosest( zShapeListCellShape(c), point, closestpoint );
   for( c=zListCellNext(c); c!=zListRoot(list); c=zListCellNext(c) )
-    if( ( d = zShape3DClosest( zShapeListCellShape(c), p, &ncp ) ) < dmin ){
-      zVec3DCopy( &ncp, cp );
-      dmin = d;
+    if( ( dist = zShape3DClosest( zShapeListCellShape(c), point, &cp ) ) < dist_min ){
+      zVec3DCopy( &cp, closestpoint );
+      dist_min = dist;
     }
-  return dmin;
+  return dist_min;
 }
 
 /* print a cell of a shape list out to a file in a ZTK format. */

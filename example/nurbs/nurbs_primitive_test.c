@@ -30,7 +30,7 @@ int main(void)
 
   zVec3DCreate( &center1, 0, 0, 1.7 );
   zVec3DCreate( &az, 0, 0, 10 );
-  zVec3DOrthoNormalSpace( &az, &ax, &ay );
+  zVec3DOrthonormalSpace( &az, &ax, &ay );
   zBox3DCreate( &box, &center1, &ax, &ay, &az, 0.8, 0.6, 0.5 );
   zNURBS3DBox( &nurbs, &box );
   foutput( fp, &nurbs, "box", "white", 1.0, 1.0, 1.0 );
@@ -52,7 +52,7 @@ int main(void)
   zVec3DCreate( &center1, 0, 1, 0 );
   zVec3DCreate( &center2, 0, 1.8, 1.0 );
   zVec3DSub( &center2, &center1, &az );
-  zVec3DOrthoNormalSpace( &az, &ax, &ay );
+  zVec3DOrthonormalSpace( &az, &ax, &ay );
   zECyl3DCreate( &ecyl, &center1, &center2, 0.2, 0.4, &ax, 0 );
   zNURBS3DECyl( &nurbs, &ecyl );
   foutput( fp, &nurbs, "ellipticcylinder", "lightgreen", 0.5, 1.0, 0.5 );
@@ -67,7 +67,7 @@ int main(void)
 
   zVec3DCreate( &center1, 0, 0, 0.2 );
   zVec3DCreate( &az, 1.0, 1.0, 0.2 );
-  zVec3DOrthoNormalSpace( &az, &ax, &ay );
+  zVec3DOrthonormalSpace( &az, &ax, &ay );
   zEllips3DCreate( &ellips, &center1, &ax, &ay, &az, 0.5, 0.4, 0.6, 0 );
   zNURBS3DEllips( &nurbs, &ellips );
   foutput( fp, &nurbs, "ellipsoid", "yellow", 1.0, 1.0, 0.0 );
@@ -75,7 +75,7 @@ int main(void)
 
   zVec3DCreate( &center1, 0, 0, 1 );
   zVec3DCreate( &az, 0, 0.1, 0.8 );
-  zVec3DOrthoNormalSpace( &az, &ax, &ay );
+  zVec3DOrthonormalSpace( &az, &ax, &ay );
   zNURBS3DTorus( &nurbs, &center1, &ax, &ay, &az, 0.5, 0.2 );
   foutput( fp, &nurbs, "torus", "red", 1.0, 0.0, 0.0 );
   zNURBS3DDestroy( &nurbs );

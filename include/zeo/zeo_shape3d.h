@@ -53,19 +53,30 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3D ){
   void destroy();
   zShape3D *queryAssign(const char *str);
   zShape3D *clone(const zShape3D *org, zOpticalInfo *oi);
-  zShape3D *mirror(const zShape3D *org, zAxis axis = zY);
+  zShape3D *mirror(const zShape3D *org, zAxis axis);
   zShape3D *xform(const zShape3D *src, const zFrame3D *frame);
   zShape3D *xformInv(const zShape3D *src, const zFrame3D *frame);
+  const zVec3D *contigVert(const zVec3D *point, double *distance);
+  const zVec3D *contigVert(const zVec3D &point, double *distance);
   double closest(const zVec3D *point, zVec3D *closestpoint);
+  double closest(const zVec3D &point, zVec3D *closestpoint);
   double distanceFromPoint(const zVec3D *point);
-  bool pointIsInside(const zVec3D *point, double margin = zTOL);
+  double distanceFromPoint(const zVec3D &point);
+  bool pointIsInside(const zVec3D *point, double margin);
+  bool pointIsInside(const zVec3D &point, double margin);
   double volume();
   zVec3D *barycenter(zVec3D *center);
+  zVec3D barycenter();
   zMat3D *baryInertiaMass(double mass, zMat3D *inertia);
+  zMat3D baryInertiaMass(double mass);
   zMat3D *baryInertia(double density, zMat3D *inertia);
+  zMat3D baryInertia(double density);
   zMat3D *inertiaMass(double mass, zMat3D *inertia);
+  zMat3D inertiaMass(double mass);
   zMat3D *inertia(double density, zMat3D *inertia);
+  zMat3D inertia(double density);
   zShape3D *toPH();
+  zVec3DOctree *putInOctree(zVec3DOctree *octree);
   zShape3D *readSTL(const char *filename);
   zShape3D *readPLY(const char *filename);
   zShape3D *readOBJ(const char *filename);
@@ -156,8 +167,26 @@ __ZEO_EXPORT zMat3D *zShape3DInertiaMass(const zShape3D *shape, double mass, zMa
 /*! \brief inertia tensor about origin of a 3D shape. */
 __ZEO_EXPORT zMat3D *zShape3DInertia(const zShape3D *shape, double density, zMat3D *inertia);
 
-/*! \brief convert a shape to a polyhedron. */
+/*! \brief convert a shape to a polyhedron.
+ *
+ * zShape3DToPH() directly converts a 3D shape \a shape to a 3D polyhedron regardless of the current type.
+ * If the original type of \a shape is polyhedron, nothing happens.
+ * Note that this process is destructive, i.e., not invertible.
+ * \return
+ * zShape3DToPH() returns a pointer \a shape if it succeeds. Otherwise, it returns the null pointer.
+ */
 __ZEO_EXPORT zShape3D *zShape3DToPH(zShape3D *shape);
+
+/*! \brief put a 3D shape in a 3D octree.
+ *
+ * zShape3DPutInOctree() puts a 3D shape \a shape in a 3D octree \a octree. Namely, regions of \a octree
+ * that are overlapped with \a shape are occupied by nominal points inside of \a shape.
+ * \a octree is internally unified, i.e., if all suboctants of an octant are all non-empty, they are
+ * unified to the parent octant, for saving memory.
+ * \return
+ * zShape3DPutInOctree() return a pointer \a octree.
+ */
+__ZEO_EXPORT zVec3DOctree *zShape3DPutInOctree(const zShape3D *shape, zVec3DOctree *octree);
 
 /*! \brief read a shape from a STL file. */
 __ZEO_EXPORT zShape3D *zShape3DReadFileSTL(zShape3D *shape, const char *filename);
@@ -260,6 +289,16 @@ __ZEO_EXPORT zShape3D *zShape3DReadFile(zShape3D *shape, const char filename[]);
 
 __END_DECLS
 
+#include <zeo/zeo_shape3d_box.h>     /* box */
+#include <zeo/zeo_shape3d_sphere.h>  /* sphere */
+#include <zeo/zeo_shape3d_ellips.h>  /* ellipsoid */
+#include <zeo/zeo_shape3d_cyl.h>     /* cylinder */
+#include <zeo/zeo_shape3d_capsule.h> /* capsule */
+#include <zeo/zeo_shape3d_ecyl.h>    /* elliptic cylinder */
+#include <zeo/zeo_shape3d_cone.h>    /* cone */
+#include <zeo/zeo_shape3d_ph.h>      /* polyhedron (for class abstraction) */
+#include <zeo/zeo_shape3d_nurbs.h>   /* NURBS (for class abstraction) */
+
 #ifdef __cplusplus
 inline zShape3D::zShape3D(){ zShape3DInit( this ); }
 inline zShape3D::zShape3D(const char *str){ zShape3DQueryAssign( this, str ); }
@@ -268,19 +307,30 @@ inline zShape3D *zShape3D::init(){ return zShape3DInit( this ); }
 inline void zShape3D::destroy(){ zShape3DDestroy( this ); }
 inline zShape3D *zShape3D::queryAssign(const char *str){ return zShape3DQueryAssign( this, str ); }
 inline zShape3D *zShape3D::clone(const zShape3D *org, zOpticalInfo *oi){ return zShape3DClone( org, this, oi ); }
-inline zShape3D *zShape3D::mirror(const zShape3D *org, zAxis axis){ return zShape3DMirror( org, this, axis ); }
+inline zShape3D *zShape3D::mirror(const zShape3D *org, zAxis axis = zY){ return zShape3DMirror( org, this, axis ); }
 inline zShape3D *zShape3D::xform(const zShape3D *src, const zFrame3D *frame){ return zShape3DXform( src, frame, this ); }
 inline zShape3D *zShape3D::xformInv(const zShape3D *src, const zFrame3D *frame){ return zShape3DXformInv( src, frame, this ); }
+inline const zVec3D *zShape3D::contigVert(const zVec3D *point, double *distance = NULL){ return zShape3DContigVert( this, point, distance ); }
+inline const zVec3D *zShape3D::contigVert(const zVec3D &point, double *distance = NULL){ return zShape3DContigVert( this, &point, distance ); }
 inline double zShape3D::closest(const zVec3D *point, zVec3D *closestpoint){ return zShape3DClosest( this, point, closestpoint ); }
+inline double zShape3D::closest(const zVec3D &point, zVec3D *closestpoint){ return zShape3DClosest( this, &point, closestpoint ); }
 inline double zShape3D::distanceFromPoint(const zVec3D *point){ return zShape3DDistFromPoint( this, point ); }
-inline bool zShape3D::pointIsInside(const zVec3D *point, double margin){ return zShape3DPointIsInside( this, point, margin ); }
+inline double zShape3D::distanceFromPoint(const zVec3D &point){ return zShape3DDistFromPoint( this, &point ); }
+inline bool zShape3D::pointIsInside(const zVec3D *point, double margin = zTOL){ return zShape3DPointIsInside( this, point, margin ); }
+inline bool zShape3D::pointIsInside(const zVec3D &point, double margin = zTOL){ return zShape3DPointIsInside( this, &point, margin ); }
 inline double zShape3D::volume(){ return zShape3DVolume( this ); }
 inline zVec3D *zShape3D::barycenter(zVec3D *center){ return zShape3DBarycenter( this, center ); }
+inline zVec3D zShape3D::barycenter(){ zVec3D center; zShape3DBarycenter( this, &center ); return center; }
 inline zMat3D *zShape3D::baryInertiaMass(double mass, zMat3D *inertia){ return zShape3DBaryInertiaMass( this, mass, inertia ); }
+inline zMat3D zShape3D::baryInertiaMass(double mass){ zMat3D inertia; zShape3DBaryInertiaMass( this, mass, &inertia ); return inertia; }
 inline zMat3D *zShape3D::baryInertia(double density, zMat3D *inertia){ return zShape3DBaryInertia( this, density, inertia ); }
+inline zMat3D zShape3D::baryInertia(double density){ zMat3D inertia; zShape3DBaryInertia( this, density, &inertia ); return inertia; }
 inline zMat3D *zShape3D::inertiaMass(double mass, zMat3D *inertia){ return zShape3DInertiaMass( this, mass, inertia ); }
+inline zMat3D zShape3D::inertiaMass(double mass){ zMat3D inertia; zShape3DInertiaMass( this, mass, &inertia ); return inertia; }
 inline zMat3D *zShape3D::inertia(double density, zMat3D *inertia){ return zShape3DInertia( this, density, inertia ); }
+inline zMat3D zShape3D::inertia(double density){ zMat3D inertia; zShape3DInertia( this, density, &inertia ); return inertia; }
 inline zShape3D *zShape3D::toPH(){ return zShape3DToPH( this ); }
+inline zVec3DOctree *zShape3D::putInOctree(zVec3DOctree *octree){ return zShape3DPutInOctree( this, octree ); }
 inline zShape3D *zShape3D::readSTL(const char *filename){ return zShape3DReadFileSTL( this, filename ); }
 inline zShape3D *zShape3D::readPLY(const char *filename){ return zShape3DReadFilePLY( this, filename ); }
 inline zShape3D *zShape3D::readOBJ(const char *filename){ return zShape3DReadFileOBJ( this, filename ); }
@@ -292,16 +342,6 @@ inline zShape3D *zShape3D::readZTK(const char *filename){ return zShape3DReadZTK
 inline bool zShape3D::writeZTK(const char *filename){ return zShape3DWriteZTK( this, filename ); }
 inline zShape3D *zShape3D::read(const char *filename){ return zShape3DReadFile( this, filename ); }
 #endif /* __cplusplus */
-
-#include <zeo/zeo_shape3d_box.h>     /* box */
-#include <zeo/zeo_shape3d_sphere.h>  /* sphere */
-#include <zeo/zeo_shape3d_ellips.h>  /* ellipsoid */
-#include <zeo/zeo_shape3d_cyl.h>     /* cylinder */
-#include <zeo/zeo_shape3d_capsule.h> /* capsule */
-#include <zeo/zeo_shape3d_ecyl.h>    /* elliptic cylinder */
-#include <zeo/zeo_shape3d_cone.h>    /* cone */
-#include <zeo/zeo_shape3d_ph.h>      /* polyhedron (for class abstraction) */
-#include <zeo/zeo_shape3d_nurbs.h>   /* NURBS (for class abstraction) */
 
 __BEGIN_DECLS
 

@@ -1,4 +1,3 @@
-#include <zeo/zeo_vec3d_data.h>
 #include <zeo/zeo_shape3d.h>
 #include <zeo/zeo_bv3d.h>
 
