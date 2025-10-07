@@ -52,23 +52,26 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zMShape3D ){
 #endif /* __cplusplus */
 };
 
-#define zMShape3DShapeNum(s)      zArraySize(&(s)->shape_array)
-#define zMShape3DShapeBuf(s)      zArrayBuf(&(s)->shape_array)
-#define zMShape3DShape(s,i)       zArrayElem(&(s)->shape_array,i)
-#define zMShape3DSetShapeNum(s,n) ( zArraySize(&(s)->shape_array) = (n) )
-#define zMShape3DSetShapeBuf(s,b) ( zArrayBuf(&(s)->shape_array) = (b) )
+#define zMShape3DShapeArray(s)    ( &(s)->shape_array )
+#define zMShape3DShapeNum(s)      zArraySize( zMShape3DShapeArray(s) )
+#define zMShape3DShapeBuf(s)      zArrayBuf( zMShape3DShapeArray(s) )
+#define zMShape3DShape(s,i)       zArrayElem( zMShape3DShapeArray(s), i )
+#define zMShape3DSetShapeNum(s,n) ( zArraySize( zMShape3DShapeArray(s) ) = (n) )
+#define zMShape3DSetShapeBuf(s,b) ( zArrayBuf( zMShape3DShapeArray(s) ) = (b) )
 
-#define zMShape3DOpticNum(s)      zArraySize(&(s)->optic_array)
-#define zMShape3DOpticBuf(s)      zArrayBuf(&(s)->optic_array)
-#define zMShape3DOptic(s,i)       zArrayElem(&(s)->optic_array,i)
-#define zMShape3DSetOpticNum(s,n) ( zArraySize(&(s)->optic_array) = (n) )
-#define zMShape3DSetOpticBuf(s,b) ( zArrayBuf(&(s)->optic_array) = (b) )
+#define zMShape3DOpticArray(s)    ( &(s)->optic_array )
+#define zMShape3DOpticNum(s)      zArraySize( zMShape3DOpticArray(s) )
+#define zMShape3DOpticBuf(s)      zArrayBuf( zMShape3DOpticArray(s) )
+#define zMShape3DOptic(s,i)       zArrayElem( zMShape3DOpticArray(s), i )
+#define zMShape3DSetOpticNum(s,n) ( zArraySize( zMShape3DOpticArray(s) ) = (n) )
+#define zMShape3DSetOpticBuf(s,b) ( zArrayBuf( zMShape3DOpticArray(s) ) = (b) )
 
-#define zMShape3DTextureNum(s)      zArraySize(&(s)->texture_array)
-#define zMShape3DTextureBuf(s)      zArrayBuf(&(s)->texture_array)
-#define zMShape3DTexture(s,i)       zArrayElem(&(s)->texture_array,i)
-#define zMShape3DSetTextureNum(s,n) ( zArraySize(&(s)->texture_array) = (n) )
-#define zMShape3DSetTextureBuf(s,b) ( zArrayBuf(&(s)->texture_array) = (b) )
+#define zMShape3DTextureArray(s)    ( &(s)->texture_array )
+#define zMShape3DTextureNum(s)      zArraySize( zMShape3DTextureArray(s) )
+#define zMShape3DTextureBuf(s)      zArrayBuf( zMShape3DTextureArray(s) )
+#define zMShape3DTexture(s,i)       zArrayElem( zMShape3DTextureArray(s) ,i )
+#define zMShape3DSetTextureNum(s,n) ( zArraySize( zMShape3DTextureArray(s) ) = (n) )
+#define zMShape3DSetTextureBuf(s,b) ( zArrayBuf( zMShape3DTextureArray(s) ) = (b) )
 
 /*! \brief initialize and destroy multiple 3D shapes.
  *
@@ -86,11 +89,11 @@ __ZEO_EXPORT zMShape3D *zMShape3DInit(zMShape3D *ms);
 __ZEO_EXPORT void zMShape3DDestroy(zMShape3D *ms);
 
 /*! \brief allocate an array of sets of optical information of multiple 3D shapes */
-#define zMShape3DAllocOpticArray(ms,num)   zArrayAlloc( &(ms)->optic_array, zOpticalInfo, num )
+#define zMShape3DAllocOpticArray(ms,num)   zArrayAlloc( zMShape3DOpticArray(ms), zOpticalInfo, num )
 /*! \brief allocate an array of sets of texture of multiple 3D shapes */
-#define zMShape3DAllocTextureArray(ms,num) zArrayAlloc( &(ms)->texture_array, zTexture, num )
+#define zMShape3DAllocTextureArray(ms,num) zArrayAlloc( zMShape3DTextureArray(ms), zTexture, num )
 /*! \brief allocate an array of shapes of multiple 3D shapes */
-#define zMShape3DAllocShapeArray(ms,num)   zArrayAlloc( &(ms)->shape_array, zShape3D, num )
+#define zMShape3DAllocShapeArray(ms,num)   zArrayAlloc( zMShape3DShapeArray(ms), zShape3D, num )
 
 /*! \brief clone multiple 3D shapes.
  *

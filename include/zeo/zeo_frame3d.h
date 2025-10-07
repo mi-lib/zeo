@@ -24,15 +24,15 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zFrame3D ){
   zVec3D &setPos(zVec3D &_pos){ zVec3DCopy( &_pos, &pos ); return pos; }
   zMat3D &setAtt(zMat3D &_att){ zMat3DCopy( &_att, &att ); return att; }
   zFrame3D &create(zVec3D &p, zMat3D &m);
-  zFrame3D &createZYX(double x, double y, double z, double azim, double elev, double tilt);
-  zFrame3D &createZYX(double array[6]);
-  zFrame3D &createZYX(zVec6D &v);
-  zFrame3D &createZYZ(double x, double y, double z, double bearing, double pitch, double bank);
-  zFrame3D &createZYZ(double array[6]);
-  zFrame3D &createZYZ(zVec6D &v);
-  zFrame3D &createAA(double x, double y, double z, double xa, double ya, double za);
-  zFrame3D &createAA(double array[6]);
-  zFrame3D &createAA(zVec6D &v);
+  zFrame3D &createPosZYX(double x, double y, double z, double azim, double elev, double tilt);
+  zFrame3D &createPosZYX(double array[6]);
+  zFrame3D &createPosZYX(zVec6D &v);
+  zFrame3D &createPosZYZ(double x, double y, double z, double bearing, double pitch, double bank);
+  zFrame3D &createPosZYZ(double array[6]);
+  zFrame3D &createPosZYZ(zVec6D &v);
+  zFrame3D &createPosAA(double x, double y, double z, double xa, double ya, double za);
+  zFrame3D &createPosAA(double array[6]);
+  zFrame3D &createPosAA(zVec6D &v);
   zFrame3D &createDH(double a, double alpha, double d, double theta);
   zFrame3D &copy(zFrame3D &src);
   zFrame3D &ident();
@@ -195,13 +195,13 @@ __ZEO_EXPORT zVec6D *zFrame3DError(const zFrame3D *frame1, const zFrame3D *frame
 
 /*! \brief create a frame from a handy expression.
  *
- * zFrame3DFromZYX() creates a 3D coordinate frame whose original point is at ( \a x, \a y, \a z ) and
+ * zFrame3DFromPosZYX() creates a 3D coordinate frame whose original point is at ( \a x, \a y, \a z ) and
  * attitude is expressed by z-y-x Eulerian angle.
  *
- * zFrame3DFromZYZ() creates a 3D coordinate frame whose original point is at ( \a x, \a y, \a z ) and
+ * zFrame3DFromPosZYZ() creates a 3D coordinate frame whose original point is at ( \a x, \a y, \a z ) and
  * attitude is expressed by z-y-z Eulerian angle.
  *
- * zFrame3DFromAA() creates a 3D coordinate frame whose original point is at ( \a x, \a y, \a z ) and
+ * zFrame3DFromPosAA() creates a 3D coordinate frame whose original point is at ( \a x, \a y, \a z ) and
  * attitude is expressed by an angle-axis vector.
  *
  * zFrame3DFromDH() creates a 3D coordinate frame from modified Denaviet-Hartenberg (DH) parameters
@@ -213,9 +213,9 @@ __ZEO_EXPORT zVec6D *zFrame3DError(const zFrame3D *frame1, const zFrame3D *frame
  * \sa
  * zMat3DFromZYX, zMat3DFromZYZ, zMat3DFromAA
  */
-__ZEO_EXPORT zFrame3D *zFrame3DFromZYX(zFrame3D *frame, double x, double y, double z, double azim, double elev, double tilt);
-__ZEO_EXPORT zFrame3D *zFrame3DFromZYZ(zFrame3D *frame, double x, double y, double z, double heading, double pitch, double bank);
-__ZEO_EXPORT zFrame3D *zFrame3DFromAA(zFrame3D *frame, double x, double y, double z, double xa, double ya, double za);
+__ZEO_EXPORT zFrame3D *zFrame3DFromPosZYX(zFrame3D *frame, double x, double y, double z, double azim, double elev, double tilt);
+__ZEO_EXPORT zFrame3D *zFrame3DFromPosZYZ(zFrame3D *frame, double x, double y, double z, double heading, double pitch, double bank);
+__ZEO_EXPORT zFrame3D *zFrame3DFromPosAA(zFrame3D *frame, double x, double y, double z, double xa, double ya, double za);
 __ZEO_EXPORT zFrame3D *zFrame3DFromDH(zFrame3D *frame, double a, double alpha, double d, double theta);
 
 /*! \brief translate a 3D view frame with respect to the current view.
@@ -371,15 +371,15 @@ __END_DECLS
 #ifdef __cplusplus
 inline zVec3D &zFrame3D::vec(zAxis axis){ return *zFrame3DVec( this, axis ); }
 inline zFrame3D &zFrame3D::create(zVec3D &p, zMat3D &m){ return *zFrame3DCreate( this, &p, &m ); }
-inline zFrame3D &zFrame3D::createZYX(double x, double y, double z, double azim, double elev, double tilt){ return *zFrame3DFromZYX( this, x, y, z, azim, elev, tilt ); }
-inline zFrame3D &zFrame3D::createZYX(double array[6]){ return *zArrayToFrame3DZYX( array, this ); }
-inline zFrame3D &zFrame3D::createZYX(zVec6D &v){ return *zVec6DToFrame3DZYX( &v, this ); }
-inline zFrame3D &zFrame3D::createZYZ(double x, double y, double z, double bearing, double pitch, double bank){ return *zFrame3DFromZYZ( this, x, y, z, bearing, pitch, bank ); }
-inline zFrame3D &zFrame3D::createZYZ(double array[6]){ return *zArrayToFrame3DZYZ( array, this ); }
-inline zFrame3D &zFrame3D::createZYZ(zVec6D &v){ return *zVec6DToFrame3DZYZ( &v, this ); }
-inline zFrame3D &zFrame3D::createAA(double x, double y, double z, double xa, double ya, double za){ return *zFrame3DFromAA( this, x, y, z, xa, ya, za ); }
-inline zFrame3D &zFrame3D::createAA(double array[6]){ return *zArrayToFrame3DAA( array, this ); }
-inline zFrame3D &zFrame3D::createAA(zVec6D &v){ return *zVec6DToFrame3DAA( &v, this ); }
+inline zFrame3D &zFrame3D::createPosZYX(double x, double y, double z, double azim, double elev, double tilt){ return *zFrame3DFromPosZYX( this, x, y, z, azim, elev, tilt ); }
+inline zFrame3D &zFrame3D::createPosZYX(double array[6]){ return *zArrayToFrame3DZYX( array, this ); }
+inline zFrame3D &zFrame3D::createPosZYX(zVec6D &v){ return *zVec6DToFrame3DZYX( &v, this ); }
+inline zFrame3D &zFrame3D::createPosZYZ(double x, double y, double z, double bearing, double pitch, double bank){ return *zFrame3DFromPosZYZ( this, x, y, z, bearing, pitch, bank ); }
+inline zFrame3D &zFrame3D::createPosZYZ(double array[6]){ return *zArrayToFrame3DZYZ( array, this ); }
+inline zFrame3D &zFrame3D::createPosZYZ(zVec6D &v){ return *zVec6DToFrame3DZYZ( &v, this ); }
+inline zFrame3D &zFrame3D::createPosAA(double x, double y, double z, double xa, double ya, double za){ return *zFrame3DFromPosAA( this, x, y, z, xa, ya, za ); }
+inline zFrame3D &zFrame3D::createPosAA(double array[6]){ return *zArrayToFrame3DAA( array, this ); }
+inline zFrame3D &zFrame3D::createPosAA(zVec6D &v){ return *zVec6DToFrame3DAA( &v, this ); }
 inline zFrame3D &zFrame3D::createDH(double a, double alpha, double d, double theta){ return *zFrame3DFromDH( this, a, alpha, d, theta ); }
 inline zFrame3D &zFrame3D::copy(zFrame3D &src){ zFrame3DCopy( &src, this ); return *this; }
 inline zFrame3D &zFrame3D::ident(){ zFrame3DIdent( this ); return *this; }

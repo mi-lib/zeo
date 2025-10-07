@@ -14,9 +14,9 @@
 /* initialize multiple shapes. */
 zMShape3D *zMShape3DInit(zMShape3D *ms)
 {
-  zArrayInit( &ms->shape_array );
-  zArrayInit( &ms->optic_array );
-  zArrayInit( &ms->texture_array );
+  zArrayInit( zMShape3DShapeArray(ms) );
+  zArrayInit( zMShape3DOpticArray(ms) );
+  zArrayInit( zMShape3DTextureArray(ms) );
   return ms;
 }
 
@@ -28,13 +28,13 @@ void zMShape3DDestroy(zMShape3D *ms)
   if( !ms ) return;
   for( i=0; i<zMShape3DShapeNum(ms); i++ )
     zShape3DDestroy( zMShape3DShape(ms,i) );
-  zArrayFree( &ms->shape_array );
+  zArrayFree( zMShape3DShapeArray(ms) );
   for( i=0; i<zMShape3DOpticNum(ms); i++ )
     zOpticalInfoDestroy( zMShape3DOptic(ms,i) );
-  zArrayFree( &ms->optic_array );
+  zArrayFree( zMShape3DOpticArray(ms) );
   for( i=0; i<zMShape3DTextureNum(ms); i++ )
     zTextureDestroy( zMShape3DTexture(ms,i) );
-  zArrayFree( &ms->texture_array );
+  zArrayFree( zMShape3DTextureArray(ms) );
 }
 
 /* clone multiple shapes. */
@@ -231,7 +231,7 @@ static void *_zMShape3DTextureFromZTK(void *obj, int i, void *arg, ZTK *ztk){
 }
 static void *_zMShape3DShapeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return zShape3DFromZTK( zMShape3DShape((zMShape3D*)obj,i),
-    &((zMShape3D*)obj)->shape_array, &((zMShape3D*)obj)->optic_array, &((zMShape3D*)obj)->texture_array, ztk ) ? obj : NULL;
+    zMShape3DShapeArray((zMShape3D*)obj), zMShape3DOpticArray((zMShape3D*)obj), zMShape3DTextureArray((zMShape3D*)obj), ztk ) ? obj : NULL;
 }
 
 static bool _zMShape3DOpticFPrint(FILE *fp, int i, void *obj){

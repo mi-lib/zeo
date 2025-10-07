@@ -2,7 +2,7 @@
 
 zFrame3D *frame3d_gen_rand(zFrame3D *f)
 {
-  return zFrame3DFromZYX( f, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-zPI,zPI), 0.5*zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+  return zFrame3DFromPosZYX( f, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-zPI,zPI), 0.5*zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
 }
 
 zVec3D *vec_gen_rand(zVec3D *v)
