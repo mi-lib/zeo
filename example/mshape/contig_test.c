@@ -5,7 +5,8 @@
 int main(int argc, char *argv[])
 {
   zMShape3D ms;
-  zVec3D p, *cp;
+  zVec3D p;
+  const zVec3D *cp;
   int i;
   FILE *fp1, *fp2;
 

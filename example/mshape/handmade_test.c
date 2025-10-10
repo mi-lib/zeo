@@ -6,10 +6,10 @@ int main(void)
   zMShape3D m;
 
   zMShape3DInit( &m );
-  zArrayAlloc( &m.optic, zOpticalInfo, 1 );
+  zMShape3DAllocOpticArray( &m, 1 );
   zOpticalInfoCreate( zMShape3DOptic(&m,0),
     0.8, 0.8, 0.8, 1.0, 1.0, 1.0, 0.4, 0.4, 0.4, 1.0, 1.0, 1.0, "white" );
-  zArrayAlloc( &m.shape, zShape3D, 1 );
+  zMShape3DAllocShapeArray( &m, 1 );
   zShape3DInit( zMShape3DShape(&m,0) );
   zShape3DBoxCreateAlign( zMShape3DShape(&m,0), ZVEC3DZERO, 0.1, 0.6, 0.4 );
   zShape3DToPH( zMShape3DShape(&m,0) );

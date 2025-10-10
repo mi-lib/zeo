@@ -186,6 +186,34 @@ static void _zShape3DAssignPH(zShape3D *shape)
   zShape3DQueryAssign( shape, "polyhedron" );
 }
 
+/* put a 3D shape in a 3D octree. */
+zVec3DOctree *zShape3DPutInOctree(const zShape3D *shape, zVec3DOctree *octree)
+{
+  int nd, nw, nh;
+  int i, j, k;
+  double d;
+  zVec3D test_point;
+
+  d = octree->resolution * 0.5;
+  nd = zAABox3DDepth(&octree->root.region) / d;
+  nw = zAABox3DWidth(&octree->root.region) / d;
+  nh = zAABox3DHeight(&octree->root.region) / d;
+  for( k=0; k<=nh; k++ ){
+    for( j=0; j<=nw; j++ ){
+      for( i=0; i<=nd; i++ ){
+        zVec3DCreate( &test_point,
+          zAABox3DXMin(&octree->root.region) + i * d,
+          zAABox3DYMin(&octree->root.region) + j * d,
+          zAABox3DZMin(&octree->root.region) + k * d );
+        if( zShape3DPointIsInside( shape, &test_point, 0 ) )
+          zVec3DOctreeAddPoint( octree, &test_point );
+      }
+    }
+  }
+  zVec3DOctreeUnifyOctant( octree );
+  return octree;
+}
+
 /* read a shape from a STL file. */
 zShape3D *zShape3DReadFileSTL(zShape3D *shape, const char *filename)
 {

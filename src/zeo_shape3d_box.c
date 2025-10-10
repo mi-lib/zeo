@@ -178,3 +178,12 @@ zShape3D *zShape3DBoxCreateAlign(zShape3D *shape, const zVec3D *center, double d
   shape->com = &zeo_shape3d_box_com;
   return shape;
 }
+
+/* create a 3D shape as a box by referring an axis-aligned box. */
+zShape3D *zShape3DBoxCreateFromAABox(zShape3D *shape, const zAABox3D *aabox)
+{
+  zVec3D center;
+
+  zAABox3DCenter( aabox, &center );
+  return zShape3DBoxCreateAlign( shape, &center, zAABox3DDepth(aabox), zAABox3DWidth(aabox), zAABox3DHeight(aabox) );
+}

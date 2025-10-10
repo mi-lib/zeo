@@ -34,23 +34,32 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPH3D ){
   zPH3D *alloc(int num_vert, int num_face);
   void destroy();
   zPH3D *clone(const zPH3D *src);
-  zPH3D *mirror(const zPH3D *src, zAxis axis = zY);
+  zPH3D *mirror(const zPH3D *src, zAxis axis);
   zPH3D *scale(const zPH3D *src, double scale);
   zPH3D *scale(double scale);
   zPH3D *flip(const zPH3D *src);
   zPH3D *flip();
   zPH3D *xform(const zFrame3D *frame, zPH3D *dest);
   zPH3D *xformInv(const zFrame3D *frame, zPH3D *dest);
-  zVec3D *contigVert(const zVec3D *p, double *d);
+  const zVec3D *contigVert(const zVec3D *point, double *distance);
+  const zVec3D *contigVert(const zVec3D &point, double *distance);
   double closest(const zVec3D *point, zVec3D *closestpoint);
+  double closest(const zVec3D &point, zVec3D *closestpoint);
   double distanceFromPoint(const zVec3D *point);
-  bool pointIsInside(const zVec3D *point, double margin = zTOL);
+  double distanceFromPoint(const zVec3D &point);
+  bool pointIsInside(const zVec3D *point, double margin);
+  bool pointIsInside(const zVec3D &point, double margin);
   double volume();
+  zVec3D *barycenter(zVec3D *center);
   zVec3D barycenter();
-  zMat3D *inertia(double density, zMat3D *inertia);
-  zMat3D *inertiaMass(double mass, zMat3D *inertia);
-  zMat3D *baryInertia(double density, zMat3D *inertia);
-  zMat3D *baryInertiaMass(double mass, zMat3D *inertia);
+  zMat3D *inertia(double density, zMat3D *_inertia);
+  zMat3D inertia(double density);
+  zMat3D *inertiaMass(double mass, zMat3D *_inertia);
+  zMat3D inertiaMass(double mass);
+  zMat3D *baryInertia(double density, zMat3D *_inertia);
+  zMat3D baryInertia(double density);
+  zMat3D *baryInertiaMass(double mass, zMat3D *_inertia);
+  zMat3D baryInertiaMass(double mass);
   zAABox3D *aabb(zAABox3D *box);
   zAABox3D aabb();
   zPH3D *createPrism(const zVec3D bottom[], int n, const zVec3D *shift);
@@ -166,7 +175,7 @@ __ZEO_EXPORT zPH3D *zPH3DXformInv(const zPH3D *src, const zFrame3D *frame, zPH3D
  * \return
  * zPH3DContigVert() returns a pointer to the contiguous vertex of \a ph.
  */
-__ZEO_EXPORT zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *point, double *d);
+__ZEO_EXPORT const zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *point, double *distance);
 
 /*! \brief check if a point is inside of a 3D polyhedron.
  *
@@ -305,23 +314,32 @@ inline bool zPH3D::allocFace(int num){ return zPH3DAllocFace( this, num ); }
 inline zPH3D *zPH3D::alloc(int num_vert, int num_face){ return zPH3DAlloc( this, num_vert, num_face ); }
 inline void zPH3D::destroy(){ zPH3DDestroy( this ); }
 inline zPH3D *zPH3D::clone(const zPH3D *src){ return zPH3DClone( src, this ); }
-inline zPH3D *zPH3D::mirror(const zPH3D *src, zAxis axis){ return zPH3DMirror( src, this, axis ); }
+inline zPH3D *zPH3D::mirror(const zPH3D *src, zAxis axis = zY){ return zPH3DMirror( src, this, axis ); }
 inline zPH3D *zPH3D::scale(const zPH3D *src, double scale){ return zPH3DScale( src, this, scale ); }
 inline zPH3D *zPH3D::scale(double scale){ return zPH3DScaleDRC( this, scale ); }
 inline zPH3D *zPH3D::flip(const zPH3D *src){ return zPH3DFlip( src, this ); }
 inline zPH3D *zPH3D::flip(){ return zPH3DFlipDRC( this ); }
 inline zPH3D *zPH3D::xform(const zFrame3D *frame, zPH3D *dest){ return zPH3DXform( this, frame, dest ); }
 inline zPH3D *zPH3D::xformInv(const zFrame3D *frame, zPH3D *dest){ return zPH3DXformInv( this, frame, dest ); }
-inline zVec3D *zPH3D::contigVert(const zVec3D *point, double *d){ return zPH3DContigVert( this, point, d ); }
+inline const zVec3D *zPH3D::contigVert(const zVec3D *point, double *distance = NULL){ return zPH3DContigVert( this, point, distance ); }
+inline const zVec3D *zPH3D::contigVert(const zVec3D &point, double *distance = NULL){ return zPH3DContigVert( this, &point, distance ); }
 inline double zPH3D::closest(const zVec3D *point, zVec3D *closestpoint){ return zPH3DClosest( this, point, closestpoint ); }
+inline double zPH3D::closest(const zVec3D &point, zVec3D *closestpoint){ return zPH3DClosest( this, &point, closestpoint ); }
 inline double zPH3D::distanceFromPoint(const zVec3D *point){ return zPH3DDistFromPoint( this, point ); }
-inline bool zPH3D::pointIsInside(const zVec3D *point, double margin){ return zPH3DPointIsInside( this, point, margin ); }
+inline double zPH3D::distanceFromPoint(const zVec3D &point){ return zPH3DDistFromPoint( this, &point ); }
+inline bool zPH3D::pointIsInside(const zVec3D *point, double margin = zTOL){ return zPH3DPointIsInside( this, point, margin ); }
+inline bool zPH3D::pointIsInside(const zVec3D &point, double margin = zTOL){ return zPH3DPointIsInside( this, &point, margin ); }
 inline double zPH3D::volume(){ return zPH3DVolume( this ); }
+inline zVec3D *zPH3D::barycenter(zVec3D *center){ return zPH3DBarycenter( this, center ); }
 inline zVec3D zPH3D::barycenter(){ zVec3D center; zPH3DBarycenter( this, &center ); return center; }
-inline zMat3D *zPH3D::inertia(double density, zMat3D *inertia){ return zPH3DInertia( this, density, inertia ); }
-inline zMat3D *zPH3D::inertiaMass(double mass, zMat3D *inertia){ return zPH3DInertiaMass( this, mass, inertia); }
-inline zMat3D *zPH3D::baryInertia(double density, zMat3D *inertia){ return zPH3DBaryInertia( this, density, inertia ); }
-inline zMat3D *zPH3D::baryInertiaMass(double mass, zMat3D *inertia){ return zPH3DBaryInertiaMass( this, mass, inertia ); }
+inline zMat3D *zPH3D::inertia(double density, zMat3D *_inertia){ return zPH3DInertia( this, density, _inertia ); }
+inline zMat3D zPH3D::inertia(double density){ zMat3D _inertia; zPH3DInertia( this, density, &_inertia ); return _inertia; }
+inline zMat3D *zPH3D::inertiaMass(double mass, zMat3D *_inertia){ return zPH3DInertiaMass( this, mass, _inertia ); }
+inline zMat3D zPH3D::inertiaMass(double mass){ zMat3D _inertia; zPH3DInertiaMass( this, mass, &_inertia ); return _inertia; }
+inline zMat3D *zPH3D::baryInertia(double density, zMat3D *_inertia){ return zPH3DBaryInertia( this, density, _inertia ); }
+inline zMat3D zPH3D::baryInertia(double density){ zMat3D _inertia; zPH3DBaryInertia( this, density, &_inertia ); return _inertia; }
+inline zMat3D *zPH3D::baryInertiaMass(double mass, zMat3D *_inertia){ return zPH3DBaryInertiaMass( this, mass, _inertia ); }
+inline zMat3D zPH3D::baryInertiaMass(double mass){ zMat3D _inertia; zPH3DBaryInertiaMass( this, mass, &_inertia ); return _inertia; }
 inline zAABox3D *zPH3D::aabb(zAABox3D *box){ return zPH3DAABB( this, box ); }
 inline zAABox3D zPH3D::aabb(){ zAABox3D box; zPH3DAABB( this, &box ); return box; }
 inline zPH3D *zPH3D::createPrism(const zVec3D bottom[], int n, const zVec3D *shift){ return zPH3DCreatePrism( this, bottom, n, shift ); }

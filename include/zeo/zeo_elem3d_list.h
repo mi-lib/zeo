@@ -12,9 +12,8 @@
 __BEGIN_DECLS
 
 /* ********************************************************** */
-/* CLASS: zLoop3D
- * loop of 3D vertices
- * ********************************************************** */
+/*! \brief loop of 3D vertices.
+ *//* ******************************************************* */
 
 typedef zVec3DAddrListCell zLoop3DCell;
 typedef zVec3DAddrList zLoop3D;
@@ -24,9 +23,8 @@ typedef zVec3DAddrList zLoop3D;
 #define zLoop3DDestroy(l)  zVec3DAddrListDestroy( l )
 
 /* ********************************************************** */
-/* CLASS: zTri3DList
- * 3D triangle list
- * ********************************************************** */
+/*! \brief list of 3D triangles.
+ *//* ******************************************************* */
 
 zListClass( zTri3DList, zTri3DListCell, zTri3D );
 

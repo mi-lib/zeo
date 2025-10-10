@@ -148,23 +148,23 @@ zPH3D *zPH3DXformInv(const zPH3D *src, const zFrame3D *frame, zPH3D *dest)
 }
 
 /* find the contiguous vertix of a 3D polyhedron to a point. */
-zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *point, double *d)
+const zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *point, double *distance)
 {
   int i;
   zVec3D *v, *nv;
-  double _d, dmin;
+  double _d, dist_min;
 
   if( zPH3DVertNum(ph) == 0 ) return NULL;
-  if( !d ) d = &_d;
+  if( !distance ) distance = &_d;
   v = zPH3DVert(ph,0);
-  dmin = zVec3DDist( point, v );
+  dist_min = zVec3DDist( point, v );
   for( i=1; i<zPH3DVertNum(ph); i++ ){
-    if( ( *d = zVec3DDist( ( nv = zPH3DVert(ph,i) ), point ) ) < dmin ){
+    if( ( *distance = zVec3DDist( ( nv = zPH3DVert(ph,i) ), point ) ) < dist_min ){
       v = nv;
-      dmin = *d;
+      dist_min = *distance;
     }
   }
-  *d = dmin;
+  *distance = dist_min;
   return v;
 }
 

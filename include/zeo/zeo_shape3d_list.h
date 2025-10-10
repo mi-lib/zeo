@@ -45,10 +45,10 @@ __ZEO_EXPORT zShapeListCell *zShapeListPush(zShapeList *list, zShape3D *shape);
 __ZEO_EXPORT zShape3D *zShapeListPop(zShapeList *list);
 #define zShapeListDestroy(list) zListDestroy( zShapeListCell, list )
 
-/*
+/*! \brief contiguous vertex of a list of 3D shapes to the given 3D point.
  */
-__ZEO_EXPORT zVec3D *zShapeListContigVert(const zShapeList *l, const zVec3D *p, double *d);
-__ZEO_EXPORT double zShapeListClosest(const zShapeList *l, const zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT const zVec3D *zShapeListContigVert(const zShapeList *list, const zVec3D *point, double *distance);
+__ZEO_EXPORT double zShapeListClosest(const zShapeList *list, const zVec3D *point, zVec3D *closestpoint);
 
 /*! \brief print out a shape list to a file in a ZTK format.
  *

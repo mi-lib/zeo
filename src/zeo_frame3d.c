@@ -120,7 +120,7 @@ zVec6D *zFrame3DError(const zFrame3D *frame1, const zFrame3D *frame2, zVec6D *er
 }
 
 /* create a 3D frame from z-y-x Eulerian angles. */
-zFrame3D *zFrame3DFromZYX(zFrame3D *frame, double x, double y, double z, double azim, double elev, double tilt)
+zFrame3D *zFrame3DFromPosZYX(zFrame3D *frame, double x, double y, double z, double azim, double elev, double tilt)
 {
   zVec3DCreate( zFrame3DPos(frame), x, y, z );
   zMat3DFromZYX( zFrame3DAtt(frame), azim, elev, tilt );
@@ -128,7 +128,7 @@ zFrame3D *zFrame3DFromZYX(zFrame3D *frame, double x, double y, double z, double 
 }
 
 /* create a 3D frame from z-y-z Eulerian angle. */
-zFrame3D *zFrame3DFromZYZ(zFrame3D *frame, double x, double y, double z, double heading, double pitch, double bank)
+zFrame3D *zFrame3DFromPosZYZ(zFrame3D *frame, double x, double y, double z, double heading, double pitch, double bank)
 {
   zVec3DCreate( zFrame3DPos(frame), x, y, z );
   zMat3DFromZYZ( zFrame3DAtt(frame), heading, pitch, bank );
@@ -136,7 +136,7 @@ zFrame3D *zFrame3DFromZYZ(zFrame3D *frame, double x, double y, double z, double 
 }
 
 /* create a 3D frame from a position vector and an angle-axis vector. */
-zFrame3D *zFrame3DFromAA(zFrame3D *frame, double x, double y, double z, double xa, double ya, double za)
+zFrame3D *zFrame3DFromPosAA(zFrame3D *frame, double x, double y, double z, double xa, double ya, double za)
 {
   zVec3D aa;
 
@@ -218,7 +218,7 @@ zFrame3D *zFrame3DGazeAndRotateView(zFrame3D *frame, double centerx, double cent
 /* convert an array of values for position and z-y-x Eulerian angles to a 3D frame. */
 zFrame3D *zArrayToFrame3DZYX(const double *array, zFrame3D *frame)
 {
-  return zFrame3DFromZYX( frame, array[0], array[1], array[2], array[3], array[4], array[5] );
+  return zFrame3DFromPosZYX( frame, array[0], array[1], array[2], array[3], array[4], array[5] );
 }
 
 /* convert a 3D frame to an array of values for position and z-y-x Eulerian angles. */
@@ -251,7 +251,7 @@ zVec6D *zFrame3DToVec6DZYX(const zFrame3D *frame, zVec6D *v)
 /* convert an array of values for position and z-y-z Eulerian angles to a 3D frame. */
 zFrame3D *zArrayToFrame3DZYZ(const double *array, zFrame3D *frame)
 {
-  return zFrame3DFromZYZ( frame, array[0], array[1], array[2], array[3], array[4], array[5] );
+  return zFrame3DFromPosZYZ( frame, array[0], array[1], array[2], array[3], array[4], array[5] );
 }
 
 /* convert a 3D frame to an array of values for position and z-y-z Eulerian angles. */
@@ -284,7 +284,7 @@ zVec6D *zFrame3DToVec6DZYZ(const zFrame3D *frame, zVec6D *v)
 /* convert an array of values for position and angle-axis vector to a 3D frame. */
 zFrame3D* zArrayToFrame3DAA(const double *array, zFrame3D *frame)
 {
-  return zFrame3DFromAA( frame, array[0], array[1], array[2], array[3], array[4], array[5] );
+  return zFrame3DFromPosAA( frame, array[0], array[1], array[2], array[3], array[4], array[5] );
 }
 
 /* convert a 3D frame to an array of values for position and angle-axis vector. */
