@@ -40,7 +40,7 @@ void test_vert(zVec3DData *data, double x, double y, double z, double a, double 
   int i;
 
   zVec3DDataInitArray( data, N );
-  zFrame3DFromZYX( &frame, x, y, z, zDeg2Rad(a), zDeg2Rad(b), zDeg2Rad(c) );
+  zFrame3DFromPosZYX( &frame, x, y, z, zDeg2Rad(a), zDeg2Rad(b), zDeg2Rad(c) );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v, zRandF(-wx,wx), zRandF(-wy,wy), zRandF(-wz,wz) );
     zXform3DDRC( &frame, &v );

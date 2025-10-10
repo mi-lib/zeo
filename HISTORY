@@ -1,3 +1,6 @@
+2025.10.10. Abolished zIntersectPH3D, and renamed _zIntersectPH3D to zIntersectPH3D. [zeo_col_ph]
+2025.10.10. Abolished zIntersectPH3DFast. [zeo_col_ph]
+2025.10.10. Reflected renaming of zFrame3DFromPosZYX to some examples. [example]
 2025.10.08. Added zMShape3DShapeArray, zMShape3DOpticArray, and zMShape3DTextureArray to encapsulate members shape_array, optic_array, and texture_array of zMShape3D. [zeo_mshape3d]
 2025.10.08. Renamed methods createZYX, createZYX, createZYX, createZYZ, createZYZ, createZYZ, createAA, createAA, and createAA of zFrame3D for C++ to createPosZYX, createPosZYX, createPosZYX, createPosZYZ, createPosZYZ, createPosZYZ, createPosAA, createPosAA, and createPosAA, respectively. [zeo_frame3d]
 2025.10.08. Renamed zFrame3DFromZYX, zFrame3DFromZYZ, and zFrame3DFromAA to zFrame3DFromPosZYX, zFrame3DFromPosZYZ, and zFrame3DFromPosAA, respectively. [zeo_frame3d]
