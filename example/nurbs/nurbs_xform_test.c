@@ -50,7 +50,7 @@ int main(void)
   nurbs_fprint( fp, &dest );
   fclose( fp );
 
-  zFrame3DFromZYX( &f, 1, 1, 1, zDeg2Rad(45), zDeg2Rad(10), zDeg2Rad(5) );
+  zFrame3DFromPosZYX( &f, 1, 1, 1, zDeg2Rad(45), zDeg2Rad(10), zDeg2Rad(5) );
   zNURBS3DXform( &src, &f, &dest );
   fp = fopen( "xfr", "w" );
   nurbs_fprint( fp, &dest );
