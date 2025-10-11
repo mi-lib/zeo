@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
   zPH3D a, b, ip;
   clock_t t1, t2;
   int n;
-  int dt1, dt2, dt3, dt4;
+  int dt1, dt2, dt3;
 
   zRandInit();
 
@@ -100,29 +100,21 @@ int main(int argc, char *argv[])
   zPH3DDestroy( &ip );
 
   t1 = clock();
-  zIntersectPH3DFast( &a, &b, &ip );
-  t2 = clock();
-  dt2 = t2 - t1;
-  eprintf( "[MP(fast)   ] time=%d\n", dt2 );
-  output( "mp2.ztk", &a, &b, &ip );
-  zPH3DDestroy( &ip );
-
-  t1 = clock();
   zIntersectPH3DBREP( &a, &b, &ip );
   t2 = clock();
-  dt3 = t2 - t1;
-  eprintf( "[B-rep      ] time=%d\n", dt3 );
+  dt2 = t2 - t1;
+  eprintf( "[B-rep      ] time=%d\n", dt2 );
   output( "brep.ztk", &a, &b, &ip );
   zPH3DDestroy( &ip );
 
   t1 = clock();
   zIntersectPH3DBREPFast( &a, &b, &ip );
   t2 = clock();
-  dt4 = t2 - t1;
-  eprintf( "[B-rep(fast)] time=%d\n", dt4 );
+  dt3 = t2 - t1;
+  eprintf( "[B-rep(fast)] time=%d\n", dt3 );
   output( "brep2.ztk", &a, &b, &ip );
   zPH3DDestroy( &ip );
-  printf( "%d %d %d %d %d\n", n, dt1, dt2, dt3, dt4 );
+  printf( "%d %d %d %d\n", n, dt1, dt2, dt3 );
 
   zPH3DDestroy( &a );
   zPH3DDestroy( &b );
