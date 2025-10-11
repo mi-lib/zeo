@@ -11,10 +11,10 @@
 typedef struct{
   bool sw_w;  /* included in W (the smallest simplex) */
   bool sw_y;  /* included in Y (the updated simplex) */
-  zVec3D w;   /* support map of Minkowski's sum */
+  zVec3D w;   /* the destination of support map for Minkowski's sum */
   const zVec3D *p1; /* corresponding vertex on object 1 to the support map */
   const zVec3D *p2; /* corresponding vertex on object 2 to the support map */
-  double s;   /* linear sum coefficient */
+  double s;   /* linear sum coefficient : Weights used to represent nearest neighbors as linear combinations of simplex vertices, and used to exclude unnecessary vertices. If the weight becomes zero, that vertex is considered unused. */
 } zGJKSlot;
 
 typedef struct{
@@ -96,7 +96,7 @@ static void _zGJKSimplexYVertFPrint(FILE *fp, zGJKSimplex *s)
       _zGJKSlotVertFPrint( fp, &s->slot[i] );
 }
 
-/* prion out vertices GJK simplex set W (minimum simplex) */
+/* print out vertices GJK simplex set W (minimum simplex) */
 static void _zGJKSimplexWVertFPrint(FILE *fp, zGJKSimplex *s)
 {
   int i;
@@ -139,6 +139,9 @@ static int _zGJKSimplexAddSlot(zGJKSimplex *s, zGJKSlot *slot)
 }
 
 /* find the closest point in/on the testing simplex. */
+/* @param[in,out] s  simplex */
+/* @param[out]    v  a separating vector when closest */
+/* @return  if successful, closest point, otherwise NULL. */
 static zVec3D *_zGJKSimplexClosest(zGJKSimplex *s, zVec3D *v)
 {
   zGJKSlot *slot[4];
@@ -179,6 +182,11 @@ static zVec3D *_zGJKSimplexClosest(zGJKSimplex *s, zVec3D *v)
 }
 
 /* support map of Minkowski difference. */
+/* @param[out] s      slots that are simplex elements (3D vertex w, etc.) */
+/* @param[in]  data1  3D vertices 1 (must be made from convex hull) */
+/* @param[in]  data2  3D vertices 2 (must be made from convex hull) */
+/* @param[in]  v      separating axis for suppport mapping (and get reverse vector nv) */
+/* @return  the edge in Minkowski difference space (data1 - data2) */
 static zVec3D *_zGJKSupportMap(zGJKSlot *slot, zVec3DData *data1, zVec3DData *data2, zVec3D *v)
 {
   zVec3D nv;
@@ -204,6 +212,11 @@ static void _zGJKPair(zGJKSimplex *s, zVec3D *c1, zVec3D *c2)
     }
 }
 
+/* param[in]  ph  polytope (convex hull) */
+/* param[in]  p   target 3D point */
+/* param[out] cp  closest 3D point in the `ph` faces */
+/* param[out] id  id of the `ph` faces, which is closest */
+/* return  closest(minimum) distance for the face of the `ph` */
 static double _zGJKPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp, int *id)
 {
   int i;
@@ -232,6 +245,8 @@ static zGJKSlotListCell *_zGJKSlotListInsert(zGJKSlotList *sl, zGJKSlot *s)
 {
   zGJKSlotListCell *sc;
 
+  if( zVec3DIsNan(&s->w) )
+    return NULL;
   if( !( sc = zAlloc( zGJKSlotListCell, 1 ) ) ){
     ZALLOCERROR();
     return NULL;
@@ -243,6 +258,13 @@ static zGJKSlotListCell *_zGJKSlotListInsert(zGJKSlotList *sl, zGJKSlot *s)
   return sc;
 }
 
+/* @param[in]     data1      3D vertices 1 (must be made from convex hull) */
+/* @param[in]     data2      3D vertices 2 (must be made from convex hull) */
+/* @param[in,out] slist      A list for accumulating slots that are simplex elements (3D vertex w, etc.) alongside the update process of simplex `s` */
+/* @param[in,out] vert_data  A set of 3D vertices `s->w` which `slist` has */
+/* @param[in]     v          */
+/* @param[in]     edge       */
+/* @param[in]     tri        */
 static bool _zGJKPDAddPoint(zVec3DData *data1, zVec3DData *data2, zGJKSlotList *slist, zVec3DData *vert_data, zVec3D *v, zEdge3D *edge, zTri3D *tri)
 {
   zGJKSlot  ns;
@@ -256,6 +278,13 @@ static bool _zGJKPDAddPoint(zVec3DData *data1, zVec3DData *data2, zGJKSlotList *
   return true;
 }
 
+/* This function aims to convert the simplex into a 3D solid (with n vertices ≥ 4). */
+/* Assumption: The number of vertices n in the simplex should be 2 ≤ n ≤ 4. */
+/* @param[in]     data1      3D vertices 1 (must be made from convex hull) */
+/* @param[in]     data2      3D vertices 2 (must be made from convex hull) */
+/* @param[in]     s          simplex from GJK */
+/* @param[in,out] slist      A list for accumulating slots that are simplex elements (3D vertex w, etc.) alongside the update process of simplex `s` */
+/* @param[out]    vert_data  A set of 3D vertices `s->w` which `slist` has */
 static bool _zGJKPDInit(zVec3DData *data1, zVec3DData *data2, zGJKSimplex *s, zGJKSlotList *slist, zVec3DData *vert_data)
 {
   int i;
@@ -265,47 +294,80 @@ static bool _zGJKPDInit(zVec3DData *data1, zVec3DData *data2, zGJKSimplex *s, zG
   zEdge3D edge;
   zVec3D v1, v2;
 
-  zListInit( slist );
-  zVec3DDataInitList( vert_data );
   for( i=0; i<s->n; i++ )
     _zGJKSlotListInsert( slist, &s->slot[i] );
   zListForEach( slist, sc )
     zVec3DDataAdd( vert_data, &sc->data.w );
 
+  if( s->n < 2 ){
+    ZRUNERROR("Invalid size=%d of syntax list. It must be between 2(edge) or 3(plane) or 4(tetrahedron) after _GJK().", s->n );
+    return false;
+  } else
   if( s->n == 2 ){
-    zEdge3DCreate( &edge, &s->slot[0].w, &s->slot[1].w );
-    zVec3DOrthoSpace( zEdge3DVec(&edge), &v1, &v2 );
+    /* edge exists in the Minkowski difference space */
+    if( zEdge3DCreate( &edge, &s->slot[0].w, &s->slot[1].w ) == NULL )
+      return false;
+    if( !zVec3DOrthoSpace( zEdge3DVec(&edge), &v1, &v2 ) )
+      return false;
+    /* v1 is the one separating axis vector in the Minkowski difference space */
     if( !_zGJKPDAddPoint( data1, data2, slist, vert_data, &v1, &edge, NULL ) )
-      goto FAILURE;
+      return false;
+    /* v2 is the another separating axis vector in the Minkowski difference space */
     if( !_zGJKPDAddPoint( data1, data2, slist, vert_data, &v2, &edge, NULL ) )
-      goto FAILURE;
+      return false;
+    /* -v1 */
     if( !_zGJKPDAddPoint( data1, data2, slist, vert_data, zVec3DRevDRC( &v1 ), &edge, NULL ) )
-      goto FAILURE;
+      return false;
+    /* -v2 */
     if( !_zGJKPDAddPoint( data1, data2, slist, vert_data, zVec3DRevDRC( &v2 ), &edge, NULL ) )
-      goto FAILURE;
-    zVec3DDataConvexHull( vert_data, &ph );
+      return false;
+    if( zVec3DDataConvexHull( vert_data, &ph ) == NULL )
+      return false;
     if( !zPH3DPointIsInside( &ph, ZVEC3DZERO, -zTOL ) ){
       zPH3DDestroy( &ph );
-      goto FAILURE;
+      return false;
     }
     zPH3DDestroy(&ph);
   } else
   if( s->n == 3 ){
-    zTri3DCreate( &tri, &s->slot[0].w, &s->slot[1].w, &s->slot[2].w );
+    if( zTri3DCreate( &tri, &s->slot[0].w, &s->slot[1].w, &s->slot[2].w ) == NULL )
+      return false;
+    /* normal vector of plane of 3 vertices */
     if( !_zGJKPDAddPoint( data1, data2, slist, vert_data, zTri3DNorm(&tri), NULL, &tri ) )
-      goto FAILURE;
+      return false;
+    /* inversed normal vector */
     if( !_zGJKPDAddPoint( data1, data2, slist, vert_data, zVec3DRev( zTri3DNorm(&tri), &v1 ), NULL, &tri ) )
-      goto FAILURE;
+      return false;
   }
-  return true;
 
- FAILURE:
+  return true;
+}
+
+/* initialize simplex as tetrahedron */
+/* @param[in]  data1      3D vertices 1 (must be made from convex hull) */
+/* @param[in]  data2      3D vertices 2 (must be made from convex hull) */
+/* @param[in]  s          simplex from GJK */
+/* @param[out] slist      A list for accumulating slots that are simplex elements (3D vertex w, etc.) alongside the update process of simplex `s` */
+/* @param[out] vert_data  A set of 3D vertices `s->w` which `slist` has */
+/* @return  If successful, true */
+static bool _zGJKPDInitSimplex3D(zVec3DData *data1, zVec3DData *data2, zGJKSimplex *s, zGJKSlotList *slist, zVec3DData *vert_data)
+{
+  zListInit( slist );
+  zVec3DDataInitList( vert_data );
+  if( _zGJKPDInit( data1, data2, s, slist, vert_data ) )
+    return true;
   zVec3DDataDestroy( vert_data );
   zListDestroy( zGJKSlotListCell, slist );
   return false;
 }
 
 /* penetration depth */
+/* @param[in]  data1  3D vertices 1 (must be made from convex hull) */
+/* @param[in]  data2  3D vertices 2 (must be made from convex hull) */
+/* @param[out] c1     deepest penetration depth of data1 */
+/* @param[out] c2     deepest penetration depth of data2 */
+/* @param[in]  s      simplex from GJK */
+/* @return  If the search for depth succeeds, true */
 static bool _zGJKPD(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2, zGJKSimplex *s)
 {
   int i, j;
@@ -318,10 +380,18 @@ static bool _zGJKPD(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2
   int id = 0;
   double l[3];
 
-  if( !_zGJKPDInit( data1, data2, s, &slist, &vert_data ) ) return false;
+  /* Question (Naive Approach): */
+  /*  When the simplex vertices are 1, 2, and 3,       */
+  /*  this means the penetration depth is 0,           */
+  /*  so shouldn't the function terminate immediately? */
+  if( !_zGJKPDInitSimplex3D( data1, data2, s, &slist, &vert_data ) ) return false;
   zVec3DZero( &v_temp );
   while( 1 ){
-    zVec3DDataConvexHull( &vert_data, &ph );
+    if( zVec3DDataConvexHull( &vert_data, &ph ) == NULL ){
+      zVec3DDataDestroy( &vert_data );
+      zListDestroy( zGJKSlotListCell, &slist );
+      return false;
+    }
     _zGJKPH3DClosest( &ph, ZVEC3DZERO, &v, &id );
     if( zVec3DEqual( &v, &v_temp ) ) break; /* success! */
     zVec3DCopy( &v, &v_temp );
