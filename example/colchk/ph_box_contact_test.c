@@ -79,39 +79,45 @@ zPH3D* create_ph_from_ztk_file(const char *filename, zPH3D *ph)
   return ph;
 }
 
-bool test_ph(const char *a_filename, const char *b_filename, zPH3D *a, zPH3D *b)
-{
-  if( !create_ph_from_ztk_file( a_filename, a ) )
-    return false;
-  if( !create_ph_from_ztk_file( b_filename, b ) )
-    return false;
-
-  return true;
-}
-
 int main(int argc, char *argv[])
 {
-  zPH3D a, b, ip;
+  zPH3D a, b, c, ip;
   clock_t t1, t2;
-  int dt1;
+  int dt;
 
-  zRandInit();
+  if( !create_ph_from_ztk_file( "ph_box_ztk/ph_box_a.ztk", &a ) )
+    return 1;
+  if( !create_ph_from_ztk_file( "ph_box_ztk/ph_box_b.ztk", &b ) )
+    return 1;
+  if( !create_ph_from_ztk_file( "ph_box_ztk/ph_box_c.ztk", &c ) )
+    return 1;
 
-  test_ph( "ph_box_a.ztk", "ph_box_b.ztk", &a, &b );
-  output( "ph_box_org.ztk", &a, &b, NULL );
-
+  output( "ph_box_org_ab.ztk", &a, &b, NULL );
   t1 = clock();
   if( !zIntersectPH3D( &a, &b, &ip ) ){
-    eprintf( "not intersect.\n" );
+    eprintf( "ab not intersect.\n" );
+  }
+  t2 = clock();
+  dt = t2 - t1;
+  eprintf( "[ph_box_contact] time=%d\n", dt );
+  output( "ph_box_contact_ab.ztk", &a, &b, &ip );
+  zPH3DDestroy( &ip );
+
+  output( "ph_box_org_cb.ztk", &c, &b, NULL );
+  t1 = clock();
+  if( !zIntersectPH3D( &c, &b, &ip ) ){
+    eprintf( "cb not intersect.\n" );
     return 1;
   }
   t2 = clock();
-  dt1 = t2 - t1;
-  eprintf( "[ph_box_contact] time=%d\n", dt1 );
-  output( "ph_box_contact.ztk", &a, &b, &ip );
+  dt = t2 - t1;
+  eprintf( "[ph_box_contact] time=%d\n", dt );
+  output( "ph_box_contact_cb.ztk", &c, &b, &ip );
   zPH3DDestroy( &ip );
 
-  zPH3DDestroy( &a );
+  zPH3DDestroy( &c );
   zPH3DDestroy( &b );
+  zPH3DDestroy( &a );
+
   return 0;
 }
