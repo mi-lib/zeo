@@ -510,6 +510,10 @@ zPH3D *zVec3DDataConvexHull(zVec3DData *data, zPH3D *ch)
   zListInit( &pl );
   zVec3DDataRewind( data );
   while( ( v = zVec3DDataFetch( data ) ) ){
+    if( zVec3DIsNan( v ) ){
+      zListDestroy( zQHPointListCell, &pl );
+      return NULL;
+    }
     if( !( pc = zAlloc( zQHPointListCell, 1 ) ) ) break;
     _zQHPointCreate( &pc->data, v );
     zListInsertHead( &pl, pc );
