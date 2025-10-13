@@ -1,6 +1,6 @@
 2025.10.13. Defined ZEO_WARN_MSHAPE_EMPTY_OCTREE for zMShape3DFromOctree. [zeo_mshape3d]
 2025.10.13. Renamed _zQHFacetBB to _zQHFacetTestBeneathBeyond. [zeo_bv3d_convexhull]
-2025.10.12. Modified zTri3DClosestFromOrigin to check if the given triangle is degenerated.
+2025.10.12. Modified zTri3DClosestFromOrigin to check if the given triangle is degenerated. [zeo_elem3d]
 2025.10.10. Modified _zTri3DDualXform to replace distance between the given triangle and the base point with a predefined value if it is too short. [zeo_col_ph]
 2025.10.10. Modified zIntersectPH3D to check the returned value of _zTri3DDualXform. [zeo_col_ph]
 2025.10.10. Abolished zIntersectPH3D, and renamed _zIntersectPH3D to zIntersectPH3D. [zeo_col_ph]
