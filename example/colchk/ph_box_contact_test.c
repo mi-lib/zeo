@@ -31,6 +31,16 @@ const zVec3D vert_c[] = {
   { { -0.00627116805963905209, -0.0510873067099782835, 0.0499999358996229201 } },
   { { -0.00556285502614803449, -0.051087370410225319, 0.149997427331371003 } } };
 
+const zVec3D vert_d[] = {
+  { { 0.0495132295579301107, 0.11282533420843735, -0.0541642239574266493 } },
+  { { 0.0471530026837614219, 0.0129753850850316196, -0.0591055789493028089 } },
+  { { 0.0769455072431732834, 0.00755472742088832919, 0.0361993167411368832 } },
+  { { 0.0793057341173419722, 0.107404676544294059, 0.0411406717330130359 } },
+  { { 0.144942973355028704, 0.112048075859204593, -0.0840399644215335112 } },
+  { { 0.142582746480860001, 0.0121981267357988629, -0.0889813194134096708 } },
+  { { 0.172375251040271876, 0.00677746907165557248, 0.00632357627703002134 } },
+  { { 0.174735477914440551, 0.106627418195061302, 0.0112649312689061809 } } };
+
 void output(const char *filename, zPH3D *a, zPH3D *b, zPH3D *ip)
 {
   FILE *fp;
@@ -120,17 +130,21 @@ void test_ph_box(zPH3D *a, zPH3D *b, const char *filename)
 
 int main(int argc, char *argv[])
 {
-  zPH3D a, b, c;
+  zPH3D a, b, c, d;
 
   if( !create_ph_box( &a, vert_a ) ||
       !create_ph_box( &b, vert_b ) ||
-      !create_ph_box( &c, vert_c ) ) return 1;
+      !create_ph_box( &c, vert_c ) ||
+      !create_ph_box( &d, vert_d ) ) return 1;
 
   eprintf( "[case 1]\n" );
   test_ph_box( &a, &b, "ph_box_contact_ab.ztk" );
   eprintf( "[case 2]\n" );
   test_ph_box( &c, &b, "ph_box_contact_cb.ztk" );
+  eprintf( "[case 3]\n" );
+  test_ph_box( &d, &b, "ph_box_contact_db.ztk" );
 
+  zPH3DDestroy( &d );
   zPH3DDestroy( &c );
   zPH3DDestroy( &b );
   zPH3DDestroy( &a );
