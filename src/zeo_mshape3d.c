@@ -184,7 +184,7 @@ zMShape3D *zMShape3DFromOctree(zMShape3D *ms, const zVec3DOctree *octree, const 
   zMShape3DInit( ms );
   zListInit( &aabox_list );
   if( ( num = zVec3DOctreeToAABox3DList( octree, &aabox_list ) ) == 0 ){
-    ZRUNWARN( "octree is empty" );
+    ZRUNWARN( ZEO_WARN_MSHAPE_EMPTY_OCTREE );
     goto TERMINATE;
   }
   zMShape3DAllocShapeArray( ms, num );

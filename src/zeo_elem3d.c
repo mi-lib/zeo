@@ -338,8 +338,8 @@ double zTri3DClosestFromOrigin(const zVec3D *vert0, const zVec3D *vert1, const z
   zVec2D v[3];
   int i;
 
-  zTri3DCreate( &tri, vert0, vert1, vert2 );
-  if( _zTri3DProjIsInside( &tri, ZVEC3DZERO, closestpoint ) ){
+  if( zTri3DCreate( &tri, vert0, vert1, vert2 ) &&
+      _zTri3DProjIsInside( &tri, ZVEC3DZERO, closestpoint ) ){
     zVec3DOrthoSpace( zTri3DNorm(&tri), &t1, &t2 );
     for( i=0; i<3; i++ ){
       zVec3DSub( zTri3DVert(&tri,i), closestpoint, &s );

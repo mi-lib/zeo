@@ -203,7 +203,7 @@ static int _zQHSimplex(zQH *qh, zQHPointList *pl)
 }
 
 /* beneath-beyond test. */
-static int _zQHFacetBB(zQHFacet *f, zQHPoint *p, zVec3D *e)
+static int _zQHFacetTestBeneathBeyond(zQHFacet *f, zQHPoint *p, zVec3D *e)
 {
   double l;
 
@@ -226,7 +226,7 @@ static void _zQHFacetAssign(zQHFacetList *fl, zQHPointList *pl)
 
   zListForEach( fl, fc )
     zListForEach( pl, pc ){
-      flag = _zQHFacetBB( &fc->data, &pc->data, &e );
+      flag = _zQHFacetTestBeneathBeyond( &fc->data, &pc->data, &e );
       if( flag == -1 ) continue; /* invisible from the current facet */
       pc_tmp = zListCellPrev( pc );
       zListPurge( pl, pc );
@@ -278,7 +278,7 @@ static bool _zQHVisibleSet(zQH *qh, zQHPoint *p, zQHFacetList *vs, zQHPointList 
   zListInit( vs );
   zListInit( pl );
   zListForEach( &qh->fl, fc ){
-    flag = _zQHFacetBB( &fc->data, p, &e );
+    flag = _zQHFacetTestBeneathBeyond( &fc->data, p, &e );
     if( flag == 0 ){
       _zQHFacetResetFlag( qh );
       return false;
@@ -456,14 +456,12 @@ static int _zQHCreate(zQH *qh, zQHPointList *pl)
   /* create simplex */
   if( ( dim = _zQHSimplex( qh, pl ) ) < 4 ) return dim;
   _zQHFacetAssign( &qh->fl, pl ); /* initial beneath-beyond test */
-
   /* incrementally generate new facets */
   zListForEach( &qh->fl, fc )
     if( !zListIsEmpty( &fc->data.op ) ){
       if( !_zQHInc( qh, &fc->data ) ) break;
       fc = zListRoot( &qh->fl ); /* retry from the tail */
     }
-
   _zQHDiscard( qh, pl ); /* discard old vertices */
   return dim;
 }
