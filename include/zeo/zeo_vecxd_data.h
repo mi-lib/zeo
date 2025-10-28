@@ -28,12 +28,12 @@ __BEGIN_DECLS
   }
 
 #define ZEO_VECXD_DATA_DEF_UNION_MEMBER(XD) \
-  zVec##XD##Array array; \
-  zVec##XD##List list; \
-  zVec##XD##AddrList addrlist; \
-  const zVec##XD##Array *array_ptr; \
-  const zVec##XD##List *list_ptr; \
-  const zVec##XD##AddrList *addrlist_ptr
+  zVec##XD##Array *array; \
+  zVec##XD##List *list; \
+  zVec##XD##AddrList *addrlist; \
+  const zVec##XD##Array *array_ref; \
+  const zVec##XD##List *list_ref; \
+  const zVec##XD##AddrList *addrlist_ref
 
 #define ZEO_VECXD_DATA_DEF_POINTER_MEMBER(XD) \
   int i; \
@@ -98,21 +98,22 @@ __BEGIN_DECLS
   }; \
   \
   static void _zVec##XD##DataArrayDestroy(zVec##XD##Data *data){ \
-    zVec##XD##ArrayFree( &data->data.array ); \
+    zVec##XD##ArrayFree( data->data.array ); \
+    zFree( data->data.array ); \
     data->method = &zeo_vec##XD##_data_method_dummy; \
   } \
-  static int  _zVec##XD##DataArraySize(zVec##XD##Data *data){ return zArraySize( &data->data.array ); } \
-  static bool _zVec##XD##DataArrayIsEmpty(zVec##XD##Data *data){ return zArraySize( &data->data.array ) == 0; } \
+  static int  _zVec##XD##DataArraySize(zVec##XD##Data *data){ return zArraySize( data->data.array ); } \
+  static bool _zVec##XD##DataArrayIsEmpty(zVec##XD##Data *data){ return zArraySize( data->data.array ) == 0; } \
   static bool _zVec##XD##DataArrayAdd(zVec##XD##Data *data, const zVec##XD *vec){ \
-    if( data->pointer.i >= zArraySize(&data->data.array) ) return false; \
-    zVec##XD##Copy( vec, zArrayElemNC(&data->data.array,data->pointer.i) ); \
+    if( data->pointer.i >= zArraySize(data->data.array) ) return false; \
+    zVec##XD##Copy( vec, zArrayElemNC(data->data.array,data->pointer.i) ); \
     data->pointer.i++; \
     return true; \
   } \
   static void _zVec##XD##DataArrayRewind(zVec##XD##Data *data){ data->pointer.i = 0; } \
   static zVec##XD *_zVec##XD##DataArrayPeek(zVec##XD##Data *data){ \
-    if( data->pointer.i >= zArraySize(&data->data.array) ) return NULL; \
-    return zArrayElemNC(&data->data.array,data->pointer.i); \
+    if( data->pointer.i >= zArraySize(data->data.array) ) return NULL; \
+    return zArrayElemNC(data->data.array,data->pointer.i); \
   } \
   static zVec##XD *_zVec##XD##DataArrayFetch(zVec##XD##Data *data){ \
     zVec##XD *ret; \
@@ -131,7 +132,8 @@ __BEGIN_DECLS
   }; \
   \
   static void _zVec##XD##DataArrayDirectDestroy(zVec##XD##Data *data){ \
-    zArrayInit( &data->data.array ); \
+    zArrayInit( data->data.array ); \
+    zFree( data->data.array ); \
     data->method = &zeo_vec##XD##_data_method_dummy; \
   } \
   static const zVec##XD##DataMethod zeo_vec##XD##_data_method_array_direct = { \
@@ -145,15 +147,16 @@ __BEGIN_DECLS
   }; \
   \
   static void _zVec##XD##DataListDestroy(zVec##XD##Data *data){ \
-    zVec##XD##ListDestroy( &data->data.list ); \
+    zVec##XD##ListDestroy( data->data.list ); \
+    zFree( data->data.list ); \
     data->method = &zeo_vec##XD##_data_method_dummy; \
   } \
-  static int  _zVec##XD##DataListSize(zVec##XD##Data *data){ return zListSize( &data->data.list ); } \
-  static bool _zVec##XD##DataListIsEmpty(zVec##XD##Data *data){ return zListIsEmpty( &data->data.list ); } \
-  static bool _zVec##XD##DataListAdd(zVec##XD##Data *data, const zVec##XD *vec){ return zVec##XD##ListAdd( &data->data.list, vec ) ? true: false; } \
-  static void _zVec##XD##DataListRewind(zVec##XD##Data *data){ data->pointer.cp = zListTail(&data->data.list); } \
+  static int  _zVec##XD##DataListSize(zVec##XD##Data *data){ return zListSize( data->data.list ); } \
+  static bool _zVec##XD##DataListIsEmpty(zVec##XD##Data *data){ return zListIsEmpty( data->data.list ); } \
+  static bool _zVec##XD##DataListAdd(zVec##XD##Data *data, const zVec##XD *vec){ return zVec##XD##ListAdd( data->data.list, vec ) ? true: false; } \
+  static void _zVec##XD##DataListRewind(zVec##XD##Data *data){ data->pointer.cp = zListTail(data->data.list); } \
   static zVec##XD *_zVec##XD##DataListPeek(zVec##XD##Data *data){ \
-    if( data->pointer.cp == zListRoot(&data->data.list) ) return NULL; \
+    if( data->pointer.cp == zListRoot(data->data.list) ) return NULL; \
     return &data->pointer.cp->data; \
   } \
   static zVec##XD *_zVec##XD##DataListFetch(zVec##XD##Data *data){ \
@@ -173,15 +176,16 @@ __BEGIN_DECLS
   }; \
   \
   static void _zVec##XD##DataAddrListDestroy(zVec##XD##Data *data){ \
-    zVec##XD##AddrListDestroy( &data->data.addrlist ); \
+    zVec##XD##AddrListDestroy( data->data.addrlist ); \
+    zFree( data->data.addrlist ); \
     data->method = &zeo_vec##XD##_data_method_dummy; \
   } \
-  static int  _zVec##XD##DataAddrListSize(zVec##XD##Data *data){ return zListSize( &data->data.addrlist ); } \
-  static bool _zVec##XD##DataAddrListIsEmpty(zVec##XD##Data *data){ return zListIsEmpty( &data->data.addrlist ); } \
-  static bool _zVec##XD##DataAddrListAdd(zVec##XD##Data *data, const zVec##XD *vec){ return zVec##XD##AddrListAdd( &data->data.addrlist, vec ) ? true: false; } \
-  static void _zVec##XD##DataAddrListRewind(zVec##XD##Data *data){ data->pointer.ap = zListTail(&data->data.addrlist); } \
+  static int  _zVec##XD##DataAddrListSize(zVec##XD##Data *data){ return zListSize( data->data.addrlist ); } \
+  static bool _zVec##XD##DataAddrListIsEmpty(zVec##XD##Data *data){ return zListIsEmpty( data->data.addrlist ); } \
+  static bool _zVec##XD##DataAddrListAdd(zVec##XD##Data *data, const zVec##XD *vec){ return zVec##XD##AddrListAdd( data->data.addrlist, vec ) ? true: false; } \
+  static void _zVec##XD##DataAddrListRewind(zVec##XD##Data *data){ data->pointer.ap = zListTail(data->data.addrlist); } \
   static zVec##XD *_zVec##XD##DataAddrListPeek(zVec##XD##Data *data){ \
-    if( data->pointer.ap == zListRoot(&data->data.addrlist) ) return NULL; \
+    if( data->pointer.ap == zListRoot(data->data.addrlist) ) return NULL; \
     return data->pointer.ap->data; \
   } \
   static zVec##XD *_zVec##XD##DataAddrListFetch(zVec##XD##Data *data){ \
@@ -201,15 +205,15 @@ __BEGIN_DECLS
   }; \
   \
   static void _zVec##XD##DataArrayPtrDestroy(zVec##XD##Data *data){ \
-    data->data.array_ptr = NULL; \
+    data->data.array_ref = NULL; \
     data->method = &zeo_vec##XD##_data_method_dummy; \
   } \
-  static int  _zVec##XD##DataArrayPtrSize(zVec##XD##Data *data){ return zArraySize( data->data.array_ptr ); } \
-  static bool _zVec##XD##DataArrayPtrIsEmpty(zVec##XD##Data *data){ return zArraySize( data->data.array_ptr ) == 0; } \
+  static int  _zVec##XD##DataArrayPtrSize(zVec##XD##Data *data){ return zArraySize( data->data.array_ref ); } \
+  static bool _zVec##XD##DataArrayPtrIsEmpty(zVec##XD##Data *data){ return zArraySize( data->data.array_ref ) == 0; } \
   static bool _zVec##XD##DataArrayPtrAdd(zVec##XD##Data *data, const zVec##XD *vec){ return false; } \
   static zVec##XD *_zVec##XD##DataArrayPtrPeek(zVec##XD##Data *data){ \
-    if( data->pointer.i >= zArraySize(data->data.array_ptr) ) return NULL; \
-    return zArrayElemNC(data->data.array_ptr,data->pointer.i); \
+    if( data->pointer.i >= zArraySize(data->data.array_ref) ) return NULL; \
+    return zArrayElemNC(data->data.array_ref,data->pointer.i); \
   } \
   static zVec##XD *_zVec##XD##DataArrayPtrFetch(zVec##XD##Data *data){ \
     zVec##XD *ret; \
@@ -228,14 +232,14 @@ __BEGIN_DECLS
   }; \
   \
   static void _zVec##XD##DataListPtrDestroy(zVec##XD##Data *data){ \
-    data->data.list_ptr = NULL; \
+    data->data.list_ref = NULL; \
     data->method = &zeo_vec##XD##_data_method_dummy; \
   } \
-  static int  _zVec##XD##DataListPtrSize(zVec##XD##Data *data){ return zListSize( data->data.list_ptr ); } \
-  static bool _zVec##XD##DataListPtrIsEmpty(zVec##XD##Data *data){ return zListIsEmpty( data->data.list_ptr ); } \
-  static void _zVec##XD##DataListPtrRewind(zVec##XD##Data *data){ data->pointer.cp = zListTail(data->data.list_ptr); } \
+  static int  _zVec##XD##DataListPtrSize(zVec##XD##Data *data){ return zListSize( data->data.list_ref ); } \
+  static bool _zVec##XD##DataListPtrIsEmpty(zVec##XD##Data *data){ return zListIsEmpty( data->data.list_ref ); } \
+  static void _zVec##XD##DataListPtrRewind(zVec##XD##Data *data){ data->pointer.cp = zListTail(data->data.list_ref); } \
   static zVec##XD *_zVec##XD##DataListPtrPeek(zVec##XD##Data *data){ \
-    if( data->pointer.cp == zListRoot(data->data.list_ptr) ) return NULL; \
+    if( data->pointer.cp == zListRoot(data->data.list_ref) ) return NULL; \
     return &data->pointer.cp->data; \
   } \
   static zVec##XD *_zVec##XD##DataListPtrFetch(zVec##XD##Data *data){ \
@@ -255,14 +259,14 @@ __BEGIN_DECLS
   }; \
   \
   static void _zVec##XD##DataAddrListPtrDestroy(zVec##XD##Data *data){ \
-    data->data.addrlist_ptr = NULL; \
+    data->data.addrlist_ref = NULL; \
     data->method = &zeo_vec##XD##_data_method_dummy; \
   } \
-  static int  _zVec##XD##DataAddrListPtrSize(zVec##XD##Data *data){ return zListSize( data->data.addrlist_ptr ); } \
-  static bool _zVec##XD##DataAddrListPtrIsEmpty(zVec##XD##Data *data){ return zListIsEmpty( data->data.addrlist_ptr ); } \
-  static void _zVec##XD##DataAddrListPtrRewind(zVec##XD##Data *data){ data->pointer.ap = zListTail(data->data.addrlist_ptr); } \
+  static int  _zVec##XD##DataAddrListPtrSize(zVec##XD##Data *data){ return zListSize( data->data.addrlist_ref ); } \
+  static bool _zVec##XD##DataAddrListPtrIsEmpty(zVec##XD##Data *data){ return zListIsEmpty( data->data.addrlist_ref ); } \
+  static void _zVec##XD##DataAddrListPtrRewind(zVec##XD##Data *data){ data->pointer.ap = zListTail(data->data.addrlist_ref); } \
   static zVec##XD *_zVec##XD##DataAddrListPtrPeek(zVec##XD##Data *data){ \
-    if( data->pointer.ap == zListRoot(data->data.addrlist_ptr) ) return NULL; \
+    if( data->pointer.ap == zListRoot(data->data.addrlist_ref) ) return NULL; \
     return data->pointer.ap->data; \
   } \
   static zVec##XD *_zVec##XD##DataAddrListPtrFetch(zVec##XD##Data *data){ \
@@ -286,8 +290,14 @@ __BEGIN_DECLS
   zVec##XD##Data *zVec##XD##DataInitArray(zVec##XD##Data *data, int size)
 #define ZEO_VECXD_DATA_INIT_ARRAY(XD) \
   ZEO_VECXD_DATA_INIT_ARRAY_PROTOTYPE( XD ){ \
-    zVec##XD##ArrayAlloc( &data->data.array, size ); \
-    if( zArraySize(&data->data.array) != size ){ \
+    if( !( data->data.array = zAlloc( zVec##XD##Array, 1 ) ) ){ \
+      ZALLOCERROR(); \
+      data->method = &zeo_vec##XD##_data_method_dummy; \
+      return NULL; \
+    } \
+    zVec##XD##ArrayAlloc( data->data.array, size ); \
+    if( zArraySize(data->data.array) != size ){ \
+      zFree( data->data.array ); \
       data->method = &zeo_vec##XD##_data_method_dummy; \
       return NULL; \
     } \
@@ -301,7 +311,12 @@ __BEGIN_DECLS
   zVec##XD##Data *zVec##XD##DataInitList(zVec##XD##Data *data)
 #define ZEO_VECXD_DATA_INIT_LIST(XD) \
   ZEO_VECXD_DATA_INIT_LIST_PROTOTYPE( XD ){ \
-    zListInit( &data->data.list ); \
+    if( !( data->data.list = zAlloc( zVec##XD##List, 1 ) ) ){ \
+      ZALLOCERROR(); \
+      data->method = &zeo_vec##XD##_data_method_dummy; \
+      return NULL; \
+    } \
+    zListInit( data->data.list ); \
     data->method = &zeo_vec##XD##_data_method_list; \
     zVec##XD##DataRewind( data ); \
     return data; \
@@ -312,7 +327,12 @@ __BEGIN_DECLS
   zVec##XD##Data *zVec##XD##DataInitAddrList(zVec##XD##Data *data)
 #define ZEO_VECXD_DATA_INIT_ADDRLIST(XD) \
   ZEO_VECXD_DATA_INIT_ADDRLIST_PROTOTYPE( XD ){ \
-    zListInit( &data->data.addrlist ); \
+    if( !( data->data.addrlist = zAlloc( zVec##XD##AddrList, 1 ) ) ){ \
+      ZALLOCERROR(); \
+      data->method = &zeo_vec##XD##_data_method_dummy; \
+      return NULL; \
+    } \
+    zListInit( data->data.addrlist ); \
     data->method = &zeo_vec##XD##_data_method_addrlist; \
     zVec##XD##DataRewind( data ); \
     return data; \
@@ -323,7 +343,17 @@ __BEGIN_DECLS
   zVec##XD##Data *zVec##XD##DataAssignArrayDirect(zVec##XD##Data *data, zVec##XD *vec, int size)
 #define ZEO_VECXD_DATA_ASSIGN_ARRAY_DIRECT(XD) \
   ZEO_VECXD_DATA_ASSIGN_ARRAY_DIRECT_PROTOTYPE( XD ){ \
-    zArrayAssign( &data->data.array, vec, size ); \
+    if( !vec || size <= 0 ){ \
+      ZRUNERROR( ZEO_ERR_NULLPOINTERASSIGNED, "vector array" ); \
+      data->method = &zeo_vec##XD##_data_method_dummy; \
+      return NULL; \
+    } \
+    if( !( data->data.array = zAlloc( zVec##XD##Array, 1 ) ) ){ \
+      ZALLOCERROR(); \
+      data->method = &zeo_vec##XD##_data_method_dummy; \
+      return NULL; \
+    } \
+    zArrayAssign( data->data.array, vec, size ); \
     data->method = &zeo_vec##XD##_data_method_array_direct; \
     zVec##XD##DataRewind( data ); \
     return data; \
@@ -334,7 +364,7 @@ __BEGIN_DECLS
   zVec##XD##Data *zVec##XD##DataAssignArray(zVec##XD##Data *data, const zVec##XD##Array *array)
 #define ZEO_VECXD_DATA_ASSIGN_ARRAY(XD) \
   ZEO_VECXD_DATA_ASSIGN_ARRAY_PROTOTYPE( XD ){ \
-    if( !( data->data.array_ptr = array ) ){ \
+    if( !( data->data.array_ref = array ) ){ \
       ZRUNERROR( ZEO_ERR_NULLPOINTERASSIGNED, "array" ); \
       data->method = &zeo_vec##XD##_data_method_dummy; \
       return NULL; \
@@ -349,7 +379,7 @@ __BEGIN_DECLS
   zVec##XD##Data *zVec##XD##DataAssignList(zVec##XD##Data *data, const zVec##XD##List *list)
 #define ZEO_VECXD_DATA_ASSIGN_LIST(XD) \
   ZEO_VECXD_DATA_ASSIGN_LIST_PROTOTYPE( XD ){ \
-    if( !( data->data.list_ptr = list ) ){ \
+    if( !( data->data.list_ref = list ) ){ \
       ZRUNERROR( ZEO_ERR_NULLPOINTERASSIGNED, "list" ); \
       data->method = &zeo_vec##XD##_data_method_dummy; \
       return NULL; \
@@ -364,7 +394,7 @@ __BEGIN_DECLS
   zVec##XD##Data *zVec##XD##DataAssignAddrList(zVec##XD##Data *data, const zVec##XD##AddrList *list)
 #define ZEO_VECXD_DATA_ASSIGN_ADDRLIST(XD) \
   ZEO_VECXD_DATA_ASSIGN_ADDRLIST_PROTOTYPE( XD ){ \
-    if( !( data->data.addrlist_ptr = list ) ){ \
+    if( !( data->data.addrlist_ref = list ) ){ \
       ZRUNERROR( ZEO_ERR_NULLPOINTERASSIGNED, "address list" ); \
       data->method = &zeo_vec##XD##_data_method_dummy; \
       return NULL; \

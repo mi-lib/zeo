@@ -40,6 +40,21 @@ void assert_vec3ddata_array(void)
   zAssert( zVec3DData (array), result );
 }
 
+void assert_vec3ddata_array_direct(void)
+{
+  zVec3DData data;
+  zVec3D v[N];
+  int i;
+  bool result;
+
+  for( i=0; i<N; i++ )
+    zVec3DCreate( &v[i], i, i, i );
+  zVec3DDataAssignArrayDirect( &data, v, N );
+  result = vec_data_test( &data );
+  zVec3DDataDestroy( &data );
+  zAssert( zVec3DData (direct array), result );
+}
+
 void assert_vec3ddata_list(void)
 {
   zVec3DData data;
@@ -254,6 +269,7 @@ int main(int argc, char *argv[])
   zRandInit();
   assert_vec3ddata_empty();
   assert_vec3ddata_array();
+  assert_vec3ddata_array_direct();
   assert_vec3ddata_list();
   assert_vec3ddata_addrlist();
   assert_vec3ddata_array_ptr();

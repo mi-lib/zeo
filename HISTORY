@@ -1,3 +1,5 @@
+2025.10.28. Renamed array_ptr, list_ptr, and addrlist_ptr members of zVecXDData to array_ref, list_ref, and addrlist_ref, respectively. [zeo_vecxd_data]
+2025.10.28. Modified types of members array, list, and addrlist of zVecXDData to pointers to avoid ambiguity for calling the destructor. [zeo_vecxd_data]
 2025.10.20. Modified zIntersectPH3D to neglect mutual penetration shorter than ZEO_INTERSECT_PH3D_THRESHOLD. [zeo_col_ph]
 2025.10.13. Defined ZEO_WARN_MSHAPE_EMPTY_OCTREE for zMShape3DFromOctree. [zeo_mshape3d]
 2025.10.13. Renamed _zQHFacetBB to _zQHFacetTestBeneathBeyond. [zeo_bv3d_convexhull]
