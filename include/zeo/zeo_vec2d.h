@@ -22,34 +22,33 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zVec2D ){
 #ifdef __cplusplus
   zVec2D &create(double x, double y);
   zVec2D &createPolar(double r, double theta);
-  zVec2D &copy(zVec2D &src);
+  zVec2D &copy(const zVec2D &src);
   zVec2D &zero();
-  bool operator==(zVec2D &v);
-  bool isEqual(zVec2D &v);
+  bool isEqual(const zVec2D &v);
   bool isTol(double tol);
   bool isTiny();
   bool isNan();
-  zVec2D operator+(zVec2D &v);
-  zVec2D operator-(zVec2D &v);
+  zVec2D operator+(const zVec2D &v);
+  zVec2D operator-(const zVec2D &v);
   zVec2D operator-();
   zVec2D operator*(double k);
-  zVec2D operator*(zVec2D &v);
+  zVec2D operator*(const zVec2D &v);
   zVec2D operator/(double k);
-  zVec2D operator/(zVec2D &v);
-  zVec2D &operator+=(zVec2D &v);
-  zVec2D &operator-=(zVec2D &v);
+  zVec2D operator/(const zVec2D &v);
+  zVec2D &operator+=(const zVec2D &v);
+  zVec2D &operator-=(const zVec2D &v);
   zVec2D &operator*=(double k);
-  zVec2D &operator*=(zVec2D &v);
+  zVec2D &operator*=(const zVec2D &v);
   zVec2D &operator/=(double k);
-  zVec2D &operator/=(zVec2D &v);
-  zVec2D &add(zVec2D &v);
-  zVec2D &sub(zVec2D &v);
+  zVec2D &operator/=(const zVec2D &v);
+  zVec2D &add(const zVec2D &v);
+  zVec2D &sub(const zVec2D &v);
   zVec2D &rev();
   zVec2D &mul(double k);
   zVec2D &div(double k);
-  zVec2D &amp(zVec2D &v);
-  zVec2D &dem(zVec2D &v);
-  zVec2D &cat(double k, zVec2D &v);
+  zVec2D &amp(const zVec2D &v);
+  zVec2D &dem(const zVec2D &v);
+  zVec2D &cat(double k, const zVec2D &v);
   double sqrNorm();
   double norm();
   zVec2D &normalize();
@@ -432,38 +431,38 @@ __END_DECLS
 #ifdef __cplusplus
 inline zVec2D &zVec2D::create(double x, double y){ _zVec2DCreate( this, x, y ); return *this; }
 inline zVec2D &zVec2D::createPolar(double r, double theta){ zVec2DCreatePolar( this, r, theta ); return *this; }
-inline zVec2D &zVec2D::copy(zVec2D &src){ zVec2DCopy( &src, this ); return *this; }
+inline zVec2D &zVec2D::copy(const zVec2D &src){ zVec2DCopy( &src, this ); return *this; }
 inline zVec2D &zVec2D::zero(){ _zVec2DZero( this ); return *this; }
-inline bool zVec2D::operator==(zVec2D &v){ return _zVec2DMatch( this, &v ); }
-inline bool zVec2D::isEqual(zVec2D &v){ return _zVec2DEqual( this, &v ); }
+inline bool zVec2D::isEqual(const zVec2D &v){ return _zVec2DEqual( this, &v ); }
 inline bool zVec2D::isTol(double tol){ return _zVec2DIsTol( this, tol ); }
 inline bool zVec2D::isTiny(){ return _zVec2DIsTiny( this ); }
 inline bool zVec2D::isNan(){ return zVec2DIsNan( this ); }
-inline zVec2D zVec2D::operator+(zVec2D &v){ zVec2D ret; _zVec2DAdd( this, &v, &ret ); return ret; }
-inline zVec2D zVec2D::operator-(zVec2D &v){ zVec2D ret; _zVec2DSub( this, &v, &ret ); return ret; }
+inline zVec2D zVec2D::operator+(const zVec2D &v){ zVec2D ret; _zVec2DAdd( this, &v, &ret ); return ret; }
+inline zVec2D zVec2D::operator-(const zVec2D &v){ zVec2D ret; _zVec2DSub( this, &v, &ret ); return ret; }
 inline zVec2D zVec2D::operator-(){ zVec2D ret; _zVec2DRev( this, &ret ); return ret; }
 inline zVec2D zVec2D::operator*(double k){ zVec2D ret; _zVec2DMul( this, k, &ret ); return ret; }
-inline zVec2D zVec2D::operator*(zVec2D &v){ zVec2D ret; _zVec2DAmp( this, &v, &ret ); return ret; }
+inline zVec2D zVec2D::operator*(const zVec2D &v){ zVec2D ret; _zVec2DAmp( this, &v, &ret ); return ret; }
 inline zVec2D zVec2D::operator/(double k){ zVec2D ret; zVec2DDiv( this, k, &ret ); return ret; }
-inline zVec2D zVec2D::operator/(zVec2D &v){ zVec2D ret; _zVec2DDem( this, &v, &ret ); return ret; }
-inline zVec2D &zVec2D::operator+=(zVec2D &v){ _zVec2DAddDRC( this, &v ); return *this; }
-inline zVec2D &zVec2D::operator-=(zVec2D &v){ _zVec2DSubDRC( this, &v ); return *this; }
+inline zVec2D zVec2D::operator/(const zVec2D &v){ zVec2D ret; _zVec2DDem( this, &v, &ret ); return ret; }
+inline zVec2D &zVec2D::operator+=(const zVec2D &v){ _zVec2DAddDRC( this, &v ); return *this; }
+inline zVec2D &zVec2D::operator-=(const zVec2D &v){ _zVec2DSubDRC( this, &v ); return *this; }
 inline zVec2D &zVec2D::operator*=(double k){ _zVec2DMulDRC( this, k ); return *this; }
-inline zVec2D &zVec2D::operator*=(zVec2D &v){ _zVec2DAmpDRC( this, &v ); return *this; }
+inline zVec2D &zVec2D::operator*=(const zVec2D &v){ _zVec2DAmpDRC( this, &v ); return *this; }
 inline zVec2D &zVec2D::operator/=(double k){ zVec2DDivDRC( this, k ); return *this; }
-inline zVec2D &zVec2D::operator/=(zVec2D &v){ _zVec2DDemDRC( this, &v ); return *this; }
-inline zVec2D &zVec2D::add(zVec2D &v){ _zVec2DAddDRC( this, &v ); return *this; }
-inline zVec2D &zVec2D::sub(zVec2D &v){ _zVec2DSubDRC( this, &v ); return *this; }
+inline zVec2D &zVec2D::operator/=(const zVec2D &v){ _zVec2DDemDRC( this, &v ); return *this; }
+inline zVec2D &zVec2D::add(const zVec2D &v){ _zVec2DAddDRC( this, &v ); return *this; }
+inline zVec2D &zVec2D::sub(const zVec2D &v){ _zVec2DSubDRC( this, &v ); return *this; }
 inline zVec2D &zVec2D::rev(){ _zVec2DRevDRC( this ); return *this; }
 inline zVec2D &zVec2D::mul(double k){ _zVec2DMulDRC( this, k ); return *this; }
 inline zVec2D &zVec2D::div(double k){ zVec2DDivDRC( this, k ); return *this; }
-inline zVec2D &zVec2D::amp(zVec2D &v){ _zVec2DAmpDRC( this, &v ); return *this; }
-inline zVec2D &zVec2D::dem(zVec2D &v){ _zVec2DDemDRC( this, &v ); return *this; }
-inline zVec2D &zVec2D::cat(double k, zVec2D &v){ _zVec2DCatDRC( this, k, &v ); return *this; }
+inline zVec2D &zVec2D::amp(const zVec2D &v){ _zVec2DAmpDRC( this, &v ); return *this; }
+inline zVec2D &zVec2D::dem(const zVec2D &v){ _zVec2DDemDRC( this, &v ); return *this; }
+inline zVec2D &zVec2D::cat(double k, const zVec2D &v){ _zVec2DCatDRC( this, k, &v ); return *this; }
 inline double zVec2D::sqrNorm(){ return _zVec2DSqrNorm( this ); }
 inline double zVec2D::norm(){ return sqrt( sqrNorm() ); }
 inline zVec2D &zVec2D::normalize(){ zVec2DNormalizeNCDRC( this ); return *this; }
 
+inline bool operator==(const zVec2D &v1, const zVec2D &v2){ return _zVec2DMatch( &v1, &v2 ); }
 __ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, zVec2D &vec);
 #endif /* __cplusplus */
 

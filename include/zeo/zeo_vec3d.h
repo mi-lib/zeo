@@ -22,34 +22,33 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zVec3D ){
 #ifdef __cplusplus
   zVec3D &create(double x, double y, double z);
   zVec3D &createPolar(double r, double theta, double phi);
-  zVec3D &copy(zVec3D &src);
+  zVec3D &copy(const zVec3D &src);
   zVec3D &zero();
-  bool operator==(zVec3D &v);
-  bool isEqual(zVec3D &v);
+  bool isEqual(const zVec3D &v);
   bool isTol(double tol);
   bool isTiny();
   bool isNan();
-  zVec3D operator+(zVec3D &v);
-  zVec3D operator-(zVec3D &v);
+  zVec3D operator+(const zVec3D &v);
+  zVec3D operator-(const zVec3D &v);
   zVec3D operator-();
   zVec3D operator*(double k);
-  zVec3D operator*(zVec3D &v);
+  zVec3D operator*(const zVec3D &v);
   zVec3D operator/(double k);
-  zVec3D operator/(zVec3D &v);
-  zVec3D &operator+=(zVec3D &v);
-  zVec3D &operator-=(zVec3D &v);
+  zVec3D operator/(const zVec3D &v);
+  zVec3D &operator+=(const zVec3D &v);
+  zVec3D &operator-=(const zVec3D &v);
   zVec3D &operator*=(double k);
-  zVec3D &operator*=(zVec3D &v);
+  zVec3D &operator*=(const zVec3D &v);
   zVec3D &operator/=(double k);
-  zVec3D &operator/=(zVec3D &v);
-  zVec3D &add(zVec3D &v);
-  zVec3D &sub(zVec3D &v);
+  zVec3D &operator/=(const zVec3D &v);
+  zVec3D &add(const zVec3D &v);
+  zVec3D &sub(const zVec3D &v);
   zVec3D &rev();
   zVec3D &mul(double k);
   zVec3D &div(double k);
-  zVec3D &amp(zVec3D &v);
-  zVec3D &dem(zVec3D &v);
-  zVec3D &cat(double k, zVec3D &v);
+  zVec3D &amp(const zVec3D &v);
+  zVec3D &dem(const zVec3D &v);
+  zVec3D &cat(double k, const zVec3D &v);
   double sqrNorm();
   double norm();
   zVec3D &normalize();
@@ -643,39 +642,39 @@ __END_DECLS
 #ifdef __cplusplus
 inline zVec3D &zVec3D::create(double x, double y, double z){ _zVec3DCreate( this, x, y, z ); return *this; }
 inline zVec3D &zVec3D::createPolar(double r, double theta, double phi){ zVec3DCreatePolar( this, r, theta, phi ); return *this; }
-inline zVec3D &zVec3D::copy(zVec3D &src){ zVec3DCopy( &src, this ); return *this; }
+inline zVec3D &zVec3D::copy(const zVec3D &src){ zVec3DCopy( &src, this ); return *this; }
 inline zVec3D &zVec3D::zero(){ _zVec3DZero( this ); return *this; }
-inline bool zVec3D::operator==(zVec3D &v){ return _zVec3DMatch( this, &v ); }
-inline bool zVec3D::isEqual(zVec3D &v){ return _zVec3DEqual( this, &v ); }
+inline bool zVec3D::isEqual(const zVec3D &v){ return _zVec3DEqual( this, &v ); }
 inline bool zVec3D::isTol(double tol){ return _zVec3DIsTol( this, tol ); }
 inline bool zVec3D::isTiny(){ return _zVec3DIsTiny( this ); }
 inline bool zVec3D::isNan(){ return zVec3DIsNan( this ); }
-inline zVec3D zVec3D::operator+(zVec3D &v){ zVec3D ret; _zVec3DAdd( this, &v, &ret ); return ret; }
-inline zVec3D zVec3D::operator-(zVec3D &v){ zVec3D ret; _zVec3DSub( this, &v, &ret ); return ret; }
+inline zVec3D zVec3D::operator+(const zVec3D &v){ zVec3D ret; _zVec3DAdd( this, &v, &ret ); return ret; }
+inline zVec3D zVec3D::operator-(const zVec3D &v){ zVec3D ret; _zVec3DSub( this, &v, &ret ); return ret; }
 inline zVec3D zVec3D::operator-(){ zVec3D ret; _zVec3DRev( this, &ret ); return ret; }
 inline zVec3D zVec3D::operator*(double k){ zVec3D ret; _zVec3DMul( this, k, &ret ); return ret; }
-inline zVec3D zVec3D::operator*(zVec3D &v){ zVec3D ret; _zVec3DAmp( this, &v, &ret ); return ret; }
+inline zVec3D zVec3D::operator*(const zVec3D &v){ zVec3D ret; _zVec3DAmp( this, &v, &ret ); return ret; }
 inline zVec3D zVec3D::operator/(double k){ zVec3D ret; zVec3DDiv( this, k, &ret ); return ret; }
-inline zVec3D zVec3D::operator/(zVec3D &v){ zVec3D ret; _zVec3DDem( this, &v, &ret ); return ret; }
-inline zVec3D &zVec3D::operator+=(zVec3D &v){ _zVec3DAddDRC( this, &v ); return *this; }
-inline zVec3D &zVec3D::operator-=(zVec3D &v){ _zVec3DSubDRC( this, &v ); return *this; }
+inline zVec3D zVec3D::operator/(const zVec3D &v){ zVec3D ret; _zVec3DDem( this, &v, &ret ); return ret; }
+inline zVec3D &zVec3D::operator+=(const zVec3D &v){ _zVec3DAddDRC( this, &v ); return *this; }
+inline zVec3D &zVec3D::operator-=(const zVec3D &v){ _zVec3DSubDRC( this, &v ); return *this; }
 inline zVec3D &zVec3D::operator*=(double k){ _zVec3DMulDRC( this, k ); return *this; }
-inline zVec3D &zVec3D::operator*=(zVec3D &v){ _zVec3DAmpDRC( this, &v ); return *this; }
+inline zVec3D &zVec3D::operator*=(const zVec3D &v){ _zVec3DAmpDRC( this, &v ); return *this; }
 inline zVec3D &zVec3D::operator/=(double k){ zVec3DDivDRC( this, k ); return *this; }
-inline zVec3D &zVec3D::operator/=(zVec3D &v){ _zVec3DDemDRC( this, &v ); return *this; }
-inline zVec3D &zVec3D::add(zVec3D &v){ _zVec3DAddDRC( this, &v ); return *this; }
-inline zVec3D &zVec3D::sub(zVec3D &v){ _zVec3DSubDRC( this, &v ); return *this; }
+inline zVec3D &zVec3D::operator/=(const zVec3D &v){ _zVec3DDemDRC( this, &v ); return *this; }
+inline zVec3D &zVec3D::add(const zVec3D &v){ _zVec3DAddDRC( this, &v ); return *this; }
+inline zVec3D &zVec3D::sub(const zVec3D &v){ _zVec3DSubDRC( this, &v ); return *this; }
 inline zVec3D &zVec3D::rev(){ _zVec3DRevDRC( this ); return *this; }
 inline zVec3D &zVec3D::mul(double k){ _zVec3DMulDRC( this, k ); return *this; }
 inline zVec3D &zVec3D::div(double k){ zVec3DDivDRC( this, k ); return *this; }
-inline zVec3D &zVec3D::amp(zVec3D &v){ _zVec3DAmpDRC( this, &v ); return *this; }
-inline zVec3D &zVec3D::dem(zVec3D &v){ _zVec3DDemDRC( this, &v ); return *this; }
-inline zVec3D &zVec3D::cat(double k, zVec3D &v){ _zVec3DCatDRC( this, k, &v ); return *this; }
+inline zVec3D &zVec3D::amp(const zVec3D &v){ _zVec3DAmpDRC( this, &v ); return *this; }
+inline zVec3D &zVec3D::dem(const zVec3D &v){ _zVec3DDemDRC( this, &v ); return *this; }
+inline zVec3D &zVec3D::cat(double k, const zVec3D &v){ _zVec3DCatDRC( this, k, &v ); return *this; }
 inline double zVec3D::sqrNorm(){ return _zVec3DSqrNorm( this ); }
 inline double zVec3D::norm(){ return sqrt( sqrNorm() ); }
 inline zVec3D &zVec3D::normalize(){ zVec3DNormalizeNCDRC( this ); return *this; }
 
-__ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, zVec3D &vec);
+inline bool operator==(const zVec3D &v1, const zVec3D &v2){ return _zVec3DMatch( &v1, &v2 ); }
+__ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, const zVec3D &vec);
 #endif /* __cplusplus */
 
 /*! \struct zVec3DArray
