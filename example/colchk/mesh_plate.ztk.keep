@@ -1,7 +1,13 @@
+[zeo::optic]
+name: mesh_plate
+ambient: 0.5, 0.5, 0.5
+diffuse: 1, 0.5, 0
+specular: 1, 1, 1
+
 [zeo::shape]
 name: mesh_plate
-optic: blue
-
+type: polyhedron
+optic: mesh_plate
 vert: 0 ( -0.041247346, -0.025543308, 0.05190421764 )
 vert: 1 ( 0.030381132, -0.03650729, 0.05190421764 )
 vert: 2 ( 0.08193071, 0.022570074, 0.05190421764 )
