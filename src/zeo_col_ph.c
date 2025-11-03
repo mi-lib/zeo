@@ -84,7 +84,8 @@ zPH3D *zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol)
   zVec3DDataAssignArray( &data1, zPH3DVertArray(ph1) );
   zVec3DDataAssignArray( &data2, zPH3DVertArray(ph2) );
   /* the base point with an ad-hoc modulation */
-  if( !zGJKDepth( &data1, &data2, &p1, &p2 ) ) return NULL;
+  if( !zGJKDepth( &data1, &data2, &p1, &p2 ) ||
+      zVec3DDist( &p1, &p2 ) < ZEO_INTERSECT_PH3D_THRESHOLD ) return NULL;
   zVec3DMid( &p1, &p2, &p_temp );
   zVec3DCopy( &p_temp, &p1 );
   for( dis1=dis2=0, i=0; i<=Z_MAX_ITER_NUM; i++ ){

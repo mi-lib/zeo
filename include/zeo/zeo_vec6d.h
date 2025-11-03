@@ -23,20 +23,19 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zVec6D ){
 #ifdef __cplusplus
 /*! \brief 6D zero vector and unit vectors */
   zVec6D &create(double x, double y, double z, double xa, double ya, double za);
-  zVec6D &create(zVec3D &vl, zVec3D &va);
-  zVec6D &copy(zVec6D &src);
+  zVec6D &create(const zVec3D &vl, const zVec3D &va);
+  zVec6D &copy(const zVec6D &src);
   zVec6D &zero();
-  bool operator==(zVec6D &v);
-  bool isEqual(zVec6D &v);
+  bool isEqual(const zVec6D &v);
   bool isTol(double tol);
   bool isTiny();
-  zVec6D operator+(zVec6D &v);
-  zVec6D operator-(zVec6D &v);
+  zVec6D operator+(const zVec6D &v);
+  zVec6D operator-(const zVec6D &v);
   zVec6D operator-();
   zVec6D operator*(double k);
   zVec6D operator/(double k);
-  zVec6D add(zVec6D &v);
-  zVec6D sub(zVec6D &v);
+  zVec6D add(const zVec6D &v);
+  zVec6D sub(const zVec6D &v);
   zVec6D rev();
   zVec6D mul(double k);
   zVec6D div(double k);
@@ -347,25 +346,25 @@ __END_DECLS
 #ifdef __cplusplus
 /*! \brief 6D zero vector and unit vectors */
 inline zVec6D &zVec6D::create(double x, double y, double z, double xa, double ya, double za){ _zVec6DCreate( this, x, y, z, xa, ya, za ); return *this; }
-inline zVec6D &zVec6D::create(zVec3D &vl, zVec3D &va){ _zVec6DFromVec3D( this, &vl, &va ); return *this; }
-inline zVec6D &zVec6D::copy(zVec6D &src){ zVec6DCopy( &src, this ); return *this; }
+inline zVec6D &zVec6D::create(const zVec3D &vl, const zVec3D &va){ _zVec6DFromVec3D( this, &vl, &va ); return *this; }
+inline zVec6D &zVec6D::copy(const zVec6D &src){ zVec6DCopy( &src, this ); return *this; }
 inline zVec6D &zVec6D::zero(){ _zVec6DZero( this ); return *this; }
-inline bool zVec6D::operator==(zVec6D &v){ return _zVec6DMatch( this, &v ); }
-inline bool zVec6D::isEqual(zVec6D &v){ return _zVec6DEqual( this, &v ); }
+inline bool zVec6D::isEqual(const zVec6D &v){ return _zVec6DEqual( this, &v ); }
 inline bool zVec6D::isTol(double tol){ return _zVec6DIsTol( this, tol ); }
 inline bool zVec6D::isTiny(){ return _zVec6DIsTiny( this ); }
-inline zVec6D zVec6D::operator+(zVec6D &v){ zVec6D ret; _zVec6DAdd( this, &v, &ret ); return ret; }
-inline zVec6D zVec6D::operator-(zVec6D &v){ zVec6D ret; _zVec6DSub( this, &v, &ret ); return ret; }
+inline zVec6D zVec6D::operator+(const zVec6D &v){ zVec6D ret; _zVec6DAdd( this, &v, &ret ); return ret; }
+inline zVec6D zVec6D::operator-(const zVec6D &v){ zVec6D ret; _zVec6DSub( this, &v, &ret ); return ret; }
 inline zVec6D zVec6D::operator-(){ zVec6D ret; _zVec6DRev( this, &ret ); return ret; }
 inline zVec6D zVec6D::operator*(double k){ zVec6D ret; _zVec6DMul( this, k, &ret ); return ret; }
 inline zVec6D zVec6D::operator/(double k){ zVec6D ret; zVec6DDiv( this, k, &ret ); return ret; }
-inline zVec6D zVec6D::add(zVec6D &v){ _zVec6DAddDRC( this, &v ); return *this; }
-inline zVec6D zVec6D::sub(zVec6D &v){ _zVec6DSubDRC( this, &v ); return *this; }
+inline zVec6D zVec6D::add(const zVec6D &v){ _zVec6DAddDRC( this, &v ); return *this; }
+inline zVec6D zVec6D::sub(const zVec6D &v){ _zVec6DSubDRC( this, &v ); return *this; }
 inline zVec6D zVec6D::rev(){ _zVec6DRevDRC( this ); return *this; }
 inline zVec6D zVec6D::mul(double k){ _zVec6DMulDRC( this, k ); return *this; }
 inline zVec6D zVec6D::div(double k){ return *zVec6DDivDRC( this, k ); }
 
-__ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, zVec6D &vec);
+inline bool operator==(const zVec6D &v1, const zVec6D &v2){ return _zVec6DMatch( &v1, &v2 ); }
+__ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, const zVec6D &vec);
 #endif /* __cplusplus */
 
 #include <zeo/zeo_vec6d_list.h>  /* 6D vector list */

@@ -570,7 +570,7 @@ const zVec3D *zVec3DFPrint(FILE *fp, const zVec3D *v)
 }
 
 #ifdef __cplusplus
-std::ostream &operator<<(std::ostream &stream, zVec3D &vec){
+std::ostream &operator<<(std::ostream &stream, const zVec3D &vec){
   stream << "( " << vec.c.x << ", " << vec.c.y << ", " << vec.c.z << " )";
   return stream;
 }

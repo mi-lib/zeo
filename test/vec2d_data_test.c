@@ -39,6 +39,21 @@ void assert_vec2ddata_array(void)
   zAssert( zVec2DData (array), result );
 }
 
+void assert_vec2ddata_array_direct(void)
+{
+  zVec2DData data;
+  zVec2D v[N];
+  int i;
+  bool result;
+
+  for( i=0; i<N; i++ )
+    zVec2DCreate( &v[i], i, i );
+  zVec2DDataAssignArrayDirect( &data, v, N );
+  result = vec_data_test( &data );
+  zVec2DDataDestroy( &data );
+  zAssert( zVec2DData (direct array), result );
+}
+
 void assert_vec2ddata_list(void)
 {
   zVec2DData data;
@@ -135,6 +150,7 @@ int main(int argc, char *argv[])
   zRandInit();
   assert_vec2ddata_empty();
   assert_vec2ddata_array();
+  assert_vec2ddata_array_direct();
   assert_vec2ddata_list();
   assert_vec2ddata_addrlist();
   assert_vec2ddata_array_ptr();
