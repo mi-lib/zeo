@@ -126,6 +126,32 @@ bool create_ph_box(zPH3D *ph, const zVec3D vert[])
   return true;
 }
 
+bool create_maeh_plate(const char *filename, zPH3D *ph)
+{
+  ZTK ztk;
+  FILE *fp;
+
+  if( !(fp = zOpenZTKFile( filename, "r" )) ){
+    return false;
+  }
+  ZTKInit( &ztk );
+  if( !ZTKParseFP( &ztk, fp ) ){
+    ZRUNERROR( "Failed parse %s.", filename );
+    fclose( fp );
+    ZTKDestroy(&ztk);
+    return false;
+  }
+  fclose( fp );
+  if( !zPH3DFromZTK( ph, &ztk) ){
+    ZTKDestroy(&ztk);
+    ZRUNERROR( "Failed create PH3D from %s.", filename );
+    zPH3DDestroy(ph);
+    return false;
+  }
+  ZTKDestroy(&ztk);
+  return true;
+}
+
 void test_ph_box(zPH3D *a, zPH3D *b, const char *filename)
 {
   zPH3D ip;
@@ -142,6 +168,7 @@ void test_ph_box(zPH3D *a, zPH3D *b, const char *filename)
 int main(int argc, char *argv[])
 {
   zPH3D a, b, c, d, e;
+  zPH3D mesh_plate;
 
   if( !create_ph_box( &a, vert_a ) ||
       !create_ph_box( &b, vert_b ) ||
@@ -158,10 +185,17 @@ int main(int argc, char *argv[])
   eprintf( "[case 4]\n" );
   test_ph_box( &e, &b, "ph_box_contact_eb.ztk" );
 
+  if( !create_maeh_plate("mesh_plate.ztk.keep", &mesh_plate) )
+    return 1;
+
+  eprintf( "[case 5]\n" );
+  test_ph_box( &mesh_plate, &b, "ph_box_and mesh_plate_contact.ztk" );
+
   zPH3DDestroy( &e );
   zPH3DDestroy( &d );
   zPH3DDestroy( &c );
   zPH3DDestroy( &b );
   zPH3DDestroy( &a );
+  zPH3DDestroy( &mesh_plate );
   return 0;
 }
