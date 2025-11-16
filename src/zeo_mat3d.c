@@ -165,23 +165,23 @@ zMat3D *zMat3DSubDyad(zMat3D *m, const zVec3D *v1, const zVec3D *v2)
 }
 
 /* create an outer-product matrix of a 3D vector. */
-zMat3D *zVec3DOuterProd2Mat3D(const zVec3D *v, zMat3D *m)
+zMat3D *zVec3DOuterProdToMat3D(const zVec3D *v, zMat3D *m)
 {
-  _zVec3DOuterProd2Mat3D( v, m );
+  _zVec3DOuterProdToMat3D( v, m );
   return m;
 }
 
 /* create a triple-product matrix of a 3D vector. */
-zMat3D *zVec3DTripleProd2Mat3D(const zVec3D *v1, const zVec3D *v2, zMat3D *m)
+zMat3D *zVec3DTripleProdToMat3D(const zVec3D *v1, const zVec3D *v2, zMat3D *m)
 {
-  _zVec3DTripleProd2Mat3D( v1, v2, m );
+  _zVec3DTripleProdToMat3D( v1, v2, m );
   return m;
 }
 
 /* create a double outer-product matrix of a 3D vector. */
-zMat3D *zVec3DDoubleOuterProd2Mat3D(const zVec3D *v, zMat3D *m)
+zMat3D *zVec3DDoubleOuterProdToMat3D(const zVec3D *v, zMat3D *m)
 {
-  _zVec3DDoubleOuterProd2Mat3D( v, m );
+  _zVec3DDoubleOuterProdToMat3D( v, m );
   return m;
 }
 
@@ -760,7 +760,7 @@ zMat3D *zMat3DFromAA(zMat3D *m, const zVec3D *aa)
   _zSinCos( l, &s, &c );
   zVec3DMul( aa, 1.0/l, &n );
   zVec3DMul( &n, 1-c, &nl );
-  _zVec3DTripleProd2Mat3D( &n, &nl, m );
+  _zVec3DTripleProdToMat3D( &n, &nl, m );
   r1 = s * n.c.x;
   r2 = s * n.c.y;
   r3 = s * n.c.z;

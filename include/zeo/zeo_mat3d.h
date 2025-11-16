@@ -372,34 +372,34 @@ __ZEO_EXPORT zMat3D *zMat3DSubDyad(zMat3D *m, const zVec3D *v1, const zVec3D *v2
 
 /*! \brief create a 3x3 matrix equivalent to outer product of 3D vectors.
  *
- * zVec3DOuterProd2Mat3D() computes the outer-product matrix of a 3D vector
+ * zVec3DOuterProdToMat3D() computes the outer-product matrix of a 3D vector
  * \a v and puts it into \a m. Namely, \a m a is equivalent with \a v x a
  * with respect to an arbitrary 3D vector a. \a m becomes skew-symmetric.
  *
- * zVec3DTripleProd2Mat3D() computes the triple product matrix of a 3D vector
+ * zVec3DTripleProdToMat3D() computes the triple product matrix of a 3D vector
  * \a v1 and \a v2 and puts it into \a m. Namely, \a m a is equivalent with
  * \a v1 x ( \a v2 x a ) ) with respect to an arbitrary 3D vector a.
  *
- * zVec3DDoubleOuterProd2Mat3D() computes the triple product matrix of a 3D
+ * zVec3DDoubleOuterProdToMat3D() computes the triple product matrix of a 3D
  * vector \a v and puts it into \a m. Namely, the result is equivalent with
- * zVec3DOuterProd2Mat3D( \a v, \a v, \a m ).
+ * zVec3DOuterProdToMat3D( \a v, \a v, \a m ).
  * \return
- * zVec3DOuterProd2Mat3D(), zVec3DTripleProd2Mat3D() and zVec3DDoubleOuterProd2Mat3D()
+ * zVec3DOuterProdToMat3D(), zVec3DTripleProdToMat3D() and zVec3DDoubleOuterProdToMat3D()
  * return a pointer \a m.
  */
-#define _zVec3DOuterProd2Mat3D(vo,m) \
+#define _zVec3DOuterProdToMat3D(vo,m) \
   _zMat3DCreate( m,\
     0.0,-(vo)->c.z, (vo)->c.y,\
     (vo)->c.z, 0.0,-(vo)->c.x,\
    -(vo)->c.y, (vo)->c.x, 0.0 )
-__ZEO_EXPORT zMat3D *zVec3DOuterProd2Mat3D(const zVec3D *v, zMat3D *m);
-#define _zVec3DTripleProd2Mat3D(v1,v2,m) \
+__ZEO_EXPORT zMat3D *zVec3DOuterProdToMat3D(const zVec3D *v, zMat3D *m);
+#define _zVec3DTripleProdToMat3D(v1,v2,m) \
   _zMat3DCreate( m,\
     -(v1)->c.y*(v2)->c.y-(v1)->c.z*(v2)->c.z, (v1)->c.y*(v2)->c.x, (v1)->c.z*(v2)->c.x,\
      (v1)->c.x*(v2)->c.y,-(v1)->c.z*(v2)->c.z-(v1)->c.x*(v2)->c.x, (v1)->c.z*(v2)->c.y,\
      (v1)->c.x*(v2)->c.z, (v1)->c.y*(v2)->c.z,-(v1)->c.x*(v2)->c.x-(v1)->c.y*(v2)->c.y )
-__ZEO_EXPORT zMat3D *zVec3DTripleProd2Mat3D(const zVec3D *v1, const zVec3D *v2, zMat3D *m);
-#define _zVec3DDoubleOuterProd2Mat3D(v,m) do{\
+__ZEO_EXPORT zMat3D *zVec3DTripleProdToMat3D(const zVec3D *v1, const zVec3D *v2, zMat3D *m);
+#define _zVec3DDoubleOuterProdToMat3D(v,m) do{\
   double __xx, __yy, __zz;\
   __xx = (v)->c.x * (v)->c.x;\
   __yy = (v)->c.y * (v)->c.y;\
@@ -411,7 +411,7 @@ __ZEO_EXPORT zMat3D *zVec3DTripleProd2Mat3D(const zVec3D *v1, const zVec3D *v2, 
   (m)->c.yz = (m)->c.zy = (v)->c.y*(v)->c.z;\
   (m)->c.zx = (m)->c.xz = (v)->c.z*(v)->c.x;\
 } while(0)
-__ZEO_EXPORT zMat3D *zVec3DDoubleOuterProd2Mat3D(const zVec3D *v, zMat3D *m);
+__ZEO_EXPORT zMat3D *zVec3DDoubleOuterProdToMat3D(const zVec3D *v, zMat3D *m);
 
 /*! \brief concatenate a double outer-product matrix of a 3D vector to another matrix. */
 #define _zMat3DCatVec3DDoubleOuterProd(m,k,v,dm) do{\
@@ -978,9 +978,9 @@ inline zMat3D &zMat3D::operator-=(const zMat3D &m){ _zMat3DSubDRC( this, &m ); r
 inline zMat3D &zMat3D::operator*=(double k){ _zMat3DMulDRC( this, k ); return *this; }
 inline zMat3D &zMat3D::operator/=(double k){ zMat3DDivDRC( this, k ); return *this; }
 inline zMat3D &zMat3D::createDyad(const zVec3D &v1, const zVec3D &v2){ _zMat3DDyad( this, &v1, &v2 ); return *this; }
-inline zMat3D &zMat3D::createOuterprod(const zVec3D &v){ _zVec3DOuterProd2Mat3D( &v, this ); return *this; }
-inline zMat3D &zMat3D::createTripleprod(const zVec3D &v1, const zVec3D &v2){ _zVec3DTripleProd2Mat3D( &v1, &v2, this ); return *this; }
-inline zMat3D &zMat3D::createDoubleOuterprod(const zVec3D &v){ _zVec3DDoubleOuterProd2Mat3D( &v, this ); return *this; }
+inline zMat3D &zMat3D::createOuterprod(const zVec3D &v){ _zVec3DOuterProdToMat3D( &v, this ); return *this; }
+inline zMat3D &zMat3D::createTripleprod(const zVec3D &v1, const zVec3D &v2){ _zVec3DTripleProdToMat3D( &v1, &v2, this ); return *this; }
+inline zMat3D &zMat3D::createDoubleOuterprod(const zVec3D &v){ _zVec3DDoubleOuterProdToMat3D( &v, this ); return *this; }
 inline zMat3D &zMat3D::orthonormalize(zAxis axis1, zAxis axis2){ return *zMat3DOrthonormalizeDRC( this, axis1, axis2 ); }
 inline double zMat3D::squareNorm(){ return _zMat3DSqrNorm( this ); }
 inline double zMat3D::norm(){ return _zMat3DNorm( this ); }

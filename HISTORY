@@ -1,3 +1,4 @@
+2025.11.16. Renamed _zVec3DOuterProd2Mat3D, zVec3DOuterProd2Mat3D, _zVec3DTripleProd2Mat3D, zVec3DTripleProd2Mat3D, _zVec3DDoubleOuterProd2Mat3D, and zVec3DDoubleOuterProd2Mat3D to _zVec3DOuterProdToMat3D, zVec3DOuterProdToMat3D, _zVec3DTripleProdToMat3D, zVec3DTripleProdToMat3D, _zVec3DDoubleOuterProdToMat3D, and zVec3DDoubleOuterProdToMat3D. [zeo_mat3d, zeo_elemd]
 2025.11.03. Added zVec2DDataCapacity and zVec3DDataCapacity. [zeo_vec2d_data, zeo_vec3d_data]
 2025.11.03. Modified _zVecXDDataArraySize, _zVecXDDataArrayCapacity, _zVecXDDataArrayIsEmpty, _zVecXDDataArrayAdd, and zVecXDDataInitArray to reflect new specification of zArray. [zeo_vecxd_data]
 2025.11.02. Redefined the operator == for zVec2D, zVec3D, zVec6D, and zMat3D for C++. [zeo_vec2d, zeo_vec3d, zeo_vec6d, zeo_mat3d]

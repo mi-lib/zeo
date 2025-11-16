@@ -496,12 +496,12 @@ zMat3D *zTri3DConeInertia(const zTri3D *tri, double density, zMat3D *i)
   for( j=0; j<3; j++ ){
     v1 = zTri3DVert(tri,j);
     v2 = zTri3DVertNext(tri,j);
-    _zVec3DTripleProd2Mat3D( v1, v1, &m );
+    _zVec3DTripleProdToMat3D( v1, v1, &m );
     _zMat3DSubDRC( i, &m );
-    _zVec3DTripleProd2Mat3D( v1, v2, &m );
+    _zVec3DTripleProdToMat3D( v1, v2, &m );
     _zMat3DMulDRC( &m, 0.5 );
     _zMat3DSubDRC( i, &m );
-    _zVec3DTripleProd2Mat3D( v2, v1, &m );
+    _zVec3DTripleProdToMat3D( v2, v1, &m );
     _zMat3DMulDRC( &m, 0.5 );
     _zMat3DSubDRC( i, &m );
   }
