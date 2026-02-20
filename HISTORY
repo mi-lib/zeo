@@ -1,3 +1,4 @@
+2026.02.20. Added zRGBToGS. [zeo_render_color]
 2026.02.20. Added C++ methods of zRGB. [zeo_render_color]
 2026.02.20. Added C++ methods of zOpticalInfo. [zeo_render_optic]
 2025.12.26. Replaced -i option of xargs in example/makefile to -I (thanks to Naoki Wakisaka). [example]
