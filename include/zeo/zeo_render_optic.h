@@ -11,10 +11,10 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/*! \brief optical characteristic parameters
- *//********************************************************* */
-typedef struct{
+/*! \struct zOpticalInfo
+ * \brief optical characteristic parameters
+ */
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zOpticalInfo ){
   Z_NAMED_CLASS;
   zRGB ambient;     /*!< \brief coefficients of reflection for ambient */
   zRGB diffuse;     /*!< \brief coefficients of diffuse reflection */
@@ -22,7 +22,22 @@ typedef struct{
   double esr;       /*!< \brief Phong's exponential for specular reflection */
   double shininess; /*!< \brief shininess */
   double alpha;     /*!< \brief alpha value */
-} zOpticalInfo;
+#ifdef __cplusplus
+  zOpticalInfo();
+  ~zOpticalInfo();
+  zOpticalInfo *init();
+  void destroy();
+  zOpticalInfo *create(float ar, float ag, float ab, float dr, float dg, float db, float sr, float sg, float sb, double esr, double shininess, double alpha, char *name);
+  zOpticalInfo *create(float red, float green, float blue, char *name);
+  zOpticalInfo *create(float red, float green, float blue);
+  zOpticalInfo *copy(zOpticalInfo *dest);
+  zOpticalInfo *copy(zOpticalInfo &dest);
+  zOpticalInfo *clone(zOpticalInfo *dest);
+  zOpticalInfo *clone(zOpticalInfo &dest);
+  zOpticalInfo *multiply(const zOpticalInfo *oi1, const zOpticalInfo *oi2);
+  zOpticalInfo *blend(const zOpticalInfo *oi1, const zOpticalInfo *oi2, double ratio);
+#endif /* __cplusplus */
+};
 
 /*! \brief create, initialize, copy and destroy a set of optical parameters.
  *
@@ -92,5 +107,21 @@ __ZEO_EXPORT void zOpticalInfoFPrintZTK(FILE *fp, const zOpticalInfo *oi);
 zArrayClass( zOpticalInfoArray, zOpticalInfo );
 
 __END_DECLS
+
+#ifdef __cplusplus
+inline zOpticalInfo::zOpticalInfo(){ this->init(); }
+inline zOpticalInfo::~zOpticalInfo(){ this->destroy(); }
+inline zOpticalInfo *zOpticalInfo::init(){ zOpticalInfoInit( this ); return this; }
+inline void zOpticalInfo::destroy(){ zOpticalInfoDestroy( this ); }
+inline zOpticalInfo *zOpticalInfo::create(float ar, float ag, float ab, float dr, float dg, float db, float sr, float sg, float sb, double esr, double shininess, double alpha, char *name){ return zOpticalInfoCreate( this, ar, ag, ab, dr, dg, db, sr, sg, sb, esr, shininess, alpha, name ); }
+inline zOpticalInfo *zOpticalInfo::create(float red, float green, float blue, char *name){ return zOpticalInfoCreateSimple( this, red, green, blue, name ); }
+inline zOpticalInfo *zOpticalInfo::create(float red, float green, float blue){ return this->create( red, green, blue, NULL ); }
+inline zOpticalInfo *zOpticalInfo::copy(zOpticalInfo *dest){ return zOpticalInfoCopy( this, dest ); }
+inline zOpticalInfo *zOpticalInfo::copy(zOpticalInfo &dest){ return zOpticalInfoCopy( this, &dest ); }
+inline zOpticalInfo *zOpticalInfo::clone(zOpticalInfo *dest){ return zOpticalInfoClone( this, dest ); }
+inline zOpticalInfo *zOpticalInfo::clone(zOpticalInfo &dest){ return zOpticalInfoClone( this, &dest ); }
+inline zOpticalInfo *zOpticalInfo::multiply(const zOpticalInfo *oi1, const zOpticalInfo *oi2){ return zOpticalInfoMul( oi1, oi2, this ); }
+inline zOpticalInfo *zOpticalInfo::blend(const zOpticalInfo *oi1, const zOpticalInfo *oi2, double ratio){ return zOpticalInfoBlend( oi1, oi2, ratio, this, NULL ); }
+#endif /* __cplusplus */
 
 #endif /* __ZEO_RENDER_OPTIC_H__ */

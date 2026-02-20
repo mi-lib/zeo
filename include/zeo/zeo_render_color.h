@@ -11,22 +11,43 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
 /*! \struct zRGB
  * \brief color expression with RGB intensity set.
- * ********************************************************** */
-
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zRGB ){
   float r; /* red */
   float g; /* green */
   float b; /* blue */
+#ifdef __cplusplus
+  zRGB() : r{0}, g{0}, b{0} {}
+  zRGB(float red, float green, float blue) : r{red}, g{green}, b{blue} {}
+  ~zRGB(){}
+  bool isZero();
+  zRGB *set(float intensity);
+  zRGB *set(float red, float green, float blue);
+  float *tofv(float colorv[]);
+  float glayscale();
+  zRGB *glayscalize();
+  zRGB *multiply(const zRGB *rgb1, const zRGB *rgb2);
+  zRGB *blend(const zRGB *rgb1, const zRGB *rgb2, double ratio);
+  zRGB *decodeString(const char *str);
+  zRGB *setByName(const char *name);
+  zRGB *setByString(const char *str);
+  static const zRGB zrgbblack;
+  static const zRGB zrgbwhite;
+#endif /* __cplusplus */
 };
 
 /*! \brief black and white RGB set. */
+#ifdef __cplusplus
+#define ZRGBBLACK ( (zRGB *)&zRGB::zrgbblack )
+#define ZRGBWHITE ( (zRGB *)&zRGB::zrgbwhite )
+#else
 __ZEO_EXPORT const zRGB zrgbblack; /*!< RGB set for black */
 __ZEO_EXPORT const zRGB zrgbwhite; /*!< RGB set for white */
 #define ZRGBBLACK ( (zRGB *)&zrgbblack )
 #define ZRGBWHITE ( (zRGB *)&zrgbwhite )
+#endif /* __cplusplus */
 
 #define ZRGB_TOL (1.0e-6)
 
@@ -59,6 +80,9 @@ __ZEO_EXPORT zRGB *zRGBCopy(const zRGB *src, zRGB *dest);
 /*! \brief grayscale color */
 #define zGS(color)              ( ( (color)->r + (color)->g + (color)->b ) / 3.0 )
 #define zGSSet(color,intensity) ( (color)->r = (color)->g = (color)->b = (intensity) )
+
+/*! \brief directly grayscalize a set of RGB parameters. */
+__ZEO_EXPORT zRGB *zRGBToGS(zRGB *rgb);
 
 /*! \brief multiply a set of RGB parameters by another. */
 __ZEO_EXPORT zRGB *zRGBMul(const zRGB *rgb1, const zRGB *rgb2, zRGB *rgb);
@@ -131,16 +155,32 @@ __ZEO_EXPORT zRGB *zRGBFScan(FILE *fp, zRGB *rgb);
 __ZEO_EXPORT void zRGBFPrint(FILE *fp, const zRGB *rgb);
 #define zRGBPrint(c) zRGBFPrint( stdout, (c) )
 
-/* ********************************************************** */
-/* CLASS: zHSV
- * HSV class - expression of color by hue, saturation and value.
- * ********************************************************** */
+__END_DECLS
 
-typedef struct{
+#ifdef __cplusplus
+inline bool zRGB::isZero(){ return zRGBIsZero( this ); }
+inline zRGB *zRGB::set(float intensity){ zGSSet( this, intensity ); return this; }
+inline zRGB *zRGB::set(float red, float green, float blue){ return zRGBSet( this, red, green, blue ); }
+inline float *zRGB::tofv(float colorv[]){ zRGB2fv( this, colorv ); return colorv; }
+inline float zRGB::glayscale(){ return zGS( this ); }
+inline zRGB *zRGB::glayscalize(){ return zRGBToGS( this ); }
+inline zRGB *zRGB::multiply(const zRGB *rgb1, const zRGB *rgb2){ return zRGBMul( rgb1, rgb2, this ); }
+inline zRGB *zRGB::blend(const zRGB *rgb1, const zRGB *rgb2, double ratio){ return zRGBBlend( rgb1, rgb2, ratio, this ); }
+inline zRGB *zRGB::decodeString(const char *str){ return zRGBDecodeStr( this, str ); }
+inline zRGB *zRGB::setByName(const char *name){ return zRGBByName( this, name ); }
+inline zRGB *zRGB::setByString(const char *str){ return zRGBByStr( this, str ); }
+#endif /* __cplusplus */
+
+__BEGIN_DECLS
+
+/*! \struct zHSV
+ * \brief expression of color by hue, saturation and value.
+ */
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zHSV ){
   float hue; /* hue: [0,360] */
   float sat; /* saturation */
   float val; /* value */
-} zHSV;
+};
 
 __ZEO_EXPORT zHSV *zRGB2HSV(const zRGB *rgb, zHSV *hsv);
 __ZEO_EXPORT zRGB *zHSV2RGB(const zHSV *hsv, zRGB *rgb);

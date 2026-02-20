@@ -1,3 +1,5 @@
+2026.02.20. Added C++ methods of zRGB. [zeo_render_color]
+2026.02.20. Added C++ methods of zOpticalInfo. [zeo_render_optic]
 2025.12.26. Replaced -i option of xargs in example/makefile to -I (thanks to Naoki Wakisaka). [example]
 2025.11.16. Renamed _zVec3DOuterProd2Mat3D, zVec3DOuterProd2Mat3D, _zVec3DTripleProd2Mat3D, zVec3DTripleProd2Mat3D, _zVec3DDoubleOuterProd2Mat3D, and zVec3DDoubleOuterProd2Mat3D to _zVec3DOuterProdToMat3D, zVec3DOuterProdToMat3D, _zVec3DTripleProdToMat3D, zVec3DTripleProdToMat3D, _zVec3DDoubleOuterProdToMat3D, and zVec3DDoubleOuterProdToMat3D. [zeo_mat3d, zeo_elemd]
 2025.11.03. Added zVec2DDataCapacity and zVec3DDataCapacity. [zeo_vec2d_data, zeo_vec3d_data]

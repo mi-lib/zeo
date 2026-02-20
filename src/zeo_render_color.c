@@ -8,12 +8,17 @@
 #include <math.h>
 
 /* ********************************************************** */
-/* CLASS: zRGB
- * RGB class - expression of color with RGB intensity set.
- * ********************************************************** */
+/* RGB - expression of color with RGB intensity set.
+ *//* ******************************************************* */
 
 /* RGB sets for black and white */
-const zRGB zrgbblack = { 0.0, 0.0, 0.0 }, zrgbwhite = { 1.0, 1.0, 1.0 };
+#ifdef __cplusplus
+const zRGB zRGB::zrgbblack = { 0.0, 0.0, 0.0 };
+const zRGB zRGB::zrgbwhite = { 1.0, 1.0, 1.0 };
+#else
+const zRGB zrgbblack = { 0.0, 0.0, 0.0 };
+const zRGB zrgbwhite = { 1.0, 1.0, 1.0 };
+#endif /* __cplusplus */
 
 /* set RGB parameters. */
 zRGB *zRGBSet(zRGB *rgb, float red, float green, float blue)
@@ -29,6 +34,13 @@ zRGB *zRGBCopy(const zRGB *src, zRGB *dest)
 {
   _zRGBCopy( src, dest );
   return dest;
+}
+
+/* directly grayscalize a set of RGB parameters. */
+zRGB *zRGBToGS(zRGB *rgb)
+{
+  zGSSet( rgb, zGS( rgb ) );
+  return rgb;
 }
 
 /* multiply a set of RGB parameters by another. */
@@ -158,9 +170,8 @@ void zRGBFPrint(FILE *fp, const zRGB *rgb)
 }
 
 /* ********************************************************** */
-/* CLASS: zHSV
- * HSV class - expression of color by hue, saturation and value.
- * ********************************************************** */
+/* HSV - expression of color by hue, saturation and value.
+ *//* ******************************************************* */
 
 /* convert RGB to HSV. */
 zHSV *zRGB2HSV(const zRGB *rgb, zHSV *hsv)
