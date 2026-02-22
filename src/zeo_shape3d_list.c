@@ -1,53 +1,48 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_shape3d_list - 3D shape: shape list
+ * zeo_shape3d_list - 3D shape: shape list.
  */
 
 #include <zeo/zeo_shape3d.h>
 
-/* ********************************************************** */
-/* CLASS: zShapeListCell & zShapeList
- * shape list class
- * ********************************************************** */
-
 /* push a shape to a list. */
-zShapeListCell *zShapeListPush(zShapeList *list, zShape3D *shape)
+zShape3DListCell *zShape3DListPush(zShape3DList *list, zShape3D *shape)
 {
-  zShapeListCell *cp;
+  zShape3DListCell *cp;
 
-  if( !( cp = zAlloc( zShapeListCell, 1 ) ) ) return NULL;
-  zShapeListCellSetShape( cp, shape );
+  if( !( cp = zAlloc( zShape3DListCell, 1 ) ) ) return NULL;
+  zShape3DListCellSetShape( cp, shape );
   zListInsertTail( list, cp );
   return cp;
 }
 
 /* pop a shape from a list. */
-zShape3D *zShapeListPop(zShapeList *list)
+zShape3D *zShape3DListPop(zShape3DList *list)
 {
-  zShapeListCell *cp;
+  zShape3DListCell *cp;
   zShape3D *shape;
 
   if( zListIsEmpty(list) ) return NULL;
   zListDeleteTail( list, &cp );
-  shape = zShapeListCellShape( cp );
+  shape = zShape3DListCellShape( cp );
   zFree( cp );
   return shape;
 }
 
 /* contiguous vertix of shapes in a list to a point. */
-const zVec3D *zShapeListContigVert(const zShapeList *list, const zVec3D *point, double *distance)
+const zVec3D *zShape3DListContigVert(const zShape3DList *list, const zVec3D *point, double *distance)
 {
-  zShapeListCell *cp;
+  zShape3DListCell *cp;
   const zVec3D *v, *nv;
   double _d, dist_min;
 
   if( !distance ) distance = &_d;
   cp = zListTail( list );
-  v = zShape3DContigVert( zShapeListCellShape(cp), point, distance );
+  v = zShape3DContigVert( zShape3DListCellShape(cp), point, distance );
   dist_min = *distance;
   for( cp=zListCellNext(cp); cp!=zListRoot(list); cp=zListCellNext(cp) ){
-    nv = zShape3DContigVert( zShapeListCellShape(cp), point, distance );
+    nv = zShape3DContigVert( zShape3DListCellShape(cp), point, distance );
     if( *distance < dist_min ){
       v = nv;
       dist_min = *distance;
@@ -58,16 +53,16 @@ const zVec3D *zShapeListContigVert(const zShapeList *list, const zVec3D *point, 
 }
 
 /* the closest point to a shape in a list. */
-double zShapeListClosest(const zShapeList *list, const zVec3D *point, zVec3D *closestpoint)
+double zShape3DListClosest(const zShape3DList *list, const zVec3D *point, zVec3D *closestpoint)
 {
-  zShapeListCell *c;
+  zShape3DListCell *c;
   zVec3D cp;
   double dist, dist_min;
 
   c = zListTail( list );
-  dist_min = zShape3DClosest( zShapeListCellShape(c), point, closestpoint );
+  dist_min = zShape3DClosest( zShape3DListCellShape(c), point, closestpoint );
   for( c=zListCellNext(c); c!=zListRoot(list); c=zListCellNext(c) )
-    if( ( dist = zShape3DClosest( zShapeListCellShape(c), point, &cp ) ) < dist_min ){
+    if( ( dist = zShape3DClosest( zShape3DListCellShape(c), point, &cp ) ) < dist_min ){
       zVec3DCopy( &cp, closestpoint );
       dist_min = dist;
     }
@@ -75,17 +70,17 @@ double zShapeListClosest(const zShapeList *list, const zVec3D *point, zVec3D *cl
 }
 
 /* print a cell of a shape list out to a file in a ZTK format. */
-void zShapeListCellFPrintZTK(FILE *fp, const zShapeListCell *cell)
+void zShape3DListCellFPrintZTK(FILE *fp, const zShape3DListCell *cell)
 {
-  if( !cell || !zShapeListCellShape(cell) ) return;
-  zShape3DFPrintZTK( fp, zShapeListCellShape(cell) );
+  if( !cell || !zShape3DListCellShape(cell) ) return;
+  zShape3DFPrintZTK( fp, zShape3DListCellShape(cell) );
 }
 
 /* print a list of shapes to a file in a ZTK format. */
-void zShapeListFPrintZTK(FILE *fp, const zShapeList *list)
+void zShape3DListFPrintZTK(FILE *fp, const zShape3DList *list)
 {
-  zShapeListCell *cp;
+  zShape3DListCell *cp;
 
   zListForEach( list, cp )
-    zShapeListCellFPrintZTK( fp, cp );
+    zShape3DListCellFPrintZTK( fp, cp );
 }

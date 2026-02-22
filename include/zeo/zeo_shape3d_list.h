@@ -11,61 +11,59 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* CLASS: zShapeListCell & zShapeList
- * shape list class
- * ********************************************************** */
+/*! \struct zShape3DListCell & zShape3DList
+ * \brief shape list class
+ */
+zListClass( zShape3DList, zShape3DListCell, zShape3D* );
 
-zListClass( zShapeList, zShapeListCell, zShape3D* );
+#define zShape3DListCellShape(c)      (c)->data
+#define zShape3DListCellOptic(c)      zShape3DOptic(zShape3DListCellShape(c))
+#define zShape3DListCellSetShape(c,s) ( zShape3DListCellShape(c) = (s) )
 
-#define zShapeListCellShape(c)      (c)->data
-#define zShapeListCellOptic(c)      zShape3DOptic(zShapeListCellShape(c))
-#define zShapeListCellSetShape(c,s) ( zShapeListCellShape(c) = (s) )
-
-#define zShapeListCellInit(c) do{\
+#define zShape3DListCellInit(c) do{\
   zListCellInit( c );\
-  zShapeListCellSetShape( c, NULL );\
+  zShape3DListCellSetShape( c, NULL );\
 } while(0)
 
 /*! \brief push and pop a shape from a list.
  *
- * zShapeListPush() pushes a new shape \a shape to a list of shapes \a list.
+ * zShape3DListPush() pushes a new shape \a shape to a list of shapes \a list.
  *
- * zShapeListPop() pops the last shape of \a list.
+ * zShape3DListPop() pops the last shape of \a list.
  *
- * zShapeListDestroy() destroys a shape list \a list.
+ * zShape3DListDestroy() destroys a shape list \a list.
  * \notes
- * When \a list includes statically-allocated cells, zShapeListDestroy() violates the memory segmentation.
+ * When \a list includes statically-allocated cells, zShape3DListDestroy() violates the memory segmentation.
  * \return
- * zShapeListPush() returns a pointer to the pushed cell.
- * zShapeListPop() returns a pointer to the poped shape.
- * zShapeListDestroy() returns no value.
+ * zShape3DListPush() returns a pointer to the pushed cell.
+ * zShape3DListPop() returns a pointer to the poped shape.
+ * zShape3DListDestroy() returns no value.
  */
-__ZEO_EXPORT zShapeListCell *zShapeListPush(zShapeList *list, zShape3D *shape);
-__ZEO_EXPORT zShape3D *zShapeListPop(zShapeList *list);
-#define zShapeListDestroy(list) zListDestroy( zShapeListCell, list )
+__ZEO_EXPORT zShape3DListCell *zShape3DListPush(zShape3DList *list, zShape3D *shape);
+__ZEO_EXPORT zShape3D *zShape3DListPop(zShape3DList *list);
+#define zShape3DListDestroy(list) zListDestroy( zShape3DListCell, list )
 
 /*! \brief contiguous vertex of a list of 3D shapes to the given 3D point.
  */
-__ZEO_EXPORT const zVec3D *zShapeListContigVert(const zShapeList *list, const zVec3D *point, double *distance);
-__ZEO_EXPORT double zShapeListClosest(const zShapeList *list, const zVec3D *point, zVec3D *closestpoint);
+__ZEO_EXPORT const zVec3D *zShape3DListContigVert(const zShape3DList *list, const zVec3D *point, double *distance);
+__ZEO_EXPORT double zShape3DListClosest(const zShape3DList *list, const zVec3D *point, zVec3D *closestpoint);
 
 /*! \brief print out a shape list to a file in a ZTK format.
  *
- * zShapeListCellFPrintZTK() prints out properties of a cell of
+ * zShape3DListCellFPrintZTK() prints out properties of a cell of
  * a shape list \a cell to the current position of a file \a fp
  * in a ZTK format conforming to that of zShape3D.
  *
- * zShapeListCellPrintZTK() prints out properties of \a cell to
+ * zShape3DListCellPrintZTK() prints out properties of \a cell to
  * the standard output.
  * \return
- * Neither zShapeListCellFPrintZTK() nor zShapeListCellPrintZTK()
+ * Neither zShape3DListCellFPrintZTK() nor zShape3DListCellPrintZTK()
  * return any values.
  */
-__ZEO_EXPORT void zShapeListCellFPrintZTK(FILE *fp, const zShapeListCell *cell);
-#define zShapeListCellPrintZTK(c) zShapeListCellFPrintZTK( stdout, (c) )
-__ZEO_EXPORT void zShapeListFPrintZTK(FILE *fp, const zShapeList *list);
-#define zShapeListPrintZTK(l) zShapeListFPrintZTK( stdout, (l) )
+__ZEO_EXPORT void zShape3DListCellFPrintZTK(FILE *fp, const zShape3DListCell *cell);
+#define zShape3DListCellPrintZTK(c) zShape3DListCellFPrintZTK( stdout, (c) )
+__ZEO_EXPORT void zShape3DListFPrintZTK(FILE *fp, const zShape3DList *list);
+#define zShape3DListPrintZTK(l) zShape3DListFPrintZTK( stdout, (l) )
 
 __END_DECLS
 
