@@ -1,4 +1,4 @@
-#include <zeo/zeo_mshape3d.h>
+#include <zeo/zeo_multishape3d.h>
 #include <zeo/zeo_bv3d.h>
 #include <zeo/zeo_brep.h>
 
@@ -6,11 +6,11 @@
 
 void test_ph(zPH3D *a)
 {
-  zMShape3D ms;
+  zMultiShape3D ms;
 
-  if( !zMShape3DReadZTK( &ms, "../model/octahedron.ztk" ) ) exit( 1 );
-  zPH3DClone( zShape3DPH(zMShape3DShape(&ms,0)), a );
-  zMShape3DDestroy( &ms );
+  if( !zMultiShape3DReadZTK( &ms, "../model/octahedron.ztk" ) ) exit( 1 );
+  zPH3DClone( zShape3DPH(zMultiShape3DShape(&ms,0)), a );
+  zMultiShape3DDestroy( &ms );
 }
 
 void output(zPH3D *a, zPH3D *b, zPH3D *c)

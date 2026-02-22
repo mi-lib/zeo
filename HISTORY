@@ -1,3 +1,6 @@
+2026.02.21. Renamed mshape2dgp to zeo_multishapeplot. [app]
+2026.02.21. Renamed ZEO_WARN_MSHAPE_* to ZEO_WARN_MULTISHAPE_*. [zeo_errmsg, zeo_multishape3d]
+2026.02.21. Renamed zeo_mshape3d to zeo_multishape3d, and likewise, zMShape3D to zMultiShape3D. [zeo_multishape3d, test, example, app]
 2026.02.20. Added zRGBToGS. [zeo_render_color]
 2026.02.20. Added C++ methods of zRGB. [zeo_render_color]
 2026.02.20. Added C++ methods of zOpticalInfo. [zeo_render_optic]

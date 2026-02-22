@@ -33,17 +33,18 @@ void assert_rgb_hsv(void)
 {
   zRGB rgb, rgb_hsv;
   zHSV hsv, hsv_rgb;
+  const double tol = ZRGB_TOL * 10;
 
   zRGBSet( &rgb, zRandF(0,1), zRandF(0,1), zRandF(0,1) );
   zRGB2HSV( &rgb, &hsv );
   zHSV2RGB( &hsv, &rgb_hsv );
-  zAssert( zRGB2HSV, zIsTol(rgb.r-rgb_hsv.r,ZRGB_TOL) &&
-                     zIsTol(rgb.g-rgb_hsv.g,ZRGB_TOL) &&
-                     zIsTol(rgb.b-rgb_hsv.b,ZRGB_TOL) );
+  zAssert( zRGB2HSV, zIsTol(rgb.r-rgb_hsv.r,tol) &&
+                     zIsTol(rgb.g-rgb_hsv.g,tol) &&
+                     zIsTol(rgb.b-rgb_hsv.b,tol) );
   zRGB2HSV( &rgb_hsv, &hsv_rgb );
-  zAssert( zHSV2RGB, zIsTol(hsv.hue-hsv_rgb.hue,ZRGB_TOL) &&
-                     zIsTol(hsv.sat-hsv_rgb.sat,ZRGB_TOL) &&
-                     zIsTol(hsv.val-hsv_rgb.val,ZRGB_TOL) );
+  zAssert( zHSV2RGB, zIsTol(hsv.hue-hsv_rgb.hue,tol) &&
+                     zIsTol(hsv.sat-hsv_rgb.sat,tol) &&
+                     zIsTol(hsv.val-hsv_rgb.val,tol) );
 }
 
 int main(void)

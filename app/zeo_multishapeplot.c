@@ -1,3 +1,5 @@
+/* output zMultiShape3D in gnuplot-friendly format. */
+
 #include <zeo/zeo.h>
 
 void usage(char *arg)
@@ -20,21 +22,21 @@ void output_shape(zShape3D *s)
   }
 }
 
-void conv_mshape(char *filename)
+void conv_multishape(char *filename)
 {
   int i;
-  zMShape3D ms;
+  zMultiShape3D ms;
 
-  if( !zMShape3DReadZTK( &ms, filename ) )
+  if( !zMultiShape3DReadZTK( &ms, filename ) )
     exit( EXIT_FAILURE );
-  for( i=0; i<zMShape3DShapeNum(&ms); i++ )
-    output_shape( zMShape3DShape(&ms,i) );
-  zMShape3DDestroy( &ms );
+  for( i=0; i<zMultiShape3DShapeNum(&ms); i++ )
+    output_shape( zMultiShape3DShape(&ms,i) );
+  zMultiShape3DDestroy( &ms );
 }
 
 int main(int argc, char *argv[])
 {
   if( argc < 2 ) usage( argv[0] );
-  conv_mshape( argv[1] );
+  conv_multishape( argv[1] );
   return 0;
 }

@@ -26,7 +26,7 @@
 #define __ZEO_H__
 
 #include <zeo/zeo_mat6d.h>
-#include <zeo/zeo_mshape3d.h>
+#include <zeo/zeo_multishape3d.h>
 #include <zeo/zeo_bv3d.h>
 #include <zeo/zeo_vec3d_profile.h>
 #include <zeo/zeo_voronoi2d.h>
