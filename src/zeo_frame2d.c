@@ -6,21 +6,12 @@
 
 #include <zeo/zeo_frame2d.h>
 
-/* ********************************************************** */
-/* CLASS: zFrame2D
- * 2D coordinate frame class
- * ********************************************************** */
-
 /* the 2D identity frame. */
 #ifdef __cplusplus
-const zFrame2D zFrame2D::zframe2Dident
+const zFrame2D zFrame2D::zframe2Dident{ 0, 0, 1, 0, 0, 1 };
 #else
-const zFrame2D zframe2Dident
+const zFrame2D zframe2Dident = { { { 0, 0 } }, { { { 1, 0 }, { 0, 1 } } } };
 #endif /* __cplusplus */
-= {
-  { { 0, 0 } },
-  { { { 1, 0 }, { 0, 1 } } }
-};
 
 /* create a 2D coordinate frame from a position vector and an attitude matrix. */
 zFrame2D *zFrame2DCreate(zFrame2D *frame, const zVec2D *p, const zMat2D *m)
@@ -36,6 +27,13 @@ zFrame2D *zFrame2DCreateAngle(zFrame2D *frame, const zVec2D *p, double angle)
   zFrame2DSetPos( frame, p );
   zMat2DCreateAngle( zFrame2DAtt(frame), angle );
   return frame;
+}
+
+/* copy a 2D coordinate frame. */
+zFrame2D *zFrame2DCopy(const zFrame2D *src, zFrame2D *dest)
+{
+  _zFrame2DCopy( src, dest );
+  return dest;
 }
 
 /* check if two 2D coordinate frames are equal. */

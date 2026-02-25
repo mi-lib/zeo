@@ -6,15 +6,10 @@
 
 #include <zeo/zeo_mat3d.h>
 
-/* ********************************************************** */
-/* CLASS: zMat3D
- * 3x3 matrix class
- * ********************************************************** */
-
 /* 3x3 zero matrix and identity matrix. */
 #ifdef __cplusplus
-const zMat3D zMat3D::zmat3Dzero  = { { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } } };
-const zMat3D zMat3D::zmat3Dident = { { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } } };
+const zMat3D zMat3D::zmat3Dzero { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const zMat3D zMat3D::zmat3Dident{ 1, 0, 0, 0, 1, 0, 0, 0, 1 };
 #else
 const zMat3D zmat3Dzero  = { { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } } };
 const zMat3D zmat3Dident = { { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } } };
@@ -28,6 +23,13 @@ zMat3D *zMat3DCreate(zMat3D *m,
 {
   _zMat3DCreate( m, a11, a12, a13, a21, a22, a23, a31, a32, a33 );
   return m;
+}
+
+/* copy a 3x3 matrix to the other. */
+zMat3D *zMat3DCopy(const zMat3D *src, zMat3D *dest)
+{
+  _zMat3DCopy( src, dest );
+  return dest;
 }
 
 /* check if two 3x3 matrices are strictly equal. */

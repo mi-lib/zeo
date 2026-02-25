@@ -15,6 +15,13 @@ zCoord2D *zCoord2DCreate(zCoord2D *coord, double x, double y, double angle)
   return coord;
 }
 
+/* copy a 2D coordinate to another. */
+zCoord2D *zCoord2DCopy(const zCoord2D *src, zCoord2D *dest)
+{
+  _zCoord2DCopy( src, dest );
+  return dest;
+}
+
 /* check if two 2D coordinates are same or not. */
 bool zCoord2DEqual(const zCoord2D *coord1, const zCoord2D *coord2)
 {

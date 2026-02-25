@@ -1,7 +1,7 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_mat2d.h - 2x2 matrix.
+ * zeo_mat2d - 2x2 matrix.
  */
 
 #ifndef __ZEO_MAT2D_H__
@@ -28,25 +28,25 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat2D ){
     double xx, xy, yx, yy;
   } c;            /*!< 4 components */
 #ifdef __cplusplus
+  zMat2D();
+  zMat2D(double a11, double a12, double a21, double a22);
+  zMat2D(const zVec2D &v1, const zVec2D &v2);
+  zMat2D(const zMat2D &mat);
+  ~zMat2D(){}
   zVec2D &vec(zAxis a);
   zMat2D &create(double a11, double a12, double a21, double a22);
+  zMat2D &create(const zVec2D &v1, const zVec2D &v2);
   zMat2D &copy(zMat2D &m);
   zMat2D &zero();
   zMat2D &ident();
-  bool operator==(zMat2D &m);
   bool isEqual(zMat2D &m);
   bool isIdent();
   bool isTol(double tol);
-  bool isTiny();
   zVec2D &row(int i, zVec2D &v);
   zVec2D &col(int i, zVec2D &v);
   zMat2D &transpose(zMat2D &m);
   zMat2D transpose();
-  zMat2D operator+(zMat2D &m);
-  zMat2D operator-(zMat2D &m);
   zMat2D operator-();
-  zMat2D operator*(double k);
-  zMat2D operator/(double k);
   zMat2D &operator+=(zMat2D &m);
   zMat2D &operator-=(zMat2D &m);
   zMat2D &operator*=(double k);
@@ -56,13 +56,12 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat2D ){
   double norm();
   double det();
   zMat2D &inv(zMat2D &m);
-  zVec2D operator*(zVec2D &v);
   zVec2D mulT(zVec2D &v);
   zVec2D mulInv(zVec2D &v);
-  zMat2D operator*(zMat2D &m);
   zMat2D mulT(zMat2D &m);
   zMat2D mulInv(zMat2D &m);
   zMat2D &createAngle(double angle);
+  /*! \brief 2D zero matrix and identity matrix */
   static const zMat2D zmat2Dzero;
   static const zMat2D zmat2Dident;
 #endif /* __cplusplus */
@@ -104,7 +103,7 @@ __ZEO_EXPORT const zMat2D zmat2Dident;
 } while(0)
 __ZEO_EXPORT zMat2D *zMat2DCreate(zMat2D *m, double a11, double a12, double a21, double a22);
 __ZEO_EXPORT zMat2D *zMat2DCreateAngle(zMat2D *m, double angle);
-#define _zMat2DCopy(s,d) zCopy( zMat2D, s, d )
+#define _zMat2DCopy(src,dest) zCopy( zMat2D, src, dest )
 __ZEO_EXPORT zMat2D *zMat2DCopy(const zMat2D *src, zMat2D *dest);
 #define zMat2DZero(m)  zMat2DCopy( ZMAT2DZERO, (m) )
 #define zMat2DIdent(m) zMat2DCopy( ZMAT2DIDENT, (m) )
@@ -481,28 +480,31 @@ __ZEO_EXPORT void zMat2DFPrint(FILE *fp, const zMat2D *m);
 __END_DECLS
 
 #ifdef __cplusplus
+inline zMat2D::zMat2D(){ zMat2DZero( this ); }
+inline zMat2D::zMat2D(double a11, double a12, double a21, double a22){ _zMat2DCreate( this, a11, a12, a21, a22 ); }
+inline zMat2D::zMat2D(const zVec2D &v1, const zVec2D &v2){ _zVec2DCopy( &v1, &this->v[0] ); _zVec2DCopy( &v2, &this->v[1] ); }
+inline zMat2D::zMat2D(const zMat2D &mat){ _zMat2DCopy( &mat, this ); }
 inline zVec2D &zMat2D::vec(zAxis a){ return *zMat2DVec( this, a ); }
 inline zMat2D &zMat2D::create(double a11, double a12, double a21, double a22){
   _zMat2DCreate( this, a11, a12, a21, a22 );
   return *this;
 }
-inline zMat2D &zMat2D::copy(zMat2D &m){ zMat2DCopy( &m, this ); return *this; }
+inline zMat2D &zMat2D::create(const zVec2D &v1, const zVec2D &v2){
+  _zVec2DCopy( &v1, &this->v[0] );
+  _zVec2DCopy( &v2, &this->v[1] );
+  return *this;
+}
+inline zMat2D &zMat2D::copy(zMat2D &m){ _zMat2DCopy( &m, this ); return *this; }
 inline zMat2D &zMat2D::zero(){ zMat2DZero( this ); return *this; }
 inline zMat2D &zMat2D::ident(){ zMat2DIdent( this ); return *this; }
-inline bool zMat2D::operator==(zMat2D &m){ return _zMat2DMatch( this, &m ); }
 inline bool zMat2D::isEqual(zMat2D &m){ return _zMat2DEqual( this, &m ); }
 inline bool zMat2D::isIdent(){ return _zMat2DIsIdent( this ); }
-inline bool zMat2D::isTol(double tol){ return _zMat2DIsTol( this, tol ); }
-inline bool zMat2D::isTiny(){ return _zMat2DIsTiny( this ); }
+inline bool zMat2D::isTol(double tol=zTOL){ return _zMat2DIsTol( this, tol ); }
 inline zVec2D &zMat2D::row(int i, zVec2D &v){ _zMat2DRow( this, i, &v ); return v; }
 inline zVec2D &zMat2D::col(int i, zVec2D &v){ zMat2DCol( this, i, &v ); return v; }
 inline zMat2D &zMat2D::transpose(zMat2D &m){ _zMat2DT( this, &m ); return m; }
 inline zMat2D zMat2D::transpose(){ _zMat2DTDRC( this ); return *this; }
-inline zMat2D zMat2D::operator+(zMat2D &m){ zMat2D ret; _zMat2DAdd( this, &m, &ret ); return ret; }
-inline zMat2D zMat2D::operator-(zMat2D &m){ zMat2D ret; _zMat2DSub( this, &m, &ret ); return ret; }
 inline zMat2D zMat2D::operator-(){ zMat2D ret; _zMat2DRev( this, &ret ); return ret; }
-inline zMat2D zMat2D::operator*(double k){ zMat2D ret; _zMat2DMul( this, k, &ret ); return ret; }
-inline zMat2D zMat2D::operator/(double k){ zMat2D ret; zMat2DDiv( this, k, &ret ); return ret; }
 inline zMat2D &zMat2D::operator+=(zMat2D &m){ _zMat2DAddDRC( this, &m ); return *this; }
 inline zMat2D &zMat2D::operator-=(zMat2D &m){ _zMat2DSubDRC( this, &m ); return *this; }
 inline zMat2D &zMat2D::operator*=(double k){ _zMat2DMulDRC( this, k ); return *this; }
@@ -512,14 +514,20 @@ inline double zMat2D::squareNorm(){ return _zMat2DSqrNorm( this ); }
 inline double zMat2D::norm(){ return _zMat2DNorm( this ); }
 inline double zMat2D::det(){ return _zMat2DDet( this ); }
 inline zMat2D &zMat2D::inv(zMat2D &m){ zMat2DInv( &m, this ); return *this; }
-inline zVec2D zMat2D::operator*(zVec2D &v){ zVec2D mv; _zMulMat2DVec2D( this, &v, &mv ); return mv; }
 inline zVec2D zMat2D::mulT(zVec2D &v){ zVec2D mv; _zMulMat2DTVec2D( this, &v, &mv ); return mv; }
 inline zVec2D zMat2D::mulInv(zVec2D &v){ zVec2D mv; zMulInvMat2DVec2D( this, &v, &mv ); return mv; }
-inline zMat2D zMat2D::operator*(zMat2D &m){ zMat2D mm; zMulMat2DMat2D( this, &m, &mm ); return mm; }
 inline zMat2D zMat2D::mulT(zMat2D &m){ zMat2D mm; zMulMat2DTMat2D( this, &m, &mm ); return mm; }
 inline zMat2D zMat2D::mulInv(zMat2D &m){ zMat2D mm; zMulInvMat2DMat2D( this, &m, &mm ); return mm; }
 inline zMat2D &zMat2D::createAngle(double angle){ return *zMat2DCreateAngle( this, angle ); }
 
+inline zMat2D operator+(const zMat2D &m1, const zMat2D &m2){ zMat2D ret; _zMat2DAdd( &m1, &m2, &ret ); return ret; }
+inline zMat2D operator-(const zMat2D &m1, const zMat2D &m2){ zMat2D ret; _zMat2DSub( &m1, &m2, &ret ); return ret; }
+inline zMat2D operator*(const zMat2D &m, double k){ zMat2D ret; _zMat2DMul( &m, k, &ret ); return ret; }
+inline zMat2D operator*(double k, const zMat2D &m){ zMat2D ret; _zMat2DMul( &m, k, &ret ); return ret; }
+inline zVec2D operator*(const zMat2D &m, const zVec2D &v){ zVec2D ret; zMulMat2DVec2D( &m, &v, &ret ); return ret; }
+inline zMat2D operator*(const zMat2D &m1, const zMat2D &m2){ zMat2D ret; zMulMat2DMat2D( &m1, &m2, &ret ); return ret; }
+inline zMat2D operator/(const zMat2D &m, double k){ zMat2D ret; zMat2DDiv( &m, k, &ret ); return ret; }
+inline bool operator==(const zMat2D &m1, const zMat2D &m2){ return _zMat2DMatch( &m1, &m2 ); }
 __ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, zMat2D &mat);
 #endif /* __cplusplus */
 

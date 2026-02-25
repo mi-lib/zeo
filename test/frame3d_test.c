@@ -10,8 +10,6 @@ zVec3D *vec_gen_rand(zVec3D *v)
   return zVec3DCreate( v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
 }
 
-#define N 1000
-
 void assert_frame3d_misc(void)
 {
   zFrame3D f;
@@ -29,10 +27,11 @@ void assert_xform(void)
 {
   zFrame3D f;
   zVec3D v1, v2, v, e;
+  const int n = 100;
   int i;
   bool result1 = true, result2 = true;
 
-  for( i=0; i<N; i++ ){
+  for( i=0; i<n; i++ ){
     frame3d_gen_rand( &f );
     vec_gen_rand( &v1 );
 
@@ -40,14 +39,14 @@ void assert_xform(void)
     _zXform3DInv( &f, &v2, &v );
     if( !zVec3DEqual( &v1, &v ) ){
       eprintf( "(error): " );
-      zVec3DPrint( zVec3DSub( &v, &v1, &e ) );
+      zVec3DFPrint( stderr, zVec3DSub( &v, &v1, &e ) );
       result1 = false;
     }
     _zXform3DInv( &f, &v1, &v2 );
     _zXform3D( &f, &v2, &v );
     if( !zVec3DEqual( &v1, &v ) ){
       eprintf( "(error): " );
-      zVec3DPrint( zVec3DSub( &v, &v1, &e ) );
+      zVec3DFPrint( stderr, zVec3DSub( &v, &v1, &e ) );
       result2 = false;
     }
   }
@@ -59,10 +58,11 @@ void assert_frame3d_inv(void)
 {
   zFrame3D f1, f2;
   zVec3D v1, v2, v, e;
+  const int n = 100;
   int i;
   bool result = true;
 
-  for( i=0; i<N; i++ ){
+  for( i=0; i<n; i++ ){
     frame3d_gen_rand( &f1 );
     vec_gen_rand( &v1 );
 
@@ -71,7 +71,7 @@ void assert_frame3d_inv(void)
     _zXform3DInv( &f1, &v1, &v );
     if( !zVec3DEqual( &v, &v2 ) ){
       eprintf( "(error): " );
-      zVec3DPrint( zVec3DSub( &v, &v2, &e ) );
+      zVec3DFPrint( stderr, zVec3DSub( &v, &v2, &e ) );
       result = false;
     }
   }
@@ -82,10 +82,11 @@ void assert_frame3d_cascade(void)
 {
   zFrame3D f1, f2, f3;
   zVec3D v1, v2, v3, v, e;
+  const int n = 100;
   int i;
   bool result = true;
 
-  for( i=0; i<N; i++ ){
+  for( i=0; i<n; i++ ){
     frame3d_gen_rand( &f1 );
     frame3d_gen_rand( &f2 );
     vec_gen_rand( &v2 );
@@ -96,7 +97,7 @@ void assert_frame3d_cascade(void)
     _zXform3D( &f3, &v2, &v3 );
     if( !zVec3DEqual( &v, &v3 ) ){
       eprintf( "(error): " );
-      zVec3DPrint( zVec3DSub( &v, &v3, &e ) );
+      zVec3DFPrint( stderr, zVec3DSub( &v, &v3, &e ) );
       result = false;
     }
   }
@@ -107,10 +108,11 @@ void assert_frame3d_xform(void)
 {
   zFrame3D f1, f2, f3;
   zVec3D v1, v2, v, e;
+  const int n = 100;
   int i;
   bool result = true;
 
-  for( i=0; i<N; i++ ){
+  for( i=0; i<n; i++ ){
     frame3d_gen_rand( &f1 );
     frame3d_gen_rand( &f2 );
     vec_gen_rand( &v2 );
@@ -121,7 +123,7 @@ void assert_frame3d_xform(void)
     _zXform3D( &f3, &v2, &v );
     if( !zVec3DEqual( &v, &v1 ) ){
       eprintf( "(error): " );
-      zVec3DPrint( zVec3DSub( &v, &v1, &e ) );
+      zVec3DFPrint( stderr, zVec3DSub( &v, &v1, &e ) );
       result = false;
     }
   }

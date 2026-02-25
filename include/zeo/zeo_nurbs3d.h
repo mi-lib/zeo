@@ -10,34 +10,31 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
 /*! \struct zNURBS3DCPCell
  * \brief cell of 3D NURBS containing a control point and weight.
  *
  * zNURBS3DCPCell is a cell of 3D NURBS that contains a control
  * point and associated weight.
- *//* ******************************************************* */
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zNURBS3DCPCell ){
   zVec3D cp; /*!< control point */
   double w;  /*!< weight */
 };
 
-/* ********************************************************** */
 /*! \struct zNURBS3DCPNet
  * \brief a net of control points for 3D NURBS.
  *
  * zNURBS3DCPNet is a net of control points for 3D NURBS.
  * It is defined with a macro zArray2Class.
  * \sa zArray2Class.
- *//* ******************************************************* */
+ */
 zArray2Class( zNURBS3DCPNet, zNURBS3DCPCell );
 
-/* ********************************************************** */
 /*! \struct zNURBS3D
  * \brief 3D NURBS curve and surface.
  *
  * zNURBS3D is a 3D NURBS that represents curve and surface.
- *//* ******************************************************* */
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zNURBS3D ){
   zBSplineParam param[2]; /*!< \brief B-spline parameter */
   zNURBS3DCPNet cpnet;    /*!< \brief a net of control points */

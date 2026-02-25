@@ -269,6 +269,15 @@ __ZEO_EXPORT zTri3D *zTri3DCreateFlip(zTri3D *tri, const zVec3D *v1, const zVec3
 __ZEO_EXPORT zTri3D *zTri3DFlip(const zTri3D *src, zTri3D *dest);
 #define zTri3DFlipDRC(tri) zTri3DFlip( tri, tri )
 
+/*! \brief copy a 3D triangle. */
+#define _zTri3DCopy(src,dest) do{ \
+  (dest)->v[0] = (src)->v[0]; \
+  (dest)->v[1] = (src)->v[1]; \
+  (dest)->v[2] = (src)->v[2]; \
+  _zVec3DCopy( &(src)->norm, &(dest)->norm ); \
+} while(0)
+__ZEO_EXPORT zTri3D *zTri3DCopy(const zTri3D *src, zTri3D *dest);
+
 /*! \brief area and normal vector of a 3D triangle.
  *
  * zTri3DArea() calculates the area of a triangle \a tri.

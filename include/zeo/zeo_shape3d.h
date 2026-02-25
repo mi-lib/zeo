@@ -1,7 +1,7 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_shape3d - 3D shape
+ * zeo_shape3d - 3D shape.
  */
 
 #ifndef __ZEO_SHAPE3D_H__

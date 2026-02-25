@@ -240,9 +240,10 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
   double zEdge##XD##ClosestFromOrigin(const zVec##XD *vert0, const zVec##XD *vert1, double *s0, double *s1, zVec##XD *closestpoint)
 #define ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN(XD) \
   ZEO_ELEM_EDGEXD_CLOSEST_FROM_ORIGIN_PROTOTYPE( XD ){ \
-    zVec2D l = { { 1.0, 1.0 } }, u; \
+    zVec2D l, u; \
     zMat2D vtv; \
     double d; \
+    _zVec2DCreate( &l, 1.0, 1.0 ); \
     vtv.c.xx = zVec##XD##SqrNorm(vert0); \
     vtv.c.xy = vtv.c.yx = zVec##XD##InnerProd(vert0,vert1); \
     vtv.c.yy = zVec##XD##SqrNorm(vert1); \

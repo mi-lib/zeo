@@ -17,6 +17,23 @@ __BEGIN_DECLS
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zCoord2D ){
   zVec2D pos;   /*!< 2D position vector. */
   double angle; /*!< 2D rotation angle. */
+#ifdef __cplusplus
+  zCoord2D() : angle{0} {}
+  zCoord2D(double _x, double _y, double _angle) : pos{_x,_y}, angle{_angle} {}
+  zCoord2D(const zVec2D &_pos, double _angle) : pos{_pos}, angle{_angle} {}
+  ~zCoord2D(){}
+  zCoord2D &create(double x, double y, double _angle);
+  zCoord2D &create(zVec2D &_pos, double _angle);
+  void phaseNormalize();
+  bool isTol(double tol);
+  zCoord2D &copy(const zCoord2D &src);
+  zCoord2D &operator+=(const zCoord2D &c);
+  zCoord2D &operator-=(const zCoord2D &c);
+  zCoord2D &operator*=(double k);
+  zCoord2D &operator/=(double k);
+  zCoord2D xform(const zCoord2D &c);
+  zCoord2D cascade(const zCoord2D &c);
+#endif /* __cplusplus */
 };
 
 #define zCoord2DX(coord)     (coord)->pos.c.x
@@ -58,7 +75,8 @@ __ZEO_EXPORT bool zCoord2DIsTol(const zCoord2D *coord, double tol);
 #define zCoord2DIsTiny(coord)  zCoord2DIsTol( coord, zTOL )
 
 /*! \brief copy a 2D coordinate to another. */
-#define zCoord2DCopy(src,dest) zCopy( zCoord2D, src, dest )
+#define _zCoord2DCopy(src,dest) zCopy( zCoord2D, src, dest )
+__ZEO_EXPORT zCoord2D *zCoord2DCopy(const zCoord2D *src, zCoord2D *dest);
 
 /*! \brief add two 2D coordinates.
  *
@@ -188,5 +206,26 @@ __ZEO_EXPORT void zCoord2DFPrint(FILE *fp, const zCoord2D *coord);
 #define zCoord2DPrint(coord) zCoord2DFPrint( stdout, (coord) )
 
 __END_DECLS
+
+#ifdef __cplusplus
+inline zCoord2D &zCoord2D::create(double x, double y, double _angle){ _zVec2DCreate( &pos, x, y ); angle = _angle; return *this; }
+inline zCoord2D &zCoord2D::create(zVec2D &_pos, double _angle){ _zVec2DCopy( &_pos, &pos ); angle = _angle; return *this; }
+inline void zCoord2D::phaseNormalize(){ zCoord2DPhaseNormalize( this ); }
+inline bool zCoord2D::isTol(double tol=zTOL){ return zCoord2DIsTol( this, tol ); }
+inline zCoord2D &zCoord2D::copy(const zCoord2D &src){ _zCoord2DCopy( &src, this ); return *this; }
+inline zCoord2D &zCoord2D::operator+=(const zCoord2D &c){ _zCoord2DAddDRC( this, &c ); return *this; }
+inline zCoord2D &zCoord2D::operator-=(const zCoord2D &c){ _zCoord2DSubDRC( this, &c ); return *this; }
+inline zCoord2D &zCoord2D::operator*=(double k){ _zCoord2DMulDRC( this, k ); return *this; }
+inline zCoord2D &zCoord2D::operator/=(double k){ zCoord2DDivDRC( this, k ); return *this; }
+inline zCoord2D zCoord2D::xform(const zCoord2D &c){ zCoord2D ret; zCoord2DXform( this, &c, &ret ); return ret; }
+inline zCoord2D zCoord2D::cascade(const zCoord2D &c){ zCoord2D ret; zCoord2DCascade( this, &c, &ret ); return ret; }
+
+inline zCoord2D operator+(const zCoord2D &c1, const zCoord2D &c2){ zCoord2D ret; _zCoord2DAdd( &c1, &c2, &ret ); return ret; }
+inline zCoord2D operator-(const zCoord2D &c1, const zCoord2D &c2){ zCoord2D ret; _zCoord2DSub( &c1, &c2, &ret ); return ret; }
+inline zCoord2D operator*(const zCoord2D &c, double k){ zCoord2D ret; _zCoord2DMul( &c, k, &ret ); return ret; }
+inline zCoord2D operator*(double k, const zCoord2D &c){ zCoord2D ret; _zCoord2DMul( &c, k, &ret ); return ret; }
+inline zCoord2D operator/(const zCoord2D &c, double k){ zCoord2D ret; zCoord2DDiv( &c, k, &ret ); return ret; }
+inline zCoord2D operator*(const zCoord2D &c1, const zCoord2D &c2){ zCoord2D ret; zCoord2DCascade( &c1, &c2, &ret ); return ret; }
+#endif /* __cplusplus */
 
 #endif /* __ZEO_COORD2D_H__ */

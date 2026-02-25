@@ -6,16 +6,11 @@
 
 #include <zeo/zeo_vec2d.h>
 
-/* ********************************************************** */
-/* CLASS: zVec2D
- * 2D vector class
- * ********************************************************** */
-
-/* 3D zero vector and unit vectors along (x,y,z) axis. */
+/* 2D zero vector and unit vectors along (x,y) axes. */
 #ifdef __cplusplus
-const zVec2D zVec2D::zvec2Dzero = { { 0, 0 } };
-const zVec2D zVec2D::zvec2Dx    = { { 1, 0 } };
-const zVec2D zVec2D::zvec2Dy    = { { 0, 1 } };
+const zVec2D zVec2D::zvec2Dzero{ 0, 0 };
+const zVec2D zVec2D::zvec2Dx   { 1, 0 };
+const zVec2D zVec2D::zvec2Dy   { 0, 1 };
 #else
 const zVec2D zvec2Dzero = { { 0, 0 } };
 const zVec2D zvec2Dx    = { { 1, 0 } };

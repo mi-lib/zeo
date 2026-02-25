@@ -211,6 +211,13 @@ zTri3D *zTri3DFlip(const zTri3D *src, zTri3D *dest)
   return zTri3DCreate( dest, zTri3DVert(src,0), zTri3DVert(src,2), zTri3DVert(src,1) );
 }
 
+/* copy a 3D triangle. */
+zTri3D *zTri3DCopy(const zTri3D *src, zTri3D *dest)
+{
+  _zTri3DCopy( src, dest );
+  return dest;
+}
+
 /* outer product of two edges of a 3D triangle. */
 static zVec3D *_zTri3DOuterProd(const zTri3D *tri, zVec3D *n)
 {

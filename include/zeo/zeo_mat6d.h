@@ -25,6 +25,11 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat6D ){
   struct{
     zMat3D ll, la, al, aa;
   } c;            /*!< \brief 2x2 block matrices */
+#ifdef __cplusplus
+  zMat6D(){}
+  zMat6D(const zMat3D &m11, const zMat3D &m12, const zMat3D &m21, const zMat3D &m22) : m{m11, m12, m21, m22} {}
+  ~zMat6D(){}
+#endif /* __cplusplus */
 };
 
 /*! \brief create a 6x6 matrix.
@@ -41,7 +46,8 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat6D ){
 } while(0)
 __ZEO_EXPORT zMat6D *zMat6DCreate(zMat6D *m, zMat3D *m1, zMat3D *m2, zMat3D *m3, zMat3D *m4);
 /*! \brief copy a 6x6 matrix to another */
-#define zMat6DCopy(s,d) zCopy( zMat6D, s, d )
+#define _zMat6DCopy(src,dest) zCopy( zMat6D, src, dest )
+__ZEO_EXPORT zMat6D *zMat6DCopy(const zMat6D *src, zMat6D *dest);
 /*! \brief put a sub 3x3 matrix into a 6x6 matrix. */
 #define zMat6DPutMat3D(m6d,row,col,m3d) zMat3DCopy( m3d, &(m6d)->e[(col)][(row)] )
 /*! \brief zero a 6x6 matrix. */
