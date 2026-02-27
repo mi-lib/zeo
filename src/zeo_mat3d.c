@@ -787,9 +787,11 @@ zVec3D *zMat3DToAA(const zMat3D *m, zVec3D *aa)
   _zVec3DCreate( aa, m->c.yz-m->c.zy, m->c.zx-m->c.xz, m->c.xy-m->c.yx );
   l = _zVec3DNorm( aa );
   a = atan2( l, m->c.xx+m->c.yy+m->c.zz-1 );
+  if( zIsTiny( a ) ) /* identity case */
+    return zVec3DZero( aa );
   if( !zIsTiny( l ) )
     return zVec3DMulDRC( aa, a/l );
-  /* singular case */
+  /* singular case (a=pi) */
   if( m->c.xx > m->c.yy ){
     i0 = m->c.xx > m->c.zz ? 0 : 2;
   } else{

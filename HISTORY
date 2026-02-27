@@ -1,3 +1,4 @@
+2026.02.28. Modified zMat3DToAA to except identity case. [zeo_mat3d]
 2026.02.27. Reimplemented zMat3DToAA with the minimum complexity of computation for singular cases. [zeo_mat3d]
 2026.02.25. Added toPosZYX, toPosZYZ, and toPosAA members of zFrame3D for an array of to double-precision floating-point values. [zeo_frame3d]
 2026.02.25. Renamed toZYX, toZYZ, and toAA members of zFrame3D to toPosZYX, toPosZYZ, and toPosAA, respectively. [zeo_frame3d]

@@ -535,9 +535,7 @@ void assert_mat3D_to_angleaxis(void)
   /* identity case */
   zMat3DIdent( &rot_src );
   zMat3DToAA( &rot_src, &aa );
-  zMat3DFromAA( &rot_dest, &aa );
-  if( !zMat3DEqual( &rot_dest, &rot_src ) ) result = false;
-  zAssert( zMat3DFromAA + zMat3DToAA (identity cases), result );
+  zAssert( zMat3DFromAA + zMat3DToAA (identity cases), zVec3DIsTiny( &aa ) );
 }
 
 void assert_mat3D_rot(void)
