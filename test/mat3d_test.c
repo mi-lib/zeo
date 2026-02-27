@@ -456,14 +456,14 @@ void assert_mat3D_inv(void)
   zAssert( zMul3DInv (severe case), result_mat_inv );
 }
 
-void assert_mat3D_rot(void)
+void assert_mat3D_eulerangles(void)
 {
   int i, testnum = 100;
   zMat3D m1, m2, m3, m4, m5;
-  zVec3D r, aa, aa1, aa2;
-  bool result_zyx, result_zyz, result_aa;
+  zVec3D r;
+  bool result_zyx, result_zyz;
 
-  result_zyx = result_zyz = result_aa = true;
+  result_zyx = result_zyz = true;
   for( i=0; i<testnum; i++ ){
     vec3D_create_aa_rand( &r );
     zMat3DFromAA( &m1, &r );
@@ -474,13 +474,9 @@ void assert_mat3D_rot(void)
     zMat3DToZYZ( &m1, &r );
     zMat3DFromZYZ( &m2, r.c.x, r.c.y, r.c.z );
     if( !zMat3DEqual( &m1, &m2 ) ) result_zyz = false;
-    zMat3DToAA( &m1, &r );
-    zMat3DFromAA( &m2, &r );
-    if( !zMat3DEqual( &m1, &m2 ) ) result_aa = false;
   }
   zAssert( zMat3DToZYX (random test), result_zyx );
   zAssert( zMat3DToZYZ (random test), result_zyz );
-  zAssert( zMat3DToAA (random test), result_aa );
 
   for( result_zyx=true, i=0; i<testnum; i++ ){
     vec3D_create_aa_rand( &r );
@@ -492,19 +488,66 @@ void assert_mat3D_rot(void)
     zMat3DFromZYX( &m5, r.c.x, r.c.y, r.c.z );
     if( !zMat3DEqual( &m4, &m5 ) ) result_zyx = false;
   }
-  zAssert( zMat3DRotYaw + zMat3DRotPitch + zMat3DRotRoll, result_zyx );
+  zAssert( zMat3DRotYaw + zMat3DRotPitch + zMat3DRotRoll / zMat3DFromZYX, result_zyx );
+  for( result_zyz=true, i=0; i<testnum; i++ ){
+    vec3D_create_aa_rand( &r );
+    zMat3DRotYaw( ZMAT3DIDENT, r.c.x, &m1 );
+    zMat3DRotPitch( ZMAT3DIDENT, r.c.y, &m2 );
+    zMat3DRotYaw( ZMAT3DIDENT, r.c.z, &m3 );
+    zMulMat3DMat3D( &m1, &m2, &m5 );
+    zMulMat3DMat3D( &m5, &m3, &m4 );
+    zMat3DFromZYZ( &m5, r.c.x, r.c.y, r.c.z );
+    if( !zMat3DEqual( &m4, &m5 ) ) result_zyz = false;
+  }
+  zAssert( zMat3DRotYaw + zMat3DRotPitch + zMat3DRotYaw / zMat3DFromZYZ, result_zyz );
+}
 
-  zMat3DIdent( &m1 );
-  zMat3DToAA( &m1, &r );
-  zAssert( zMat3DToAA (ident test), zVec3DIsTiny(&r) );
-  zMat3DCreate( &m1,
-    1.0/sqrt(2),-1.0/sqrt(2), 0,
-    1.0/sqrt(2), 1.0/sqrt(2), 0,
-              0,           0, 1 );
-  zMat3DToAA( &m1, &r );
-  zAssert( zMat3DToAA (singular non-ident), r.c.x == 0 && r.c.y == 0 && zIsTiny( r.c.z - zDeg2Rad(45) ) );
+void assert_mat3D_to_angleaxis(void)
+{
+  zVec3D aa;
+  zMat3D rot_src, rot_dest;
+  bool result = true;
+  const int n = 100;
+  int i;
 
-  for( result_aa=true, i=0; i<testnum; i++ ){
+  /* random cases */
+  for( i=0; i<n; i++ ){
+    zVec3DCreate( &aa, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    zMat3DFromAA( &rot_src, &aa );
+    zMat3DToAA( &rot_src, &aa );
+    zMat3DFromAA( &rot_dest, &aa );
+    if( !zMat3DEqual( &rot_dest, &rot_src ) ) result = false;
+  }
+  zAssert( zMat3DFromAA + zMat3DToAA (regular cases), result );
+  /* singular cases */
+  for( i=0; i<n; i++ ){
+    zVec3DCreate( &aa, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+    zVec3DNormalizeDRC( &aa );
+    zMat3DCreate( &rot_src,
+      2*aa.c.x*aa.c.x - 1, 2*aa.c.x*aa.c.y, 2*aa.c.x*aa.c.z,
+      2*aa.c.y*aa.c.x, 2*aa.c.y*aa.c.y - 1, 2*aa.c.y*aa.c.z,
+      2*aa.c.z*aa.c.x, 2*aa.c.z*aa.c.y, 2*aa.c.z*aa.c.z - 1 );
+    zMat3DToAA( &rot_src, &aa );
+    zMat3DFromAA( &rot_dest, &aa );
+    if( !zMat3DEqual( &rot_dest, &rot_src ) ) result = false;
+  }
+  zAssert( zMat3DFromAA + zMat3DToAA (singular cases), result );
+  /* identity case */
+  zMat3DIdent( &rot_src );
+  zMat3DToAA( &rot_src, &aa );
+  zMat3DFromAA( &rot_dest, &aa );
+  if( !zMat3DEqual( &rot_dest, &rot_src ) ) result = false;
+  zAssert( zMat3DFromAA + zMat3DToAA (identity cases), result );
+}
+
+void assert_mat3D_rot(void)
+{
+  int i, testnum = 100;
+  zMat3D m1, m2, m3;
+  zVec3D r, aa, aa1, aa2;
+  bool result;
+
+  for( result=true, i=0; i<testnum; i++ ){
     vec3D_create_aa_rand( &aa );
     vec3D_create_aa_rand( &r );
     zMat3DFromAA( &m1, &r );
@@ -512,39 +555,39 @@ void assert_mat3D_rot(void)
     zVec3DRot( &m1.b.x, &aa, &m3.b.x );
     zVec3DRot( &m1.b.y, &aa, &m3.b.y );
     zVec3DRot( &m1.b.z, &aa, &m3.b.z );
-    if( !zMat3DEqual( &m2, &m3 ) ) result_aa = false;
+    if( !zMat3DEqual( &m2, &m3 ) ) result = false;
   }
-  zAssert( zMat3DRot, result_aa );
+  zAssert( zMat3DRot, result );
 
-  for( result_aa=true, i=0; i<testnum; i++ ){
+  for( result=true, i=0; i<testnum; i++ ){
     vec3D_create_aa_rand( &aa );
     vec3D_create_aa_rand( &r );
     zMat3DFromAA( &m1, &r );
     zMat3DRot( &m1, &aa, &m2 );
     zMat3DRotDRC( &m1, &aa );
-    if( !zMat3DEqual( &m1, &m2 ) ) result_aa = false;
+    if( !zMat3DEqual( &m1, &m2 ) ) result = false;
   }
-  zAssert( zMat3DRotDRC, result_aa );
+  zAssert( zMat3DRotDRC, result );
 
-  for( result_aa=true, i=0; i<testnum; i++ ){
+  for( result=true, i=0; i<testnum; i++ ){
     vec3D_create_aa_rand( &r );
     zMat3DFromAA( &m1, &r );
     vec3D_create_aa_rand( &r );
     zMat3DFromAA( &m2, &r );
     zMat3DError( &m1, &m2, &aa );
     zMat3DRot( &m2, &aa, &m3 );
-    if( !zMat3DEqual( &m1, &m3 ) ) result_aa = false;
+    if( !zMat3DEqual( &m1, &m3 ) ) result = false;
   }
-  zAssert( zMat3DError, result_aa );
+  zAssert( zMat3DError, result );
 
-  for( result_aa=true, i=0; i<testnum; i++ ){
+  for( result=true, i=0; i<testnum; i++ ){
     vec3D_create_aa_rand( &aa1 );
     vec3D_create_aa_rand( &aa2 );
     zAAError( &aa2, &aa1, &r );
     zAACascade( &aa1, &r, &aa );
-    if( !zVec3DIsTiny( zAAError( &aa2, &aa, &r ) ) ) result_aa = false;
+    if( !zVec3DIsTiny( zAAError( &aa2, &aa, &r ) ) ) result = false;
   }
-  zAssert( zAAError + zAACascade, result_aa );
+  zAssert( zAAError + zAACascade, result );
 }
 
 void assert_mat3D_eig_power(void)
@@ -727,6 +770,8 @@ int main(void)
   assert_mat3D_adj();
   assert_mat3D_inv();
   assert_mat3D_mul();
+  assert_mat3D_eulerangles();
+  assert_mat3D_to_angleaxis();
   assert_mat3D_rot();
   assert_mat3D_eig_power();
   assert_mat3D_sym_eig();

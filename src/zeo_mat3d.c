@@ -781,27 +781,26 @@ zMat3D *zMat3DFromAA(zMat3D *m, const zVec3D *aa)
 /* convert a 3D attitude matrix to an angle-axis vector. */
 zVec3D *zMat3DToAA(const zMat3D *m, zVec3D *aa)
 {
-  int i, axis_id = zAxisInvalid;
-  double l, a, eigerrmin;
-  zVec3D eigval;
-  zMat3D eigbase;
+  double l, a;
+  int i0, i1, i2;
 
   _zVec3DCreate( aa, m->c.yz-m->c.zy, m->c.zx-m->c.xz, m->c.xy-m->c.yx );
   l = _zVec3DNorm( aa );
   a = atan2( l, m->c.xx+m->c.yy+m->c.zz-1 );
-  if( zIsTiny( l ) ){ /* singular case */
-    zMat3DSymEig( m, &eigval, &eigbase );
-    eigerrmin = HUGE_VAL;
-    for( i=0; i<3; i++ )
-      if( ( l = fabs( eigval.e[i] - 1.0 ) ) < eigerrmin ){
-        eigerrmin = l;
-        axis_id = i;
-      }
-    if( !zIsTiny( eigerrmin ) )
-      ZRUNWARN( ZEO_ERR_MAT_NOTSO3 );
-    return zVec3DMul( &eigbase.v[axis_id], a, aa );
+  if( !zIsTiny( l ) )
+    return zVec3DMulDRC( aa, a/l );
+  /* singular case */
+  if( m->c.xx > m->c.yy ){
+    i0 = m->c.xx > m->c.zz ? 0 : 2;
+  } else{
+    i0 = m->c.yy > m->c.zz ? 1 : 2;
   }
-  return zVec3DMulDRC( aa, a/l );
+  i1 = ( i0 + 1 ) % 3;
+  i2 = ( i0 + 2 ) % 3;
+  aa->e[i0] = sqrt( 0.5 * m->e[i0][i0] + 0.5 );
+  aa->e[i1] = 0.5 * m->e[i0][i1] / aa->e[i0];
+  aa->e[i2] = 0.5 * m->e[i0][i2] / aa->e[i0];
+  return zVec3DMulDRC( aa, a );
 }
 
 /* rotational multiplication for 3D matrices. */
