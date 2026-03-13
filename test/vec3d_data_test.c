@@ -4,8 +4,14 @@
 bool vec_data_test(zVec3DData *data)
 {
   zVec3D point, *nn;
+#ifdef __cplusplus
+  zVec3D nn_answer( 1, 1, 1 );
+  zVec3D sp_answer( 4, 4, 4 );
+#else
   zVec3D nn_answer = { { 1, 1, 1 } };
   zVec3D sp_answer = { { 4, 4, 4 } };
+#endif
+
 
   zVec3DCreate( &point, 0, 1, 1 );
   zVec3DDataNN( data, &point, &nn );
