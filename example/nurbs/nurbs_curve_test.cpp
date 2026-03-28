@@ -3,7 +3,6 @@
 int main(int argc, char *argv[])
 {
   zNURBS3D nurbs;
-#ifdef __cplusplus
   zVec3D cp[] = {
     zVec3D( 2.0, 3.0, 0.0 ),
     zVec3D( 3.0,-1.0, 0.0 ),
@@ -12,16 +11,6 @@ int main(int argc, char *argv[])
     zVec3D( 5.0, 4.0, 0.0 ),
     zVec3D( 7.0, 1.5, 0.0 ),
   };
-#else
-  zVec3D cp[] = {
-    { { 2.0, 3.0, 0.0 } },
-    { { 3.0,-1.0, 0.0 } },
-    { { 5.0,-2.0, 0.0 } },
-    { { 4.0, 0.0, 0.0 } },
-    { { 5.0, 4.0, 0.0 } },
-    { { 7.0, 1.5, 0.0 } },
-  };
-#endif
   int i, n;
   double t;
   zVec3D p;

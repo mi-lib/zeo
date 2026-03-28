@@ -24,7 +24,6 @@ void output(zPH3D *ph)
 #define DIV 100
 int main(void)
 {
-#ifdef __cplusplus
   zVec3D v[] = {
     zVec3D( 0.10, 0.01, 0.00 ),
     zVec3D( 0.15, 0.00, 0.05 ),
@@ -35,18 +34,6 @@ int main(void)
   };
   zVec3D center( 0, 0, 0 );
   zVec3D axis( 0, 0, 1 );
-#else
-  zVec3D v[] = {
-    { { 0.10, 0.01, 0.00 } },
-    { { 0.15, 0.00, 0.05 } },
-    { { 0.20, 0.00, 0.00 } },
-    { { 0.20, 0.00,-0.05 } },
-    { { 0.15,-0.01,-0.10 } },
-    { { 0.10, 0.01,-0.05 } },
-  };
-  zVec3D center = { { 0, 0, 0 } };
-  zVec3D axis   = { { 0, 0, 1 } };
-#endif
   zPH3D torus;
 
   zPH3DCreateTorus( &torus, v, sizeof(v)/sizeof(zVec3D), DIV, &center, &axis );
