@@ -2,6 +2,90 @@
 
 #define TEST 0
 
+#ifdef __cplusplus
+zVec3D test_loop[] = {
+#if TEST == 0
+  zVec3D( 0, 0, 0 ),
+  zVec3D( 0, 0, 0 ),
+  zVec3D( 0, 0, 0 ),
+  zVec3D( 0, 0, 0 ),
+  zVec3D( 0, 0, 0 ),
+  zVec3D( 0, 0, 0 ),
+  zVec3D( 0, 0, 0 ),
+  zVec3D( 0, 0, 0 ),
+  zVec3D( 0, 0, 0 ),
+#elif TEST == 1
+  zVec3D( 0.0, 0.0, 0 ),
+  zVec3D(-0.1, 0.1, 0 ),
+  zVec3D(-0.1, 0.2, 0 ),
+  zVec3D( 0.1, 0.2, 0 ),
+  zVec3D( 0.2, 0.4, 0 ),
+  zVec3D( 0.1, 0.5, 0 ),
+  zVec3D( 0.1, 0.6, 0 ),
+  zVec3D( 0.3, 0.6, 0 ),
+  zVec3D( 0.3, 0.0, 0 ),
+#elif TEST == 2
+  zVec3D( 0.0, 0.0, 0 ),
+  zVec3D( 0.0, 0.1, 0 ),
+  zVec3D( 0.1, 0.1, 0 ),
+  zVec3D( 0.1, 0.2, 0 ),
+  zVec3D( 0.2, 0.2, 0 ),
+  zVec3D( 0.2, 0.0, 0 ),
+#elif TEST == 3
+  zVec3D( 0.2, 0.0, 0 ),
+  zVec3D( 0.2, 0.2, 0 ),
+  zVec3D( 0.1, 0.2, 0 ),
+  zVec3D( 0.1, 0.1, 0 ),
+  zVec3D( 0.0, 0.1, 0 ),
+  zVec3D( 0.0, 0.0, 0 ),
+#elif TEST == 4
+  zVec3D( 0,-3, 0 ),
+  zVec3D(-4, 0, 0 ),
+  zVec3D(-2, 1, 0 ),
+  zVec3D(-3, 6, 0 ),
+  zVec3D(-6,-2, 0 ),
+  zVec3D(-3,-5, 0 ),
+  zVec3D(-5,-1, 0 ),
+  zVec3D( 0,-6, 0 ),
+  zVec3D( 4,-3, 0 ),
+  zVec3D( 5,-4, 0 ),
+  zVec3D( 6,-1, 0 ),
+  zVec3D( 5, 4, 0 ),
+  zVec3D( 0, 5, 0 ),
+  zVec3D( 4, 0, 0 ),
+  zVec3D( 2,-2, 0 ),
+#elif TEST == 5
+  zVec3D(-3, 0, 0 ),
+  zVec3D( 0, 2, 0 ),
+  zVec3D( 3, 1, 0 ),
+  zVec3D(-1, 1, 0 ),
+  zVec3D(-1,-1, 0 ),
+  zVec3D( 3,-1, 0 ),
+  zVec3D( 0,-2, 0 ),
+#elif TEST ==  6
+  zVec3D( 0, 0, 0 ),
+  zVec3D(-1, 1, 0 ),
+  zVec3D(-1, 2, 0 ),
+  zVec3D( 1, 2, 0 ),
+  zVec3D( 2, 4, 0 ),
+  zVec3D( 1, 5, 0 ),
+  zVec3D( 1, 6, 0 ),
+  zVec3D( 3, 6, 0 ),
+  zVec3D( 3, 0, 0 ),
+#elif TEST == 7
+  zVec3D( 0, 0, 0 ),
+  zVec3D( 0, 1, 0 ),
+  zVec3D( 1, 1, 0 ),
+  zVec3D( 1, 2, 0 ),
+  zVec3D( 2, 2, 0 ),
+  zVec3D( 2, 1, 0 ),
+  zVec3D( 3, 1, 0 ),
+  zVec3D( 3, 0, 0 ),
+#else
+#warning "This example doesn't work correctly."
+#endif
+};
+#else /* #ifdef __cplusplus */
 zVec3D test_loop[] = {
 #if TEST == 0
   { { 0, 0, 0 } },
@@ -84,6 +168,7 @@ zVec3D test_loop[] = {
 #warning "This example doesn't work correctly."
 #endif
 };
+#endif /* #ifdef __cplusplus */
 
 void generate_loop(zLoop3D *loop, double xmin, double ymin, double xmax, double ymax)
 {

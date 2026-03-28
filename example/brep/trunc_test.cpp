@@ -4,6 +4,17 @@
 
 void create_src(zPH3D *ph)
 {
+#ifdef __cplusplus
+  zVec3D v[] = {
+    zVec3D(  0.0, 0.0, 0  ),
+    zVec3D( -0.1, 0.2, 0  ),
+    zVec3D(  0.1, 0.2, 0  ),
+    zVec3D(  0.05, 0.5, 0 ),
+    zVec3D(  0.3, 0.5, 0  ),
+    zVec3D(  0.3, 0.0, 0  ),
+  };
+  zVec3D shift = zVec3D( 0, 0.1, 0.4 );
+#else
   zVec3D v[] = {
     { { 0.0, 0.0, 0 } },
     { {-0.1, 0.2, 0 } },
@@ -13,6 +24,7 @@ void create_src(zPH3D *ph)
     { { 0.3, 0.0, 0 } },
   };
   zVec3D shift = { { 0, 0.1, 0.4 } };
+#endif
 
   zPH3DCreatePrism( ph, v, sizeof(v)/sizeof(zVec3D), &shift );
 }
@@ -63,9 +75,17 @@ int main(int argc, char *argv[])
   zBREP brep;
   zPlane3D pl;
 #if 1
+  #ifdef __cplusplus
+  zVec3D c( 0.2, 0.2, 0.2 ), n( 1.0, 0.0, 0.5 );
+  #else
   zVec3D c = { { 0.2, 0.2, 0.2 } }, n = { { 1.0, 0.0, 0.5 } };
+  #endif
 #else /* ijiwaru case */
+  #ifdef __cplusplus
+  zVec3D c( 1.0, 0.0, 0.0 ), n( -1.0, 0.0, 0.0 );
+  #else
   zVec3D c = { { 1.0, 0.0, 0.0 } }, n = { { -1.0, 0.0, 0.0 } };
+  #endif
 #endif
 
   create_src( &prism );
