@@ -88,7 +88,7 @@ int main(void)
   fclose( fp );
 
   fp = fopen( "test_nurbs.ztk", "w" );
-  fprintf( fp, "[zeo::shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "type: nurbs\n" );
   zNURBS3DFPrintZTK( fp, &nurbs );
   fclose( fp );

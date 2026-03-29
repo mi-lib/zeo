@@ -85,7 +85,7 @@ zVec3D test_loop[] = {
 #endif
 };
 
-void generate_loop(zLoop3D *loop, double xmin, double ymin, double xmax, double ymax)
+void generate_loop(zLoop3D &loop, double xmin, double ymin, double xmax, double ymax)
 {
   zVec3DArray va;
 #if TEST == 0
@@ -100,35 +100,34 @@ void generate_loop(zLoop3D *loop, double xmin, double ymin, double xmax, double 
   for( i=0; i<n; i++ ){
     zSinCos( zPIx2*i/n, &s, &c );
     r = zRandF( 0, 1 );
-    zVec3DCreate( &test_loop[i], r*rx*c+x0, r*ry*s+y0, 0 );
+    test_loop[i].create( r*rx*c+x0, r*ry*s+y0, 0 );
   }
 #endif
-  zListInit( loop );
   zArraySize(&va) = sizeof(test_loop)/sizeof(zVec3D);
   zArrayBuf(&va) = test_loop;
-  zVec3DAddrListCreate( loop, &va );
+  zVec3DAddrListCreate( &loop, &va );
 }
 
-void output_loop(zLoop3D *loop, char filename[])
+void output_loop(const zLoop3D &loop, char filename[])
 {
   FILE *fp;
   zLoop3DCell *cp;
 
   fp = fopen( filename, "w" );
-  zListForEach( loop, cp )
+  zListForEach( &loop, cp )
     zVec3DValueNLFPrint( fp, cp->data );
-  zVec3DValueNLFPrint( fp, zListTail(loop)->data );
+  zVec3DValueNLFPrint( fp, zListTail(&loop)->data );
   fclose( fp );
 }
 
-void output_triangles(zTri3DList *tlist, char filename[])
+void output_triangles(const zTri3DList &tlist, char filename[])
 {
   FILE *fp;
   zTri3DListCell *tp;
 
   fp = fopen( filename, "w" );
-  zListForEach( tlist, tp ){
-    /* for gnuplot visualization */
+  zListForEach( &tlist, tp ){
+    // for gnuplot visualization
     zVec3DValueNLFPrint( fp, zTri3DVert(&tp->data,0) );
     zVec3DValueNLFPrint( fp, zTri3DVert(&tp->data,1) );
     zVec3DValueNLFPrint( fp, zTri3DVert(&tp->data,2) );
@@ -149,13 +148,13 @@ int main(void)
   zTri3DList tlist;
 
   zRandInit();
-  /* source vertices */
-  generate_loop( &loop, XMIN, YMIN, XMAX, YMAX );
-  output_loop( &loop, "org.dat" );
+  // source vertices
+  generate_loop( loop, XMIN, YMIN, XMAX, YMAX );
+  output_loop( loop, "org.dat" );
 
-  /* triangulation of a loop */
+  // triangulation of a loop
   printf( "vert.num=%d, tri.num=%d\n", zListSize(&loop), zLoop3DTriangulate( &loop, &tlist ) );
-  output_triangles( &tlist, "tri.dat" );
+  output_triangles( tlist, "tri.dat" );
 
   zTri3DListDestroy( &tlist );
   zLoop3DDestroy( &loop );
