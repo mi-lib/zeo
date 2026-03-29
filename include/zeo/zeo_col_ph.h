@@ -30,7 +30,7 @@ __ZEO_EXPORT bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, zVec3D *p1, zVec3D *p2);
  *
  * \return a pointer \a phcol.
  */
-__ZEO_EXPORT zPH3D *zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol);
+__ZEO_EXPORT zPH3D *zIntersectPH3D(const zPH3D *ph1, const zPH3D *ph2, zPH3D *phcol);
 
 __END_DECLS
 

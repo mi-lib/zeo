@@ -1,6 +1,6 @@
 #include <zeo/zeo_ph3d.h>
 
-void output(zPH3D *ph)
+void output(const zPH3D &ph)
 {
   FILE *fp;
 
@@ -17,7 +17,7 @@ void output(zPH3D *ph)
   fprintf( fp, "name: torus\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: white\n" );
-  zPH3DFPrintZTK( fp, ph );
+  ph.fprintZTK( fp );
   fclose( fp );
 }
 
@@ -25,19 +25,18 @@ void output(zPH3D *ph)
 int main(void)
 {
   zVec3D v[] = {
-    { { 0.10, 0.01, 0.00 } },
-    { { 0.15, 0.00, 0.05 } },
-    { { 0.20, 0.00, 0.00 } },
-    { { 0.20, 0.00,-0.05 } },
-    { { 0.15,-0.01,-0.10 } },
-    { { 0.10, 0.01,-0.05 } },
+    zVec3D( 0.10, 0.01, 0.00 ),
+    zVec3D( 0.15, 0.00, 0.05 ),
+    zVec3D( 0.20, 0.00, 0.00 ),
+    zVec3D( 0.20, 0.00,-0.05 ),
+    zVec3D( 0.15,-0.01,-0.10 ),
+    zVec3D( 0.10, 0.01,-0.05 ),
   };
-  zVec3D center = { { 0, 0, 0 } };
-  zVec3D axis   = { { 0, 0, 1 } };
+  zVec3D center( 0, 0, 0 );
+  zVec3D axis( 0, 0, 1 );
   zPH3D torus;
 
-  zPH3DCreateTorus( &torus, v, sizeof(v)/sizeof(zVec3D), DIV, &center, &axis );
-  output( &torus );
-  zPH3DDestroy( &torus );
+  torus.createTorus( v, sizeof(v)/sizeof(zVec3D), DIV, &center, &axis );
+  output( torus );
   return 0;
 }
