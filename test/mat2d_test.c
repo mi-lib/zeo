@@ -130,7 +130,7 @@ void assert_rotation(void)
 {
   zMat2D m, m1, m2, m3;
 #ifdef __cplusplus
-  zVec2D v1, v2, v3, vx( 1.0, 0.0 ), vy( 0.0, 1.0 );
+  zVec2D v1, v2, v3, vx{ 1.0, 0.0 }, vy{ 0.0, 1.0 };
 #else
   zVec2D v1, v2, v3, vx = { { 1.0, 0.0 } }, vy = { { 0.0, 1.0 } };
 #endif

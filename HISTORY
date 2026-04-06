@@ -1,3 +1,4 @@
+2026.04.06. Modified example and test programs to conform to C++ (thanks to Daishi Kaneta). [example, test]
 2026.02.28. Modified zMat3DToAA. [zeo_mat3d]
 2026.02.28. Modified zMat3DToAA to except identity case. [zeo_mat3d]
 2026.02.27. Reimplemented zMat3DToAA with the minimum complexity of computation for singular cases. [zeo_mat3d]

@@ -1,17 +1,18 @@
 #include <zeo/zeo_brep.h>
+#include <zeo/zeo_shape3d.h>
 
 void create_src(zPH3D *ph)
 {
 #ifdef __cplusplus
   zVec3D v[] = {
-    zVec3D(  0.0, 0.0, 0  ),
-    zVec3D( -0.1, 0.2, 0  ),
-    zVec3D(  0.1, 0.2, 0  ),
-    zVec3D(  0.05, 0.5, 0 ),
-    zVec3D(  0.3, 0.5, 0  ),
-    zVec3D(  0.3, 0.0, 0  ),
+    zVec3D{  0.0,  0.0, 0 },
+    zVec3D{ -0.1,  0.2, 0 },
+    zVec3D{  0.1,  0.2, 0 },
+    zVec3D{  0.05, 0.5, 0 },
+    zVec3D{  0.3,  0.5, 0 },
+    zVec3D{  0.3,  0.0, 0 },
   };
-  zVec3D shift = zVec3D( 0, 0.1, 0.4 );
+  zVec3D shift{ 0, 0.1, 0.4 };
 #else
   zVec3D v[] = {
     { { 0.0, 0.0, 0 } },
@@ -27,13 +28,12 @@ void create_src(zPH3D *ph)
   zPH3DCreatePrism( ph, v, sizeof(v)/sizeof(zVec3D), &shift );
 }
 
-void output(zPH3D *ph, char name[])
+void output(zPH3D *ph, const char name[])
 {
   FILE *fp;
 
   fp = fopen( name, "w" );
-  /* for visualization */
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: white\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.8\n" );
   fprintf( fp, "diffuse: 0.8 0.8 0.8\n" );
@@ -41,7 +41,7 @@ void output(zPH3D *ph, char name[])
   fprintf( fp, "alpha: 0.8\n" );
   fprintf( fp, "esr: 1.0\n\n" );
 
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: prism\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: white\n" );

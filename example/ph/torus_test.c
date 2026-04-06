@@ -1,11 +1,12 @@
 #include <zeo/zeo_ph3d.h>
+#include <zeo/zeo_shape3d.h>
 
 void output(zPH3D *ph)
 {
   FILE *fp;
 
   fp = fopen( "torus.ztk", "w" );
-  fprintf( fp, "[optic]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: white\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.8\n" );
   fprintf( fp, "diffuse: 0.8 0.8 0.8\n" );
@@ -13,7 +14,7 @@ void output(zPH3D *ph)
   fprintf( fp, "alpha: 0.8\n" );
   fprintf( fp, "esr: 1.0\n\n" );
 
-  fprintf( fp, "[shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: torus\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: white\n" );
@@ -22,19 +23,20 @@ void output(zPH3D *ph)
 }
 
 #define DIV 100
+
 int main(void)
 {
 #ifdef __cplusplus
   zVec3D v[] = {
-    zVec3D( 0.10, 0.01, 0.00 ),
-    zVec3D( 0.15, 0.00, 0.05 ),
-    zVec3D( 0.20, 0.00, 0.00 ),
-    zVec3D( 0.20, 0.00,-0.05 ),
-    zVec3D( 0.15,-0.01,-0.10 ),
-    zVec3D( 0.10, 0.01,-0.05 ),
+    zVec3D{ 0.10, 0.01, 0.00 },
+    zVec3D{ 0.15, 0.00, 0.05 },
+    zVec3D{ 0.20, 0.00, 0.00 },
+    zVec3D{ 0.20, 0.00,-0.05 },
+    zVec3D{ 0.15,-0.01,-0.10 },
+    zVec3D{ 0.10, 0.01,-0.05 },
   };
-  zVec3D center( 0, 0, 0 );
-  zVec3D axis( 0, 0, 1 );
+  zVec3D center{ 0, 0, 0 };
+  zVec3D axis{ 0, 0, 1 };
 #else
   zVec3D v[] = {
     { { 0.10, 0.01, 0.00 } },
