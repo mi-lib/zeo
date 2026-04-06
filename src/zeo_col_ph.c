@@ -51,7 +51,7 @@ static zVec3D *_zTri3DDualXform_b(zTri3D *t, zVec3D *dx)
 }
 
 /* return a face of a polyhedron close to a point. */
-static zTri3D *_zIntersectPH3DPointIsInside(const zPH3D *ph, const zVec3D *p, double *dis)
+static zTri3D *_zIntersectPH3DPointIsInside(zPH3D *ph, zVec3D *p, double *dis)
 {
   int i;
 
@@ -71,7 +71,7 @@ static zTri3D *_zIntersectPH3DPointIsInside(const zPH3D *ph, const zVec3D *p, do
 } while(0)
 
 /* intersection of convices by Muller-Preparata's algorithm. */
-zPH3D *zIntersectPH3D(const zPH3D *ph1, const zPH3D *ph2, zPH3D *phcol)
+zPH3D *zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol)
 {
   zVec3DData data1, data2;
   zVec3D p1, p2, p_temp;

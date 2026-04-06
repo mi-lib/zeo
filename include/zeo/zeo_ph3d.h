@@ -67,7 +67,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPH3D ){
   zPH3D *createTorus(const zVec3D loop[], int n, int div, const zVec3D *center, const zVec3D *axis);
   zPH3D *createLathe(const zVec3D rim[], int n, int div, const zVec3D *center, const zVec3D *axis);
   zPH3D *fromZTK(ZTK *ztk);
-  void fprintZTK (FILE *fp = stdout) const;
+  void fprintZTK(FILE *fp = stdout);
 #endif
 };
 
@@ -347,7 +347,7 @@ inline zPH3D *zPH3D::createPyramid(const zVec3D bottom[], int n, const zVec3D *v
 inline zPH3D *zPH3D::createTorus(const zVec3D loop[], int n, int div, const zVec3D *center, const zVec3D *axis){ return zPH3DCreateTorus( this, loop, n, div, center, axis ); }
 inline zPH3D *zPH3D::createLathe(const zVec3D rim[], int n, int div, const zVec3D *center, const zVec3D *axis){ return zPH3DCreateLathe( this, rim, n, div, center, axis ); }
 inline zPH3D *zPH3D::fromZTK(ZTK *ztk){ return zPH3DFromZTK( this, ztk ); }
-inline void zPH3D::fprintZTK(FILE *fp) const { zPH3DFPrintZTK( fp, this ); }
+inline void zPH3D::fprintZTK(FILE *fp){ zPH3DFPrintZTK( fp, this ); }
 #endif
 
 #include <zeo/zeo_ph3d_stl.h>

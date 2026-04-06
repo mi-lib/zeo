@@ -72,23 +72,23 @@ int main(void)
     if( zVec3DIsTiny( &n ) ) goto RETRY;
     zVec3DValueFPrint( fp, &p );
     fprintf( fp, "\n" );
-    n += p;
+    zVec3DAddDRC( &n, &p );
     zVec3DValueFPrint( fp, &n );
     fprintf( fp, "\n\n\n" );
     zVec3DValueFPrint( fp, &p );
     fprintf( fp, "\n" );
-    t1 += p;
+    zVec3DAddDRC( &t1, &p );
     zVec3DValueFPrint( fp, &t1 );
     fprintf( fp, "\n\n\n" );
     zVec3DValueFPrint( fp, &p );
     fprintf( fp, "\n" );
-    t2 += p;
+    zVec3DAddDRC( &t2, &p );
     zVec3DValueFPrint( fp, &t2 );
   }
   fclose( fp );
 
   fp = fopen( "test_nurbs.ztk", "w" );
-  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
+  fprintf( fp, "[zeo::shape]\n" );
   fprintf( fp, "type: nurbs\n" );
   zNURBS3DFPrintZTK( fp, &nurbs );
   fclose( fp );

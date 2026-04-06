@@ -23,7 +23,7 @@ void output(zPH3D *ph, char name[])
 
   fp = fopen( name, "w" );
   /* for visualization */
-  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
+  fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: white\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.8\n" );
   fprintf( fp, "diffuse: 0.8 0.8 0.8\n" );
@@ -31,7 +31,7 @@ void output(zPH3D *ph, char name[])
   fprintf( fp, "alpha: 0.8\n" );
   fprintf( fp, "esr: 1.0\n\n" );
 
-  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
+  fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: prism\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: white\n" );

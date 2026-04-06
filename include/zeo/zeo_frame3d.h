@@ -25,35 +25,35 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zFrame3D ){
   zVec3D &vec(zAxis axis);
   zVec3D &setPos(zVec3D &_pos){ zVec3DCopy( &_pos, &pos ); return pos; }
   zMat3D &setAtt(zMat3D &_att){ zMat3DCopy( &_att, &att ); return att; }
-  zFrame3D &create(const zVec3D &p, const zMat3D &m);
+  zFrame3D &create(zVec3D &p, zMat3D &m);
   zFrame3D &createPosZYX(double x, double y, double z, double azim, double elev, double tilt);
   zFrame3D &createPosZYX(double array[6]);
-  zFrame3D &createPosZYX(const zVec6D &v);
+  zFrame3D &createPosZYX(zVec6D &v);
   zFrame3D &createPosZYZ(double x, double y, double z, double bearing, double pitch, double bank);
   zFrame3D &createPosZYZ(double array[6]);
-  zFrame3D &createPosZYZ(const zVec6D &v);
+  zFrame3D &createPosZYZ(zVec6D &v);
   zFrame3D &createPosAA(double x, double y, double z, double xa, double ya, double za);
   zFrame3D &createPosAA(double array[6]);
-  zFrame3D &createPosAA(const zVec6D &v);
+  zFrame3D &createPosAA(zVec6D &v);
   zFrame3D &createDH(double a, double alpha, double d, double theta);
-  zFrame3D &copy(const zFrame3D &src);
+  zFrame3D &copy(zFrame3D &src);
   zFrame3D &ident();
-  bool match(const zFrame3D &f) const;
-  bool isEqual(const zFrame3D &f) const;
-  bool isIdent() const;
-  zFrame3D &operator*=(const zFrame3D &f);
-  zVec3D xform(const zVec3D &v) const;
-  zVec3D xformInv(const zVec3D &v) const;
+  bool match(zFrame3D &f);
+  bool isEqual(zFrame3D &f);
+  bool isIdent();
+  zFrame3D &operator*=(zFrame3D &f);
+  zVec3D xform(zVec3D &v);
+  zVec3D xformInv(zVec3D &v);
   zVec3D &xformDRC(zVec3D &v);
   zVec3D &xformInvDRC(zVec3D &v);
-  zFrame3D inv() const;
-  zFrame3D cascade(const zFrame3D &f) const;
-  zVec6D xformLin(const zVec6D &v) const;
-  zVec6D xformAng(const zVec6D &v) const;
-  zFrame3D twist(const zVec6D &t) const;
-  zVec6D toPosZYX() const;
-  zVec6D toPosZYZ() const;
-  zVec6D toPosAA() const;
+  zFrame3D inv();
+  zFrame3D cascade(zFrame3D &f);
+  zVec6D xformLin(zVec6D &v);
+  zVec6D xformAng(zVec6D &v);
+  zFrame3D twist(zVec6D &t);
+  zVec6D toPosZYX();
+  zVec6D toPosZYZ();
+  zVec6D toPosAA();
   double *toPosZYX(double array[]);
   double *toPosZYZ(double array[]);
   double *toPosAA(double array[]);
@@ -85,7 +85,7 @@ __ZEO_EXPORT const zFrame3D zframe3Dident;
  * \return
  * zFrame3DCreate() returns a pointer \a frame.
  */
-__ZEO_EXPORT zFrame3D *zFrame3DCreate(zFrame3D *frame, const zVec3D *p, const zMat3D *m);
+__ZEO_EXPORT zFrame3D *zFrame3DCreate(zFrame3D *frame, zVec3D *p, zMat3D *m);
 
 /*! \brief copy a 3D coordinate frame.
  *
@@ -383,35 +383,35 @@ __END_DECLS
 
 #ifdef __cplusplus
 inline zVec3D &zFrame3D::vec(zAxis axis){ return *zFrame3DVec( this, axis ); }
-inline zFrame3D &zFrame3D::create(const zVec3D &p, const zMat3D &m){ return *zFrame3DCreate( this, &p, &m ); }
+inline zFrame3D &zFrame3D::create(zVec3D &p, zMat3D &m){ return *zFrame3DCreate( this, &p, &m ); }
 inline zFrame3D &zFrame3D::createPosZYX(double x, double y, double z, double azim, double elev, double tilt){ return *zFrame3DFromPosZYX( this, x, y, z, azim, elev, tilt ); }
 inline zFrame3D &zFrame3D::createPosZYX(double array[6]){ return *zArrayToFrame3DZYX( array, this ); }
-inline zFrame3D &zFrame3D::createPosZYX(const zVec6D &v){ return *zVec6DToFrame3DZYX( &v, this ); }
+inline zFrame3D &zFrame3D::createPosZYX(zVec6D &v){ return *zVec6DToFrame3DZYX( &v, this ); }
 inline zFrame3D &zFrame3D::createPosZYZ(double x, double y, double z, double bearing, double pitch, double bank){ return *zFrame3DFromPosZYZ( this, x, y, z, bearing, pitch, bank ); }
 inline zFrame3D &zFrame3D::createPosZYZ(double array[6]){ return *zArrayToFrame3DZYZ( array, this ); }
-inline zFrame3D &zFrame3D::createPosZYZ(const zVec6D &v){ return *zVec6DToFrame3DZYZ( &v, this ); }
+inline zFrame3D &zFrame3D::createPosZYZ(zVec6D &v){ return *zVec6DToFrame3DZYZ( &v, this ); }
 inline zFrame3D &zFrame3D::createPosAA(double x, double y, double z, double xa, double ya, double za){ return *zFrame3DFromPosAA( this, x, y, z, xa, ya, za ); }
 inline zFrame3D &zFrame3D::createPosAA(double array[6]){ return *zArrayToFrame3DAA( array, this ); }
-inline zFrame3D &zFrame3D::createPosAA(const zVec6D &v){ return *zVec6DToFrame3DAA( &v, this ); }
+inline zFrame3D &zFrame3D::createPosAA(zVec6D &v){ return *zVec6DToFrame3DAA( &v, this ); }
 inline zFrame3D &zFrame3D::createDH(double a, double alpha, double d, double theta){ return *zFrame3DFromDH( this, a, alpha, d, theta ); }
-inline zFrame3D &zFrame3D::copy(const zFrame3D &src){ zFrame3DCopy( &src, this ); return *this; }
+inline zFrame3D &zFrame3D::copy(zFrame3D &src){ zFrame3DCopy( &src, this ); return *this; }
 inline zFrame3D &zFrame3D::ident(){ zFrame3DIdent( this ); return *this; }
-inline bool zFrame3D::match(const zFrame3D &f) const{ return _zFrame3DMatch( this, &f ); }
-inline bool zFrame3D::isEqual(const zFrame3D &f) const{ return _zFrame3DEqual( this, &f ); }
-inline bool zFrame3D::isIdent() const{ return _zFrame3DIsIdent( this ); }
-inline zFrame3D &zFrame3D::operator*=(const zFrame3D &f){ zFrame3D tmp; zFrame3DCascade( this, &f, &tmp ); zFrame3DCopy( &tmp, this ); return *this; }
-inline zVec3D zFrame3D::xform(const zVec3D &v) const{ zVec3D ret; _zXform3D( this, &v, &ret ); return ret; }
-inline zVec3D zFrame3D::xformInv(const zVec3D &v) const{ zVec3D ret; _zXform3DInv( this, &v, &ret ); return ret; }
+inline bool zFrame3D::match(zFrame3D &f){ return _zFrame3DMatch( this, &f ); }
+inline bool zFrame3D::isEqual(zFrame3D &f){ return _zFrame3DEqual( this, &f ); }
+inline bool zFrame3D::isIdent(){ return _zFrame3DIsIdent( this ); }
+inline zFrame3D &zFrame3D::operator*=(zFrame3D &f){ zFrame3D tmp; zFrame3DCascade( this, &f, &tmp ); zFrame3DCopy( &tmp, this ); return *this; }
+inline zVec3D zFrame3D::xform(zVec3D &v){ zVec3D ret; _zXform3D( this, &v, &ret ); return ret; }
+inline zVec3D zFrame3D::xformInv(zVec3D &v){ zVec3D ret; _zXform3DInv( this, &v, &ret ); return ret; }
 inline zVec3D &zFrame3D::xformDRC(zVec3D &v){ zXform3DDRC( this, &v ); return v; }
 inline zVec3D &zFrame3D::xformInvDRC(zVec3D &v){ zXform3DInvDRC( this, &v ); return v; }
-inline zFrame3D zFrame3D::inv() const{ zFrame3D ret; _zFrame3DInv( this, &ret ); return ret; }
-inline zFrame3D zFrame3D::cascade(const zFrame3D &f) const{ zFrame3D ret; zFrame3DCascade( this, &f, &ret ); return ret; }
-inline zVec6D zFrame3D::xformLin(const zVec6D &v) const{ zVec6D ret; zXform6DLin( this, &v, &ret ); return ret; }
-inline zVec6D zFrame3D::xformAng(const zVec6D &v) const{ zVec6D ret; zXform6DAng( this, &v, &ret ); return ret; }
-inline zFrame3D zFrame3D::twist(const zVec6D &t) const{ zFrame3D ret; zFrame3DTwist( this, &t, &ret ); return ret; }
-inline zVec6D zFrame3D::toPosZYX() const{ zVec6D v; zFrame3DToVec6DZYX( this, &v ); return v; }
-inline zVec6D zFrame3D::toPosZYZ() const{ zVec6D v; zFrame3DToVec6DZYZ( this, &v ); return v; }
-inline zVec6D zFrame3D::toPosAA() const{ zVec6D v; zFrame3DToVec6DAA( this, &v ); return v; }
+inline zFrame3D zFrame3D::inv(){ zFrame3D ret; _zFrame3DInv( this, &ret ); return ret; }
+inline zFrame3D zFrame3D::cascade(zFrame3D &f){ zFrame3D ret; zFrame3DCascade( this, &f, &ret ); return ret; }
+inline zVec6D zFrame3D::xformLin(zVec6D &v){ zVec6D ret; zXform6DLin( this, &v, &ret ); return ret; }
+inline zVec6D zFrame3D::xformAng(zVec6D &v){ zVec6D ret; zXform6DAng( this, &v, &ret ); return ret; }
+inline zFrame3D zFrame3D::twist(zVec6D &t){ zFrame3D ret; zFrame3DTwist( this, &t, &ret ); return ret; }
+inline zVec6D zFrame3D::toPosZYX(){ zVec6D v; zFrame3DToVec6DZYX( this, &v ); return v; }
+inline zVec6D zFrame3D::toPosZYZ(){ zVec6D v; zFrame3DToVec6DZYZ( this, &v ); return v; }
+inline zVec6D zFrame3D::toPosAA(){ zVec6D v; zFrame3DToVec6DAA( this, &v ); return v; }
 inline double *zFrame3D::toPosZYX(double array[]){ zFrame3DToArrayZYX( this, array ); return array; }
 inline double *zFrame3D::toPosZYZ(double array[]){ zFrame3DToArrayZYZ( this, array ); return array; }
 inline double *zFrame3D::toPosAA(double array[]){ zFrame3DToArrayAA( this, array ); return array; }

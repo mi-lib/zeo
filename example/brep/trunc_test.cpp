@@ -1,8 +1,8 @@
 #include <zeo/zeo_brep.h>
 
-// test
+/* test */
 
-void create_src(zPH3D &ph)
+void create_src(zPH3D *ph)
 {
   zVec3D v[] = {
     zVec3D(  0.0, 0.0, 0  ),
@@ -14,16 +14,16 @@ void create_src(zPH3D &ph)
   };
   zVec3D shift = zVec3D( 0, 0.1, 0.4 );
 
-  ph.createPrism( v, sizeof(v)/sizeof(zVec3D), &shift );
+  zPH3DCreatePrism( ph, v, sizeof(v)/sizeof(zVec3D), &shift );
 }
 
-void output(const zPH3D &ph, char name[])
+void output(zPH3D *ph, char name[])
 {
   FILE *fp;
 
   fp = fopen( name, "w" );
-  // for visualization
-  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
+  /* for visualization */
+  fprintf( fp, "[optic]\n" );
   fprintf( fp, "name: white\n" );
   fprintf( fp, "ambient: 0.8 0.8 0.8\n" );
   fprintf( fp, "diffuse: 0.8 0.8 0.8\n" );
@@ -31,22 +31,22 @@ void output(const zPH3D &ph, char name[])
   fprintf( fp, "alpha: 0.8\n" );
   fprintf( fp, "esr: 1.0\n\n" );
 
-  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
+  fprintf( fp, "[shape]\n" );
   fprintf( fp, "name: prism\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: white\n" );
-  ph.fprintZTK( fp );
+  zPH3DFPrintZTK( fp, ph );
   fclose( fp );
 }
 
-void brep_output(const zBREP &brep)
+void brep_output(zBREP *brep)
 {
   zBREPFaceListCell *cp;
   FILE *fp;
 
-  // for gnuplot
+  /* for gnuplot */
   fp = fopen( "brep", "w" );
-  zListForEach( &brep.flist, cp ){
+  zListForEach( &brep->flist, cp ){
     zVec3DValueNLFPrint( fp, &cp->data.v[0]->data.p );
     zVec3DValueNLFPrint( fp, &cp->data.v[1]->data.p );
     fprintf( fp, "\n" );
@@ -63,24 +63,34 @@ int main(int argc, char *argv[])
   zBREP brep;
   zPlane3D pl;
 #if 1
+  #ifdef __cplusplus
   zVec3D c( 0.2, 0.2, 0.2 ), n( 1.0, 0.0, 0.5 );
-#else // ijiwaru case
+  #else
+  zVec3D c = { { 0.2, 0.2, 0.2 } }, n = { { 1.0, 0.0, 0.5 } };
+  #endif
+#else /* ijiwaru case */
+  #ifdef __cplusplus
   zVec3D c( 1.0, 0.0, 0.0 ), n( -1.0, 0.0, 0.0 );
+  #else
+  zVec3D c = { { 1.0, 0.0, 0.0 } }, n = { { -1.0, 0.0, 0.0 } };
+  #endif
 #endif
 
-  create_src( prism );
+  create_src( &prism );
 
   zPH3D2BREP( &prism, &brep );
 
   zVec3DNormalizeDRC( &n );
   zPlane3DCreate( &pl, &c, &n );
   zBREPTrunc( &brep, &pl );
-  brep_output( brep );
+  brep_output( &brep );
 
   zBREP2PH3D( &brep, &ph );
-  output( prism, "src.ztk" );
-  output( ph, "dest.ztk" );
+  output( &prism, "src.ztk" );
+  output( &ph, "dest.ztk" );
 
+  zPH3DDestroy( &prism );
+  zPH3DDestroy( &ph );
   zBREPDestroy( &brep );
   return 0;
 }

@@ -31,12 +31,12 @@ const zVec3D vert_c[] = {
   zVec3D( -0.00627116805963905209, -0.0510873067099782835, 0.0499999358996229201 ),
   zVec3D( -0.00556285502614803449, -0.051087370410225319, 0.149997427331371003   ) };
 
-void output(const char *filename, const zPH3D &a, const zPH3D &b, const zPH3D &ip)
+void output(const char *filename, zPH3D *a, zPH3D *b, zPH3D *ip)
 {
   FILE *fp;
 
   fp = fopen( filename, "w" );
-  // for visualization
+  /* for visualization */
   fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_OPTIC );
   fprintf( fp, "name: red\n" );
   fprintf( fp, "ambient: 0.8 0.2 0.2\n" );
@@ -58,77 +58,81 @@ void output(const char *filename, const zPH3D &a, const zPH3D &b, const zPH3D &i
   fprintf( fp, "specular: 0.0 0.0 0.0\n" );
   fprintf( fp, "alpha: 0.6\n" );
   fprintf( fp, "esr: 1.0\n\n" );
-  // convex 1
+  /* convex 1 */
   fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: a\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: red\n" );
-  a.fprintZTK( fp );
+  zPH3DFPrintZTK( fp, a );
   fprintf( fp, "\n" );
-  // convex 2
+  /* convex 2 */
   fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "name: b\n" );
   fprintf( fp, "type: polyhedron\n" );
   fprintf( fp, "optic: blue\n" );
-  b.fprintZTK( fp );
+  zPH3DFPrintZTK( fp, b );
   fprintf( fp, "\n" );
-  // intersection convex
-  if( &ip ){
+  /* intersection convex */
+  if( ip ){
     fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
     fprintf( fp, "name: intersection\n" );
     fprintf( fp, "type: polyhedron\n" );
     fprintf( fp, "optic: yellow\n" );
-    ip.fprintZTK( fp );
+    zPH3DFPrintZTK( fp, ip );
   }
   fclose( fp );
 }
 
-bool create_ph_box(zPH3D &ph, const zVec3D vert[])
+bool create_ph_box(zPH3D *ph, const zVec3D vert[])
 {
   int i;
 
-  if( !ph.alloc( 8, 12 ) ) return false;
+  if( !zPH3DAlloc( ph, 8, 12 ) ) return false;
   for( i=0; i<8; i++ )
-    ph.vert(i)->copy( vert[i] );
-  zTri3DCreate( ph.face(0),  ph.vert(0), ph.vert(1), ph.vert(2) );
-  zTri3DCreate( ph.face(1),  ph.vert(0), ph.vert(2), ph.vert(3) );
-  zTri3DCreate( ph.face(2),  ph.vert(0), ph.vert(4), ph.vert(5) );
-  zTri3DCreate( ph.face(3),  ph.vert(0), ph.vert(5), ph.vert(1) );
-  zTri3DCreate( ph.face(4),  ph.vert(1), ph.vert(5), ph.vert(6) );
-  zTri3DCreate( ph.face(5),  ph.vert(1), ph.vert(6), ph.vert(2) );
-  zTri3DCreate( ph.face(6),  ph.vert(2), ph.vert(6), ph.vert(7) );
-  zTri3DCreate( ph.face(7),  ph.vert(2), ph.vert(7), ph.vert(3) );
-  zTri3DCreate( ph.face(8),  ph.vert(0), ph.vert(3), ph.vert(7) );
-  zTri3DCreate( ph.face(9),  ph.vert(0), ph.vert(7), ph.vert(4) );
-  zTri3DCreate( ph.face(10), ph.vert(7), ph.vert(6), ph.vert(5) );
-  zTri3DCreate( ph.face(11), ph.vert(7), ph.vert(5), ph.vert(4) );
+    zVec3DCopy( &vert[i], zPH3DVert(ph,i) );
+  zTri3DCreate( zPH3DFace(ph,0),  zPH3DVert(ph,0), zPH3DVert(ph,1), zPH3DVert(ph,2) );
+  zTri3DCreate( zPH3DFace(ph,1),  zPH3DVert(ph,0), zPH3DVert(ph,2), zPH3DVert(ph,3) );
+  zTri3DCreate( zPH3DFace(ph,2),  zPH3DVert(ph,0), zPH3DVert(ph,4), zPH3DVert(ph,5) );
+  zTri3DCreate( zPH3DFace(ph,3),  zPH3DVert(ph,0), zPH3DVert(ph,5), zPH3DVert(ph,1) );
+  zTri3DCreate( zPH3DFace(ph,4),  zPH3DVert(ph,1), zPH3DVert(ph,5), zPH3DVert(ph,6) );
+  zTri3DCreate( zPH3DFace(ph,5),  zPH3DVert(ph,1), zPH3DVert(ph,6), zPH3DVert(ph,2) );
+  zTri3DCreate( zPH3DFace(ph,6),  zPH3DVert(ph,2), zPH3DVert(ph,6), zPH3DVert(ph,7) );
+  zTri3DCreate( zPH3DFace(ph,7),  zPH3DVert(ph,2), zPH3DVert(ph,7), zPH3DVert(ph,3) );
+  zTri3DCreate( zPH3DFace(ph,8),  zPH3DVert(ph,0), zPH3DVert(ph,3), zPH3DVert(ph,7) );
+  zTri3DCreate( zPH3DFace(ph,9),  zPH3DVert(ph,0), zPH3DVert(ph,7), zPH3DVert(ph,4) );
+  zTri3DCreate( zPH3DFace(ph,10), zPH3DVert(ph,7), zPH3DVert(ph,6), zPH3DVert(ph,5) );
+  zTri3DCreate( zPH3DFace(ph,11), zPH3DVert(ph,7), zPH3DVert(ph,5), zPH3DVert(ph,4) );
   return true;
 }
 
-void test_ph_box(const zPH3D &a, const zPH3D &b, const char *filename)
+void test_ph_box(zPH3D *a, zPH3D *b, const char *filename)
 {
   zPH3D ip;
 
-  if( !zIntersectPH3D( &a, &b, &ip ) ){
+  if( !zIntersectPH3D( a, b, &ip ) ){
     eprintf( "boxes do not intersect.\n" );
   } else{
     eprintf( "intersection volume is output to %s.\n", filename );
-    output( filename, a, b, ip );
+    output( filename, a, b, &ip );
   }
+  zPH3DDestroy( &ip );
 }
 
 int main(int argc, char *argv[])
 {
   zPH3D a, b, c;
 
-  if( !create_ph_box( a, vert_a ) ||
-      !create_ph_box( b, vert_b ) ||
-      !create_ph_box( c, vert_c ) ) return 1;
+  if( !create_ph_box( &a, vert_a ) ||
+      !create_ph_box( &b, vert_b ) ||
+      !create_ph_box( &c, vert_c ) ) return 1;
 
   eprintf( "[case 1]\n" );
-  test_ph_box( a, b, "ph_box_contact_ab.ztk" );
+  test_ph_box( &a, &b, "ph_box_contact_ab.ztk" );
   eprintf( "[case 2]\n" );
-  test_ph_box( c, b, "ph_box_contact_cb.ztk" );
+  test_ph_box( &c, &b, "ph_box_contact_cb.ztk" );
 
+  zPH3DDestroy( &c );
+  zPH3DDestroy( &b );
+  zPH3DDestroy( &a );
   return 0;
 }

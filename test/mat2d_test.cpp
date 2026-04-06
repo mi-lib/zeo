@@ -2,7 +2,7 @@
 
 void assert_matstruct(void)
 {
-  zMat2D tm, mc;
+  zMat2D m, tm, mc;
   zVec2D v1, v2;
   double a11, a12, a21, a22;
 
@@ -10,69 +10,70 @@ void assert_matstruct(void)
   a12 = zRandF(-10,10);
   a21 = zRandF(-10,10);
   a22 = zRandF(-10,10);
-  zMat2D m( a11, a12, a21, a22 );
-  zAssert( zMat2D(), m.c.xx == a11 && m.c.yx == a12 && m.c.xy == a21 && m.c.yy == a22 );
-  m.row( 0, v1 );
-  m.row( 1, v2 );
-  zAssert( zMat2D &zMat2D::row(double, zVec2D &), v1.c.x == m.c.xx && v1.c.y == m.c.yx && v2.c.x == m.c.xy && v2.c.y == m.c.yy );
-  m.col( 0, v1 );
-  m.col( 1, v2 );
-  zAssert( zMat2D &zMat2D::col(double, zVec2D &), v1.c.x == m.c.xx && v1.c.y == m.c.xy && v2.c.x == m.c.yx && v2.c.y == m.c.yy );
-  m.transpose( tm );
-  zAssert( zMat2D &zMat2::transpose(zMat2D &), tm.c.xx == m.c.xx && tm.c.yx == m.c.xy && tm.c.xy == m.c.yx && tm.c.yy == m.c.yy );
-  mc.copy( m );
-  mc.transpose();
-  zAssert( zMat2D zMat2D::transpose(), zMat2DEqual( &tm, &mc ) );
+  zMat2DCreate( &m, a11, a12, a21, a22 );
+  zAssert( zMat2DCreate, m.c.xx == a11 && m.c.yx == a12 && m.c.xy == a21 && m.c.yy == a22 );
+  zMat2DRow( &m, 0, &v1 );
+  zMat2DRow( &m, 1, &v2 );
+  zAssert( zMat2DRow, v1.c.x == m.c.xx && v1.c.y == m.c.yx && v2.c.x == m.c.xy && v2.c.y == m.c.yy );
+  zMat2DCol( &m, 0, &v1 );
+  zMat2DCol( &m, 1, &v2 );
+  zAssert( zMat2DCol, v1.c.x == m.c.xx && v1.c.y == m.c.xy && v2.c.x == m.c.yx && v2.c.y == m.c.yy );
+  zMat2DT( &m, &tm );
+  zAssert( zMat2DT, tm.c.xx == m.c.xx && tm.c.yx == m.c.xy && tm.c.xy == m.c.yx && tm.c.yy == m.c.yy );
+  zMat2DCopy( &m, &mc );
+  zMat2DTDRC( &mc );
+  zAssert( zMat2DTDRC, zMat2DEqual( &tm, &mc ) );
 }
 
 void assert_arith(void)
 {
-  zMat2D m3;
+  zMat2D m1, m2, m3;
+  zVec2D v1, v2;
   double k;
 
-  zMat2D m1( zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  zMat2D m2( zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  zVec2D v1( zRandF(-10,10), zRandF(-10,10) );
-  zVec2D v2( zRandF(-10,10), zRandF(-10,10) );
+  zMat2DCreate( &m1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  zMat2DCreate( &m2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  zVec2DCreate( &v1, zRandF(-10,10), zRandF(-10,10) );
+  zVec2DCreate( &v2, zRandF(-10,10), zRandF(-10,10) );
   k = zRandF(-10,10);
-  m3 = m1 + m2;
-  zAssert( zMat2D operator+(const zMat2D &, const zMat2D &), m1.c.xx+m2.c.xx==m3.c.xx && m1.c.yx+m2.c.yx==m3.c.yx && m1.c.xy+m2.c.xy==m3.c.xy && m1.c.yy+m2.c.yy==m3.c.yy );
-  m3 = m1 - m2;
-  zAssert( zMat2D operator-(const zMat2D &, const zMat2D &), m1.c.xx-m2.c.xx==m3.c.xx && m1.c.yx-m2.c.yx==m3.c.yx && m1.c.xy-m2.c.xy==m3.c.xy && m1.c.yy-m2.c.yy==m3.c.yy );
-  m3 = -m1;
-  zAssert( zMat2D zMat2D::operator-(), m1.c.xx+m3.c.xx==0 && m1.c.yx+m3.c.yx==0 && m1.c.xy+m3.c.xy==0 && m1.c.yy+m3.c.yy==0 );
-  m3 = k * m1;
-  zAssert( zMat2D operator*(double, const zMat2D &), m1.c.xx*k==m3.c.xx && m1.c.yx*k==m3.c.yx && m1.c.xy*k==m3.c.xy && m1.c.yy*k==m3.c.yy );
-  m3 = m1 / k;
-  zAssert( zMat2D operator-(const zMat2D &, double), zIsTiny(m1.c.xx/k-m3.c.xx) && zIsTiny(m1.c.yx/k-m3.c.yx) && zIsTiny(m1.c.xy/k-m3.c.xy) && zIsTiny(m1.c.yy/k-m3.c.yy) );
-  m3 = m1 + k * m2;
-  zAssert( m1 + k * m2, m1.c.xx+m2.c.xx*k==m3.c.xx && m1.c.yx+m2.c.yx*k==m3.c.yx && m1.c.xy+m2.c.xy*k==m3.c.xy && m1.c.yy+m2.c.yy*k==m3.c.yy );
+  zMat2DAdd( &m1, &m2, &m3 );
+  zAssert( zMat2DAdd, m1.c.xx+m2.c.xx==m3.c.xx && m1.c.yx+m2.c.yx==m3.c.yx && m1.c.xy+m2.c.xy==m3.c.xy && m1.c.yy+m2.c.yy==m3.c.yy );
+  zMat2DSub( &m1, &m2, &m3 );
+  zAssert( zMat2DSub, m1.c.xx-m2.c.xx==m3.c.xx && m1.c.yx-m2.c.yx==m3.c.yx && m1.c.xy-m2.c.xy==m3.c.xy && m1.c.yy-m2.c.yy==m3.c.yy );
+  zMat2DRev( &m1, &m3 );
+  zAssert( zMat2DRev, m1.c.xx+m3.c.xx==0 && m1.c.yx+m3.c.yx==0 && m1.c.xy+m3.c.xy==0 && m1.c.yy+m3.c.yy==0 );
+  zMat2DMul( &m1, k, &m3 );
+  zAssert( zMat2DMul, m1.c.xx*k==m3.c.xx && m1.c.yx*k==m3.c.yx && m1.c.xy*k==m3.c.xy && m1.c.yy*k==m3.c.yy );
+  zMat2DDiv( &m1, k, &m3 );
+  zAssert( zMat2DDiv, zIsTiny(m1.c.xx/k-m3.c.xx) && zIsTiny(m1.c.yx/k-m3.c.yx) && zIsTiny(m1.c.xy/k-m3.c.xy) && zIsTiny(m1.c.yy/k-m3.c.yy) );
+  zMat2DCat( &m1, k, &m2, &m3 );
+  zAssert( zMat2DCat, m1.c.xx+m2.c.xx*k==m3.c.xx && m1.c.yx+m2.c.yx*k==m3.c.yx && m1.c.xy+m2.c.xy*k==m3.c.xy && m1.c.yy+m2.c.yy*k==m3.c.yy );
 
-  m3.copy( m1 ); m3 += m2;
-  zAssert( zMat2D &zMat2D::operator+=(zMat2D &), m1.c.xx+m2.c.xx==m3.c.xx && m1.c.yx+m2.c.yx==m3.c.yx && m1.c.xy+m2.c.xy==m3.c.xy && m1.c.yy+m2.c.yy==m3.c.yy );
-  m3.copy( m1 ); m3 -= m2;
-  zAssert( zMat2D &zMat2D::operator-=(zMat2D &), m1.c.xx-m2.c.xx==m3.c.xx && m1.c.yx-m2.c.yx==m3.c.yx && m1.c.xy-m2.c.xy==m3.c.xy && m1.c.yy-m2.c.yy==m3.c.yy );
-  m3.copy( m1 ); m3 = -m3;
-  zAssert( zMat2D zMat2D::operator-(), m1.c.xx+m3.c.xx==0 && m1.c.yx+m3.c.yx==0 && m1.c.xy+m3.c.xy==0 && m1.c.yy+m3.c.yy==0 );
-  m3.copy( m1 ); m3 *= k;
-  zAssert( zMat2D &zMat2D::operator*=(double), m1.c.xx*k==m3.c.xx && m1.c.yx*k==m3.c.yx && m1.c.xy*k==m3.c.xy && m1.c.yy*k==m3.c.yy );
-  m3.copy( m1 ); m3 /= k;
-  zAssert( zMat2D &zMat2D::operator/=(double), zIsTiny(m1.c.xx/k-m3.c.xx) && zIsTiny(m1.c.yx/k-m3.c.yx) && zIsTiny(m1.c.xy/k-m3.c.xy) && zIsTiny(m1.c.yy/k-m3.c.yy) );
-  m3.copy( m1 ); m3 = m3 + k * m2;
-  zAssert( m3 = m3 + k * m2, m1.c.xx+m2.c.xx*k==m3.c.xx && m1.c.yx+m2.c.yx*k==m3.c.yx && m1.c.xy+m2.c.xy*k==m3.c.xy && m1.c.yy+m2.c.yy*k==m3.c.yy );
+  zMat2DCopy( &m1, &m3 ); zMat2DAddDRC( &m3, &m2 );
+  zAssert( zMat2DAddDRC, m1.c.xx+m2.c.xx==m3.c.xx && m1.c.yx+m2.c.yx==m3.c.yx && m1.c.xy+m2.c.xy==m3.c.xy && m1.c.yy+m2.c.yy==m3.c.yy );
+  zMat2DCopy( &m1, &m3 ); zMat2DSubDRC( &m3, &m2 );
+  zAssert( zMat2DSubDRC, m1.c.xx-m2.c.xx==m3.c.xx && m1.c.yx-m2.c.yx==m3.c.yx && m1.c.xy-m2.c.xy==m3.c.xy && m1.c.yy-m2.c.yy==m3.c.yy );
+  zMat2DCopy( &m1, &m3 ); zMat2DRevDRC( &m3 );
+  zAssert( zMat2DRevDRC, m1.c.xx+m3.c.xx==0 && m1.c.yx+m3.c.yx==0 && m1.c.xy+m3.c.xy==0 && m1.c.yy+m3.c.yy==0 );
+  zMat2DCopy( &m1, &m3 ); zMat2DMulDRC( &m3, k );
+  zAssert( zMat2DMulDRC, m1.c.xx*k==m3.c.xx && m1.c.yx*k==m3.c.yx && m1.c.xy*k==m3.c.xy && m1.c.yy*k==m3.c.yy );
+  zMat2DCopy( &m1, &m3 ); zMat2DDivDRC( &m3, k );
+  zAssert( zMat2DDivDRC, zIsTiny(m1.c.xx/k-m3.c.xx) && zIsTiny(m1.c.yx/k-m3.c.yx) && zIsTiny(m1.c.xy/k-m3.c.xy) && zIsTiny(m1.c.yy/k-m3.c.yy) );
+  zMat2DCopy( &m1, &m3 ); zMat2DCatDRC( &m3, k, &m2 );
+  zAssert( zMat2DCatDRC, m1.c.xx+m2.c.xx*k==m3.c.xx && m1.c.yx+m2.c.yx*k==m3.c.yx && m1.c.xy+m2.c.xy*k==m3.c.xy && m1.c.yy+m2.c.yy*k==m3.c.yy );
 
-  m3.createDyad( v1, v2 );
-  zAssert( zMat2D &zMat2D::createDyad(zVec2D &, zVec2D &), m3.c.xx==v1.c.x*v2.c.x && m3.c.yx==v1.c.x*v2.c.y && m3.c.xy==v1.c.y*v2.c.x && m3.c.yy==v1.c.y*v2.c.y );
+  zMat2DDyad( &m3, &v1, &v2 );
+  zAssert( zMat2DDyad, m3.c.xx==v1.c.x*v2.c.x && m3.c.yx==v1.c.x*v2.c.y && m3.c.xy==v1.c.y*v2.c.x && m3.c.yy==v1.c.y*v2.c.y );
 }
 
 void assert_inv(void)
 {
   zMat2D m1, m2, m3;
 
-  m1.create( zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  m2.inv( m1 );
-  m3 = m1 * m2;
-  zAssert( zMat2D &zMat2D::inv(zMat2D &), zIsTiny(m3.c.xx-1) && zIsTiny(m3.c.yx) && zIsTiny(m3.c.xy) && zIsTiny(m3.c.yy-1) );
+  zMat2DCreate( &m1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  zMat2DInv( &m1, &m2 );
+  zMulMat2DMat2D( &m1, &m2, &m3 );
+  zAssert( zMat2DInv, zIsTiny(m3.c.xx-1) && zIsTiny(m3.c.yx) && zIsTiny(m3.c.xy) && zIsTiny(m3.c.yy-1) );
 }
 
 void assert_mul(void)
@@ -80,51 +81,49 @@ void assert_mul(void)
   zMat2D m1, m2, m3, m4;
   zVec2D v1, v2, v3;
 
-  m1.create( zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  m2.create( zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  v1.create( zRandF(-10,10), zRandF(-10,10) );
-  v2 = m1 * v1;
-  zAssert( zVec2D operator*(const zMat2D &, const zVec2D &), m1.c.xx*v1.c.x+m1.c.yx*v1.c.y==v2.c.x && m1.c.xy*v1.c.x+m1.c.yy*v1.c.y==v2.c.y );
-  v3.copy( v1 );
-  v3 = m1 * v3;
-  zAssert( v3 = m1 * v3, v2 == v3 );
-  v2 = m1.mulT( v1 );
-  zAssert( zVec2D zMat2D::mulT(zVec2D &), m1.c.xx*v1.c.x+m1.c.xy*v1.c.y==v2.c.x && m1.c.yx*v1.c.x+m1.c.yy*v1.c.y==v2.c.y );
-  v3.copy( v1 );
-  v3 = m1.mulT( v3 );
-  zAssert( v3 = mi.mulT( v3 ), v2 == v3 );
+  zMat2DCreate( &m1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  zMat2DCreate( &m2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  zVec2DCreate( &v1, zRandF(-10,10), zRandF(-10,10) );
+  zMulMat2DVec2D( &m1, &v1, &v2 );
+  zAssert( zMulMat2DVec2D, m1.c.xx*v1.c.x+m1.c.yx*v1.c.y==v2.c.x && m1.c.xy*v1.c.x+m1.c.yy*v1.c.y==v2.c.y );
+  zVec2DCopy( &v1, &v3 );
+  zMulMat2DVec2DDRC( &m1, &v3 );
+  zAssert( zMulMat2DVec2DDRC, zVec2DEqual( &v2, &v3 ) );
+  zMulMat2DTVec2D( &m1, &v1, &v2 );
+  zAssert( zMulMat2DTVec2D, m1.c.xx*v1.c.x+m1.c.xy*v1.c.y==v2.c.x && m1.c.yx*v1.c.x+m1.c.yy*v1.c.y==v2.c.y );
+  zVec2DCopy( &v1, &v3 );
+  zMulMat2DTVec2DDRC( &m1, &v3 );
+  zAssert( zMulMat2DVec2DDRC, zVec2DEqual( &v2, &v3 ) );
 
-  m3.inv( m1 );
-  v2 = m1.mulInv( v1 );
-  v3 = m3 * v1;
-  zAssert( zVec2D zMat2D::mulInv(zVec2D &), zIsTiny(v2.c.x-v3.c.x) && zIsTiny(v2.c.y-v3.c.y) );
+  zMat2DInv( &m1, &m3 );
+  zMulInvMat2DVec2D( &m1, &v1, &v2 );
+  zMulMat2DVec2D( &m3, &v1, &v3 );
+  zAssert( zMulInvMat2DVec2D, zIsTiny(v2.c.x-v3.c.x) && zIsTiny(v2.c.y-v3.c.y) );
 
-  m3 = m1 * m2;
-  zAssert( zMat2D operator*(const zMat2D &, const zMat2D &),
+  zMulMat2DMat2D( &m1, &m2, &m3 );
+  zAssert( zMulMat2DMat2D,
        m1.c.xx*m2.c.xx+m1.c.yx*m2.c.xy==m3.c.xx && m1.c.xx*m2.c.yx+m1.c.yx*m2.c.yy==m3.c.yx
     && m1.c.xy*m2.c.xx+m1.c.yy*m2.c.xy==m3.c.xy && m1.c.xy*m2.c.yx+m1.c.yy*m2.c.yy==m3.c.yy );
-  m4.copy( m2 );
-  m4 = m1 * m4;
-  zAssert( m4 = m1 * m4, m3 == m4 );
-  m3 = m1.mulT( m2 );
-  zAssert( zMat2D zMat2D::mulT(zMat2D &),
+  zMat2DCopy( &m2, &m4 );
+  zMulMat2DMat2DDRC( &m1, &m4 );
+  zAssert( zMulMat2DMat2DDRC, zMat2DEqual( &m3, &m4 ) );
+  zMulMat2DTMat2D( &m1, &m2, &m3 );
+  zAssert( zMulMat2DTMat2D,
        m1.c.xx*m2.c.xx+m1.c.xy*m2.c.xy==m3.c.xx && m1.c.xx*m2.c.yx+m1.c.xy*m2.c.yy==m3.c.yx
     && m1.c.yx*m2.c.xx+m1.c.yy*m2.c.xy==m3.c.xy && m1.c.yx*m2.c.yx+m1.c.yy*m2.c.yy==m3.c.yy );
-  m4.copy( m2 );
-  m4 = m1.mulT( m4 );
-  zAssert( m4 = m1.mulT( m4 ), m3 == m4 );
-  // TODO write as C++ format
+  zMat2DCopy( &m2, &m4 );
+  zMulMat2DTMat2DDRC( &m1, &m4 );
+  zAssert( zMulMat2DTMat2DDRC, zMat2DEqual( &m3, &m4 ) );
   zMulMat2DMat2DT( &m1, &m2, &m3 );
   zAssert( zMulMat2DMat2DT,
        m1.c.xx*m2.c.xx+m1.c.yx*m2.c.yx==m3.c.xx && m1.c.xx*m2.c.xy+m1.c.yx*m2.c.yy==m3.c.yx
     && m1.c.xy*m2.c.xx+m1.c.yy*m2.c.yx==m3.c.xy && m1.c.xy*m2.c.xy+m1.c.yy*m2.c.yy==m3.c.yy );
-  m4.copy( m1 );
-  // TODO write as C++ format
+  zMat2DCopy( &m1, &m4 );
   zMulMat2DMat2DTDRC( &m4, &m2 );
-  zAssert( zMulMat2DMat2DTDRC, m3 == m4 );
+  zAssert( zMulMat2DMat2DTDRC, zMat2DEqual( &m3, &m4 ) );
 
-  m3 = m1.mulInv( m1 );
-  zAssert( zMat2DInvMat2DMat2D, m3.isIdent() );
+  zMulInvMat2DMat2D( &m1, &m1, &m3 );
+  zAssert( zMat2DInvMat2DMat2D, zMat2DIsIdent(&m3) );
 }
 
 void assert_rotation(void)
@@ -135,21 +134,21 @@ void assert_rotation(void)
 
   angle = zRandF(-zPI,zPI);
 
-  m.createAngle( angle );
-  v1.create( zRandF(-10,10), zRandF(-10,10) );
-  v2 = m * v1;
+  zMat2DCreateAngle( &m, angle );
+  zVec2DCreate( &v1, zRandF(-10,10), zRandF(-10,10) );
+  zMulMat2DVec2D( &m, &v1, &v2 );
   zVec2DRot( &v1, angle, &v3 );
-  zAssert( zMat2D::createAngle(double) + operator*(const zMat2D &, const zVec2D &), v2 == v3 );
+  zAssert( zMat2DCreateAngle + zMulMat2DVec2D, zVec2DEqual( &v2, &v3 ) );
 
-  m1.create( zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  m2 = m * m1;
+  zMat2DCreate( &m1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  zMulMat2DMat2D( &m, &m1, &m2 );
   zMat2DRot( &m1, angle, &m3 );
-  zAssert( zMat2D::create(double, double, double) + operator*(const zMat2D &, const zMat2D &), m2 == m3 );
+  zAssert( zMat2DCreateAngle + zMulMat2DMat2D, zMat2DEqual( &m2, &m3 ) );
 
-  m1.ident();
+  zMat2DIdent( &m1 );
   zMat2DRot( &m1, angle, &m2 );
-  m2.col( 0, v1 );
-  m2.col( 1, v2 );
+  zMat2DCol( &m2, 0, &v1 );
+  zMat2DCol( &m2, 1, &v2 );
   zAssert( zMat2DRot, zIsTiny( zVec2DAngle(&vx,&v1) - angle ) && zIsTiny( zVec2DAngle(&vy,&v2) - angle ) );
   error = zMat2DError( &m2, &m1 );
   zAssert( zMat2DError, zIsTiny( angle - error ) );

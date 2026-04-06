@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     if( zNURBS3D1VecTan( &nurbs, 0, t, &p, &tv ) ){
       zVec3DValueNLFPrint( fpp, &p );
       zVec3DValueNLFPrint( fpt, &p );
-      p += tv;
+      zVec3DAddDRC( &p, &tv );
       zVec3DValueNLFPrint( fpt, &p );
       zFEndl( fpt );
     }
