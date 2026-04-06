@@ -24,6 +24,7 @@ void output(zPH3D *ph)
 
 int main(void)
 {
+#ifdef __cplusplus
   zVec3D v[] = {
 #if 1
     zVec3D( 0.0, 0.0, 0 ),
@@ -46,6 +47,30 @@ int main(void)
 #endif
   };
   zVec3D vert( 0, 0.1, 0.5 );
+#else /* #ifdef __cplusplus */
+  zVec3D v[] = {
+#if 1
+    { { 0.0, 0.0, 0 } },
+    { {-0.1, 0.1, 0 } },
+    { {-0.1, 0.2, 0 } },
+    { { 0.1, 0.2, 0 } },
+    { { 0.2, 0.4, 0 } },
+    { { 0.1, 0.5, 0 } },
+    { { 0.1, 0.6, 0 } },
+    { { 0.3, 0.6, 0 } },
+    { { 0.3, 0.0, 0 } },
+#elif 0
+    { { 0.0, 0.0, 0 } },
+    { { 0.0, 0.1, 0 } },
+    { { 0.1, 0.0, 0 } },
+#else
+    { { 0.0, 0.0, 0 } },
+    { { 0.1, 0.0, 0 } },
+    { { 0.0, 0.1, 0 } },
+#endif
+  };
+  zVec3D vert = { { 0, 0.1, 0.5 } };
+#endif /* #ifdef __cplusplus */
   zPH3D pyr;
 
   zPH3DCreatePyramid( &pyr, v, sizeof(v)/sizeof(zVec3D), &vert );
