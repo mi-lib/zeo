@@ -25,13 +25,23 @@ void output(zPH3D *ph)
 #define DIV 100
 int main(void)
 {
+#ifdef __cplusplus
   zVec3D v[] = {
-    { { 0.10, 0.0, 0.1 } },
-    { { 0.15, 0.0, 0.0 } },
-    { { 0.10, 0.0,-0.1 } },
+    zVec3D( 0.10, 0.0, 0.1 ),
+    zVec3D( 0.15, 0.0, 0.0 ),
+    zVec3D( 0.10, 0.0,-0.1 ),
   };
-  zVec3D center = { { 0, 0, 0 } };
-  zVec3D axis   = { { 0, 0, 1 } };
+  zVec3D center = zVec3D( 0, 0, 0 );
+  zVec3D axis   = zVec3D( 0, 0, 1 );
+#else
+  zVec3D v[] = {
+    zVec3D( 0.10, 0.0, 0.1 ),
+    zVec3D( 0.15, 0.0, 0.0 ),
+    zVec3D( 0.10, 0.0,-0.1 ),
+  };
+  zVec3D center = zVec3D( 0, 0, 0 );
+  zVec3D axis   = zVec3D( 0, 0, 1 );
+#endif
   zPH3D lathe;
 
   zPH3DCreateLathe( &lathe, v, sizeof(v)/sizeof(zVec3D), DIV, &center, &axis );

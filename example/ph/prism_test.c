@@ -24,6 +24,20 @@ void output(zPH3D *ph)
 
 int main(void)
 {
+#ifdef __cplusplus
+  zVec3D v[] = {
+    zVec3D( 0.0,  0.0, 0  ),
+    zVec3D(-0.05, 0.05, 0 ),
+    zVec3D(-0.05, 0.1, 0  ),
+    zVec3D( 0.05, 0.1, 0  ),
+    zVec3D( 0.1,  0.2, 0  ),
+    zVec3D( 0.05, 0.25, 0 ),
+    zVec3D( 0.05, 0.3, 0  ),
+    zVec3D( 0.15, 0.3, 0  ),
+    zVec3D( 0.15, 0.0, 0  ),
+  };
+  zVec3D shift( 0, 0.05, 0.25 );
+#else
   zVec3D v[] = {
     { { 0.0,  0.0, 0 } },
     { {-0.05, 0.05, 0 } },
@@ -36,6 +50,7 @@ int main(void)
     { { 0.15, 0.0, 0 } },
   };
   zVec3D shift = { { 0, 0.05, 0.25 } };
+#endif
   zPH3D prism;
 
   zPH3DCreatePrism( &prism, v, sizeof(v)/sizeof(zVec3D), &shift );
