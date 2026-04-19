@@ -1,3 +1,6 @@
+2026.04.19. Modified __z_ch2d_cmp as to conform to the new specification of ZEDA_DEF_LIST_QUICKSORT. [zeo_bv2d_convexhull]
+2026.04.19. Modified _zVec2DListQuickSortDefaultCmp and _zVec3DListQuickSortDefaultCmp as to conform to the new specification of ZEDA_DEF_LIST_QUICKSORT. [zeo_vec2d_list, zeo_vec3d_list]
+2026.04.19. Redefined ZEO_VECXD_LIST_QUICKSORT_PROTOTYPE, ZEO_VECXD_LIST_QUICKSORT, ZEO_VECXD_LIST_QUICKSORT_DEFAULT_PROTOTYPE, ZEO_VECXD_LIST_QUICKSORT_DEFAULT, ZEO_VECXD_ADDRLIST_QUICKSORT_PROTOTYPE, and ZEO_VECXD_ADDRLIST_QUICKSORT by using newly defined ZEDA_DEF_LIST_QUICKSORT. [zeo_vecxd_list, zeo_vec2d_list, zeo_vec3d_list]
 2026.04.06. Modified example and test programs to conform to C++ (thanks to Daishi Kaneta). [example, test]
 2026.02.28. Modified zMat3DToAA. [zeo_mat3d]
 2026.02.28. Modified zMat3DToAA to except identity case. [zeo_mat3d]

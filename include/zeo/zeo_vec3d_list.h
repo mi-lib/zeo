@@ -13,10 +13,9 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* CLASS: zVec3DList
- * list of 3D vectors
- * ********************************************************** */
+/*! \struct zVec3DList
+ * \brief list of 3D vectors.
+ */
 
 ZEO_VECXD_LIST_DEF_STRUCT( 3D );
 
@@ -94,9 +93,9 @@ __ZEO_EXPORT ZEO_VECXD_LIST_FIND_PROTOTYPE( 3D );
  * x component values, they are sorted in ascending order of y components. If the y component values
  * are same, then it compares z component values likewise.
  * \return
- * zVec3DListQuickSort() and zVec3DListQuickSortDefault() return a pointer \a list.
+ * zVec3DListQuickSort() and zVec3DListQuickSortDefault() do not return any value.
  * \sa
- * zListQuickSortDef
+ * ZEDA_DEF_LIST_QUICKSORT
  */
 __ZEO_EXPORT ZEO_VECXD_LIST_QUICKSORT_PROTOTYPE( 3D );
 __ZEO_EXPORT ZEO_VECXD_LIST_QUICKSORT_DEFAULT_PROTOTYPE( 3D );
@@ -130,10 +129,9 @@ __ZEO_EXPORT ZEO_VECXD_LIST_FPRINT_PROTOTYPE( 3D );
 __ZEO_EXPORT ZEO_VECXD_LIST_VALUE_FPRINT_PROTOTYPE( 3D );
 #define zVec3DListValuePrint(list) zVecXDListValuePrint( 3D, list )
 
-/* ********************************************************** */
-/* CLASS: zVec3DAddrList
- * list of addresses of 3D vectors
- * ********************************************************** */
+/*! \struct zVec3DAddrList
+ * \brief list of addresses of 3D vectors.
+ */
 
 ZEO_VECXD_ADDRLIST_DEF_STRUCT( 3D );
 
@@ -199,9 +197,9 @@ __ZEO_EXPORT ZEO_VECXD_ADDRLIST_CLONE_PROTOTYPE( 3D );
  * (The factor a in \a list is put after another factor b when \a cmp(a,b,p) > 0, where p is for
  * programmer's utility, given by \a priv.)
  * \return
- * zVec3DAddrListQuickSort() returns a pointer \a list.
+ * zVec3DAddrListQuickSort() does not return any value.
  * \sa
- * zListQuickSortDef
+ * ZEDA_DEF_LIST_QUICKSORT
  */
 __ZEO_EXPORT ZEO_VECXD_ADDRLIST_QUICKSORT_PROTOTYPE( 3D );
 

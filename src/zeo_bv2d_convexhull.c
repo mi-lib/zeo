@@ -36,18 +36,18 @@ static zVec3D *_zConvexHull2DBase(zVec3DAddrList *addrlist, zVec3D s[])
 }
 
 /* comparison function of two vertices for sorting. */
-static int __z_ch2d_cmp(void *v1, void *v2, void *priv)
+static int __z_ch2d_cmp(zVec3DAddrListCell *v1, zVec3DAddrListCell *v2, void *priv)
 {
   double d1, d2;
   zVec3D *s1, *s2;
 
   s1 = (zVec3D *)priv;
   s2 = (zVec3D *)priv + 1;
-  d1 = zVec3DInnerProd( ((zVec3DAddrListCell *)v1)->data, s1 );
-  d2 = zVec3DInnerProd( ((zVec3DAddrListCell *)v2)->data, s1 );
+  d1 = zVec3DInnerProd( v1->data, s1 );
+  d2 = zVec3DInnerProd( v2->data, s1 );
   if( zIsTiny( d1 - d2 ) ){
-    d1 = zVec3DInnerProd( ((zVec3DAddrListCell *)v1)->data, s2 );
-    d2 = zVec3DInnerProd( ((zVec3DAddrListCell *)v2)->data, s2 );
+    d1 = zVec3DInnerProd( v1->data, s2 );
+    d2 = zVec3DInnerProd( v2->data, s2 );
     if( zIsTiny( d1 - d2 ) ) return 0;
     return d1 > d2 ? 1 : -1;
   }

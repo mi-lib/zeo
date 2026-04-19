@@ -11,10 +11,9 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* CLASS: zVec2D/3DList
- * list of 2D/3D vectors
- * ********************************************************** */
+/*! \struct zVec2D/3DList
+ * \brief list of 2D/3D vectors.
+ */
 
 #define ZEO_VECXD_LIST_DEF_STRUCT(XD) \
   zListClass( zVec##XD##List, zVec##XD##ListCell, zVec##XD )
@@ -96,14 +95,14 @@ __BEGIN_DECLS
 
 /* a quick sort routine for 2D/3D vector list class. */
 #define ZEO_VECXD_LIST_QUICKSORT_PROTOTYPE(XD) \
-  zVec##XD##List *zVec##XD##ListQuickSort(zVec##XD##List *list, int (*cmp)(void*,void*,void*), void *util)
-#define ZEO_VECXD_LIST_QUICKSORT(XD) zListQuickSortDef( zVec##XD##List, zVec##XD##ListCell )
-
-#define ZEO_VECXD_LIST_QUICKSORT_DEFAULT_PROTOTYPE(XD) \
-  zVec##XD##List *zVec##XD##ListQuickSortDefault(zVec##XD##List *list)
+  ZEDA_DEF_LIST_QUICKSORT_PROTOTYPE( zVec##XD##List, zVec##XD##ListCell )
+#define ZEO_VECXD_LIST_QUICKSORT(XD) \
+  ZEDA_DEF_LIST_QUICKSORT( zVec##XD##List, zVec##XD##ListCell )
+#define ZEO_VECXD_LIST_QUICKSORT_DEFAULT_PROTOTYPE(XD)		\
+  void zVec##XD##ListQuickSortDefault(zVec##XD##List *list)
 #define ZEO_VECXD_LIST_QUICKSORT_DEFAULT(XD) \
-  ZEO_VECXD_LIST_QUICKSORT_DEFAULT_PROTOTYPE(XD){\
-    return zVec##XD##ListQuickSort( list, _zVec##XD##ListQuickSortDefaultCmp, NULL );\
+  ZEO_VECXD_LIST_QUICKSORT_DEFAULT_PROTOTYPE(XD){ \
+    zVec##XD##ListQuickSort( list, _zVec##XD##ListQuickSortDefaultCmp, NULL ); \
   }
 
 /* print a list of 2D/3D vectors. */
@@ -131,10 +130,9 @@ __BEGIN_DECLS
 
 #define zVecXDListValuePrint(XD,list) zVec##XD##ListValueFPrint( stdout, (list) )
 
-/* ********************************************************** */
-/* CLASS: zVec2D/3DAddrList
- * list of addresses of 2D/3D vectors
- * ********************************************************** */
+/*! \struct zVec2D/3DAddrList
+ * \brief list of addresses of 2D/3D vectors.
+ */
 
 #define ZEO_VECXD_ADDRLIST_DEF_STRUCT(XD) \
   zListClass( zVec##XD##AddrList, zVec##XD##AddrListCell, zVec##XD * )
@@ -207,8 +205,9 @@ __BEGIN_DECLS
 
 /* a quick sort routine for vector list class. */
 #define ZEO_VECXD_ADDRLIST_QUICKSORT_PROTOTYPE(XD) \
-  zVec##XD##AddrList *zVec##XD##AddrListQuickSort(zVec##XD##AddrList *list, int (*cmp)(void*,void*,void*), void *utilp)
-#define ZEO_VECXD_ADDRLIST_QUICKSORT(XD) zListQuickSortDef( zVec##XD##AddrList, zVec##XD##AddrListCell )
+  ZEDA_DEF_LIST_QUICKSORT_PROTOTYPE( zVec##XD##AddrList, zVec##XD##AddrListCell )
+#define ZEO_VECXD_ADDRLIST_QUICKSORT(XD) \
+  ZEDA_DEF_LIST_QUICKSORT( zVec##XD##AddrList, zVec##XD##AddrListCell )
 
 /* print a list of pointers to 2D/3D vectors. */
 #define ZEO_VECXD_ADDRLIST_FPRINT_PROTOTYPE(XD) \
