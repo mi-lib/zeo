@@ -1,3 +1,5 @@
+2026.04.22. Applied renaming of zListAppendA/zListAppendZ to zListSpliceAndMoveA/zListSpliceAndMoveZ. [zeo_bv3d_convexhull, zeo_vec3d_octree, zeo_brep_bool]
+2026.04.22. Applied renaming of zListClass to ZEDA_DEF_LIST_CLASS. [zeo_vecxd_list, zeo_elem3d_list, zeo_elem3d_box, zeo_bvxd_boundingball, zeo_ph3d_stl, zeo_ph3d_dae, zeo_voronoi2d, zeo_bv3d_convexhull, zeo_shape3d_list, zeo_brep, zeo_col_gjk]
 2026.04.19. Modified __z_ch2d_cmp as to conform to the new specification of ZEDA_DEF_LIST_QUICKSORT. [zeo_bv2d_convexhull]
 2026.04.19. Modified _zVec2DListQuickSortDefaultCmp and _zVec3DListQuickSortDefaultCmp as to conform to the new specification of ZEDA_DEF_LIST_QUICKSORT. [zeo_vec2d_list, zeo_vec3d_list]
 2026.04.19. Redefined ZEO_VECXD_LIST_QUICKSORT_PROTOTYPE, ZEO_VECXD_LIST_QUICKSORT, ZEO_VECXD_LIST_QUICKSORT_DEFAULT_PROTOTYPE, ZEO_VECXD_LIST_QUICKSORT_DEFAULT, ZEO_VECXD_ADDRLIST_QUICKSORT_PROTOTYPE, and ZEO_VECXD_ADDRLIST_QUICKSORT by using newly defined ZEDA_DEF_LIST_QUICKSORT. [zeo_vecxd_list, zeo_vec2d_list, zeo_vec3d_list]

@@ -18,7 +18,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zDelaunayTri2D ){
   zTri2D t;
   zDelaunayTri2D *adj[3];
 };
-zListClass( zDelaunayTri2DList, zDelaunayTri2DListCell, zDelaunayTri2D );
+ZEDA_DEF_LIST_CLASS( zDelaunayTri2DList, zDelaunayTri2DListCell, zDelaunayTri2D );
 
 #define zDelaunayTri2DListDestroy( l ) zListDestroy( zDelaunayTri2DListCell, l )
 
@@ -46,14 +46,14 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVoronoi2DLoopData ){
   zVec2D node;    /*!< node */
   zDelaunayTri2D *t[2]; /*!< pointers to triangles from the node to the next */
 };
-zListClass( zVoronoi2DLoop, zVoronoi2DLoopCell, zVoronoi2DLoopData );
+ZEDA_DEF_LIST_CLASS( zVoronoi2DLoop, zVoronoi2DLoopCell, zVoronoi2DLoopData );
 
 /*! \brief 2D Voronoi cell class */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVoronoi2DData ){
   zVec2D *seed;
   zVoronoi2DLoop loop;
 };
-zListClass( zVoronoi2DList, zVoronoi2DCell, zVoronoi2DData );
+ZEDA_DEF_LIST_CLASS( zVoronoi2DList, zVoronoi2DCell, zVoronoi2DData );
 
 /*! \brief destroy a list of 2D Voronoi cell */
 __ZEO_EXPORT void zVoronoi2DListDestroy(zVoronoi2DList *vl);

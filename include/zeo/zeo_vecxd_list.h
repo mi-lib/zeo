@@ -16,7 +16,7 @@ __BEGIN_DECLS
  */
 
 #define ZEO_VECXD_LIST_DEF_STRUCT(XD) \
-  zListClass( zVec##XD##List, zVec##XD##ListCell, zVec##XD )
+  ZEDA_DEF_LIST_CLASS( zVec##XD##List, zVec##XD##ListCell, zVec##XD )
 
 /* allocate a 2D/3D vector list cell and copy a vector. */
 #define ZEO_VECXD_LIST_NEW_PROTOTYPE(XD) \
@@ -135,7 +135,7 @@ __BEGIN_DECLS
  */
 
 #define ZEO_VECXD_ADDRLIST_DEF_STRUCT(XD) \
-  zListClass( zVec##XD##AddrList, zVec##XD##AddrListCell, zVec##XD * )
+  ZEDA_DEF_LIST_CLASS( zVec##XD##AddrList, zVec##XD##AddrListCell, zVec##XD * )
 
 /* add a pointer to a 2D/3D vector into a list of vectors. */
 #define ZEO_VECXD_ADDRLIST_ADD_PROTOTYPE(XD) \

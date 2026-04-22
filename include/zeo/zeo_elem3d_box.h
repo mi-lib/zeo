@@ -11,9 +11,9 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/*! \brief 3D axis-aligned box class.
- *//* ******************************************************* */
+/*! \struct zAABox3D
+ * \brief 3D axis-aligned box class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zAABox3D ){
   zVec3D min; /*!< minimum coordinates */
   zVec3D max; /*!< maximum coordinates */
@@ -142,10 +142,10 @@ inline bool operator==(zAABox3D &box1, zAABox3D &box2){ return zAABox3DEqual( &b
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/*! \brief list of 3D axis-aligned boxes.
- *//* ******************************************************* */
-zListClass( zAABox3DList, zAABox3DListCell, zAABox3D );
+/*! \struct zAABox3DList
+ * \brief list of 3D axis-aligned boxes.
+ */
+ZEDA_DEF_LIST_CLASS( zAABox3DList, zAABox3DListCell, zAABox3D );
 
 /*! \brief add a 3D axis-aligned box to a list. */
 __ZEO_EXPORT zAABox3DListCell *zAABox3DListAdd(zAABox3DList *list, const zAABox3D *box);
@@ -153,9 +153,9 @@ __ZEO_EXPORT zAABox3DListCell *zAABox3DListAdd(zAABox3DList *list, const zAABox3
 /*! \brief destroy a list of 3D axis-aligned boxes. */
 #define zAABox3DListDestroy(list) zListDestroy( zAABox3DListCell, list )
 
-/* ********************************************************** */
-/*! \brief 3D box class.
- *//* ******************************************************* */
+/*! \struct zBox3D
+ * \brief 3D box class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zBox3D ){
   zVec3D edgespan;
   zFrame3D frame;

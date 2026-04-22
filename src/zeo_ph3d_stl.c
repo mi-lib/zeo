@@ -21,7 +21,7 @@ typedef struct{
   zVec3DTree *v1, *v2, *v3;
   zVec3D normal;
 } _zSTLFacet;
-zListClass( _zSTLFacetList, _zSTLFacetListCell, _zSTLFacet );
+ZEDA_DEF_LIST_CLASS( _zSTLFacetList, _zSTLFacetListCell, _zSTLFacet );
 
 /* register a facet to a STL facet list. */
 static _zSTLFacetListCell *_zSTLFacetListReg(_zSTLFacetList *flist, zVec3DTree *vtree, zVec3D *normal, zVec3D v[])

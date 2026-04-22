@@ -16,7 +16,7 @@ typedef struct _zQHPoint{
   zVec3D *v;    /* vertex coordinates */
   bool discard; /* discarding flag */
 } zQHPoint;
-zListClass(zQHPointList, zQHPointListCell, zQHPoint);
+ZEDA_DEF_LIST_CLASS(zQHPointList, zQHPointListCell, zQHPoint);
 
 typedef struct _zQHFacet{
   zQHPoint *p[3];  /* vertices */
@@ -28,7 +28,7 @@ typedef struct _zQHFacet{
   bool visible;    /* visible set flag */
   bool check;      /* merge check flag */
 } zQHFacet;
-zListClass(zQHFacetList, zQHFacetListCell, zQHFacet);
+ZEDA_DEF_LIST_CLASS(zQHFacetList, zQHFacetListCell, zQHFacet);
 
 typedef struct{
   zQHPointList vl; /* vertices */
@@ -171,7 +171,7 @@ static int _zQHSimplexVert(zQHPointList *pl, zQHPointListCell *v[])
   dim = 3;
  TERMINATE:
   if( !zListIsEmpty( &reserve ) )
-    zListAppend( pl, &reserve );
+    zListSpliceAndMoveZ( pl, &reserve );
   return dim;
 }
 
@@ -290,7 +290,7 @@ static bool _zQHVisibleSet(zQH *qh, zQHPoint *p, zQHFacetList *vs, zQHPointList 
       fc_tmp = zListCellPrev( fc );
       zListPurge( &qh->fl, fc ); /* delete from facet list */
       zListInsertTail( vs, fc ); /* insert to visible set */
-      zListAppendZ( pl, &fc->data.op ); /* points to be reassigned */
+      zListSpliceAndMoveZ( pl, &fc->data.op ); /* points to be reassigned */
       fc->data.p[0]->discard = fc->data.p[1]->discard = fc->data.p[2]->discard = true;
       fc = fc_tmp;
     }
@@ -424,7 +424,7 @@ static bool _zQHInc(zQH *qh, zQHFacet *f)
     return false;
   }
   _zQHFacetAssign( &cone, &pl ); /* reassign points outside of the cone */
-  zListAppendA( &qh->fl, &cone ); /* merge the cone to the convex hull */
+  zListSpliceAndMoveA( &qh->fl, &cone ); /* merge the cone to the convex hull */
   _zQHFacetListDestroy( &vs ); /* destroy visible set */
   return true;
 }
@@ -434,7 +434,7 @@ static void _zQHDiscard(zQH *qh, zQHPointList *pl)
 {
   zQHPointListCell *pc;
 
-  zListAppend( pl, &qh->vl );
+  zListSpliceAndMoveZ( pl, &qh->vl );
   while( !zListIsEmpty(pl) ){
     zListDeleteTail( pl, &pc );
     if( pc->data.discard )
