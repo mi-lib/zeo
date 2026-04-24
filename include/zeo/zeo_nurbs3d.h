@@ -28,7 +28,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zNURBS3DCPCell ){
  * It is defined with a macro zArray2Class.
  * \sa zArray2Class.
  */
-zArray2Class( zNURBS3DCPNet, zNURBS3DCPCell );
+ZEDA_DEF_ARRAY2_CLASS( zNURBS3DCPNet, zNURBS3DCPCell );
 
 /*! \struct zNURBS3D
  * \brief 3D NURBS curve and surface.

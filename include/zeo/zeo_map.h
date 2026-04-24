@@ -47,7 +47,7 @@ __ZEO_EXPORT void zMapFPrintZTK(FILE *fp, zMap *map);
 /*! \struct zMapArray
  * \brief array class of maps.
  */
-zArrayClass( zMapArray, zMap );
+ZEDA_DEF_ARRAY_CLASS( zMapArray, zMap );
 
 __END_DECLS
 

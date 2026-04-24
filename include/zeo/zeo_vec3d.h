@@ -682,7 +682,7 @@ __ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, const zVec3D &vec);
 /*! \struct zVec3DArray
  * \brief array class of 3D vectors.
  */
-zArrayClass( zVec3DArray, zVec3D );
+ZEDA_DEF_ARRAY_CLASS( zVec3DArray, zVec3D );
 
 /*! \brief allocate an array of 3D vectors. */
 #define zVec3DArrayAlloc(array,size) zArrayAlloc( array, zVec3D, size )

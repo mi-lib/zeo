@@ -11,9 +11,9 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/*! \brief cell type of elevation map.
- *//* ******************************************************* */
+/*! \struct zTerraCell
+ * \brief cell type of elevation map.
+ */
 typedef struct{
   double z;    /*!< \brief elevation */
   zVec3D norm; /*!< \brief normal vector */
@@ -29,11 +29,11 @@ typedef struct{
 #define zTerraCellZ(c,x,y) \
   ( (c)->_prm.e[zX] * (x) + (c)->_prm.e[zY] * (y) + (c)->_prm.e[zZ] )
 
-zArray2Class( zTerraCellArray, zTerraCell );
+ZEDA_DEF_ARRAY2_CLASS( zTerraCellArray, zTerraCell );
 
-/* ********************************************************** */
-/*! \brief elevation map.
- *//* ******************************************************* */
+/*! \struct zTerra
+ * \brief elevation map.
+ */
 typedef struct{
   double xmin; /*!< \brief minimum boundary in x */
   double xmax; /*!< \brief maximum boundary in x */

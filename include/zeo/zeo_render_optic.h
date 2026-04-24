@@ -104,7 +104,7 @@ __ZEO_EXPORT void zOpticalInfoFPrintZTK(FILE *fp, const zOpticalInfo *oi);
 /*! \struct zOpticalInfoArray
  * \brief array class of a set of optical parameters.
  */
-zArrayClass( zOpticalInfoArray, zOpticalInfo );
+ZEDA_DEF_ARRAY_CLASS( zOpticalInfoArray, zOpticalInfo );
 
 __END_DECLS
 

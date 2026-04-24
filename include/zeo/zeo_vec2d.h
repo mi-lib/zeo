@@ -470,7 +470,7 @@ __ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, zVec2D &vec);
 /*! \struct zVec2DArray
  * \brief array class of 2D vectors.
  */
-zArrayClass( zVec2DArray, zVec2D );
+ZEDA_DEF_ARRAY_CLASS( zVec2DArray, zVec2D );
 
 /*! \brief allocate an array of 2D vectors. */
 #define zVec2DArrayAlloc(array,size) zArrayAlloc( array, zVec2D, size )

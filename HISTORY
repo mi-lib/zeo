@@ -1,3 +1,4 @@
+2026.04.24. Applied renaming of zArrayClass and zArray2Class to ZEDA_DEF_ARRAY_CLASS and ZEDA_DEF_ARRAY2_CLASS. [zeo_render_optic, zeo_render_texture, zeo_vec2d, zeo_vec3d, zeo_elem2d, zeo_elem3d, zeo_nurbs3d, zeo_shape3d, zeo_map, zeo_map_terra]
 2026.04.22. Applied renaming of zListAppendA/zListAppendZ to zListSpliceAndMoveA/zListSpliceAndMoveZ. [zeo_bv3d_convexhull, zeo_vec3d_octree, zeo_brep_bool]
 2026.04.22. Applied renaming of zListClass to ZEDA_DEF_LIST_CLASS. [zeo_vecxd_list, zeo_elem3d_list, zeo_elem3d_box, zeo_bvxd_boundingball, zeo_ph3d_stl, zeo_ph3d_dae, zeo_voronoi2d, zeo_bv3d_convexhull, zeo_shape3d_list, zeo_brep, zeo_col_gjk]
 2026.04.19. Modified __z_ch2d_cmp as to conform to the new specification of ZEDA_DEF_LIST_QUICKSORT. [zeo_bv2d_convexhull]
