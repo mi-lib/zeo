@@ -337,11 +337,3 @@ void zMat2DFPrint(FILE *fp, const zMat2D *m)
   fprintf( fp, " %.10g, %.10g\n", m->c.xy, m->c.yy );
   fprintf( fp, "}\n" );
 }
-
-#ifdef __cplusplus
-std::ostream &operator<<(std::ostream &stream, zMat2D &mat){
-  stream << "|~ " << mat.c.xx << ", " << mat.c.yx << " ~|" << std::endl;
-  stream << "|_ " << mat.c.xy << ", " << mat.c.yy << " _|" << std::endl;
-  return stream;
-}
-#endif /* __cplusplus */

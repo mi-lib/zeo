@@ -9,14 +9,12 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
 /*! \brief default number of division in conversion from smooth curves to polygonal models. */
 #define ZEO_ELEM_DEFAULT_DIV 32
 
-/* ********************************************************** */
-/*! \brief 3D sphere class
- *//* ******************************************************* */
+/*! \struct zSphere3D
+ * \brief 3D sphere class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zSphere3D ){
   zVec3D center;
   double radius;
@@ -37,6 +35,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zSphere3D ){
   zMat3D *baryInertia(double density, zMat3D *inertia);
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 #define zSphere3DCenter(s)      ( &(s)->center )
 #define zSphere3DRadius(s)      (s)->radius

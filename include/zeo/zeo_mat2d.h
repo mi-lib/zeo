@@ -9,8 +9,6 @@
 
 #include <zeo/zeo_vec2d.h>
 
-__BEGIN_DECLS
-
 /*! \struct zMat2D
  * \brief 2x2 matrix.
  */
@@ -61,11 +59,22 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat2D ){
   zMat2D mulT(zMat2D &m);
   zMat2D mulInv(zMat2D &m);
   zMat2D &createAngle(double angle);
+  friend zMat2D operator+(const zMat2D &m1, const zMat2D &m2);
+  friend zMat2D operator-(const zMat2D &m1, const zMat2D &m2);
+  friend zMat2D operator*(const zMat2D &m, double k);
+  friend zMat2D operator*(double k, const zMat2D &m);
+  friend zVec2D operator*(const zMat2D &m, const zVec2D &v);
+  friend zMat2D operator*(const zMat2D &m1, const zMat2D &m2);
+  friend zMat2D operator/(const zMat2D &m, double k);
+  friend bool operator==(const zMat2D &m1, const zMat2D &m2);
+  friend std::ostream &operator<<(std::ostream &stream, const zMat2D &mat);
   /*! \brief 2D zero matrix and identity matrix */
   static const zMat2D zmat2Dzero;
   static const zMat2D zmat2Dident;
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 /*! \brief a column vector of a 2x2 matrix. */
 #define zMat2DVec(mat,axis) ( &(mat)->v[(axis)] )
@@ -528,7 +537,11 @@ inline zVec2D operator*(const zMat2D &m, const zVec2D &v){ zVec2D ret; zMulMat2D
 inline zMat2D operator*(const zMat2D &m1, const zMat2D &m2){ zMat2D ret; zMulMat2DMat2D( &m1, &m2, &ret ); return ret; }
 inline zMat2D operator/(const zMat2D &m, double k){ zMat2D ret; zMat2DDiv( &m, k, &ret ); return ret; }
 inline bool operator==(const zMat2D &m1, const zMat2D &m2){ return _zMat2DMatch( &m1, &m2 ); }
-__ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, zMat2D &mat);
+inline std::ostream &operator<<(std::ostream &stream, const zMat2D &mat){
+  stream << "|~ " << mat.c.xx << ", " << mat.c.yx << " ~|" << std::endl;
+  stream << "|_ " << mat.c.xy << ", " << mat.c.yy << " _|" << std::endl;
+  return stream;
+}
 #endif /* __cplusplus */
 
 #endif /* __ZEO_MAT2D_H__ */

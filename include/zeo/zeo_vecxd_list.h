@@ -9,12 +9,7 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
-/*! \struct zVec2D/3DList
- * \brief list of 2D/3D vectors.
- */
-
+/* macro to define zVec2D/3DList. */
 #define ZEO_VECXD_LIST_DEF_STRUCT(XD) \
   ZEDA_DEF_LIST_CLASS( zVec##XD##List, zVec##XD##ListCell, zVec##XD )
 
@@ -233,7 +228,5 @@ __BEGIN_DECLS
   }
 
 #define zVecXDAddrListValuePrint(XD,list) zVec##XD##AddrListValueFPrint( stdout, (list) )
-
-__END_DECLS
 
 #endif /* __ZEO_VECXD_LIST_H__ */

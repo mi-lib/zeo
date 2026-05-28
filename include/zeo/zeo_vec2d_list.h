@@ -11,13 +11,13 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
 /*! \struct zVec2DList
  * \brief list of 2D vectors.
  */
 
 ZEO_VECXD_LIST_DEF_STRUCT( 2D );
+
+__BEGIN_DECLS
 
 /*! \brief allocate a 2D vector list cell and copy a vector.
  *
@@ -128,11 +128,14 @@ __ZEO_EXPORT ZEO_VECXD_LIST_FPRINT_PROTOTYPE( 2D );
 __ZEO_EXPORT ZEO_VECXD_LIST_VALUE_FPRINT_PROTOTYPE( 2D );
 #define zVec2DListValuePrint(list) zVecXDListValuePrint( 2D, list )
 
+__END_DECLS
+
 /*! \struct zVec2DAddrList
  * \brief list of addresses of 2D vectors.
  */
-
 ZEO_VECXD_ADDRLIST_DEF_STRUCT( 2D );
+
+__BEGIN_DECLS
 
 /*! \brief add a pointer to a 2D vector into a list of vectors.
  *

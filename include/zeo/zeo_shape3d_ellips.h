@@ -14,16 +14,16 @@ zShape3D *createEllips(const zVec3D *center, double rx, double ry, double rz, in
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
-/* ********************************************************** */
-/*! \brief 3D ellipsoid class
- *//* ******************************************************* */
+/*! \struct zEllips3D
+ * \brief 3D ellipsoid class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEllips3D ){
   zVec3D radius;
   zFrame3D f;
   int div;
 };
+
+__BEGIN_DECLS
 
 #define zEllips3DRadius(ellips,d)      ( (ellips)->radius.e[(d)] )
 #define zEllips3DRadiusX(ellips)       zEllips3DRadius( ellips, zX )

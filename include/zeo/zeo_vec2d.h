@@ -9,8 +9,6 @@
 
 #include <zeo/zeo_misc.h>
 
-__BEGIN_DECLS
-
 /*! \struct zVec2D
  * \brief 2D vector.
  */
@@ -49,12 +47,23 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zVec2D ){
   double sqrNorm();
   double norm();
   zVec2D &normalize();
+  friend zVec2D operator+(const zVec2D &v1, const zVec2D &v2);
+  friend zVec2D operator-(const zVec2D &v1, const zVec2D &v2);
+  friend zVec2D operator*(const zVec2D &v, double k);
+  friend zVec2D operator*(double k, const zVec2D &v);
+  friend zVec2D operator*(const zVec2D &v1, const zVec2D &v2);
+  friend zVec2D operator/(const zVec2D &v, double k);
+  friend zVec2D operator/(const zVec2D &v1, const zVec2D &v2);
+  friend bool operator==(const zVec2D &v1, const zVec2D &v2);
+  friend std::ostream &operator<<(std::ostream &stream, const zVec2D &vec);
   /*! \brief 2D zero vector and unit vectors */
   static const zVec2D zvec2Dzero;
   static const zVec2D zvec2Dx;
   static const zVec2D zvec2Dy;
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 /*! \brief 2D zero vector and unit vectors */
 #ifdef __cplusplus
@@ -464,7 +473,10 @@ inline zVec2D operator*(const zVec2D &v1, const zVec2D &v2){ zVec2D ret; _zVec2D
 inline zVec2D operator/(const zVec2D &v, double k){ zVec2D ret; zVec2DDiv( &v, k, &ret ); return ret; }
 inline zVec2D operator/(const zVec2D &v1, const zVec2D &v2){ zVec2D ret; _zVec2DDem( &v1, &v2, &ret ); return ret; }
 inline bool operator==(const zVec2D &v1, const zVec2D &v2){ return _zVec2DMatch( &v1, &v2 ); }
-__ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, zVec2D &vec);
+inline std::ostream &operator<<(std::ostream &stream, const zVec2D &vec){
+  stream << "( " << vec.c.x << ", " << vec.c.y << ")";
+  return stream;
+}
 #endif /* __cplusplus */
 
 /*! \struct zVec2DArray

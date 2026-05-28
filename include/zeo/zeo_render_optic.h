@@ -9,8 +9,6 @@
 
 #include <zeo/zeo_render_color.h>
 
-__BEGIN_DECLS
-
 /*! \struct zOpticalInfo
  * \brief optical characteristic parameters
  */
@@ -38,6 +36,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zOpticalInfo ){
   zOpticalInfo *blend(const zOpticalInfo *oi1, const zOpticalInfo *oi2, double ratio);
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 /*! \brief create, initialize, copy and destroy a set of optical parameters.
  *

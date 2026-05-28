@@ -131,17 +131,17 @@ static void *_zTextureFaceFromZTK(void *obj, int i, void *arg, ZTK *ztk)
   return obj;
 }
 
-static bool _zTextureNameFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zTextureNameFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%s\n", zName((zTexture*)obj) );
   return true;
 }
 
-static bool _zTextureFileFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zTextureFileFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%s\n", ((zTexture*)obj)->filename );
   return true;
 }
 
-static bool _zTextureTypeFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zTextureTypeFPrintZTK(FILE *fp, int i, const void *obj){
   switch( ((zTexture*)obj)->type ){
   case ZTEXTURE_BUMP:           fprintf( fp, "bump\n" );  break;
   case ZTEXTURE_COLOR: default: fprintf( fp, "color\n" ); break;
@@ -149,7 +149,7 @@ static bool _zTextureTypeFPrintZTK(FILE *fp, int i, void *obj){
   return true;
 }
 
-static bool _zTextureDepthFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zTextureDepthFPrintZTK(FILE *fp, int i, const void *obj){
   if( ((zTexture*)obj)->type != ZTEXTURE_BUMP ) return false;
   fprintf( fp, "%.10g\n", ((zTexture*)obj)->depth );
   return true;

@@ -9,14 +9,14 @@
 
 #include <zeo/zeo_map.h>
 
-__BEGIN_DECLS
-
 /*! \struct zMapNet
  * \brief net of maps (tentative)
  */
-typedef struct{
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zMapNet ){
   zMapArray maparray;
-} zMapNet;
+};
+
+__BEGIN_DECLS
 
 #define zMapNetMap(mn,i) ((zMap*)zArrayElem(&(mn)->maparray,i))
 
@@ -32,12 +32,12 @@ __ZEO_EXPORT void zMapNetDestroy(zMapNet *mn);
 /*! \brief read multiple 3D shapes from a ZTK format processor. */
 __ZEO_EXPORT zMapNet *zMapNetFromZTK(zMapNet *mn, ZTK *ztk);
 /*! \brief print information of map net out to a file in ZTK format. */
-__ZEO_EXPORT void zMapNetFPrintZTK(FILE *fp, zMapNet *mn);
+__ZEO_EXPORT void zMapNetFPrintZTK(FILE *fp, const zMapNet *mn);
 
 /*! \brief read map net from a ZTK format file. */
-__ZEO_EXPORT zMapNet *zMapNetReadZTK(zMapNet *mn, char filename[]);
+__ZEO_EXPORT zMapNet *zMapNetReadZTK(zMapNet *mn, const char filename[]);
 /*! \brief write map net to a ZTK format file. */
-__ZEO_EXPORT bool zMapNetWriteZTK(zMapNet *mn, char filename[]);
+__ZEO_EXPORT bool zMapNetWriteZTK(const zMapNet *mn, const char filename[]);
 
 __END_DECLS
 

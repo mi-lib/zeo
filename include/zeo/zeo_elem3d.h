@@ -10,12 +10,12 @@
 #include <zeo/zeo_frame3d.h>
 #include <zeo/zeo_elemxd.h>
 
-__BEGIN_DECLS
-
 /*! \struct zLine3D
  * \brief 3D line class.
  */
 ZEO_ELEM_LINEXD_DEF_STRUCT( 3D );
+
+__BEGIN_DECLS
 
 #define zLine3DOrg(line)       zLineXDOrg( 3D, line )
 #define zLine3DDir(line)       zLineXDDir( 3D, line )
@@ -46,10 +46,14 @@ __ZEO_EXPORT zLine3D *zLine3DCommonPerp(const zLine3D *line1, const zLine3D *lin
 /*! \brief distance between two 3D lines. */
 __ZEO_EXPORT double zDistLine3DLine3D(const zLine3D *line1, const zLine3D *line2);
 
+__END_DECLS
+
 /*! \struct zEdge3D
  * \brief 3D edge class.
  */
 ZEO_ELEM_EDGEXD_DEF_STRUCT( 3D );
+
+__BEGIN_DECLS
 
 #define zEdge3DVert(edge,i)        zEdgeXDVert( 3D, edge, i )
 #define zEdge3DVec(edge)           zEdgeXDVec( 3D, edge )
@@ -161,6 +165,8 @@ __ZEO_EXPORT ZEO_ELEM_EDGEXD_CONTIG_VERT_PROTOTYPE( 3D );
 __ZEO_EXPORT ZEO_ELEM_EDGEXD_FPRINT_PROTOTYPE( 3D );
 #define zEdge3DPrint(edge) zEdge3DFPrint( stdout, (edge) )
 
+__END_DECLS
+
 /*! \struct zPlane3D
  * \brief 3D plane class.
  */
@@ -168,6 +174,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPlane3D ){
   zVec3D *origin; /*!< original point */
   zVec3D norm;    /*!< normal vector */
 };
+
+__BEGIN_DECLS
 
 #define zPlane3DOrg(plane)        ( (plane)->origin )
 #define zPlane3DNorm(plane)       ( &(plane)->norm )
@@ -230,6 +238,8 @@ __ZEO_EXPORT double zPlane3DProjPoint(const zPlane3D *plane, const zVec3D *v, zV
 __ZEO_EXPORT void zPlane3DFPrint(FILE *fp, const zPlane3D *plane);
 #define zPlane3DPrint(plane) zPlane3DFPrint( stdout, (plane) )
 
+__END_DECLS
+
 /*! \struct zTri3D
  * \brief 3D triangle class.
  */
@@ -237,6 +247,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zTri3D ){
   zVec3D *v[3]; /*!< vertices */
   zVec3D norm;  /*!< normal vector */
 };
+
+__BEGIN_DECLS
 
 #define zTri3DNorm(tri)        ( &(tri)->norm )
 #define zTri3DVert(tri,i)      (tri)->v[(i)]
@@ -453,14 +465,16 @@ __ZEO_EXPORT zVec3D *zTri3DConeCircumcenter(const zTri3D *tri, zVec3D *c);
 __ZEO_EXPORT void zTri3DFPrint(FILE *fp, const zTri3D *tri);
 #define zTri3DPrint(tri) zTri3DFPrint( stdout, (tri) )
 
+__END_DECLS
+
 /*! \struct zTri3DArray
  * \brief array class of 3D triangles.
  */
 ZEDA_DEF_ARRAY_CLASS( zTri3DArray, zTri3D );
 
-/* ********************************************************** */
-/* 3D tetrahedron.
- * ********************************************************** */
+/* 3D tetrahedron. */
+
+__BEGIN_DECLS
 
 /*! \brief closest point on a tetrahedron composed by four given 3D points to the origin. */
 __ZEO_EXPORT double zTetra3DClosestFromOrigin(const zVec3D *vert0, const zVec3D *vert1, const zVec3D *vert2, const zVec3D *vert3, double *s0, double *s1, double *s2, double *s3, zVec3D *closestpoint);

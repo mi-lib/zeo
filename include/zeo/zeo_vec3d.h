@@ -9,8 +9,6 @@
 
 #include <zeo/zeo_misc.h>
 
-__BEGIN_DECLS
-
 /*! \struct zVec3D
  * \brief 3D vector.
  */
@@ -49,6 +47,15 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zVec3D ){
   double sqrNorm();
   double norm();
   zVec3D &normalize();
+  friend zVec3D operator+(const zVec3D &v1, const zVec3D &v2);
+  friend zVec3D operator-(const zVec3D &v1, const zVec3D &v2);
+  friend zVec3D operator*(const zVec3D &v, double k);
+  friend zVec3D operator*(double k, const zVec3D &v);
+  friend zVec3D operator*(const zVec3D &v1, const zVec3D &v2);
+  friend zVec3D operator/(const zVec3D &v, double k);
+  friend zVec3D operator/(const zVec3D &v1, const zVec3D &v2);
+  friend bool operator==(const zVec3D &v1, const zVec3D &v2);
+  friend std::ostream &operator<<(std::ostream &stream, const zVec3D &vec);
   /*! \brief 3D zero vector and unit vectors */
   static const zVec3D zvec3Dzero;
   static const zVec3D zvec3Dx;
@@ -56,6 +63,8 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zVec3D ){
   static const zVec3D zvec3Dz;
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 /*! \brief 3D zero vector and unit vectors */
 #ifdef __cplusplus
@@ -676,7 +685,10 @@ inline zVec3D operator*(const zVec3D &v1, const zVec3D &v2){ zVec3D ret; _zVec3D
 inline zVec3D operator/(const zVec3D &v, double k){ zVec3D ret; zVec3DDiv( &v, k, &ret ); return ret; }
 inline zVec3D operator/(const zVec3D &v1, const zVec3D &v2){ zVec3D ret; _zVec3DDem( &v1, &v2, &ret ); return ret; }
 inline bool operator==(const zVec3D &v1, const zVec3D &v2){ return _zVec3DMatch( &v1, &v2 ); }
-__ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, const zVec3D &vec);
+inline std::ostream &operator<<(std::ostream &stream, const zVec3D &vec){
+  stream << "( " << vec.c.x << ", " << vec.c.y << ", " << vec.c.z << " )";
+  return stream;
+}
 #endif /* __cplusplus */
 
 /*! \struct zVec3DArray

@@ -13,17 +13,16 @@ zShape3D *createCylinder(const zVec3D *center1, const zVec3D *center2, double ra
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
-/* ********************************************************** */
-/*! \brief 3D cylinder class
- *//* ******************************************************* */
-
+/*! \struct zCyl3D
+ * \brief 3D cylinder class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zCyl3D ){
   zVec3D center[2];
   double radius;
   int div;
 };
+
+__BEGIN_DECLS
 
 #define zCyl3DCenter(cyl,i)      ( &(cyl)->center[i] )
 #define zCyl3DRadius(cyl)        (cyl)->radius

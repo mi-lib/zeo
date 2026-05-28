@@ -11,12 +11,12 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
 /*! \struct zVec6DList
  * \brief list of 6D vectors
  */
 ZEO_VECXD_LIST_DEF_STRUCT( 6D );
+
+__BEGIN_DECLS
 
 /*! \brief allocate a 6D vector list cell and copy a vector.
  *

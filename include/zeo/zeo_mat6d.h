@@ -10,8 +10,6 @@
 
 #include <zeo/zeo_mat3d.h>
 
-__BEGIN_DECLS
-
 /*! \struct zMat6D
  * \brief 6x6 matrix consisting of four 3x3 matrices.
  */
@@ -31,6 +29,8 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat6D ){
   ~zMat6D(){}
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 /*! \brief create a 6x6 matrix.
  *

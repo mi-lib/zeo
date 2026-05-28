@@ -10,8 +10,6 @@
 #include <zeda/zeda_misc.h>
 #include <zeo/zeo_elem2d.h>
 
-__BEGIN_DECLS
-
 enum{
   ZTEXTURE_COLOR,
   ZTEXTURE_BUMP,
@@ -30,6 +28,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zTexture ){
   int height;        /*!< \brief height of the texture image */
   double depth;      /*!< \brief depth of bumps (for bump mapping only) */
 };
+
+__BEGIN_DECLS
 
 #define zTextureCoordNum(tex)      zArraySize(&(tex)->coord)
 #define zTextureCoordBuf(tex)      zArrayBuf(&(tex)->coord)

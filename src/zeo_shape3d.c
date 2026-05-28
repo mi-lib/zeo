@@ -6,11 +6,6 @@
 
 #include <zeo/zeo_shape3d.h>
 
-/* ********************************************************** */
-/* CLASS: zShape3D
- * 3D unit shape class
- * ********************************************************** */
-
 /* initialize a 3D shape. */
 zShape3D *zShape3DInit(zShape3D *shape)
 {
@@ -373,20 +368,20 @@ static void *_zShape3DFrameFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 
-static bool _zShape3DNameFPrint(FILE *fp, int i, void *obj){
+static bool _zShape3DNameFPrint(FILE *fp, int i, const void *obj){
   fprintf( fp, "%s\n", zName((zShape3D*)obj) );
   return true;
 }
-static bool _zShape3DTypeFPrint(FILE *fp, int i, void *obj){
+static bool _zShape3DTypeFPrint(FILE *fp, int i, const void *obj){
   fprintf( fp, "%s\n", ((zShape3D*)obj)->com->typestr );
   return true;
 }
-static bool _zShape3DOpticFPrint(FILE *fp, int i, void *obj){
+static bool _zShape3DOpticFPrint(FILE *fp, int i, const void *obj){
   if( !zShape3DOptic((zShape3D*)obj) ) return false;
   fprintf( fp, "%s\n", zName(zShape3DOptic((zShape3D*)obj)) );
   return true;
 }
-static bool _zShape3DTextureFPrint(FILE *fp, int i, void *obj){
+static bool _zShape3DTextureFPrint(FILE *fp, int i, const void *obj){
   if( !zShape3DTexture((zShape3D*)obj) ) return false;
   fprintf( fp, "%s\n", zName(zShape3DTexture((zShape3D*)obj)) );
   return true;

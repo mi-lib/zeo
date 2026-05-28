@@ -9,12 +9,10 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
 /*! \struct zTerraCell
  * \brief cell type of elevation map.
  */
-typedef struct{
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zTerraCell ){
   double z;    /*!< \brief elevation */
   zVec3D norm; /*!< \brief normal vector */
   double var;  /*!< \brief variance */
@@ -24,17 +22,20 @@ typedef struct{
   zMat3D _s;    /* covariant matrix */
   int _np;      /* number of assigned points */
   /*! \endcond */
-} zTerraCell;
+};
 
-#define zTerraCellZ(c,x,y) \
-  ( (c)->_prm.e[zX] * (x) + (c)->_prm.e[zY] * (y) + (c)->_prm.e[zZ] )
+__BEGIN_DECLS
+
+#define zTerraCellZ(c,x,y) ( (c)->_prm.e[zX] * (x) + (c)->_prm.e[zY] * (y) + (c)->_prm.e[zZ] )
+
+__END_DECLS
 
 ZEDA_DEF_ARRAY2_CLASS( zTerraCellArray, zTerraCell );
 
 /*! \struct zTerra
  * \brief elevation map.
  */
-typedef struct{
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zTerra ){
   double xmin; /*!< \brief minimum boundary in x */
   double xmax; /*!< \brief maximum boundary in x */
   double ymin; /*!< \brief minimum boundary in y */
@@ -47,7 +48,9 @@ typedef struct{
   double travs_th_grd; /*!< \brief traversability threshold of gradient */
   double travs_th_res; /*!< \brief traversability threshold of residual */
   zTerraCellArray gridmap; /*!< \brief grid map */
-} zTerra;
+};
+
+__BEGIN_DECLS
 
 /* \brief a grid at (\a i, \a j) of a map in \a terra. */
 #define zTerraGridNC(terra,i,j) zArray2ElemNC(&(terra)->gridmap,i,j)
@@ -135,10 +138,10 @@ __ZEO_EXPORT double zTerraZ(zTerra *terra, double x, double y);
 __ZEO_EXPORT zTerra *zTerraFromZTK(zTerra *terra, ZTK *ztk);
 
 /*! \brief print an elevation map out to a file in ZTK format. */
-__ZEO_EXPORT void zTerraFPrintZTK(FILE *fp, zTerra *terra);
+__ZEO_EXPORT void zTerraFPrintZTK(FILE *fp, const zTerra *terra);
 
 /*! \brief print an elevation map out to a file in a plot-friendly format. */
-__ZEO_EXPORT void zTerraDataFPrint(FILE *fp, zTerra *terra);
+__ZEO_EXPORT void zTerraDataFPrint(FILE *fp, const zTerra *terra);
 
 /* methods for abstraction */
 __ZEO_EXPORT zMapCom zeo_map_terra_com;

@@ -11,13 +11,12 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
 /*! \struct zVec3DList
  * \brief list of 3D vectors.
  */
-
 ZEO_VECXD_LIST_DEF_STRUCT( 3D );
+
+__BEGIN_DECLS
 
 /*! \brief allocate a 3D vector list cell and copy a vector.
  *
@@ -129,11 +128,14 @@ __ZEO_EXPORT ZEO_VECXD_LIST_FPRINT_PROTOTYPE( 3D );
 __ZEO_EXPORT ZEO_VECXD_LIST_VALUE_FPRINT_PROTOTYPE( 3D );
 #define zVec3DListValuePrint(list) zVecXDListValuePrint( 3D, list )
 
+__END_DECLS
+
 /*! \struct zVec3DAddrList
  * \brief list of addresses of 3D vectors.
  */
-
 ZEO_VECXD_ADDRLIST_DEF_STRUCT( 3D );
+
+__BEGIN_DECLS
 
 /*! \brief add a pointer to a 3D vector into a list of vectors.
  *

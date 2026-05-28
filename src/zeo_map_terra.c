@@ -354,31 +354,31 @@ static void *_zTerraGridFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 
-static bool _zTerraOriginFPrint(FILE *fp, int i, void *obj){
+static bool _zTerraOriginFPrint(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g %.10g\n", ((zTerra*)obj)->xmin, ((zTerra*)obj)->ymin );
   return true;
 }
-static bool _zTerraResolFPrint(FILE *fp, int i, void *obj){
+static bool _zTerraResolFPrint(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g %.10g\n", ((zTerra*)obj)->dx, ((zTerra*)obj)->dy );
   return true;
 }
-static bool _zTerraSizeFPrint(FILE *fp, int i, void *obj){
+static bool _zTerraSizeFPrint(FILE *fp, int i, const void *obj){
   fprintf( fp, "%d %d\n", zTerraXSize((zTerra*)obj), zTerraYSize((zTerra*)obj) );
   return true;
 }
-static bool _zTerraZRangeFPrint(FILE *fp, int i, void *obj){
+static bool _zTerraZRangeFPrint(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g %.10g\n", ((zTerra*)obj)->zmin, ((zTerra*)obj)->zmax );
   return true;
 }
-static bool _zTerraVarThrsdFPrint(FILE *fp, int i, void *obj){
+static bool _zTerraVarThrsdFPrint(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", ((zTerra*)obj)->travs_th_var );
   return true;
 }
-static bool _zTerraGrdThrsdFPrint(FILE *fp, int i, void *obj){
+static bool _zTerraGrdThrsdFPrint(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zRad2Deg( acos( ((zTerra*)obj)->travs_th_grd ) ) );
   return true;
 }
-static bool _zTerraResThrsdFPrint(FILE *fp, int i, void *obj){
+static bool _zTerraResThrsdFPrint(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", ((zTerra*)obj)->travs_th_res );
   return true;
 }
@@ -402,7 +402,7 @@ zTerra *zTerraFromZTK(zTerra *terra, ZTK *ztk)
 }
 
 /* print an elevation map out to a file. */
-void zTerraFPrintZTK(FILE *fp, zTerra *terra)
+void zTerraFPrintZTK(FILE *fp, const zTerra *terra)
 {
   int i, j;
   zTerraCell *grid;
@@ -417,7 +417,7 @@ void zTerraFPrintZTK(FILE *fp, zTerra *terra)
 }
 
 /* print an elevation map out to a file in a plot-friendly format. */
-void zTerraDataFPrint(FILE *fp, zTerra *terra)
+void zTerraDataFPrint(FILE *fp, const zTerra *terra)
 {
   int i, j;
   zTerraCell *grid;
@@ -443,8 +443,8 @@ static void *_zMapTerraParseZTK(void *terra, ZTK *ztk){
   return zTerraFromZTK( (zTerra *)terra, ztk );
 }
 
-static void _zMapTerraFPrintZTK(FILE *fp, void *terra){
-  zTerraFPrintZTK( fp, (zTerra *)terra );
+static void _zMapTerraFPrintZTK(FILE *fp, const void *terra){
+  zTerraFPrintZTK( fp, (const zTerra *)terra );
 }
 
 zMapCom zeo_map_terra_com = {

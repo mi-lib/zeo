@@ -9,12 +9,9 @@
 
 #include <zeo/zeo_vec3d_data.h>
 
-__BEGIN_DECLS
-
-/* ********************************************************** */
-/*! \brief 3D polyhedron class.
- *//* ******************************************************* */
-
+/*! \struct zPH3D
+ * \brief 3D polyhedron class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPH3D ){
   zVec3DArray vert_array;
   zTri3DArray face_array;
@@ -70,6 +67,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPH3D ){
   void fprintZTK(FILE *fp = stdout);
 #endif
 };
+
+__BEGIN_DECLS
 
 #define zPH3DVertArray(ph)    ( &(ph)->vert_array )
 #define zPH3DVertNum(ph)      zArraySize(zPH3DVertArray(ph))

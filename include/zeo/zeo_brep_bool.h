@@ -25,11 +25,7 @@ __BEGIN_DECLS
  */
 __ZEO_EXPORT zBREP *zBREPMerge(zBREP *target, zBREP *sub);
 
-/* ********************************************************** */
-/* CATEGOLY: intersection of polyhedra
- * ********************************************************** */
-
-/*! \brief truncate a polyhedon.
+/*! \brief truncate a polyhedon by another.
  *
  * zPH3DTrunc() truncates a convex polyhedron \a src
  * by another polyhedron \a cut. The part of \a src which
@@ -41,7 +37,7 @@ __ZEO_EXPORT zBREP *zBREPMerge(zBREP *target, zBREP *sub);
  */
 __ZEO_EXPORT zPH3D *zPH3DTruncBREP(zPH3D *src, zPH3D *cut, zPH3D *dest);
 
-/*! \brief intersect of polyhedra.
+/*! \brief intersect 3D polyhedra.
  *
  * zIntersectPH3DBREP() computes the intersection of two polyhedra
  * \a src1 and \a src2. It is assumed that both \a src1 and
@@ -53,7 +49,7 @@ __ZEO_EXPORT zPH3D *zPH3DTruncBREP(zPH3D *src, zPH3D *cut, zPH3D *dest);
  */
 __ZEO_EXPORT zPH3D *zIntersectPH3DBREP(zPH3D *src1, zPH3D *src2, zPH3D *dest);
 
-/*! \brief intersect of polyhedra.
+/*! \brief intersect polyhedra.
  *
  * zIntersectPH3DBREPFast() computes the intersection of two
  * polyhedra \a src1 and \a src2. It is assumed that both \a src1

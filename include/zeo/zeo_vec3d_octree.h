@@ -9,9 +9,9 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
-/* octant of matrix-based octree */
+/*! \struct Vec3DOctant
+ * \brief octant of matrix-based octree.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec3DOctant ){
   zVec3DOctant *suboctant[8]; /*!< \brief 8 suboctants */
   zAABox3D region;            /*!< \brief region to cover */
@@ -23,6 +23,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec3DOctant ){
   /*! \endcond */
 };
 
+__BEGIN_DECLS
+
 /*! \brief check if a 3D point is inside of an octant. */
 #define zVec3DOctantPointIsInside(octant,point) zAABox3DPointIsInside( &(octant)->region, point, zTOL )
 
@@ -32,7 +34,11 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec3DOctant ){
     zAABox3DWidth( &(octant)->region) < (resolution) + zTOL && \
     zAABox3DHeight(&(octant)->region) < (resolution) + zTOL )
 
-/* matrix-based octree */
+__END_DECLS
+
+/*! \struct zVec3DOctree
+ * \brief matrix-based octree.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec3DOctree ){
   double resolution; /*!< \brief spatial resolution */
   zVec3DOctant root; /*!< \brief root node of octree */
@@ -61,6 +67,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec3DOctree ){
   int toAABox3DList(zAABox3DList *list);
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 #define zVec3DOctreeSetResolution(octree,res) ( (octree)->resolution = (res) )
 

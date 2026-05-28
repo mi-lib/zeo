@@ -9,15 +9,15 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
-/* ********************************************************** */
-/*! \brief 2D disk class.
- *//********************************************************* */
+/*! \struct zDisk2D
+ * \brief 2D disk class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zDisk2D ){
   zVec2D center;
   double radius;
 };
+
+__BEGIN_DECLS
 
 #define zDisk2DCenter(disk)      ( &(disk)->center )
 #define zDisk2DRadius(disk)      (disk)->radius
@@ -40,13 +40,17 @@ __ZEO_EXPORT zDisk2D *zDisk2DFrom2(zDisk2D *disk, const zVec2D *v1, const zVec2D
 /*! \brief create a 2D disk from three points as a circumcircle of them. */
 __ZEO_EXPORT zDisk2D *zDisk2DFrom3(zDisk2D *disk, const zVec2D *v1, const zVec2D *v2, const zVec2D *v3);
 
-/* ********************************************************** */
-/*! \brief 2D ellipse class.
- *//********************************************************* */
+__END_DECLS
+
+/*! \struct zEllips2D
+ * \brief 2D ellipse class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEllips2D ){
   zVec2D center;
   double radius[2];
 };
+
+__BEGIN_DECLS
 
 #define zEllips2DCenter(ellips)        ( &(ellips)->center )
 #define zEllips2DRadius(ellips,i)      (ellips)->radius[(i)]

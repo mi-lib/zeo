@@ -9,8 +9,6 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
 /* ********************************************************** */
 /* commonized class of a set of 2D/3D vectors.
  * ********************************************************** */
@@ -96,7 +94,7 @@ __BEGIN_DECLS
     } pointer; \
     const zVec##XD##DataMethod *method; \
   }
-#endif
+#endif /* __cplusplus */
 
 #define zVecXDDataDestroy(data)  (data)->method->destroy( data )
 #define zVecXDDataSize(data)     (data)->method->size( data )
@@ -399,7 +397,7 @@ __BEGIN_DECLS
       data->method = &zeo_vec##XD##_data_method_dummy; \
       return NULL; \
     } \
-    zArrayAssign( data->data.array, vec, capacity ); \
+    zArrayAssign( data->data.array, capacity, vec ); \
     data->method = &zeo_vec##XD##_data_method_array_direct; \
     zVec##XD##DataRewind( data ); \
     return data; \
@@ -587,8 +585,6 @@ __BEGIN_DECLS
   }
 
 #define zVecXDDataValuePrint(XD,data) zVec##XD##DataValueFPrint( stdout, data )
-
-__END_DECLS
 
 #ifdef __cplusplus
 #define ZEO_VECXD_DATA_DEF_STATIC_METHOD(XD) \

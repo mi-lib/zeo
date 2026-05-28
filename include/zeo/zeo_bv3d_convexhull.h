@@ -11,10 +11,6 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* 3D convex hull
- * ********************************************************** */
-
 /*! \brief convex hull of 3D points.
  *
  * zVec3DDataConvexHull() computes the convex hull of a set of points \a data based on the

@@ -6,10 +6,6 @@
 
 #include <zeo/zeo_shape3d.h>
 
-/* ********************************************************** */
-/* 3D cylinder class
- * ********************************************************** */
-
 /* create a 3D cylinder. */
 zCyl3D *zCyl3DCreate(zCyl3D *cyl, const zVec3D *center1, const zVec3D *center2, double radius, int div)
 {
@@ -238,13 +234,13 @@ static void *_zCyl3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zCyl3DDiv((zCyl3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static bool _zCyl3DCenterFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zCyl3DCenterFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zCyl3DCenter((zCyl3D*)obj,i) );
   return true; }
-static bool _zCyl3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zCyl3DRadiusFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zCyl3DRadius((zCyl3D*)obj) );
   return true; }
-static bool _zCyl3DDivFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zCyl3DDivFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%d\n", zCyl3DDiv((zCyl3D*)obj) );
   return true; }
 
@@ -266,38 +262,38 @@ static void *_zShape3DCylInit(void *body){
   return zCyl3DInit( (zCyl3D*)body ); }
 static void *_zShape3DCylAlloc(void){
   return zCyl3DAlloc(); }
-static void *_zShape3DCylClone(void *src){
+static void *_zShape3DCylClone(const void *src){
   zCyl3D *cln;
-  return ( cln = zCyl3DAlloc() ) ? zCyl3DCopy( (zCyl3D*)src, cln ) : NULL; }
-static void *_zShape3DCylMirror(void *src, zAxis axis){
+  return ( cln = zCyl3DAlloc() ) ? zCyl3DCopy( (const zCyl3D*)src, cln ) : NULL; }
+static void *_zShape3DCylMirror(const void *src, zAxis axis){
   zCyl3D *mrr;
-  return ( mrr = zCyl3DAlloc() ) ? zCyl3DMirror( (zCyl3D*)src, mrr, axis ) : NULL; }
+  return ( mrr = zCyl3DAlloc() ) ? zCyl3DMirror( (const zCyl3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DCylDestroy(void *body){}
-static void *_zShape3DCylXform(void *src, const zFrame3D *f, void *dest){
-  return zCyl3DXform( (zCyl3D*)src, f, (zCyl3D*)dest ); }
-static void *_zShape3DCylXformInv(void *src, const zFrame3D *f, void *dest){
-  return zCyl3DXformInv( (zCyl3D*)src, f, (zCyl3D*)dest ); }
-static double _zShape3DCylClosest(void *body, const zVec3D *p, zVec3D *cp){
-  return zCyl3DClosest( (zCyl3D*)body, p, cp ); }
-static double _zShape3DCylDistFromPoint(void *body, const zVec3D *p){
-  return zCyl3DDistFromPoint( (zCyl3D*)body, p ); }
-static bool _zShape3DCylPointIsInside(void *body, const zVec3D *p, double margin){
-  return zCyl3DPointIsInside( (zCyl3D*)body, p, margin ); }
-static double _zShape3DCylVolume(void *body){
-  return zCyl3DVolume( (zCyl3D*)body ); }
-static zVec3D *_zShape3DCylBarycenter(void *body, zVec3D *c){
-  return zCyl3DBarycenter( (zCyl3D*)body, c ); }
-static zMat3D *_zShape3DCylBaryInertiaMass(void *body, double mass, zMat3D *i){
-  return zCyl3DBaryInertiaMass( (zCyl3D*)body, mass, i ); }
-static zMat3D *_zShape3DCylBaryInertia(void *body, double density, zMat3D *i){
-  return zCyl3DBaryInertia( (zCyl3D*)body, density, i ); }
-static zPH3D *_zShape3DCylToPH(void *body, zPH3D *ph){
-  return zCyl3DToPH( (zCyl3D*)body, ph ); }
+static void *_zShape3DCylXform(const void *src, const zFrame3D *f, void *dest){
+  return zCyl3DXform( (const zCyl3D*)src, f, (zCyl3D*)dest ); }
+static void *_zShape3DCylXformInv(const void *src, const zFrame3D *f, void *dest){
+  return zCyl3DXformInv( (const zCyl3D*)src, f, (zCyl3D*)dest ); }
+static double _zShape3DCylClosest(const void *body, const zVec3D *p, zVec3D *cp){
+  return zCyl3DClosest( (const zCyl3D*)body, p, cp ); }
+static double _zShape3DCylDistFromPoint(const void *body, const zVec3D *p){
+  return zCyl3DDistFromPoint( (const zCyl3D*)body, p ); }
+static bool _zShape3DCylPointIsInside(const void *body, const zVec3D *p, double margin){
+  return zCyl3DPointIsInside( (const zCyl3D*)body, p, margin ); }
+static double _zShape3DCylVolume(const void *body){
+  return zCyl3DVolume( (const zCyl3D*)body ); }
+static zVec3D *_zShape3DCylBarycenter(const void *body, zVec3D *c){
+  return zCyl3DBarycenter( (const zCyl3D*)body, c ); }
+static zMat3D *_zShape3DCylBaryInertiaMass(const void *body, double mass, zMat3D *i){
+  return zCyl3DBaryInertiaMass( (const zCyl3D*)body, mass, i ); }
+static zMat3D *_zShape3DCylBaryInertia(const void *body, double density, zMat3D *i){
+  return zCyl3DBaryInertia( (const zCyl3D*)body, density, i ); }
+static zPH3D *_zShape3DCylToPH(const void *body, zPH3D *ph){
+  return zCyl3DToPH( (const zCyl3D*)body, ph ); }
 static void *_zShape3DCylParseZTK(void *body, ZTK *ztk){
   zCyl3DInit( (zCyl3D*)body );
   return _ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_cyl ); }
-static void _zShape3DCylFPrintZTK(FILE *fp, void *body){
-  zCyl3DFPrintZTK( fp, (zCyl3D*)body ); }
+static void _zShape3DCylFPrintZTK(FILE *fp, const void *body){
+  zCyl3DFPrintZTK( fp, (const zCyl3D*)body ); }
 
 zShape3DCom zeo_shape3d_cyl_com = {
   "cylinder",

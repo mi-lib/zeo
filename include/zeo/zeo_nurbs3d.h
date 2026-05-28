@@ -8,8 +8,6 @@
 
 #include <zeo/zeo_ph3d.h>
 
-__BEGIN_DECLS
-
 /*! \struct zNURBS3DCPCell
  * \brief cell of 3D NURBS containing a control point and weight.
  *
@@ -39,6 +37,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zNURBS3D ){
   zBSplineParam param[2]; /*!< \brief B-spline parameter */
   zNURBS3DCPNet cpnet;    /*!< \brief a net of control points */
 };
+
+__BEGIN_DECLS
 
 #define zNURBS3DOrder(nurbs,i)       (nurbs)->param[(i)].order
 #define zNURBS3DKnotNum(nurbs,i)     zBSplineParamKnotNum( &(nurbs)->param[(i)] )

@@ -9,8 +9,6 @@
 
 #include <zeo/zeo_mat3d.h>
 
-__BEGIN_DECLS
-
 /*! \struct zFrame3D
  * \brief 3D coordinate frame class
  */
@@ -57,10 +55,15 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zFrame3D ){
   double *toPosZYX(double array[]);
   double *toPosZYZ(double array[]);
   double *toPosAA(double array[]);
+  friend zVec3D operator*(const zFrame3D &f, const zVec3D &v);
+  friend zFrame3D operator*(const zFrame3D &f1, const zFrame3D &f2);
+  friend zVec6D operator-(const zFrame3D &f1, const zFrame3D &f2);
   /*! \brief 3D identity frame */
   static const zFrame3D zframe3Dident;
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 /*! \brief the 3D identity transformation frame. */
 #ifdef __cplusplus

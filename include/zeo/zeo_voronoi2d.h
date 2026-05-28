@@ -9,16 +9,18 @@
 
 #include <zeo/zeo_bv2d.h>
 
-__BEGIN_DECLS
+/* 2D Delaunay triangulation */
 
-/* *** 2D Delaunay triangulation *** */
-
-/*! \brief 2D triangle class for Delaunay triangulation. */
+/*! \struct zDelaunayTri2D
+ * \brief 2D triangle class for Delaunay triangulation.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zDelaunayTri2D ){
   zTri2D t;
   zDelaunayTri2D *adj[3];
 };
 ZEDA_DEF_LIST_CLASS( zDelaunayTri2DList, zDelaunayTri2DListCell, zDelaunayTri2D );
+
+__BEGIN_DECLS
 
 #define zDelaunayTri2DListDestroy( l ) zListDestroy( zDelaunayTri2DListCell, l )
 
@@ -39,21 +41,29 @@ __ZEO_EXPORT void zDelaunayTri2DListFPrint(FILE *fp, zDelaunayTri2DList *tl);
 /*! \brief print 2D Voronoi diagram from a set of 2D Delaunay triangles */
 __ZEO_EXPORT void zDelaunayTri2DListVoronoi2DFPrint(FILE *fp, zDelaunayTri2DList *tl);
 
-/* *** 2D Voronoi diagram *** */
+__END_DECLS
 
-/*! \brief 2D Voronoi node class vor Voronoi diagram */
+/* 2D Voronoi diagram */
+
+/*! \struct zVoronoi2DLoopData
+ * \brief 2D Voronoi node class vor Voronoi diagram.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVoronoi2DLoopData ){
   zVec2D node;    /*!< node */
   zDelaunayTri2D *t[2]; /*!< pointers to triangles from the node to the next */
 };
 ZEDA_DEF_LIST_CLASS( zVoronoi2DLoop, zVoronoi2DLoopCell, zVoronoi2DLoopData );
 
-/*! \brief 2D Voronoi cell class */
+/*! \struct zVoronoi2DData
+ * \brief 2D Voronoi cell class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVoronoi2DData ){
   zVec2D *seed;
   zVoronoi2DLoop loop;
 };
 ZEDA_DEF_LIST_CLASS( zVoronoi2DList, zVoronoi2DCell, zVoronoi2DData );
+
+__BEGIN_DECLS
 
 /*! \brief destroy a list of 2D Voronoi cell */
 __ZEO_EXPORT void zVoronoi2DListDestroy(zVoronoi2DList *vl);

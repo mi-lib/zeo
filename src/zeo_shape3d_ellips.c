@@ -6,10 +6,6 @@
 
 #include <zeo/zeo_shape3d.h>
 
-/* ********************************************************** */
-/* 3D ellipsoid class
- * ********************************************************** */
-
 /* create a 3D ellipsoid. */
 zEllips3D *zEllips3DCreate(zEllips3D *ellips, const zVec3D *c, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double rx, double ry, double rz, int div)
 {
@@ -278,28 +274,28 @@ static void *_zEllips3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zEllips3DDiv((zEllips3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static bool _zEllips3DCenterFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DCenterFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zEllips3DCenter((zEllips3D*)obj) );
   return true; }
-static bool _zEllips3DAxisXFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DAxisXFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zX) );
   return true; }
-static bool _zEllips3DAxisYFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DAxisYFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zY) );
   return true; }
-static bool _zEllips3DAxisZFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DAxisZFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zZ) );
   return true; }
-static bool _zEllips3DRadiusXFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DRadiusXFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zEllips3DRadiusX((zEllips3D*)obj) );
   return true; }
-static bool _zEllips3DRadiusYFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DRadiusYFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zEllips3DRadiusY((zEllips3D*)obj) );
   return true; }
-static bool _zEllips3DRadiusZFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DRadiusZFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zEllips3DRadiusZ((zEllips3D*)obj) );
   return true; }
-static bool _zEllips3DDivFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DDivFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%d\n", zEllips3DDiv((zEllips3D*)obj) );
   return true; }
 
@@ -326,38 +322,38 @@ static void *_zShape3DEllipsInit(void *body){
   return zEllips3DInit( (zEllips3D*)body ); }
 static void *_zShape3DEllipsAlloc(void){
   return zEllips3DAlloc(); }
-static void *_zShape3DEllipsClone(void *src){
+static void *_zShape3DEllipsClone(const void *src){
   zEllips3D *cln;
-  return ( cln = zEllips3DAlloc() ) ? zEllips3DCopy( (zEllips3D*)src, cln ) : NULL; }
-static void *_zShape3DEllipsMirror(void *src, zAxis axis){
+  return ( cln = zEllips3DAlloc() ) ? zEllips3DCopy( (const zEllips3D*)src, cln ) : NULL; }
+static void *_zShape3DEllipsMirror(const void *src, zAxis axis){
   zEllips3D *mrr;
-  return ( mrr = zEllips3DAlloc() ) ? zEllips3DMirror( (zEllips3D*)src, mrr, axis ) : NULL; }
+  return ( mrr = zEllips3DAlloc() ) ? zEllips3DMirror( (const zEllips3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DEllipsDestroy(void *body){}
-static void *_zShape3DEllipsXform(void *src, const zFrame3D *f, void *dest){
-  return zEllips3DXform( (zEllips3D*)src, f, (zEllips3D*)dest ); }
-static void *_zShape3DEllipsXformInv(void *src, const zFrame3D *f, void *dest){
-  return zEllips3DXformInv( (zEllips3D*)src, f, (zEllips3D*)dest ); }
-static double _zShape3DEllipsClosest(void *body, const zVec3D *p, zVec3D *cp){
-  return zEllips3DClosest( (zEllips3D*)body, p, cp ); }
-static double _zShape3DEllipsDistFromPoint(void *body, const zVec3D *p){
-  return zEllips3DDistFromPoint( (zEllips3D*)body, p ); }
-static bool _zShape3DEllipsPointIsInside(void *body, const zVec3D *p, double margin){
-  return zEllips3DPointIsInside( (zEllips3D*)body, p, margin ); }
-static double _zShape3DEllipsVolume(void *body){
-  return zEllips3DVolume( (zEllips3D*)body ); }
-static zVec3D *_zShape3DEllipsBarycenter(void *body, zVec3D *c){
-  zVec3DCopy( zEllips3DCenter((zEllips3D*)body), c ); return c; }
-static zMat3D *_zShape3DEllipsBaryInertiaMass(void *body, double mass, zMat3D *i){
-  return zEllips3DBaryInertiaMass( (zEllips3D*)body, mass, i ); }
-static zMat3D *_zShape3DEllipsBaryInertia(void *body, double density, zMat3D *i){
-  return zEllips3DBaryInertia( (zEllips3D*)body, density, i ); }
-static zPH3D *_zShape3DEllipsToPH(void *body, zPH3D *ph){
-  return zEllips3DToPH( (zEllips3D*)body, ph ); }
+static void *_zShape3DEllipsXform(const void *src, const zFrame3D *f, void *dest){
+  return zEllips3DXform( (const zEllips3D*)src, f, (zEllips3D*)dest ); }
+static void *_zShape3DEllipsXformInv(const void *src, const zFrame3D *f, void *dest){
+  return zEllips3DXformInv( (const zEllips3D*)src, f, (zEllips3D*)dest ); }
+static double _zShape3DEllipsClosest(const void *body, const zVec3D *p, zVec3D *cp){
+  return zEllips3DClosest( (const zEllips3D*)body, p, cp ); }
+static double _zShape3DEllipsDistFromPoint(const void *body, const zVec3D *p){
+  return zEllips3DDistFromPoint( (const zEllips3D*)body, p ); }
+static bool _zShape3DEllipsPointIsInside(const void *body, const zVec3D *p, double margin){
+  return zEllips3DPointIsInside( (const zEllips3D*)body, p, margin ); }
+static double _zShape3DEllipsVolume(const void *body){
+  return zEllips3DVolume( (const zEllips3D*)body ); }
+static zVec3D *_zShape3DEllipsBarycenter(const void *body, zVec3D *c){
+  zVec3DCopy( zEllips3DCenter((const zEllips3D*)body), c ); return c; }
+static zMat3D *_zShape3DEllipsBaryInertiaMass(const void *body, double mass, zMat3D *i){
+  return zEllips3DBaryInertiaMass( (const zEllips3D*)body, mass, i ); }
+static zMat3D *_zShape3DEllipsBaryInertia(const void *body, double density, zMat3D *i){
+  return zEllips3DBaryInertia( (const zEllips3D*)body, density, i ); }
+static zPH3D *_zShape3DEllipsToPH(const void *body, zPH3D *ph){
+  return zEllips3DToPH( (const zEllips3D*)body, ph ); }
 static void *_zShape3DEllipsParseZTK(void *body, ZTK *ztk){
   zEllips3DInit( (zEllips3D*)body );
   return _ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_ellips ); }
-static void _zShape3DEllipsFPrintZTK(FILE *fp, void *body){
-  zEllips3DFPrintZTK( fp, (zEllips3D*)body ); }
+static void _zShape3DEllipsFPrintZTK(FILE *fp, const void *body){
+  zEllips3DFPrintZTK( fp, (const zEllips3D*)body ); }
 
 zShape3DCom zeo_shape3d_ellips_com = {
   "ellipsoid",

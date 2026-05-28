@@ -11,29 +11,28 @@
 #include <zeo/zeo_render_optic.h>
 #include <zeo/zeo_render_texture.h>
 
-__BEGIN_DECLS
-
-/*! \brief common methods of shape class.
+/*! \struct zShape3DCom
+ * \brief common methods of shape class.
  */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3DCom ){
   const char *typestr;
   void *(* _init)(void*);
   void *(* _alloc)(void);
-  void *(* _clone)(void*);
-  void *(* _mirror)(void*,zAxis);
+  void *(* _clone)(const void*);
+  void *(* _mirror)(const void*,zAxis);
   void (* _destroy)(void*);
-  void *(* _xform)(void*,const zFrame3D*,void*);
-  void *(* _xforminv)(void*,const zFrame3D*,void*);
-  double (* _closest)(void*,const zVec3D*,zVec3D*);
-  double (* _distfrompoint)(void*,const zVec3D*);
-  bool (* _pointisinside)(void*,const zVec3D*,double);
-  double (* _volume)(void*);
-  zVec3D *(* _barycenter)(void*,zVec3D*);
-  zMat3D *(* _baryinertia_m)(void*,double,zMat3D*);
-  zMat3D *(* _baryinertia_d)(void*,double,zMat3D*);
-  zPH3D *(* _toph)(void*,zPH3D*);
+  void *(* _xform)(const void*,const zFrame3D*,void*);
+  void *(* _xforminv)(const void*,const zFrame3D*,void*);
+  double (* _closest)(const void*,const zVec3D*,zVec3D*);
+  double (* _distfrompoint)(const void*,const zVec3D*);
+  bool (* _pointisinside)(const void*,const zVec3D*,double);
+  double (* _volume)(const void*);
+  zVec3D *(* _barycenter)(const void*,zVec3D*);
+  zMat3D *(* _baryinertia_m)(const void*,double,zMat3D*);
+  zMat3D *(* _baryinertia_d)(const void*,double,zMat3D*);
+  zPH3D *(* _toph)(const void*,zPH3D*);
   void *(* _fromZTK)(void*,ZTK*);
-  void (* _fprintZTK)(FILE*,void*);
+  void (* _fprintZTK)(FILE*,const void*);
 };
 
 /*! \struct zShape3D
@@ -98,6 +97,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3D ){
 #undef ZEO_SHAPE_DECL_METHOD
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 #define zShape3DOptic(shape)        (shape)->optic
 #define zShape3DSetOptic(shape,o)   ( (shape)->optic = (o) )
@@ -199,10 +200,14 @@ __ZEO_EXPORT zShape3D *zShape3DReadFileOBJ(zShape3D *shape, const char *filename
 __ZEO_EXPORT zShape3D *zShape3DReadFileDAE(zShape3D *shape, const char *filename);
 #endif /* __ZEO_USE_DAE */
 
+__END_DECLS
+
 /*! \struct zShape3DArray
  * \brief array class of 3D shapes.
  */
 ZEDA_DEF_ARRAY_CLASS( zShape3DArray, zShape3D );
+
+__BEGIN_DECLS
 
 /* ZTK */
 

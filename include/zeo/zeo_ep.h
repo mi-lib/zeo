@@ -9,8 +9,6 @@
 
 #include <zeo/zeo_mat3d.h>
 
-__BEGIN_DECLS
-
 /*! \struct zEP
  * \brief Euler parameter.
  */
@@ -40,8 +38,14 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zEP ){
   zEP &cat(double k, const zEP &e);
   double norm();
   zEP &normalize();
+  friend zEP operator+(const zEP &ep1, const zEP &ep2);
+  friend zEP operator-(const zEP &ep1, const zEP &ep2);
+  friend zEP operator*(const zEP &ep, double k);
+  friend zEP operator*(double k, const zEP &ep);
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 /*! \brief create and copy Euler parameter.
  *
@@ -237,26 +241,10 @@ inline zEP &zEP::cat(double k, const zEP &e){ return *zEPCatDRC( this, k, &e ); 
 inline double zEP::norm(){ return zEPNorm( this ); }
 inline zEP &zEP::normalize(){ return *zEPNormalize( this ); }
 
-inline zEP operator+(const zEP &ep1, const zEP &ep2){
-  zEP ret;
-  zEPAdd( &ep1, &ep2, &ret );
-  return ret;
-}
-inline zEP operator-(const zEP &ep1, const zEP &ep2){
-  zEP ret;
-  zEPSub( &ep1, &ep2, &ret );
-  return ret;
-}
-inline zEP operator*(const zEP &ep, double k){
-  zEP ret;
-  zEPMul( &ep, k, &ret );
-  return ret;
-}
-inline zEP operator*(double k, const zEP &ep){
-  zEP ret;
-  zEPMul( &ep, k, &ret );
-  return ret;
-}
+inline zEP operator+(const zEP &ep1, const zEP &ep2){ zEP ret; zEPAdd( &ep1, &ep2, &ret ); return ret; }
+inline zEP operator-(const zEP &ep1, const zEP &ep2){ zEP ret; zEPSub( &ep1, &ep2, &ret ); return ret; }
+inline zEP operator*(const zEP &ep, double k){ zEP ret; zEPMul( &ep, k, &ret ); return ret; }
+inline zEP operator*(double k, const zEP &ep){ zEP ret; zEPMul( &ep, k, &ret ); return ret; }
 #endif /* __cplusplus */
 
 #endif /* __ZEO_EP_H__ */

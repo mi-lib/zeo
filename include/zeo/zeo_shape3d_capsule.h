@@ -13,13 +13,12 @@ zShape3D *createCapsule(const zVec3D *center1, const zVec3D *center2, double rad
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
-/* ********************************************************** */
-/*! \brief 3D capsule class
- *//* ******************************************************* */
-
+/*! \struct zCapsule3D
+ * \brief 3D capsule class.
+ */
 typedef zCyl3D zCapsule3D;
+
+__BEGIN_DECLS
 
 #define zCapsule3DCenter(cap,i)      zCyl3DCenter( cap, i )
 #define zCapsule3DRadius(cap)        zCyl3DRadius( cap )

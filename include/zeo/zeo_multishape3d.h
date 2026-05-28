@@ -9,11 +9,9 @@
 
 #include <zeo/zeo_shape3d.h>
 
-__BEGIN_DECLS
-
-/* ********************************************************** */
-/*! \brief multiple 3D shape class.
- * ********************************************************** */
+/*! \struct zMultiShape3D
+ * \brief multiple 3D shape class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zMultiShape3D ){
   zShape3DArray shape_array;
   zOpticalInfoArray optic_array;
@@ -51,6 +49,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zMultiShape3D ){
   bool writeZTK(const char filename[]);
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 #define zMultiShape3DShapeArray(s)    ( &(s)->shape_array )
 #define zMultiShape3DShapeNum(s)      zArraySize( zMultiShape3DShapeArray(s) )

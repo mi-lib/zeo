@@ -7,10 +7,6 @@
 #include <zeo/zeo_multishape3d.h>
 #include <zeo/zeo_bv3d.h>
 
-/* ********************************************************** */
-/* multiple 3D shape class
- * ********************************************************** */
-
 /* initialize multiple shapes. */
 zMultiShape3D *zMultiShape3DInit(zMultiShape3D *ms)
 {
@@ -234,15 +230,15 @@ static void *_zMultiShape3DShapeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
     zMultiShape3DShapeArray((zMultiShape3D*)obj), zMultiShape3DOpticArray((zMultiShape3D*)obj), zMultiShape3DTextureArray((zMultiShape3D*)obj), ztk ) ? obj : NULL;
 }
 
-static bool _zMultiShape3DOpticFPrint(FILE *fp, int i, void *obj){
+static bool _zMultiShape3DOpticFPrint(FILE *fp, int i, const void *obj){
   zOpticalInfoFPrintZTK( fp, zMultiShape3DOptic( (zMultiShape3D*)obj, i ) );
   return true;
 }
-static bool _zMultiShape3DTextureFPrint(FILE *fp, int i, void *obj){
+static bool _zMultiShape3DTextureFPrint(FILE *fp, int i, const void *obj){
   zTextureFPrintZTK( fp, zMultiShape3DTexture( (zMultiShape3D*)obj, i ) );
   return true;
 }
-static bool _zMultiShape3DShapeFPrint(FILE *fp, int i, void *obj){
+static bool _zMultiShape3DShapeFPrint(FILE *fp, int i, const void *obj){
   zShape3DFPrintZTK( fp, zMultiShape3DShape( (zMultiShape3D*)obj, i ) );
   return true;
 }

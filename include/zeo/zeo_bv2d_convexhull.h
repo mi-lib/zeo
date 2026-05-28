@@ -11,10 +11,6 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* planar convex hull
- * ********************************************************** */
-
 /*! \brief planar convex hull.
  *
  * zVec3DDataConvexHull2D() creates a planar convex hull of a set of 3D points \a data,

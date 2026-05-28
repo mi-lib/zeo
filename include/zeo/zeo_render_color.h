@@ -9,8 +9,6 @@
 
 #include <zeo/zeo_misc.h>
 
-__BEGIN_DECLS
-
 /*! \struct zRGB
  * \brief color expression with RGB intensity set.
  */
@@ -37,6 +35,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zRGB ){
   static const zRGB zrgbwhite;
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 /*! \brief black and white RGB set. */
 #ifdef __cplusplus
@@ -171,8 +171,6 @@ inline zRGB *zRGB::setByName(const char *name){ return zRGBByName( this, name );
 inline zRGB *zRGB::setByString(const char *str){ return zRGBByStr( this, str ); }
 #endif /* __cplusplus */
 
-__BEGIN_DECLS
-
 /*! \struct zHSV
  * \brief expression of color by hue, saturation and value.
  */
@@ -181,6 +179,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zHSV ){
   float sat; /* saturation */
   float val; /* value */
 };
+
+__BEGIN_DECLS
 
 __ZEO_EXPORT zHSV *zRGB2HSV(const zRGB *rgb, zHSV *hsv);
 __ZEO_EXPORT zRGB *zHSV2RGB(const zHSV *hsv, zRGB *rgb);

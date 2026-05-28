@@ -9,8 +9,6 @@
 
 #include <zeo/zeo_vec3d.h>
 
-__BEGIN_DECLS
-
 /*! \struct zVec6D
  * \brief 6D spatial vector for linear/angular quantities.
  */
@@ -37,6 +35,13 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zVec6D ){
   zVec6D rev();
   zVec6D mul(double k);
   zVec6D div(double k);
+  friend zVec6D operator+(const zVec6D &v1, const zVec6D &v2);
+  friend zVec6D operator-(const zVec6D &v1, const zVec6D &v2);
+  friend zVec6D operator*(const zVec6D &v, double k);
+  friend zVec6D operator*(double k, const zVec6D &v);
+  friend zVec6D operator/(const zVec6D &v, double k);
+  friend bool operator==(const zVec6D &v1, const zVec6D &v2);
+  friend std::ostream &operator<<(std::ostream &stream, const zVec6D &vec);
   /*! \brief 6D zero vector and unit vectors */
   static const zVec6D zvec6Dzero;
   static const zVec6D zvec6Dlinx;
@@ -47,6 +52,8 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zVec6D ){
   static const zVec6D zvec6Dangz;
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 /*! \brief 6D zero vector and unit vectors */
 #ifdef __cplusplus
@@ -366,7 +373,10 @@ inline zVec6D operator*(const zVec6D &v, double k){ zVec6D ret; _zVec6DMul( &v, 
 inline zVec6D operator*(double k, const zVec6D &v){ zVec6D ret; _zVec6DMul( &v, k, &ret ); return ret; }
 inline zVec6D operator/(const zVec6D &v, double k){ zVec6D ret; zVec6DDiv( &v, k, &ret ); return ret; }
 inline bool operator==(const zVec6D &v1, const zVec6D &v2){ return _zVec6DMatch( &v1, &v2 ); }
-__ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, const zVec6D &vec);
+inline std::ostream &operator<<(std::ostream &stream, const zVec6D &vec){
+  stream << vec.t.lin << ' ' << vec.t.ang;
+  return stream;
+}
 #endif /* __cplusplus */
 
 #include <zeo/zeo_vec6d_list.h>  /* 6D vector list */

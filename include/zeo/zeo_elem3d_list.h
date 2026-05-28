@@ -9,8 +9,6 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
 /* ********************************************************** */
 /*! \brief loop of 3D vertices.
  *//* ******************************************************* */
@@ -26,6 +24,8 @@ typedef zVec3DAddrList zLoop3D;
  * \brief list of 3D triangles.
  */
 ZEDA_DEF_LIST_CLASS( zTri3DList, zTri3DListCell, zTri3D );
+
+__BEGIN_DECLS
 
 /*! add a 3D triangle to a list of 3D triangles.
  *

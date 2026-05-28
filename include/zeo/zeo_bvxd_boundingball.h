@@ -9,8 +9,6 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
 /* A recursive implementation of the bounding ball algorithm based on the original algorithm
  * proposed by Welzl (1991). This is possibly violated due to stack-overflow. */
 
@@ -207,7 +205,5 @@ int zVec##XD##DataBoundingBall(zVec##XD##Data *pointdata, BALLTYPE *bb, zVec##XD
   _zBoundingBall##XD##DataDestroy( &data ); \
   return num; \
 }
-
-__END_DECLS
 
 #endif /* __ZEO_BVXD_BOUNDINGBALL_H__ */

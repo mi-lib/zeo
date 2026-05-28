@@ -9,27 +9,27 @@
 
 #include <zeo/zeo_mat3d.h>
 
-__BEGIN_DECLS
-
 /*! \struct zMapCom
  * \brief common methods for map class.
  */
-typedef struct{
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zMapCom ){
   const char *typestr;
   void *(* _alloc)(void);
   void (* _destroy)(void *);
   void *(* _fromZTK)(void*,ZTK*);
-  void (* _fprintZTK)(FILE*,void*);
-} zMapCom;
+  void (* _fprintZTK)(FILE*,const void*);
+};
 
 /*! \struct zMap
  * \brief map class.
  */
-typedef struct{
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zMap ){
   Z_NAMED_CLASS;
   void *body;
   zMapCom *com;
-} zMap;
+};
+
+__BEGIN_DECLS
 
 /* initialize a map. */
 __ZEO_EXPORT zMap *zMapInit(zMap *map);
@@ -42,14 +42,14 @@ __ZEO_EXPORT void zMapDestroy(zMap *map);
 #define ZTK_KEY_ZEO_MAP_TYPE "type"
 
 __ZEO_EXPORT zMap *zMapFromZTK(zMap *map, ZTK *ztk);
-__ZEO_EXPORT void zMapFPrintZTK(FILE *fp, zMap *map);
+__ZEO_EXPORT void zMapFPrintZTK(FILE *fp, const zMap *map);
+
+__END_DECLS
 
 /*! \struct zMapArray
  * \brief array class of maps.
  */
 ZEDA_DEF_ARRAY_CLASS( zMapArray, zMap );
-
-__END_DECLS
 
 #include <zeo/zeo_map_terra.h>
 

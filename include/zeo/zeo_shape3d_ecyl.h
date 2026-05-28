@@ -13,17 +13,17 @@ zShape3D *createEllipticCylinder(const zVec3D *center1, const zVec3D *center2, d
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
-/* ********************************************************** */
-/*! \brief 3D elliptic cylinder class
- *//* ******************************************************* */
+/*! \struct zECyl3D
+ * \brief 3D elliptic cylinder class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zECyl3D ){
   zVec3D center[2];
   double radius[2];
   zVec3D rv[2];
   int div;
 };
+
+__BEGIN_DECLS
 
 #define zECyl3DCenter(cyl,i)      ( &(cyl)->center[(i)] )
 #define zECyl3DRadius(cyl,i)      (cyl)->radius[(i)]

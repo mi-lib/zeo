@@ -13,17 +13,17 @@ zShape3D *createCone(const zVec3D *center, const zVec3D *vert, double radius, in
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
-/* ********************************************************** */
-/*! \brief 3D cone class
- *//* ******************************************************* */
+/*! \struct zCone3D
+ * \brief 3D cone class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zCone3D ){
   zVec3D center;
   zVec3D vert;
   double radius;
   int div;
 };
+
+__BEGIN_DECLS
 
 #define zCone3DCenter(cone)        ( &(cone)->center )
 #define zCone3DVert(cone)          ( &(cone)->vert )

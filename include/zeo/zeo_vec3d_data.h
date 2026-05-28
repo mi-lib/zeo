@@ -11,12 +11,12 @@
 #include <zeo/zeo_elem3d.h>
 #include <zeo/zeo_vecxd_data.h>
 
-__BEGIN_DECLS
-
-/* ********************************************************** */
-/* a set of 3D vectors.
- *//* ******************************************************* */
+/*! \struct zVec3DData
+ * \brief a set of 3D vectors.
+ */
 ZEO_VECXD_DATA_DEF_STRUCT( 3D );
+
+__BEGIN_DECLS
 
 #define zVec3DDataDestroy(data)  zVecXDDataDestroy(data)
 #define zVec3DDataSize(data)     zVecXDDataSize(data)

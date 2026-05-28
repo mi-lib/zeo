@@ -13,12 +13,12 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
-/* ********************************************************** */
-/* a set of 2D vectors.
- *//* ******************************************************* */
+/*! \struct zVec2DData
+ * \brief a set of 2D vectors.
+ */
 ZEO_VECXD_DATA_DEF_STRUCT( 2D );
+
+__BEGIN_DECLS
 
 #define zVec2DDataDestroy(data)  zVecXDDataDestroy(data)
 #define zVec2DDataSize(data)     zVecXDDataSize(data)

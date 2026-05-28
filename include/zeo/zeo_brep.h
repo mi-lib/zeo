@@ -10,19 +10,17 @@
 #include <zeo/zeo_ph3d.h>
 #include <zeo/zeo_col.h>
 
-__BEGIN_DECLS
-
-/* ********************************************************** */
-/* CLASS: zBREPVert, zBREPEdge, zBREPFace
- * B-Rep vertex, edge and face class
- * ********************************************************** */
-
-typedef struct{
+/*! \struct zBREPVert
+ * \brief vertex of B-Rep.
+ */
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zBREPVert ){
   zVec3D p;
   double _d; /* for beneath-beyond test */
   void *_p; /* pointer to destination vector */
-} zBREPVert;
+};
 ZEDA_DEF_LIST_CLASS( zBREPVertList, zBREPVertListCell, zBREPVert );
+
+__BEGIN_DECLS
 
 #define zBREPVertListCellInit(c,v) do{\
   zVec3DCopy( v, &(c)->data.p );\
@@ -40,10 +38,15 @@ ZEDA_DEF_LIST_CLASS( zBREPVertList, zBREPVertListCell, zBREPVert );
  */
 __ZEO_EXPORT zBREPVertListCell *zBREPVertListFind(zBREPVertList *vlist, zVec3D *v);
 
-typedef struct{
+__END_DECLS
+
+/*! \struct zBREPEdge
+ * !\brief edge of B-rep.
+ */
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zBREPEdge ){
   zBREPVertListCell *v[2];
   void *_v;
-} zBREPEdge;
+};
 ZEDA_DEF_LIST_CLASS( zBREPEdgeList, zBREPEdgeListCell, zBREPEdge );
 
 #define zBREPEdgeListCellInit(e,v1,v2) do{\
@@ -51,6 +54,8 @@ ZEDA_DEF_LIST_CLASS( zBREPEdgeList, zBREPEdgeListCell, zBREPEdge );
   (e)->data.v[1] = (zBREPVertListCell *)(v2);\
   (e)->data._v  = NULL;\
 } while(0)
+
+__BEGIN_DECLS
 
 /*! \brief find edge cell from a list.
  *
@@ -62,23 +67,28 @@ ZEDA_DEF_LIST_CLASS( zBREPEdgeList, zBREPEdgeListCell, zBREPEdge );
  */
 __ZEO_EXPORT zBREPEdgeListCell *zBREPEdgeListFind(zBREPEdgeList *elist, zBREPVertListCell *v1, zBREPVertListCell *v2);
 
-typedef struct{
+__END_DECLS
+
+/*! \struct zBREPFace
+ * \brief face of B-rep.
+ */
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zBREPFace ){
   zBREPVertListCell *v[3];
   zBREPEdgeListCell *e[3];
   zVec3D norm; /* to be used. */
-} zBREPFace;
+};
 ZEDA_DEF_LIST_CLASS( zBREPFaceList, zBREPFaceListCell, zBREPFace );
 
-/* ********************************************************** */
-/* CLASS: zBREP
- * B-Rep class
- * ********************************************************** */
-
-typedef struct{
+/*! \struct zBREP
+ * \brief B-Rep class.
+ */
+ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zBREP ){
   zBREPVertList vlist;
   zBREPEdgeList elist;
   zBREPFaceList flist;
-} zBREP;
+};
+
+__BEGIN_DECLS
 
 /*! \brief convert a polyhedron to a B-Rep solid.
  *

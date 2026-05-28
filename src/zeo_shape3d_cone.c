@@ -6,10 +6,6 @@
 
 #include <zeo/zeo_shape3d.h>
 
-/* ********************************************************** */
-/* 3D cone class
- * ********************************************************** */
-
 /* create a 3D cone. */
 zCone3D *zCone3DCreate(zCone3D *cone, const zVec3D *center, const zVec3D *vert, double radius, int div)
 {
@@ -255,17 +251,17 @@ static void *_zCone3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zCone3DDiv((zCone3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static bool _zCone3DCenterFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zCone3DCenterFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zCone3DCenter((zCone3D*)obj) );
   return true; }
-static bool _zCone3DVertFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zCone3DVertFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zCone3DVert((zCone3D*)obj) );
   return true; }
-static bool _zCone3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
-  fprintf( fp, "%.10g\n", zCone3DRadius((zCone3D*)obj) );
+static bool _zCone3DRadiusFPrintZTK(FILE *fp, int i, const void *obj){
+  fprintf( fp, "%.10g\n", zCone3DRadius((const zCone3D*)obj) );
   return true; }
-static bool _zCone3DDivFPrintZTK(FILE *fp, int i, void *obj){
-  fprintf( fp, "%d\n", zCone3DDiv((zCone3D*)obj) );
+static bool _zCone3DDivFPrintZTK(FILE *fp, int i, const void *obj){
+  fprintf( fp, "%d\n", zCone3DDiv((const zCone3D*)obj) );
   return true; }
 
 static const ZTKPrp __ztk_prp_shape_cone[] = {
@@ -287,38 +283,38 @@ static void *_zShape3DConeInit(void *body){
   return zCone3DInit( (zCone3D*)body ); }
 static void *_zShape3DConeAlloc(void){
   return zCone3DAlloc(); }
-static void *_zShape3DConeClone(void *src){
+static void *_zShape3DConeClone(const void *src){
   zCone3D *cln;
-  return ( cln = zCone3DAlloc() ) ? zCone3DCopy( (zCone3D*)src, cln ) : NULL; }
-static void *_zShape3DConeMirror(void *src, zAxis axis){
+  return ( cln = zCone3DAlloc() ) ? zCone3DCopy( (const zCone3D*)src, cln ) : NULL; }
+static void *_zShape3DConeMirror(const void *src, zAxis axis){
   zCone3D *mrr;
-  return ( mrr = zCone3DAlloc() ) ? zCone3DMirror( (zCone3D*)src, mrr, axis ) : NULL; }
+  return ( mrr = zCone3DAlloc() ) ? zCone3DMirror( (const zCone3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DConeDestroy(void *body){}
-static void *_zShape3DConeXform(void *src, const zFrame3D *f, void *dest){
-  return zCone3DXform( (zCone3D*)src, f, (zCone3D*)dest ); }
-static void *_zShape3DConeXformInv(void *src, const zFrame3D *f, void *dest){
-  return zCone3DXformInv( (zCone3D*)src, f, (zCone3D*)dest ); }
-static double _zShape3DConeClosest(void *body, const zVec3D *p, zVec3D *cp){
-  return zCone3DClosest( (zCone3D*)body, p, cp ); }
-static double _zShape3DConeDistFromPoint(void *body, const zVec3D *p){
-  return zCone3DDistFromPoint( (zCone3D*)body, p ); }
-static bool _zShape3DConePointIsInside(void *body, const zVec3D *p, double margin){
-  return zCone3DPointIsInside( (zCone3D*)body, p, margin ); }
-static double _zShape3DConeVolume(void *body){
-  return zCone3DVolume( (zCone3D*)body ); }
-static zVec3D *_zShape3DConeBarycenter(void *body, zVec3D *c){
-  return zCone3DBarycenter( (zCone3D*)body, c ); }
-static zMat3D *_zShape3DConeBaryInertiaMass(void *body, double mass, zMat3D *i){
-  return zCone3DBaryInertiaMass( (zCone3D*)body, mass, i ); }
-static zMat3D *_zShape3DConeBaryInertia(void *body, double density, zMat3D *i){
-  return zCone3DBaryInertia( (zCone3D*)body, density, i ); }
-static zPH3D *_zShape3DConeToPH(void *body, zPH3D *ph){
-  return zCone3DToPH( (zCone3D*)body, ph ); }
+static void *_zShape3DConeXform(const void *src, const zFrame3D *f, void *dest){
+  return zCone3DXform( (const zCone3D*)src, f, (zCone3D*)dest ); }
+static void *_zShape3DConeXformInv(const void *src, const zFrame3D *f, void *dest){
+  return zCone3DXformInv( (const zCone3D*)src, f, (zCone3D*)dest ); }
+static double _zShape3DConeClosest(const void *body, const zVec3D *p, zVec3D *cp){
+  return zCone3DClosest( (const zCone3D*)body, p, cp ); }
+static double _zShape3DConeDistFromPoint(const void *body, const zVec3D *p){
+  return zCone3DDistFromPoint( (const zCone3D*)body, p ); }
+static bool _zShape3DConePointIsInside(const void *body, const zVec3D *p, double margin){
+  return zCone3DPointIsInside( (const zCone3D*)body, p, margin ); }
+static double _zShape3DConeVolume(const void *body){
+  return zCone3DVolume( (const zCone3D*)body ); }
+static zVec3D *_zShape3DConeBarycenter(const void *body, zVec3D *c){
+  return zCone3DBarycenter( (const zCone3D*)body, c ); }
+static zMat3D *_zShape3DConeBaryInertiaMass(const void *body, double mass, zMat3D *i){
+  return zCone3DBaryInertiaMass( (const zCone3D*)body, mass, i ); }
+static zMat3D *_zShape3DConeBaryInertia(const void *body, double density, zMat3D *i){
+  return zCone3DBaryInertia( (const zCone3D*)body, density, i ); }
+static zPH3D *_zShape3DConeToPH(const void *body, zPH3D *ph){
+  return zCone3DToPH( (const zCone3D*)body, ph ); }
 static void *_zShape3DConeParseZTK(void *body, ZTK *ztk){
   zCone3DInit( (zCone3D*)body );
   return _ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_cone ); }
-static void _zShape3DConeFPrintZTK(FILE *fp, void *body){
-  zCone3DFPrintZTK( fp, (zCone3D*)body ); }
+static void _zShape3DConeFPrintZTK(FILE *fp, const void *body){
+  zCone3DFPrintZTK( fp, (const zCone3D*)body ); }
 
 zShape3DCom zeo_shape3d_cone_com = {
   "cone",

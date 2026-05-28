@@ -9,8 +9,6 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
 /*! \struct zAABox3D
  * \brief 3D axis-aligned box class.
  */
@@ -47,6 +45,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zAABox3D ){
   void fprintValue(FILE *fp = stdout);
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 #define zAABox3DXMin(box)   (box)->min.c.x
 #define zAABox3DYMin(box)   (box)->min.c.y
@@ -140,18 +140,20 @@ inline void zAABox3D::fprintValue(FILE *fp){ return zAABox3DValueFPrint( fp, thi
 inline bool operator==(zAABox3D &box1, zAABox3D &box2){ return zAABox3DEqual( &box1, &box2 ); }
 #endif /* __cpluspls */
 
-__BEGIN_DECLS
-
 /*! \struct zAABox3DList
  * \brief list of 3D axis-aligned boxes.
  */
 ZEDA_DEF_LIST_CLASS( zAABox3DList, zAABox3DListCell, zAABox3D );
+
+__BEGIN_DECLS
 
 /*! \brief add a 3D axis-aligned box to a list. */
 __ZEO_EXPORT zAABox3DListCell *zAABox3DListAdd(zAABox3DList *list, const zAABox3D *box);
 
 /*! \brief destroy a list of 3D axis-aligned boxes. */
 #define zAABox3DListDestroy(list) zListDestroy( zAABox3DListCell, list )
+
+__END_DECLS
 
 /*! \struct zBox3D
  * \brief 3D box class.
@@ -184,6 +186,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zBox3D ){
   void fprintValue(FILE *fp = stdout);
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 #define zBox3DSpan(b,d)      ( (b)->edgespan.e[(d)] )
 #define zBox3DDepth(b)       zBox3DSpan( b, zX )

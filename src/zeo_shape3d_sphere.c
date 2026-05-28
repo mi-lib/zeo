@@ -115,13 +115,13 @@ static void *_zSphere3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zSphere3DDiv((zSphere3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static bool _zSphere3DCenterFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zSphere3DCenterFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zSphere3DCenter((zSphere3D*)obj) );
   return true; }
-static bool _zSphere3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zSphere3DRadiusFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zSphere3DRadius((zSphere3D*)obj) );
   return true; }
-static bool _zSphere3DDivFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zSphere3DDivFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%d\n", zSphere3DDiv((zSphere3D*)obj) );
   return true; }
 
@@ -143,38 +143,38 @@ static void *_zShape3DSphereInit(void *body){
   return zSphere3DInit( (zSphere3D*)body ); }
 static void *_zShape3DSphereAlloc(void){
   return zSphere3DAlloc(); }
-static void *_zShape3DSphereClone(void *src){
+static void *_zShape3DSphereClone(const void *src){
   zSphere3D *cln;
-  return ( cln = zSphere3DAlloc() ) ? zSphere3DCopy( (zSphere3D*)src, cln ) : NULL; }
-static void *_zShape3DSphereMirror(void *src, zAxis axis){
+  return ( cln = zSphere3DAlloc() ) ? zSphere3DCopy( (const zSphere3D*)src, cln ) : NULL; }
+static void *_zShape3DSphereMirror(const void *src, zAxis axis){
   zSphere3D *mrr;
-  return ( mrr = zSphere3DAlloc() ) ? zSphere3DMirror( (zSphere3D*)src, mrr, axis ) : NULL; }
+  return ( mrr = zSphere3DAlloc() ) ? zSphere3DMirror( (const zSphere3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DSphereDestroy(void *body){}
-static void *_zShape3DSphereXform(void *src, const zFrame3D *f, void *dest){
-  return zSphere3DXform( (zSphere3D*)src, f, (zSphere3D*)dest ); }
-static void *_zShape3DSphereXformInv(void *src, const zFrame3D *f, void *dest){
-  return zSphere3DXformInv( (zSphere3D*)src, f, (zSphere3D*)dest ); }
-static double _zShape3DSphereClosest(void *body, const zVec3D *p, zVec3D *cp){
-  return zSphere3DClosest( (zSphere3D*)body, p, cp ); }
-static double _zShape3DSphereDistFromPoint(void *body, const zVec3D *p){
-  return zSphere3DDistFromPoint( (zSphere3D*)body, p ); }
-static bool _zShape3DSpherePointIsInside(void *body, const zVec3D *p, double margin){
-  return zSphere3DPointIsInside( (zSphere3D*)body, p, margin ); }
-static double _zShape3DSphereVolume(void *body){
-  return zSphere3DVolume( (zSphere3D*)body ); }
-static zVec3D *_zShape3DSphereBarycenter(void *body, zVec3D *c){
-  zVec3DCopy( zSphere3DCenter((zSphere3D*)body), c ); return c; }
-static zMat3D *_zShape3DSphereBaryInertiaMass(void *body, double mass, zMat3D *i){
-  return zSphere3DBaryInertiaMass( (zSphere3D*)body, mass, i ); }
-static zMat3D *_zShape3DSphereBaryInertia(void *body, double density, zMat3D *i){
-  return zSphere3DBaryInertia( (zSphere3D*)body, density, i ); }
-static zPH3D *_zShape3DSphereToPH(void *body, zPH3D *ph){
-  return zSphere3DToPH( (zSphere3D*)body, ph ); }
+static void *_zShape3DSphereXform(const void *src, const zFrame3D *f, void *dest){
+  return zSphere3DXform( (const zSphere3D*)src, f, (zSphere3D*)dest ); }
+static void *_zShape3DSphereXformInv(const void *src, const zFrame3D *f, void *dest){
+  return zSphere3DXformInv( (const zSphere3D*)src, f, (zSphere3D*)dest ); }
+static double _zShape3DSphereClosest(const void *body, const zVec3D *p, zVec3D *cp){
+  return zSphere3DClosest( (const zSphere3D*)body, p, cp ); }
+static double _zShape3DSphereDistFromPoint(const void *body, const zVec3D *p){
+  return zSphere3DDistFromPoint( (const zSphere3D*)body, p ); }
+static bool _zShape3DSpherePointIsInside(const void *body, const zVec3D *p, double margin){
+  return zSphere3DPointIsInside( (const zSphere3D*)body, p, margin ); }
+static double _zShape3DSphereVolume(const void *body){
+  return zSphere3DVolume( (const zSphere3D*)body ); }
+static zVec3D *_zShape3DSphereBarycenter(const void *body, zVec3D *c){
+  zVec3DCopy( zSphere3DCenter((const zSphere3D*)body), c ); return c; }
+static zMat3D *_zShape3DSphereBaryInertiaMass(const void *body, double mass, zMat3D *i){
+  return zSphere3DBaryInertiaMass( (const zSphere3D*)body, mass, i ); }
+static zMat3D *_zShape3DSphereBaryInertia(const void *body, double density, zMat3D *i){
+  return zSphere3DBaryInertia( (const zSphere3D*)body, density, i ); }
+static zPH3D *_zShape3DSphereToPH(const void *body, zPH3D *ph){
+  return zSphere3DToPH( (const zSphere3D*)body, ph ); }
 static void *_zShape3DSphereParseZTK(void *body, ZTK *ztk){
   zSphere3DInit( (zSphere3D*)body );
   return _ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_sphere ); }
-static void _zShape3DSphereFPrintZTK(FILE *fp, void *body){
-  zSphere3DFPrintZTK( fp, (zSphere3D*)body ); }
+static void _zShape3DSphereFPrintZTK(FILE *fp, const void *body){
+  zSphere3DFPrintZTK( fp, (const zSphere3D*)body ); }
 
 zShape3DCom zeo_shape3d_sphere_com = {
   "sphere",

@@ -9,11 +9,9 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
-/* ********************************************************** */
-/*! \brief 2D axis-aligned box class.
- *//* ******************************************************* */
+/*! \struct zAABox2D
+ * \brief 2D axis-aligned box class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zAABox2D ){
   zVec2D min; /*!< minimum coordinates */
   zVec2D max; /*!< maximum coordinates */
@@ -44,6 +42,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zAABox2D ){
   void fprintValue(FILE *fp = stdout);
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 #define zAABox2DXMin(box)   (box)->min.c.x
 #define zAABox2DYMin(box)   (box)->min.c.y

@@ -6,10 +6,6 @@
 
 #include <zeo/zeo_shape3d.h>
 
-/* ********************************************************** */
-/* 3D capsule class
- * ********************************************************** */
-
 static void _zCapsule3DClosestPrep(const zCapsule3D *capsule, const zVec3D *point, zVec3D *axis, zVec3D *v, double *l, double *r, double *d)
 {
   zCapsule3DAxis( capsule, axis );
@@ -196,13 +192,13 @@ static void *_zCapsule3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zCapsule3DDiv((zCapsule3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static bool _zCapsule3DCenterFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zCapsule3DCenterFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zCapsule3DCenter((zCapsule3D*)obj,i) );
   return true; }
-static bool _zCapsule3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zCapsule3DRadiusFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zCapsule3DRadius((zCapsule3D*)obj) );
   return true; }
-static bool _zCapsule3DDivFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zCapsule3DDivFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%d\n", zCapsule3DDiv((zCapsule3D*)obj) );
   return true; }
 
@@ -224,38 +220,38 @@ static void *_zShape3DCapsuleInit(void *body){
   return zCapsule3DInit( (zCapsule3D*)body ); }
 static void *_zShape3DCapsuleAlloc(void){
   return zCapsule3DAlloc(); }
-static void *_zShape3DCapsuleClone(void *src){
+static void *_zShape3DCapsuleClone(const void *src){
   zCapsule3D *cln;
-  return ( cln = zCapsule3DAlloc() ) ? zCapsule3DCopy( (zCapsule3D*)src, cln ) : NULL; }
-static void *_zShape3DCapsuleMirror(void *src, zAxis axis){
+  return ( cln = zCapsule3DAlloc() ) ? zCapsule3DCopy( (const zCapsule3D*)src, cln ) : NULL; }
+static void *_zShape3DCapsuleMirror(const void *src, zAxis axis){
   zCapsule3D *mrr;
-  return ( mrr = zCapsule3DAlloc() ) ? zCapsule3DMirror( (zCapsule3D*)src, mrr, axis ) : NULL; }
+  return ( mrr = zCapsule3DAlloc() ) ? zCapsule3DMirror( (const zCapsule3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DCapsuleDestroy(void *body){}
-static void *_zShape3DCapsuleXform(void *src, const zFrame3D *f, void *dest){
-  return zCapsule3DXform( (zCapsule3D*)src, f, (zCapsule3D*)dest ); }
-static void *_zShape3DCapsuleXformInv(void *src, const zFrame3D *f, void *dest){
-  return zCapsule3DXformInv( (zCapsule3D*)src, f, (zCapsule3D*)dest ); }
-static double _zShape3DCapsuleClosest(void *body, const zVec3D *p, zVec3D *cp){
-  return zCapsule3DClosest( (zCapsule3D*)body, p, cp ); }
-static double _zShape3DCapsuleDistFromPoint(void *body, const zVec3D *p){
-  return zCapsule3DDistFromPoint( (zCapsule3D*)body, p ); }
-static bool _zShape3DCapsulePointIsInside(void *body, const zVec3D *p, double margin){
-  return zCapsule3DPointIsInside( (zCapsule3D*)body, p, margin ); }
-static double _zShape3DCapsuleVolume(void *body){
-  return zCapsule3DVolume( (zCapsule3D*)body ); }
-static zVec3D *_zShape3DCapsuleBarycenter(void *body, zVec3D *c){
-  return zCapsule3DBarycenter( (zCapsule3D*)body, c ); }
-static zMat3D *_zShape3DCapsuleBaryInertiaMass(void *body, double mass, zMat3D *i){
-  return zCapsule3DBaryInertiaMass( (zCapsule3D*)body, mass, i ); }
-static zMat3D *_zShape3DCapsuleBaryInertia(void *body, double density, zMat3D *i){
-  return zCapsule3DBaryInertia( (zCapsule3D*)body, density, i ); }
-static zPH3D *_zShape3DCapsuleToPH(void *body, zPH3D *ph){
-  return zCapsule3DToPH( (zCapsule3D*)body, ph ); }
+static void *_zShape3DCapsuleXform(const void *src, const zFrame3D *f, void *dest){
+  return zCapsule3DXform( (const zCapsule3D*)src, f, (zCapsule3D*)dest ); }
+static void *_zShape3DCapsuleXformInv(const void *src, const zFrame3D *f, void *dest){
+  return zCapsule3DXformInv( (const zCapsule3D*)src, f, (zCapsule3D*)dest ); }
+static double _zShape3DCapsuleClosest(const void *body, const zVec3D *p, zVec3D *cp){
+  return zCapsule3DClosest( (const zCapsule3D*)body, p, cp ); }
+static double _zShape3DCapsuleDistFromPoint(const void *body, const zVec3D *p){
+  return zCapsule3DDistFromPoint( (const zCapsule3D*)body, p ); }
+static bool _zShape3DCapsulePointIsInside(const void *body, const zVec3D *p, double margin){
+  return zCapsule3DPointIsInside( (const zCapsule3D*)body, p, margin ); }
+static double _zShape3DCapsuleVolume(const void *body){
+  return zCapsule3DVolume( (const zCapsule3D*)body ); }
+static zVec3D *_zShape3DCapsuleBarycenter(const void *body, zVec3D *c){
+  return zCapsule3DBarycenter( (const zCapsule3D*)body, c ); }
+static zMat3D *_zShape3DCapsuleBaryInertiaMass(const void *body, double mass, zMat3D *i){
+  return zCapsule3DBaryInertiaMass( (const zCapsule3D*)body, mass, i ); }
+static zMat3D *_zShape3DCapsuleBaryInertia(const void *body, double density, zMat3D *i){
+  return zCapsule3DBaryInertia( (const zCapsule3D*)body, density, i ); }
+static zPH3D *_zShape3DCapsuleToPH(const void *body, zPH3D *ph){
+  return zCapsule3DToPH( (const zCapsule3D*)body, ph ); }
 static void *_zShape3DCapsuleParseZTK(void *body, ZTK *ztk){
   zCapsule3DInit( (zCapsule3D*)body );
   return _ZTKEvalKey( body, NULL, ztk, __ztk_prp_shape_capsule ); }
-static void _zShape3DCapsuleFPrintZTK(FILE *fp, void *body){
-  zCapsule3DFPrintZTK( fp, (zCapsule3D*)body ); }
+static void _zShape3DCapsuleFPrintZTK(FILE *fp, const void *body){
+  zCapsule3DFPrintZTK( fp, (const zCapsule3D*)body ); }
 
 zShape3DCom zeo_shape3d_capsule_com = {
   "capsule",

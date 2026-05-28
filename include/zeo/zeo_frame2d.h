@@ -9,8 +9,6 @@
 
 #include <zeo/zeo_coord2d.h>
 
-__BEGIN_DECLS
-
 /*! \struct zFrame2D
  * \brief 2D coordinate frame class.
  */
@@ -37,10 +35,14 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zFrame2D ){
   zVec2D &xformInvDRC(zVec2D &v);
   zFrame2D inv();
   zFrame2D cascade(zFrame2D &f);
+  friend zVec2D operator*(const zFrame2D &f, const zVec2D &v);
+  friend zFrame2D operator*(const zFrame2D &f1, const zFrame2D &f2);
   /*! \brief 3D identity frame */
   static const zFrame2D zframe2Dident;
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 /*! \brief the 2D identity transformation frame. */
 #ifdef __cplusplus

@@ -9,8 +9,6 @@
 
 #include <zeo/zeo_mat2d.h>
 
-__BEGIN_DECLS
-
 /*! \brief 2D coordinate class.
  * zCoord2D is a combination of a planar position vector and a rotation angle on the same plane.
  */
@@ -33,8 +31,16 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zCoord2D ){
   zCoord2D &operator/=(double k);
   zCoord2D xform(const zCoord2D &c);
   zCoord2D cascade(const zCoord2D &c);
+  friend zCoord2D operator+(const zCoord2D &c1, const zCoord2D &c2);
+  friend zCoord2D operator-(const zCoord2D &c1, const zCoord2D &c2);
+  friend zCoord2D operator*(const zCoord2D &c, double k);
+  friend zCoord2D operator*(double k, const zCoord2D &c);
+  friend zCoord2D operator/(const zCoord2D &c, double k);
+  friend zCoord2D operator*(const zCoord2D &c1, const zCoord2D &c2);
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 #define zCoord2DX(coord)     (coord)->pos.c.x
 #define zCoord2DY(coord)     (coord)->pos.c.y

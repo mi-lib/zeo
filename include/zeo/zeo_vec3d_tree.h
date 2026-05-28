@@ -9,8 +9,6 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
 /*! \struct zVec3DTree
  * \brief 3D vector tree class
  *
@@ -27,9 +25,15 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec3DTreeData ){
   zAABox3D region; /*!< region to cover */
 };
 
+__BEGIN_DECLS
+
 __ZEO_EXPORT zVec3DTreeData *zVec3DTreeDataInit(zVec3DTreeData *data);
 
-zTreeClass( __ZEO_EXPORT, zVec3DTree, zVec3DTreeData );
+__END_DECLS
+
+ZEDA_DEF_TREE_CLASS( __ZEO_EXPORT, zVec3DTree, zVec3DTreeData );
+
+__BEGIN_DECLS
 
 /*! \brief add a new 3D point to a 3D vector tree.
  *

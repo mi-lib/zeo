@@ -1074,12 +1074,3 @@ zVec3D *zAAFromZTK(zVec3D *aa, ZTK *ztk)
     zVec3DZero( aa );
   return aa;
 }
-
-#ifdef __cplusplus
-std::ostream &operator<<(std::ostream &stream, zMat3D &mat){
-  stream << "|~ " << mat.c.xx << ", " << mat.c.yx << ", " << mat.c.zx << " ~|" << std::endl;
-  stream << "|  " << mat.c.xy << ", " << mat.c.yy << ", " << mat.c.zy << "  |" << std::endl;
-  stream << "|_ " << mat.c.xz << ", " << mat.c.yz << ", " << mat.c.zz << " _|" << std::endl;
-  return stream;
-}
-#endif /* __cplusplus */

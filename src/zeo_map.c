@@ -44,11 +44,11 @@ static void *_zMapTypeFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return NULL;
 }
 
-static bool _zMapNameFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zMapNameFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%s\n", zName((zMap*)obj) );
   return true;
 }
-static bool _zMapTypeFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zMapTypeFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%s\n", ((zMap*)obj)->com->typestr );
   return true;
 }
@@ -69,7 +69,7 @@ zMap *zMapFromZTK(zMap *map, ZTK *ztk)
   return map->com->_fromZTK( map->body, ztk ) ? map : NULL;
 }
 
-void zMapFPrintZTK(FILE *fp, zMap *map)
+void zMapFPrintZTK(FILE *fp, const zMap *map)
 {
   _ZTKPrpKeyFPrint( fp, map, __ztk_prp_map );
   map->com->_fprintZTK( fp, map->body );

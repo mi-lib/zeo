@@ -58,7 +58,7 @@ zMapNet *zMapNetFromZTK(zMapNet *mn, ZTK *ztk)
 }
 
 /* print information of map net out to a file. */
-void zMapNetFPrintZTK(FILE *fp, zMapNet *mn)
+void zMapNetFPrintZTK(FILE *fp, const zMapNet *mn)
 {
   int i;
 
@@ -69,7 +69,7 @@ void zMapNetFPrintZTK(FILE *fp, zMapNet *mn)
 }
 
 /* read map net from a ZTK format file. */
-zMapNet *zMapNetReadZTK(zMapNet *mn, char filename[])
+zMapNet *zMapNetReadZTK(zMapNet *mn, const char filename[])
 {
   ZTK ztk;
 
@@ -81,7 +81,7 @@ zMapNet *zMapNetReadZTK(zMapNet *mn, char filename[])
 }
 
 /* write map net to a ZTK format file. */
-bool zMapNetWriteZTK(zMapNet *mn, char filename[])
+bool zMapNetWriteZTK(const zMapNet *mn, const char filename[])
 {
   FILE *fp;
 

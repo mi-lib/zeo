@@ -18,42 +18,42 @@ static void *_zShape3DNURBSAlloc(void){
   }
   return nurbs;
 }
-static void *_zShape3DNURBSClone(void *src){
+static void *_zShape3DNURBSClone(const void *src){
   zNURBS3D *cln;
-  return ( cln = (zNURBS3D*)_zShape3DNURBSAlloc() ) ?  zNURBS3DClone( (zNURBS3D*)src, cln ) : NULL; }
-static void *_zShape3DNURBSMirror(void *src, zAxis axis){
+  return ( cln = (zNURBS3D*)_zShape3DNURBSAlloc() ) ?  zNURBS3DClone( (const zNURBS3D*)src, cln ) : NULL; }
+static void *_zShape3DNURBSMirror(const void *src, zAxis axis){
   zNURBS3D *mrr;
-  return ( mrr = (zNURBS3D*)_zShape3DNURBSAlloc() ) ? zNURBS3DMirror( (zNURBS3D*)src, mrr, axis ) : NULL; }
+  return ( mrr = (zNURBS3D*)_zShape3DNURBSAlloc() ) ? zNURBS3DMirror( (const zNURBS3D*)src, mrr, axis ) : NULL; }
 static void _zShape3DNURBSDestroy(void *body){
   zNURBS3DDestroy( (zNURBS3D*)body ); }
-static void *_zShape3DNURBSXform(void *src, const zFrame3D *f, void *dest){
-  return zNURBS3DXform( (zNURBS3D*)src, f, (zNURBS3D*)dest ); }
-static void *_zShape3DNURBSXformInv(void *src, const zFrame3D *f, void *dest){
-  return zNURBS3DXformInv( (zNURBS3D*)src, f, (zNURBS3D*)dest ); }
-static double _zShape3DNURBSClosest(void *body, const zVec3D *p, zVec3D *cp){
-  return zNURBS3DClosest( (zNURBS3D*)body, p, cp, NULL, NULL ); }
-static double _zShape3DNURBSDistFromPoint(void *body, const zVec3D *p){
+static void *_zShape3DNURBSXform(const void *src, const zFrame3D *f, void *dest){
+  return zNURBS3DXform( (const zNURBS3D*)src, f, (zNURBS3D*)dest ); }
+static void *_zShape3DNURBSXformInv(const void *src, const zFrame3D *f, void *dest){
+  return zNURBS3DXformInv( (const zNURBS3D*)src, f, (zNURBS3D*)dest ); }
+static double _zShape3DNURBSClosest(const void *body, const zVec3D *p, zVec3D *cp){
+  return zNURBS3DClosest( (const zNURBS3D*)body, p, cp, NULL, NULL ); }
+static double _zShape3DNURBSDistFromPoint(const void *body, const zVec3D *p){
   zVec3D nn;
-  return zNURBS3DClosest( (zNURBS3D*)body, p, &nn, NULL, NULL ); }
+  return zNURBS3DClosest( (const zNURBS3D*)body, p, &nn, NULL, NULL ); }
 
 /* dummy functions */
-static bool _zShape3DNURBSPointIsInside(void *body, const zVec3D *p, double margin){
+static bool _zShape3DNURBSPointIsInside(const void *body, const zVec3D *p, double margin){
   return false; }
-static double _zShape3DNURBSVolume(void *body){
+static double _zShape3DNURBSVolume(const void *body){
   return 0; }
-static zVec3D *_zShape3DNURBSBarycenter(void *body, zVec3D *c){
+static zVec3D *_zShape3DNURBSBarycenter(const void *body, zVec3D *c){
   return NULL; }
-static zMat3D *_zShape3DNURBSBaryInertiaMass(void *body, double mass, zMat3D *i){
+static zMat3D *_zShape3DNURBSBaryInertiaMass(const void *body, double mass, zMat3D *i){
   return NULL; }
-static zMat3D *_zShape3DNURBSBaryInertia(void *body, double density, zMat3D *i){
+static zMat3D *_zShape3DNURBSBaryInertia(const void *body, double density, zMat3D *i){
   return NULL; }
 
-static zPH3D *_zShape3DNURBSToPH(void *body, zPH3D *ph){
-  return zNURBS3DToPH( (zNURBS3D*)body, ph ); }
+static zPH3D *_zShape3DNURBSToPH(const void *body, zPH3D *ph){
+  return zNURBS3DToPH( (const zNURBS3D*)body, ph ); }
 static void *_zShape3DNURBSParseZTK(void *body, ZTK *ztk){
   return zNURBS3DFromZTK( (zNURBS3D*)body, ztk ); }
-static void _zShape3DNURBSFPrintZTK(FILE *fp, void *body){
-  return zNURBS3DFPrintZTK( fp, (zNURBS3D*)body ); }
+static void _zShape3DNURBSFPrintZTK(FILE *fp, const void *body){
+  return zNURBS3DFPrintZTK( fp, (const zNURBS3D*)body ); }
 
 zShape3DCom zeo_shape3d_nurbs_com = {
   "nurbs",

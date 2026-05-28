@@ -9,8 +9,6 @@
 
 #include <zeo/zeo_vec6d.h>
 
-__BEGIN_DECLS
-
 /*! \struct zMat3D
  * \brief 3x3 matrix for attitude / rotation representation.
  */
@@ -79,11 +77,23 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zMat3D ){
   zMat3D &rot(const zMat3D &r);
   zMat3D &rotInv(const zMat3D &r);
   zMat3D &rot(const zVec3D &aa);
+  friend zMat3D operator+(const zMat3D &m1, const zMat3D &m2);
+  friend zMat3D operator-(const zMat3D &m1, const zMat3D &m2);
+  friend zMat3D operator*(const zMat3D &m, double k);
+  friend zMat3D operator*(double k, const zMat3D &m);
+  friend zVec3D operator*(const zMat3D &m, const zVec3D &v);
+  friend zVec6D operator*(const zMat3D &m, const zVec6D &v);
+  friend zMat3D operator*(const zMat3D &m1, const zMat3D &m2);
+  friend zMat3D operator/(const zMat3D &m, double k);
+  friend bool operator==(const zMat3D &m1, const zMat3D &m2);
+  friend std::ostream &operator<<(std::ostream &stream, const zMat3D &mat);
   /*! \brief 3D zero matrix and identity matrix */
   static const zMat3D zmat3Dzero;
   static const zMat3D zmat3Dident;
 #endif /* __cplusplus */
 };
+
+__BEGIN_DECLS
 
 /*! \brief a column vector of a 3x3 matrix. */
 #define zMat3DVec(mat,axis) ( &(mat)->v[(axis)] )
@@ -1016,7 +1026,12 @@ inline zVec6D operator*(const zMat3D &m, const zVec6D &v){ zVec6D ret; zMulMat3D
 inline zMat3D operator*(const zMat3D &m1, const zMat3D &m2){ zMat3D ret; zMulMat3DMat3D( &m1, &m2, &ret ); return ret; }
 inline zMat3D operator/(const zMat3D &m, double k){ zMat3D ret; zMat3DDiv( &m, k, &ret ); return ret; }
 inline bool operator==(const zMat3D &m1, const zMat3D &m2){ return _zMat3DMatch( &m1, &m2 ); }
-__ZEO_EXPORT std::ostream &operator<<(std::ostream &stream, zMat3D &mat);
+inline std::ostream &operator<<(std::ostream &stream, const zMat3D &mat){
+  stream << "|~ " << mat.c.xx << ", " << mat.c.yx << ", " << mat.c.zx << " ~|" << std::endl;
+  stream << "|  " << mat.c.xy << ", " << mat.c.yy << ", " << mat.c.zy << "  |" << std::endl;
+  stream << "|_ " << mat.c.xz << ", " << mat.c.yz << ", " << mat.c.zz << " _|" << std::endl;
+  return stream;
+}
 #endif /* __cplusplus */
 
 #endif /* __ZEO_MAT3D_H__ */

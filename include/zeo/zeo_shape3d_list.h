@@ -9,12 +9,12 @@
 
 /* NOTE: never include this header file in user programs. */
 
-__BEGIN_DECLS
-
 /*! \struct zShape3DListCell & zShape3DList
  * \brief shape list class
  */
 ZEDA_DEF_LIST_CLASS( zShape3DList, zShape3DListCell, zShape3D* );
+
+__BEGIN_DECLS
 
 #define zShape3DListCellShape(c)      (c)->data
 #define zShape3DListCellOptic(c)      zShape3DOptic(zShape3DListCellShape(c))
