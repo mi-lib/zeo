@@ -22,11 +22,10 @@ typedef zVec3DAddrList zLoop3D;
 #define zLoop3DCreate(l,a) zVec3DAddrListCreate( l, a )
 #define zLoop3DDestroy(l)  zVec3DAddrListDestroy( l )
 
-/* ********************************************************** */
-/*! \brief list of 3D triangles.
- *//* ******************************************************* */
-
-zListClass( zTri3DList, zTri3DListCell, zTri3D );
+/*! \struct zTri3DList
+ * \brief list of 3D triangles.
+ */
+ZEDA_DEF_LIST_CLASS( zTri3DList, zTri3DListCell, zTri3D );
 
 /*! add a 3D triangle to a list of 3D triangles.
  *

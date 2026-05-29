@@ -239,7 +239,7 @@ static double _zGJKPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp, int *id)
   return dmin;
 }
 
-zListClass( zGJKSlotList, zGJKSlotListCell, zGJKSlot );
+ZEDA_DEF_LIST_CLASS( zGJKSlotList, zGJKSlotListCell, zGJKSlot );
 
 static zGJKSlotListCell *_zGJKSlotListInsert(zGJKSlotList *sl, zGJKSlot *s)
 {

@@ -28,7 +28,7 @@ static zDAESrc *_zDAESrcInit(zDAESrc *s)
   return s;
 }
 
-zListClass( zDAESrcList, zDAESrcCell, zDAESrc );
+ZEDA_DEF_LIST_CLASS( zDAESrcList, zDAESrcCell, zDAESrc );
 
 static zDAESrc *_zDAESrcFind(zDAESrcList *slist, char *str)
 {
@@ -58,7 +58,7 @@ zDAEPrimitive *_zDAEPrimitiveInit(zDAEPrimitive *p)
   return p;
 }
 
-zListClass( zDAEPrimitiveList, zDAEPrimitiveCell, zDAEPrimitive );
+ZEDA_DEF_LIST_CLASS( zDAEPrimitiveList, zDAEPrimitiveCell, zDAEPrimitive );
 
 /* mesh geometry in DAE */
 typedef struct{
@@ -86,7 +86,7 @@ static void _zDAEMeshDestroy(zDAEMesh *mesh)
   zListDestroy( zDAEPrimitiveCell, &mesh->plist );
 }
 
-zListClass( zDAEMeshList, zDAEMeshCell, zDAEMesh );
+ZEDA_DEF_LIST_CLASS( zDAEMeshList, zDAEMeshCell, zDAEMesh );
 
 static void _zDAEMeshListDestroy(zDAEMeshList *mlist)
 {

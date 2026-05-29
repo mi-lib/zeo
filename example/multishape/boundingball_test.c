@@ -1,8 +1,8 @@
-#include <zeo/zeo_mshape3d.h>
+#include <zeo/zeo_multishape3d.h>
 
-void output(zMShape3D *ms, zSphere3D *bb)
+void output(zMultiShape3D *ms, zSphere3D *bb)
 {
-  zMShape3DFPrintZTK( stdout, ms );
+  zMultiShape3DFPrintZTK( stdout, ms );
   printf( "\n[optic]\n" );
   printf( "name: transparent\n" );
   printf( "diffuse: 1.0 1.0 1.0\n" );
@@ -18,13 +18,13 @@ void output(zMShape3D *ms, zSphere3D *bb)
 
 int main(int argc, char *argv[])
 {
-  zMShape3D ms;
+  zMultiShape3D ms;
   zSphere3D bball;
 
   if( argc < 2 ) return 1;
-  if( !zMShape3DReadZTK( &ms, argv[1] ) ) return 1;
-  zMShape3DBoundingBall( &ms, &bball );
+  if( !zMultiShape3DReadZTK( &ms, argv[1] ) ) return 1;
+  zMultiShape3DBoundingBall( &ms, &bball );
   output( &ms, &bball );
-  zMShape3DDestroy( &ms );
+  zMultiShape3DDestroy( &ms );
   return 0;
 }

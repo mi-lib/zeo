@@ -134,13 +134,14 @@ __BEGIN_DECLS
     zFree( data->data.array ); \
     data->method = &zeo_vec##XD##_data_method_dummy; \
   } \
-  static int  _zVec##XD##DataArraySize(zVec##XD##Data *data){ return data->pointer.i; } \
-  static int  _zVec##XD##DataArrayCapacity(zVec##XD##Data *data){ return zArraySize( data->data.array ); } \
-  static bool _zVec##XD##DataArrayIsEmpty(zVec##XD##Data *data){ return data->pointer.i == 0; } \
+  static int  _zVec##XD##DataArraySize(zVec##XD##Data *data){ return zArraySize(data->data.array); } \
+  static int  _zVec##XD##DataArrayCapacity(zVec##XD##Data *data){ return zArrayCapacity( data->data.array ); } \
+  static bool _zVec##XD##DataArrayIsEmpty(zVec##XD##Data *data){ return zArraySize(data->data.array) == 0; } \
   static bool _zVec##XD##DataArrayAdd(zVec##XD##Data *data, const zVec##XD *vec){ \
-    if( data->pointer.i >= zArraySize(data->data.array) ) return false; \
+    if( data->pointer.i >= zArrayCapacity(data->data.array) ) return false; \
     zVec##XD##Copy( vec, zArrayElemNC(data->data.array,data->pointer.i) ); \
     data->pointer.i++; \
+    zArrayResize( data->data.array, data->pointer.i ); \
     return true; \
   } \
   static void _zVec##XD##DataArrayRewind(zVec##XD##Data *data){ data->pointer.i = 0; } \
@@ -170,13 +171,11 @@ __BEGIN_DECLS
     zFree( data->data.array ); \
     data->method = &zeo_vec##XD##_data_method_dummy; \
   } \
-  static int  _zVec##XD##DataArrayDirectSize(zVec##XD##Data *data){ return zArraySize(data->data.array); } \
-  static bool _zVec##XD##DataArrayDirectIsEmpty(zVec##XD##Data *data){ return zArraySize(data->data.array) == 0; } \
   static const zVec##XD##DataMethod zeo_vec##XD##_data_method_array_direct = { \
     destroy:  _zVec##XD##DataArrayDirectDestroy, \
-    size:     _zVec##XD##DataArrayDirectSize, \
+    size:     _zVec##XD##DataArraySize, \
     capacity: _zVec##XD##DataArrayCapacity, \
-    is_empty: _zVec##XD##DataArrayDirectIsEmpty, \
+    is_empty: _zVec##XD##DataArrayIsEmpty, \
     add:      _zVec##XD##DataDummyAdd, \
     rewind:   _zVec##XD##DataArrayRewind, \
     peek:     _zVec##XD##DataArrayPeek, \
@@ -250,7 +249,7 @@ __BEGIN_DECLS
     data->method = &zeo_vec##XD##_data_method_dummy; \
   } \
   static int  _zVec##XD##DataArrayPtrSize(zVec##XD##Data *data){ return zArraySize( data->data.array_ref ); } \
-  static int  _zVec##XD##DataArrayPtrCapacity(zVec##XD##Data *data){ return zArraySize( data->data.array_ref ); } \
+  static int  _zVec##XD##DataArrayPtrCapacity(zVec##XD##Data *data){ return zArrayCapacity( data->data.array_ref ); } \
   static bool _zVec##XD##DataArrayPtrIsEmpty(zVec##XD##Data *data){ return zArraySize( data->data.array_ref ) == 0; } \
   static zVec##XD *_zVec##XD##DataArrayPtrPeek(zVec##XD##Data *data){ \
     if( data->pointer.i >= zArraySize(data->data.array_ref) ) return NULL; \
@@ -349,6 +348,7 @@ __BEGIN_DECLS
     } \
     data->method = &zeo_vec##XD##_data_method_array; \
     zVec##XD##DataRewind( data ); \
+    zArrayResize( data->data.array, 0 ); \
     return data; \
   }
 

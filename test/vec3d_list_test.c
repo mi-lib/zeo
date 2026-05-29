@@ -56,18 +56,14 @@ void assert_addr_list_clone(void)
   zAssert( zVec3DAddrListClone, result );
 }
 
-int cmp(void *a, void *b, void *dummy)
+int cmp(zVec3DListCell *a, zVec3DListCell *b, void *dummy)
 {
-  zVec3D *v1, *v2;
-
-  v1 = &((zVec3DListCell*)a)->data;
-  v2 = &((zVec3DListCell*)b)->data;
-  if( v1->e[zX] > v2->e[zX] ) return 1;
-  if( v1->e[zX] < v2->e[zX] ) return -1;
-  if( v1->e[zY] > v2->e[zY] ) return 1;
-  if( v1->e[zY] < v2->e[zY] ) return -1;
-  if( v1->e[zZ] > v2->e[zZ] ) return 1;
-  if( v1->e[zZ] < v2->e[zZ] ) return -1;
+  if( a->data.e[zX] > b->data.e[zX] ) return 1;
+  if( a->data.e[zX] < b->data.e[zX] ) return -1;
+  if( a->data.e[zY] > b->data.e[zY] ) return 1;
+  if( a->data.e[zY] < b->data.e[zY] ) return -1;
+  if( a->data.e[zZ] > b->data.e[zZ] ) return 1;
+  if( a->data.e[zZ] < b->data.e[zZ] ) return -1;
   return 0;
 }
 

@@ -13,10 +13,9 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* CLASS: zVec2DList
- * list of 2D vectors
- * ********************************************************** */
+/*! \struct zVec2DList
+ * \brief list of 2D vectors.
+ */
 
 ZEO_VECXD_LIST_DEF_STRUCT( 2D );
 
@@ -93,9 +92,9 @@ __ZEO_EXPORT ZEO_VECXD_LIST_FIND_PROTOTYPE( 2D );
  * The cells of \a list is sorted in ascending order of x components. Regarding cells with the same
  * x component values, they are sorted in ascending order of y components.
  * \return
- * zVec2DListQuickSort() and zVec2DListQuickSortDefault() return a pointer \a list.
+ * zVec2DListQuickSort() and zVec2DListQuickSortDefault() do not return any value.
  * \sa
- * zListQuickSortDef
+ * ZEDA_DEF_LIST_QUICKSORT
  */
 __ZEO_EXPORT ZEO_VECXD_LIST_QUICKSORT_PROTOTYPE( 2D );
 __ZEO_EXPORT ZEO_VECXD_LIST_QUICKSORT_DEFAULT_PROTOTYPE( 2D );
@@ -129,10 +128,9 @@ __ZEO_EXPORT ZEO_VECXD_LIST_FPRINT_PROTOTYPE( 2D );
 __ZEO_EXPORT ZEO_VECXD_LIST_VALUE_FPRINT_PROTOTYPE( 2D );
 #define zVec2DListValuePrint(list) zVecXDListValuePrint( 2D, list )
 
-/* ********************************************************** */
-/* CLASS: zVec2DAddrList
- * list of addresses of 2D vectors
- * ********************************************************** */
+/*! \struct zVec2DAddrList
+ * \brief list of addresses of 2D vectors.
+ */
 
 ZEO_VECXD_ADDRLIST_DEF_STRUCT( 2D );
 
@@ -198,9 +196,9 @@ __ZEO_EXPORT ZEO_VECXD_ADDRLIST_CLONE_PROTOTYPE( 2D );
  * (The factor a in \a list is put after another factor b when \a cmp(a,b,p) > 0, where p is for
  * programmer's utility, given by \a priv.)
  * \return
- * zVec2DAddrListQuickSort() returns a pointer \a list.
+ * zVec2DAddrListQuickSort() does not return any value.
  * \sa
- * zListQuickSortDef
+ * ZEDA_DEF_LIST_QUICKSORT
  */
 __ZEO_EXPORT ZEO_VECXD_ADDRLIST_QUICKSORT_PROTOTYPE( 2D );
 

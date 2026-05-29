@@ -140,7 +140,7 @@ static bool _zVec3DOctantDivide(zVec3DOctant *octant, double resolution)
 /* merge a suboctant into the parent octant. */
 static void _zVec3DOctantMergeSuboctant(zVec3DOctant *octant, int i)
 {
-  zListAppend( &octant->points, &octant->suboctant[i]->points );
+  zListSpliceAndMoveZ( &octant->points, &octant->suboctant[i]->points );
   _zMat3DAddDRC( &octant->_ncov, &octant->suboctant[i]->_ncov );
   _zVec3DAddDRC( &octant->_norm, &octant->suboctant[i]->_norm );
   _zVec3DOctantDestroy( octant->suboctant[i] );

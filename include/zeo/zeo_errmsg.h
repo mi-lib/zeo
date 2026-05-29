@@ -173,8 +173,8 @@
 #define ZEO_WARN_SHAPE_UNKNOWNFORMAT               "%s: unknown format of a shape."
 #define ZEO_WARN_SHAPE_INVALID_MIRRORTYPE          "cannot specify type for mirrored shape : %s. destroyed"
 
-#define ZEO_WARN_MSHAPE_EMPTY                      "empty shapes assigned."
-#define ZEO_WARN_MSHAPE_EMPTY_OCTREE               "empty octree assigned."
+#define ZEO_WARN_MULTISHAPE_EMPTY                  "empty shapes assigned."
+#define ZEO_WARN_MULTISHAPE_EMPTY_OCTREE           "empty octree assigned."
 
 #define ZEO_WARN_MAPNET_EMPTY                      "empty map net assigned."
 

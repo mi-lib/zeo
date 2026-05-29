@@ -14,6 +14,13 @@ zMat6D *zMat6DCreate(zMat6D *m, zMat3D *m1, zMat3D *m2, zMat3D *m3, zMat3D *m4)
   return m;
 }
 
+/* copy a 6x6 matrix to another */
+zMat6D *zMat6DCopy(const zMat6D *src, zMat6D *dest)
+{
+  _zMat6DCopy( src, dest );
+  return dest;
+}
+
 /* zero a 6x6 matrix. */
 zMat6D *zMat6DZero(zMat6D *m)
 {

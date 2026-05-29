@@ -22,6 +22,7 @@ ZEO_VECXD_DATA_DEF_STRUCT( 2D );
 
 #define zVec2DDataDestroy(data)  zVecXDDataDestroy(data)
 #define zVec2DDataSize(data)     zVecXDDataSize(data)
+#define zVec2DDataCapacity(data) zVecXDDataCapacity(data)
 #define zVec2DDataIsEmpty(data)  zVecXDDataIsEmpty(data)
 #define zVec2DDataAdd(data,v)    zVecXDDataAdd(data,v)
 #define zVec2DDataRewind(data)   zVecXDDataRewind(data)

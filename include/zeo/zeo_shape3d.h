@@ -1,7 +1,7 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_shape3d - 3D shape
+ * zeo_shape3d - 3D shape.
  */
 
 #ifndef __ZEO_SHAPE3D_H__
@@ -36,9 +36,9 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3DCom ){
   void (* _fprintZTK)(FILE*,void*);
 };
 
-/* ********************************************************** */
-/*! \brief 3D unit shape class
- * ********************************************************** */
+/*! \struct zShape3D
+ * \brief 3D unit shape class
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3D ){
   Z_NAMED_CLASS;
   void *body;
@@ -202,7 +202,7 @@ __ZEO_EXPORT zShape3D *zShape3DReadFileDAE(zShape3D *shape, const char *filename
 /*! \struct zShape3DArray
  * \brief array class of 3D shapes.
  */
-zArrayClass( zShape3DArray, zShape3D );
+ZEDA_DEF_ARRAY_CLASS( zShape3DArray, zShape3D );
 
 /* ZTK */
 

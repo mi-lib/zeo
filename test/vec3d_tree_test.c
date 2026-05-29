@@ -1,10 +1,5 @@
 #include <zeo/zeo.h>
 
-#define NS 1000
-#define N   100
-
-#define RESOLUTION 0.5
-
 bool cmp_vec_array(zVec3DArray *array1, zVec3DArray *array2)
 {
   int i;
@@ -65,18 +60,19 @@ void assert_nn(void)
   zVec3DOctree octree;
   zVec3DTree tree, *node_nn;
   zVec3DData pointdata;
+  const int ns = 1000;
   int i;
   zVec3D v, *nn_octree, *nn_data;
   bool result_kdtree, result_octree;
+  const double resolution = 0.5;
   const double xmin = -10, xmax = 10, ymin = -10, ymax = 10, zmin = -10, zmax = 10;
 
-  zRandInit();
-  zVec3DDataInitArray( &pointdata, NS );
-  for( i=0; i<zVec3DDataSize(&pointdata); i++ ){
+  zVec3DDataInitArray( &pointdata, ns );
+  for( i=0; i<zVec3DDataCapacity(&pointdata); i++ ){
     zVec3DCreate( &v, zRandF(xmin,xmax), zRandF(ymin,ymax), zRandF(zmin,zmax) );
     zVec3DDataAdd( &pointdata, &v );
   }
-  zVec3DOctreeInit( &octree, xmin, ymin , zmin, xmax, ymax, zmax, RESOLUTION );
+  zVec3DOctreeInit( &octree, xmin, ymin , zmin, xmax, ymax, zmax, resolution );
   zVec3DOctreeAddData( &octree, &pointdata );
   zVec3DTreeInit( &tree );
   zVec3DTreeAddData( &tree, &pointdata );
@@ -108,18 +104,20 @@ void assert_vicinity(void)
   zVec3DTree tree;
   zVec3DData pointdata;
   zVec3DData vicinity1, vicinity2, vicinity3;
+  const int ns = 1000;
   int i;
   zVec3D v;
   bool result_kdtree, result_octree;
+  const double resolution = 0.5;
   const double xmin = -10, xmax = 10, ymin = -10, ymax = 10, zmin = -10, zmax = 10;
   const double radius = 5.0;
 
-  zVec3DDataInitArray( &pointdata, NS );
+  zVec3DDataInitArray( &pointdata, ns );
   for( i=0; i<zVec3DDataSize(&pointdata); i++ ){
     zVec3DCreate( &v, zRandF(xmin,xmax), zRandF(ymin,ymax), zRandF(zmin,zmax) );
     zVec3DDataAdd( &pointdata, &v );
   }
-  zVec3DOctreeInit( &octree, xmin, ymin , zmin, xmax, ymax, zmax, RESOLUTION );
+  zVec3DOctreeInit( &octree, xmin, ymin , zmin, xmax, ymax, zmax, resolution );
   zVec3DOctreeAddData( &octree, &pointdata );
   zVec3DTreeInit( &tree );
   zVec3DTreeAddData( &tree, &pointdata );
@@ -146,11 +144,12 @@ void assert_vec_tree_to_array(void)
 {
   zVec3DArray array1, array2;
   zVec3DTree tree;
+  const int n = 100;
   int i;
   bool result;
 
-  zVec3DArrayAlloc( &array1, N );
-  for( i=0; i<N; i++ ){
+  zVec3DArrayAlloc( &array1, n );
+  for( i=0; i<n; i++ ){
     zVec3DCreate( zArrayElemNC(&array1,i), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
   }
   zVec3DArrayToTree( &array1, &tree );
@@ -167,11 +166,12 @@ void assert_vec_tree_to_list(void)
   zVec3DList list1, list2;
   zVec3DTree tree;
   zVec3D v;
+  const int n = 100;
   int i;
   bool result;
 
   zListInit( &list1 );
-  for( i=0; i<N; i++ ){
+  for( i=0; i<n; i++ ){
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
     zVec3DListAdd( &list1, &v );
   }
@@ -191,11 +191,12 @@ void assert_vec_tree_to_data(void)
   zVec3DData data1, data2;
   zVec3DTree tree;
   zVec3D v;
+  const int n = 100;
   int i;
   bool result;
 
-  zVec3DDataInitArray( &data1, N );
-  for( i=0; i<N; i++ ){
+  zVec3DDataInitArray( &data1, n );
+  for( i=0; i<n; i++ ){
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
     zVec3DDataAdd( &data1, &v );
   }

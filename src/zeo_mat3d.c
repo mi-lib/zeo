@@ -6,15 +6,10 @@
 
 #include <zeo/zeo_mat3d.h>
 
-/* ********************************************************** */
-/* CLASS: zMat3D
- * 3x3 matrix class
- * ********************************************************** */
-
 /* 3x3 zero matrix and identity matrix. */
 #ifdef __cplusplus
-const zMat3D zMat3D::zmat3Dzero  = { { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } } };
-const zMat3D zMat3D::zmat3Dident = { { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } } };
+const zMat3D zMat3D::zmat3Dzero { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+const zMat3D zMat3D::zmat3Dident{ 1, 0, 0, 0, 1, 0, 0, 0, 1 };
 #else
 const zMat3D zmat3Dzero  = { { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } } };
 const zMat3D zmat3Dident = { { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } } };
@@ -28,6 +23,13 @@ zMat3D *zMat3DCreate(zMat3D *m,
 {
   _zMat3DCreate( m, a11, a12, a13, a21, a22, a23, a31, a32, a33 );
   return m;
+}
+
+/* copy a 3x3 matrix to the other. */
+zMat3D *zMat3DCopy(const zMat3D *src, zMat3D *dest)
+{
+  _zMat3DCopy( src, dest );
+  return dest;
 }
 
 /* check if two 3x3 matrices are strictly equal. */
@@ -165,23 +167,23 @@ zMat3D *zMat3DSubDyad(zMat3D *m, const zVec3D *v1, const zVec3D *v2)
 }
 
 /* create an outer-product matrix of a 3D vector. */
-zMat3D *zVec3DOuterProd2Mat3D(const zVec3D *v, zMat3D *m)
+zMat3D *zVec3DOuterProdToMat3D(const zVec3D *v, zMat3D *m)
 {
-  _zVec3DOuterProd2Mat3D( v, m );
+  _zVec3DOuterProdToMat3D( v, m );
   return m;
 }
 
 /* create a triple-product matrix of a 3D vector. */
-zMat3D *zVec3DTripleProd2Mat3D(const zVec3D *v1, const zVec3D *v2, zMat3D *m)
+zMat3D *zVec3DTripleProdToMat3D(const zVec3D *v1, const zVec3D *v2, zMat3D *m)
 {
-  _zVec3DTripleProd2Mat3D( v1, v2, m );
+  _zVec3DTripleProdToMat3D( v1, v2, m );
   return m;
 }
 
 /* create a double outer-product matrix of a 3D vector. */
-zMat3D *zVec3DDoubleOuterProd2Mat3D(const zVec3D *v, zMat3D *m)
+zMat3D *zVec3DDoubleOuterProdToMat3D(const zVec3D *v, zMat3D *m)
 {
-  _zVec3DDoubleOuterProd2Mat3D( v, m );
+  _zVec3DDoubleOuterProdToMat3D( v, m );
   return m;
 }
 
@@ -760,7 +762,7 @@ zMat3D *zMat3DFromAA(zMat3D *m, const zVec3D *aa)
   _zSinCos( l, &s, &c );
   zVec3DMul( aa, 1.0/l, &n );
   zVec3DMul( &n, 1-c, &nl );
-  _zVec3DTripleProd2Mat3D( &n, &nl, m );
+  _zVec3DTripleProdToMat3D( &n, &nl, m );
   r1 = s * n.c.x;
   r2 = s * n.c.y;
   r3 = s * n.c.z;
@@ -779,27 +781,22 @@ zMat3D *zMat3DFromAA(zMat3D *m, const zVec3D *aa)
 /* convert a 3D attitude matrix to an angle-axis vector. */
 zVec3D *zMat3DToAA(const zMat3D *m, zVec3D *aa)
 {
-  int i, axis_id = zAxisInvalid;
-  double l, a, eigerrmin;
-  zVec3D eigval;
-  zMat3D eigbase;
+  double l, a;
+  int i0, i1, i2;
 
   _zVec3DCreate( aa, m->c.yz-m->c.zy, m->c.zx-m->c.xz, m->c.xy-m->c.yx );
   l = _zVec3DNorm( aa );
   a = atan2( l, m->c.xx+m->c.yy+m->c.zz-1 );
-  if( zIsTiny( l ) ){ /* singular case */
-    zMat3DSymEig( m, &eigval, &eigbase );
-    eigerrmin = HUGE_VAL;
-    for( i=0; i<3; i++ )
-      if( ( l = fabs( eigval.e[i] - 1.0 ) ) < eigerrmin ){
-        eigerrmin = l;
-        axis_id = i;
-      }
-    if( !zIsTiny( eigerrmin ) )
-      ZRUNWARN( ZEO_ERR_MAT_NOTSO3 );
-    return zVec3DMul( &eigbase.v[axis_id], a, aa );
-  }
-  return zVec3DMulDRC( aa, a/l );
+  if( zIsTiny( a )  ) return zVec3DZero( aa ); /* identity case */
+  if( !zIsTiny( l ) ) return zVec3DMulDRC( aa, a/l ); /* regular case */
+  /* singular case (a=pi) */
+  i0 = m->c.xx > m->c.yy ? ( m->c.xx > m->c.zz ? 0 : 2 ) : ( m->c.yy > m->c.zz ? 1 : 2 );
+  i1 = ( i0 + 1 ) % 3;
+  i2 = ( i0 + 2 ) % 3;
+  aa->e[i0] = sqrt( 0.5 * m->e[i0][i0] + 0.5 );
+  aa->e[i1] = 0.5 * m->e[i0][i1] / aa->e[i0];
+  aa->e[i2] = 0.5 * m->e[i0][i2] / aa->e[i0];
+  return zVec3DMulDRC( aa, a );
 }
 
 /* rotational multiplication for 3D matrices. */

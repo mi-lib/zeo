@@ -12,9 +12,9 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/*! \brief 3D line class.
- *//********************************************************* */
+/*! \struct zLine3D
+ * \brief 3D line class.
+ */
 ZEO_ELEM_LINEXD_DEF_STRUCT( 3D );
 
 #define zLine3DOrg(line)       zLineXDOrg( 3D, line )
@@ -46,9 +46,9 @@ __ZEO_EXPORT zLine3D *zLine3DCommonPerp(const zLine3D *line1, const zLine3D *lin
 /*! \brief distance between two 3D lines. */
 __ZEO_EXPORT double zDistLine3DLine3D(const zLine3D *line1, const zLine3D *line2);
 
-/* ********************************************************** */
-/*! \brief 3D edge class.
- *//********************************************************* */
+/*! \struct zEdge3D
+ * \brief 3D edge class.
+ */
 ZEO_ELEM_EDGEXD_DEF_STRUCT( 3D );
 
 #define zEdge3DVert(edge,i)        zEdgeXDVert( 3D, edge, i )
@@ -161,9 +161,9 @@ __ZEO_EXPORT ZEO_ELEM_EDGEXD_CONTIG_VERT_PROTOTYPE( 3D );
 __ZEO_EXPORT ZEO_ELEM_EDGEXD_FPRINT_PROTOTYPE( 3D );
 #define zEdge3DPrint(edge) zEdge3DFPrint( stdout, (edge) )
 
-/* ********************************************************** */
-/*! \brief 3D plane class.
- *//********************************************************* */
+/*! \struct zPlane3D
+ * \brief 3D plane class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPlane3D ){
   zVec3D *origin; /*!< original point */
   zVec3D norm;    /*!< normal vector */
@@ -230,9 +230,9 @@ __ZEO_EXPORT double zPlane3DProjPoint(const zPlane3D *plane, const zVec3D *v, zV
 __ZEO_EXPORT void zPlane3DFPrint(FILE *fp, const zPlane3D *plane);
 #define zPlane3DPrint(plane) zPlane3DFPrint( stdout, (plane) )
 
-/* ********************************************************** */
-/*! \brief 3D triangle class.
- *//********************************************************* */
+/*! \struct zTri3D
+ * \brief 3D triangle class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zTri3D ){
   zVec3D *v[3]; /*!< vertices */
   zVec3D norm;  /*!< normal vector */
@@ -268,6 +268,15 @@ __ZEO_EXPORT zTri3D *zTri3DCreate(zTri3D *tri, const zVec3D *v1, const zVec3D *v
 __ZEO_EXPORT zTri3D *zTri3DCreateFlip(zTri3D *tri, const zVec3D *v1, const zVec3D *v2, const zVec3D *v3);
 __ZEO_EXPORT zTri3D *zTri3DFlip(const zTri3D *src, zTri3D *dest);
 #define zTri3DFlipDRC(tri) zTri3DFlip( tri, tri )
+
+/*! \brief copy a 3D triangle. */
+#define _zTri3DCopy(src,dest) do{ \
+  (dest)->v[0] = (src)->v[0]; \
+  (dest)->v[1] = (src)->v[1]; \
+  (dest)->v[2] = (src)->v[2]; \
+  _zVec3DCopy( &(src)->norm, &(dest)->norm ); \
+} while(0)
+__ZEO_EXPORT zTri3D *zTri3DCopy(const zTri3D *src, zTri3D *dest);
 
 /*! \brief area and normal vector of a 3D triangle.
  *
@@ -447,7 +456,7 @@ __ZEO_EXPORT void zTri3DFPrint(FILE *fp, const zTri3D *tri);
 /*! \struct zTri3DArray
  * \brief array class of 3D triangles.
  */
-zArrayClass( zTri3DArray, zTri3D );
+ZEDA_DEF_ARRAY_CLASS( zTri3DArray, zTri3D );
 
 /* ********************************************************** */
 /* 3D tetrahedron.

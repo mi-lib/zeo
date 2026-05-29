@@ -1,20 +1,15 @@
 /* Zeo - Z/Geometry and optics computation library.
  * Copyright (C) 2005 Tomomichi Sugihara (Zhidao)
  *
- * zeo_mat2d.h - 2x2 matrix.
+ * zeo_mat2d - 2x2 matrix.
  */
 
 #include <zeo/zeo_mat2d.h>
 
-/* ********************************************************** */
-/* CLASS: zMat2D
- * 2x2 matrix class
- * ********************************************************** */
-
 /* 2x2 zero matrix and identity matrix. */
 #ifdef __cplusplus
-const zMat2D zMat2D::zmat2Dzero  = { { { 0, 0 }, { 0, 0 } } };
-const zMat2D zMat2D::zmat2Dident = { { { 1, 0 }, { 0, 1 } } };
+const zMat2D zMat2D::zmat2Dzero { 0, 0, 0, 0 };
+const zMat2D zMat2D::zmat2Dident{ 1, 0, 0, 1 };
 #else
 const zMat2D zmat2Dzero  = { { { 0, 0 }, { 0, 0 } } };
 const zMat2D zmat2Dident = { { { 1, 0 }, { 0, 1 } } };

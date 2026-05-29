@@ -6,17 +6,12 @@
 
 #include <zeo/zeo_vec3d.h>
 
-/* ********************************************************** */
-/* CLASS: zVec3D
- * 3D vector class
- * ********************************************************** */
-
 /* 3D zero vector and unit vectors along (x,y,z) axis. */
 #ifdef __cplusplus
-const zVec3D zVec3D::zvec3Dzero = { { 0, 0, 0 } };
-const zVec3D zVec3D::zvec3Dx = { { 1, 0, 0 } };
-const zVec3D zVec3D::zvec3Dy = { { 0, 1, 0 } };
-const zVec3D zVec3D::zvec3Dz = { { 0, 0, 1 } };
+const zVec3D zVec3D::zvec3Dzero{ 0, 0, 0 };
+const zVec3D zVec3D::zvec3Dx   { 1, 0, 0 };
+const zVec3D zVec3D::zvec3Dy   { 0, 1, 0 };
+const zVec3D zVec3D::zvec3Dz   { 0, 0, 1 };
 #else
 const zVec3D zvec3Dzero = { { 0, 0, 0 } };
 const zVec3D zvec3Dx    = { { 1, 0, 0 } };
@@ -39,6 +34,13 @@ zVec3D *zVec3DCreatePolar(zVec3D *v, double r, double theta, double phi)
   rs = r * sin( theta );
   _zVec3DCreate( v, rs*cos(phi), rs*sin(phi), r*cos(theta) );
   return v;
+}
+
+/* copy a 3D vector. */
+zVec3D *zVec3DCopy(const zVec3D *src, zVec3D *dest)
+{
+  _zVec3DCopy( src, dest );
+  return dest;
 }
 
 /* check if two 3D vectors match are exactly the same. */

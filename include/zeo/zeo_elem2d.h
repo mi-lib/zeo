@@ -12,9 +12,9 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/*! \brief 2D line class.
- *//********************************************************* */
+/*! \struct zLine2D
+ * \brief 2D line class.
+ */
 ZEO_ELEM_LINEXD_DEF_STRUCT( 2D );
 
 #define zLine2DOrg(line)       zLineXDOrg( 2D, line )
@@ -40,9 +40,9 @@ __ZEO_EXPORT ZEO_ELEM_LINEXD_POINT_IS_ON_PROTOTYPE( 2D );
 /*! \brief the intersection of two 2D lines. */
 __ZEO_EXPORT zVec2D *zIntersectLine2D(const zLine2D *line1, const zLine2D *line2, zVec2D *intersection);
 
-/* ********************************************************** */
-/*! \brief 2D edge class.
- *//********************************************************* */
+/*! \struct zEdge2D
+ * \brief 2D edge class.
+ */
 ZEO_ELEM_EDGEXD_DEF_STRUCT( 2D );
 
 #define zEdge2DVert(edge,i)        zEdgeXDVert( 2D, edge, i )
@@ -159,9 +159,9 @@ __ZEO_EXPORT ZEO_ELEM_EDGEXD_CONTIG_VERT_PROTOTYPE( 2D );
 __ZEO_EXPORT ZEO_ELEM_EDGEXD_FPRINT_PROTOTYPE( 2D );
 #define zEdge2DPrint(edge) zEdge2DFPrint( stdout, (edge) )
 
-/* ********************************************************** */
-/*! \brief 2D triangle class.
- *//********************************************************* */
+/*! \struct zTri2D
+ * \brief 2D triangle class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zTri2D ){
   zVec2D *v[3]; /*!< \brief vertices */
 };
@@ -273,7 +273,7 @@ __ZEO_EXPORT void zTri2DFPrint(FILE *fp, const zTri2D *tri);
 /*! \struct zTri2DArray
  * \brief array class of 2D triangles.
  */
-zArrayClass( zTri2DArray, zTri2D );
+ZEDA_DEF_ARRAY_CLASS( zTri2DArray, zTri2D );
 
 __END_DECLS
 

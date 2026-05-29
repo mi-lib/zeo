@@ -11,15 +11,17 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* CLASS: zFrame3D
- * 3D coordinate frame class
- * ********************************************************** */
-
+/*! \struct zFrame3D
+ * \brief 3D coordinate frame class
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zFrame3D ){
   zVec3D pos;
   zMat3D att;
 #ifdef __cplusplus
+  zFrame3D(){}
+  zFrame3D(double x, double y, double z, double a11, double a12, double a13, double a21, double a22, double a23, double a31, double a32, double a33) : pos{x,y,z}, att{a11,a12,a13,a21,a22,a23,a31,a32,a33} {}
+  zFrame3D(const zVec3D &_pos, const zMat3D &_att) : pos{_pos}, att{_att} {}
+  ~zFrame3D(){}
   zVec3D &vec(zAxis axis);
   zVec3D &setPos(zVec3D &_pos){ zVec3DCopy( &_pos, &pos ); return pos; }
   zMat3D &setAtt(zMat3D &_att){ zMat3DCopy( &_att, &att ); return att; }
@@ -39,21 +41,23 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zFrame3D ){
   bool match(zFrame3D &f);
   bool isEqual(zFrame3D &f);
   bool isIdent();
-  zVec3D operator*(zVec3D &v);
-  zFrame3D operator*(zFrame3D &f);
   zFrame3D &operator*=(zFrame3D &f);
   zVec3D xform(zVec3D &v);
   zVec3D xformInv(zVec3D &v);
   zVec3D &xformDRC(zVec3D &v);
   zVec3D &xformInvDRC(zVec3D &v);
   zFrame3D inv();
-  zFrame3D casecade(zFrame3D &f);
+  zFrame3D cascade(zFrame3D &f);
   zVec6D xformLin(zVec6D &v);
   zVec6D xformAng(zVec6D &v);
   zFrame3D twist(zVec6D &t);
-  zVec6D toZYX();
-  zVec6D toZYZ();
-  zVec6D toAA();
+  zVec6D toPosZYX();
+  zVec6D toPosZYZ();
+  zVec6D toPosAA();
+  double *toPosZYX(double array[]);
+  double *toPosZYZ(double array[]);
+  double *toPosAA(double array[]);
+  /*! \brief 3D identity frame */
   static const zFrame3D zframe3Dident;
 #endif /* __cplusplus */
 };
@@ -74,22 +78,31 @@ __ZEO_EXPORT const zFrame3D zframe3Dident;
 #define zFrame3DSetPos(frame,pos) zVec3DCopy( pos, zFrame3DPos(frame) )
 #define zFrame3DSetAtt(frame,att) zMat3DCopy( att, zFrame3DAtt(frame) )
 
-/*! \brief create, copy and initialize a 3D coordinate frame.
+/*! \brief create a 3D coordinate frame.
  *
  * zFrame3DCreate() creates a 3D coordinate frame \a frame from a position vector \a p and an attitude
  * matrix \a m.
+ * \return
+ * zFrame3DCreate() returns a pointer \a frame.
+ */
+__ZEO_EXPORT zFrame3D *zFrame3DCreate(zFrame3D *frame, zVec3D *p, zMat3D *m);
+
+/*! \brief copy a 3D coordinate frame.
  *
  * zFrame3DCopy() copies a 3D coordinate frame \a src to \a dest.
+ * \return
+ * zFrame3DCopy() returns a pointer \a dest.
+ */
+#define _zFrame3DCopy(src,dest) zCopy( zFrame3D, src, dest )
+__ZEO_EXPORT zFrame3D *zFrame3DCopy(const zFrame3D *src, zFrame3D *dest);
+
+/*! \brief 3D identity coordinate frame.
  *
  * zFrame3DIdent() initializes \a frame as the 3D identity frame, namely, a frame whose position is at
  * the original point (0,0,0) and attitude is identical with the absolute coordinate frame.
  * \return
- * zFrame3DCreate() returns a pointer \a frame.
- *
- * zFrame3DCopy() and zFrame3DIdent() return no value.
+ * zFrame3DCreate() and zFrame3DIdent() returns a pointer \a frame.
  */
-__ZEO_EXPORT zFrame3D *zFrame3DCreate(zFrame3D *frame, zVec3D *p, zMat3D *m);
-#define zFrame3DCopy(src,dest) ( *(dest) = *(src) )
 #define zFrame3DIdent(frame) zFrame3DCopy( ZFRAME3DIDENT, frame )
 
 /*! \brief check if two 3D coordinate frames match. */
@@ -386,21 +399,26 @@ inline zFrame3D &zFrame3D::ident(){ zFrame3DIdent( this ); return *this; }
 inline bool zFrame3D::match(zFrame3D &f){ return _zFrame3DMatch( this, &f ); }
 inline bool zFrame3D::isEqual(zFrame3D &f){ return _zFrame3DEqual( this, &f ); }
 inline bool zFrame3D::isIdent(){ return _zFrame3DIsIdent( this ); }
-inline zVec3D zFrame3D::operator*(zVec3D &v){ zVec3D ret; zXform3D( this, &v, &ret ); return ret; }
-inline zFrame3D zFrame3D::operator*(zFrame3D &f){ zFrame3D ret; zFrame3DCascade( this, &f, &ret ); return ret; }
 inline zFrame3D &zFrame3D::operator*=(zFrame3D &f){ zFrame3D tmp; zFrame3DCascade( this, &f, &tmp ); zFrame3DCopy( &tmp, this ); return *this; }
 inline zVec3D zFrame3D::xform(zVec3D &v){ zVec3D ret; _zXform3D( this, &v, &ret ); return ret; }
 inline zVec3D zFrame3D::xformInv(zVec3D &v){ zVec3D ret; _zXform3DInv( this, &v, &ret ); return ret; }
 inline zVec3D &zFrame3D::xformDRC(zVec3D &v){ zXform3DDRC( this, &v ); return v; }
 inline zVec3D &zFrame3D::xformInvDRC(zVec3D &v){ zXform3DInvDRC( this, &v ); return v; }
 inline zFrame3D zFrame3D::inv(){ zFrame3D ret; _zFrame3DInv( this, &ret ); return ret; }
-inline zFrame3D zFrame3D::casecade(zFrame3D &f){ zFrame3D ret; zFrame3DCascade( this, &f, &ret ); return ret; }
+inline zFrame3D zFrame3D::cascade(zFrame3D &f){ zFrame3D ret; zFrame3DCascade( this, &f, &ret ); return ret; }
 inline zVec6D zFrame3D::xformLin(zVec6D &v){ zVec6D ret; zXform6DLin( this, &v, &ret ); return ret; }
 inline zVec6D zFrame3D::xformAng(zVec6D &v){ zVec6D ret; zXform6DAng( this, &v, &ret ); return ret; }
 inline zFrame3D zFrame3D::twist(zVec6D &t){ zFrame3D ret; zFrame3DTwist( this, &t, &ret ); return ret; }
-inline zVec6D zFrame3D::toZYX(){ zVec6D v; zFrame3DToVec6DZYX( this, &v ); return v; }
-inline zVec6D zFrame3D::toZYZ(){ zVec6D v; zFrame3DToVec6DZYZ( this, &v ); return v; }
-inline zVec6D zFrame3D::toAA(){ zVec6D v; zFrame3DToVec6DAA( this, &v ); return v; }
+inline zVec6D zFrame3D::toPosZYX(){ zVec6D v; zFrame3DToVec6DZYX( this, &v ); return v; }
+inline zVec6D zFrame3D::toPosZYZ(){ zVec6D v; zFrame3DToVec6DZYZ( this, &v ); return v; }
+inline zVec6D zFrame3D::toPosAA(){ zVec6D v; zFrame3DToVec6DAA( this, &v ); return v; }
+inline double *zFrame3D::toPosZYX(double array[]){ zFrame3DToArrayZYX( this, array ); return array; }
+inline double *zFrame3D::toPosZYZ(double array[]){ zFrame3DToArrayZYZ( this, array ); return array; }
+inline double *zFrame3D::toPosAA(double array[]){ zFrame3DToArrayAA( this, array ); return array; }
+
+inline zVec3D operator*(const zFrame3D &f, const zVec3D &v){ zVec3D ret; _zXform3D( &f, &v, &ret ); return ret; }
+inline zFrame3D operator*(const zFrame3D &f1, const zFrame3D &f2){ zFrame3D ret; _zFrame3DCascade( &f1, &f2, &ret ); return ret; }
+inline zVec6D operator-(const zFrame3D &f1, const zFrame3D &f2){ zVec6D error; zFrame3DError( &f1, &f2, &error ); return error; }
 #endif /* __cplusplus */
 
 #endif /* __ZEO_FRAME3D_H__ */

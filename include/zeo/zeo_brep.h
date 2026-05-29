@@ -22,7 +22,7 @@ typedef struct{
   double _d; /* for beneath-beyond test */
   void *_p; /* pointer to destination vector */
 } zBREPVert;
-zListClass( zBREPVertList, zBREPVertListCell, zBREPVert );
+ZEDA_DEF_LIST_CLASS( zBREPVertList, zBREPVertListCell, zBREPVert );
 
 #define zBREPVertListCellInit(c,v) do{\
   zVec3DCopy( v, &(c)->data.p );\
@@ -44,7 +44,7 @@ typedef struct{
   zBREPVertListCell *v[2];
   void *_v;
 } zBREPEdge;
-zListClass( zBREPEdgeList, zBREPEdgeListCell, zBREPEdge );
+ZEDA_DEF_LIST_CLASS( zBREPEdgeList, zBREPEdgeListCell, zBREPEdge );
 
 #define zBREPEdgeListCellInit(e,v1,v2) do{\
   (e)->data.v[0] = (zBREPVertListCell *)(v1);\
@@ -67,7 +67,7 @@ typedef struct{
   zBREPEdgeListCell *e[3];
   zVec3D norm; /* to be used. */
 } zBREPFace;
-zListClass( zBREPFaceList, zBREPFaceListCell, zBREPFace );
+ZEDA_DEF_LIST_CLASS( zBREPFaceList, zBREPFaceListCell, zBREPFace );
 
 /* ********************************************************** */
 /* CLASS: zBREP

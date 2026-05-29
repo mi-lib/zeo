@@ -111,7 +111,7 @@ __ZEO_EXPORT void zTextureFPrintZTK(FILE *fp, const zTexture *texture);
 /*! \struct zTextureArray
  * \brief array class of a set of textures.
  */
-zArrayClass( zTextureArray, zTexture );
+ZEDA_DEF_ARRAY_CLASS( zTextureArray, zTexture );
 
 __END_DECLS
 

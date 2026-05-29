@@ -6,20 +6,15 @@
 
 #include <zeo/zeo_vec6d.h>
 
-/* ********************************************************** */
-/* CLASS: zVec6D
- * 6D spatial vector class - set of linear/angular vectors
- * ********************************************************** */
-
 /* 6D zero vector and unit vectors along (x,y,z) axes. */
 #ifdef __cplusplus
-const zVec6D zVec6D::zvec6Dzero = { { 0, 0, 0, 0, 0, 0 } };
-const zVec6D zVec6D::zvec6Dlinx = { { 1, 0, 0, 0, 0, 0 } };
-const zVec6D zVec6D::zvec6Dliny = { { 0, 1, 0, 0, 0, 0 } };
-const zVec6D zVec6D::zvec6Dlinz = { { 0, 0, 1, 0, 0, 0 } };
-const zVec6D zVec6D::zvec6Dangx = { { 0, 0, 0, 1, 0, 0 } };
-const zVec6D zVec6D::zvec6Dangy = { { 0, 0, 0, 0, 1, 0 } };
-const zVec6D zVec6D::zvec6Dangz = { { 0, 0, 0, 0, 0, 1 } };
+const zVec6D zVec6D::zvec6Dzero{ 0, 0, 0, 0, 0, 0 };
+const zVec6D zVec6D::zvec6Dlinx{ 1, 0, 0, 0, 0, 0 };
+const zVec6D zVec6D::zvec6Dliny{ 0, 1, 0, 0, 0, 0 };
+const zVec6D zVec6D::zvec6Dlinz{ 0, 0, 1, 0, 0, 0 };
+const zVec6D zVec6D::zvec6Dangx{ 0, 0, 0, 1, 0, 0 };
+const zVec6D zVec6D::zvec6Dangy{ 0, 0, 0, 0, 1, 0 };
+const zVec6D zVec6D::zvec6Dangz{ 0, 0, 0, 0, 0, 1 };
 #else
 const zVec6D zvec6Dzero = { { 0, 0, 0, 0, 0, 0 } };
 const zVec6D zvec6Dlinx = { { 1, 0, 0, 0, 0, 0 } };
@@ -42,6 +37,13 @@ zVec6D *zVec6DFromVec3D(zVec6D *v, const zVec3D *vl, const zVec3D *va)
 {
   _zVec6DFromVec3D( v, vl, va );
   return v;
+}
+
+/* copy a 6D vector. */
+zVec6D *zVec6DCopy(const zVec6D *src, zVec6D *dest)
+{
+  _zVec6DCopy( src, dest );
+  return dest;
 }
 
 /* check if two 6D vectors match each other. */

@@ -6,21 +6,12 @@
 
 #include <zeo/zeo_frame3d.h>
 
-/* ********************************************************** */
-/* CLASS: zFrame3D
- * 3D coordinate frame class
- * ********************************************************** */
-
 /* the 3D identity frame. */
 #ifdef __cplusplus
-const zFrame3D zFrame3D::zframe3Dident
+const zFrame3D zFrame3D::zframe3Dident{ 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 };
 #else
-const zFrame3D zframe3Dident
+const zFrame3D zframe3Dident = { { { 0, 0, 0 } }, { { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } } } };
 #endif /* __cplusplus */
-= {
-  { { 0, 0, 0 } },
-  { { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } } }
-};
 
 /* create a 3D coordinate frame from a position vector and an attitude matrix. */
 zFrame3D *zFrame3DCreate(zFrame3D *frame, zVec3D *p, zMat3D *m)
@@ -28,6 +19,13 @@ zFrame3D *zFrame3DCreate(zFrame3D *frame, zVec3D *p, zMat3D *m)
   zFrame3DSetPos( frame, p );
   zFrame3DSetAtt( frame, m );
   return frame;
+}
+
+/* copy a 3D coordinate frame. */
+zFrame3D *zFrame3DCopy(const zFrame3D *src, zFrame3D *dest)
+{
+  _zFrame3DCopy( src, dest );
+  return dest;
 }
 
 /* check if two 3D coordinate frames match. */

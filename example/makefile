@@ -6,7 +6,7 @@ CXX=g++
 CXXFLAGS=-std=c++17 -Wall -O3 -funroll-loops -g `zeo-config --cflags`
 LINKCXX=`zeo-config -lcpp`
 
-TARGET=$(shell ls *.c | xargs -i basename {} .c | tr -s "\n" " ") $(shell ls *.cpp | xargs -i basename {} .cpp | tr -s "\n" " ")
+TARGET=$(shell ls *.c | xargs -I{} basename {} .c | tr -s "\n" " ") $(shell ls *.cpp | xargs -I{} basename {} .cpp | tr -s "\n" " ")
 
 all: $(TARGET)
 %: %.c

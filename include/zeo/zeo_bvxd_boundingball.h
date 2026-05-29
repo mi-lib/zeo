@@ -58,7 +58,8 @@ typedef enum{
   ZEO_BOUNDINGBALL_ACTION_CHECK,
   ZEO_BOUNDINGBALL_ACTION_REVERT,
 } zBoundingBallAction;
-zListClass( zBoundingBallActionStack, zBoundingBallActionStackCell, zBoundingBallAction );
+
+ZEDA_DEF_LIST_CLASS( zBoundingBallActionStack, zBoundingBallActionStackCell, zBoundingBallAction );
 
 #define ZEO_BOUNDINGBALL_DEF_METHOD(XD,DIM,BALLTYPE) \
 typedef struct{ \

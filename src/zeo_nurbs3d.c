@@ -67,7 +67,7 @@ zNURBS3D *zNURBS3DCopy(const zNURBS3D *src, zNURBS3D *dest)
     ZRUNERROR( ZEO_ERR_NURBS_SIZEMISMATCH );
     return NULL;
   }
-  memcpy( zArray2Buf(&dest->cpnet), zArray2Buf(&src->cpnet), zNURBS3DCPNum(src,0)*zNURBS3DCPNum(src,1)*sizeof(zNURBS3DCPCell) );
+  memcpy( (void *)zArray2Buf(&dest->cpnet), (void *)zArray2Buf(&src->cpnet), zNURBS3DCPNum(src,0)*zNURBS3DCPNum(src,1)*sizeof(zNURBS3DCPCell) );
   return dest;
 }
 

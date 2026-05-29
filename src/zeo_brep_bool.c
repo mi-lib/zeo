@@ -56,7 +56,7 @@ zBREP *zBREPMerge(zBREP *target, zBREP *sub)
       zListInsertHead( &target->elist, ep );
   }
   /* merge faces */
-  zListAppend( &target->flist, &sub->flist );
+  zListSpliceAndMoveZ( &target->flist, &sub->flist );
 
   return target;
 }

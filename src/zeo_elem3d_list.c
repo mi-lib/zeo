@@ -19,7 +19,7 @@ zTri3DListCell *zTri3DListAdd(zTri3DList *list, const zTri3D *t)
     ZALLOCERROR();
     return NULL;
   }
-  zCopy( zTri3D, t, &cell->data );
+  zTri3DCopy( t, &cell->data );
   zListInsertHead( list, cell );
   return cell;
 }
@@ -41,7 +41,7 @@ void zTri3DListCopyArray(const zTri3DList *list, zTri3D t[], int n)
   int i = 0;
 
   zListForEach( list, tp ){
-    zCopy( zTri3D, &tp->data, &t[i] );
+    zTri3DCopy( &tp->data, &t[i] );
     if( ++i >= n ) break;
   }
 }

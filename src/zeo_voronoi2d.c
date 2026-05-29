@@ -101,7 +101,7 @@ typedef struct{
   zDelaunayTri2D *t;
   int i; /* index of the new adjacent */
 } zDelaunayPair2D;
-zListClass( zDelaunayPair2DStack, zDelaunayPair2DCell, zDelaunayPair2D );
+ZEDA_DEF_LIST_CLASS( zDelaunayPair2DStack, zDelaunayPair2DCell, zDelaunayPair2D );
 
 /* push an edge of a 2D triangle to be legalized on a stack for Delaunay triangulation */
 static bool _zDelaunayPair2DStackPush(zDelaunayPair2DStack *ps, zDelaunayTri2D *t, int i)

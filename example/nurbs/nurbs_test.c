@@ -1,5 +1,35 @@
 #include <zeo/zeo_nurbs3d.h>
+#include <zeo/zeo_shape3d.h>
 
+#ifdef __cplusplus
+zVec3D cp[] = {
+  zVec3D{ 1.0,-2.0, 0.0 },
+  zVec3D{ 1.0,-1.0, 0.0 },
+  zVec3D{ 1.0, 0.0, 0.0 },
+  zVec3D{ 1.0, 1.0, 0.0 },
+  zVec3D{ 1.0, 2.0, 0.0 },
+  zVec3D{ 3.0,-2.0, 0.0 },
+  zVec3D{ 3.0,-1.0,-1.0 },
+  zVec3D{ 3.0, 0.0,-1.0 },
+  zVec3D{ 3.0, 1.0,-1.0 },
+  zVec3D{ 3.0, 2.0, 0.0 },
+  zVec3D{ 4.0,-2.0, 0.0 },
+  zVec3D{ 4.0,-1.0,-1.0 },
+  zVec3D{ 4.0, 0.0, 2.0 },
+  zVec3D{ 4.0, 1.0,-1.0 },
+  zVec3D{ 4.0, 2.0, 0.0 },
+  zVec3D{ 5.0,-2.0, 0.0 },
+  zVec3D{ 5.0,-1.0,-1.0 },
+  zVec3D{ 5.0, 0.0,-1.0 },
+  zVec3D{ 5.0, 1.0,-1.0 },
+  zVec3D{ 5.0, 2.0, 0.0 },
+  zVec3D{ 7.0,-2.0, 0.0 },
+  zVec3D{ 7.0,-1.0, 0.0 },
+  zVec3D{ 7.0, 0.0, 0.0 },
+  zVec3D{ 7.0, 1.0, 0.0 },
+  zVec3D{ 7.0, 2.0, 0.0 },
+};
+#else
 zVec3D cp[] = {
   { { 1.0,-2.0, 0.0 } },
   { { 1.0,-1.0, 0.0 } },
@@ -27,6 +57,7 @@ zVec3D cp[] = {
   { { 7.0, 1.0, 0.0 } },
   { { 7.0, 2.0, 0.0 } },
 };
+#endif
 
 int main(void)
 {
@@ -88,7 +119,7 @@ int main(void)
   fclose( fp );
 
   fp = fopen( "test_nurbs.ztk", "w" );
-  fprintf( fp, "[zeo::shape]\n" );
+  fprintf( fp, "[%s]\n", ZTK_TAG_ZEO_SHAPE );
   fprintf( fp, "type: nurbs\n" );
   zNURBS3DFPrintZTK( fp, &nurbs );
   fclose( fp );

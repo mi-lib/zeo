@@ -11,15 +11,17 @@
 
 __BEGIN_DECLS
 
-/* ********************************************************** */
-/* CLASS: zFrame2D
- * 2D coordinate frame class
- * ********************************************************** */
-
+/*! \struct zFrame2D
+ * \brief 2D coordinate frame class.
+ */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zFrame2D ){
   zVec2D pos;
   zMat2D att;
 #ifdef __cplusplus
+  zFrame2D(){}
+  zFrame2D(double x, double y, double a11, double a12, double a21, double a22) : pos{x,y}, att{a11, a12, a21, a22} {}
+  zFrame2D(const zVec2D &_pos, const zMat2D &_att) : pos{_pos}, att{_att} {}
+  ~zFrame2D(){}
   zVec2D &vec(zAxis axis);
   zVec2D &setPos(zVec2D &_pos){ zVec2DCopy( &_pos, &pos ); return pos; }
   zMat2D &setAtt(zMat2D &_att){ zMat2DCopy( &_att, &att ); return att; }
@@ -28,8 +30,6 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zFrame2D ){
   zFrame2D &ident();
   bool isEqual(zFrame2D &f);
   bool isIdent();
-  zVec2D operator*(zVec2D &v);
-  zFrame2D operator*(zFrame2D &f);
   zFrame2D &operator*=(zFrame2D &f);
   zVec2D xform(zVec2D &v);
   zVec2D xformInv(zVec2D &v);
@@ -37,6 +37,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zFrame2D ){
   zVec2D &xformInvDRC(zVec2D &v);
   zFrame2D inv();
   zFrame2D cascade(zFrame2D &f);
+  /*! \brief 3D identity frame */
   static const zFrame2D zframe2Dident;
 #endif /* __cplusplus */
 };
@@ -57,25 +58,35 @@ __ZEO_EXPORT const zFrame2D zframe2Dident;
 #define zFrame2DSetPos(frame,pos) zVec2DCopy( pos, zFrame2DPos(frame) )
 #define zFrame2DSetAtt(frame,att) zMat2DCopy( att, zFrame2DAtt(frame) )
 
-/*! \brief create, copy and initialize 2D coordinate frame.
+/*! \brief create a 2D coordinate frame.
  *
  * zFrame2DCreate() creates a 2D coordinate frame \a frame from a position vector \a p and an attitude
  * matrix \a m.
+ *
  * zFrame2DCreateAngle() creates a 2D coordinate frame \a frame from a position vector and a rotation
  * angle \a angle.
+ * \return
+ * zFrame2DCreate() and zFrame2DCreateAngle() returns a pointer \a frame.
+ */
+__ZEO_EXPORT zFrame2D *zFrame2DCreate(zFrame2D *frame, const zVec2D *p, const zMat2D *m);
+__ZEO_EXPORT zFrame2D *zFrame2DCreateAngle(zFrame2D *frame, const zVec2D *p, double angle);
+
+/*! \brief copy a 2D coordinate frame.
  *
  * zFrame2DCopy() copies a 2D coordinate frame \a src to \a dest.
+ * \return
+ * zFrame2DCopy() returns a pointer \a dest.
+ */
+#define _zFrame2DCopy(src,dest) zCopy( zFrame2D, src, dest )
+__ZEO_EXPORT zFrame2D *zFrame2DCopy(const zFrame2D *src, zFrame2D *dest);
+
+/*! \brief 2D identity coordinate frame.
  *
  * zFrame2DIdent() initializes \a frame as the 2D identity frame, namely, a frame whose position is at
  * the original point (0,0,0) and attitude is identical with the absolute coordinate frame.
  * \return
- * zFrame2DCreate() returns a pointer \a frame.
- *
- * zFrame2DCopy() and zFrame2DIdent() return no value.
+ * zFrame2DIdent() returns a pointer \a frame.
  */
-__ZEO_EXPORT zFrame2D *zFrame2DCreate(zFrame2D *frame, const zVec2D *p, const zMat2D *m);
-__ZEO_EXPORT zFrame2D *zFrame2DCreateAngle(zFrame2D *frame, const zVec2D *p, double angle);
-#define zFrame2DCopy(src,dest) ( *(dest) = *(src) )
 #define zFrame2DIdent(frame) zFrame2DCopy( ZFRAME2DIDENT, frame )
 
 /*! \brief check if two 2D coordinate frames are equal. */
@@ -210,8 +221,6 @@ inline zFrame2D &zFrame2D::copy(zFrame2D &src){ zFrame2DCopy( &src, this ); retu
 inline zFrame2D &zFrame2D::ident(){ zFrame2DIdent( this ); return *this; }
 inline bool zFrame2D::isEqual(zFrame2D &f){ return _zFrame2DEqual( this, &f ); }
 inline bool zFrame2D::isIdent(){ return _zFrame2DIsIdent( this ); }
-inline zVec2D zFrame2D::operator*(zVec2D &v){ zVec2D ret; zXform2D( this, &v, &ret ); return ret; }
-inline zFrame2D zFrame2D::operator*(zFrame2D &f){ zFrame2D ret; zFrame2DCascade( this, &f, &ret ); return ret; }
 inline zFrame2D &zFrame2D::operator*=(zFrame2D &f){ zFrame2D tmp; zFrame2DCascade( this, &f, &tmp ); zFrame2DCopy( &tmp, this ); return *this; }
 inline zVec2D zFrame2D::xform(zVec2D &v){ zVec2D ret; _zXform2D( this, &v, &ret ); return ret; }
 inline zVec2D zFrame2D::xformInv(zVec2D &v){ zVec2D ret; _zXform2DInv( this, &v, &ret ); return ret; }
@@ -219,6 +228,9 @@ inline zVec2D &zFrame2D::xformDRC(zVec2D &v){ zXform2DDRC( this, &v ); return v;
 inline zVec2D &zFrame2D::xformInvDRC(zVec2D &v){ zXform2DInvDRC( this, &v ); return v; }
 inline zFrame2D zFrame2D::inv(){ zFrame2D ret; _zFrame2DInv( this, &ret ); return ret; }
 inline zFrame2D zFrame2D::cascade(zFrame2D &f){ zFrame2D ret; zFrame2DCascade( this, &f, &ret ); return ret; }
+
+inline zVec2D operator*(const zFrame2D &f, const zVec2D &v){ zVec2D ret; _zXform2D( &f, &v, &ret ); return ret; }
+inline zFrame2D operator*(const zFrame2D &f1, const zFrame2D &f2){ zFrame2D ret; _zFrame2DXform( &f1, &f2, &ret ); return ret; }
 #endif /* __cplusplus */
 
 #endif /* __ZEO_FRAME2D_H__ */

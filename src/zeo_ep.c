@@ -6,11 +6,6 @@
 
 #include <zeo/zeo_ep.h>
 
-/* ********************************************************** */
-/* CLASS: zEP
- * Euler parameter class
- * ********************************************************** */
-
 /* create Euler parameter. */
 zEP *zEPCreate(zEP *ep, double w, double x, double y, double z)
 {
@@ -22,7 +17,7 @@ zEP *zEPCreate(zEP *ep, double w, double x, double y, double z)
 }
 
 /* create Euler parameter from rotation angle and axis vector. */
-zEP *zEPCreateAA(zEP *ep, double theta, zVec3D *axis)
+zEP *zEPCreateAA(zEP *ep, double theta, const zVec3D *axis)
 {
   double sh, ch;
 
@@ -37,14 +32,21 @@ zEP *zEPCreateAA(zEP *ep, double theta, zVec3D *axis)
   return ep;
 }
 
+/* copy Euler parameter to the other. */
+zEP *zEPCopy(const zEP *src, zEP *dest)
+{
+  _zEPCopy( src, dest );
+  return dest;
+}
+
 /* check if Euler parameter is for identity conversion. */
-bool zEPIsIdent(zEP *ep)
+bool zEPIsIdent(const zEP *ep)
 {
   return zIsTiny( ep->ex.w - 1.0 ) && zVec3DIsTiny( &ep->ex.v );
 }
 
 /* convert Euler parameter to angle-axis vector. */
-zVec3D *zEP2AA(zEP *ep, zVec3D *aa)
+zVec3D *zEP2AA(const zEP *ep, zVec3D *aa)
 {
   double theta, sh;
 
@@ -54,13 +56,13 @@ zVec3D *zEP2AA(zEP *ep, zVec3D *aa)
 }
 
 /* convert angle-axis vector to Euler parameter. */
-zEP *zAA2EP(zVec3D *aa, zEP *ep)
+zEP *zAA2EP(const zVec3D *aa, zEP *ep)
 {
   return zEPCreateAA( ep, zVec3DNorm(aa), aa );
 }
 
 /* convert Euler parameter to attitude matrix. */
-zMat3D *zMat3DFromEP(zMat3D *m, zEP* ep)
+zMat3D *zMat3DFromEP(zMat3D *m, const zEP* ep)
 {
   double e00, e11, e22, e33, e12, e23, e31, e01, e02, e03;
 
@@ -81,7 +83,7 @@ zMat3D *zMat3DFromEP(zMat3D *m, zEP* ep)
 }
 
 /* convert attitude matrix to Euler parameter. */
-zEP *zMat3DToEP(zMat3D *m, zEP *ep)
+zEP *zMat3DToEP(const zMat3D *m, zEP *ep)
 {
   double k, s[4];
   int i, imax;
@@ -123,7 +125,7 @@ zEP *zMat3DToEP(zMat3D *m, zEP *ep)
 }
 
 /* rotate vector by Euler parameter. */
-zVec3D *zEPRotVec3D(zEP *ep, zVec3D *v, zVec3D *rv)
+zVec3D *zEPRotVec3D(const zEP *ep, const zVec3D *v, zVec3D *rv)
 {
   _zVec3DOuterProd( &ep->ex.v, v, rv );
   zVec3DMulDRC( rv, 2*ep->ex.w );
@@ -133,7 +135,7 @@ zVec3D *zEPRotVec3D(zEP *ep, zVec3D *v, zVec3D *rv)
 }
 
 /* convert from Euler parameter derivative to angular velocity. */
-zVec3D *zEPVel2AngVel(zEP *epvel, zEP *ep, zVec3D *angvel)
+zVec3D *zEPVel2AngVel(const zEP *epvel, const zEP *ep, zVec3D *angvel)
 {
   _zVec3DOuterProd( &ep->ex.v, &epvel->ex.v, angvel );
   _zVec3DCatDRC( angvel, ep->ex.w, &epvel->ex.v );
@@ -142,7 +144,7 @@ zVec3D *zEPVel2AngVel(zEP *epvel, zEP *ep, zVec3D *angvel)
 }
 
 /* convert from angular velocity to Euler parameter derivative. */
-zEP *zAngVel2EPVel(zVec3D *angvel, zEP *ep, zEP *epvel)
+zEP *zAngVel2EPVel(const zVec3D *angvel, const zEP *ep, zEP *epvel)
 {
   epvel->ex.w = -0.5*_zVec3DInnerProd(&ep->ex.v,angvel);
   _zVec3DOuterProd( angvel, &ep->ex.v, &epvel->ex.v );
@@ -152,7 +154,7 @@ zEP *zAngVel2EPVel(zVec3D *angvel, zEP *ep, zEP *epvel)
 }
 
 /* add Euler parameters. */
-zEP *zEPAdd(zEP *ep1, zEP *ep2, zEP *ep)
+zEP *zEPAdd(const zEP *ep1, const zEP *ep2, zEP *ep)
 {
   ep->ex.w = ep1->ex.w + ep2->ex.w;
   _zVec3DAdd( &ep1->ex.v, &ep2->ex.v, &ep->ex.v );
@@ -160,7 +162,7 @@ zEP *zEPAdd(zEP *ep1, zEP *ep2, zEP *ep)
 }
 
 /* subtract an Euler parameter from another. */
-zEP *zEPSub(zEP *ep1, zEP *ep2, zEP *ep)
+zEP *zEPSub(const zEP *ep1, const zEP *ep2, zEP *ep)
 {
   ep->ex.w = ep1->ex.w - ep2->ex.w;
   _zVec3DSub( &ep1->ex.v, &ep2->ex.v, &ep->ex.v );
@@ -168,7 +170,7 @@ zEP *zEPSub(zEP *ep1, zEP *ep2, zEP *ep)
 }
 
 /* reverse an Euler parameter. */
-zEP *zEPRev(zEP *ep1, zEP *ep)
+zEP *zEPRev(const zEP *ep1, zEP *ep)
 {
   ep->ex.w = -ep1->ex.w;
   _zVec3DRev( &ep1->ex.v, &ep->ex.v );
@@ -176,7 +178,7 @@ zEP *zEPRev(zEP *ep1, zEP *ep)
 }
 
 /* multiply an Euler parameter by a scalar value. */
-zEP *zEPMul(zEP *ep1, double k, zEP *ep)
+zEP *zEPMul(const zEP *ep1, double k, zEP *ep)
 {
   ep->ex.w = k * ep1->ex.w;
   _zVec3DMul( &ep1->ex.v, k, &ep->ex.v );
@@ -184,7 +186,7 @@ zEP *zEPMul(zEP *ep1, double k, zEP *ep)
 }
 
 /* concatenate an Euler parameter multiplied by a scalar value. */
-zEP *zEPCat(zEP *ep1, double k, zEP *ep2, zEP *ep)
+zEP *zEPCat(const zEP *ep1, double k, const zEP *ep2, zEP *ep)
 {
   ep->ex.w = ep1->ex.w + k * ep2->ex.w;
   _zVec3DCat( &ep1->ex.v, k, &ep2->ex.v, &ep->ex.v );
@@ -192,7 +194,7 @@ zEP *zEPCat(zEP *ep1, double k, zEP *ep2, zEP *ep)
 }
 
 /* numerically differentiate Euler parameters. */
-zEP *zEPDif(zEP *ep1, zEP *ep2, double dt, zEP *ep_vel)
+zEP *zEPDif(const zEP *ep1, const zEP *ep2, double dt, zEP *ep_vel)
 {
   if( zIsTiny(dt) ){
     ZRUNERROR( ZEO_ERR_ZERODIV );
@@ -203,13 +205,13 @@ zEP *zEPDif(zEP *ep1, zEP *ep2, double dt, zEP *ep_vel)
 }
 
 /* inner product of Euler parameters. */
-double zEPInnerProd(zEP *ep1, zEP *ep2)
+double zEPInnerProd(const zEP *ep1, const zEP *ep2)
 {
   return ep1->ex.w*ep2->ex.w + _zVec3DInnerProd( &ep1->ex.v, &ep2->ex.v );
 }
 
 /* norm of Euler parameter. */
-double zEPNorm(zEP *ep)
+double zEPNorm(const zEP *ep)
 {
   return sqrt( zEPInnerProd( ep, ep ) );
 }
@@ -229,7 +231,7 @@ zEP *zEPNormalize(zEP *ep)
 }
 
 /* cascade a Euler parameter to another. */
-zEP *zEPCascade(zEP *ep1, zEP *ep2, zEP *ep)
+zEP *zEPCascade(const zEP *ep1, const zEP *ep2, zEP *ep)
 {
   zEP tmp;
 
@@ -242,30 +244,32 @@ zEP *zEPCascade(zEP *ep1, zEP *ep2, zEP *ep)
 }
 
 /* interior division of Euler parameter for SLERP. */
-zEP *zEPInterDiv(zEP *ep1, zEP *ep2, double t, zEP *ep)
+zEP *zEPInterDiv(const zEP *ep1, const zEP *ep2, double t, zEP *ep)
 {
+  zEP _ep2;
   double th, cth, sth, th2;
 
   if( ( cth = zEPInnerProd( ep1, ep2 ) ) < 0 ){
-    zEPRevDRC( ep2 );
+    zEPRev( ep2, &_ep2 );
     cth = -cth;
-  }
+  } else
+    zEPCopy( ep2, &_ep2 );
   if( cth > 1.0 ) cth = 1.0;
   th = acos( cth );
   sth = sin( th );
   if( zIsTiny( sth ) ){
     zEPMul( ep1, 1 - t, ep );
-    zEPCatDRC( ep, t, ep2 );
+    zEPCatDRC( ep, t, &_ep2 );
   } else{
     th2 = th * t;
     zEPMul( ep1, sin( th - th2 ), ep );
-    zEPCatDRC( ep, sin( th2 ), ep2 );
+    zEPCatDRC( ep, sin( th2 ), &_ep2 );
   }
   return zEPNormalize( ep );
 }
 
 /* interior division of two attitude matrices for SLERP. */
-zMat3D *zMat3DInterDiv(zMat3D *m1, zMat3D *m2, double t, zMat3D *m)
+zMat3D *zMat3DInterDiv(const zMat3D *m1, const zMat3D *m2, double t, zMat3D *m)
 {
   zEP ep1, ep2, ep;
 
@@ -276,7 +280,7 @@ zMat3D *zMat3DInterDiv(zMat3D *m1, zMat3D *m2, double t, zMat3D *m)
 }
 
 /* print Euler parameter out to a file. */
-void zEPFPrint(FILE *fp, zEP *ep)
+void zEPFPrint(FILE *fp, const zEP *ep)
 {
   fprintf( fp, "%f ", ep->ex.w );
   zVec3DFPrint( fp, &ep->ex.v );
