@@ -15,7 +15,7 @@ zVec3DTreeData *zVec3DTreeDataInit(zVec3DTreeData *data)
   return data;
 }
 
-zTreeClassMethod( zVec3DTree, zVec3DTreeData, zVec3DTreeDataInit, NULL )
+ZEDA_DEF_TREE_CLASS_METHOD( zVec3DTree, zVec3DTreeData, zVec3DTreeDataInit, NULL )
 
 /* create a leaf of a 3D vector tree. */
 static zVec3DTree *_zVec3DTreeCreateLeaf(zAxis split, const zVec3D *point, int id)

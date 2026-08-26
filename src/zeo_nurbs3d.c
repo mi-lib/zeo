@@ -299,21 +299,21 @@ static void *_zNURBS3DCPFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   return obj;
 }
 
-static bool _zNURBS3DUKnotFPrint(FILE *fp, int i, void *obj){
+static bool _zNURBS3DUKnotFPrint(FILE *fp, int i, const void *obj){
   if( zVecSizeNC(((zNURBS3D*)obj)->param[0].knot) <= 0 ) return false;
   zVecFPrint( fp, ((zNURBS3D*)obj)->param[0].knot );
   return true;
 }
-static bool _zNURBS3DVKnotFPrint(FILE *fp, int i, void *obj){
+static bool _zNURBS3DVKnotFPrint(FILE *fp, int i, const void *obj){
   if( zVecSizeNC(((zNURBS3D*)obj)->param[1].knot) <= 0 ) return false;
   zVecFPrint( fp, ((zNURBS3D*)obj)->param[1].knot );
   return true;
 }
-static bool _zNURBS3DSliceFPrint(FILE *fp, int i, void *obj){
+static bool _zNURBS3DSliceFPrint(FILE *fp, int i, const void *obj){
   fprintf( fp, "%d %d\n", zNURBS3DSlice((zNURBS3D*)obj,0), zNURBS3DSlice((zNURBS3D*)obj,1) );
   return true;
 }
-static bool _zNURBS3DSizeFPrint(FILE *fp, int i, void *obj){
+static bool _zNURBS3DSizeFPrint(FILE *fp, int i, const void *obj){
   fprintf( fp, "%d %d\n", zNURBS3DCPNum((zNURBS3D*)obj,0), zNURBS3DCPNum((zNURBS3D*)obj,1) );
   return true;
 }

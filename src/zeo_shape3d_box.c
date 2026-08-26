@@ -61,25 +61,25 @@ static void *_zBox3DHeightFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zBox3DHeight((zBox3D*)obj) = ZTKDouble(ztk);
   return obj; }
 
-static bool _zBox3DCenterFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zBox3DCenterFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zBox3DCenter((zBox3D*)obj) );
   return true; }
-static bool _zBox3DAxisXFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zBox3DAxisXFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zX) );
   return true; }
-static bool _zBox3DAxisYFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zBox3DAxisYFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zY) );
   return true; }
-static bool _zBox3DAxisZFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zBox3DAxisZFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zBox3DAxis((zBox3D*)obj,zZ) );
   return true; }
-static bool _zBox3DDepthFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zBox3DDepthFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zBox3DDepth((zBox3D*)obj) );
   return true; }
-static bool _zBox3DWidthFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zBox3DWidthFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zBox3DWidth((zBox3D*)obj) );
   return true; }
-static bool _zBox3DHeightFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zBox3DHeightFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zBox3DHeight((zBox3D*)obj) );
   return true; }
 

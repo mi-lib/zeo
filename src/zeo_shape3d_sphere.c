@@ -115,13 +115,13 @@ static void *_zSphere3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zSphere3DDiv((zSphere3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static bool _zSphere3DCenterFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zSphere3DCenterFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zSphere3DCenter((zSphere3D*)obj) );
   return true; }
-static bool _zSphere3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zSphere3DRadiusFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zSphere3DRadius((zSphere3D*)obj) );
   return true; }
-static bool _zSphere3DDivFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zSphere3DDivFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%d\n", zSphere3DDiv((zSphere3D*)obj) );
   return true; }
 

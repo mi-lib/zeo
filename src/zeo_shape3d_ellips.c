@@ -278,28 +278,28 @@ static void *_zEllips3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zEllips3DDiv((zEllips3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static bool _zEllips3DCenterFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DCenterFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zEllips3DCenter((zEllips3D*)obj) );
   return true; }
-static bool _zEllips3DAxisXFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DAxisXFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zX) );
   return true; }
-static bool _zEllips3DAxisYFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DAxisYFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zY) );
   return true; }
-static bool _zEllips3DAxisZFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DAxisZFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zEllips3DAxis((zEllips3D*)obj,zZ) );
   return true; }
-static bool _zEllips3DRadiusXFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DRadiusXFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zEllips3DRadiusX((zEllips3D*)obj) );
   return true; }
-static bool _zEllips3DRadiusYFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DRadiusYFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zEllips3DRadiusY((zEllips3D*)obj) );
   return true; }
-static bool _zEllips3DRadiusZFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DRadiusZFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zEllips3DRadiusZ((zEllips3D*)obj) );
   return true; }
-static bool _zEllips3DDivFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zEllips3DDivFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%d\n", zEllips3DDiv((zEllips3D*)obj) );
   return true; }
 
