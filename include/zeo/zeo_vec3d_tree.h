@@ -29,7 +29,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zVec3DTreeData ){
 
 __ZEO_EXPORT zVec3DTreeData *zVec3DTreeDataInit(zVec3DTreeData *data);
 
-zTreeClass( __ZEO_EXPORT, zVec3DTree, zVec3DTreeData );
+ZEDA_DEF_TREE_CLASS( __ZEO_EXPORT, zVec3DTree, zVec3DTreeData );
 
 /*! \brief add a new 3D point to a 3D vector tree.
  *

@@ -399,7 +399,7 @@ __BEGIN_DECLS
       data->method = &zeo_vec##XD##_data_method_dummy; \
       return NULL; \
     } \
-    zArrayAssign( data->data.array, vec, capacity ); \
+    zArrayAssign( data->data.array, capacity, vec ); \
     data->method = &zeo_vec##XD##_data_method_array_direct; \
     zVec##XD##DataRewind( data ); \
     return data; \

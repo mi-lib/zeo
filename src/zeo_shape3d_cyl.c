@@ -238,13 +238,13 @@ static void *_zCyl3DDivFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   zCyl3DDiv((zCyl3D*)obj) = zShape3DDivFromZTK(ztk);
   return obj; }
 
-static bool _zCyl3DCenterFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zCyl3DCenterFPrintZTK(FILE *fp, int i, const void *obj){
   zVec3DFPrint( fp, zCyl3DCenter((zCyl3D*)obj,i) );
   return true; }
-static bool _zCyl3DRadiusFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zCyl3DRadiusFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%.10g\n", zCyl3DRadius((zCyl3D*)obj) );
   return true; }
-static bool _zCyl3DDivFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zCyl3DDivFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%d\n", zCyl3DDiv((zCyl3D*)obj) );
   return true; }
 

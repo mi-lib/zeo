@@ -96,27 +96,27 @@ static void *_zOpticalInfoAlphaFromZTK(void *obj, int i, void *arg, ZTK *ztk){
   ((zOpticalInfo*)obj)->alpha = ZTKDouble(ztk);
   return obj; }
 
-static bool _zOpticalInfoNameFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zOpticalInfoNameFPrintZTK(FILE *fp, int i, const void *obj){
   fprintf( fp, "%s\n", zName((zOpticalInfo*)obj) );
   return true; }
-static bool _zOpticalInfoAmbientFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zOpticalInfoAmbientFPrintZTK(FILE *fp, int i, const void *obj){
   zRGBFPrint( fp, &((zOpticalInfo*)obj)->ambient );
   return true; }
-static bool _zOpticalInfoDiffuseFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zOpticalInfoDiffuseFPrintZTK(FILE *fp, int i, const void *obj){
   zRGBFPrint( fp, &((zOpticalInfo*)obj)->diffuse );
   return true; }
-static bool _zOpticalInfoSpecularFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zOpticalInfoSpecularFPrintZTK(FILE *fp, int i, const void *obj){
   zRGBFPrint( fp, &((zOpticalInfo*)obj)->specular );
   return true; }
-static bool _zOpticalInfoESRFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zOpticalInfoESRFPrintZTK(FILE *fp, int i, const void *obj){
   if( zIsTiny( ((zOpticalInfo*)obj)->esr ) ) return false;
   fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->esr );
   return true; }
-static bool _zOpticalInfoShininessFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zOpticalInfoShininessFPrintZTK(FILE *fp, int i, const void *obj){
   if( zIsTiny( ((zOpticalInfo*)obj)->shininess ) ) return false;
   fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->shininess );
   return true; }
-static bool _zOpticalInfoAlphaFPrintZTK(FILE *fp, int i, void *obj){
+static bool _zOpticalInfoAlphaFPrintZTK(FILE *fp, int i, const void *obj){
   if( zIsTiny( 1.0 - ((zOpticalInfo*)obj)->alpha ) ) return false;
   fprintf( fp, "%.10g\n", ((zOpticalInfo*)obj)->alpha );
   return true; }
