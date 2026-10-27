@@ -1,3 +1,6 @@
+2026.10.27. Added const qualifiers to _z*FPrintZTK (thanks to Daishi Kaneta). [zeo_render_optic, zeo_render_texture, zeo_nurbs3d, zeo_shape3d, zeo_shape3d_box, zeo_shape3d_sphere, zeo_shape3d_cyl, zeo_shape3d_cone, zeo_shape3d_capsule, zeo_shape3d_ecyl, zeo_shape3d_ellips, zeo_multishape3d, zeo_map, zeo_map_terra]
+2026.10.27. Debugged usage of zArrayAssign (thanks to Daishi Kaneta). [zeo_vecxd_data]
+2026.10.27. Applied ZEDA_DEF_TREE_CLASS to zVec3DTree (thanks to Daishi Kaneta). [zeo_vec3d_tree]
 2026.05.27. Added const qualifier to an argument of _fprintZTK member of zMapCom. [zeo_map, zeo_map_terra]
 2026.05.27. Added const qualifiers to arguments of members of zShape3DCom. [zeo_shape3d, zeo_shape3d_box, zeo_shape3d_sphere, zeo_shape3d_cyl, zeo_shape3d_cone, zeo_shape3d_capsule, zeo_shape3d_ellips, zeo_shape3d_ecyl, zeo_shape3d_ph, zeo_shape3d_nurbs]
 2026.05.27. Applied ZEDA_DEF_TREE_CLASS. [zeo_vec3d_tree]
