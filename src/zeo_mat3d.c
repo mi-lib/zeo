@@ -952,7 +952,7 @@ bool zMat3DSymEig(const zMat3D *m, zVec3D *eigval, zMat3D *eigbase)
   zMat3DIdent( eigbase );
   /* iterative elimination of non-diagonal components */
   i = 0; j = 1;
-  for( iter=0; i<Z_MAX_ITER_NUM; iter++ ){
+  for( iter=0; iter<Z_MAX_ITER_NUM; iter++ ){
     _zMat3DSymEigRot( &l, eigbase, i, j );
     i1 = ( i + 1 ) % 3; j1 = ( j + 1 ) % 3;
     i2 = ( i + 2 ) % 3; j2 = ( j + 2 ) % 3;
