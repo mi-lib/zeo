@@ -20,7 +20,7 @@ static zVec3D *_zConvexHull2DBase(zVec3DAddrList *addrlist, zVec3D s[])
   ZRUNERROR( ZEO_ERR_CH_DEG1 );
   return NULL;
  STEP2:
-  for( cp=zListCellNext(cp);
+  for( cp=zListCellNext(zListTail(addrlist));
        cp!=zListRoot(addrlist); cp=zListCellNext(cp) ){
     if( !zVec3DIsTiny( zVec3DSub( cp->data, zListTail(addrlist)->data, &s[1] ) ) &&
         !zVec3DIsTiny( zVec3DOuterProd( &s[0], &s[1], &n ) ) )

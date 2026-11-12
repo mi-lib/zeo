@@ -1,6 +1,7 @@
 #include <zeo/zeo_shape3d.h>
 
-#define TEST_ZTK   "test_nurbs.ztk"
+#define TEST_ZTK "3DBenchy_import.ztk"
+/* #define TEST_ZTK   "test_nurbs.ztk" */
 #define OUTPUT_ZTK "output.ztk"
 
 void nurbs_test(void)
