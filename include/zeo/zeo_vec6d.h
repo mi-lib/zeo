@@ -225,6 +225,18 @@ __ZEO_EXPORT zVec6D *zVec6DRev(const zVec6D *v, zVec6D *rv);
   _zVec3DMul( zVec6DLin(v), k, zVec6DLin(mv) );\
   _zVec3DMul( zVec6DAng(v), k, zVec6DAng(mv) );\
 } while(0)
+/* division by a scalar value, where the multiplication by the reciprocal is adopted for speed
+ * unless the reciprocal is infinity or a subnormal number (see zRawVecDiv() in ZM). It does not
+ * check if \a k is zero. */
+#define _zVec6DDiv(v,k,dv) do{\
+  double __z_vec6d_k = (k), __z_vec6d_ki = 1.0 / __z_vec6d_k;\
+  if( _zIsNormalDouble( __z_vec6d_ki ) ){\
+    _zVec6DMul( v, __z_vec6d_ki, dv );\
+  } else{\
+    _zVec3DDiv( zVec6DLin(v), __z_vec6d_k, zVec6DLin(dv) );\
+    _zVec3DDiv( zVec6DAng(v), __z_vec6d_k, zVec6DAng(dv) );\
+  }\
+} while(0)
 __ZEO_EXPORT zVec6D *zVec6DMul(const zVec6D *v, double k, zVec6D *mv);
 __ZEO_EXPORT zVec6D *zVec6DDiv(const zVec6D *v, double k, zVec6D *dv);
 #define _zVec6DCat(v1,k,v2,v) do{\
@@ -252,6 +264,7 @@ __ZEO_EXPORT zVec6D *zVec6DCat(const zVec6D *v1, double k, const zVec6D *v2, zVe
   _zVec3DMulDRC( zVec6DLin(v), k );\
   _zVec3DMulDRC( zVec6DAng(v), k );\
 } while(0)
+#define _zVec6DDivDRC(v,k) _zVec6DDiv( v, k, v )
 #define zVec6DMulDRC(v,k) zVec6DMul(v,k,v)
 #define zVec6DDivDRC(v,k) zVec6DDiv(v,k,v)
 #define _zVec6DCatDRC(v1,k,v2) do{\
@@ -365,7 +378,7 @@ inline zVec6D zVec6D::add(const zVec6D &v){ _zVec6DAddDRC( this, &v ); return *t
 inline zVec6D zVec6D::sub(const zVec6D &v){ _zVec6DSubDRC( this, &v ); return *this; }
 inline zVec6D zVec6D::rev(){ _zVec6DRevDRC( this ); return *this; }
 inline zVec6D zVec6D::mul(double k){ _zVec6DMulDRC( this, k ); return *this; }
-inline zVec6D zVec6D::div(double k){ return *zVec6DDivDRC( this, k ); }
+inline zVec6D zVec6D::div(double k){ zVec6DDivDRC( this, k ); return *this; }
 
 inline zVec6D operator+(const zVec6D &v1, const zVec6D &v2){ zVec6D ret; _zVec6DAdd( &v1, &v2, &ret ); return ret; }
 inline zVec6D operator-(const zVec6D &v1, const zVec6D &v2){ zVec6D ret; _zVec6DSub( &v1, &v2, &ret ); return ret; }

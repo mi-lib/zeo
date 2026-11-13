@@ -118,6 +118,18 @@ __ZEO_EXPORT zCoord2D *zCoord2DSub(const zCoord2D *coord1, const zCoord2D *coord
   _zVec2DMul( zCoord2DPos(coord1), k, zCoord2DPos(coord) ); \
   zCoord2DAngle(coord) = (k) * zCoord2DAngle(coord1); \
 } while(0)
+/* division by a scalar value, where the multiplication by the reciprocal is adopted for speed
+ * unless the reciprocal is infinity or a subnormal number (see zRawVecDiv() in ZM). It does not
+ * check if \a k is zero. */
+#define _zCoord2DDiv(coord1,k,coord) do{\
+  double __z_coord2d_k = (k), __z_coord2d_ki = 1.0 / __z_coord2d_k;\
+  if( _zIsNormalDouble( __z_coord2d_ki ) ){\
+    _zCoord2DMul( coord1, __z_coord2d_ki, coord );\
+  } else{\
+    _zVec2DDiv( zCoord2DPos(coord1), __z_coord2d_k, zCoord2DPos(coord) );\
+    zCoord2DAngle(coord) = zCoord2DAngle(coord1) / __z_coord2d_k;\
+  }\
+} while(0)
 __ZEO_EXPORT zCoord2D *zCoord2DMul(const zCoord2D *coord1, double k, zCoord2D *coord);
 
 /*! \brief divide a 2D coordinate by a scalar value.
@@ -175,6 +187,7 @@ __ZEO_EXPORT zCoord2D *zCoord2DSubDRC(zCoord2D *coord1, const zCoord2D *coord2);
   _zVec2DMulDRC( zCoord2DPos(coord), k ); \
   zCoord2DAngle(coord) *= (k); \
 } while(0)
+#define _zCoord2DDivDRC(coord,k) _zCoord2DDiv( coord, k, coord )
 __ZEO_EXPORT zCoord2D *zCoord2DMulDRC(zCoord2D *coord, double k);
 
 /*! \brief divide a 2D coordinate directly by a scalar value.

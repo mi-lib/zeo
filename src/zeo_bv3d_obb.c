@@ -79,9 +79,9 @@ static bool _zOBB3DMaxDir(zBox3D *obb, zPH3D *ch, zPlane3D *pl)
   zVec3DZero( &dc );
   for( ; vp1!=zListRoot(&rim); vp1=zListCellNext(vp1), vp2=zListCellPrev(vp1) ){
     zVec3DSub( vp2->data, vp1->data, &e1 );
+    zVec3DNormalizeDRC( &e1, 0 );
+    /* e1 is on the plane orthogonal to the z-axis, and hence e2 is a unit vector. */
     zVec3DOuterProd( zBox3DAxis(obb,zZ), &e1, &e2 );
-    zVec3DNormalizeDRC( &e1 );
-    zVec3DNormalizeDRC( &e2 );
     area = _zOBB3DRect( &rim, &c, &e1, &e2, &l1, &l2 );
     if( area < area_min ){
       zVec3DCopy( &e1, zBox3DAxis(obb,zX) );

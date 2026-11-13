@@ -75,8 +75,6 @@ void assert_inside(void)
   generate_cyl_rand( &cyl );
   zCyl3DAxis( &cyl, &d1 );
   zVec3DOrthoSpace( &d1, &d2, &d3 );
-  zVec3DNormalizeDRC( &d2 );
-  zVec3DNormalizeDRC( &d3 );
   for( ni=no=nitest=notest=0, i=0; i<n; i++ ){
     x = zRandF(-2,2);
     y = zRandF(-2,2);

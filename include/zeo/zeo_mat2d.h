@@ -228,6 +228,17 @@ __ZEO_EXPORT zMat2D *zMat2DTDRC(zMat2D *m);
   _zMat2DCreate( rm, -(m)->c.xx, -(m)->c.yx, -(m)->c.xy, -(m)->c.yy )
 #define _zMat2DMul(m,k,mm) \
   _zMat2DCreate( mm, (k)*(m)->c.xx, (k)*(m)->c.yx, (k)*(m)->c.xy, (k)*(m)->c.yy )
+/* division by a scalar value, where the multiplication by the reciprocal is adopted for speed
+ * unless the reciprocal is infinity or a subnormal number (see zRawVecDiv() in ZM). It does not
+ * check if \a k is zero. */
+#define _zMat2DDiv(m,k,dm) do{\
+  double __z_mat2d_k = (k), __z_mat2d_ki = 1.0 / __z_mat2d_k;\
+  if( _zIsNormalDouble( __z_mat2d_ki ) ){\
+    _zMat2DMul( m, __z_mat2d_ki, dm );\
+  } else{\
+    _zMat2DCreate( dm, (m)->c.xx / __z_mat2d_k, (m)->c.yx / __z_mat2d_k, (m)->c.xy / __z_mat2d_k, (m)->c.yy / __z_mat2d_k );\
+  }\
+} while(0)
 #define _zMat2DCat(m1,k,m2,m) \
   _zMat2DCreate( m, (m1)->c.xx+(k)*(m2)->c.xx, (m1)->c.yx+(k)*(m2)->c.yx, (m1)->c.xy+(k)*(m2)->c.xy, (m1)->c.yy+(k)*(m2)->c.yy )
 

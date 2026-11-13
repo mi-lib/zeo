@@ -8,7 +8,7 @@ int main(void)
   zRandInit();
   zVec3DCreate( zVec6DLin(&v), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
   zVec3DCreate( zVec6DAng(&v), zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
-  zVec3DNormalizeDRC( zVec6DAng(&v) );
+  zVec3DNormalizeDRC( zVec6DAng(&v), 0 );
   zVec3DMulDRC( zVec6DAng(&v), zRandF(0,zPI) );
 
   printf( "[original 6D vector]\n" ); zVec6DPrint( &v );

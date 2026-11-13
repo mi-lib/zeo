@@ -9,7 +9,7 @@ void generate_ecyl_rand(zECyl3D *ecyl)
   zVec3DSub( &c2, &c1, &a );
   zVec3DCreate( &d, zRandF(-3,3), zRandF(-3,3), zRandF(-3,3) );
   zVec3DOrthogonalize( &d, &a, &d );
-  zVec3DNormalizeDRC( &d );
+  zVec3DNormalizeDRC( &d, 0 );
   zECyl3DCreate( ecyl, &c1, &c2, zRandF(0,5), zRandF(0,5), &d, 0 );
 }
 

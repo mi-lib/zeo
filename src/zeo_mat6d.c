@@ -96,8 +96,7 @@ zMat6D *zMat6DDiv(const zMat6D *m, double k, zMat6D *dm)
     ZRUNWARN( ZEO_ERR_ZERODIV );
     return NULL;
   }
-  k = 1.0 / k;
-  _zMat6DMul( m, k, dm );
+  _zMat6DDiv( m, k, dm );
   return dm;
 }
 
@@ -129,8 +128,7 @@ zMat6D *zMat6DDivDRC(zMat6D *m, double k)
     ZRUNWARN( ZEO_ERR_ZERODIV );
     return NULL;
   }
-  k = 1.0 / k;
-  _zMat6DMulDRC( m, k );
+  _zMat6DDivDRC( m, k );
   return m;
 }
 

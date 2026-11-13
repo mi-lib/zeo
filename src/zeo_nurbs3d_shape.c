@@ -167,8 +167,6 @@ zNURBS3D *zNURBS3DCone(zNURBS3D *nurbs, const zCone3D *cone)
   if( !zNURBS3DAlloc( nurbs, 9, 3, 2, 1 ) ) return NULL;
   zCone3DAxis( cone, &axis );
   zVec3DOrthoSpace( &axis, &ax, &ay );
-  zVec3DNormalizeDRC( &ax );
-  zVec3DNormalizeDRC( &ay );
   _zNURBS3DEllipsInitCP( nurbs, 1, zCone3DCenter(cone), zCone3DRadius(cone), zCone3DRadius(cone), &ax, &ay );
   for( i=0; i<9; i++ ){
     zVec3DCopy( zCone3DCenter(cone), zNURBS3DCP(nurbs,i,0) );

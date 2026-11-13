@@ -36,7 +36,7 @@ static zVec3D *_zBox3DAxisFromZTK(zBox3D *box, int i0, int i1, int i2, ZTK *ztk)
     zVec3DOuterProd( zBox3DAxis(box,i1), zBox3DAxis(box,i2), zBox3DAxis(box,i0) );
   else
     zVec3DFromZTK( zBox3DAxis(box,i0), ztk );
-  zVec3DNormalizeDRC( zBox3DAxis(box,i0) );
+  zVec3DNormalizeDRC( zBox3DAxis(box,i0), 0 );
   return zBox3DAxis(box,i0);
 }
 

@@ -37,7 +37,7 @@ ZDEF_UNION( __ZEO_CLASS_EXPORT, zEP ){
   zEP &mul(double k);
   zEP &cat(double k, const zEP &e);
   double norm();
-  zEP &normalize();
+  zEP &normalize(double tol=0);
   friend zEP operator+(const zEP &ep1, const zEP &ep2);
   friend zEP operator-(const zEP &ep1, const zEP &ep2);
   friend zEP operator*(const zEP &ep, double k);
@@ -49,12 +49,14 @@ __BEGIN_DECLS
 
 /*! \brief create and copy Euler parameter.
  *
- * zEPCreate() creates Euler parameter \a ep from four values.
- * zEPCreateAA() creates Euler parameter \a ep from a combination of angle and axis.
+ * zEPCreate() creates Euler parameter \a ep from four values \a w, \a x, \a y, and \a z, where \a w is
+ * for the scalar part, while the others are for the vector part.
+ * zEPCreateAA() creates Euler parameter \a ep from a combination of an angle \a theta and an axis vector
+ * \a axis.
  * For both functions, \a ep is automatically normalized by zEPNormalize().
  *
- * zEPIdent() creates Euler parameter which is equivalent to the
- * identity transformation, namely, \a ep equals to [ 1, 0, 0, 0 ].
+ * zEPIdent() creates Euler parameter which is equivalent to the identity transformation, namely, \a ep
+ * equals to [ 1, 0, 0, 0 ].
  *
  * zEPCopy() copies Euler parameter \a src to the other \a dest.
  * \return
@@ -63,9 +65,17 @@ __BEGIN_DECLS
  * \sa
  * zEPNormalize
  */
+#define _zEPCreate(ep,w,x,y,z) do{ \
+  (ep)->e[0] = (w); \
+  (ep)->e[1] = (x); \
+  (ep)->e[2] = (y); \
+  (ep)->e[3] = (z); \
+} while(0)
 __ZEO_EXPORT zEP *zEPCreate(zEP *ep, double w, double x, double y, double z);
 __ZEO_EXPORT zEP *zEPCreateAA(zEP *ep, double theta, const zVec3D *axis);
-#define zEPIdent(e)  zEPCreate( e, 1, 0, 0, 0 );
+
+#define _zEPIdent(ep) _zEPCreate( ep, 1, 0, 0, 0 )
+#define zEPIdent(e)   zEPCreate( e, 1, 0, 0, 0 )
 #define _zEPCopy(src,dest) zCopy( zEP, src, dest )
 __ZEO_EXPORT zEP *zEPCopy(const zEP *src, zEP *dest);
 
@@ -162,15 +172,17 @@ __ZEO_EXPORT zEP *zEPDif(const zEP *ep1, const zEP *ep2, double dt, zEP *ep_vel)
  * zEPInnerProd() calculates the inner product of two Euler parameters \a ep1 and \a ep2.
  * zEPNorm() calculates the norm of an Euler parameter \a ep.
  *
- * zEPNormalize() directly normalizes an Euler parameter \a ep.
+ * zEPNormalize() directly normalizes an Euler parameter \a ep. If the norm of \a ep is not larger
+ * than \a tol, it regards \a ep as zero, and sets all components of \a ep for zeros. If zero or a
+ * negative value is given for \a tol, zTOL is adopted instead.
  * \return
  * zEPInnerProd() and zEPNorm() return the result value.
- * zEPNormalize() returns a pointer \a ep if succeeding. If the norm of \a ep is zero, it returns
- * the null pointer.
+ * zEPNormalize() returns a pointer \a ep if succeeding. If the norm of \a ep is not larger than the
+ * tolerance, it returns the null pointer.
  */
 __ZEO_EXPORT double zEPInnerProd(const zEP *ep1, const zEP *ep2);
 __ZEO_EXPORT double zEPNorm(const zEP *ep);
-__ZEO_EXPORT zEP *zEPNormalize(zEP *ep);
+__ZEO_EXPORT zEP *zEPNormalize(zEP *ep, double tol);
 
 /*! \brief cascade a Euler parameter to another.
  */
@@ -239,7 +251,7 @@ inline zEP &zEP::rev(){ return *zEPRevDRC( this ); }
 inline zEP &zEP::mul(double k){ return *zEPMulDRC( this, k ); }
 inline zEP &zEP::cat(double k, const zEP &e){ return *zEPCatDRC( this, k, &e ); }
 inline double zEP::norm(){ return zEPNorm( this ); }
-inline zEP &zEP::normalize(){ return *zEPNormalize( this ); }
+inline zEP &zEP::normalize(double tol){ zEPNormalize( this, tol ); return *this; }
 
 inline zEP operator+(const zEP &ep1, const zEP &ep2){ zEP ret; zEPAdd( &ep1, &ep2, &ret ); return ret; }
 inline zEP operator-(const zEP &ep1, const zEP &ep2){ zEP ret; zEPSub( &ep1, &ep2, &ret ); return ret; }

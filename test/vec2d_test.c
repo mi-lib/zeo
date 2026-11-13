@@ -53,10 +53,17 @@ void assert_vecprod(void)
   zAssert( zVec2DInnerProd, v1.c.x*v2.c.x+v1.c.y*v2.c.y == zVec2DInnerProd(&v1,&v2) );
   zAssert( zVec2DOuterProd, v1.c.x*v2.c.y-v1.c.y*v2.c.x == zVec2DOuterProd(&v1,&v2) );
 
-  zVec2DNormalize( &v1, &v2 );
+  zVec2DNormalize( &v1, 0, &v2 );
   zAssert( zVec2DNormalize, zIsTiny(v2.c.x*v2.c.x+v2.c.y*v2.c.y-1) );
-  zVec2DNormalizeDRC( &v1 );
+  zVec2DNormalizeDRC( &v1, 0 );
   zAssert( zVec2DNormalizeDRC, zIsTiny(v1.c.x*v1.c.x+v1.c.y*v1.c.y-1) );
+  /* tiny vector with the norm 5e-13 */
+  zVec2DCreate( &v1, 3.0e-13, 4.0e-13 );
+  zVec2DCreate( &v2, 1, 2 );
+  zAssert( zVec2DNormalize (default tolerance), zVec2DNormalize( &v1, 0, &v2 ) == 0 && v2.c.x == 0 && v2.c.y == 0 );
+  zAssert( zVec2DNormalize (specified tolerance), zVec2DNormalize( &v1, 1.0e-20, &v2 ) > 0 &&
+    zIsTol( v2.c.x - 0.6, 1.0e-15 ) && zIsTol( v2.c.y - 0.8, 1.0e-15 ) );
+  zAssert( zVec2DNormalizeDRC (specified tolerance), zVec2DNormalizeDRC( &v1, 1.0e-20 ) > 0 && zIsTiny( zVec2DNorm( &v1 ) - 1 ) );
 }
 
 void assert_geometry(void)
@@ -83,6 +90,38 @@ void assert_geometry(void)
   zAssert( zVec2DRot, zIsTiny( zVec2DOuterProd(&v2,&v3) ) );
 }
 
+/* division by very small or large values, where each component is accessed as a double array */
+bool check_div_array_vec2d(const double *a, double k, const double *q, int n)
+{
+  int i;
+
+  for( i=0; i<n; i++ )
+    if( !zIsFinite( q[i] ) || fabs( q[i] - a[i]/k ) > DBL_EPSILON * fabs( a[i]/k ) ) return false;
+  return true;
+}
+
+void assert_div_range_vec2d(void)
+{
+  zVec2D a, q, d;
+  double k[] = { 3.0, 1.0e-13, 4.0e-309, 1.0e308 }; /* including a subnormal divisor and a divisor with the subnormal reciprocal */
+  const int n = sizeof(zVec2D) / sizeof(double);
+  int i, j;
+  bool result = true, result_drc = true, result_zero;
+
+  for( j=0; j<sizeof(k)/sizeof(double); j++ ){
+    for( i=0; i<n; i++ ) ((double *)&a)[i] = zRandF(-1,1) * ( k[j] < 1.0e-300 ? 1.0e-300 : 1 ); /* avoid overflow */
+    if( !zVec2DDiv( &a, k[j], &q ) || !check_div_array_vec2d( (double *)&a, k[j], (double *)&q, n ) ) result = false;
+    d = a;
+    if( !zVec2DDivDRC( &d, k[j] ) ) result_drc = false;
+    for( i=0; i<n; i++ )
+      if( ((double *)&d)[i] != ((double *)&q)[i] ) result_drc = false;
+  }
+  result_zero = zVec2DDiv( &a, 0, &q ) == NULL;
+  zAssert( zVec2DDiv (very small or large divisor), result );
+  zAssert( zVec2DDivDRC (very small or large divisor), result_drc );
+  zAssert( zVec2DDiv (division by zero), result_zero );
+}
+
 int main(void)
 {
   zRandInit();
@@ -90,5 +129,6 @@ int main(void)
   assert_arith();
   assert_vecprod();
   assert_geometry();
+  assert_div_range_vec2d();
   return EXIT_SUCCESS;
 }

@@ -6,7 +6,7 @@ void assert_aa(void)
   zEP ep, test_ep;
 
   zVec3DCreate( &aa, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
-  zVec3DNormalizeDRC( &aa );
+  zVec3DNormalizeDRC( &aa, 0 );
   zVec3DMulDRC( &aa, zRandF(0,zPI) );
 
   zAA2EP( &aa, &ep );
@@ -43,7 +43,7 @@ void assert_rotate(void)
   zMat3D m;
 
   zVec3DCreate( &aa, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
-  zVec3DNormalizeDRC( &aa );
+  zVec3DNormalizeDRC( &aa, 0 );
   zVec3DMulDRC( &aa, zRandF(0,zPI) );
   zAA2EP( &aa, &ep );
   zMat3DFromAA( &m, &aa );
@@ -83,6 +83,22 @@ void assert_cascade(void)
   zAssert( zEPCascade, zMat3DEqual( &m3, &test_m ) );
 }
 
+void assert_normalize(void)
+{
+  zEP ep;
+
+  ep.e[0] = 1; ep.e[1] = 2; ep.e[2] = 2; ep.e[3] = 4; /* norm 5 */
+  zAssert( zEPNormalize, zEPNormalize( &ep, 0 ) == &ep && zIsTiny( zEPNorm( &ep ) - 1 ) &&
+    zIsTiny( ep.e[0] - 0.2 ) && zIsTiny( ep.e[3] - 0.8 ) );
+  ep.e[0] = 1.0e-13; ep.e[1] = 2.0e-13; ep.e[2] = 2.0e-13; ep.e[3] = 4.0e-13; /* norm 5e-13 */
+  zAssert( zEPNormalize (default tolerance), zEPNormalize( &ep, 0 ) == NULL &&
+    ep.e[0] == 1 && ep.e[1] == 0 && ep.e[2] == 0 && ep.e[3] == 0 ); /* the identity */
+  ep.e[0] = 1.0e-13; ep.e[1] = 2.0e-13; ep.e[2] = 2.0e-13; ep.e[3] = 4.0e-13;
+  zAssert( zEPNormalize (specified tolerance), zEPNormalize( &ep, 1.0e-20 ) == &ep && zIsTiny( zEPNorm( &ep ) - 1 ) );
+  ep.e[0] = NAN; ep.e[1] = 0; ep.e[2] = 0; ep.e[3] = 0;
+  zAssert( zEPNormalize (not-a-number), zEPNormalize( &ep, 0 ) == NULL );
+}
+
 int main(void)
 {
   zRandInit();
@@ -91,5 +107,6 @@ int main(void)
   assert_rotate();
   assert_vel();
   assert_cascade();
+  assert_normalize();
   return EXIT_SUCCESS;
 }

@@ -13,8 +13,8 @@
 
 #define ZEO_ERR_NULLPOINTERASSIGNED           "null pointer assigned for %s"
 
-#define ZEO_ERR_ZERODIV                       "cannot divid by zero value"
-#define ZEO_ERR_VEC_ZERONORM                  "cannot normalize zero vector"
+#define ZEO_ERR_ZERODIV                       "cannot divide by zero value"
+#define ZEO_ERR_VEC_ZERONORM                  "cannot normalize a vector whose norm is zero or not greater than the tolerance"
 #define ZEO_ERR_MAT_SINGULAR                  "matrix is singular"
 #define ZEO_ERR_MAT_NOTSO3                    "matrix is not orthonormal"
 

@@ -116,8 +116,7 @@ zMat2D *zMat2DDiv(const zMat2D *m, double k, zMat2D *dm)
     ZRUNWARN( ZEO_ERR_ZERODIV );
     return NULL;
   }
-  k = 1.0 / k;
-  _zMat2DMul( m, k, dm );
+  _zMat2DDiv( m, k, dm );
   return dm;
 }
 

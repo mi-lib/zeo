@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 
   zPH3D2BREP( &prism, &brep );
 
-  zVec3DNormalizeDRC( &n );
+  zVec3DNormalizeDRC( &n, 0 );
   zPlane3DCreate( &pl, &c, &n );
   zBREPTrunc( &brep, &pl );
   brep_output( &brep );

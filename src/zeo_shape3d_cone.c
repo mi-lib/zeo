@@ -68,11 +68,11 @@ double zCone3DClosest(const zCone3D *cone, const zVec3D *point, zVec3D *closestp
   double l, r, d;
 
   zCone3DAxis( cone, &axis );
-  l = zVec3DNormalizeDRC( &axis );
+  l = zVec3DNormalizeDRC( &axis, 0 );
   zVec3DSub( point, zCone3DCenter(cone), &v );
   d = zVec3DInnerProd( &axis, &v );
   zVec3DCat( &v, -d, &axis, &s );
-  r = zVec3DNormalizeDRC( &s );
+  r = zVec3DNormalizeDRC( &s, 0 );
   if( d < 0 ){
     if( r < zCone3DRadius(cone) ){
       zVec3DCat( point, -d, &axis, closestpoint );
@@ -90,7 +90,7 @@ double zCone3DClosest(const zCone3D *cone, const zVec3D *point, zVec3D *closestp
     if( r <= l*d/zCone3DRadius(cone) + zCone3DRadius(cone) ){
       zVec3DMul( &s, zCone3DRadius(cone), &g );
       zVec3DCatDRC( &g, -l, &axis );
-      zVec3DNormalizeDRC( &g );
+      zVec3DNormalizeDRC( &g, 0 );
       zVec3DSub( point, zCone3DVert(cone), &v );
       zVec3DCat( zCone3DVert(cone), zVec3DInnerProd(&v,&g), &g, closestpoint );
       return zVec3DDist( point, closestpoint );
@@ -107,11 +107,11 @@ double zCone3DDistFromPoint(const zCone3D *cone, const zVec3D *point)
   double l, r, d;
 
   zCone3DAxis( cone, &axis );
-  l = zVec3DNormalizeDRC( &axis );
+  l = zVec3DNormalizeDRC( &axis, 0 );
   zVec3DSub( point, zCone3DCenter(cone), &v );
   d = zVec3DInnerProd( &axis, &v );
   zVec3DCat( &v, -d, &axis, &s );
-  r = zVec3DNormalizeDRC( &s );
+  r = zVec3DNormalizeDRC( &s, 0 );
   if( d < 0 ){
     if( r < zCone3DRadius(cone) ) return -d;
   } else{
@@ -122,7 +122,7 @@ double zCone3DDistFromPoint(const zCone3D *cone, const zVec3D *point)
     if( r <= l*d/zCone3DRadius(cone) + zCone3DRadius(cone) ){
       zVec3DMul( &s, zCone3DRadius(cone), &g );
       zVec3DCatDRC( &g, -l, &axis );
-      zVec3DNormalizeDRC( &g );
+      zVec3DNormalizeDRC( &g, 0 );
       zVec3DSub( point, zCone3DVert(cone), &v );
       return zVec3DOuterProdNorm( &v, &g );
     }
@@ -139,7 +139,7 @@ bool zCone3DPointIsInside(const zCone3D *cone, const zVec3D *point, double margi
 
   zCone3DAxis( cone, &axis );
   zVec3DSub( point, zCone3DVert(cone), &v );
-  l = zVec3DNormalizeDRC( &axis );
+  l = zVec3DNormalizeDRC( &axis, 0 );
   d = -zVec3DInnerProd( &axis, &v );
   if( d <= -margin || d >= l + margin ) return false;
   zVec2DCreate( &p2d, d, sqrt( zVec3DSqrNorm(&v) - d*d ) );
@@ -210,7 +210,7 @@ zPH3D *zCone3DToPH(const zCone3D *cone, zPH3D *ph)
     ZRUNERROR( ZEO_ERR_SHAPE_ZEROC );
     return NULL;
   }
-  zVec3DNormalizeDRC( &d );
+  zVec3DNormalizeDRC( &d, 0 );
   /* one radial vector */
   zVec3DOrthonormal( &d, &s );
   zVec3DMulDRC( &s, zCone3DRadius(cone) );

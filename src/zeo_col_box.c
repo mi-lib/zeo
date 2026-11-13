@@ -268,7 +268,7 @@ static bool _zColChkBox3DPerp(const zBox3D *b1, zAxis ax1, const zBox3D *b2, zAx
   zVec3DOuterProd( zBox3DAxis(b1,ax1), zBox3DAxis(b2,ax2), &p );
   if( zVec3DIsTiny( &p ) )
     return true; /* parallel edges, should have been already checked. */
-  zVec3DNormalizeDRC( &p );
+  zVec3DNormalizeDRC( &p, 0 );
   ax12 = ( ax1 + 1 ) % 3;
   ax13 = ( ax1 + 2 ) % 3;
   ax22 = ( ax2 + 1 ) % 3;

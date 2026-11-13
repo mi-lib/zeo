@@ -8,7 +8,7 @@ void test_plane_box(zVec3D *p0, zPlane3D *p, zAABox3D *b)
   zRandInit();
   zVec3DCreate( p0, zRandF(-0.2,0.2), zRandF(-0.2,0.2), zRandF(-0.2,0.2) );
   zVec3DCreate( &norm, zRandF(-0.2,0.2), zRandF(-0.2,0.2), zRandF(-0.2,0.2) );
-  zVec3DNormalizeDRC( &norm );
+  zVec3DNormalizeDRC( &norm, 0 );
   zPlane3DCreate( p, p0, &norm );
   zAABox3DCreate( b, zRandF(-0.3,0), zRandF(-0.3,0), zRandF(-0.3,0), zRandF(0,0.3), zRandF(0,0.3), zRandF(0,0.3) );
 }

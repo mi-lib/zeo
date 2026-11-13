@@ -158,6 +158,38 @@ void assert_rotation(void)
   zAssert( zMat2DError, zIsTiny( angle - error ) );
 }
 
+/* division by very small or large values, where each component is accessed as a double array */
+bool check_div_array_mat2d(const double *a, double k, const double *q, int n)
+{
+  int i;
+
+  for( i=0; i<n; i++ )
+    if( !zIsFinite( q[i] ) || fabs( q[i] - a[i]/k ) > DBL_EPSILON * fabs( a[i]/k ) ) return false;
+  return true;
+}
+
+void assert_div_range_mat2d(void)
+{
+  zMat2D a, q, d;
+  double k[] = { 3.0, 1.0e-13, 4.0e-309, 1.0e308 }; /* including a subnormal divisor and a divisor with the subnormal reciprocal */
+  const int n = sizeof(zMat2D) / sizeof(double);
+  int i, j;
+  bool result = true, result_drc = true, result_zero;
+
+  for( j=0; j<sizeof(k)/sizeof(double); j++ ){
+    for( i=0; i<n; i++ ) ((double *)&a)[i] = zRandF(-1,1) * ( k[j] < 1.0e-300 ? 1.0e-300 : 1 ); /* avoid overflow */
+    if( !zMat2DDiv( &a, k[j], &q ) || !check_div_array_mat2d( (double *)&a, k[j], (double *)&q, n ) ) result = false;
+    d = a;
+    if( !zMat2DDivDRC( &d, k[j] ) ) result_drc = false;
+    for( i=0; i<n; i++ )
+      if( ((double *)&d)[i] != ((double *)&q)[i] ) result_drc = false;
+  }
+  result_zero = zMat2DDiv( &a, 0, &q ) == NULL;
+  zAssert( zMat2DDiv (very small or large divisor), result );
+  zAssert( zMat2DDivDRC (very small or large divisor), result_drc );
+  zAssert( zMat2DDiv (division by zero), result_zero );
+}
+
 int main(void)
 {
   zRandInit();
@@ -166,5 +198,6 @@ int main(void)
   assert_inv();
   assert_mul();
   assert_rotation();
+  assert_div_range_mat2d();
   return EXIT_SUCCESS;
 }

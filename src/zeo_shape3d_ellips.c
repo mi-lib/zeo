@@ -245,7 +245,7 @@ static zVec3D *_zEllips3DAxisFromZTK(zEllips3D *ellips, int i0, int i1, int i2, 
     zVec3DOuterProd( zEllips3DAxis(ellips,i1), zEllips3DAxis(ellips,i2), zEllips3DAxis(ellips,i0) );
   else
     zVec3DFromZTK( zEllips3DAxis(ellips,i0), ztk );
-  zVec3DNormalizeDRC( zEllips3DAxis(ellips,i0) );
+  zVec3DNormalizeDRC( zEllips3DAxis(ellips,i0), 0 );
   return zEllips3DAxis(ellips,i0);
 }
 

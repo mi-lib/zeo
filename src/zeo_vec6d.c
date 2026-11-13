@@ -103,9 +103,7 @@ zVec6D *zVec6DDiv(const zVec6D *v, double k, zVec6D *dv)
     ZRUNWARN( ZEO_ERR_ZERODIV );
     return NULL;
   }
-  k = 1.0 / k;
-  _zVec3DMul( zVec6DLin(v), k, zVec6DLin(dv) );
-  _zVec3DMul( zVec6DAng(v), k, zVec6DAng(dv) );
+  _zVec6DDiv( v, k, dv );
   return dv;
 }
 

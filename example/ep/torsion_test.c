@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
   zRandInit();
   zVec3DCreate( &t, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
-  zVec3DNormalizeDRC( &t );
+  zVec3DNormalizeDRC( &t, 0 );
   zVec3DMulDRC( &t, zRandF(0,zPI) );
 
   zMat3DFromZYX( &r1, zRandF(-zPI,zPI), 0.5*zRandF(-zPI,zPI), zRandF(-zPI,zPI) );

@@ -67,9 +67,9 @@ void zECyl3DDefAxis(zECyl3D *cyl, const zVec3D *ref)
   zECyl3DAxis( cyl, &axis );
   if( ref && !zVec3DIsTiny(ref) ){
     zVec3DOrthogonalize( ref, &axis, zECyl3DRadVec(cyl,0) );
-    zVec3DNormalizeDRC( zECyl3DRadVec(cyl,0) );
+    zVec3DNormalizeDRC( zECyl3DRadVec(cyl,0), 0 );
     zVec3DOuterProd( &axis, zECyl3DRadVec(cyl,0), zECyl3DRadVec(cyl,1) );
-    zVec3DNormalizeDRC( zECyl3DRadVec(cyl,1) );
+    zVec3DNormalizeDRC( zECyl3DRadVec(cyl,1), 0 );
   } else{
     zVec3DOrthoSpace( &axis, zECyl3DRadVec(cyl,0), zECyl3DRadVec(cyl,1) );
   }
@@ -136,7 +136,7 @@ bool zECyl3DPointIsInside(const zECyl3D *ecyl, const zVec3D *point, double margi
 
   zVec3DSub( point, zECyl3DCenter(ecyl,0), &v );
   zECyl3DAxis( ecyl, &axis );
-  l = zVec3DNormalizeDRC( &axis );
+  l = zVec3DNormalizeDRC( &axis, 0 );
   zVec3DCatRatio( zECyl3DRadVec(ecyl,0), zECyl3DRadVec(ecyl,1), &axis, &v, vs.e );
   if( vs.c.z <= -margin || vs.c.z >= l + margin ) return false;
   zEllips2DCreate( &ellips2d, ZVEC2DZERO, zECyl3DRadius(ecyl,0), zECyl3DRadius(ecyl,1) );
@@ -181,7 +181,7 @@ zMat3D *zECyl3DBaryInertiaMass(const zECyl3D *cyl, double mass, zMat3D *inertia)
   /* rotate */
   zVec3DCopy( zECyl3DRadVec(cyl,0), &att.b.x );
   zVec3DCopy( zECyl3DRadVec(cyl,1), &att.b.y );
-  zVec3DNormalizeDRC( &att.b.z );
+  zVec3DNormalizeDRC( &att.b.z, 0 );
   return zRotMat3D( &att, &i, inertia );
 }
 
@@ -215,7 +215,7 @@ zPH3D *zECyl3DToPH(const zECyl3D *cyl, zPH3D *ph)
   face = zPH3DFaceBuf(ph);
 
   zECyl3DAxis( cyl, &d );
-  if( zVec3DNormalizeDRC( &d ) < 0 ){
+  if( zVec3DNormalizeDRC( &d, 0 ) == 0 ){
     ZRUNERROR( ZEO_ERR_SHAPE_ZEROC );
     return NULL;
   }

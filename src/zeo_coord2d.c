@@ -62,8 +62,7 @@ zCoord2D *zCoord2DDiv(const zCoord2D *coord1, double k, zCoord2D *coord)
     ZRUNERROR( ZEO_ERR_ZERODIV );
     return NULL;
   }
-  k = 1.0 / k;
-  _zCoord2DMul( coord1, k, coord );
+  _zCoord2DDiv( coord1, k, coord );
   return coord;
 }
 
@@ -102,8 +101,7 @@ zCoord2D *zCoord2DDivDRC(zCoord2D *coord, double k)
     ZRUNERROR( ZEO_ERR_ZERODIV );
     return NULL;
   }
-  k = 1.0 / k;
-  _zCoord2DMulDRC( coord, k );
+  _zCoord2DDivDRC( coord, k );
   return coord;
 }
 

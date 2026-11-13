@@ -111,7 +111,7 @@ void create_plane3D_rand(zVec3D *v, zPlane3D *p)
 
   zVec3DCreate( v, zRandF(-1e10,1e10), zRandF(-1e10,1e10), zRandF(-1e10,1e10) );
   zVec3DCreate( &n, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-  zVec3DNormalizeDRC( &n );
+  zVec3DNormalizeDRC( &n, 0 );
   zPlane3DCreate( p, v, &n );
 }
 

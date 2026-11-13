@@ -66,7 +66,7 @@ static void _zCyl3DClosestPrep(const zCyl3D *cyl, const zVec3D *point, zVec3D *a
 {
   zCyl3DAxis( cyl, axis );
   _zVec3DSub( point, zCyl3DCenter(cyl,0), v );
-  *l = zVec3DNormalizeDRC( axis );
+  *l = zVec3DNormalizeDRC( axis, 0 );
   *r = zVec3DOuterProdNorm( v, axis );
   *d = zVec3DInnerProd( axis, v ) ;
 }
@@ -190,7 +190,7 @@ zPH3D *zCyl3DToPH(const zCyl3D *cyl, zPH3D *ph)
     ZRUNERROR( ZEO_ERR_SHAPE_ZEROC );
     return NULL;
   }
-  zVec3DNormalizeDRC( &d );
+  zVec3DNormalizeDRC( &d, 0 );
   /* one radial vector */
   zVec3DOrthonormal( &d, &s );
   zVec3DMulDRC( &s, zCyl3DRadius(cyl) );

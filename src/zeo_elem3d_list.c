@@ -70,7 +70,7 @@ static zVec3D *_zLoop3DTriangulateNorm(const zLoop3D *loop, zVec3D *norm)
   zVec3DSub( pre->data, st->data, &e1 );
   zVec3DSub( pst->data, st->data, &e2 );
   zVec3DOuterProd( &e2, &e1, norm );
-  zVec3DNormalizeDRC( norm );
+  zVec3DNormalizeDRC( norm, 0 );
   return norm;
 }
 

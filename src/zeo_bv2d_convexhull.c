@@ -30,8 +30,8 @@ static zVec3D *_zConvexHull2DBase(zVec3DAddrList *addrlist, zVec3D s[])
   return NULL;
  STEP3:
   zVec3DOuterProd( &n, &s[0], &s[1] );
-  zVec3DNormalizeDRC( &s[0] );
-  zVec3DNormalizeDRC( &s[1] );
+  zVec3DNormalizeDRC( &s[0], 0 );
+  zVec3DNormalizeDRC( &s[1], 0 );
   return s;
 }
 

@@ -247,6 +247,17 @@ __ZEO_EXPORT zVec3D *zVec3DRev(const zVec3D *v, zVec3D *rv);
   (mv)->c.y = (k) * (v)->c.y;\
   (mv)->c.z = (k) * (v)->c.z;\
 } while(0)
+/* division by a scalar value, where the multiplication by the reciprocal is adopted for speed
+ * unless the reciprocal is infinity or a subnormal number (see zRawVecDiv() in ZM). It does not
+ * check if \a k is zero. */
+#define _zVec3DDiv(v,k,dv) do{\
+  double __z_vec3d_k = (k), __z_vec3d_ki = 1.0 / __z_vec3d_k;\
+  if( _zIsNormalDouble( __z_vec3d_ki ) ){\
+    _zVec3DMul( v, __z_vec3d_ki, dv );\
+  } else{\
+    _zVec3DCreate( dv, (v)->c.x / __z_vec3d_k, (v)->c.y / __z_vec3d_k, (v)->c.z / __z_vec3d_k );\
+  }\
+} while(0)
 __ZEO_EXPORT zVec3D *zVec3DMul(const zVec3D *v, double k, zVec3D *mv);
 
 __ZEO_EXPORT zVec3D *zVec3DDiv(const zVec3D *v, double k, zVec3D *dv);
@@ -299,6 +310,7 @@ __ZEO_EXPORT zVec3D *zVec3DRevDRC(zVec3D *v);
   (v)->c.y *= (k);\
   (v)->c.z *= (k);\
 } while(0)
+#define _zVec3DDivDRC(v,k) _zVec3DDiv( v, k, v )
 __ZEO_EXPORT zVec3D *zVec3DMulDRC(zVec3D *v, double k);
 /*! \brief directly divide a 3D vector by a scalar value. */
 __ZEO_EXPORT zVec3D *zVec3DDivDRC(zVec3D *v, double k);
@@ -412,8 +424,13 @@ __ZEO_EXPORT double zVec3DSqrDist(const zVec3D *v1, const zVec3D *v2);
  * \a v. The result is put into \a nv. Namely, \a nv is in parallel
  * to \a v, and its norm is 1.
  *
- * zVec3DNormalize() checks if all components of \a v are larger than
- * zTOL. If not, nothing happens on \a nv, and 0 is returned.
+ * zVec3DNormalize() checks if the norm of \a v is larger than \a tol.
+ * If not, it regards \a v as the zero vector, sets \a nv for the zero
+ * vector, and returns 0. If zero or a negative value is given for \a tol,
+ * zTOL is adopted instead. Note that a vector that is theoretically zero
+ * but remains non-zero due to rounding errors could be normalized to a
+ * meaningless direction, so that \a tol should be chosen relative to the
+ * scale of the computation that produced \a v.
  * zVec3DNormalizeNC() does not check the components of \a v. Thus,
  * it should be used only when it is guaranteed that \a v is not tiny.
  *
@@ -423,13 +440,13 @@ __ZEO_EXPORT double zVec3DSqrDist(const zVec3D *v1, const zVec3D *v2);
  * check components of \a v.
  * \return
  * All these functions return the norm of the original vector \a v.
- * If all components of \a v are less than zTOL, zVec3DNormalize() and
- * zVec3DNormalizeDRC() return 0.
+ * If the norm of \a v is not larger than the tolerance, zVec3DNormalize()
+ * and zVec3DNormalizeDRC() return 0.
  */
 __ZEO_EXPORT double zVec3DNormalizeNC(const zVec3D *v, zVec3D *nv);
-__ZEO_EXPORT double zVec3DNormalize(const zVec3D *v, zVec3D *nv);
-#define zVec3DNormalizeNCDRC(v) zVec3DNormalizeNC(v,v)
-#define zVec3DNormalizeDRC(v)   zVec3DNormalize(v,v)
+__ZEO_EXPORT double zVec3DNormalize(const zVec3D *v, double tol, zVec3D *nv);
+#define zVec3DNormalizeNCDRC(v)   zVec3DNormalizeNC(v,v)
+#define zVec3DNormalizeDRC(v,tol) zVec3DNormalize(v,tol,v)
 
 /* ********************************************************** */
 /* geometry
@@ -485,7 +502,7 @@ __ZEO_EXPORT double zVec3DAngle(const zVec3D *v1, const zVec3D *v2, const zVec3D
 __ZEO_EXPORT zVec3D *zVec3DAAError(const zVec3D *v1, const zVec3D *v2, zVec3D *aa);
 
 /*! \brief extract angle and unit axis vector from an angle-axis vector. */
-#define zAA2AngleAndAxis(aa,angle,axis) ( *(angle) = zVec3DNormalize( (aa), axis ) )
+#define zAA2AngleAndAxis(aa,angle,axis) ( *(angle) = zVec3DNormalize( (aa), 0, axis ) )
 
 /*! \brief projection, orthogonalization and rotation of a 3D vector.
  *
@@ -503,9 +520,14 @@ __ZEO_EXPORT zVec3D *zVec3DAAError(const zVec3D *v1, const zVec3D *v2, zVec3D *a
  *
  * zVec3DOrthoSpace() creates the orthogonal space to \a v, and
  * put them into \a sv1 and \a sv2. Namely, \a v, \a sv1 and \a sv2
- * are orthogonal with each other, and are normalized.
- * Note that the orthogonal is not unique in nature. This function
- * only creates "one of" them.
+ * are orthogonal with each other, \a sv1 and \a sv2 are unit
+ * vectors, and \a v, \a sv1 and \a sv2 form a right-handed system.
+ * zVec3DOrthonormalSpace() normalizes \a v in addition, so that
+ * \a v, \a sv1 and \a sv2 are orthogonal unit vectors.
+ * If the norm of \a v is not larger than zTOL, these functions fail
+ * without modifying \a v.
+ * Note that the orthogonal space is not unique in nature. These
+ * functions only create "one of" them.
  *
  * zVec3DRot() rotates \a v by angle-axis vector \a aa, whose
  * direction is that of the rotation axis and norm is the
@@ -515,8 +537,9 @@ __ZEO_EXPORT zVec3D *zVec3DAAError(const zVec3D *v1, const zVec3D *v2, zVec3D *a
  * \a pv and \a ov, respectively, or the null pointer if they
  * fails because of \a n being the zero vector.
  *
- * zVec3DOrthoSpace() returns the true value if it succeeds to
- * create the orthogonal space, or the false value, otherwise.
+ * zVec3DOrthoSpace() and zVec3DOrthonormalSpace() return the true
+ * value if they succeed to create the orthogonal space, or the false
+ * value, otherwise.
  *
  * zVec3DRot() returns a pointer to \a rv.
  */

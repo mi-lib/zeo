@@ -9,9 +9,9 @@ void generate_box_rand(zBox3D *box, zVec3D *ax, zVec3D *ay, zVec3D *az)
   zVec3DCreate( &tmp, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
   zVec3DOrthogonalize( &tmp, ax, ay );
   zVec3DOuterProd( ax, ay, az );
-  zVec3DNormalizeDRC( ax );
-  zVec3DNormalizeDRC( ay );
-  zVec3DNormalizeDRC( az );
+  zVec3DNormalizeDRC( ax, 0 );
+  zVec3DNormalizeDRC( ay, 0 );
+  zVec3DNormalizeDRC( az, 0 );
 
   zBox3DCreate( box, &center, ax, ay, az, zRandF(0,5), zRandF(0,5), zRandF(0,5) );
 }

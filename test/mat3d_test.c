@@ -522,7 +522,7 @@ void assert_mat3D_to_angleaxis(void)
   /* singular cases */
   for( i=0; i<n; i++ ){
     zVec3DCreate( &aa, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
-    zVec3DNormalizeDRC( &aa );
+    zVec3DNormalizeDRC( &aa, 0 );
     zMat3DCreate( &rot_src,
       2*aa.c.x*aa.c.x - 1, 2*aa.c.x*aa.c.y, 2*aa.c.x*aa.c.z,
       2*aa.c.y*aa.c.x, 2*aa.c.y*aa.c.y - 1, 2*aa.c.y*aa.c.z,
@@ -756,6 +756,38 @@ void assert_mat3D_ztk(void)
   zAssert( zMat3DFromZTK + zMat3DToZTK, zMat3DIsTol( &mat_src, 1.0e-9 ) );
 }
 
+/* division by very small or large values, where each component is accessed as a double array */
+bool check_div_array_mat3d(const double *a, double k, const double *q, int n)
+{
+  int i;
+
+  for( i=0; i<n; i++ )
+    if( !zIsFinite( q[i] ) || fabs( q[i] - a[i]/k ) > DBL_EPSILON * fabs( a[i]/k ) ) return false;
+  return true;
+}
+
+void assert_div_range_mat3d(void)
+{
+  zMat3D a, q, d;
+  double k[] = { 3.0, 1.0e-13, 4.0e-309, 1.0e308 }; /* including a subnormal divisor and a divisor with the subnormal reciprocal */
+  const int n = sizeof(zMat3D) / sizeof(double);
+  int i, j;
+  bool result = true, result_drc = true, result_zero;
+
+  for( j=0; j<sizeof(k)/sizeof(double); j++ ){
+    for( i=0; i<n; i++ ) ((double *)&a)[i] = zRandF(-1,1) * ( k[j] < 1.0e-300 ? 1.0e-300 : 1 ); /* avoid overflow */
+    if( !zMat3DDiv( &a, k[j], &q ) || !check_div_array_mat3d( (double *)&a, k[j], (double *)&q, n ) ) result = false;
+    d = a;
+    if( !zMat3DDivDRC( &d, k[j] ) ) result_drc = false;
+    for( i=0; i<n; i++ )
+      if( ((double *)&d)[i] != ((double *)&q)[i] ) result_drc = false;
+  }
+  result_zero = zMat3DDiv( &a, 0, &q ) == NULL;
+  zAssert( zMat3DDiv (very small or large divisor), result );
+  zAssert( zMat3DDivDRC (very small or large divisor), result_drc );
+  zAssert( zMat3DDiv (division by zero), result_zero );
+}
+
 int main(void)
 {
   zRandInit();
@@ -776,5 +808,6 @@ int main(void)
   assert_mat3D_sym_eig_min();
   assert_mat3D_svd();
   assert_mat3D_ztk();
+  assert_div_range_mat3d();
   return EXIT_SUCCESS;
 }

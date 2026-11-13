@@ -138,15 +138,15 @@ static int _zQHSimplexVert(zQHPointList *pl, zQHPointListCell *v[])
   ZRUNWARN( ZEO_ERR_CH_DEG1 );
   return 1;
  THIRD:
-  zVec3DNormalize( &e[0], &d[0] );
+  zVec3DNormalize( &e[0], 0, &d[0] );
   while( !zListIsEmpty( pl ) ){ /* third vertex */
     zListDeleteTail( pl, &v[2] ); /* candidate */
     zVec3DSub( v[2]->data.v, v[0]->data.v, &e[1] );
     if( !zVec3DIsTiny( &e[1] ) ){
-      zVec3DNormalize( &e[1], &d[1] );
+      zVec3DNormalize( &e[1], 0, &d[1] );
       zVec3DOuterProd( &d[0], &d[1], &n );
       if( !zVec3DIsTiny( &n ) ){
-        zVec3DNormalizeDRC( &n );
+        zVec3DNormalizeDRC( &n, 0 );
         goto FOURTH;
       }
     }

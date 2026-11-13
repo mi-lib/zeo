@@ -372,7 +372,7 @@ static bool _zPCDViewpointFRead(FILE *fp, _zPCD *pcd, char *buf, char *tkn)
   }
   zVec3DCreate( zFrame3DPos(&pcd->viewpoint), val[0], val[1], val[2] );
   ep.e[0] = val[3]; ep.e[1] = val[4]; ep.e[2] = val[5]; ep.e[3] = val[6];
-  zEPNormalize( &ep );
+  zEPNormalize( &ep, 0 );
   zMat3DFromEP( zFrame3DAtt(&pcd->viewpoint), &ep );
   return true;
 }

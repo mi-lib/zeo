@@ -52,7 +52,7 @@ static void _zTerraCellForm(zTerraCell *cell, double x, double y)
 {
   cell->z = zTerraCellZ( cell, x, y );
   zVec3DCreate( &cell->norm, -cell->_prm.e[zX], -cell->_prm.e[zY], 1 );
-  zVec3DNormalizeDRC( &cell->norm );
+  zVec3DNormalizeDRC( &cell->norm, 0 );
 }
 
 /* ********************************************************** */

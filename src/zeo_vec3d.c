@@ -108,8 +108,7 @@ zVec3D *zVec3DDiv(const zVec3D *v, double k, zVec3D *dv)
     ZRUNWARN( ZEO_ERR_ZERODIV );
     return NULL;
   }
-  k = 1.0 / k;
-  _zVec3DMul( v, k, dv );
+  _zVec3DDiv( v, k, dv );
   return dv;
 }
 
@@ -169,8 +168,7 @@ zVec3D *zVec3DDivDRC(zVec3D *v, double k)
     ZRUNWARN( ZEO_ERR_ZERODIV );
     return NULL;
   }
-  k = 1.0 / k;
-  _zVec3DMulDRC( v, k );
+  _zVec3DDivDRC( v, k );
   return v;
 }
 
@@ -256,27 +254,29 @@ double zVec3DSqrDist(const zVec3D *v1, const zVec3D *v2)
   return _zVec3DSqrNorm( &dv );
 }
 
-#define __zVec3DNormalize(v,nv) do{\
-  double __l, __k;\
-  __k = 1.0 / ( __l = zVec3DNorm(v) );\
-  _zVec3DMul( v, __k, nv );\
-  return __l;\
-} while(0)
-
 /* normalize a 3D vector without checking vector size. */
 double zVec3DNormalizeNC(const zVec3D *v, zVec3D *nv)
 {
-  __zVec3DNormalize( v, nv );
+  double l;
+
+  l = zVec3DNorm( v );
+  _zVec3DDiv( v, l, nv );
+  return l;
 }
 
 /* normalize a 3D vector. */
-double zVec3DNormalize(const zVec3D *v, zVec3D *nv)
+double zVec3DNormalize(const zVec3D *v, double tol, zVec3D *nv)
 {
-  if( zVec3DIsTiny( v ) ){
+  double l;
+
+  if( tol <= 0 ) tol = zTOL;
+  if( !( ( l = zVec3DNorm( v ) ) > tol ) ){ /* NaN also results in the true value. */
     ZRUNWARN( ZEO_ERR_VEC_ZERONORM );
+    _zVec3DZero( nv );
     return 0;
   }
-  __zVec3DNormalize( v, nv );
+  _zVec3DDiv( v, l, nv );
+  return l;
 }
 
 /* ********************************************************** */
@@ -352,7 +352,7 @@ zVec3D *zVec3DOrthonormal(const zVec3D *v, zVec3D *ov)
     ZRUNWARN( ZEO_ERR_VEC_ZERONORM );
     return NULL;
   }
-  zVec3DNormalizeDRC( ov );
+  zVec3DNormalizeDRC( ov, 0 );
   return ov;
 }
 
@@ -370,21 +370,35 @@ zVec3D *zVec3DOrthogonalize(const zVec3D *v, const zVec3D *n, zVec3D *ov)
   return ov;
 }
 
+/* create the orthonormal space of a unit 3D vector. sv1 is normalized in zVec3DOrthonormal(),
+ * which never fails for a unit vector, and the outer product of the two orthogonal unit vectors
+ * n and sv1 is also a unit vector. */
+static void _zVec3DOrthonormalSpaceUnit(const zVec3D *n, zVec3D *sv1, zVec3D *sv2)
+{
+  zVec3DOrthonormal( n, sv1 );
+  _zVec3DOuterProd( n, sv1, sv2 );
+}
+
 /* create the orthogonal space of a 3D vector. */
 bool zVec3DOrthoSpace(const zVec3D *v, zVec3D *sv1, zVec3D *sv2)
 {
-  if( !zVec3DOrthonormal( v, sv1 ) ) return false;
-  _zVec3DOuterProd( v, sv1, sv2 );
+  zVec3D n;
+
+  /* the norm of v has to be checked prior to creating the orthogonal space; zVec3DOrthonormal()
+   * checks the components of the vector orthogonal to v, which can be larger than the norm of v. */
+  if( zVec3DNormalize( v, 0, &n ) == 0 ) return false;
+  _zVec3DOrthonormalSpaceUnit( &n, sv1, sv2 );
   return true;
 }
 
 /* create the orthonormal space of a 3D vector. */
 bool zVec3DOrthonormalSpace(zVec3D *v, zVec3D *sv1, zVec3D *sv2)
 {
-  if( !zVec3DOrthoSpace( v, sv1, sv2 ) ) return false;
-  zVec3DNormalizeDRC( v );
-  zVec3DNormalizeDRC( sv1 );
-  zVec3DNormalizeDRC( sv2 );
+  zVec3D n;
+
+  if( zVec3DNormalize( v, 0, &n ) == 0 ) return false; /* see zVec3DOrthoSpace() */
+  zVec3DCopy( &n, v );
+  _zVec3DOrthonormalSpaceUnit( v, sv1, sv2 );
   return true;
 }
 
@@ -395,7 +409,7 @@ zVec3D *zVec3DRot(const zVec3D *v, const zVec3D *aa, zVec3D *rv)
   double angle, s, c;
 
   if( _zVec3DIsTiny( aa ) ) return zVec3DCopy( v, rv );
-  angle = zVec3DNormalize( aa, &n );
+  angle = zVec3DNormalize( aa, 0, &n );
   zVec3DProj( v, &n, &v0 );
   _zVec3DSub( v, &v0, &v1 );
   _zVec3DOuterProd( &n, v, &v2 );

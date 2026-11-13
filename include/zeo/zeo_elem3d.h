@@ -181,7 +181,7 @@ __BEGIN_DECLS
 #define zPlane3DNorm(plane)       ( &(plane)->norm )
 
 #define zPlane3DSetOrg(plane,org) ( zPlane3DOrg(plane) = (org) )
-#define zPlane3DSetNorm(plane,n)  zVec3DNormalize( (n), zPlane3DNorm(plane) )
+#define zPlane3DSetNorm(plane,n)  zVec3DNormalize( (n), 0, zPlane3DNorm(plane) )
 
 /*! \brief initialize and create a 3D plane.
  *

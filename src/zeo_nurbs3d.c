@@ -179,10 +179,10 @@ zVec3D *zNURBS3DVecTSpace(const zNURBS3D *nurbs, double u, double v, zVec3D *p, 
     if( zVec3DIsTiny( n ) )
       zVec3DZero( n );
     else
-      zVec3DNormalizeDRC( n );
+      zVec3DNormalizeDRC( n, 0 );
   }
-  if( t1 && !zVec3DIsTiny( t1 ) ) zVec3DNormalizeDRC( t1 );
-  if( t2 && !zVec3DIsTiny( t2 ) ) zVec3DNormalizeDRC( t2 );
+  if( t1 && !zVec3DIsTiny( t1 ) ) zVec3DNormalizeDRC( t1, 0 );
+  if( t2 && !zVec3DIsTiny( t2 ) ) zVec3DNormalizeDRC( t2, 0 );
   return p;
 }
 

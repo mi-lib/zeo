@@ -58,7 +58,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zLine##XD ){ \
   ZEO_ELEM_LINEXD_CREATE_TWOPOINT_PROTOTYPE( XD ){ \
     zLine##XD##SetOrg( line, (zVec##XD*)p1 ); \
     zVec##XD##Sub( p2, p1, zLine##XD##Dir(line) ); \
-    zVec##XD##NormalizeDRC( zLine##XD##Dir(line) ); \
+    zVec##XD##NormalizeDRC( zLine##XD##Dir(line), 0 ); \
     return line; \
   }
 
@@ -147,7 +147,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
 #define ZEO_ELEM_EDGEXD_LEN(XD,edge)     zVec##XD##Norm( zEdge##XD##Vec(edge) )
 
 /* find the direction vector of a 2D/3D edge. */
-#define ZEO_ELEM_EDGEXD_DIR(XD,edge,dir) zVec##XD##Normalize( zEdge##XD##Vec(edge), dir )
+#define ZEO_ELEM_EDGEXD_DIR(XD,edge,dir) zVec##XD##Normalize( zEdge##XD##Vec(edge), 0, dir )
 
 /* TO BE REMOVED. */
 /* unit_dir  ... unit direction vector of the edge
@@ -192,7 +192,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
     zVec##XD##Sub( point, zEdge##XD##Vert(edge,0), &dp0 ); \
     zVec##XD##Sub( point, zEdge##XD##Vert(edge,1), &dp1 ); \
     ni = ( zVec##XD##SqrNorm(&dp0) <= zVec##XD##SqrNorm(&dp1) ) ? 0 : 1; \
-    if( ( d = zVec##XD##Normalize( zEdge##XD##Vec(edge), &v ) ) < 0 ){ \
+    if( ( d = zVec##XD##Normalize( zEdge##XD##Vec(edge), 0, &v ) ) <= 0 ){ \
       ZRUNERROR( ZEO_ERR_ELEM_DEG_EDGE ); \
       return -1; \
     } \

@@ -10,7 +10,7 @@ static void _zCapsule3DClosestPrep(const zCapsule3D *capsule, const zVec3D *poin
 {
   zCapsule3DAxis( capsule, axis );
   _zVec3DSub( point, zCapsule3DCenter(capsule,0), v );
-  *l = zVec3DNormalizeDRC( axis );
+  *l = zVec3DNormalizeDRC( axis, 0 );
   *r = zVec3DOuterProdNorm( v, axis );
   *d = zVec3DInnerProd( axis, v ) ;
 }
@@ -124,7 +124,7 @@ zPH3D *zCapsule3DToPH(const zCapsule3D *capsule, zPH3D *ph)
     ZRUNERROR( ZEO_ERR_SHAPE_ZEROC );
     return NULL;
   }
-  zVec3DNormalizeDRC( &d );
+  zVec3DNormalizeDRC( &d, 0 );
   /* one radial vector */
   zVec3DOrthonormal( &d, &s );
   zVec3DMulDRC( &s, zCapsule3DRadius(capsule) );

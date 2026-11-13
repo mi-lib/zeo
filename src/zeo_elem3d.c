@@ -151,7 +151,7 @@ bool zPlane3DPointIsOn(const zPlane3D *plane, const zVec3D *point, double margin
 
   zVec3DSub( point, zPlane3DOrg(plane), &tmp );
   if( zVec3DIsTiny( &tmp ) ) return true;
-  zVec3DNormalizeDRC( &tmp );
+  zVec3DNormalizeDRC( &tmp, 0 );
   return zIsTol( zVec3DInnerProd( &tmp, zPlane3DNorm(plane) ), margin );
 }
 
@@ -242,7 +242,7 @@ zVec3D *zTri3DCalcNorm(zTri3D *tri)
 {
   _zTri3DOuterProd( tri, zTri3DNorm(tri) );
   if( zVec3DIsTiny( zTri3DNorm(tri) ) ) return NULL;
-  zVec3DNormalizeDRC( zTri3DNorm(tri) );
+  zVec3DNormalizeDRC( zTri3DNorm(tri), 0 );
   return zTri3DNorm(tri);
 }
 
@@ -301,7 +301,7 @@ bool zTri3DPointIsOnPlane(const zTri3D *tri, const zVec3D *point, double margin)
   zVec3DSub( point, zTri3DVert(tri,0), &tmp );
   if( zVec3DIsTiny( &tmp ) ) return true;
   /* ARGUMENT: Is this normalization necessary? */
-  zVec3DNormalizeDRC( &tmp );
+  zVec3DNormalizeDRC( &tmp, 0 );
   return zIsTol( zVec3DInnerProd( &tmp, zTri3DNorm(tri) ), margin );
 }
 
@@ -315,7 +315,7 @@ static bool _zTri3DProjIsInside(const zTri3D *tri, const zVec3D *point, zVec3D *
   for( i=0; i<3; i++ ){
     zVec3DSub( zTri3DVertNext(tri,i), zTri3DVert(tri,i), &edge );
     zVec3DOuterProd( &edge, zTri3DNorm(tri), &n );
-    zVec3DNormalizeDRC( &n );
+    zVec3DNormalizeDRC( &n, 0 );
     zVec3DSub( projection, zTri3DVert(tri,i), &d );
     if( zVec3DInnerProd( &n, &d ) > 0 ) return false;
   }
@@ -439,9 +439,9 @@ double zTri3DLinScale(const zTri3D *tri, const zVec3D *p, double *l0, double *l1
   i2 = ( i0 + 2 ) % 3;
 
   zVec3DSub( zTri3DVert(tri,i1), zTri3DVert(tri,i0), &e1 );
-  d1 = zVec3DNormalizeDRC( &e1 );
+  d1 = zVec3DNormalizeDRC( &e1, 0 );
   zVec3DSub( zTri3DVert(tri,i2), zTri3DVert(tri,i0), &e2 );
-  d2 = zVec3DNormalizeDRC( &e2 );
+  d2 = zVec3DNormalizeDRC( &e2, 0 );
   zVec3DSub( p, zTri3DVert(tri,i0), &dp );
   zVec2DCreate( &v, zVec3DInnerProd(&e1,&dp), zVec3DInnerProd(&e2,&dp) );
   mc = zVec3DInnerProd(&e1,&e2);

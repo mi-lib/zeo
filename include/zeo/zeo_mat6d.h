@@ -104,6 +104,20 @@ __ZEO_EXPORT zMat6D *zMat6DSub(const zMat6D *m1, const zMat6D *m2, zMat6D *m);
   _zMat3DMul( &(m)->c.al, k, &(mm)->c.al );\
   _zMat3DMul( &(m)->c.aa, k, &(mm)->c.aa );\
 } while(0)
+/* division by a scalar value, where the multiplication by the reciprocal is adopted for speed
+ * unless the reciprocal is infinity or a subnormal number (see zRawVecDiv() in ZM). It does not
+ * check if \a k is zero. */
+#define _zMat6DDiv(m,k,dm) do{\
+  double __z_mat6d_k = (k), __z_mat6d_ki = 1.0 / __z_mat6d_k;\
+  if( _zIsNormalDouble( __z_mat6d_ki ) ){\
+    _zMat6DMul( m, __z_mat6d_ki, dm );\
+  } else{\
+    _zMat3DDiv( &(m)->c.ll, __z_mat6d_k, &(dm)->c.ll );\
+    _zMat3DDiv( &(m)->c.la, __z_mat6d_k, &(dm)->c.la );\
+    _zMat3DDiv( &(m)->c.al, __z_mat6d_k, &(dm)->c.al );\
+    _zMat3DDiv( &(m)->c.aa, __z_mat6d_k, &(dm)->c.aa );\
+  }\
+} while(0)
 __ZEO_EXPORT zMat6D *zMat6DMul(const zMat6D *m, double k, zMat6D *mm);
 
 /*! \brief divide a 6x6 matrix by a scalar value.
@@ -131,6 +145,7 @@ __ZEO_EXPORT zMat6D *zMat6DSubDRC(zMat6D *m1, const zMat6D *m2);
   _zMat3DMulDRC( &(m)->c.al, k );\
   _zMat3DMulDRC( &(m)->c.aa, k );\
 } while(0)
+#define _zMat6DDivDRC(m,k) _zMat6DDiv( m, k, m )
 __ZEO_EXPORT zMat6D *zMat6DMulDRC(zMat6D *m, double k);
 __ZEO_EXPORT zMat6D *zMat6DDivDRC(zMat6D *m, double k);
 

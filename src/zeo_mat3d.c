@@ -133,8 +133,7 @@ zMat3D *zMat3DDiv(const zMat3D *m, double k, zMat3D *dm)
     ZRUNWARN( ZEO_ERR_ZERODIV );
     return NULL;
   }
-  k = 1.0 / k;
-  _zMat3DMul( m, k, dm );
+  _zMat3DDiv( m, k, dm );
   return dm;
 }
 
@@ -239,11 +238,11 @@ zMat3D *zMat3DOrthonormalize(const zMat3D *src, zAxis axis1, zAxis axis2, zMat3D
   }
   axis3 = ( 3 - axis1 - axis2 ) % 3; /* (X,Y)->Z, (Y,Z)->X, (Z,X)->Y */
 
-  zVec3DNormalize( zMat3DVec(src,axis1), zMat3DVec(dest,axis1) );
+  zVec3DNormalize( zMat3DVec(src,axis1), 0, zMat3DVec(dest,axis1) );
   zVec3DOrthogonalize( zMat3DVec(src,axis2), zMat3DVec(src,axis1), zMat3DVec(dest,axis2) );
-  zVec3DNormalizeDRC( zMat3DVec(dest,axis2) );
+  zVec3DNormalizeDRC( zMat3DVec(dest,axis2), 0 );
+  /* the outer product of the two orthogonal unit vectors is also a unit vector. */
   zVec3DOuterProd( zMat3DVec(dest,axis1), zMat3DVec(dest,axis2), zMat3DVec(dest,axis3) );
-  zVec3DNormalizeDRC( zMat3DVec(dest,axis3) );
   return dest;
 }
 
@@ -886,7 +885,7 @@ double zMat3DEigPower(const zMat3D *m, zVec3D *eigvec, int iter)
   zVec3DCreate( eigvec, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
   ZITERINIT( iter );
   for( i=0; i<iter; i++ ){
-    zVec3DNormalize( eigvec, &ev );
+    zVec3DNormalize( eigvec, 0, &ev );
     zMulMat3DVec3D( m, &ev, eigvec );
     eigval = zVec3DInnerProd( &ev, eigvec );
     zVec3DCat( eigvec, -eigval, &ev, &err );
@@ -1068,7 +1067,7 @@ zVec3D *zAAFromZTK(zVec3D *aa, ZTK *ztk)
 
   zVec3DFromZTK( &axis, ztk );
   angle = zDeg2Rad( ZTKDouble( ztk ) );
-  if( zVec3DNormalizeDRC( &axis ) > 0 )
+  if( zVec3DNormalizeDRC( &axis, 0 ) > 0 )
     zVec3DMul( &axis, angle, aa );
   else
     zVec3DZero( aa );

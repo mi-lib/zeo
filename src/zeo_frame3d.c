@@ -177,7 +177,7 @@ zFrame3D *zFrame3DRotateView(zFrame3D *frame, double angle, double x, double y, 
   zMat3D r;
 
   zVec3DCreate( &aa, x, y, z );
-  if( !zIsTiny( zVec3DNormalizeDRC( &aa ) ) ){
+  if( !zIsTiny( zVec3DNormalizeDRC( &aa, 0 ) ) ){
     zVec3DMulDRC( &aa, angle );
     zMat3DFromAA( &r, &aa );
     zMulMat3DMat3D( zFrame3DAtt(frame), &r, zFrame3DAtt(frame) );
@@ -194,8 +194,8 @@ zFrame3D *zFrame3DLookAtView(zFrame3D *frame, double eyex, double eyey, double e
   zVec3DCreate( &gazevec, eyex - centerx, eyey - centery, eyez - centerz );
   zVec3DCreate( &uppervec, upx, upy, upz );
   zVec3DOrthogonalize( &uppervec, &gazevec, &uppervec );
-  zVec3DNormalize( &gazevec, zMat3DVec(zFrame3DAtt(frame),zX) );
-  zVec3DNormalize( &uppervec, zMat3DVec(zFrame3DAtt(frame),zZ) );
+  zVec3DNormalize( &gazevec, 0, zMat3DVec(zFrame3DAtt(frame),zX) );
+  zVec3DNormalize( &uppervec, 0, zMat3DVec(zFrame3DAtt(frame),zZ) );
   zVec3DOuterProd( zMat3DVec(zFrame3DAtt(frame),zZ), zMat3DVec(zFrame3DAtt(frame),zX), zMat3DVec(zFrame3DAtt(frame),zY) );
   return frame;
 }

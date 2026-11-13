@@ -77,9 +77,9 @@ int main(int argc, char *argv[])
   fp = fopen( "result.ztk", "w" );
   output_header( fp );
   zVec3DCreate( &c, 1, 1, 1 );
-  zVec3DCreate( &ax, 5, 1, -1 ); zVec3DNormalizeDRC( &ax );
-  zVec3DCreate( &tmp, -1, -1, 8 ); zVec3DOuterProd( &ax, &tmp, &ay ); zVec3DNormalizeDRC( &ay );
-  zVec3DOuterProd( &ax, &ay, &az ); zVec3DNormalizeDRC( &az );
+  zVec3DCreate( &ax, 5, 1, -1 ); zVec3DNormalizeDRC( &ax, 0 );
+  zVec3DCreate( &tmp, -1, -1, 8 ); zVec3DOuterProd( &ax, &tmp, &ay ); zVec3DNormalizeDRC( &ay, 0 );
+  zVec3DOuterProd( &ax, &ay, &az ); zVec3DNormalizeDRC( &az, 0 );
   zBox3DCreate( &box, &c, &ax, &ay, &az, 5, 3, 2 );
   margin = argc > 1 ? atof( argv[1] ) : DEFAULT_MARGIN;
   for( i=0; i<N; i++ ){

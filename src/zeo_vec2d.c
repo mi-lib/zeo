@@ -102,8 +102,7 @@ zVec2D *zVec2DDiv(const zVec2D *v, double k, zVec2D *dv)
     ZRUNERROR( ZEO_ERR_ZERODIV );
     return NULL;
   }
-  k = 1.0 / k;
-  _zVec2DMul( v, k, dv );
+  _zVec2DDiv( v, k, dv );
   return dv;
 }
 
@@ -163,8 +162,7 @@ zVec2D *zVec2DDivDRC(zVec2D *v, double k)
     ZRUNWARN( ZEO_ERR_ZERODIV );
     return NULL;
   }
-  k = 1.0 / k;
-  _zVec2DMulDRC( v, k );
+  _zVec2DDivDRC( v, k );
   return v;
 }
 
@@ -218,24 +216,26 @@ double zVec2DSqrDist(const zVec2D *v1, const zVec2D *v2)
 /* normalize a 2D vector without checking vector size. */
 double zVec2DNormalizeNC(const zVec2D *v, zVec2D *nv)
 {
-  double l, k;
+  double l;
 
-  k = 1.0 / ( l = zVec2DNorm(v) );
-  _zVec2DMul( v, k, nv );
+  l = zVec2DNorm( v );
+  _zVec2DDiv( v, l, nv );
   return l;
 }
 
 /* normalize a 2D vector. */
-double zVec2DNormalize(const zVec2D *v, zVec2D *nv)
+double zVec2DNormalize(const zVec2D *v, double tol, zVec2D *nv)
 {
-  double l, k;
+  double l;
 
-  if( zVec2DIsTiny( v ) ){
+  if( tol <= 0 ) tol = zTOL;
+  /* a norm that is not a number is also rejected, since the comparison is false. */
+  if( !( ( l = zVec2DNorm( v ) ) > tol ) ){
     ZRUNWARN( ZEO_ERR_VEC_ZERONORM );
-    return -1;
+    _zVec2DZero( nv );
+    return 0;
   }
-  k = 1.0 / ( l = zVec2DNorm(v) );
-  _zVec2DMul( v, k, nv );
+  _zVec2DDiv( v, l, nv );
   return l;
 }
 
@@ -268,7 +268,7 @@ zVec2D *zVec2DProj(const zVec2D *v, const zVec2D *n, zVec2D *pv)
 {
   zVec2D d;
 
-  if( zVec2DNormalize( n, &d ) < 0 ) return NULL;
+  if( zVec2DNormalize( n, 0, &d ) == 0 ) return NULL;
   _zVec2DMul( &d, _zVec2DInnerProd(&d,v), pv );
   return pv;
 }

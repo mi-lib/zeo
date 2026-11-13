@@ -349,7 +349,7 @@ zVec2D *test_ellips2D_norm(zEllips2D *e, zVec2D *p, zVec2D *n)
   zVec2DCreate( n,
     ( p->c.x - zEllips2DCenter(e)->c.x ) / zSqr( zEllips2DRadius(e,0) ),
     ( p->c.y - zEllips2DCenter(e)->c.y ) / zSqr( zEllips2DRadius(e,1) ) );
-  zVec2DNormalizeDRC( n );
+  zVec2DNormalizeDRC( n, 0 );
   return n;
 }
 

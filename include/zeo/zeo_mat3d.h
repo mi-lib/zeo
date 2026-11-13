@@ -294,6 +294,19 @@ __ZEO_EXPORT zMat3D *zMat3DRev(const zMat3D *m, zMat3D *rm);
   _zVec3DMul( &(m)->b.y, k, &(mm)->b.y );\
   _zVec3DMul( &(m)->b.z, k, &(mm)->b.z );\
 } while(0)
+/* division by a scalar value, where the multiplication by the reciprocal is adopted for speed
+ * unless the reciprocal is infinity or a subnormal number (see zRawVecDiv() in ZM). It does not
+ * check if \a k is zero. */
+#define _zMat3DDiv(m,k,dm) do{\
+  double __z_mat3d_k = (k), __z_mat3d_ki = 1.0 / __z_mat3d_k;\
+  if( _zIsNormalDouble( __z_mat3d_ki ) ){\
+    _zMat3DMul( m, __z_mat3d_ki, dm );\
+  } else{\
+    _zVec3DDiv( &(m)->b.x, __z_mat3d_k, &(dm)->b.x );\
+    _zVec3DDiv( &(m)->b.y, __z_mat3d_k, &(dm)->b.y );\
+    _zVec3DDiv( &(m)->b.z, __z_mat3d_k, &(dm)->b.z );\
+  }\
+} while(0)
 __ZEO_EXPORT zMat3D *zMat3DMul(const zMat3D *m, double k, zMat3D *mm);
 __ZEO_EXPORT zMat3D *zMat3DDiv(const zMat3D *m, double k, zMat3D *dm);
 #define _zMat3DCat(m1,k,m2,m) do{\
@@ -326,6 +339,7 @@ __ZEO_EXPORT zMat3D *zMat3DCat(const zMat3D *m1, double k, const zMat3D *m2, zMa
   _zVec3DMulDRC( &(m)->b.y, k );\
   _zVec3DMulDRC( &(m)->b.z, k );\
 } while(0)
+#define _zMat3DDivDRC(m,k) _zMat3DDiv( m, k, m )
 #define zMat3DMulDRC(m,k) zMat3DMul(m,k,m)
 #define zMat3DDivDRC(m,k) zMat3DDiv(m,k,m)
 #define _zMat3DCatDRC(m1,k,m2) do{\

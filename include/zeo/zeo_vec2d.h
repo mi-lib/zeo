@@ -216,6 +216,17 @@ __ZEO_EXPORT zVec2D *zVec2DRev(const zVec2D *v, zVec2D *rv);
   (mv)->c.x = (k) * (v)->c.x;\
   (mv)->c.y = (k) * (v)->c.y;\
 } while(0)
+/* division by a scalar value, where the multiplication by the reciprocal is adopted for speed
+ * unless the reciprocal is infinity or a subnormal number (see zRawVecDiv() in ZM). It does not
+ * check if \a k is zero. */
+#define _zVec2DDiv(v,k,dv) do{\
+  double __z_vec2d_k = (k), __z_vec2d_ki = 1.0 / __z_vec2d_k;\
+  if( _zIsNormalDouble( __z_vec2d_ki ) ){\
+    _zVec2DMul( v, __z_vec2d_ki, dv );\
+  } else{\
+    _zVec2DCreate( dv, (v)->c.x / __z_vec2d_k, (v)->c.y / __z_vec2d_k );\
+  }\
+} while(0)
 __ZEO_EXPORT zVec2D *zVec2DMul(const zVec2D *v, double k, zVec2D *mv);
 
 __ZEO_EXPORT zVec2D *zVec2DDiv(const zVec2D *v, double k, zVec2D *dv);
@@ -261,6 +272,7 @@ __ZEO_EXPORT zVec2D *zVec2DRevDRC(zVec2D *v);
   (v)->c.x *= (k);\
   (v)->c.y *= (k);\
 } while(0)
+#define _zVec2DDivDRC(v,k) _zVec2DDiv( v, k, v )
 __ZEO_EXPORT zVec2D *zVec2DMulDRC(zVec2D *v, double k);
 /*! \brief directly divide a 2D vector by a scalar value. */
 __ZEO_EXPORT zVec2D *zVec2DDivDRC(zVec2D *v, double k);
@@ -330,16 +342,21 @@ __ZEO_EXPORT double zVec2DSqrDist(const zVec2D *v1, const zVec2D *v2);
 /*! \brief normalize a 2D vector.
  *
  * zVec2DNormalize() normalizes a 2D vector \a v and puts it into \a nv.
+ * If the norm of \a v is not larger than \a tol, it regards \a v as the
+ * zero vector and sets \a nv for the zero vector. If zero or a negative
+ * value is given for \a tol, zTOL is adopted instead.
+ * zVec2DNormalizeNC() does not check the norm of \a v.
  *
  * zVec2DNormalizeDRC() directly normalizes a 2D vector \a v.
  * \return
  * zVec2DNormalizeNC() and zVec2DNormalize() return the norm of \a v.
- * If the norm of \a v is zero, -1 is returned.
+ * If the norm of \a v is not larger than the tolerance, zVec2DNormalize()
+ * and zVec2DNormalizeDRC() return 0.
  */
 __ZEO_EXPORT double zVec2DNormalizeNC(const zVec2D *v, zVec2D *nv);
-__ZEO_EXPORT double zVec2DNormalize(const zVec2D *v, zVec2D *nv);
-#define zVec2DNormalizeNCDRC(v) zVec2DNormalizeNC(v,v)
-#define zVec2DNormalizeDRC(v)   zVec2DNormalize(v,v)
+__ZEO_EXPORT double zVec2DNormalize(const zVec2D *v, double tol, zVec2D *nv);
+#define zVec2DNormalizeNCDRC(v)   zVec2DNormalizeNC(v,v)
+#define zVec2DNormalizeDRC(v,tol) zVec2DNormalize(v,tol,v)
 
 /* ********************************************************** */
 /* geometry

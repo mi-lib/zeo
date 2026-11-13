@@ -9,11 +9,8 @@
 /* create Euler parameter. */
 zEP *zEPCreate(zEP *ep, double w, double x, double y, double z)
 {
-  ep->e[0] = w;
-  ep->e[1] = x;
-  ep->e[2] = y;
-  ep->e[3] = z;
-  return zEPNormalize( ep );
+  _zEPCreate( ep, w, x, y, z );
+  return zEPNormalize( ep, 0 );
 }
 
 /* create Euler parameter from rotation angle and axis vector. */
@@ -190,7 +187,7 @@ zEP *zEPCat(const zEP *ep1, double k, const zEP *ep2, zEP *ep)
 {
   ep->ex.w = ep1->ex.w + k * ep2->ex.w;
   _zVec3DCat( &ep1->ex.v, k, &ep2->ex.v, &ep->ex.v );
-  return zEPNormalize( ep );
+  return zEPNormalize( ep, 0 );
 }
 
 /* numerically differentiate Euler parameters. */
@@ -217,12 +214,14 @@ double zEPNorm(const zEP *ep)
 }
 
 /* normalize Euler parameter. */
-zEP *zEPNormalize(zEP *ep)
+zEP *zEPNormalize(zEP *ep, double tol)
 {
   double norm;
 
-  if( zIsTiny( ( norm = zEPNorm( ep ) ) ) ){
-    ZRUNERROR( ZEO_ERR_ZERODIV );
+  if( tol <= 0 ) tol = zTOL;
+  if( !( ( norm = zEPNorm( ep ) ) > tol ) ){ /* NaN also results in the true value. */
+    ZRUNWARN( ZEO_ERR_VEC_ZERONORM );
+    _zEPIdent( ep );
     return NULL;
   }
   ep->ex.w /= norm;
@@ -265,7 +264,7 @@ zEP *zEPInterDiv(const zEP *ep1, const zEP *ep2, double t, zEP *ep)
     zEPMul( ep1, sin( th - th2 ), ep );
     zEPCatDRC( ep, sin( th2 ), &_ep2 );
   }
-  return zEPNormalize( ep );
+  return zEPNormalize( ep, 0 );
 }
 
 /* interior division of two attitude matrices for SLERP. */

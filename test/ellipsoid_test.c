@@ -9,9 +9,9 @@ void generate_ellips_rand(zEllips3D *ellips)
   zVec3DCreate( &tmp, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
   zVec3DOrthogonalize( &tmp, &ax, &ay );
   zVec3DOuterProd( &ax, &ay, &az );
-  zVec3DNormalizeDRC( &ax );
-  zVec3DNormalizeDRC( &ay );
-  zVec3DNormalizeDRC( &az );
+  zVec3DNormalizeDRC( &ax, 0 );
+  zVec3DNormalizeDRC( &ay, 0 );
+  zVec3DNormalizeDRC( &az, 0 );
 
   zEllips3DCreate( ellips, &center, &ax, &ay, &az, zRandF(0,5), zRandF(0,5), zRandF(0,5), 0 );
 }
