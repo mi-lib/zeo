@@ -209,11 +209,14 @@ __BEGIN_DECLS
  *
  * zBox3DCreate() creates a box whose center, width, height and depth are \a c, \a w, \a h and \a d,
  * respectively.
- * \a ax, \a ay and \a az are expected to be perpendicular with each other.
+ * \a ax, \a ay and \a az are normalized to be the axes of the box. They are expected to be
+ * perpendicular with each other, which is not checked.
  *
  * zBox3DCopy() copies a box \a src to the other \a dest.
  * \return
  * Each of zBox3DInit() and zBox3DCreate() returns a pointer \a box.
+ * If any of \a ax, \a ay and \a az is zero, or they are parallel or on the same plane, zBox3DCreate()
+ * returns the null pointer without modifying \a box.
  * zBox3DCopy() returns a pointer the copied \a dest.
  */
 __ZEO_EXPORT zBox3D *zBox3DCreate(zBox3D *box, const zVec3D *center, const zVec3D *ax, const zVec3D *ay, const zVec3D *az, double depth, double width, double height);

@@ -113,9 +113,38 @@ void assert_inside(void)
   zAssert( zBox3DPointIsInside, nitest == ni && notest == no );
 }
 
+void assert_create(void)
+{
+  zBox3D box, org;
+  zVec3D center, ax, ay, az;
+  bool result, result_fail = true;
+
+  zVec3DCreate( &center, 1, 2, 3 );
+  zVec3DCreate( &ax, 2, 0, 0 );
+  zVec3DCreate( &ay, 0, 1.0e-6, 0 );
+  zVec3DCreate( &az, 0, 0, 1.0e6 );
+  result = zBox3DCreate( &box, &center, &ax, &ay, &az, 1, 2, 3 ) == &box &&
+    zVec3DEqual( zBox3DCenter(&box), &center ) &&
+    zVec3DEqual( zBox3DAxis(&box,zX), ZVEC3DX ) &&
+    zVec3DEqual( zBox3DAxis(&box,zY), ZVEC3DY ) &&
+    zVec3DEqual( zBox3DAxis(&box,zZ), ZVEC3DZ );
+  zBox3DCopy( &box, &org );
+  /* zero axis */
+  if( zBox3DCreate( &box, &center, &ax, ZVEC3DZERO, &az, 1, 2, 3 ) ) result_fail = false;
+  /* parallel axes */
+  if( zBox3DCreate( &box, &center, &ax, &ay, &ax, 1, 2, 3 ) ) result_fail = false;
+  /* coplanar axes */
+  zVec3DAdd( &ax, &ay, &az );
+  if( zBox3DCreate( &box, &center, &ax, &ay, &az, 1, 2, 3 ) ) result_fail = false;
+  if( memcmp( &box, &org, sizeof(zBox3D) ) != 0 ) result_fail = false;
+  zAssert( zBox3DCreate, result );
+  zAssert( zBox3DCreate (degenerate axes), result_fail );
+}
+
 int main(void)
 {
   zRandInit();
+  assert_create();
   assert_vert();
   assert_volume_inertia();
   assert_inside();

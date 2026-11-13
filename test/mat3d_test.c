@@ -259,13 +259,40 @@ void assert_mat3D_is_orthonormal(void)
   zAssert( zMat3DIsRightHand (negative cases), result4 );
 }
 
+/* check if the result of orthonormalization is a right-handed orthonormal matrix, the axis1-th
+ * column vector of which is in the same direction with that of the original, and the axis2-th column
+ * vector of which is on the plane spanned by the two column vectors of the original. */
+bool check_mat3D_orthonormalize(const zMat3D *src, zAxis axis1, zAxis axis2, const zMat3D *dest)
+{
+  zVec3D v1, v2, d;
+
+  zVec3DNormalize( zMat3DVec(src,axis1), 0, &v1 );
+  zVec3DNormalize( zMat3DVec(src,axis2), 0, &v2 );
+  return zMat3DIsOrthonormal( dest ) && zMat3DIsRightHand( dest ) &&
+         zVec3DInnerProd( &v1, zMat3DVec(dest,axis1) ) > 0 &&
+         zVec3DIsTiny( zVec3DOuterProd( &v1, zMat3DVec(dest,axis1), &d ) ) &&
+         zVec3DInnerProd( &v2, zMat3DVec(dest,axis2) ) > 0 &&
+         zIsTiny( zVec3DGrassmannProd( &v1, &v2, zMat3DVec(dest,axis2) ) );
+}
+
+/* check if orthonormalization fails without modifying the destination. */
+bool check_mat3D_orthonormalize_fail(const zMat3D *src, zAxis axis1, zAxis axis2)
+{
+  zMat3D dest, org;
+
+  zMat3DCreate( &dest, 1, 2, 3, 4, 5, 6, 7, 8, 9 );
+  zMat3DCopy( &dest, &org );
+  return zMat3DOrthonormalize( src, axis1, axis2, &dest ) == NULL && memcmp( &dest, &org, sizeof(zMat3D) ) == 0;
+}
+
 void assert_mat3D_orthonormalize(void)
 {
   zMat3D m1, m2, *ret;
   zAxis axis1, axis2;
-  const int n = 20;
-  int i;
-  bool result1 = true, result2 = true;
+  const int n = 1000;
+  double scale[] = { 1.0e-9, 1.0e-6, -1.0, 1.0e6 };
+  int i, j;
+  bool result1 = true, result2 = true, result_small = true, result_zero = true, result_parallel = true;
 
   for( i=0; i<n; i++ ){
     zMat3DCreate( &m1,
@@ -276,15 +303,42 @@ void assert_mat3D_orthonormalize(void)
     axis2 = zRandI( zX, zZ );
     ret = zMat3DOrthonormalize( &m1, axis1, axis2, &m2 );
     if( ret == &m2 ){
-      if( !zMat3DIsOrthonormal( &m2 ) ) result1 = false;
+      if( !check_mat3D_orthonormalize( &m1, axis1, axis2, &m2 ) ) result1 = false;
       zMat3DOrthonormalizeDRC( &m1, axis1, axis2 );
       if( !zMat3DEqual( &m1, &m2 ) ) result2 = false;
     } else{
       if( axis1 != axis2 ) result1 = false;
     }
   }
+  for( axis1=zX; axis1<=zZ; axis1++ )
+    for( axis2=zX; axis2<=zZ; axis2++ ){
+      if( axis1 == axis2 ) continue;
+      zMat3DCreate( &m1,
+        zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
+        zRandF(-10,10), zRandF(-10,10), zRandF(-10,10),
+        zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+      /* small matrix */
+      zMat3DMul( &m1, 1.0e-9, &m2 );
+      if( !zMat3DOrthonormalize( &m2, axis1, axis2, &m2 ) || !zMat3DIsOrthonormal( &m2 ) || !zMat3DIsRightHand( &m2 ) ) result_small = false;
+      /* zero vectors */
+      zMat3DCopy( &m1, &m2 );
+      zVec3DZero( zMat3DVec(&m2,axis1) );
+      if( !check_mat3D_orthonormalize_fail( &m2, axis1, axis2 ) ) result_zero = false;
+      zMat3DCopy( &m1, &m2 );
+      zVec3DZero( zMat3DVec(&m2,axis2) );
+      if( !check_mat3D_orthonormalize_fail( &m2, axis1, axis2 ) ) result_zero = false;
+      /* parallel vectors */
+      for( j=0; j<sizeof(scale)/sizeof(double); j++ ){
+        zMat3DCopy( &m1, &m2 );
+        zVec3DMul( zMat3DVec(&m1,axis1), scale[j], zMat3DVec(&m2,axis2) );
+        if( !check_mat3D_orthonormalize_fail( &m2, axis1, axis2 ) ) result_parallel = false;
+      }
+    }
   zAssert( zMat3DOrthonormalize, result1 );
   zAssert( zMat3DOrthonormalizeDRC, result2 );
+  zAssert( zMat3DOrthonormalize (small matrix), result_small );
+  zAssert( zMat3DOrthonormalize (zero vectors), result_zero );
+  zAssert( zMat3DOrthonormalize (parallel vectors), result_parallel );
 }
 
 void assert_mat3D_mul(void)

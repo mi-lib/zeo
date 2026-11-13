@@ -149,6 +149,46 @@ void assert_frame3d_ztk(void)
   zAssert( zFrame3DFromZTK + zFrame3DToZTK, zVec6DIsTol( &error, 1.0e-9 ) );
 }
 
+void assert_frame3d_lookat(void)
+{
+  zFrame3D f, org;
+  zVec3D eye, center, up, gaze, d;
+  const int n = 1000;
+  int i;
+  bool result = true, result_fail = true;
+
+  for( i=0; i<n; i++ ){
+    zVec3DCreate( &eye, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    zVec3DCreate( &center, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    zVec3DCreate( &up, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+    if( !zFrame3DLookAtView( &f, eye.c.x, eye.c.y, eye.c.z, center.c.x, center.c.y, center.c.z, up.c.x, up.c.y, up.c.z ) ){
+      result = false;
+      continue;
+    }
+    zVec3DSub( &eye, &center, &gaze );
+    zVec3DNormalizeDRC( &gaze, 0 );
+    zVec3DNormalizeDRC( &up, 0 );
+    if( !zVec3DEqual( zFrame3DPos(&f), &eye ) ||
+        !zMat3DIsOrthonormal( zFrame3DAtt(&f) ) || !zMat3DIsRightHand( zFrame3DAtt(&f) ) ||
+        zVec3DInnerProd( &gaze, zMat3DVec(zFrame3DAtt(&f),zX) ) <= 0 ||
+        !zVec3DIsTiny( zVec3DOuterProd( &gaze, zMat3DVec(zFrame3DAtt(&f),zX), &d ) ) ||
+        zVec3DInnerProd( &up, zMat3DVec(zFrame3DAtt(&f),zZ) ) <= 0 ||
+        !zIsTiny( zVec3DGrassmannProd( &gaze, &up, zMat3DVec(zFrame3DAtt(&f),zZ) ) ) )
+      result = false;
+  }
+  zFrame3DCopy( &f, &org );
+  /* identical eye and center */
+  if( zFrame3DLookAtView( &f, 1, 2, 3, 1, 2, 3, 0, 0, 1 ) ) result_fail = false;
+  /* zero upper vector */
+  if( zFrame3DLookAtView( &f, 1, 2, 3, 0, 0, 0, 0, 0, 0 ) ) result_fail = false;
+  /* upper vector parallel to the gaze vector */
+  if( zFrame3DLookAtView( &f, 1, 2, 3, 0, 0, 0, 1.0e-6, 2.0e-6, 3.0e-6 ) ) result_fail = false;
+  if( zFrame3DLookAtView( &f, 1, 2, 3, 0, 0, 0, -1, -2, -3 ) ) result_fail = false;
+  if( memcmp( &f, &org, sizeof(zFrame3D) ) != 0 ) result_fail = false;
+  zAssert( zFrame3DLookAtView, result );
+  zAssert( zFrame3DLookAtView (degenerate cases), result_fail );
+}
+
 int main(void)
 {
   zRandInit();
@@ -158,5 +198,6 @@ int main(void)
   assert_frame3d_cascade();
   assert_frame3d_xform();
   assert_frame3d_ztk();
+  assert_frame3d_lookat();
   return 0;
 }

@@ -229,6 +229,7 @@ bool zMat3DIsRightHand(const zMat3D *m)
 zMat3D *zMat3DOrthonormalize(const zMat3D *src, zAxis axis1, zAxis axis2, zMat3D *dest)
 {
   zAxis axis3;
+  zVec3D v1, v2;
 
   axis1 %= 3;
   axis2 %= 3;
@@ -236,13 +237,27 @@ zMat3D *zMat3DOrthonormalize(const zMat3D *src, zAxis axis1, zAxis axis2, zMat3D
     ZRUNERROR( ZEO_ERR_IDENT_AXIS, axis1 );
     return NULL;
   }
-  axis3 = ( 3 - axis1 - axis2 ) % 3; /* (X,Y)->Z, (Y,Z)->X, (Z,X)->Y */
-
-  zVec3DNormalize( zMat3DVec(src,axis1), 0, zMat3DVec(dest,axis1) );
-  zVec3DOrthogonalize( zMat3DVec(src,axis2), zMat3DVec(src,axis1), zMat3DVec(dest,axis2) );
-  zVec3DNormalizeDRC( zMat3DVec(dest,axis2), 0 );
-  /* the outer product of the two orthogonal unit vectors is also a unit vector. */
-  zVec3DOuterProd( zMat3DVec(dest,axis1), zMat3DVec(dest,axis2), zMat3DVec(dest,axis3) );
+  axis3 = ( 3 - axis1 - axis2 ) % 3;
+  if( zVec3DNormalize( zMat3DVec(src,axis1), 0, &v1 ) == 0 ){
+    ZRUNERROR( ZEO_ERR_ZERO_AXIS, axis1 );
+    return NULL;
+  }
+  /* the component of the second vector orthogonal to the first one. Its norm is compared with that
+   * of the second vector, so that nearly parallel vectors are rejected regardless of the magnitude. */
+  _zVec3DCat( zMat3DVec(src,axis2), -_zVec3DInnerProd( &v1, zMat3DVec(src,axis2) ), &v1, &v2 );
+  if( zVec3DNormalizeDRC( &v2, zTOL * zVec3DNorm( zMat3DVec(src,axis2) ) ) == 0 ){
+    ZRUNERROR( ZEO_ERR_PARALLEL_AXIS, axis2, axis1 );
+    return NULL;
+  }
+  zVec3DCopy( &v1, zMat3DVec(dest,axis1) );
+  zVec3DCopy( &v2, zMat3DVec(dest,axis2) );
+  /* the third axis to form a right-handed system, where (X,Y)->Z, (Y,Z)->X, and (Z,X)->Y, while
+   * (Y,X)->-Z, (Z,Y)->-X, and (X,Z)->-Y. The outer product of the two orthogonal unit vectors is
+   * also a unit vector. */
+  if( axis2 == ( axis1 + 1 ) % 3 )
+    _zVec3DOuterProd( &v1, &v2, zMat3DVec(dest,axis3) );
+  else
+    _zVec3DOuterProd( &v2, &v1, zMat3DVec(dest,axis3) );
   return dest;
 }
 

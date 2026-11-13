@@ -493,7 +493,20 @@ __ZEO_EXPORT bool zMat3DIsOrthonormal(const zMat3D *m);
 /*! \brief check if a 3x3 matrix is a right-hand system. */
 __ZEO_EXPORT bool zMat3DIsRightHand(const zMat3D *m);
 
-/*! \brief orthonormalize a 3x3 matrix. */
+/*! \brief orthonormalize a 3x3 matrix.
+ *
+ * zMat3DOrthonormalize() orthonormalizes a 3x3 matrix \a src and puts the result into \a dest.
+ * The \a axis1-th column vector of \a dest is the normalized \a axis1-th column vector of \a src.
+ * The \a axis2-th column vector of \a dest is the normalized component of the \a axis2-th column
+ * vector of \a src orthogonal to the former. The remaining column vector of \a dest is determined
+ * so that \a dest is a right-handed orthonormal matrix. Only the \a axis1-th and \a axis2-th column
+ * vectors of \a src are referred.
+ * zMat3DOrthonormalizeDRC() directly orthonormalizes \a m.
+ * \return
+ * zMat3DOrthonormalize() and zMat3DOrthonormalizeDRC() return a pointer to the orthonormalized matrix.
+ * If \a axis1 and \a axis2 are identical, the \a axis1-th column vector of \a src is zero, or the
+ * two column vectors are parallel, they return the null pointer without modifying \a dest.
+ */
 __ZEO_EXPORT zMat3D *zMat3DOrthonormalize(const zMat3D *src, zAxis axis1, zAxis axis2, zMat3D *dest);
 #define zMat3DOrthonormalizeDRC(m,axis1,axis2) zMat3DOrthonormalize(m,axis1,axis2,m)
 
@@ -1010,7 +1023,7 @@ inline zMat3D &zMat3D::createDyad(const zVec3D &v1, const zVec3D &v2){ _zMat3DDy
 inline zMat3D &zMat3D::createOuterprod(const zVec3D &v){ _zVec3DOuterProdToMat3D( &v, this ); return *this; }
 inline zMat3D &zMat3D::createTripleprod(const zVec3D &v1, const zVec3D &v2){ _zVec3DTripleProdToMat3D( &v1, &v2, this ); return *this; }
 inline zMat3D &zMat3D::createDoubleOuterprod(const zVec3D &v){ _zVec3DDoubleOuterProdToMat3D( &v, this ); return *this; }
-inline zMat3D &zMat3D::orthonormalize(zAxis axis1, zAxis axis2){ return *zMat3DOrthonormalizeDRC( this, axis1, axis2 ); }
+inline zMat3D &zMat3D::orthonormalize(zAxis axis1, zAxis axis2){ zMat3DOrthonormalizeDRC( this, axis1, axis2 ); return *this; }
 inline double zMat3D::squareNorm(){ return _zMat3DSqrNorm( this ); }
 inline double zMat3D::norm(){ return _zMat3DNorm( this ); }
 inline double zMat3D::det(){ return _zMat3DDet( this ); }

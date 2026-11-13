@@ -24,6 +24,8 @@
 #define ZEO_ERR_INVALID_DIR_NAME              "invalid direction name : %s"
 
 #define ZEO_ERR_IDENT_AXIS                    "identical axis %d"
+#define ZEO_ERR_ZERO_AXIS                     "axis %d is zero"
+#define ZEO_ERR_PARALLEL_AXIS                 "axis %d is zero or parallel to axis %d"
 
 #define ZEO_ERR_INVALID_RGBSTR                "invalid size of RGB specification, strlen(%s)=%d"
 
@@ -34,6 +36,7 @@
 #define ZEO_ERR_ELEM_DEG_PLANE                "too small normal vector to define a plane"
 #define ZEO_ERR_ELEM_DEG_EDGE                 "edge degenerated"
 #define ZEO_ERR_ELEM_DEG_TRI                  "triangle degenerated"
+#define ZEO_ERR_ELEM_DEG_BOX                  "box degenerated"
 
 #define ZEO_ERR_ELEM_NPTR_SPECIFIED(XD)       "null pointer specified for position / direction vector of a " #XD " line"
 #define ZEO_ERR_ELEM_ZERO_DIRVEC(XD)          "cannot create a " #XD " line from a zero direction vector"
@@ -154,6 +157,8 @@
 #define ZEO_WARN_LINE3D_NOT_UNIQUE_COMMONPERP      "cannot find a unique common parpendicular of parallel 3D lines, choose a nominal one"
 
 #define ZEO_WARN_AABOX3D_NEGATIVE_MAGNITUDE        "negative magnitude assigned for expansion, reversed"
+
+#define ZEO_WARN_SHAPE_ECYL_PARALLEL_REF           "reference vector parallel to the axis of an elliptic cylinder, radial vectors automatically defined"
 
 #define ZEO_WARN_PCD_LACKOFDATA                    "short of data"
 

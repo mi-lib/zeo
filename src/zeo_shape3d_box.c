@@ -164,7 +164,10 @@ zShape3D *zShape3DBoxCreate(zShape3D *shape, const zVec3D *center, const zVec3D 
 {
   zShape3DInit( shape );
   if( !( shape->body = zBox3DAlloc() ) ) return NULL;
-  zBox3DCreate( zShape3DBox(shape), center, ax, ay, az, depth, width, height );
+  if( !zBox3DCreate( zShape3DBox(shape), center, ax, ay, az, depth, width, height ) ){
+    zFree( shape->body );
+    return NULL;
+  }
   shape->com = &zeo_shape3d_box_com;
   return shape;
 }

@@ -256,12 +256,16 @@ __ZEO_EXPORT zFrame3D *zFrame3DRotateView(zFrame3D *frame, double angle, double 
  *
  * zFrame3DLookAtView() locates a 3D view frame \a frame as to look at a specified 3D point
  * (\a centerx, \a centery, \a centerz) from another point (\a eyex, \a eyey, \a eyez), where a 3D vector
- * (\a upx, \a upy, \a upz) points the upper direction for the viewer. As the result, the x-axis of the
- * updated \a frame is in parallel to (\a centerx - \a eyex, \a centery - \a eyey, \a centerz - \a eyez),
- * the z-axis of \a frame is on a plane spanned by the x-axis and (\a upx, \a upy, \a upz) and perpendicular
- * to the x-axis, and the y-axis is determined from the z- and x-axes based on the right-hand coordinate rule.
+ * (\a upx, \a upy, \a upz) points the upper direction for the viewer. As the result, the origin of the
+ * updated \a frame is at the eye point, the x-axis of \a frame points from the center point to the eye
+ * point, namely, is in the same direction with (\a eyex - \a centerx, \a eyey - \a centery, \a eyez -
+ * \a centerz), the z-axis of \a frame is on a plane spanned by the x-axis and (\a upx, \a upy, \a upz),
+ * perpendicular to the x-axis, and on the same side with (\a upx, \a upy, \a upz), and the y-axis is
+ * determined from the z- and x-axes based on the right-hand coordinate rule.
  * \return
- * zFrame3DLookAtView() always returns the pointer \a frame.
+ * zFrame3DLookAtView() returns the pointer \a frame. If the two points are identical, or the upper
+ * direction is zero or parallel to the gaze direction, it returns the null pointer without modifying
+ * \a frame.
  */
 __ZEO_EXPORT zFrame3D *zFrame3DLookAtView(zFrame3D *frame, double eyex, double eyey, double eyez, double centerx, double centery, double centerz, double upx, double upy, double upz);
 

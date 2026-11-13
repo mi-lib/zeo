@@ -46,8 +46,18 @@ __ZEO_EXPORT zECyl3D *zECyl3DCopy(const zECyl3D *src, zECyl3D *dest);
 /*! \brief mirror a 3D elliptic cylinder. */
 __ZEO_EXPORT zECyl3D *zECyl3DMirror(const zECyl3D *src, zECyl3D *dest, zAxis axis);
 
-/*! \brief define orthonormal axes of the bottom face of a 3D elliptic cylinder. */
-__ZEO_EXPORT void zECyl3DDefAxis(zECyl3D *cyl, const zVec3D *ref);
+/*! \brief define orthonormal axes of the bottom face of a 3D elliptic cylinder.
+ *
+ * zECyl3DDefAxis() defines the orthonormal radial vectors of the bottom face of a 3D elliptic cylinder
+ * \a cyl. The first radial vector is the normalized component of a reference vector \a ref orthogonal
+ * to the axis of \a cyl, and the second one is the outer product of the axis and the first one. If
+ * \a ref is the null pointer, zero, or parallel to the axis, the radial vectors are automatically
+ * defined.
+ * \return
+ * zECyl3DDefAxis() returns the false value if the two centers of \a cyl coincide, without modifying
+ * the radial vectors. Otherwise, it returns the true value.
+ */
+__ZEO_EXPORT bool zECyl3DDefAxis(zECyl3D *cyl, const zVec3D *ref);
 
 /*! \brief transform coordinates of a 3D elliptic cylinder. */
 __ZEO_EXPORT zECyl3D *zECyl3DXform(const zECyl3D *src, const zFrame3D *frame, zECyl3D *dest);

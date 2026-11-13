@@ -188,15 +188,12 @@ zFrame3D *zFrame3DRotateView(zFrame3D *frame, double angle, double x, double y, 
 /* locate a 3D view frame as to view a 3D point from a another specified point. */
 zFrame3D *zFrame3DLookAtView(zFrame3D *frame, double eyex, double eyey, double eyez, double centerx, double centery, double centerz, double upx, double upy, double upz)
 {
-  zVec3D gazevec, uppervec;
+  zMat3D m; /* only the x- and z-axes are used */
 
+  zVec3DCreate( zMat3DVec(&m,zX), eyex - centerx, eyey - centery, eyez - centerz ); /* gaze vector */
+  zVec3DCreate( zMat3DVec(&m,zZ), upx, upy, upz ); /* upper vector */
+  if( !zMat3DOrthonormalize( &m, zX, zZ, zFrame3DAtt(frame) ) ) return NULL;
   zVec3DCreate( zFrame3DPos(frame), eyex, eyey, eyez );
-  zVec3DCreate( &gazevec, eyex - centerx, eyey - centery, eyez - centerz );
-  zVec3DCreate( &uppervec, upx, upy, upz );
-  zVec3DOrthogonalize( &uppervec, &gazevec, &uppervec );
-  zVec3DNormalize( &gazevec, 0, zMat3DVec(zFrame3DAtt(frame),zX) );
-  zVec3DNormalize( &uppervec, 0, zMat3DVec(zFrame3DAtt(frame),zZ) );
-  zVec3DOuterProd( zMat3DVec(zFrame3DAtt(frame),zZ), zMat3DVec(zFrame3DAtt(frame),zX), zMat3DVec(zFrame3DAtt(frame),zY) );
   return frame;
 }
 

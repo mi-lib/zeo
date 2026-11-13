@@ -13,7 +13,7 @@ zECyl3D *zECyl3DCreate(zECyl3D *cyl, const zVec3D *center1, const zVec3D *center
   zECyl3DSetCenter( cyl, 1, center2 );
   zECyl3DSetRadius( cyl, 0, radius1 );
   zECyl3DSetRadius( cyl, 1, radius2 );
-  zECyl3DDefAxis( cyl, ref );
+  if( !zECyl3DDefAxis( cyl, ref ) ) return NULL;
   zECyl3DSetDiv( cyl, div == 0 ? ZEO_SHAPE_DEFAULT_DIV : div );
   return cyl;
 }
@@ -60,19 +60,32 @@ zECyl3D *zECyl3DMirror(const zECyl3D *src, zECyl3D *dest, zAxis axis)
 }
 
 /* define orthonormal axes of the bottom face of a 3D elliptic cylinder. */
-void zECyl3DDefAxis(zECyl3D *cyl, const zVec3D *ref)
+bool zECyl3DDefAxis(zECyl3D *cyl, const zVec3D *ref)
 {
-  zVec3D axis;
+  zVec3D axis, r;
+  double l;
 
   zECyl3DAxis( cyl, &axis );
-  if( ref && !zVec3DIsTiny(ref) ){
-    zVec3DOrthogonalize( ref, &axis, zECyl3DRadVec(cyl,0) );
-    zVec3DNormalizeDRC( zECyl3DRadVec(cyl,0), 0 );
-    zVec3DOuterProd( &axis, zECyl3DRadVec(cyl,0), zECyl3DRadVec(cyl,1) );
-    zVec3DNormalizeDRC( zECyl3DRadVec(cyl,1), 0 );
-  } else{
-    zVec3DOrthoSpace( &axis, zECyl3DRadVec(cyl,0), zECyl3DRadVec(cyl,1) );
+  if( zVec3DNormalizeDRC( &axis, 0 ) == 0 ){
+    ZRUNERROR( ZEO_ERR_SHAPE_ZEROC );
+    return false;
   }
+  if( ref && ( l = zVec3DNorm( ref ) ) > zTOL ){
+    /* the component of the reference vector orthogonal to the axis. Its norm is compared with that
+     * of the reference vector, so that a reference vector nearly parallel to the axis is rejected
+     * regardless of the magnitude. */
+    _zVec3DCat( ref, -_zVec3DInnerProd( &axis, ref ), &axis, &r );
+    if( zVec3DNormalize( &r, zTOL * l, zECyl3DRadVec(cyl,0) ) > 0 ){
+      /* the outer product of the two orthogonal unit vectors is also a unit vector. */
+      _zVec3DOuterProd( &axis, zECyl3DRadVec(cyl,0), zECyl3DRadVec(cyl,1) );
+      return true;
+    }
+    ZRUNWARN( ZEO_WARN_SHAPE_ECYL_PARALLEL_REF );
+  }
+  /* automatically defined if the reference vector is not given, zero, or parallel to the axis. */
+  zVec3DOrthonormal( &axis, zECyl3DRadVec(cyl,0) ); /* never fails for a unit vector */
+  _zVec3DOuterProd( &axis, zECyl3DRadVec(cyl,0), zECyl3DRadVec(cyl,1) );
+  return true;
 }
 
 /* transform coordinates of a 3D elliptic cylinder. */
@@ -355,7 +368,10 @@ zShape3D *zShape3DECylCreate(zShape3D *shape, const zVec3D *center1, const zVec3
 {
   zShape3DInit( shape );
   if( !( shape->body = zECyl3DAlloc() ) ) return NULL;
-  zECyl3DCreate( zShape3DECyl(shape), center1, center2, radius1, radius2, ref, div );
+  if( !zECyl3DCreate( zShape3DECyl(shape), center1, center2, radius1, radius2, ref, div ) ){
+    zFree( shape->body );
+    return NULL;
+  }
   shape->com = &zeo_shape3d_ecyl_com;
   return shape;
 }

@@ -209,10 +209,17 @@ zBox3D *zBox3DCreate(zBox3D *box, const zVec3D *center, const zVec3D *ax, const 
 {
   zVec3D ux, uy, uz;
 
+  if( zVec3DNormalize( ax, 0, &ux ) == 0 ||
+      zVec3DNormalize( ay, 0, &uy ) == 0 ||
+      zVec3DNormalize( az, 0, &uz ) == 0 ||
+      zIsTiny( zVec3DGrassmannProd( &ux, &uy, &uz ) ) ){ /* zero, parallel or coplanar axes */
+    ZRUNERROR( ZEO_ERR_ELEM_DEG_BOX );
+    return NULL;
+  }
   zBox3DSetCenter( box, center );
-  zVec3DNormalize( ax, 0, &ux ); zBox3DSetAxis( box, 0, &ux );
-  zVec3DNormalize( ay, 0, &uy ); zBox3DSetAxis( box, 1, &uy );
-  zVec3DNormalize( az, 0, &uz ); zBox3DSetAxis( box, 2, &uz );
+  zBox3DSetAxis( box, 0, &ux );
+  zBox3DSetAxis( box, 1, &uy );
+  zBox3DSetAxis( box, 2, &uz );
   zBox3DSetDepth( box, fabs(depth) );
   zBox3DSetWidth( box, fabs(width) );
   zBox3DSetHeight( box, fabs(height) );
