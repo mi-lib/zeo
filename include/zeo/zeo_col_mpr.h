@@ -14,7 +14,9 @@ __BEGIN_DECLS
 /*! \brief Minkowski Portal Refinement algorithm for collision detection.
  *
  * zMPR() checks if two convex objects are in collision. Each object is represented as the
- * convex hull of a set of 3D points \a data1 and \a data2.
+ * convex hull of a set of 3D points \a data1 and \a data2. Every geometric test in the algorithm
+ * is made with the tolerance of zTOL in length, so that the result coincides with that of zGJK()
+ * except that the distance or the penetration depth between the objects is as small as zTOL.
  *
  * zMPRDepth() checks if the two convex objects are in collision, and if yes, computes the
  * penetration depth of the objects. Each object is represented as the convex hull of a set of

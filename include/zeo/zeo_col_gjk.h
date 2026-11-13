@@ -14,11 +14,12 @@ __BEGIN_DECLS
 /*! \brief Gilbert-Johnson-Keerthi algorithm for collision detection.
  *
  * zGJK() finds a pair of the closest points of convex hulls of two sets of 3D points \a data1 and \a data2.
- * The pair of the closest points is stored in \a c1 and \a c2.
+ * The pair of the closest points is stored in \a c1 and \a c2. The distance between them is computed
+ * within the error of zTOL.
  * \return
- * zGJK() returns the distance between the closest points \a c1 and \a c2.
- * If the convex hulls intersect, zero is returned as the distance, and the center of intersection
- * is put into \a c1 and \a c2.
+ * zGJK() returns the true value if the convex hulls intersect, namely, the distance between them is not
+ * larger than zTOL. In this case, a point in the intersection is put into \a c1 and \a c2.
+ * Otherwise, it returns the false value.
  * \note
  * zGJK() does not work correctly when the points have very large component values such as 1.0e10.
  */

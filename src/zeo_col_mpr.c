@@ -56,6 +56,19 @@ static zVec3D *_zMPRSimplexDir(zMPRSimplex *s, int i0, int i1, int i2, zVec3D *d
 
 enum{ Z_MPR_PORTAL_OUTSIDE = -1, Z_MPR_PORTAL_TO_REFINE = 0, Z_MPR_PORTAL_AT_POINT = 1, Z_MPR_PORTAL_ON_SEG = 2 };
 
+/* check if the origin is outside of a plane through three points p0, p1 and p2 farther than zTOL,
+ * where the outer side is that to which (p1-p0)x(p2-p0) is directed. The signed distance of the
+ * origin from the plane is -p0.(p1xp2)/|(p1-p0)x(p2-p0)|. */
+static bool _zMPRIsOutside(const zVec3D *p0, const zVec3D *p1, const zVec3D *p2)
+{
+  zVec3D d1, d2, n;
+
+  _zVec3DSub( p1, p0, &d1 );
+  _zVec3DSub( p2, p0, &d2 );
+  _zVec3DOuterProd( &d1, &d2, &n );
+  return zVec3DGrassmannProd( p0, p1, p2 ) <= -zTOL * _zVec3DNorm( &n );
+}
+
 /* find Minkowski portal. */
 static int _zMPRFindPortal(zMPRSimplex *portal, zVec3DData *data1, zVec3DData *data2)
 {
@@ -65,7 +78,7 @@ static int _zMPRFindPortal(zMPRSimplex *portal, zVec3DData *data1, zVec3DData *d
   /* vertex 0: the center of portal */
   _zMPROrigin( &portal->slot[0], data1, data2 );
   portal->n = 1;
-  if( zVec3DIsTiny( &portal->slot[0].v ) )
+  if( _zVec3DSqrNorm( &portal->slot[0].v ) <= zTOL * zTOL )
     /* intersecting case: the center is slightly biased in order to compute penetration depth. */
     portal->slot[0].v.e[0] += Z_MPR_BIAS;
 
@@ -99,12 +112,12 @@ static int _zMPRFindPortal(zMPRSimplex *portal, zVec3DData *data1, zVec3DData *d
     _zMPRSupportMap( &portal->slot[3], data1, data2, &dir );
     if( zVec3DInnerProd( &portal->slot[3].v, &dir ) < zTOL ) return Z_MPR_PORTAL_OUTSIDE;
     /* test if origin is outside of (v1, v0, v3) - set v3 for v2 and continue */
-    if( zVec3DGrassmannProd( &portal->slot[0].v, &portal->slot[1].v, &portal->slot[3].v ) <= -zTOL ){
+    if( _zMPRIsOutside( &portal->slot[0].v, &portal->slot[1].v, &portal->slot[3].v ) ){
       _zMPRSlotCopy( &portal->slot[3], &portal->slot[2] );
       _zMPRSimplexDir( portal, 0, 1, 2, &dir );
     } else{
       /* test if origin is outside of (v3, v0, v2) - set v3 for v1 and continue */
-      if( zVec3DGrassmannProd( &portal->slot[0].v, &portal->slot[3].v, &portal->slot[2].v ) <= -zTOL ){
+      if( _zMPRIsOutside( &portal->slot[0].v, &portal->slot[3].v, &portal->slot[2].v ) ){
         _zMPRSlotCopy( &portal->slot[3], &portal->slot[1] );
         _zMPRSimplexDir( portal, 0, 1, 2, &dir );
       } else
@@ -170,17 +183,22 @@ static bool _zMPRRefinePortal(zMPRSimplex* portal, zVec3DData *data1, zVec3DData
 /* set the origin of Minkowski portal for the barycenter of a tetrahedral simplex. */
 static void _zMPRDepthPair(zMPRSimplex* portal, zVec3D *pos)
 {
-  zVec3D dir;
+  zVec3D dir, d1, d2, n;
   size_t i;
   double b[4], sum;
   zVec3D p1, p2;
 
   _zMPRPortalDir( portal, &dir );
+  _zVec3DSub( &portal->slot[2].v, &portal->slot[1].v, &d1 );
+  _zVec3DSub( &portal->slot[3].v, &portal->slot[1].v, &d2 );
+  _zVec3DOuterProd( &d1, &d2, &n );
   b[0] = zVec3DGrassmannProd( &portal->slot[3].v, &portal->slot[1].v, &portal->slot[2].v );
   b[1] = zVec3DGrassmannProd( &portal->slot[0].v, &portal->slot[3].v, &portal->slot[2].v );
   b[2] = zVec3DGrassmannProd( &portal->slot[3].v, &portal->slot[0].v, &portal->slot[1].v );
   b[3] = zVec3DGrassmannProd( &portal->slot[0].v, &portal->slot[2].v, &portal->slot[1].v );
-  if( ( sum = b[0] + b[1] + b[2] + b[3] ) < zTOL ){ /* degenerated case */
+  /* the sum is six times the volume of the tetrahedron, which is compared with the area of the
+   * portal, so that the tetrahedron is regarded as degenerate if the height is less than zTOL. */
+  if( ( sum = b[0] + b[1] + b[2] + b[3] ) < zTOL * _zVec3DNorm( &n ) ){ /* degenerated case */
     b[0] = 0.0;
     b[1] = zVec3DGrassmannProd( &dir, &portal->slot[2].v, &portal->slot[3].v );
     b[2] = zVec3DGrassmannProd( &dir, &portal->slot[3].v, &portal->slot[1].v );

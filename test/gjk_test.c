@@ -129,7 +129,7 @@ void assert_point_plane(void)
  * about 4.5% of the length of the rod if separated. */
 bool check_mpr_rod(double scale, double width, bool expected)
 {
-  zVec3D a[8], b;
+  zVec3D a[8], b, c1, c2;
   zVec3DData data1, data2;
   int i;
   bool result;
@@ -139,7 +139,7 @@ bool check_mpr_rod(double scale, double width, bool expected)
   zVec3DZero( &b );
   zVec3DDataAssignArrayDirect( &data1, a, 8 );
   zVec3DDataAssignArrayDirect( &data2, &b, 1 );
-  result = zMPR( &data1, &data2 ) == expected;
+  result = zMPR( &data1, &data2 ) == expected && zGJK( &data1, &data2, &c1, &c2 ) == expected;
   zVec3DDataDestroy( &data1 );
   zVec3DDataDestroy( &data2 );
   return result;
@@ -156,8 +156,58 @@ void assert_mpr_scale(void)
     if( !check_mpr_rod( scale, 0.01, false ) ) result_separate = false;
     if( !check_mpr_rod( scale, 0.2, true ) ) result_collide = false;
   }
-  zAssert( zMPR (separated objects of various sizes), result_separate );
-  zAssert( zMPR (colliding objects of various sizes), result_collide );
+  zAssert( zMPR + zGJK (separated objects of various sizes), result_separate );
+  zAssert( zMPR + zGJK (colliding objects of various sizes), result_collide );
+}
+
+/* random sets of points scaled from tiny to huge, for which the results of zGJK and zMPR have to
+ * coincide with each other and with those at the unit scale, and the distance computed by zGJK has
+ * to be proportional to the scale. The cases in which the scaled distance or penetration depth is
+ * as small as zTOL are excluded, since the convex hulls are regarded as touching each other. */
+#define NP 20
+void assert_gjk_mpr_scale(void)
+{
+  zVec3D a0[NP], b0[NP], a[NP], b[NP], c1, c2, off;
+  zVec3DData data1, data2;
+  double scale[] = { 1.0e-8, 1.0e-6, 1.0e-4, 1.0e-2, 1.0e2, 1.0e4 };
+  double d0, d;
+  bool col0, col_gjk, col_mpr, result_col = true, result_dist = true;
+  int i, j, k;
+
+  for( i=0; i<N; i++ ){
+    zVec3DCreate( &off, zRandF(-3,3), zRandF(-3,3), zRandF(-3,3) );
+    for( j=0; j<NP; j++ ){
+      zVec3DCreate( &a0[j], zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+      zVec3DCreate( &b0[j], zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+      zVec3DAddDRC( &b0[j], &off );
+    }
+    zVec3DDataAssignArrayDirect( &data1, a0, NP );
+    zVec3DDataAssignArrayDirect( &data2, b0, NP );
+    col0 = zGJK( &data1, &data2, &c1, &c2 );
+    if( col0 ) zGJKDepth( &data1, &data2, &c1, &c2 );
+    d0 = zVec3DDist( &c1, &c2 ); /* distance or penetration depth */
+    if( zMPR( &data1, &data2 ) != col0 ) result_col = false;
+    zVec3DDataDestroy( &data1 );
+    zVec3DDataDestroy( &data2 );
+    for( k=0; k<sizeof(scale)/sizeof(double); k++ ){
+      for( j=0; j<NP; j++ ){
+        zVec3DMul( &a0[j], scale[k], &a[j] );
+        zVec3DMul( &b0[j], scale[k], &b[j] );
+      }
+      zVec3DDataAssignArrayDirect( &data1, a, NP );
+      zVec3DDataAssignArrayDirect( &data2, b, NP );
+      col_gjk = zGJK( &data1, &data2, &c1, &c2 );
+      col_mpr = zMPR( &data1, &data2 );
+      d = zVec3DDist( &c1, &c2 );
+      if( d0 * scale[k] > 10 * zTOL && ( col_gjk != col0 || col_mpr != col0 ) ) result_col = false;
+      /* the distance is computed within zTOL */
+      if( !col0 && fabs( d - d0 * scale[k] ) > zMax( 10 * zTOL, 10 * DBL_EPSILON * d ) ) result_dist = false;
+      zVec3DDataDestroy( &data1 );
+      zVec3DDataDestroy( &data2 );
+    }
+  }
+  zAssert( zGJK + zMPR (consistency for various sizes), result_col );
+  zAssert( zGJK (distance for various sizes), result_dist );
 }
 
 int main(int argc, char *argv[])
@@ -166,5 +216,6 @@ int main(int argc, char *argv[])
   assert_point_volume();
   assert_point_plane();
   assert_mpr_scale();
+  assert_gjk_mpr_scale();
   return 0;
 }

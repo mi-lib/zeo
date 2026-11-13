@@ -1,3 +1,6 @@
+2026.11.13. Added tests of zGJK and zMPR for the consistency between them and the distance for point sets from tiny to huge. [test]
+2026.11.13. Modified zGJK, zGJKDepth and zGJKPoint to terminate the iteration if the difference between the upper and lower bounds of the distance is not larger than zTOL, and to judge the collision by the distance between the convex hulls for every size of the simplex. [zeo_col_gjk]
+2026.11.13. Modified zMPR and zMPRDepth to check if the origin is outside of a plane by the signed distance, and to check the degeneracy of the tetrahedral portal by its height. [zeo_col_mpr]
 2026.11.13. Added convexhull2d_test for zVec3DDataConvexHull2D with polygons of various sizes, coincident points and collinear points, and tests of zMPR for separated and colliding objects of various sizes. [test]
 2026.11.13. Modified zMPR and zMPRDepth to check if the origin lies on the line through the first two vertices of the portal by the distance from the line. [zeo_col_mpr]
 2026.11.13. Modified zVec3DDataConvexHull2D and zVec3DDataConvexHull2DPH3D to choose the base vectors from the farthest points for accuracy, and to check if the points are collinear by the ratio of the distance from the line to the extent of the points. [zeo_bv2d_convexhull]
