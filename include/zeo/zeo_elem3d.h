@@ -272,6 +272,8 @@ __BEGIN_DECLS
  * zTri3DRev( tri, tri ).
  * \return
  * zTri3DInit(), zTri3DCreate(), zTri3DCreateFlip(), and zTri3DFlipDRC() return a pointer \a tri.
+ * zTri3DCreate() and zTri3DCreateFlip() return the null pointer if the triangle is degenerate (see
+ * zTri3DCalcNorm()), where the vertices are set and the normal vector is set for the zero vector.
  *
  * zTri3DFlip() returns a pointer \a dest.
  */
@@ -297,9 +299,14 @@ __ZEO_EXPORT zTri3D *zTri3DCopy(const zTri3D *src, zTri3D *dest);
  * zTri3DCalcNorm() calculates the normal vector of triangle \a tri.
  * The vector is contained by the triangle itself within. One can access
  * the normal vector by calling zTri3DNorm() (see zeo_elem.h).
+ * \a tri is regarded as degenerate if the ratio of the minimum height to
+ * the longest edge is not larger than zTOL, which does not depend on the
+ * size of \a tri. The normal vector of a degenerate triangle is set for
+ * the zero vector.
  * \return
  * zTri3DArea() returns the area calculated.
- * zTri3DCalcNorm() returns a pointer to the normal vector.
+ * zTri3DCalcNorm() returns a pointer to the normal vector, or the null
+ * pointer if \a tri is degenerate.
  */
 __ZEO_EXPORT double zTri3DArea(const zTri3D *tri);
 __ZEO_EXPORT zVec3D *zTri3DCalcNorm(zTri3D *tri);

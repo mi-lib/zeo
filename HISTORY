@@ -1,3 +1,8 @@
+2026.11.13. Added convexhull2d_test for zVec3DDataConvexHull2D with polygons of various sizes, coincident points and collinear points, and tests of zMPR for separated and colliding objects of various sizes. [test]
+2026.11.13. Modified zMPR and zMPRDepth to check if the origin lies on the line through the first two vertices of the portal by the distance from the line. [zeo_col_mpr]
+2026.11.13. Modified zVec3DDataConvexHull2D and zVec3DDataConvexHull2DPH3D to choose the base vectors from the farthest points for accuracy, and to check if the points are collinear by the ratio of the distance from the line to the extent of the points. [zeo_bv2d_convexhull]
+2026.11.13. Added tests of zTri3DCalcNorm for triangles of various sizes, coincident vertices, collinear vertices and slivers. [test]
+2026.11.13. Modified zTri3DCalcNorm to regard a triangle as degenerate if the ratio of the minimum height to the longest edge is not larger than zTOL. [zeo_elem3d]
 2026.11.13. Added tests of zMat3DOrthonormalize for the right-handedness, small matrices, zero vectors and parallel vectors, of zFrame3DLookAtView, of zBox3DCreate, and of zECyl3DDefAxis, including degenerate cases. [test]
 2026.11.13. Modified zECyl3DCreate, zShape3DECylCreate and zShape3DBoxCreate to return the null pointer if they fail. [zeo_shape3d_box, zeo_shape3d_ecyl]
 2026.11.13. Modified zECyl3DDefAxis to return a boolean value, to fail if the two centers coincide, to define the radial vectors automatically if the reference vector is parallel to the axis, and not to normalize the outer product of two orthogonal unit vectors. [zeo_shape3d_ecyl]

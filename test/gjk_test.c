@@ -125,10 +125,46 @@ void assert_point_plane(void)
   zAssert( zGJKPoint (plane case 4), zGJKPoint( &data, &p, &c ) == false && zVec3DEqual( &c, &c_answer ) );
 }
 
+/* a slanted thin rod near the origin and the origin, of various sizes, where the gap between them is
+ * about 4.5% of the length of the rod if separated. */
+bool check_mpr_rod(double scale, double width, bool expected)
+{
+  zVec3D a[8], b;
+  zVec3DData data1, data2;
+  int i;
+  bool result;
+
+  for( i=0; i<8; i++ )
+    zVec3DCreate( &a[i], scale*( i&1 ? 2 : -2 ), scale*( ( i&1 ? 0.9 : -1.1 ) + ( i&2 ? width : -width ) ), scale*( i&4 ? 0.01 : -0.01 ) );
+  zVec3DZero( &b );
+  zVec3DDataAssignArrayDirect( &data1, a, 8 );
+  zVec3DDataAssignArrayDirect( &data2, &b, 1 );
+  result = zMPR( &data1, &data2 ) == expected;
+  zVec3DDataDestroy( &data1 );
+  zVec3DDataDestroy( &data2 );
+  return result;
+}
+
+void assert_mpr_scale(void)
+{
+  int i;
+  double scale;
+  bool result_separate = true, result_collide = true;
+
+  for( i=0; i<N; i++ ){
+    scale = pow( 10, zRandF(-8,4) );
+    if( !check_mpr_rod( scale, 0.01, false ) ) result_separate = false;
+    if( !check_mpr_rod( scale, 0.2, true ) ) result_collide = false;
+  }
+  zAssert( zMPR (separated objects of various sizes), result_separate );
+  zAssert( zMPR (colliding objects of various sizes), result_collide );
+}
+
 int main(int argc, char *argv[])
 {
   assert_box();
   assert_point_volume();
   assert_point_plane();
+  assert_mpr_scale();
   return 0;
 }

@@ -12,25 +12,43 @@
 static zVec3D *_zConvexHull2DBase(zVec3DAddrList *addrlist, zVec3D s[])
 {
   zVec3DAddrListCell *cp;
-  zVec3D n;
+  zVec3D *p0, d, dmax, n;
+  double l, lmax;
 
-  for( cp=zListCellNext(zListTail(addrlist)); cp!=zListRoot(addrlist); cp=zListCellNext(cp) )
-    if( !zVec3DIsTiny( zVec3DSub( cp->data, zListTail(addrlist)->data, &s[0] ) ) )
-      goto STEP2;
-  ZRUNERROR( ZEO_ERR_CH_DEG1 );
-  return NULL;
- STEP2:
-  for( cp=zListCellNext(cp);
-       cp!=zListRoot(addrlist); cp=zListCellNext(cp) ){
-    if( !zVec3DIsTiny( zVec3DSub( cp->data, zListTail(addrlist)->data, &s[1] ) ) &&
-        !zVec3DIsTiny( zVec3DOuterProd( &s[0], &s[1], &n ) ) )
-      goto STEP3;
+  p0 = zListTail(addrlist)->data;
+  /* the first base is directed to the farthest point from p0, which is chosen for accuracy. */
+  for( lmax=0, cp=zListCellNext(zListTail(addrlist)); cp!=zListRoot(addrlist); cp=zListCellNext(cp) ){
+    _zVec3DSub( cp->data, p0, &d );
+    if( ( l = _zVec3DSqrNorm( &d ) ) > lmax ){
+      lmax = l;
+      zVec3DCopy( &d, &s[0] );
+    }
   }
-  ZRUNERROR( ZEO_ERR_CH_DEG2 );
-  return NULL;
- STEP3:
-  zVec3DOuterProd( &n, &s[0], &s[1] );
+  if( !( lmax > zTOL * zTOL ) ){ /* all points are within zTOL from p0. */
+    ZRUNERROR( ZEO_ERR_CH_DEG1 );
+    return NULL;
+  }
+  /* the farthest point from the line along the first base. The distance is |s[0] x d| / |s[0]|. */
+  for( lmax=0, cp=zListCellNext(zListTail(addrlist)); cp!=zListRoot(addrlist); cp=zListCellNext(cp) ){
+    _zVec3DSub( cp->data, p0, &d );
+    _zVec3DOuterProd( &s[0], &d, &n );
+    if( ( l = _zVec3DSqrNorm( &n ) ) > lmax ){
+      lmax = l;
+      zVec3DCopy( &d, &dmax );
+    }
+  }
+  /* the ratio of the distance to the length of the first base is compared with zTOL, so that the
+   * decision does not depend on the size of the point set, and collinear points with rounding errors
+   * are detected. */
+  l = _zVec3DSqrNorm( &s[0] );
+  if( !( lmax > zTOL * zTOL * l * l ) ){
+    ZRUNERROR( ZEO_ERR_CH_DEG2 );
+    return NULL;
+  }
+  /* the second base is the component orthogonal to the first base of the vector to the farthest
+   * point from the line, the norm of which is the distance from the line. */
   zVec3DNormalizeDRC( &s[0], 0 );
+  _zVec3DCat( &dmax, -_zVec3DInnerProd( &dmax, &s[0] ), &s[0], &s[1] );
   zVec3DNormalizeDRC( &s[1], 0 );
   return s;
 }

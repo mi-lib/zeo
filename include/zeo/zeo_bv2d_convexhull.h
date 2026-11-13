@@ -17,12 +17,16 @@ __BEGIN_DECLS
  * which are supposed to be on a common plane.
  * The convex hull is represented as a list of pointers to the vertices in \a data, which
  * is stored where \a chloop points.
+ * The points are regarded as degenerate if all of them are within zTOL from one point,
+ * or the ratio of the distances between the points and a line to the extent of the points
+ * along the line is not larger than zTOL.
  *
  * zVec3DConvexHull2DPH3D() creates a planar convex hull of a set of 3D points \a data as
  * a polyhedron \a ch with dual-face triangles.
  * \return
  * zVec3DDataConvexHull2D() returns a pointer \a chloop, if it succeeds.
- * If it fails to allocate memory for cells of the list, it returns the null pointer.
+ * If the points are degenerate, or it fails to allocate memory for cells of the list, it
+ * returns the null pointer.
  *
  * zVec3DConvexHull2DPH3D() returns a pointer \a ch, if it succeeds.
  * If it fails to create it, the null pointer is returned.

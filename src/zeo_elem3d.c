@@ -240,9 +240,25 @@ double zTri3DArea(const zTri3D *tri)
 /* normal vector of a 3D triangle. */
 zVec3D *zTri3DCalcNorm(zTri3D *tri)
 {
-  _zTri3DOuterProd( tri, zTri3DNorm(tri) );
-  if( zVec3DIsTiny( zTri3DNorm(tri) ) ) return NULL;
-  zVec3DNormalizeDRC( zTri3DNorm(tri), 0 );
+  zVec3D edge[3];
+  double l, l2max = 0;
+  int i;
+
+  for( i=0; i<3; i++ ){
+    _zVec3DSub( zTri3DVertNext(tri,i), zTri3DVert(tri,i), &edge[i] );
+    if( ( l = _zVec3DSqrNorm( &edge[i] ) ) > l2max ) l2max = l;
+  }
+  _zVec3DOuterProd( &edge[0], &edge[1], zTri3DNorm(tri) );
+  /* The norm of the outer product, namely, twice the area of the triangle, is compared with the
+   * squared length of the longest edge. The ratio is that of the minimum height of the triangle to
+   * the longest edge, so that degenerate triangles are detected regardless of the size. Coincident
+   * vertices and an overflow also result in the rejection. */
+  l = _zVec3DNorm( zTri3DNorm(tri) );
+  if( !( l > zTOL * l2max ) ){
+    _zVec3DZero( zTri3DNorm(tri) );
+    return NULL;
+  }
+  _zVec3DDivDRC( zTri3DNorm(tri), l );
   return zTri3DNorm(tri);
 }
 

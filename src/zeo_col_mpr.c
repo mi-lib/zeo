@@ -59,7 +59,7 @@ enum{ Z_MPR_PORTAL_OUTSIDE = -1, Z_MPR_PORTAL_TO_REFINE = 0, Z_MPR_PORTAL_AT_POI
 /* find Minkowski portal. */
 static int _zMPRFindPortal(zMPRSimplex *portal, zVec3DData *data1, zVec3DData *data2)
 {
-  zVec3D dir;
+  zVec3D dir, d;
   zMPRSlot tmp;
 
   /* vertex 0: the center of portal */
@@ -77,8 +77,10 @@ static int _zMPRFindPortal(zMPRSimplex *portal, zVec3DData *data1, zVec3DData *d
 
   /* vertex 2 */
   zVec3DOuterProd( &portal->slot[1].v, &portal->slot[0].v, &dir );
-  if( zVec3DIsTiny( &dir ) ) /* origin lies at vertex 1 or between vertices 0 and 1. */
-    return zVec3DIsTiny( &portal->slot[1].v ) ? Z_MPR_PORTAL_AT_POINT : Z_MPR_PORTAL_ON_SEG;
+  _zVec3DSub( &portal->slot[1].v, &portal->slot[0].v, &d );
+  /* the distance between the origin and the line through vertices 0 and 1 is |v1 x v0| / |v1 - v0|. */
+  if( _zVec3DSqrNorm( &dir ) <= zTOL * zTOL * _zVec3DSqrNorm( &d ) ) /* origin lies at vertex 1 or between vertices 0 and 1. */
+    return _zVec3DSqrNorm( &portal->slot[1].v ) <= zTOL * zTOL ? Z_MPR_PORTAL_AT_POINT : Z_MPR_PORTAL_ON_SEG;
   zVec3DNormalizeNCDRC( &dir );
   _zMPRSupportMap( &portal->slot[2], data1, data2, &dir );
   portal->n = 3;

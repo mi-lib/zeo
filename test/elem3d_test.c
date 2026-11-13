@@ -239,6 +239,89 @@ void assert_edge3D_contig(void)
   zAssert( zEdge3DContigVert, result );
 }
 
+/* check if the normal vector of a triangle is a unit vector orthogonal to the edges and directed
+ * according to the order of the vertices. The error of the normal vector is proportional to the
+ * ratio of the longest edge to the minimum height, which is considered in the tolerance. */
+bool check_tri3D_norm(const zTri3D *tri)
+{
+  zVec3D e[3], n;
+  double l2max = 0, tol;
+  int i;
+
+  for( i=0; i<3; i++ ){
+    zVec3DSub( zTri3DVertNext(tri,i), zTri3DVert(tri,i), &e[i] );
+    l2max = zMax( l2max, zVec3DSqrNorm( &e[i] ) );
+  }
+  zVec3DOuterProd( &e[0], &e[1], &n );
+  tol = zMax( 100 * DBL_EPSILON * l2max / zVec3DNorm( &n ), zTOL );
+  for( i=0; i<3; i++ ){
+    zVec3DNormalizeDRC( &e[i], 0 );
+    if( !zIsTol( zVec3DInnerProd( &e[i], zTri3DNorm(tri) ), tol ) ) return false;
+  }
+  return zIsTiny( zVec3DNorm( zTri3DNorm(tri) ) - 1 ) && zVec3DInnerProd( &n, zTri3DNorm(tri) ) > 0;
+}
+
+/* create a sliver triangle, the ratio of the height of which to the longest edge is r. */
+void create_tri3D_sliver(zVec3D *v0, zVec3D *v1, double r, zVec3D *v2)
+{
+  zVec3D d;
+
+  zVec3DSub( v1, v0, &d );
+  zVec3DOrthonormal( &d, v2 );
+  zVec3DMulDRC( v2, r * zVec3DNorm( &d ) );
+  zVec3DCatDRC( v2, zRandF(0,1), &d );
+  zVec3DAddDRC( v2, v0 );
+}
+
+/* check if a triangle is regarded as degenerate, where the normal vector is set for zero. */
+bool check_tri3D_degenerate(const zVec3D *v1, const zVec3D *v2, const zVec3D *v3)
+{
+  zTri3D tri;
+
+  return zTri3DCreate( &tri, v1, v2, v3 ) == NULL && zVec3DMatch( zTri3DNorm(&tri), ZVEC3DZERO );
+}
+
+void assert_tri3D_calc_norm(void)
+{
+  zTri3D tri;
+  zVec3D v[3], d;
+  double scale;
+  const int n = 1000;
+  int i, j;
+  bool result = true, result_coincide = true, result_collinear = true, result_sliver = true;
+
+  for( i=0; i<n; i++ ){
+    scale = pow( 10, zRandF(-8,8) ); /* from tiny to huge triangles */
+    for( j=0; j<3; j++ ){
+      zVec3DCreate( &v[j], zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+      zVec3DMulDRC( &v[j], scale );
+    }
+    if( !zTri3DCreate( &tri, &v[0], &v[1], &v[2] ) || !check_tri3D_norm( &tri ) ) result = false;
+    /* coincident vertices */
+    if( !check_tri3D_degenerate( &v[0], &v[0], &v[1] ) ||
+        !check_tri3D_degenerate( &v[0], &v[1], &v[1] ) ||
+        !check_tri3D_degenerate( &v[0], &v[1], &v[0] ) ||
+        !check_tri3D_degenerate( &v[0], &v[0], &v[0] ) ) result_coincide = false;
+    /* collinear vertices, where the third vertex is computed in floating-point arithmetics */
+    zVec3DInterDiv( &v[0], &v[1], zRandF(-2,2), &v[2] );
+    if( !check_tri3D_degenerate( &v[0], &v[1], &v[2] ) ) result_collinear = false;
+    /* slivers: the ratio of the height to the longest edge is 1e-14 (degenerate) or 1e-9 (not
+     * degenerate). The longest edge is as long as the distance from the origin, so that the rounding
+     * error of the vertices does not affect the ratio. */
+    zVec3DCreate( &d, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+    zVec3DNormalizeDRC( &d, 0 );
+    zVec3DCat( &v[0], scale, &d, &v[1] );
+    create_tri3D_sliver( &v[0], &v[1], 1.0e-14, &v[2] );
+    if( !check_tri3D_degenerate( &v[0], &v[1], &v[2] ) ) result_sliver = false;
+    create_tri3D_sliver( &v[0], &v[1], 1.0e-9, &v[2] );
+    if( !zTri3DCreate( &tri, &v[0], &v[1], &v[2] ) || !check_tri3D_norm( &tri ) ) result_sliver = false;
+  }
+  zAssert( zTri3DCalcNorm (random triangles of various sizes), result );
+  zAssert( zTri3DCalcNorm (coincident vertices), result_coincide );
+  zAssert( zTri3DCalcNorm (collinear vertices), result_collinear );
+  zAssert( zTri3DCalcNorm (slivers), result_sliver );
+}
+
 void assert_tri3D_contig(void)
 {
   zVec3D v[3], p;
@@ -707,5 +790,6 @@ int main(void)
   assert_aabox3D_equal();
   assert_aabox3D_expand();
   assert_aabox3D_dist();
+  assert_tri3D_calc_norm();
   return 0;
 }
