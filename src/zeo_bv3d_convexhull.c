@@ -268,22 +268,35 @@ static void _zQHFacetResetFlag(zQH *qh)
   }
 }
 
+#define IS_ORIGINAL_Z_QH_VISIBLE_SET 1
 /* purge visible set from facet list and collect outside points. */
 static bool _zQHVisibleSet(zQH *qh, zQHPoint *p, zQHFacetList *vs, zQHPointList *pl)
 {
   zQHFacetListCell *fc, *fc_tmp;
   zVec3D e;
+#if IS_ORIGINAL_Z_QH_VISIBLE_SET
   int flag;
+#endif
 
   zListInit( vs );
   zListInit( pl );
   zListForEach( &qh->fl, fc ){
+#if IS_ORIGINAL_Z_QH_VISIBLE_SET
     flag = _zQHFacetTestBeneathBeyond( &fc->data, p, &e );
     if( flag == 0 ){
       _zQHFacetResetFlag( qh );
       return false;
     }
     if( flag == 1 && !fc->data.check ) _zQHMerge( &fc->data );
+#else
+    zVec3DSub( p->v, fc->data.p[0]->v, &e );
+    const double signed_distance = zVec3DInnerProd( &fc->data.n, &e );
+    if( fabs(signed_distance) <= zTOL )
+      continue;
+    if( signed_distance > zTOL && !fc->data.check ){
+      _zQHMerge( &fc->data );
+    }
+#endif
   }
   zListForEach( &qh->fl, fc )
     if( fc->data.visible ){ /* if visible, the facet will be deleted. */
