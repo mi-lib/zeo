@@ -766,22 +766,28 @@ zMat3D *zMat3DFromAA(zMat3D *m, const zVec3D *aa)
 /* convert a 3D attitude matrix to an angle-axis vector. */
 zVec3D *zMat3DToAA(const zMat3D *m, zVec3D *aa)
 {
-  double l, a;
+  double l, c, a;
+  zVec3D n;
   int i0, i1, i2;
 
-  _zVec3DCreate( aa, m->c.yz-m->c.zy, m->c.zx-m->c.xz, m->c.xy-m->c.yx );
+  _zVec3DCreate( aa, m->c.yz-m->c.zy, m->c.zx-m->c.xz, m->c.xy-m->c.yx ); /* 2 sin(a) n */
   l = _zVec3DNorm( aa );
-  a = atan2( l, m->c.xx+m->c.yy+m->c.zz-1 );
-  if( zIsTiny( a )  ) return zVec3DZero( aa ); /* identity case */
-  if( !zIsTiny( l ) ) return zVec3DMulDRC( aa, a/l ); /* regular case */
-  /* singular case (a=pi) */
+  c = m->c.xx + m->c.yy + m->c.zz - 1; /* 2 cos(a) */
+  a = atan2( l, c );
+  if( zIsTiny( a ) ) return zVec3DZero( aa ); /* identity case */
+  if( c >= 0 ) return zVec3DMulDRC( aa, a/l ); /* a <= pi/2 */
+  /* a > pi/2: the axis from the skew-symmetric part loses accuracy as sin(a) -> 0,
+   * so that it is computed from the symmetric part (m+m^T)/2 - cos(a) I = (1-cos(a)) n n^T,
+   * whose column of the largest diagonal is not smaller than (1-cos(a))/3. */
+  c *= 0.5;
   i0 = m->c.xx > m->c.yy ? ( m->c.xx > m->c.zz ? 0 : 2 ) : ( m->c.yy > m->c.zz ? 1 : 2 );
   i1 = ( i0 + 1 ) % 3;
   i2 = ( i0 + 2 ) % 3;
-  aa->e[i0] = sqrt( 0.5 * m->e[i0][i0] + 0.5 );
-  aa->e[i1] = 0.5 * m->e[i0][i1] / aa->e[i0];
-  aa->e[i2] = 0.5 * m->e[i0][i2] / aa->e[i0];
-  return zVec3DMulDRC( aa, a );
+  n.e[i0] = m->e[i0][i0] - c;
+  n.e[i1] = 0.5 * ( m->e[i0][i1] + m->e[i1][i0] );
+  n.e[i2] = 0.5 * ( m->e[i0][i2] + m->e[i2][i0] );
+  /* the direction is determined by the skew-symmetric part (arbitrary if a=pi). */
+  return zVec3DMul( &n, ( _zVec3DInnerProd( &n, aa ) < 0 ? -a : a ) / _zVec3DNorm( &n ), aa );
 }
 
 /* rotational multiplication for 3D matrices. */

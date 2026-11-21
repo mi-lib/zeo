@@ -685,7 +685,7 @@ void assert_mat3D_eulerangles(void)
 
 void assert_mat3D_to_angleaxis(void)
 {
-  zVec3D aa;
+  zVec3D aa, aa_src;
   zMat3D rot_src, rot_dest;
   bool result = true;
   const int n = 100;
@@ -700,8 +700,19 @@ void assert_mat3D_to_angleaxis(void)
     if( !zMat3DEqual( &rot_dest, &rot_src ) ) result = false;
   }
   zAssert( zMat3DFromAA + zMat3DToAA (regular cases), result );
+  /* nearly singular cases */
+  for( result=true, i=0; i<n; i++ ){
+    zVec3DCreate( &aa, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+    zVec3DNormalizeDRC( &aa, 0 );
+    zVec3DMul( &aa, zPI - pow( 10, -zRandF(1,13) ), &aa_src );
+    zMat3DFromAA( &rot_src, &aa_src );
+    zMat3DToAA( &rot_src, &aa );
+    zMat3DFromAA( &rot_dest, &aa );
+    if( !zVec3DEqual( &aa, &aa_src ) || !zMat3DEqual( &rot_dest, &rot_src ) ) result = false;
+  }
+  zAssert( zMat3DFromAA + zMat3DToAA (nearly singular cases), result );
   /* singular cases */
-  for( i=0; i<n; i++ ){
+  for( result=true, i=0; i<n; i++ ){
     zVec3DCreate( &aa, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
     zVec3DNormalizeDRC( &aa, 0 );
     zMat3DCreate( &rot_src,
