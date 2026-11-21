@@ -76,6 +76,124 @@ void assert_inv(void)
   zAssert( zMat2DInv, zIsTiny(m3.c.xx-1) && zIsTiny(m3.c.yx) && zIsTiny(m3.c.xy) && zIsTiny(m3.c.yy-1) );
 }
 
+/* create an ill-conditioned 2x2 matrix U diag(1,s) V^T with rows and columns scaled by 10^[-scale,scale]. */
+void mat2D_create_illcond(zMat2D *m, double s, double scale)
+{
+  zMat2D u, v, d;
+  double r[2], c[2];
+  int i, j;
+
+  zMat2DCreateAngle( &u, zRandF(-zPI,zPI) );
+  zMat2DCreateAngle( &v, zRandF(-zPI,zPI) );
+  zMat2DCreate( &d, 1, 0, 0, s );
+  zMulMat2DMat2D( &u, &d, m );
+  zMulMat2DMat2DTDRC( m, &v );
+  for( i=0; i<2; i++ ){
+    r[i] = pow( 10, zRandF(-scale,scale) );
+    c[i] = pow( 10, zRandF(-scale,scale) );
+  }
+  for( i=0; i<2; i++ )
+    for( j=0; j<2; j++ ) m->e[j][i] *= r[i] * c[j];
+}
+
+void assert_inv_illcond(void)
+{
+  zMat2D m, m2, m3, im, me;
+  zVec2D v1, v2, e;
+  double kappa[] = { 1.0e2, 1.0e8, 1.0e10 }, scale[] = { 0, 6 };
+  int i, j, k;
+  const int testnum = 1000;
+  bool result_mul_inv_vec = true, result_mul_inv_mat = true, result_mat_inv = true;
+
+  for( i=0; i<sizeof(kappa)/sizeof(double); i++ )
+    for( j=0; j<sizeof(scale)/sizeof(double); j++ )
+      for( k=0; k<testnum; k++ ){
+        mat2D_create_illcond( &m, 1/kappa[i], scale[j] );
+        zMat2DCreate( &m2, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+        zVec2DCreate( &v1, zRandF(-10,10), zRandF(-10,10) );
+        if( !zMulInvMat2DVec2D( &m, &v1, &v2 ) ){
+          result_mul_inv_vec = false;
+        } else{
+          zMulMat2DVec2D( &m, &v2, &e );
+          zVec2DSubDRC( &e, &v1 );
+          if( zVec2DNorm( &e ) > zTOL * ( zMat2DNorm( &m ) * zVec2DNorm( &v2 ) + zVec2DNorm( &v1 ) ) ) result_mul_inv_vec = false;
+        }
+        if( !zMulInvMat2DMat2D( &m, &m2, &m3 ) ){
+          result_mul_inv_mat = false;
+        } else{
+          zMulMat2DMat2D( &m, &m3, &me );
+          zMat2DSubDRC( &me, &m2 );
+          if( zMat2DNorm( &me ) > zTOL * ( zMat2DNorm( &m ) * zMat2DNorm( &m3 ) + zMat2DNorm( &m2 ) ) ) result_mul_inv_mat = false;
+        }
+        if( !zMat2DInv( &m, &im ) ){
+          result_mat_inv = false;
+        } else{
+          zMulMat2DMat2D( &m, &im, &me );
+          zMat2DSubDRC( &me, ZMAT2DIDENT );
+          if( zMat2DNorm( &me ) > zTOL * zMat2DNorm( &m ) * zMat2DNorm( &im ) ) result_mat_inv = false;
+        }
+      }
+  zAssert( zMulInvMat2DVec2D (ill-conditioned and badly-scaled cases), result_mul_inv_vec );
+  zAssert( zMulInvMat2DMat2D (ill-conditioned and badly-scaled cases), result_mul_inv_mat );
+  zAssert( zMat2DInv (ill-conditioned and badly-scaled cases), result_mat_inv );
+}
+
+bool check_inv_singular(const zMat2D *m)
+{
+  zMat2D m1, m2;
+  zVec2D v1, v2;
+
+  zMat2DCopy( ZMAT2DIDENT, &m1 );
+  zVec2DCreate( &v1, 1, 2 );
+  zVec2DCopy( &v1, &v2 );
+  zMat2DCopy( &m1, &m2 );
+  return !zMat2DInv( m, &m1 ) && zMat2DMatch( &m1, ZMAT2DIDENT ) &&
+         !zMulInvMat2DVec2D( m, &v1, &v2 ) && zVec2DMatch( &v2, &v1 ) &&
+         !zMulInvMat2DMat2D( m, ZMAT2DIDENT, &m2 ) && zMat2DMatch( &m2, ZMAT2DIDENT );
+}
+
+void assert_inv_singular(void)
+{
+  zMat2D m, im;
+  bool result = true;
+
+  zMat2DZero( &m );
+  if( !check_inv_singular( &m ) ) result = false;
+  zMat2DCreate( &m, 1, 2, 0, 0 ); /* zero row */
+  if( !check_inv_singular( &m ) ) result = false;
+  zMat2DCreate( &m, 1, 0, 2, 0 ); /* zero column */
+  if( !check_inv_singular( &m ) ) result = false;
+  zMat2DCreate( &m, 1, 2, 2, 4 ); /* rank 1 */
+  if( !check_inv_singular( &m ) ) result = false;
+  zMat2DCreate( &m, 1, 2, 3, NAN );
+  if( !check_inv_singular( &m ) ) result = false;
+  zAssert( zMat2DInv + zMulInvMat2DVec2D + zMulInvMat2DMat2D (singular case), result );
+
+  zMat2DCreate( &m, 1e-20, 0, 0, 1e20 );
+  zAssert( zMat2DInv (regular badly-scaled case),
+    zMat2DInv( &m, &im ) && zEqual( im.e[0][0]*1e-20, 1, zTOL ) && zEqual( im.e[1][1]*1e20, 1, zTOL ) );
+  zMat2DCreate( &m, 1e-7, 0, 0, 1e-7 );
+  zAssert( zMat2DInv (regular small case),
+    zMat2DInv( &m, &im ) && zEqual( im.e[0][0]*1e-7, 1, zTOL ) && zEqual( im.e[1][1]*1e-7, 1, zTOL ) );
+  zMat2DCreate( &m, 1e7, 1e7, 1e7, 1e7+1e-7 );
+  zAssert( zMat2DInv (singular large case), !zMat2DInv( &m, &im ) );
+}
+
+void assert_inv_alias(void)
+{
+  zMat2D m1, m;
+  zVec2D v, v_test;
+  bool result = true;
+
+  zMat2DCreate( &m1, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  zVec2DCreate( &v, zRandF(-10,10), zRandF(-10,10) );
+  zMat2DInv( &m1, &m );
+  if( !zMat2DInv( &m1, &m1 ) || !zMat2DMatch( &m1, &m ) ) result = false;
+  zMulInvMat2DVec2D( &m1, &v, &v_test );
+  if( !zMulInvMat2DVec2D( &m1, &v, &v ) || !zVec2DMatch( &v, &v_test ) ) result = false;
+  zAssert( zMat2DInv + zMulInvMat2DVec2D (destination identical with the operands), result );
+}
+
 void assert_mul(void)
 {
   zMat2D m1, m2, m3, m4;
@@ -204,6 +322,9 @@ int main(void)
   assert_matstruct();
   assert_arith();
   assert_inv();
+  assert_inv_illcond();
+  assert_inv_singular();
+  assert_inv_alias();
   assert_mul();
   assert_rotation();
   assert_div_range_mat2d();

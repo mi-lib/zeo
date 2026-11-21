@@ -362,14 +362,16 @@ void assert_mat3D_mul(void)
   zVec3DCopy( &v1, &v3 ); zMulMat3DTVec3DDRC( &m1, &v3 );
   zAssert( zMulMat3DTVec3DDRC, v2.e[0]==v3.e[0] && v2.e[1]==v3.e[1] && v2.e[2]==v3.e[2] );
 
-  zMat3DInv( &m1, &m3 );
+  /* residuals are compared relatively to the norms */
   zMulInvMat3DVec3D( &m1, &v1, &v2 );
-  zMulMat3DVec3D( &m3, &v1, &v3 );
-  zAssert( zMulInvMat3DVec3D, zIsTiny(v2.e[0]-v3.e[0]) && zIsTiny(v2.e[1]-v3.e[1]) && zIsTiny(v2.e[2]-v3.e[2]) );
+  zMulMat3DVec3D( &m1, &v2, &v3 );
+  zVec3DSubDRC( &v3, &v1 );
+  zAssert( zMulInvMat3DVec3D, zVec3DNorm(&v3) <= zTOL * ( zMat3DNorm(&m1) * zVec3DNorm(&v2) + zVec3DNorm(&v1) ) );
 
   zVec3DCatRatio( &m1.v[0], &m1.v[1], &m1.v[2], &v1, w.e );
   zMulMat3DVec3D( &m1, &w, &v2 );
-  zAssert( zVec3DCatRatio, zIsTiny(v1.e[0]-v2.e[0]) && zIsTiny(v1.e[1]-v2.e[1]) && zIsTiny(v1.e[2]-v2.e[2]) );
+  zVec3DSubDRC( &v2, &v1 );
+  zAssert( zVec3DCatRatio, zVec3DNorm(&v2) <= zTOL * ( zMat3DNorm(&m1) * zVec3DNorm(&w) + zVec3DNorm(&v1) ) );
 
   zMulMat3DMat3D( &m1, &m2, &m3 );
   zAssert( zMulMat3DMat3D,
@@ -478,7 +480,7 @@ void assert_mat3D_inv(void)
   zMat3D m, im, m2, m3, m2_test, me;
   zVec3D v1, v2, v1_test, e;
   double mag1 = 1.0e-6, mag2 = 1.0e-6;
-  const double tol = 1.0e-6;
+  const double tol = zTOL; /* relative to the norms */
   bool result_mul_inv_vec, result_mul_inv_mat, result_mat_inv;
 
   result_mul_inv_vec = result_mul_inv_mat = result_mat_inv = true;
@@ -493,21 +495,106 @@ void assert_mat3D_inv(void)
     zMulInvMat3DVec3D( &m, &v1, &v2 );
     zMulMat3DVec3D( &m, &v2, &v1_test );
     zVec3DSub( &v1, &v1_test, &e );
-    if( !zVec3DIsTol( &e, tol ) ) result_mul_inv_vec = false;
+    if( zVec3DNorm( &e ) > tol * ( zMat3DNorm( &m ) * zVec3DNorm( &v2 ) + zVec3DNorm( &v1 ) ) ) result_mul_inv_vec = false;
 
     zMulInvMat3DMat3D( &m, &m2, &m3 );
     zMulMat3DMat3D( &m, &m3, &m2_test );
     zMat3DSub( &m2, &m2_test, &me );
-    if( !zMat3DIsTol( &me, tol ) ) result_mul_inv_mat = false;
+    if( zMat3DNorm( &me ) > tol * ( zMat3DNorm( &m ) * zMat3DNorm( &m3 ) + zMat3DNorm( &m2 ) ) ) result_mul_inv_mat = false;
 
     zMat3DInv( &m, &im );
     zMulMat3DMat3D( &m, &im, &me );
     zMat3DSubDRC( &me, ZMAT3DIDENT );
-    if( !zMat3DIsTol( &me, tol ) ) result_mat_inv = false;
+    if( zMat3DNorm( &me ) > tol * zMat3DNorm( &m ) * zMat3DNorm( &im ) ) result_mat_inv = false;
   }
   zAssert( zMulInvMat3DVec3D (severe case), result_mul_inv_vec );
   zAssert( zMulInvMat3DMat3D (severe case), result_mul_inv_mat );
   zAssert( zMul3DInv (severe case), result_mat_inv );
+}
+
+/* create an ill-conditioned 3x3 matrix U diag(1,s1,s2) V^T with rows and columns scaled by 10^[-scale,scale]. */
+void mat3D_create_illcond(zMat3D *m, double s1, double s2, double scale)
+{
+  zMat3D u, v, d;
+  double r[3], c[3];
+  int i, j;
+
+  zMat3DFromZYX( &u, zRandF(-zPI,zPI), zRandF(-zPI_2,zPI_2), zRandF(-zPI,zPI) );
+  zMat3DFromZYX( &v, zRandF(-zPI,zPI), zRandF(-zPI_2,zPI_2), zRandF(-zPI,zPI) );
+  zMat3DCreate( &d, 1, 0, 0, 0, s1, 0, 0, 0, s2 );
+  zMulMat3DMat3D( &u, &d, m );
+  zMulMat3DMat3DTDRC( m, &v );
+  for( i=0; i<3; i++ ){
+    r[i] = pow( 10, zRandF(-scale,scale) );
+    c[i] = pow( 10, zRandF(-scale,scale) );
+  }
+  for( i=0; i<3; i++ )
+    for( j=0; j<3; j++ ) m->e[j][i] *= r[i] * c[j];
+}
+
+void assert_mat3D_inv_illcond(void)
+{
+  zMat3D m, m2, m3, im, me;
+  zVec3D v1, v2, e;
+  /* pairs of the condition number and the range of the scaling of rows and columns, for which
+   * the matrix is not regarded as singular after balancing. */
+  double kappa[] = { 1.0e8, 1.0e10, 1.0e8 }, scale[] = { 0, 0, 6 };
+  int i, k;
+  const int testnum = 1000;
+  bool result_mul_inv_vec = true, result_mul_inv_mat = true, result_mat_inv = true;
+
+  for( i=0; i<sizeof(kappa)/sizeof(double); i++ )
+      for( k=0; k<testnum; k++ ){
+        mat3D_create_illcond( &m, pow( kappa[i], -zRandF(0,1) ), 1/kappa[i], scale[i] );
+        mat3D_create_rand( &m2 );
+        vec3D_create_rand( &v1 );
+        if( !zMulInvMat3DVec3D( &m, &v1, &v2 ) ){
+          result_mul_inv_vec = false;
+        } else{
+          zMulMat3DVec3D( &m, &v2, &e );
+          zVec3DSubDRC( &e, &v1 );
+          if( zVec3DNorm( &e ) > zTOL * ( zMat3DNorm( &m ) * zVec3DNorm( &v2 ) + zVec3DNorm( &v1 ) ) ) result_mul_inv_vec = false;
+        }
+        if( !zMulInvMat3DMat3D( &m, &m2, &m3 ) ){
+          result_mul_inv_mat = false;
+        } else{
+          zMulMat3DMat3D( &m, &m3, &me );
+          zMat3DSubDRC( &me, &m2 );
+          if( zMat3DNorm( &me ) > zTOL * ( zMat3DNorm( &m ) * zMat3DNorm( &m3 ) + zMat3DNorm( &m2 ) ) ) result_mul_inv_mat = false;
+        }
+        if( !zMat3DInv( &m, &im ) ){
+          result_mat_inv = false;
+        } else{
+          zMulMat3DMat3D( &m, &im, &me );
+          zMat3DSubDRC( &me, ZMAT3DIDENT );
+          if( zMat3DNorm( &me ) > zTOL * zMat3DNorm( &m ) * zMat3DNorm( &im ) ) result_mat_inv = false;
+        }
+      }
+  zAssert( zMulInvMat3DVec3D (ill-conditioned case), result_mul_inv_vec );
+  zAssert( zMulInvMat3DMat3D (ill-conditioned case), result_mul_inv_mat );
+  zAssert( zMat3DInv (ill-conditioned case), result_mat_inv );
+}
+
+void assert_mat3D_inv_alias(void)
+{
+  zMat3D m1, m2, m, m_test;
+  zVec3D v, v_test;
+  bool result = true;
+
+  mat3D_create_rand( &m1 );
+  mat3D_create_rand( &m2 );
+  vec3D_create_rand( &v );
+  zMat3DInv( &m1, &m );
+  zMat3DCopy( &m1, &m_test );
+  if( !zMat3DInv( &m_test, &m_test ) || !zMat3DMatch( &m_test, &m ) ) result = false;
+  zMulInvMat3DMat3D( &m1, &m2, &m );
+  zMat3DCopy( &m1, &m_test );
+  if( !zMulInvMat3DMat3D( &m_test, &m2, &m_test ) || !zMat3DMatch( &m_test, &m ) ) result = false;
+  zMat3DCopy( &m2, &m_test );
+  if( !zMulInvMat3DMat3D( &m1, &m_test, &m_test ) || !zMat3DMatch( &m_test, &m ) ) result = false;
+  zMulInvMat3DVec3D( &m1, &v, &v_test );
+  if( !zMulInvMat3DVec3D( &m1, &v, &v ) || !zVec3DMatch( &v, &v_test ) ) result = false;
+  zAssert( zMat3DInv + zMulInvMat3DMat3D + zMulInvMat3DVec3D (destination identical with the operands), result );
 }
 
 bool check_mat3D_inv_singular(const zMat3D *m)
@@ -893,6 +980,8 @@ int main(void)
   assert_mat3D_orthonormalize();
   assert_mat3D_adj();
   assert_mat3D_inv();
+  assert_mat3D_inv_illcond();
+  assert_mat3D_inv_alias();
   assert_mat3D_inv_singular();
   assert_mat3D_mul();
   assert_mat3D_eulerangles();

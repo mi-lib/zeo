@@ -285,127 +285,128 @@ zMat3D *zMat3DAdj(const zMat3D *mat, zMat3D *adj_mat)
   return adj_mat;
 }
 
-/* find indices of maximum and minimum components of a 3D vector. */
-static double _zMat3DBalancingMinMaxIndex(const zVec3D *v, int *imax, int *imin)
-{
-  if( v->e[0] > v->e[1] ){
-    *imax = 0; *imin = 1;
-  } else{
-    *imax = 1; *imin = 0;
-  }
-  if( v->e[*imax] < v->e[2] ){
-    *imax = 2;
-  } else
-  if( v->e[*imin] > v->e[2] ){
-    *imin = 2;
-  }
-  return v->e[*imax];
-}
-
-/* find a scaling vector for row-balancing of a 3x3 matrix. */
-static double _zMat3DRowBalancingScale(const zMat3D *m, zVec3D *s)
-{
-  zVec3D v;
-  int imax, imin;
-
-  _zVec3DCreate( &v, fabs(m->e[0][0]), fabs(m->e[1][0]), fabs(m->e[2][0]) );
-  s->e[0] = _zMat3DBalancingMinMaxIndex( &v, &imax, &imin );
-  _zVec3DCreate( &v, fabs(m->e[0][1]), fabs(m->e[1][1]), fabs(m->e[2][1]) );
-  s->e[1] = _zMat3DBalancingMinMaxIndex( &v, &imax, &imin );
-  _zVec3DCreate( &v, fabs(m->e[0][2]), fabs(m->e[1][2]), fabs(m->e[2][2]) );
-  s->e[2] = _zMat3DBalancingMinMaxIndex( &v, &imax, &imin );
-  _zMat3DBalancingMinMaxIndex( s, &imax, &imin );
-  return s->e[imin] / s->e[imax];
-}
-
-/* find a scaling vector for column-balancing of a 3x3 matrix. */
-static double _zMat3DColBalancingScale(const zMat3D *m, zVec3D *s)
-{
-  zVec3D v;
-  int imax, imin;
-
-  _zVec3DCreate( &v, fabs(m->e[0][0]), fabs(m->e[0][1]), fabs(m->e[0][2]) );
-  s->e[0] = _zMat3DBalancingMinMaxIndex( &v, &imax, &imin );
-  _zVec3DCreate( &v, fabs(m->e[1][0]), fabs(m->e[1][1]), fabs(m->e[1][2]) );
-  s->e[1] = _zMat3DBalancingMinMaxIndex( &v, &imax, &imin );
-  _zVec3DCreate( &v, fabs(m->e[2][0]), fabs(m->e[2][1]), fabs(m->e[2][2]) );
-  s->e[2] = _zMat3DBalancingMinMaxIndex( &v, &imax, &imin );
-  _zMat3DBalancingMinMaxIndex( s, &imax, &imin );
-  return s->e[imin] / s->e[imax];
-}
-
-/* scale a 3x3 matrix for row-balancing. */
-#define _zMat3DRowBalancing(m,s,mb) _zMat3DCreate( mb,\
-  (m)->e[0][0] / (s)->e[0], (m)->e[1][0] / (s)->e[0], (m)->e[2][0] / (s)->e[0],\
-  (m)->e[0][1] / (s)->e[1], (m)->e[1][1] / (s)->e[1], (m)->e[2][1] / (s)->e[1],\
-  (m)->e[0][2] / (s)->e[2], (m)->e[1][2] / (s)->e[2], (m)->e[2][2] / (s)->e[2] )
-
-/* scale a 3x3 matrix for column-balancing. */
-#define _zMat3DColBalancing(m,s,mb) _zMat3DCreate( mb,\
-  (m)->e[0][0] / (s)->e[0], (m)->e[1][0] / (s)->e[1], (m)->e[2][0] / (s)->e[2],\
-  (m)->e[0][1] / (s)->e[0], (m)->e[1][1] / (s)->e[1], (m)->e[2][1] / (s)->e[2],\
-  (m)->e[0][2] / (s)->e[0], (m)->e[1][2] / (s)->e[1], (m)->e[2][2] / (s)->e[2] )
-
-/* balance a 3x3 matrix by scaling its rows and columns. */
-static zMat3D *_zMat3DBalancing(const zMat3D *m, zMat3D *mb, zVec3D *sr, zVec3D *sc)
-{
-  zMat3D mb_tmp;
-  double rs, cs;
-
-  rs = _zMat3DRowBalancingScale( m, sr );
-  cs = _zMat3DColBalancingScale( m, sc );
-  /* a matrix that has a zero row or column is singular; the negated
-     comparison also rejects NaN, which results from the zero matrix. */
-  if( !( rs > 0 && cs > 0 ) ){
-    ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
-    return NULL;
-  }
-  if( rs < cs ){
-    _zMat3DRowBalancing( m, sr, &mb_tmp );
-    _zMat3DColBalancingScale( &mb_tmp, sc );
-    _zMat3DColBalancing( &mb_tmp, sc, mb );
-  } else{
-    _zMat3DColBalancing( m, sc, &mb_tmp );
-    _zMat3DRowBalancingScale( &mb_tmp, sr );
-    _zMat3DRowBalancing( &mb_tmp, sr, mb );
-  }
-  return mb;
-}
-
 /* determinant of a 3x3 matrix. */
 double zMat3DDet(const zMat3D *mat)
 {
   return _zMat3DDet( mat );
 }
 
-/* inverse matrix of a 3x3 matrix. */
-static zMat3D *_zMat3DInv(const zMat3D *mat, zMat3D *inv_mat)
-{
-  double det, idet;
+/* LU decomposition of a balanced 3x3 matrix with partial pivoting. */
+typedef struct{
+  zMat3D a;  /* L (unit lower triangular, below the diagonal) and U. Note that a.v[i] is the i-th
+                ROW, namely, the transpose is stored, since Gaussian elimination operates on rows. */
+  zVec3D ir; /* reciprocals of the row scales */
+  zVec3D ic; /* reciprocals of the column scales */
+  zVec3D id; /* reciprocals of the diagonal components of U */
+  int p;     /* the row swapped with the first row */
+  bool s;    /* true if the second and the third rows are swapped */
+} _zMat3DLU;
 
-  det = _zMat3DDet( mat );
-  if( zIsTiny( det ) ){
-    ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
-    return NULL;
-  }
-  idet = 1.0 / det;
-  _zMat3DAdj( mat, inv_mat );
-  _zMat3DMulDRC( inv_mat, idet );
-  return inv_mat;
+/* local macros for _zMat3DLUDecomp() and _zMat3DLUSolve() */
+/* the i-th row vector and the component at the i-th row and the j-th column. */
+#define __zMat3DLURow(lu,i)        ( &(lu)->a.v[i] )
+#define __zMat3DLUElem(lu,i,j)     (lu)->a.v[i].e[j]
+/* the maximum absolute value of the components of the i-th row / the j-th column. */
+#define __zMat3DLURowAbsMax(lu,i)  _zMax3( fabs( __zMat3DLUElem(lu,i,0) ), fabs( __zMat3DLUElem(lu,i,1) ), fabs( __zMat3DLUElem(lu,i,2) ) )
+#define __zMat3DLUColAbsMax(lu,j)  _zMax3( fabs( __zMat3DLUElem(lu,0,j) ), fabs( __zMat3DLUElem(lu,1,j) ), fabs( __zMat3DLUElem(lu,2,j) ) )
+/* swap the i-th and the j-th rows. Swapping components one by one is faster than swapping the row
+ * vectors as structures, which causes a penalty of the store forwarding (measured). */
+#define __zMat3DLUSwapRow(lu,i,j) do{\
+  zSwap( double, __zMat3DLUElem(lu,i,0), __zMat3DLUElem(lu,j,0) );\
+  zSwap( double, __zMat3DLUElem(lu,i,1), __zMat3DLUElem(lu,j,1) );\
+  zSwap( double, __zMat3DLUElem(lu,i,2), __zMat3DLUElem(lu,j,2) );\
+} while(0)
+/* check if the k-th pivot is regarded as zero. */
+#define __zMat3DLUPivotIsZero(lu,k) ( !( fabs( __zMat3DLUElem(lu,k,k) ) > zTOL ) )
+/* store the reciprocal of the k-th pivot. */
+#define __zMat3DLUSetPivot(lu,k)   ( (lu)->id.e[k] = 1.0 / __zMat3DLUElem(lu,k,k) )
+/* the multiplier to eliminate the component at the i-th row and the k-th column by the k-th row,
+ * which is stored at the eliminated place as a component of L. */
+#define __zMat3DLUMultiplier(lu,i,k) ( __zMat3DLUElem(lu,i,k) *= (lu)->id.e[k] )
+/* subtract the k-th row multiplied by the multiplier from the component at the i-th row and the j-th column. */
+#define __zMat3DLUSubRow(lu,i,j,k) ( __zMat3DLUElem(lu,i,j) -= __zMat3DLUElem(lu,i,k) * __zMat3DLUElem(lu,k,j) )
+
+/* LU decomposition of a 3x3 matrix. The matrix is balanced by scaling its rows and then its columns
+ * so that the maximum absolute value of the components of each row and column is one. Then, it is
+ * decomposed by Gaussian elimination with partial pivoting. A pivot is regarded as zero if its
+ * absolute value is not larger than zTOL, which is the same criterion with ZM, i.e., relative to the
+ * maximum absolute value of the components of the balanced matrix. The false value is returned for
+ * a singular matrix including those that have a zero row or column, or NaN. */
+static bool _zMat3DLUDecomp(const zMat3D *m, _zMat3DLU *lu)
+{
+  _zMat3DT( m, &lu->a );
+  /* row balancing */
+  if( !( ( lu->ir.c.x = __zMat3DLURowAbsMax(lu,0) ) > 0 ) ||
+      !( ( lu->ir.c.y = __zMat3DLURowAbsMax(lu,1) ) > 0 ) ||
+      !( ( lu->ir.c.z = __zMat3DLURowAbsMax(lu,2) ) > 0 ) ) return false; /* zero row */
+  _zVec3DCreate( &lu->ir, 1.0 / lu->ir.c.x, 1.0 / lu->ir.c.y, 1.0 / lu->ir.c.z );
+  _zVec3DMulDRC( __zMat3DLURow(lu,0), lu->ir.c.x );
+  _zVec3DMulDRC( __zMat3DLURow(lu,1), lu->ir.c.y );
+  _zVec3DMulDRC( __zMat3DLURow(lu,2), lu->ir.c.z );
+  /* column balancing */
+  if( !( ( lu->ic.c.x = __zMat3DLUColAbsMax(lu,0) ) > 0 ) ||
+      !( ( lu->ic.c.y = __zMat3DLUColAbsMax(lu,1) ) > 0 ) ||
+      !( ( lu->ic.c.z = __zMat3DLUColAbsMax(lu,2) ) > 0 ) ) return false; /* zero column */
+  _zVec3DCreate( &lu->ic, 1.0 / lu->ic.c.x, 1.0 / lu->ic.c.y, 1.0 / lu->ic.c.z );
+  _zVec3DAmpDRC( __zMat3DLURow(lu,0), &lu->ic );
+  _zVec3DAmpDRC( __zMat3DLURow(lu,1), &lu->ic );
+  _zVec3DAmpDRC( __zMat3DLURow(lu,2), &lu->ic );
+  /* elimination of the first column */
+  if( fabs( __zMat3DLUElem(lu,1,0) ) > fabs( __zMat3DLUElem(lu,0,0) ) )
+    lu->p = fabs( __zMat3DLUElem(lu,2,0) ) > fabs( __zMat3DLUElem(lu,1,0) ) ? 2 : 1;
+  else
+    lu->p = fabs( __zMat3DLUElem(lu,2,0) ) > fabs( __zMat3DLUElem(lu,0,0) ) ? 2 : 0;
+  if( lu->p != 0 ) __zMat3DLUSwapRow( lu, 0, lu->p );
+  if( __zMat3DLUPivotIsZero( lu, 0 ) ) return false;
+  __zMat3DLUSetPivot( lu, 0 );
+  __zMat3DLUMultiplier( lu, 1, 0 );
+  __zMat3DLUSubRow( lu, 1, 1, 0 );
+  __zMat3DLUSubRow( lu, 1, 2, 0 );
+  __zMat3DLUMultiplier( lu, 2, 0 );
+  __zMat3DLUSubRow( lu, 2, 1, 0 );
+  __zMat3DLUSubRow( lu, 2, 2, 0 );
+  /* elimination of the second column */
+  if( ( lu->s = ( fabs( __zMat3DLUElem(lu,2,1) ) > fabs( __zMat3DLUElem(lu,1,1) ) ) ) )
+    __zMat3DLUSwapRow( lu, 1, 2 );
+  if( __zMat3DLUPivotIsZero( lu, 1 ) ) return false;
+  __zMat3DLUSetPivot( lu, 1 );
+  __zMat3DLUMultiplier( lu, 2, 1 );
+  __zMat3DLUSubRow( lu, 2, 2, 1 );
+  /* the last pivot */
+  if( __zMat3DLUPivotIsZero( lu, 2 ) ) return false;
+  __zMat3DLUSetPivot( lu, 2 );
+  return true;
 }
 
-/* inverse matrix of a 3x3 matrix. */
-zMat3D *zMat3DInv(const zMat3D *m, zMat3D *im)
+/* solve a 3x3 linear equation m x = b from the LU decomposition of m. x can be the same with b. */
+static void _zMat3DLUSolve(const _zMat3DLU *lu, const zVec3D *b, zVec3D *x)
 {
-  zMat3D mb;
-  zVec3D sr, sc;
+  zVec3D y;
 
-  if( !_zMat3DBalancing( m, &mb, &sr, &sc ) || !_zMat3DInv( &mb, im ) ) return NULL;
-  /* row and column scalings commute */
-  _zMat3DRowBalancing( im, &sc, im );
-  _zMat3DColBalancing( im, &sr, im );
-  return im;
+  /* row balancing and pivoting */
+  _zVec3DAmp( b, &lu->ir, &y );
+  if( lu->p != 0 ) zSwap( double, y.e[0], y.e[lu->p] );
+  if( lu->s ) zSwap( double, y.e[1], y.e[2] );
+  /* forward substitution */
+  y.e[1] -= __zMat3DLUElem(lu,1,0) * y.e[0];
+  y.e[2] -= __zMat3DLUElem(lu,2,0) * y.e[0] + __zMat3DLUElem(lu,2,1) * y.e[1];
+  /* backward substitution */
+  y.e[2] *= lu->id.e[2];
+  y.e[1] = ( y.e[1] - __zMat3DLUElem(lu,1,2) * y.e[2] ) * lu->id.e[1];
+  y.e[0] = ( y.e[0] - __zMat3DLUElem(lu,0,1) * y.e[1] - __zMat3DLUElem(lu,0,2) * y.e[2] ) * lu->id.e[0];
+  /* column balancing */
+  _zVec3DAmp( &y, &lu->ic, x );
 }
+
+#undef __zMat3DLURow
+#undef __zMat3DLUElem
+#undef __zMat3DLURowAbsMax
+#undef __zMat3DLUColAbsMax
+#undef __zMat3DLUSwapRow
+#undef __zMat3DLUPivotIsZero
+#undef __zMat3DLUSetPivot
+#undef __zMat3DLUMultiplier
+#undef __zMat3DLUSubRow
 
 /* ********************************************************** */
 /* multiplication of a 3D vector by a 3x3 matrix
@@ -460,44 +461,27 @@ zVec3D *zMulAdjMat3DVec3D(const zMat3D *mat, const zVec3D *vec, zVec3D *adj_vec)
 }
 
 /* multiply a 3D vector by inverse of a 3x3 matrix. */
-static zVec3D *_zMulInvMat3DVec3D(const zMat3D *mat, const zVec3D *vec, zVec3D *inv_vec)
+zVec3D *zMulInvMat3DVec3D(const zMat3D *mat, const zVec3D *vec, zVec3D *inv_vec)
 {
-  double val;
+  _zMat3DLU lu;
 
-  if( zIsTiny( ( val = zMat3DDet( mat ) ) ) ){
+  if( !_zMat3DLUDecomp( mat, &lu ) ){
     ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
     return NULL;
   }
-  val = 1.0 / val;
-  _zMulAdjMat3DVec3D( mat, vec, inv_vec );
-  _zVec3DMulDRC( inv_vec, val );
-  return inv_vec;
-}
-
-/* multiply a 3D vector by inverse of a 3x3 matrix. */
-zVec3D *zMulInvMat3DVec3D(const zMat3D *mat, const zVec3D *vec, zVec3D *inv_vec)
-{
-  zMat3D mb;
-  zVec3D v_tmp, sr, sc;
-
-  if( !_zMat3DBalancing( mat, &mb, &sr, &sc ) ) return NULL;
-  _zVec3DDem( vec, &sr, &v_tmp );
-  if( !_zMulInvMat3DVec3D( &mb, &v_tmp, inv_vec ) ) return NULL;
-  _zVec3DDemDRC( inv_vec, &sc );
+  _zMat3DLUSolve( &lu, vec, inv_vec );
   return inv_vec;
 }
 
 /* concatenate ratio of vector. */
 double *zVec3DCatRatio(const zVec3D *v1, const zVec3D *v2, const zVec3D *v3, const zVec3D *v, double ratio[])
 {
-  zMat3D m, im;
+  zMat3D m;
 
   zVec3DCopy( v1, &m.b.x );
   zVec3DCopy( v2, &m.b.y );
   zVec3DCopy( v3, &m.b.z );
-  if( !zMat3DInv( &m, &im ) ) return NULL;
-  zMulMat3DVec3D( &im, v, (zVec3D*)ratio );
-  return ratio;
+  return zMulInvMat3DVec3D( &m, v, (zVec3D*)ratio ) ? ratio : NULL;
 }
 
 /* ********************************************************** */
@@ -559,31 +543,19 @@ zMat3D *zMulAdjMat3DMat3D(const zMat3D *m1, const zMat3D *m2, zMat3D *m)
   return m;
 }
 
-/* multiply 3x3 matrix by inverse of another 3x3 matrix. */
-static zMat3D *_zMulInvMat3DMat3D(const zMat3D *m1, const zMat3D *m2, zMat3D *m)
+/* multiply a 3x3 matrix by inverse of another 3x3 matrix. */
+zMat3D *zMulInvMat3DMat3D(const zMat3D *m1, const zMat3D *m2, zMat3D *m)
 {
-  double val;
+  _zMat3DLU lu;
 
-  if( zIsTiny( ( val = zMat3DDet( m1 ) ) ) ){
+  if( !_zMat3DLUDecomp( m1, &lu ) ){
     ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
     return NULL;
   }
-  val = 1.0 / val;
-  _zMulAdjMat3DMat3D( m1, m2, m );
-  _zMat3DMulDRC( m, val );
-  return m;
-}
-
-/* multiply a 3x3 matrix by inverse of aother 3x3 matrix. */
-zMat3D *zMulInvMat3DMat3D(const zMat3D *m1, const zMat3D *m2, zMat3D *m)
-{
-  zMat3D mb, m2_tmp;
-  zVec3D sr, sc;
-
-  if( !_zMat3DBalancing( m1, &mb, &sr, &sc ) ) return NULL;
-  _zMat3DRowBalancing( m2, &sr, &m2_tmp );
-  if( !_zMulInvMat3DMat3D( &mb, &m2_tmp, m ) ) return NULL;
-  _zMat3DRowBalancing( m, &sc, m );
+  /* each column of m depends only on the same column of m2, so that m can be the same with m2. */
+  _zMat3DLUSolve( &lu, &m2->b.x, &m->b.x );
+  _zMat3DLUSolve( &lu, &m2->b.y, &m->b.y );
+  _zMat3DLUSolve( &lu, &m2->b.z, &m->b.z );
   return m;
 }
 

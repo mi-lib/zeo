@@ -314,11 +314,10 @@ __ZEO_EXPORT zMat2D *zMat2DAdj(const zMat2D *mat, zMat2D *adj);
  *
  * zMat2DInv() computes the inverse of a 2x2 matrix \a mat. The result is put into \a invmat.
  * \return
- * zMat2DInv() returns a pointer \a invmat.
- * \notes
- * \a invmat has to be different from \a mat. If \a invmat is identical with \a mat, anything might happen.
+ * zMat2DInv() returns a pointer \a invmat, if it succeeds.
+ * If \a mat is singular, it returns the null pointer.
  */
-__ZEO_EXPORT zMat2D *zMat2DInv(const zMat2D *mat, zMat2D *invmat);
+#define zMat2DInv(mat,invmat) zMulInvMat2DMat2D( mat, ZMAT2DIDENT, invmat )
 
 /* ********************************************************** */
 /* multiplication of a 2D vector by a 2x2 matrix
@@ -374,7 +373,8 @@ __ZEO_EXPORT zVec2D *zMulAdjMat2DVec2D(const zMat2D *mat, const zVec2D *vec, zVe
  * zMulInvMat2DVec2D() multiplies a 2D \a vec by the inverse matrix of a 2x2 matrix \a mat.
  * The result is put into \a inv_vec.
  * \return
- * zMulInvMat2DVec2D() returns a pointer \a inv_vec.
+ * zMulInvMat2DVec2D() returns a pointer \a inv_vec, if \a mat is regular. If \a mat is not regular,
+ * it returns the null pointer.
  */
 __ZEO_EXPORT zVec2D *zMulInvMat2DVec2D(const zMat2D *mat, const zVec2D *vec, zVec2D *inv_vec);
 
@@ -418,7 +418,8 @@ __ZEO_EXPORT zMat2D *zMulMat2DMat2DT(const zMat2D *m1, const zMat2D *m2, zMat2D 
  * zMulInvMat2DMat2D() multiplies a 2x2 matrix \a m2 by the inverse of the other 2x2 matrix \a m1
  * from the leftside, and puts it into \a m.
  * \return
- * zMulInvMat2DMat2D() returns the pointer \a m.
+ * zMulInvMat2DMat2D() returns the pointer \a m, if \a m1 is regular.
+ * If \a m1 is not regular, it returns the null pointer.
  */
 __ZEO_EXPORT zMat2D *zMulInvMat2DMat2D(const zMat2D *m1, const zMat2D *m2, zMat2D *m);
 

@@ -529,16 +529,13 @@ __ZEO_EXPORT double zMat3DDet(const zMat3D *mat);
 
 /*! \brief inverse of a 3x3 matrix.
  *
- * zMat3DInv() computes the inverse matrix of an arbitrary 3x3 matrix \a mat, and puts it into \a inv_mat.
-* It does not assume that \a mat is an orthonormal matrix.
+ * zMat3DInv() computes the inverse matrix of an arbitrary 3x3 matrix \a mat, and puts it into \a invmat.
+ * It does not assume that \a mat is an orthonormal matrix.
  * \return
- * zMat3DInv() returns a pointer \a inv_mat, if it succeeds.
+ * zMat3DInv() returns a pointer \a invmat, if it succeeds.
  * If \a mat is singular, it returns the null pointer.
- * \notes
- * \a inv_mat has to point to a different address from \a mat. If \a inv_mat is the same with \a mat,
- * anything might happen.
  */
-__ZEO_EXPORT zMat3D *zMat3DInv(const zMat3D *mat, zMat3D *inv_mat);
+#define zMat3DInv(mat,invmat) zMulInvMat3DMat3D( mat, ZMAT3DIDENT, invmat )
 
 /* ********************************************************** */
 /* multiplication of a 3D vector by a 3x3 matrix

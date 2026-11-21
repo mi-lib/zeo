@@ -1,3 +1,8 @@
+2026.11.21. Modified tests of zMulInvMat3DVec3D, zMulInvMat3DMat3D, zMat3DInv and zVec3DCatRatio to compare the residuals relatively to the norms. [test]
+2026.11.21. Added tests of zMat2DInv, zMulInvMat2DVec2D, zMulInvMat2DMat2D, zMat3DInv, zMulInvMat3DVec3D and zMulInvMat3DMat3D for ill-conditioned, badly-scaled and singular matrices, and for the destination identical with the operands. [test]
+2026.11.21. Reimplemented zVec3DCatRatio by using zMulInvMat3DMat3D. [zeo_mat3d]
+2026.11.21. Reimplemented zMat2DInv and zMat3DInv as macros by using zMulInvMat2DMat2D and zMulInvMat3DMat3D, respectively. [zeo_mat2d, zeo_mat3d]
+2026.11.21. Modified zMulInvMat2DVec2D, zMulInvMat2DMat2D, zMulInvMat3DVec3D and zMulInvMat3DMat3D to compute by Gaussian elimination. [zeo_mat2d, zeo_mat3d]
 2026.11.21. Added tests of zTri2DCircumcenter, zTri2DOrthocenter, zTri3DCircumcenter and zTri3DOrthocenter for thin, right, equilateral and degenerate triangles, and modified their random tests to check the error relatively. [test]
 2026.11.21. Modified zVec2DDataVoronoiDiagram to return the false value if it fails to convert Delaunay triangles to Voronoi cells. [zeo_errmsg, zeo_voronoi2d]
 2026.11.21. Modified zDelaunayTri2DListVoronoi2DFPrint to skip a degenerate triangle. [zeo_voronoi2d]

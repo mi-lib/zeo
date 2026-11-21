@@ -157,20 +157,78 @@ zMat2D *zMat2DAdj(const zMat2D *mat, zMat2D *adj)
   return adj;
 }
 
-/* inverse matrix of a 2x2 matrix. */
-zMat2D *zMat2DInv(const zMat2D *mat, zMat2D *invmat)
-{
-  double det;
+/* LU decomposition of a balanced 2x2 matrix with partial pivoting. */
+typedef struct{
+  zMat2D a;  /* L (unit lower triangular, below the diagonal) and U. a.v[i] is the i-th ROW. */
+  zVec2D ir; /* reciprocals of the row scales */
+  zVec2D ic; /* reciprocals of the column scales */
+  zVec2D id; /* reciprocals of the diagonal components of U */
+  bool s;    /* true if the rows are swapped */
+} _zMat2DLU;
 
-  if( zIsTiny( ( det = _zMat2DDet( mat ) ) ) ){
-    ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
-    return NULL;
-  }
-  det = 1.0 / det;
-  _zMat2DAdj( mat, invmat );
-  _zMat2DMulDRC( invmat, det );
-  return invmat;
+/* local macros for _zMat2DLUDecomp() and _zMat2DLUSolve(); see those for _zMat3DLUDecomp(). */
+#define __zMat2DLURow(lu,i)        ( &(lu)->a.v[i] )
+#define __zMat2DLUElem(lu,i,j)     (lu)->a.v[i].e[j]
+#define __zMat2DLURowAbsMax(lu,i)  _zMax( fabs( __zMat2DLUElem(lu,i,0) ), fabs( __zMat2DLUElem(lu,i,1) ) )
+#define __zMat2DLUColAbsMax(lu,j)  _zMax( fabs( __zMat2DLUElem(lu,0,j) ), fabs( __zMat2DLUElem(lu,1,j) ) )
+#define __zMat2DLUSwapRow(lu) do{\
+  zSwap( double, __zMat2DLUElem(lu,0,0), __zMat2DLUElem(lu,1,0) );\
+  zSwap( double, __zMat2DLUElem(lu,0,1), __zMat2DLUElem(lu,1,1) );\
+} while(0)
+#define __zMat2DLUPivotIsZero(lu,k) ( !( fabs( __zMat2DLUElem(lu,k,k) ) > zTOL ) )
+#define __zMat2DLUSetPivot(lu,k)   ( (lu)->id.e[k] = 1.0 / __zMat2DLUElem(lu,k,k) )
+
+/* LU decomposition of a 2x2 matrix in the same way with _zMat3DLUDecomp(). */
+static bool _zMat2DLUDecomp(const zMat2D *m, _zMat2DLU *lu)
+{
+  _zMat2DT( m, &lu->a );
+  /* row balancing */
+  if( !( ( lu->ir.c.x = __zMat2DLURowAbsMax(lu,0) ) > 0 ) ||
+      !( ( lu->ir.c.y = __zMat2DLURowAbsMax(lu,1) ) > 0 ) ) return false; /* zero row */
+  _zVec2DCreate( &lu->ir, 1.0 / lu->ir.c.x, 1.0 / lu->ir.c.y );
+  _zVec2DMulDRC( __zMat2DLURow(lu,0), lu->ir.c.x );
+  _zVec2DMulDRC( __zMat2DLURow(lu,1), lu->ir.c.y );
+  /* column balancing */
+  if( !( ( lu->ic.c.x = __zMat2DLUColAbsMax(lu,0) ) > 0 ) ||
+      !( ( lu->ic.c.y = __zMat2DLUColAbsMax(lu,1) ) > 0 ) ) return false; /* zero column */
+  _zVec2DCreate( &lu->ic, 1.0 / lu->ic.c.x, 1.0 / lu->ic.c.y );
+  _zVec2DAmpDRC( __zMat2DLURow(lu,0), &lu->ic );
+  _zVec2DAmpDRC( __zMat2DLURow(lu,1), &lu->ic );
+  /* elimination of the first column */
+  if( ( lu->s = ( fabs( __zMat2DLUElem(lu,1,0) ) > fabs( __zMat2DLUElem(lu,0,0) ) ) ) )
+    __zMat2DLUSwapRow( lu );
+  if( __zMat2DLUPivotIsZero( lu, 0 ) ) return false;
+  __zMat2DLUSetPivot( lu, 0 );
+  __zMat2DLUElem(lu,1,0) *= lu->id.e[0]; /* multiplier, stored as a component of L */
+  __zMat2DLUElem(lu,1,1) -= __zMat2DLUElem(lu,1,0) * __zMat2DLUElem(lu,0,1);
+  /* the last pivot */
+  if( __zMat2DLUPivotIsZero( lu, 1 ) ) return false;
+  __zMat2DLUSetPivot( lu, 1 );
+  return true;
 }
+
+/* solve a 2x2 linear equation m x = b from the LU decomposition of m. x can be the same with b. */
+static void _zMat2DLUSolve(const _zMat2DLU *lu, const zVec2D *b, zVec2D *x)
+{
+  zVec2D y;
+
+  /* row balancing and pivoting */
+  _zVec2DAmp( b, &lu->ir, &y );
+  if( lu->s ) zSwap( double, y.c.x, y.c.y );
+  /* forward and backward substitutions */
+  y.c.y = ( y.c.y - __zMat2DLUElem(lu,1,0) * y.c.x ) * lu->id.c.y;
+  y.c.x = ( y.c.x - __zMat2DLUElem(lu,0,1) * y.c.y ) * lu->id.c.x;
+  /* column balancing */
+  _zVec2DAmp( &y, &lu->ic, x );
+}
+
+#undef __zMat2DLURow
+#undef __zMat2DLUElem
+#undef __zMat2DLURowAbsMax
+#undef __zMat2DLUColAbsMax
+#undef __zMat2DLUSwapRow
+#undef __zMat2DLUPivotIsZero
+#undef __zMat2DLUSetPivot
 
 /* ********************************************************** */
 /* multiplication of a 2D vector by a 2x2 matrix
@@ -214,15 +272,13 @@ zVec2D *zMulAdjMat2DVec2D(const zMat2D *mat, const zVec2D *vec, zVec2D *adj_vec)
 /* multiply a 2D vector by the inverse of a 2x2 matrix. */
 zVec2D *zMulInvMat2DVec2D(const zMat2D *mat, const zVec2D *vec, zVec2D *inv_vec)
 {
-  double det;
+  _zMat2DLU lu;
 
-  if( zIsTiny( ( det = _zMat2DDet( mat ) ) ) ){
+  if( !_zMat2DLUDecomp( mat, &lu ) ){
     ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
     return NULL;
   }
-  det = 1.0 / det;
-  _zMulAdjMat2DVec2D( mat, vec, inv_vec );
-  _zVec2DMulDRC( inv_vec, det );
+  _zMat2DLUSolve( &lu, vec, inv_vec );
   return inv_vec;
 }
 
@@ -267,18 +323,14 @@ zMat2D *zMulMat2DMat2DT(const zMat2D *m1, const zMat2D *m2, zMat2D *m)
 /* multiply a 2x2 matrix by the inverse of another matrix from leftside. */
 zMat2D *zMulInvMat2DMat2D(const zMat2D *m1, const zMat2D *m2, zMat2D *m)
 {
-  zMat2D tmp;
-  double det;
+  _zMat2DLU lu;
 
-  if( zIsTiny( ( det = _zMat2DDet( m1 ) ) ) ){
+  if( !_zMat2DLUDecomp( m1, &lu ) ){
     ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
     return NULL;
   }
-  det = 1.0 / det;
-  /* tmp is used so that m can be the same with m1. */
-  _zMulAdjMat2DVec2D( m1, &m2->b.x, &tmp.b.x );
-  _zMulAdjMat2DVec2D( m1, &m2->b.y, &tmp.b.y );
-  _zMat2DMul( &tmp, det, m );
+  _zMat2DLUSolve( &lu, &m2->b.x, &m->b.x );
+  _zMat2DLUSolve( &lu, &m2->b.y, &m->b.y );
   return m;
 }
 
