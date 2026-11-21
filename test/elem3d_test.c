@@ -351,6 +351,35 @@ void assert_plane3D_create(void)
   zVec3DCreate( &norm, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
   zPlane3DCreate( &plane, &pos, &norm );
   zAssert( zPlane3DCreate, zEqual( zVec3DNorm(zPlane3DNorm(&plane)), 1.0, zTOL ) );
+
+  /* a small normal vector of which components are all within zTOL but of which norm is larger than zTOL */
+  zVec3DCreate( &norm, 0.9*zTOL, -0.9*zTOL, 0.9*zTOL );
+  zAssert( zPlane3DCreate (small normal vector),
+    zPlane3DCreate( &plane, &pos, &norm ) && zEqual( zVec3DNorm(zPlane3DNorm(&plane)), 1.0, zTOL ) );
+}
+
+bool check_plane3D_create_fail(zVec3D *norm)
+{
+  zVec3D pos;
+  zPlane3D plane;
+
+  zPlane3DInit( &plane );
+  zVec3DCreate( &pos, 1, 2, 3 );
+  return !zPlane3DCreate( &plane, &pos, norm ) &&
+         zPlane3DOrg(&plane) == ZVEC3DZERO && zVec3DIsTiny( zPlane3DNorm(&plane) );
+}
+
+void assert_plane3D_create_fail(void)
+{
+  zVec3D norm;
+  bool result = true;
+
+  if( !check_plane3D_create_fail( ZVEC3DZERO ) ) result = false;
+  zVec3DCreate( &norm, 0.5*zTOL, 0.5*zTOL, 0.5*zTOL );
+  if( !check_plane3D_create_fail( &norm ) ) result = false;
+  zVec3DCreate( &norm, 1, NAN, 0 );
+  if( !check_plane3D_create_fail( &norm ) ) result = false;
+  zAssert( zPlane3DCreate (degenerate case), result );
 }
 
 void assert_plane3D_proj_point(void)
@@ -775,6 +804,7 @@ int main(void)
   assert_edge3D_closest();
   assert_edge3D_contig();
   assert_plane3D_create();
+  assert_plane3D_create_fail();
   assert_plane3D_proj_point();
   assert_tri3D_contig();
   assert_tri3D_proj_point();

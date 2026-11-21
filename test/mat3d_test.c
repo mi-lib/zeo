@@ -510,6 +510,46 @@ void assert_mat3D_inv(void)
   zAssert( zMul3DInv (severe case), result_mat_inv );
 }
 
+bool check_mat3D_inv_singular(const zMat3D *m)
+{
+  zMat3D m1, m2;
+  zVec3D v1, v2;
+  double r[3];
+
+  zMat3DCopy( ZMAT3DIDENT, &m1 );
+  zVec3DCreate( &v1, 1, 2, 3 );
+  zVec3DCopy( &v1, &v2 );
+  zMat3DCopy( &m1, &m2 );
+  return !zMat3DInv( m, &m1 ) && zMat3DEqual( &m1, ZMAT3DIDENT ) &&
+         !zMulInvMat3DVec3D( m, &v1, &v2 ) && zVec3DEqual( &v2, &v1 ) &&
+         !zMulInvMat3DMat3D( m, ZMAT3DIDENT, &m2 ) && zMat3DEqual( &m2, ZMAT3DIDENT ) &&
+         !zVec3DCatRatio( &m->v[0], &m->v[1], &m->v[2], &v1, r );
+}
+
+void assert_mat3D_inv_singular(void)
+{
+  zMat3D m, im;
+  bool result = true;
+
+  zMat3DZero( &m );
+  if( !check_mat3D_inv_singular( &m ) ) result = false;
+  zMat3DCreate( &m, 1, 2, 3, 0, 0, 0, 4, 5, 7 ); /* zero row */
+  if( !check_mat3D_inv_singular( &m ) ) result = false;
+  zMat3DCreate( &m, 1, 0, 3, 2, 0, 6, 4, 0, 7 ); /* zero column */
+  if( !check_mat3D_inv_singular( &m ) ) result = false;
+  zMat3DCreate( &m, 1, 2, 3, 2, 4, 6, 1, 0, 1 ); /* rank 2 */
+  if( !check_mat3D_inv_singular( &m ) ) result = false;
+  zMat3DCreate( &m, 1, 2, 3, 2, 4, 6, 3, 6, 9 ); /* rank 1 */
+  if( !check_mat3D_inv_singular( &m ) ) result = false;
+  zMat3DCreate( &m, 1, 2, 3, 4, NAN, 6, 7, 8, 10 );
+  if( !check_mat3D_inv_singular( &m ) ) result = false;
+  zAssert( zMat3DInv + zMulInvMat3DVec3D + zMulInvMat3DMat3D + zVec3DCatRatio (singular case), result );
+
+  zMat3DCreate( &m, 1e-20, 0, 0, 0, 1, 0, 0, 0, 1e20 );
+  zAssert( zMat3DInv (regular badly-scaled case),
+    zMat3DInv( &m, &im ) && zEqual( im.e[0][0]*1e-20, 1, zTOL ) && zEqual( im.e[1][1], 1, zTOL ) && zEqual( im.e[2][2]*1e20, 1, zTOL ) );
+}
+
 void assert_mat3D_eulerangles(void)
 {
   int i, testnum = 100;
@@ -853,6 +893,7 @@ int main(void)
   assert_mat3D_orthonormalize();
   assert_mat3D_adj();
   assert_mat3D_inv();
+  assert_mat3D_inv_singular();
   assert_mat3D_mul();
   assert_mat3D_eulerangles();
   assert_mat3D_to_angleaxis();

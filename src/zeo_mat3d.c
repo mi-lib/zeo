@@ -346,6 +346,32 @@ static double _zMat3DColBalancingScale(const zMat3D *m, zVec3D *s)
   (m)->e[0][1] / (s)->e[0], (m)->e[1][1] / (s)->e[1], (m)->e[2][1] / (s)->e[2],\
   (m)->e[0][2] / (s)->e[0], (m)->e[1][2] / (s)->e[1], (m)->e[2][2] / (s)->e[2] )
 
+/* balance a 3x3 matrix by scaling its rows and columns. */
+static zMat3D *_zMat3DBalancing(const zMat3D *m, zMat3D *mb, zVec3D *sr, zVec3D *sc)
+{
+  zMat3D mb_tmp;
+  double rs, cs;
+
+  rs = _zMat3DRowBalancingScale( m, sr );
+  cs = _zMat3DColBalancingScale( m, sc );
+  /* a matrix that has a zero row or column is singular; the negated
+     comparison also rejects NaN, which results from the zero matrix. */
+  if( !( rs > 0 && cs > 0 ) ){
+    ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
+    return NULL;
+  }
+  if( rs < cs ){
+    _zMat3DRowBalancing( m, sr, &mb_tmp );
+    _zMat3DColBalancingScale( &mb_tmp, sc );
+    _zMat3DColBalancing( &mb_tmp, sc, mb );
+  } else{
+    _zMat3DColBalancing( m, sc, &mb_tmp );
+    _zMat3DRowBalancingScale( &mb_tmp, sr );
+    _zMat3DRowBalancing( &mb_tmp, sr, mb );
+  }
+  return mb;
+}
+
 /* determinant of a 3x3 matrix. */
 double zMat3DDet(const zMat3D *mat)
 {
@@ -371,24 +397,13 @@ static zMat3D *_zMat3DInv(const zMat3D *mat, zMat3D *inv_mat)
 /* inverse matrix of a 3x3 matrix. */
 zMat3D *zMat3DInv(const zMat3D *m, zMat3D *im)
 {
-  zMat3D mb_tmp, mb;
+  zMat3D mb;
   zVec3D sr, sc;
 
-  if( _zMat3DRowBalancingScale( m, &sr ) < _zMat3DColBalancingScale( m, &sc ) ){
-    _zMat3DRowBalancing( m, &sr, &mb_tmp );
-    _zMat3DColBalancingScale( &mb_tmp, &sc );
-    _zMat3DColBalancing( &mb_tmp, &sc, &mb );
-    _zMat3DInv( &mb, im );
-    _zMat3DRowBalancing( im, &sc, im );
-    _zMat3DColBalancing( im, &sr, im );
-  } else{
-    _zMat3DColBalancing( m, &sc, &mb_tmp );
-    _zMat3DRowBalancingScale( &mb_tmp, &sr );
-    _zMat3DRowBalancing( &mb_tmp, &sr, &mb );
-    _zMat3DInv( &mb, im );
-    _zMat3DColBalancing( im, &sr, im );
-    _zMat3DRowBalancing( im, &sc, im );
-  }
+  if( !_zMat3DBalancing( m, &mb, &sr, &sc ) || !_zMat3DInv( &mb, im ) ) return NULL;
+  /* row and column scalings commute */
+  _zMat3DRowBalancing( im, &sc, im );
+  _zMat3DColBalancing( im, &sr, im );
   return im;
 }
 
@@ -462,21 +477,13 @@ static zVec3D *_zMulInvMat3DVec3D(const zMat3D *mat, const zVec3D *vec, zVec3D *
 /* multiply a 3D vector by inverse of a 3x3 matrix. */
 zVec3D *zMulInvMat3DVec3D(const zMat3D *mat, const zVec3D *vec, zVec3D *inv_vec)
 {
-  zMat3D mb_tmp, mb;
+  zMat3D mb;
   zVec3D v_tmp, sr, sc;
 
-  if( _zMat3DRowBalancingScale( mat, &sr ) < _zMat3DColBalancingScale( mat, &sc ) ){
-    _zMat3DRowBalancing( mat, &sr, &mb_tmp );
-    _zMat3DColBalancingScale( &mb_tmp, &sc );
-    _zMat3DColBalancing( &mb_tmp, &sc, &mb );
-  } else{
-    _zMat3DColBalancing( mat, &sc, &mb_tmp );
-    _zMat3DRowBalancingScale( &mb_tmp, &sr );
-    _zMat3DRowBalancing( &mb_tmp, &sr, &mb );
-  }
+  if( !_zMat3DBalancing( mat, &mb, &sr, &sc ) ) return NULL;
   _zVec3DDem( vec, &sr, &v_tmp );
-  if( _zMulInvMat3DVec3D( &mb, &v_tmp, inv_vec ) )
-    _zVec3DDemDRC( inv_vec, &sc );
+  if( !_zMulInvMat3DVec3D( &mb, &v_tmp, inv_vec ) ) return NULL;
+  _zVec3DDemDRC( inv_vec, &sc );
   return inv_vec;
 }
 
@@ -488,7 +495,7 @@ double *zVec3DCatRatio(const zVec3D *v1, const zVec3D *v2, const zVec3D *v3, con
   zVec3DCopy( v1, &m.b.x );
   zVec3DCopy( v2, &m.b.y );
   zVec3DCopy( v3, &m.b.z );
-  zMat3DInv( &m, &im );
+  if( !zMat3DInv( &m, &im ) ) return NULL;
   zMulMat3DVec3D( &im, v, (zVec3D*)ratio );
   return ratio;
 }
@@ -570,21 +577,13 @@ static zMat3D *_zMulInvMat3DMat3D(const zMat3D *m1, const zMat3D *m2, zMat3D *m)
 /* multiply a 3x3 matrix by inverse of aother 3x3 matrix. */
 zMat3D *zMulInvMat3DMat3D(const zMat3D *m1, const zMat3D *m2, zMat3D *m)
 {
-  zMat3D mb_tmp, mb, m2_tmp;
+  zMat3D mb, m2_tmp;
   zVec3D sr, sc;
 
-  if( _zMat3DRowBalancingScale( m1, &sr ) < _zMat3DColBalancingScale( m1, &sc ) ){
-    _zMat3DRowBalancing( m1, &sr, &mb_tmp );
-    _zMat3DColBalancingScale( &mb_tmp, &sc );
-    _zMat3DColBalancing( &mb_tmp, &sc, &mb );
-  } else{
-    _zMat3DColBalancing( m1, &sc, &mb_tmp );
-    _zMat3DRowBalancingScale( &mb_tmp, &sr );
-    _zMat3DRowBalancing( &mb_tmp, &sr, &mb );
-  }
+  if( !_zMat3DBalancing( m1, &mb, &sr, &sc ) ) return NULL;
   _zMat3DRowBalancing( m2, &sr, &m2_tmp );
-  if( _zMulInvMat3DMat3D( &mb, &m2_tmp, m ) )
-    _zMat3DRowBalancing( m, &sc, m );
+  if( !_zMulInvMat3DMat3D( &mb, &m2_tmp, m ) ) return NULL;
+  _zMat3DRowBalancing( m, &sc, m );
   return m;
 }
 

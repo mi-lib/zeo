@@ -126,12 +126,11 @@ _ZEO_ELEM_EDGEXD_LINSCALE( 3D )
 /* create a plane. */
 zPlane3D* zPlane3DCreate(zPlane3D *plane, const zVec3D *origin, const zVec3D *norm)
 {
-  if( zVec3DIsTiny( norm ) ){
+  if( zPlane3DSetNorm( plane, norm ) == 0 ){
     ZRUNERROR( ZEO_ERR_ELEM_DEG_PLANE );
     return NULL;
   }
   zPlane3DSetOrg( plane, (zVec3D*)origin );
-  zPlane3DSetNorm( plane, norm );
   return plane;
 }
 

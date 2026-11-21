@@ -65,7 +65,7 @@ static zTri3D *_zIntersectPH3DPointIsInside(zPH3D *ph, zVec3D *p, double *dis)
   return NULL;
 }
 
-#define Z_INTERSECT_PH3D_FAILURE( label ) do{ \
+#define ZEO_INTERSECT_PH3D_FAILURE( label ) do{ \
   phcol = NULL; \
   goto label; \
 } while(0)
@@ -81,6 +81,7 @@ zPH3D *zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol)
   zTri3D *tri1, *tri2;
 
   zPH3DInit( phcol );
+  zPH3DInit( &ch ); /* to be safely destroyed on failure prior to the creation of the convex hull */
   zVec3DDataAssignArray( &data1, zPH3DVertArray(ph1) );
   zVec3DDataAssignArray( &data2, zPH3DVertArray(ph2) );
   /* the base point with an ad-hoc modulation */
@@ -106,21 +107,21 @@ zPH3D *zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol)
   n = 0;
   for( i=0; i<zPH3DFaceNum(ph1); i++ ){
     if( !_zTri3DDualXform_a( zPH3DFace(ph1,i), &p1, &p_temp ) || !zVec3DDataAdd( &data1, &p_temp ) )
-      Z_INTERSECT_PH3D_FAILURE( TERMINATE );
+      ZEO_INTERSECT_PH3D_FAILURE( TERMINATE );
     n++;
   }
   for( i=0; i<zPH3DFaceNum(ph2); i++ ){
     if( !_zTri3DDualXform_a( zPH3DFace(ph2,i), &p1, &p_temp ) || !zVec3DDataAdd( &data1, &p_temp ) )
-      Z_INTERSECT_PH3D_FAILURE( TERMINATE );
+      ZEO_INTERSECT_PH3D_FAILURE( TERMINATE );
     n++;
   }
   /* convex hull in dual space */
-  if( !zVec3DDataConvexHull( &data1, &ch ) ) Z_INTERSECT_PH3D_FAILURE( TERMINATE );
+  if( !zVec3DDataConvexHull( &data1, &ch ) ) ZEO_INTERSECT_PH3D_FAILURE( TERMINATE );
   zVec3DDataDestroy( &data1 );
   /* re-transfer to the original space */
-  if( !zVec3DDataInitArray( &data1, zPH3DFaceNum(&ch) ) ) Z_INTERSECT_PH3D_FAILURE( TERMINATE );
+  if( !zVec3DDataInitArray( &data1, zPH3DFaceNum(&ch) ) ) ZEO_INTERSECT_PH3D_FAILURE( TERMINATE );
   for( i=0; i<zPH3DFaceNum(&ch); i++ ){
-    if( !_zTri3DDualXform_b( zPH3DFace(&ch,i), &p_temp ) ) Z_INTERSECT_PH3D_FAILURE( TERMINATE );
+    if( !_zTri3DDualXform_b( zPH3DFace(&ch,i), &p_temp ) ) ZEO_INTERSECT_PH3D_FAILURE( TERMINATE );
     zVec3DAddDRC( &p_temp, &p1 );
     zVec3DDataAdd( &data1, &p_temp );
   }

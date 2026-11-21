@@ -52,9 +52,9 @@ static zVec3D *_zMPRSimplexDir(zMPRSimplex *s, int i0, int i1, int i2, zVec3D *d
   return dir;
 }
 
-#define Z_MPR_BIAS ( zTOL * 10 )
+#define ZEO_MPR_BIAS ( zTOL * 10 )
 
-enum{ Z_MPR_PORTAL_OUTSIDE = -1, Z_MPR_PORTAL_TO_REFINE = 0, Z_MPR_PORTAL_AT_POINT = 1, Z_MPR_PORTAL_ON_SEG = 2 };
+enum{ ZEO_MPR_PORTAL_OUTSIDE = -1, ZEO_MPR_PORTAL_TO_REFINE = 0, ZEO_MPR_PORTAL_AT_POINT = 1, ZEO_MPR_PORTAL_ON_SEG = 2 };
 
 /* check if the origin is outside of a plane through three points p0, p1 and p2 farther than zTOL,
  * where the outer side is that to which (p1-p0)x(p2-p0) is directed. The signed distance of the
@@ -80,24 +80,24 @@ static int _zMPRFindPortal(zMPRSimplex *portal, zVec3DData *data1, zVec3DData *d
   portal->n = 1;
   if( _zVec3DSqrNorm( &portal->slot[0].v ) <= zTOL * zTOL )
     /* intersecting case: the center is slightly biased in order to compute penetration depth. */
-    portal->slot[0].v.e[0] += Z_MPR_BIAS;
+    portal->slot[0].v.e[0] += ZEO_MPR_BIAS;
 
   /* vertex 1 = support in direction to origin */
   zVec3DNormalizeNCDRC( zVec3DRev( &portal->slot[0].v, &dir ) );
   _zMPRSupportMap( &portal->slot[1], data1, data2, &dir );
   portal->n = 2;
-  if( zVec3DInnerProd( &portal->slot[1].v, &dir ) < zTOL ) return Z_MPR_PORTAL_OUTSIDE;
+  if( zVec3DInnerProd( &portal->slot[1].v, &dir ) < zTOL ) return ZEO_MPR_PORTAL_OUTSIDE;
 
   /* vertex 2 */
   zVec3DOuterProd( &portal->slot[1].v, &portal->slot[0].v, &dir );
   _zVec3DSub( &portal->slot[1].v, &portal->slot[0].v, &d );
   /* the distance between the origin and the line through vertices 0 and 1 is |v1 x v0| / |v1 - v0|. */
   if( _zVec3DSqrNorm( &dir ) <= zTOL * zTOL * _zVec3DSqrNorm( &d ) ) /* origin lies at vertex 1 or between vertices 0 and 1. */
-    return _zVec3DSqrNorm( &portal->slot[1].v ) <= zTOL * zTOL ? Z_MPR_PORTAL_AT_POINT : Z_MPR_PORTAL_ON_SEG;
+    return _zVec3DSqrNorm( &portal->slot[1].v ) <= zTOL * zTOL ? ZEO_MPR_PORTAL_AT_POINT : ZEO_MPR_PORTAL_ON_SEG;
   zVec3DNormalizeNCDRC( &dir );
   _zMPRSupportMap( &portal->slot[2], data1, data2, &dir );
   portal->n = 3;
-  if( zVec3DInnerProd( &portal->slot[2].v, &dir ) < zTOL ) return Z_MPR_PORTAL_OUTSIDE;
+  if( zVec3DInnerProd( &portal->slot[2].v, &dir ) < zTOL ) return ZEO_MPR_PORTAL_OUTSIDE;
 
   /* vertex 3 */
   _zMPRSimplexDir( portal, 0, 1, 2, &dir );
@@ -110,7 +110,7 @@ static int _zMPRFindPortal(zMPRSimplex *portal, zVec3DData *data1, zVec3DData *d
   }
   while( 1 ){
     _zMPRSupportMap( &portal->slot[3], data1, data2, &dir );
-    if( zVec3DInnerProd( &portal->slot[3].v, &dir ) < zTOL ) return Z_MPR_PORTAL_OUTSIDE;
+    if( zVec3DInnerProd( &portal->slot[3].v, &dir ) < zTOL ) return ZEO_MPR_PORTAL_OUTSIDE;
     /* test if origin is outside of (v1, v0, v3) - set v3 for v2 and continue */
     if( _zMPRIsOutside( &portal->slot[0].v, &portal->slot[1].v, &portal->slot[3].v ) ){
       _zMPRSlotCopy( &portal->slot[3], &portal->slot[2] );
@@ -125,7 +125,7 @@ static int _zMPRFindPortal(zMPRSimplex *portal, zVec3DData *data1, zVec3DData *d
     }
   }
   portal->n = 4;
-  return Z_MPR_PORTAL_TO_REFINE;
+  return ZEO_MPR_PORTAL_TO_REFINE;
 }
 
 /* direction vector of Minkowski portal. */
@@ -314,8 +314,8 @@ bool zMPR(zVec3DData *data1, zVec3DData *data2)
   zMPRSimplex portal;
 
   switch( _zMPRFindPortal( &portal, data1, data2 ) ){
-  case Z_MPR_PORTAL_OUTSIDE:   return false;
-  case Z_MPR_PORTAL_TO_REFINE: return _zMPRRefinePortal( &portal, data1, data2 );
+  case ZEO_MPR_PORTAL_OUTSIDE:   return false;
+  case ZEO_MPR_PORTAL_TO_REFINE: return _zMPRRefinePortal( &portal, data1, data2 );
   default: ;
   }
   return true;
@@ -328,16 +328,16 @@ bool zMPRDepth(zVec3DData *data1, zVec3DData *data2, double *depth, zVec3D *pos,
 
   /* Phase 1: find portal */
   switch( _zMPRFindPortal( &portal, data1, data2 ) ){
-  case Z_MPR_PORTAL_AT_POINT: /* contact at a point. */
+  case ZEO_MPR_PORTAL_AT_POINT: /* contact at a point. */
     *depth = 0;
     _zVec3DZero( dir );
     zVec3DMid( &portal.slot[1].v1, &portal.slot[1].v2, pos );
     break;
-  case Z_MPR_PORTAL_ON_SEG: /* contact on a segment */
+  case ZEO_MPR_PORTAL_ON_SEG: /* contact on a segment */
     *depth = zVec3DNormalizeNCDRC( zVec3DCopy( &portal.slot[1].v, dir ) );
     zVec3DMid( &portal.slot[1].v1, &portal.slot[1].v2, pos );
     break;
-  case Z_MPR_PORTAL_TO_REFINE: /* Phase 2: refine portal */
+  case ZEO_MPR_PORTAL_TO_REFINE: /* Phase 2: refine portal */
     if( _zMPRRefinePortal( &portal, data1, data2 ) ){
       /* compute penetration depth */
       return _zMPRDepth( &portal, data1, data2, depth, pos, dir );

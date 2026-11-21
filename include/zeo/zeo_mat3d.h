@@ -618,7 +618,8 @@ __ZEO_EXPORT zVec3D *zMulInvMat3DVec3D(const zMat3D *mat, const zVec3D *vec, zVe
  * This function fails if \a v1, \a v2 and \a v3 are not independent with
  * each other.
  * \return
- * zVec3DCatRatio() returns a pointer \a ratio.
+ * zVec3DCatRatio() returns a pointer \a ratio, if it succeeds. If \a v1, \a v2 and \a v3 are
+ * not independent, it returns the null pointer.
  */
 __ZEO_EXPORT double *zVec3DCatRatio(const zVec3D *v1, const zVec3D *v2, const zVec3D *v3, const zVec3D *v, double ratio[]);
 

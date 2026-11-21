@@ -191,6 +191,8 @@ __BEGIN_DECLS
  * point \a v and the normal vector \a n.
  * \return
  * zPlane3DInit() and zPlane3DCreate() return a pointer \a plane.
+ * If the norm of \a n is not larger than zTOL or is NaN, zPlane3DCreate() returns the null pointer.
+ * In this case, the normal vector of \a plane is set for the zero vector.
  */
 __ZEO_EXPORT zPlane3D *zPlane3DCreate(zPlane3D *plane, const zVec3D *v, const zVec3D *n);
 #define zPlane3DInit(plane) zPlane3DCreate( (plane), ZVEC3DZERO, ZVEC3DZ )
