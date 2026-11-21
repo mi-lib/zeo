@@ -1,3 +1,4 @@
+2026.11.21. Modified the test of zMat3DSymmetrize to compare the quadratic forms relatively to the norms of the matrix and the vector. [test]
 2026.11.21. Added a test of zMat3DFromAA and zMat3DToAA for angles close to pi. [test]
 2026.11.21. Debugged the test of zMat3DFromAA and zMat3DToAA for singular cases. [test]
 2026.11.21. Modified zMat3DToAA to compute the axis from the symmetric part of the matrix if the angle is larger than pi/2. [zeo_mat3d]

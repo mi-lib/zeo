@@ -88,7 +88,7 @@ void assert_mat3D_symmetrize(void)
     if( !zMat3DIsSymmetric( &m2 ) ) result3 = false;
     zMulMat3DVec3D( &m2, &v, &u );
     qval2 = zVec3DInnerProd( &v, &u );
-    if( !zIsTiny( qval1 - qval2 ) ) result1 = false;
+    if( !zIsTol( qval1 - qval2, zTOL * zMat3DNorm( &m1 ) * zVec3DSqrNorm( &v ) ) ) result1 = false;
     zMat3DSymmetrizeDRC( &m1 );
     if( !zMat3DEqual( &m1, &m2 ) ) result2 = false;
   }
