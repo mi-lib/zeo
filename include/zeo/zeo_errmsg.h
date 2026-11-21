@@ -79,6 +79,7 @@
 
 #define ZEO_ERR_VEC3DDATA_SIZEMISMATCH        "size mismatch between two sets of 3D points %d / %d"
 #define ZEO_ERR_VEC3DDATA_IDENTFRAME_TOOFEWPOINTS "too few points to identify the transformation: %d"
+#define ZEO_ERR_VEC3DDATA_IDENTFRAME_DEGENERATE "points are collinear or coincident to identify the transformation"
 
 #define ZEO_ERR_STL_UNREADABLE                "unreadable file. probably not a STL file."
 #define ZEO_ERR_STL_INCOMPLETE                "incomplete STL file"

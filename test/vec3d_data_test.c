@@ -270,6 +270,124 @@ void assert_frame_ident(void)
   zAssert( zVec3DDataIdentFrame, result );
 }
 
+void assert_frame_ident_coplanar(void)
+{
+  int i, j, testnum = 100;
+  zVec3DData src, dest;
+  zFrame3D frame, frame_ident;
+  zVec3D po, p;
+  double z;
+  bool result = true;
+
+  for( i=0; i<testnum; i++ ){
+    zVec3DDataInitList( &src );
+    zVec3DDataInitList( &dest );
+    generate_frame( &frame );
+    z = zRandF(-5,5);
+    for( j=0; j<10; j++ ){
+      zVec3DCreate( &po, zRandF(-5,5), zRandF(-5,5), z );
+      zXform3D( &frame, &po, &p );
+      zVec3DDataAdd( &src, &po );
+      zVec3DDataAdd( &dest, &p );
+    }
+    if( !zVec3DDataIdentFrame( &src, &dest, &frame_ident ) ||
+        zMat3DDet( zFrame3DAtt(&frame_ident) ) < 0 ||
+        !check_frame_error( &frame, &frame_ident, zTOL ) ) result = false;
+    zVec3DDataDestroy( &dest );
+    zVec3DDataDestroy( &src );
+  }
+  zAssert( zVec3DDataIdentFrame (coplanar points), result );
+}
+
+void assert_frame_ident_barycenter(void)
+{
+  int i, j, testnum = 100;
+  zVec3DData src, dest;
+  zFrame3D frame, frame_ident;
+  zVec3D po, p, offset, gs, gd;
+  bool result = true;
+
+  for( i=0; i<testnum; i++ ){
+    zVec3DDataInitList( &src );
+    zVec3DDataInitList( &dest );
+    generate_frame( &frame );
+    zVec3DCreate( &offset, zRandF(-100,100), zRandF(-100,100), zRandF(-100,100) );
+    for( j=0; j<20; j++ ){
+      zVec3DCreate( &po, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+      zVec3DAddDRC( &po, &offset );
+      zXform3D( &frame, &po, &p );
+      p.c.x += zRandF(-0.1,0.1);
+      p.c.y += zRandF(-0.1,0.1);
+      p.c.z += zRandF(-0.1,0.1);
+      zVec3DDataAdd( &src, &po );
+      zVec3DDataAdd( &dest, &p );
+    }
+    zVec3DDataBarycenter( &src, &gs );
+    zVec3DDataBarycenter( &dest, &gd );
+    if( !zVec3DDataIdentFrame( &src, &dest, &frame_ident ) ) result = false;
+    zXform3D( &frame_ident, &gs, &p );
+    if( !zVec3DIsTol( zVec3DSubDRC( &p, &gd ), zTOL * ( 1 + zVec3DNorm( &gd ) ) ) ) result = false;
+    zVec3DDataDestroy( &dest );
+    zVec3DDataDestroy( &src );
+  }
+  zAssert( zVec3DDataIdentFrame (barycenters of noisy points), result );
+}
+
+void assert_frame_ident_collinear(void)
+{
+  int j;
+  zVec3DData src, dest;
+  zFrame3D frame, frame_ident;
+  zVec3D po, p, dir;
+  double t;
+  bool result;
+
+  zVec3DDataInitList( &src );
+  zVec3DDataInitList( &dest );
+  generate_frame( &frame );
+  zVec3DCreate( &dir, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+  for( j=0; j<10; j++ ){
+    t = zRandF(-5,5);
+    zVec3DMul( &dir, t, &po );
+    zXform3D( &frame, &po, &p );
+    zVec3DDataAdd( &src, &po );
+    zVec3DDataAdd( &dest, &p );
+  }
+  result = zVec3DDataIdentFrame( &src, &dest, &frame_ident ) == NULL;
+  zAssert( zVec3DDataIdentFrame (collinear points), result );
+  result = zVec3DDataICP( &src, &dest, &frame_ident, 1.0, 1.0e-10 ) == NULL;
+  zAssert( zVec3DDataICP (collinear points), result );
+  zVec3DDataDestroy( &dest );
+  zVec3DDataDestroy( &src );
+}
+
+void assert_icp_offset(void)
+{
+  int i, k, testnum = 10;
+  zVec3DData src, dest;
+  zFrame3D frame, frame_icp;
+  zVec3D po, p;
+  bool result = true;
+
+  for( k=0; k<testnum; k++ ){
+    zVec3DCreate( zFrame3DPos(&frame), zRandF(-0.2,0.2), zRandF(-0.2,0.2), zRandF(-0.2,0.2) );
+    zMat3DFromZYX( zFrame3DAtt(&frame), 0.2*zPI*zRandF(-1,1), 0.2*zPI*zRandF(-1,1), 0.2*zPI*zRandF(-1,1) );
+    zVec3DDataInitList( &src );
+    zVec3DDataInitList( &dest );
+    for( i=0; i<1000; i++ ){ /* points apart from the origin */
+      zVec3DCreate( &po, zRandF(-1,1)+5, zRandF(-0.5,0.5)+5, zRandF(-0.2,0.2)+5 );
+      zXform3D( &frame, &po, &p );
+      zVec3DDataAdd( &src, &po );
+      zVec3DDataAdd( &dest, &p );
+    }
+    if( !zVec3DDataICP( &src, &dest, &frame_icp, 0.1, 1.0e-6 ) ||
+        !check_frame_error( &frame, &frame_icp, 1.0e-4 ) ) result = false;
+    zVec3DDataDestroy( &dest );
+    zVec3DDataDestroy( &src );
+  }
+  zAssert( zVec3DDataICP (points apart from the origin), result );
+}
+
 int main(int argc, char *argv[])
 {
   zRandInit();
@@ -283,5 +401,9 @@ int main(int argc, char *argv[])
   assert_vec3ddata_addrlist_ptr();
   assert_vicinity();
   assert_frame_ident();
+  assert_frame_ident_coplanar();
+  assert_frame_ident_barycenter();
+  assert_frame_ident_collinear();
+  assert_icp_offset();
   return 0;
 }

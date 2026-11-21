@@ -975,13 +975,15 @@ zVec3D *zMat3DSymEigMin(const zMat3D *m, zVec3D *eig)
 }
 
 /* rotation of two columns of a 3x3 matrix to be orthogonal to each other (one-sided Jacobi's method). */
-static bool _zMat3DSVDRot(zMat3D *w, zMat3D *v, int i, int j)
+static bool _zMat3DSVDRot(zMat3D *w, zMat3D *v, int i, int j, double tiny)
 {
   double a, b, g, z, t, c, s, tmp1, tmp2;
   int k;
 
   a = _zVec3DSqrNorm( &w->v[i] );
   b = _zVec3DSqrNorm( &w->v[j] );
+  /* a column as small as rounding errors has a random direction, which cannot be orthogonalized. */
+  if( a <= tiny || b <= tiny ) return false;
   g = _zVec3DInnerProd( &w->v[i], &w->v[j] );
   /* the margin of the threshold covers the rounding error of the inner product, which otherwise
    * prevents the iteration from terminating in rare cases. */
@@ -1007,15 +1009,17 @@ int zMat3DSVD(const zMat3D *m, zMat3D *u, zVec3D *sv, zMat3D *v)
 {
   zMat3D w;
   int iter, i, p, q, r, rank;
+  double tiny;
   bool rotated;
 
   /* orthogonalize columns of w = m v */
   zMat3DCopy( m, &w );
   zMat3DIdent( v );
+  tiny = zSqr( 4 * DBL_EPSILON ) * _zMat3DSqrNorm( m ); /* squared norm of a negligible column */
   for( iter=0; iter<Z_MAX_ITER_NUM; iter++ ){
-    rotated  = _zMat3DSVDRot( &w, v, 0, 1 );
-    rotated |= _zMat3DSVDRot( &w, v, 0, 2 );
-    rotated |= _zMat3DSVDRot( &w, v, 1, 2 );
+    rotated  = _zMat3DSVDRot( &w, v, 0, 1, tiny );
+    rotated |= _zMat3DSVDRot( &w, v, 0, 2, tiny );
+    rotated |= _zMat3DSVDRot( &w, v, 1, 2, tiny );
     if( !rotated ) break;
   }
   if( iter == Z_MAX_ITER_NUM ) ZITERWARN( Z_MAX_ITER_NUM );

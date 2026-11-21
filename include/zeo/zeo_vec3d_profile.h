@@ -38,9 +38,11 @@ __ZEO_EXPORT zVec3DData *(* zVec3DDataNormalVec)(zVec3DData*, double, zVec3DData
  * another \a dest based on Umeyama's method:
  * Shinji Umeyama, Least-Squares Estimation of Transformation Parameters Between Two Point Patterns,
  * IEEE Transactions on Pattern Analysis and Machine Intelligence, Vol. 13, No. 4, pp. 376-380, 1991.
+ * The frame is identified as a rigid transformation without scaling.
  * \return
- * zVec3DDataIdentFrame() returns the pointer \a frame if it succeeds. If the given points are too few
- * or the sizes of \a src and \a dest mismatches, it returns the null pointer.
+ * zVec3DDataIdentFrame() returns the pointer \a frame if it succeeds. If the given points are too few,
+ * the sizes of \a src and \a dest mismatches, or the points of \a src or \a dest are collinear or
+ * coincident, it returns the null pointer.
  */
 __ZEO_EXPORT zFrame3D *zVec3DDataIdentFrame(zVec3DData *src, zVec3DData *dest, zFrame3D *frame);
 
@@ -57,7 +59,8 @@ __ZEO_EXPORT zFrame3D *zVec3DDataIdentFrame(zVec3DData *src, zVec3DData *dest, z
  * \a tol is the tolerance of the maximum distance between corresponding points of \a src and \a dest
  * to stop iterations.
  * \return
- * zVec3DDataICP() returns the pointer \a frame.
+ * zVec3DDataICP() returns the pointer \a frame if it succeeds. If it fails to identify the transformation
+ * because the points are collinear or coincident, it returns the null pointer.
  * \sa
  * zVec3DDataIdentFrame
  */

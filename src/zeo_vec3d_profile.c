@@ -37,9 +37,11 @@ zVec3DData *zVec3DDataNormalVec_Tree(zVec3DData *pointdata, double radius, zVec3
   zVec3DDataRewind( pointdata );
   while( ( v = zVec3DDataFetch( pointdata ) ) ){
     zVec3DDataInitAddrList( &vicinity );
-    if( !zVec3DTreeVicinity( &tree, v, radius, &vicinity ) ) goto TERMINATE;
-    _zVec3DDataNormalVecFromVicinity( &vicinity, v, &center, &normal );
-    if( !zVec3DDataAdd( normaldata, &normal ) ) goto TERMINATE;
+    if( !zVec3DTreeVicinity( &tree, v, radius, &vicinity ) ||
+        !zVec3DDataAdd( normaldata, _zVec3DDataNormalVecFromVicinity( &vicinity, v, &center, &normal ) ) ){
+      zVec3DDataDestroy( &vicinity );
+      goto TERMINATE;
+    }
     zVec3DDataDestroy( &vicinity );
   }
   retval = normaldata;
@@ -64,9 +66,11 @@ zVec3DData *zVec3DDataNormalVec_Octree(zVec3DData *pointdata, double radius, zVe
   zVec3DDataRewind( pointdata );
   while( ( v = zVec3DDataFetch( pointdata ) ) ){
     zVec3DDataInitAddrList( &vicinity );
-    if( !zVec3DOctreeVicinity( &octree, v, radius, &vicinity ) ) goto TERMINATE;
-    _zVec3DDataNormalVecFromVicinity( &vicinity, v, &center, &normal );
-    if( !zVec3DDataAdd( normaldata, &normal ) ) goto TERMINATE;
+    if( !zVec3DOctreeVicinity( &octree, v, radius, &vicinity ) ||
+        !zVec3DDataAdd( normaldata, _zVec3DDataNormalVecFromVicinity( &vicinity, v, &center, &normal ) ) ){
+      zVec3DDataDestroy( &vicinity );
+      goto TERMINATE;
+    }
     zVec3DDataDestroy( &vicinity );
   }
   retval = normaldata;
@@ -87,7 +91,8 @@ zFrame3D *zVec3DDataIdentFrame(zVec3DData *src, zVec3DData *dest, zFrame3D *fram
   zVec3D *po, *p;
   zVec3D pgo, pg, dpo, dp, d;
   zMat3D cov, u, v;
-  double so = 0;
+  double ss_src = 0, ss_dest = 0, tol;
+  int imin;
 
   if( zVec3DDataSize(src) != zVec3DDataSize(dest) ){
     ZRUNERROR( ZEO_ERR_VEC3DDATA_SIZEMISMATCH, zVec3DDataSize(src), zVec3DDataSize(dest) );
@@ -105,15 +110,26 @@ zFrame3D *zVec3DDataIdentFrame(zVec3DData *src, zVec3DData *dest, zFrame3D *fram
   while( ( po = zVec3DDataFetch( src ) ) && ( p = zVec3DDataFetch( dest ) ) ){
     zVec3DSub( po, &pgo, &dpo );
     zVec3DSub( p, &pg, &dp );
-    so += zVec3DSqrNorm( &dpo );
     zMat3DAddDyad( &cov, &dpo, &dp );
+    ss_src += zVec3DSqrNorm( po );
+    ss_dest += zVec3DSqrNorm( p );
   }
-  so /= zVec3DDataSize(src);
-  zMat3DDivDRC( &cov, zVec3DDataSize(src) );
   zMat3DSVD( &cov, &u, &d, &v );
+  /* the rotation about a line is not determined if the points are collinear or coincident, namely,
+   * if less than two singular values are larger than rounding errors relative to the coordinates. */
+  tol = zTOL * sqrt( ss_src * ss_dest );
+  if( ( d.c.x > tol ) + ( d.c.y > tol ) + ( d.c.z > tol ) < 2 ){
+    ZRUNERROR( ZEO_ERR_VEC3DDATA_IDENTFRAME_DEGENERATE );
+    return NULL;
+  }
+  /* avoid a reflection by flipping the singular vector of the smallest singular value. */
+  if( zMat3DDet( &u ) * zMat3DDet( &v ) < 0 ){
+    imin = d.c.x < d.c.y ? ( d.c.x < d.c.z ? 0 : 2 ) : ( d.c.y < d.c.z ? 1 : 2 );
+    zVec3DRevDRC( zMat3DVec(&v,imin) );
+  }
   zMulMat3DMat3DT( &v, &u, zFrame3DAtt(frame) );
+  /* the frame is rigid, so that the barycenter of src is transformed to that of dest without scaling. */
   zMulMat3DVec3D( zFrame3DAtt(frame), &pgo, &dp );
-  zVec3DMulDRC( &dp, ( d.c.x + d.c.y + d.c.z ) / so );
   zVec3DSub( &pg, &dp, zFrame3DPos(frame) );
   return frame;
 }
@@ -138,6 +154,8 @@ zFrame3D *zVec3DDataICP(zVec3DData *src, zVec3DData *dest, zFrame3D *frame, doub
   zVec3D *po, p;
   int i, iter = ZEO_VEC3DDATA_ICP_MAXITERNUM;
   double error_max, error;
+  zFrame3D *ret = frame;
+  bool converged;
 
   if( !zVec3DDataToTree( dest, &dest_tree ) ){
     zVec3DTreeDestroy( &dest_tree );
@@ -156,13 +174,18 @@ zFrame3D *zVec3DDataICP(zVec3DData *src, zVec3DData *dest, zFrame3D *frame, doub
       zVec3DDataAdd( &sample_src, po );
       zVec3DDataAdd( &sample_dest, &nn->data.point );
     }
-    if( error_max < tol ) break;
-    zVec3DDataIdentFrame( &sample_src, &sample_dest, frame );
+    converged = false;
+    /* an iteration with too few samples is skipped, and the points are re-sampled. */
+    if( zVec3DDataSize(&sample_src) >= ZEO_VEC3DDATA_IDENT_FRAME_MINSIZ ){
+      if( !( converged = error_max < tol ) &&
+          !zVec3DDataIdentFrame( &sample_src, &sample_dest, frame ) ) ret = NULL;
+    }
     zVec3DDataDestroy( &sample_src );
     zVec3DDataDestroy( &sample_dest );
+    if( converged || !ret ) break;
   }
   if( i == iter )
     ZITERWARN( iter );
   zVec3DTreeDestroy( &dest_tree );
-  return frame;
+  return ret;
 }
