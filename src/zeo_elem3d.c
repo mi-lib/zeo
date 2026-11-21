@@ -273,6 +273,36 @@ ZEO_ELEM_TRIXD_BARYCENTER( 3D )
   (p)->c.z = ( (w1)*zTri3DVert(tri,0)->c.z + (w2)*zTri3DVert(tri,1)->c.z + (w3)*zTri3DVert(tri,2)->c.z ) / __d;\
 } while(0)
 
+/* circumcenter of a 3D triangle relative to the vertex of the largest angle, namely, the vertex opposite
+ * to the longest edge. Let A be the vertex, and u = B - A and w = C - A the edge vectors from A. The
+ * circumcenter O is computed only from the edge vectors as
+ *   O - A = ( |u|^2 w - |w|^2 u ) x ( u x w ) / ( 2 |u x w|^2 ),
+ * which is accurate even for a thin triangle and is invariant to the translation of the triangle.
+ * The index of A is returned. If the triangle is degenerate, -1 is returned. */
+static int _zTri3DCircumcenterRel(const zTri3D *tri, zVec3D *u, zVec3D *w, zVec3D *oa)
+{
+  zVec3D n, y;
+  double r[3], nn;
+  int a;
+
+  /* squared lengths of the edges opposite to the vertices */
+  r[0] = zVec3DSqrDist( zTri3DVert(tri,1), zTri3DVert(tri,2) );
+  r[1] = zVec3DSqrDist( zTri3DVert(tri,2), zTri3DVert(tri,0) );
+  r[2] = zVec3DSqrDist( zTri3DVert(tri,0), zTri3DVert(tri,1) );
+  a = r[0] >= r[1] ? ( r[0] >= r[2] ? 0 : 2 ) : ( r[1] >= r[2] ? 1 : 2 );
+  _zVec3DSub( zTri3DVert(tri,(a+1)%3), zTri3DVert(tri,a), u );
+  _zVec3DSub( zTri3DVert(tri,(a+2)%3), zTri3DVert(tri,a), w );
+  _zVec3DOuterProd( u, w, &n );
+  /* the same criterion with zTri3DCalcNorm(), namely, the norm of the outer product is compared with
+   * the squared length of the longest edge. */
+  if( !( ( nn = _zVec3DSqrNorm( &n ) ) > zTOL * zTOL * r[a] * r[a] ) ) return -1;
+  _zVec3DMul( w, r[(a+2)%3], &y );
+  _zVec3DCatDRC( &y, -r[(a+1)%3], u );
+  _zVec3DOuterProd( &y, &n, oa );
+  _zVec3DMulDRC( oa, 0.5 / nn );
+  return a;
+}
+
 /* circumcenter of a 3D triangle */
 ZEO_ELEM_TRIXD_CIRCUMCENTER( 3D )
 

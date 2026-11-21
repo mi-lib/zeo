@@ -37,7 +37,8 @@ __ZEO_EXPORT bool zDisk2DPointIsInside(const zDisk2D *disk, const zVec2D *v, dou
 /*! \brief create a 2D disk from two points at both ends of diameter. */
 __ZEO_EXPORT zDisk2D *zDisk2DFrom2(zDisk2D *disk, const zVec2D *v1, const zVec2D *v2);
 
-/*! \brief create a 2D disk from three points as a circumcircle of them. */
+/*! \brief create a 2D disk from three points as a circumcircle of them.
+ * It returns the null pointer if the three points are collinear. */
 __ZEO_EXPORT zDisk2D *zDisk2DFrom3(zDisk2D *disk, const zVec2D *v1, const zVec2D *v2, const zVec2D *v3);
 
 __END_DECLS

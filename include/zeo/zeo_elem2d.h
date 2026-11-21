@@ -201,6 +201,7 @@ __ZEO_EXPORT zTri2D *zTri2DCreate(zTri2D *tri, const zVec2D *v1, const zVec2D *v
  * \return
  * zTri2DBarycenter(), zTri2DCircumcenter(), zTri2DIncenter() and
  * zTri2DOrthocenter() return a pointer \a c.
+ * zTri2DCircumcenter() and zTri2DOrthocenter() return the null pointer if \a tri is degenerate.
  */
 __ZEO_EXPORT ZEO_ELEM_TRIXD_BARYCENTER_PROTOTYPE( 2D );
 __ZEO_EXPORT ZEO_ELEM_TRIXD_CIRCUMCENTER_PROTOTYPE( 2D );

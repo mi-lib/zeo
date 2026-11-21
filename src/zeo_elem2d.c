@@ -113,6 +113,32 @@ ZEO_ELEM_TRIXD_BARYCENTER( 2D )
   (p)->c.y = ( (w1)*zTri2DVert(tri,0)->c.y + (w2)*zTri2DVert(tri,1)->c.y + (w3)*zTri2DVert(tri,2)->c.y ) / __d;\
 } while(0)
 
+/* circumcenter of a 2D triangle relative to the vertex of the largest angle, namely, the vertex opposite
+ * to the longest edge. Let A be the vertex, and u = B - A and w = C - A the edge vectors from A. The
+ * circumcenter O is computed only from the edge vectors as
+ *   O - A = ( |u|^2 w_y - |w|^2 u_y, |w|^2 u_x - |u|^2 w_x ) / ( 2 u x w ),
+ * which is accurate even for a thin triangle and is invariant to the translation of the triangle.
+ * The index of A is returned. If the triangle is degenerate, -1 is returned. */
+static int _zTri2DCircumcenterRel(const zTri2D *tri, zVec2D *u, zVec2D *w, zVec2D *oa)
+{
+  double r[3], d;
+  int a;
+
+  /* squared lengths of the edges opposite to the vertices */
+  r[0] = zVec2DSqrDist( zTri2DVert(tri,1), zTri2DVert(tri,2) );
+  r[1] = zVec2DSqrDist( zTri2DVert(tri,2), zTri2DVert(tri,0) );
+  r[2] = zVec2DSqrDist( zTri2DVert(tri,0), zTri2DVert(tri,1) );
+  a = r[0] >= r[1] ? ( r[0] >= r[2] ? 0 : 2 ) : ( r[1] >= r[2] ? 1 : 2 );
+  _zVec2DSub( zTri2DVert(tri,(a+1)%3), zTri2DVert(tri,a), u );
+  _zVec2DSub( zTri2DVert(tri,(a+2)%3), zTri2DVert(tri,a), w );
+  /* the outer product, namely, twice the area of the triangle, is compared with the squared length
+   * of the longest edge. */
+  if( !( fabs( ( d = _zVec2DOuterProd( u, w ) ) ) > zTOL * r[a] ) ) return -1;
+  d = 0.5 / d;
+  _zVec2DCreate( oa, ( r[(a+2)%3]*w->c.y - r[(a+1)%3]*u->c.y ) * d, ( r[(a+1)%3]*u->c.x - r[(a+2)%3]*w->c.x ) * d );
+  return a;
+}
+
 /* circumcenter of a triangle */
 ZEO_ELEM_TRIXD_CIRCUMCENTER( 2D )
 

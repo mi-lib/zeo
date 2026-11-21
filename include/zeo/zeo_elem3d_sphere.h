@@ -102,7 +102,8 @@ __ZEO_EXPORT bool zSphere3DPointIsInside(const zSphere3D *sphere, const zVec3D *
 /*! \brief create a 3D sphere from two points at both ends of diameter. */
 __ZEO_EXPORT zSphere3D *zSphere3DFrom2(zSphere3D *sphere, const zVec3D *v1, const zVec3D *v2);
 
-/*! \brief create a 3D sphere from three points to include their circumcircle as the great circle. */
+/*! \brief create a 3D sphere from three points to include their circumcircle as the great circle.
+ * It returns the null pointer if the three points are collinear. */
 __ZEO_EXPORT zSphere3D *zSphere3DFrom3(zSphere3D *sphere, const zVec3D *v1, const zVec3D *v2, const zVec3D *v3);
 
 /*! \brief create a 3D sphere from four points as the circumscribing sphere of them. */

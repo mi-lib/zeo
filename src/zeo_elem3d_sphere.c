@@ -110,7 +110,8 @@ zSphere3D *zSphere3DFrom3(zSphere3D *sphere, const zVec3D *v1, const zVec3D *v2,
   double r;
 
   zTri3DCreate( &t, v1, v2, v3 );
-  r = zVec3DDist( zTri3DCircumcenter( &t, &c ), v3 );
+  if( !zTri3DCircumcenter( &t, &c ) ) return NULL;
+  r = zVec3DDist( &c, v3 );
   return zSphere3DCreate( sphere, &c, r, 0 );
 }
 

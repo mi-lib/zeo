@@ -129,10 +129,12 @@ static bool _zDelaunay2DLegalizeOne(zDelaunayTri2DList *tl, zDelaunayTri2D *t, i
 
   if( !( a = t->adj[i] ) ) return true;
   ia = _zDelaunayTri2DFindAdj( a, t );
-  zTri2DCircumcenter( &t->t, &c );
-  r = zVec2DDist( zTri2DVert( &t->t, 0 ), &c );
   pn = zTri2DVert( &a->t, ( ka = ( ia + 2 ) % 3 ) );
-  if( zVec2DDist( pn, &c ) > r ) return true;
+  /* a degenerate triangle, which does not have the circumcenter, is always flipped. */
+  if( zTri2DCircumcenter( &t->t, &c ) ){
+    r = zVec2DDist( zTri2DVert( &t->t, 0 ), &c );
+    if( zVec2DDist( pn, &c ) > r ) return true;
+  }
   /* flip t and a */
   pk = zTri2DVert( &t->t, ( k = ( i + 2 ) % 3 ) );
   tj = t->adj[ ( j = ( i + 1 ) % 3 ) ];
@@ -251,21 +253,18 @@ void zDelaunayTri2DListVoronoi2DFPrint(FILE *fp, zDelaunayTri2DList *tl)
   zDelaunayTri2DListCell *tc;
 
   zListForEach( tl, tc ){
-    zTri2DCircumcenter( &tc->data.t, &c );
-    if( tc->data.adj[0] ){
-      zTri2DCircumcenter( &tc->data.adj[0]->t, &c0 );
+    if( !zTri2DCircumcenter( &tc->data.t, &c ) ) continue; /* degenerate triangle */
+    if( tc->data.adj[0] && zTri2DCircumcenter( &tc->data.adj[0]->t, &c0 ) ){
       zVec2DValueNLFPrint( fp, &c );
       zVec2DValueNLFPrint( fp, &c0 );
       fprintf( fp, "\n" );
     }
-    if( tc->data.adj[1] ){
-      zTri2DCircumcenter( &tc->data.adj[1]->t, &c1 );
+    if( tc->data.adj[1] && zTri2DCircumcenter( &tc->data.adj[1]->t, &c1 ) ){
       zVec2DValueNLFPrint( fp, &c );
       zVec2DValueNLFPrint( fp, &c1 );
       fprintf( fp, "\n" );
     }
-    if( tc->data.adj[2] ){
-      zTri2DCircumcenter( &tc->data.adj[2]->t, &c2 );
+    if( tc->data.adj[2] && zTri2DCircumcenter( &tc->data.adj[2]->t, &c2 ) ){
       zVec2DValueNLFPrint( fp, &c );
       zVec2DValueNLFPrint( fp, &c2 );
       fprintf( fp, "\n" );
@@ -367,7 +366,7 @@ static zVoronoi2DList *_zVoronoi2DListFromDelaunayTri2DList(zVoronoi2DList *vl, 
   zVec2D node;
 
   zListForEach( tl, tc ){
-    zTri2DCircumcenter( &tc->data.t, &node );
+    if( !zTri2DCircumcenter( &tc->data.t, &node ) ) return NULL;
     if( !_zVoronoi2DListFromDelaunayTri2D( vl, tc, 0, &node ) ) return NULL;
     if( !_zVoronoi2DListFromDelaunayTri2D( vl, tc, 1, &node ) ) return NULL;
     if( !_zVoronoi2DListFromDelaunayTri2D( vl, tc, 2, &node ) ) return NULL;
@@ -398,7 +397,10 @@ bool zVec2DDataVoronoiDiagram(zVec2DData *data, zVoronoi2DList *vl)
   bool ret = true;
 
   if( _zVoronoi2DListInit( vl, data, &tl, sp ) ){
-    _zVoronoi2DListFromDelaunayTri2DList( vl, &tl );
+    if( !_zVoronoi2DListFromDelaunayTri2DList( vl, &tl ) ){
+      ZRUNERROR( ZEO_ERR_VORONOI_CONV );
+      ret = false;
+    }
   } else
     ret = false;
   zDelaunayTri2DListDestroy( &tl );

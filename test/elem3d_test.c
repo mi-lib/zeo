@@ -649,7 +649,7 @@ void assert_tri3D_center(void)
     create_tri3D_rand_minmax( v, &t, -5, 5 );
     zTri3DCircumcenter( &t, &c );
     r = zVec3DDist( &v[0], &c );
-    if( !zIsTol( zVec3DDist( &v[1], &c ) - r, TOL ) || !zIsTol( zVec3DDist( &v[2], &c ) - r, TOL ) ){
+    if( !zIsTol( zVec3DDist( &v[1], &c ) - r, TOL*r ) || !zIsTol( zVec3DDist( &v[2], &c ) - r, TOL*r ) ){
       eprintf( "%.10g, %.10g\n", zVec3DDist( &v[1], &c ) - r, zVec3DDist( &v[2], &c ) - r );
       ret = false;
     }
@@ -673,13 +673,89 @@ void assert_tri3D_center(void)
     for( j=0; j<3; j++ ){
       zVec3DSub( &c, &v[j], &tmp );
       zVec3DSub( &v[(j+2)%3], &v[(j+1)%3], &h[0] );
-      if( !zIsTol( zVec3DInnerProd( &tmp, &h[0] ), TOL ) ){
+      if( !zIsTol( zVec3DInnerProd( &tmp, &h[0] ), TOL*zVec3DNorm(&tmp)*zVec3DNorm(&h[0]) ) ){
         eprintf( "%.10g\n", zVec3DInnerProd( &tmp, &h[0] ) );
         ret = false;
       }
     }
   }
   zAssert( zTri3DOrthocenter, ret );
+}
+
+/* check a center of a triangle with the expected point relatively to the scale. */
+bool check_tri3D_center(const zVec3D *c, const zVec3D *c_expected, double scale)
+{
+  return c && zVec3DDist( c, c_expected ) <= TOL * scale;
+}
+
+void assert_tri3D_center_thin(void)
+{
+  zVec3D v[3], o, c, c_expected;
+  zTri3D t;
+  double h, hs[] = { 1.0e-1, 1.0e-2, 1.0e-3, 1.0e-4, 1.0e-5, 1.0e-6 };
+  double offset[] = { 0, 1.0e3 };
+  int i, j, k;
+  bool result1 = true, result2 = true;
+
+  for( i=0; i<sizeof(offset)/sizeof(double); i++ ){
+    zVec3DCreate( &o, offset[i], -offset[i], 0.5*offset[i] );
+    for( j=0; j<sizeof(hs)/sizeof(double); j++ ){
+      /* isosceles triangle with the base from -1 to 1 along x-axis and the apex at the height h */
+      zVec3DCreate( &v[0], o.c.x-1, o.c.y, o.c.z );
+      zVec3DCreate( &v[1], o.c.x+1, o.c.y, o.c.z );
+      zVec3DCreate( &v[2], o.c.x, o.c.y+hs[j], o.c.z );
+      h = v[2].c.y - o.c.y; /* the actual height after rounding */
+      for( k=0; k<3; k++ ){ /* every order of vertices */
+        zTri3DCreate( &t, &v[k], &v[(k+1)%3], &v[(k+2)%3] );
+        zVec3DCreate( &c_expected, o.c.x, o.c.y+0.5*(h*h-1)/h, o.c.z );
+        if( !check_tri3D_center( zTri3DCircumcenter( &t, &c ), &c_expected, zVec3DDist( &c_expected, &v[0] ) ) ){
+          eprintf( "(offset=%g, h=%g) circumcenter error = %g\n", offset[i], hs[j], zVec3DDist( &c, &c_expected ) );
+          result1 = false;
+        }
+        zVec3DCreate( &c_expected, o.c.x, o.c.y+1/h, o.c.z );
+        if( !check_tri3D_center( zTri3DOrthocenter( &t, &c ), &c_expected, zVec3DDist( &c_expected, &v[0] ) ) ){
+          eprintf( "(offset=%g, h=%g) orthocenter error = %g\n", offset[i], hs[j], zVec3DDist( &c, &c_expected ) );
+          result2 = false;
+        }
+      }
+    }
+  }
+  zAssert( zTri3DCircumcenter (thin triangle case), result1 );
+  zAssert( zTri3DOrthocenter (thin triangle case), result2 );
+}
+
+void assert_tri3D_center_special(void)
+{
+  zVec3D v[3], c, c_expected;
+  zTri3D t;
+  bool result1 = true, result2 = true;
+
+  /* right triangle */
+  zVec3DCreate( &v[0], 1, 2, 3 );
+  zVec3DCreate( &v[1], 4, 2, 3 );
+  zVec3DCreate( &v[2], 1, 6, 3 );
+  zTri3DCreate( &t, &v[0], &v[1], &v[2] );
+  zVec3DMid( &v[1], &v[2], &c_expected );
+  if( !check_tri3D_center( zTri3DCircumcenter( &t, &c ), &c_expected, zVec3DDist( &c_expected, &v[0] ) ) ) result1 = false;
+  if( !check_tri3D_center( zTri3DOrthocenter( &t, &c ), &v[0], zVec3DDist( &v[0], &v[1] ) ) ) result1 = false;
+  /* equilateral triangle */
+  zVec3DCreate( &v[0], 1, 0, 0 );
+  zVec3DCreate( &v[1], 0, 1, 0 );
+  zVec3DCreate( &v[2], 0, 0, 1 );
+  zTri3DCreate( &t, &v[0], &v[1], &v[2] );
+  zTri3DBarycenter( &t, &c_expected );
+  if( !check_tri3D_center( zTri3DCircumcenter( &t, &c ), &c_expected, zVec3DDist( &c_expected, &v[0] ) ) ) result1 = false;
+  if( !check_tri3D_center( zTri3DOrthocenter( &t, &c ), &c_expected, zVec3DDist( &c_expected, &v[0] ) ) ) result1 = false;
+  zAssert( zTri3DCircumcenter + zTri3DOrthocenter (right and equilateral triangles), result1 );
+  /* degenerate triangles */
+  zVec3DCreate( &v[0], 1, 2, 3 );
+  zVec3DCreate( &v[1], 2, 3, 4 );
+  zVec3DCreate( &v[2], 3, 4, 5 );
+  zTri3DCreate( &t, &v[0], &v[1], &v[2] );
+  if( zTri3DCircumcenter( &t, &c ) || zTri3DOrthocenter( &t, &c ) ) result2 = false;
+  zTri3DCreate( &t, &v[0], &v[0], &v[0] );
+  if( zTri3DCircumcenter( &t, &c ) || zTri3DOrthocenter( &t, &c ) ) result2 = false;
+  zAssert( zTri3DCircumcenter + zTri3DOrthocenter (degenerate case), result2 );
 }
 
 void assert_tri3D_list_align(void)
@@ -924,6 +1000,8 @@ int main(void)
   assert_tri3D_closest_thin();
   assert_tri3D_linscale_degenerate();
   assert_tri3D_center();
+  assert_tri3D_center_thin();
+  assert_tri3D_center_special();
   assert_tri3D_list_align();
   assert_tetra3D_closest_trivial();
   assert_tetra3D_closest();

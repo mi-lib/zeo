@@ -44,7 +44,7 @@ zDisk2D *zDisk2DFrom3(zDisk2D *disk, const zVec2D *v1, const zVec2D *v2, const z
   zTri2D tri;
 
   zTri2DCreate( &tri, v1, v2, v3 );
-  zTri2DCircumcenter( &tri, zDisk2DCenter(disk) );
+  if( !zTri2DCircumcenter( &tri, zDisk2DCenter(disk) ) ) return NULL;
   zDisk2DSetRadius( disk, zVec2DDist(zDisk2DCenter(disk),v3) );
   return disk;
 }

@@ -325,17 +325,16 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
 
 #define ZEO_ELEM_TRIXD_CIRCUMCENTER_PROTOTYPE(XD) \
   zVec##XD *zTri##XD##Circumcenter(const zTri##XD *tri, zVec##XD *c)
+/* _zTri##XD##CircumcenterRel() has to be defined for each dimension in advance. */
 #define ZEO_ELEM_TRIXD_CIRCUMCENTER(XD) \
   ZEO_ELEM_TRIXD_CIRCUMCENTER_PROTOTYPE( XD ){ \
-    double r[3], s[3]; \
-    r[0] = zVec##XD##SqrDist( zTri##XD##Vert(tri,2), zTri##XD##Vert(tri,1) ); \
-    r[1] = zVec##XD##SqrDist( zTri##XD##Vert(tri,0), zTri##XD##Vert(tri,2) ); \
-    r[2] = zVec##XD##SqrDist( zTri##XD##Vert(tri,1), zTri##XD##Vert(tri,0) ); \
-    s[0] = r[0] * ( r[1] + r[2] - r[0] ); \
-    s[1] = r[1] * ( r[2] + r[0] - r[1] ); \
-    s[2] = r[2] * ( r[0] + r[1] - r[2] ); \
-    _zTri##XD##WeightedCenter( tri, s[0], s[1], s[2], c ); \
-    return c; \
+    zVec##XD u, w, oa; \
+    int a; \
+    if( ( a = _zTri##XD##CircumcenterRel( tri, &u, &w, &oa ) ) < 0 ){ \
+      ZRUNERROR( ZEO_ERR_ELEM_DEG_TRI ); \
+      return NULL; \
+    } \
+    return zVec##XD##Add( zTri##XD##Vert(tri,a), &oa, c ); \
   }
 
 #define ZEO_ELEM_TRIXD_INCENTER_PROTOTYPE(XD) \
@@ -352,18 +351,19 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
 
 #define ZEO_ELEM_TRIXD_ORTHOCENTER_PROTOTYPE(XD) \
   zVec##XD *zTri##XD##Orthocenter(const zTri##XD *tri, zVec##XD *c)
+/* the orthocenter H is computed from the circumcenter O by the relation H = A + B + C - 2 O,
+ * where the vertex A is the origin of the edge vectors u = B - A and w = C - A. */
 #define ZEO_ELEM_TRIXD_ORTHOCENTER(XD) \
   ZEO_ELEM_TRIXD_ORTHOCENTER_PROTOTYPE( XD ){ \
-    zVec##XD e[3]; \
-    zTri##XD circum_tri; \
-    zVec##XD##Add( zTri##XD##Vert(tri,0), zTri##XD##Vert(tri,1), &e[0] ); \
-    zVec##XD##SubDRC( &e[0], zTri##XD##Vert(tri,2) ); \
-    zVec##XD##Add( zTri##XD##Vert(tri,1), zTri##XD##Vert(tri,2), &e[1] ); \
-    zVec##XD##SubDRC( &e[1], zTri##XD##Vert(tri,0) ); \
-    zVec##XD##Add( zTri##XD##Vert(tri,2), zTri##XD##Vert(tri,0), &e[2] ); \
-    zVec##XD##SubDRC( &e[2], zTri##XD##Vert(tri,1) ); \
-    zTri##XD##Create( &circum_tri, &e[0], &e[1], &e[2] ); \
-    return zTri##XD##Circumcenter( &circum_tri, c ); \
+    zVec##XD u, w, oa; \
+    int a; \
+    if( ( a = _zTri##XD##CircumcenterRel( tri, &u, &w, &oa ) ) < 0 ){ \
+      ZRUNERROR( ZEO_ERR_ELEM_DEG_TRI ); \
+      return NULL; \
+    } \
+    zVec##XD##AddDRC( &u, &w ); \
+    zVec##XD##CatDRC( &u, -2, &oa ); \
+    return zVec##XD##Add( zTri##XD##Vert(tri,a), &u, c ); \
   }
 
 #define ZEO_ELEM_TRIXD_CONTIG_VERT_PROTOTYPE(XD) \

@@ -132,6 +132,8 @@
 
 #define ZEO_ERR_BREP_CONV                     "cannot convert polyhedron to B-Rep solid"
 
+#define ZEO_ERR_VORONOI_CONV                  "cannot convert Delaunay triangles to Voronoi cells"
+
 #define ZEO_ERR_COLCHK_LINE_PARALLEL          "lines are parallel"
 #define ZEO_ERR_COLCHK_PLANE_IDENT            "planes are identical"
 #define ZEO_ERR_COLCHK_PLANE_PARALLEL         "planes are parallel"

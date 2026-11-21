@@ -322,6 +322,7 @@ __ZEO_EXPORT zVec3D *zTri3DCalcNorm(zTri3D *tri);
  * \return
  * zTri3DBarycenter(), zTri3DCircumcenter(), zTri3DIncenter() and
  * zTri3DOrthocenter() return a pointer \a c.
+ * zTri3DCircumcenter() and zTri3DOrthocenter() return the null pointer if \a tri is degenerate.
  */
 __ZEO_EXPORT ZEO_ELEM_TRIXD_BARYCENTER_PROTOTYPE( 3D );
 __ZEO_EXPORT ZEO_ELEM_TRIXD_CIRCUMCENTER_PROTOTYPE( 3D );
