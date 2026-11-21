@@ -434,17 +434,24 @@ void assert_tri3D_proj_point(void)
   zAssert( zTri3DProjPoint + zTri3DPointIsOnPlane, result );
 }
 
+/* the rounding error of the distance from a point on a triangle is proportional to the size of the triangle. */
+double tri3D_margin(const zVec3D v[])
+{
+  return zTOL * sqrt( zMax( zMax( zVec3DSqrDist( &v[0], &v[1] ), zVec3DSqrDist( &v[1], &v[2] ) ), zVec3DSqrDist( &v[2], &v[0] ) ) );
+}
+
 void assert_tri3D_point_is_inside(void)
 {
   zVec3D v[3], p;
   zTri3D t;
   int i;
-  double r1, r2;
+  double r1, r2, margin;
   bool result1, result2, result3, result4;
 
   result1 = result2 = result3 = result4 = true;
   for( i=0; i<N; i++ ){
     create_tri3D_rand( v, &t );
+    margin = tri3D_margin( v );
     /* inside case */
     zVec3DZero( &p );
     zVec3DCatDRC( &p, ( r1 = zRandF(0,1) ), &v[0] );
@@ -459,15 +466,57 @@ void assert_tri3D_point_is_inside(void)
     if( zTri3DPointIsInside( &t, &p, zTOL ) ) result2 = false;
     /* midpoint case */
     zVec3DMid( &v[0], &v[1], &p );
-    if( !zTri3DPointIsInside( &t, &p, zTOL ) ) result3 = false;
+    if( !zTri3DPointIsInside( &t, &p, margin ) ) result3 = false;
     /* vertex case */
     zVec3DCopy( &v[2], &p );
-    if( !zTri3DPointIsInside( &t, &p, zTOL ) ) result4 = false;
+    if( !zTri3DPointIsInside( &t, &p, margin ) ) result4 = false;
   }
   zAssert( zTri3DPointIsInside (true positive), result1 );
   zAssert( zTri3DPointIsInside (false positive), result2 );
   zAssert( zTri3DPointIsInside (midpoint case), result3 );
   zAssert( zTri3DPointIsInside (vertex case), result4 );
+}
+
+void assert_tri3D_closest_thin(void)
+{
+  zTri3D tri;
+  zVec3D p[3], w[3], c, n, p_test, cp, cp_test;
+  double s[3], dist, dist_test;
+  int i;
+  const int n_test = 1000;
+  bool result1 = true, result2 = true;
+
+  for( i=0; i<n_test; i++ ){
+    /* a thin triangle whose height is 1e-3 times the longest edge */
+    zVec3DCreate( &p[0], zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+    zVec3DCreate( &p[1], zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+    zVec3DMid( &p[0], &p[1], &c );
+    zVec3DCreate( &n, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+    zVec3DSub( &p[1], &p[0], &w[0] );
+    zVec3DOuterProd( &w[0], &n, &w[1] );
+    zVec3DNormalizeDRC( &w[1], 0 );
+    zVec3DCat( &c, 1.0e-3*zVec3DNorm(&w[0]), &w[1], &p[2] );
+    if( !zTri3DCreate( &tri, &p[0], &p[1], &p[2] ) ) continue;
+    /* a point distant from the plane, of which the projection is the barycenter */
+    zTri3DBarycenter( &tri, &cp );
+    zVec3DCat( &cp, zRandF(-10,10), zTri3DNorm(&tri), &p_test );
+    zTri3DClosest( &tri, &p_test, &cp_test );
+    if( !zVec3DEqual( &cp_test, &cp ) ){
+      eprintf( "(thin case #%d) error = %.10g\n", i, zVec3DDist( &cp_test, &cp ) );
+      result1 = false;
+    }
+    /* equivalence of zTri3DClosest for the origin and zTri3DClosestFromOrigin */
+    zVec3DCreate( &p_test, zRandF(-2,2), zRandF(-2,2), zRandF(-2,2) );
+    zVec3DSub( &p[0], &p_test, &w[0] );
+    zVec3DSub( &p[1], &p_test, &w[1] );
+    zVec3DSub( &p[2], &p_test, &w[2] );
+    dist = zTri3DClosestFromOrigin( &w[0], &w[1], &w[2], &s[0], &s[1], &s[2], &cp );
+    zTri3DCreate( &tri, &w[0], &w[1], &w[2] );
+    dist_test = zTri3DClosest( &tri, ZVEC3DZERO, &cp_test );
+    if( !zVec3DMatch( &cp_test, &cp ) || dist_test != dist ) result2 = false;
+  }
+  zAssert( zTri3DClosest (thin triangle case), result1 );
+  zAssert( zTri3DClosest + zTri3DClosestFromOrigin (equivalence), result2 );
 }
 
 void assert_tri3D_closest_trivial(void)
@@ -872,6 +921,7 @@ int main(void)
   assert_tri3D_point_is_inside();
   assert_tri3D_closest_trivial();
   assert_tri3D_closest();
+  assert_tri3D_closest_thin();
   assert_tri3D_linscale_degenerate();
   assert_tri3D_center();
   assert_tri3D_list_align();

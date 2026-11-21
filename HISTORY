@@ -1,3 +1,6 @@
+2026.11.21. Added tests of zTri3DClosest for thin triangles, and of the equivalence between zTri3DClosest for the origin and zTri3DClosestFromOrigin. [test]
+2026.11.21. Modified the test of zTri3DPointIsInside to set the threshold proportional to the size of the triangle. [test]
+2026.11.21. Debugged zTri3DClosest to project a point by the normal vector of the original triangle. [zeo_elem3d]
 2026.11.21. Added tests of zLine3DCommonPerpEnd for nearly parallel lines, of zTri3DLinScale for degenerate triangles, and of zMulInvMat2DMat2D for the destination identical with the operands. [test]
 2026.11.21. Debugged zMulInvMat2DMat2D to work even if the destination is the same with the first matrix. [zeo_mat2d]
 2026.11.21. Modified zLine3DCommonPerpEnd to compute the end points from outer products. [zeo_elem3d]

@@ -352,50 +352,53 @@ static bool _zTri3DClosestFromOrigin_TestEdge(const zVec3D *vert0, const zVec3D 
   return false;
 }
 
-/* closest point on a triangle composed by three given 3D points to the origin. */
-double zTri3DClosestFromOrigin(const zVec3D *vert0, const zVec3D *vert1, const zVec3D *vert2, double *s0, double *s1, double *s2, zVec3D *closestpoint)
+/* closest point on a 3D triangle to a 3D point.
+ * the normal vector of the original triangle is used for the projection, since that of the triangle
+ * translated by the point would be perturbed by the rounding error of the translation, which is
+ * amplified for a thin triangle. */
+static double _zTri3DClosest(const zTri3D *tri, const zVec3D *point, double *s0, double *s1, double *s2, zVec3D *closestpoint)
 {
-  zTri3D tri;
+  zVec3D v[3], s;
   double inv_det, dist_min = HUGE_VAL;
-  zVec3D s, t1, t2;
-  zVec2D v[3];
   int i;
 
-  if( zTri3DCreate( &tri, vert0, vert1, vert2 ) &&
-      _zTri3DProjIsInside( &tri, ZVEC3DZERO, closestpoint ) ){
-    zVec3DOrthoSpace( zTri3DNorm(&tri), &t1, &t2 );
-    for( i=0; i<3; i++ ){
-      zVec3DSub( zTri3DVert(&tri,i), closestpoint, &s );
-      zVec2DCreate( &v[i], zVec3DInnerProd( &t1, &s ), zVec3DInnerProd( &t2, &s ) );
-    }
-    *s0 = _zVec2DOuterProd( &v[1], &v[2] );
-    *s1 = _zVec2DOuterProd( &v[2], &v[0] );
-    *s2 = _zVec2DOuterProd( &v[0], &v[1] );
+  if( !zVec3DIsTiny( zTri3DNorm(tri) ) && /* the normal vector of a degenerate triangle is zero */
+      _zTri3DProjIsInside( tri, point, closestpoint ) ){
+    for( i=0; i<3; i++ )
+      zVec3DSub( zTri3DVert(tri,i), closestpoint, &v[i] );
+    *s0 = zVec3DGrassmannProd( zTri3DNorm(tri), &v[1], &v[2] );
+    *s1 = zVec3DGrassmannProd( zTri3DNorm(tri), &v[2], &v[0] );
+    *s2 = zVec3DGrassmannProd( zTri3DNorm(tri), &v[0], &v[1] );
     inv_det = 1.0 / ( *s0 + *s1 + *s2 );
     *s0 *= inv_det;
     *s1 *= inv_det;
     *s2 *= inv_det;
-    return zVec3DNorm( closestpoint );
+    return zVec3DDist( point, closestpoint );
   }
   for( i=0; i<3; i++ )
-    if( _zTri3DClosestFromOrigin_TestEdge( zTri3DVert(&tri,i), zTri3DVertNext(&tri,i), &s.e[i], &s.e[(i+1)%3], &s.e[(i+2)%3], closestpoint, &dist_min ) ){
+    zVec3DSub( zTri3DVert(tri,i), point, &v[i] );
+  for( i=0; i<3; i++ )
+    if( _zTri3DClosestFromOrigin_TestEdge( &v[i], &v[(i+1)%3], &s.e[i], &s.e[(i+1)%3], &s.e[(i+2)%3], closestpoint, &dist_min ) ){
       *s0 = s.e[0]; *s1 = s.e[1]; *s2 = s.e[2];
     }
+  zVec3DAddDRC( closestpoint, point );
   return dist_min;
+}
+
+/* closest point on a triangle composed by three given 3D points to the origin. */
+double zTri3DClosestFromOrigin(const zVec3D *vert0, const zVec3D *vert1, const zVec3D *vert2, double *s0, double *s1, double *s2, zVec3D *closestpoint)
+{
+  zTri3D tri;
+
+  zTri3DCreate( &tri, vert0, vert1, vert2 ); /* the normal vector is zero if degenerate */
+  return _zTri3DClosest( &tri, ZVEC3DZERO, s0, s1, s2, closestpoint );
 }
 
 /* closest point to a 3D triangle. */
 double zTri3DClosest(const zTri3D *tri, const zVec3D *point, zVec3D *closestpoint)
 {
-  zVec3D v[3];
-  double dist, s[3];
-
-  zVec3DSub( zTri3DVert(tri,0), point, &v[0] );
-  zVec3DSub( zTri3DVert(tri,1), point, &v[1] );
-  zVec3DSub( zTri3DVert(tri,2), point, &v[2] );
-  dist = zTri3DClosestFromOrigin( &v[0], &v[1], &v[2], &s[0], &s[1], &s[2], closestpoint );
-  zVec3DAddDRC( closestpoint, point );
-  return dist;
+  double s[3];
+  return _zTri3DClosest( tri, point, &s[0], &s[1], &s[2], closestpoint );
 }
 
 /* signed closest point to a 3D triangle. */
