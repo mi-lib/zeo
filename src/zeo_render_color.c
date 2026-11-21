@@ -207,7 +207,10 @@ zHSV *zRGB2HSV(const zRGB *rgb, zHSV *hsv)
   d = max - min;
   /* conversion */
   hsv->hue =   d == 0 ? 0 : 60.0 * phase / d + phase0;
-  if( hsv->hue < 0 ) hsv->hue += 360;
+  if( hsv->hue < 0 ){
+    hsv->hue += 360;
+    if( hsv->hue >= 360 ) hsv->hue = 0; /* a slightly negative hue is rounded up to 360 */
+  }
   hsv->sat = max == 0 ? 0 : d / max;
   hsv->val = max;
   return hsv;
@@ -219,9 +222,9 @@ zRGB *zHSV2RGB(const zHSV *hsv, zRGB *rgb)
   float h, f, p, q, t;
   int i;
 
-  h = hsv->hue / 60;
-  i = (int)floor( h ) % 6;
-  f = h - i;
+  h = floor( hsv->hue / 60 );
+  f = hsv->hue / 60 - h;
+  if( ( i = (int)fmod( h, 6 ) ) < 0 ) i += 6; /* hue out of [0,360) is wrapped */
   p = hsv->val * ( 1 - hsv->sat );
   q = hsv->val * ( 1 - f * hsv->sat );
   t = hsv->val * ( 1 - (1-f) * hsv->sat );

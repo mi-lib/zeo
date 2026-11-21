@@ -175,7 +175,7 @@ inline zRGB *zRGB::setByString(const char *str){ return zRGBByStr( this, str ); 
  * \brief expression of color by hue, saturation and value.
  */
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zHSV ){
-  float hue; /* hue: [0,360] */
+  float hue; /* hue: [0,360) */
   float sat; /* saturation */
   float val; /* value */
 };

@@ -1,3 +1,7 @@
+2026.11.22. Added tests of zHSV2RGB for the hue of 360, a negative hue and a hue larger than 360, and of zRGB2HSV for a hue close to 360. [test]
+2026.11.22. Modified the test of zRGB2HSV and zHSV2RGB to check the conversions with the tolerances based on the sensitivities of the hue and the saturation. [test]
+2026.11.22. Modified zRGB2HSV to keep the hue in [0,360) even if a slightly negative hue is rounded up to 360. [zeo_render_color]
+2026.11.22. Debugged zHSV2RGB to work for the hue of 360. [zeo_render_color]
 2026.11.22. Modified the tests of zMat3DEigPower, zMat3DEigPowerInv and zMat3DSymEigMin to use matrices whose eigenvalues are separated, and to compare the results relatively to the eigenvalues. [test]
 2026.11.22. Added a test of zMat3DEigPowerInv for a singular matrix. [test]
 2026.11.22. Modified zMat3DEigPowerInv to return zero for a singular matrix. [zeo_mat3d]
