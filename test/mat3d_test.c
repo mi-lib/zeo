@@ -780,53 +780,60 @@ void assert_mat3D_rot(void)
   zAssert( zAAError + zAACascade, result );
 }
 
+/* symmetric positive-definite matrix with eigenvalues l1 > l2 > l3, where l2/l1 <= 0.99 and l3/l2 <= 0.99 */
+void mat3D_create_eig(zMat3D *m, double *l1, double *l3)
+{
+  zMat3D r, rd;
+  zVec3D aa;
+  double l2;
+  int i;
+
+  *l1 = zRandF( 1, 100 );
+  l2 = *l1 * zRandF( 0.01, 0.99 );
+  *l3 = l2 * zRandF( 0.01, 0.99 );
+  vec3D_create_aa_rand( &aa );
+  zMat3DFromAA( &r, &aa );
+  for( i=0; i<3; i++ )
+    zVec3DMul( zMat3DVec(&r,i), i == 0 ? *l1 : ( i == 1 ? l2 : *l3 ), zMat3DVec(&rd,i) );
+  zMulMat3DMat3DT( &rd, &r, m );
+  zMat3DSymmetrizeDRC( m );
+}
+
+bool check_mat3D_eig_power(const zMat3D *m, double lambda, const zVec3D *v, double lambda_true)
+{
+  zVec3D error;
+  const double c = 100;
+
+  if( !zEqual( lambda, lambda_true, c * zTOL * fabs( lambda_true ) ) ) return false;
+  zMulMat3DVec3D( m, v, &error );
+  zVec3DCatDRC( &error, -lambda, v );
+  return zVec3DIsTol( &error, c * zTOL * fabs( lambda ) * zVec3DNorm( v ) );
+}
+
 void assert_mat3D_eig_power(void)
 {
-  zMat3D m, eigbase;
-  zVec3D v, eigval, error;
-  double lambda, lambda1, lambda2;
-  const int num = 10, testnum = 100;
-  int i, k;
-  const double tol1 = 1.0e-10, tol2 = 1.0e-6;
-  bool result1 = true, result2 = true;
+  zMat3D m;
+  zVec3D v, v_test;
+  double lambda, lambda1, lambda3;
+  const int testnum = 100;
+  int k;
+  bool result1 = true, result2 = true, result3;
 
   for( k=0; k<testnum; k++ ){
-    zMat3DZero( &m );
-    for( i=0; i<num; i++ ){
-      zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-      zMat3DAddDyad( &m, &v, &v );
-    }
-    zMat3DSymEig( &m, &eigval, &eigbase );
-    lambda1 = zMax3( eigval.e[0], eigval.e[1], eigval.e[2] );
-    lambda2 = zMin3( eigval.e[0], eigval.e[1], eigval.e[2] );
-
+    mat3D_create_eig( &m, &lambda1, &lambda3 );
     lambda = zMat3DEigPower( &m, &v, 0 );
-    if( !zEqual( lambda, lambda1, zTOL ) ){
-      eprintf( "different largest principal component: %g / %g\n", lambda, lambda1 );
-      result1 = false;
-    }
-    zMulMat3DVec3D( &m, &v, &error );
-    zVec3DCatDRC( &error, -lambda, &v );
-    if( !zVec3DIsTol( &error, tol1 ) ){
-      eprintf( "error for largest principal component: " );
-      zVec3DFPrint( stderr, &error );
-      result1 = false;
-    }
+    if( !check_mat3D_eig_power( &m, lambda, &v, lambda1 ) ) result1 = false;
     lambda = zMat3DEigPowerInv( &m, &v, 0 );
-    if( !zEqual( lambda, lambda2, zTOL ) ){
-      eprintf( "different smallest principal component: %g / %g\n", lambda, lambda2 );
-      result2 = false;
-    }
-    zMulMat3DVec3D( &m, &v, &error );
-    zVec3DCatDRC( &error, -lambda, &v );
-    if( !zVec3DIsTol( &error, tol2 ) ){
-      eprintf( "error for smallest principal component: " );
-      zVec3DFPrint( stderr, &error );
-      result2 = false;
-    }
+    if( !check_mat3D_eig_power( &m, lambda, &v, lambda3 ) ) result2 = false;
   }
   zAssert( zMat3DEigPower, result1 );
   zAssert( zMat3DEigPowerInv, result2 );
+  /* singular case */
+  zMat3DCreate( &m, 1, 2, 3, 2, 4, 6, 1, 0, 1 );
+  zVec3DCreate( &v, 1, 2, 3 );
+  v_test = v;
+  result3 = zMat3DEigPowerInv( &m, &v, 0 ) == 0 && zVec3DEqual( &v, &v_test );
+  zAssert( zMat3DEigPowerInv (singular case), result3 );
 }
 
 void assert_mat3D_sym_eig(void)
@@ -856,13 +863,47 @@ void assert_mat3D_sym_eig(void)
   zAssert( zMat3DSymEig, result );
 }
 
+bool check_mat3D_sym_eig(const zMat3D *m)
+{
+  zMat3D eigbase;
+  zVec3D eigval, v;
+  int i;
+
+  if( !zMat3DSymEig( m, &eigval, &eigbase ) || !zMat3DIsOrthonormal( &eigbase ) ) return false;
+  for( i=0; i<3; i++ ){
+    zMulMat3DVec3D( m, &eigbase.v[i], &v );
+    zVec3DCatDRC( &v, -eigval.e[i], &eigbase.v[i] );
+    if( !zVec3DIsTol( &v, zTOL * zMat3DNorm( m ) ) ) return false;
+  }
+  return true;
+}
+
+void assert_mat3D_sym_eig_scale(void)
+{
+  zMat3D m;
+  double scale[] = { 1.0e-12, 1.0e-6, 1.0e6, 1.0e12 };
+  int i, j, testnum = 100;
+  bool result = true, result_zero;
+
+  for( j=0; j<sizeof(scale)/sizeof(double); j++ )
+    for( i=0; i<testnum; i++ ){
+      mat3D_create_rand( &m );
+      zMat3DSymmetrizeDRC( &m );
+      zMat3DMulDRC( &m, scale[j] );
+      if( !check_mat3D_sym_eig( &m ) ) result = false;
+    }
+  zAssert( zMat3DSymEig (very small or large matrices), result );
+  result_zero = check_mat3D_sym_eig( ZMAT3DZERO );
+  zAssert( zMat3DSymEig (zero matrix), result_zero );
+}
+
 void assert_mat3D_sym_eig_min(void)
 {
   zMat3D m;
-  zVec3D v, *eigvec1, *eigvec2, error;
+  zVec3D *eigvec1, *eigvec2, error;
+  double lambda1, lambda3;
   const int testnum = 1000;
-  const int num = 100;
-  int i, k;
+  int k;
   const double tol = 1.0e-6;
   clock_t c1, c2;
   long c_jacobi, c_power;
@@ -870,11 +911,7 @@ void assert_mat3D_sym_eig_min(void)
 
   eigvec1 = zAlloc( zVec3D, testnum );
   eigvec2 = zAlloc( zVec3D, testnum );
-  zMat3DZero( &m );
-  for( i=0; i<num; i++ ){
-    zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-    zMat3DAddDyad( &m, &v, &v );
-  }
+  mat3D_create_eig( &m, &lambda1, &lambda3 );
   c1 = clock();
   for( k=0; k<testnum; k++ )
     zMat3DSymEigMin( &m, &eigvec1[k] );
@@ -929,6 +966,52 @@ void assert_mat3D_svd(void)
   zMat3DCreate( &m, zRandF(-5,5), 0, 0, 0, zRandF(-5,5), 0, 0, 0, 0 );
   zMat3DSVD( &m, &u, &s, &v );
   zAssert( zMat3DSVD (singular case), check_mat3D_svd( &m, &u, &s, &v ) );
+}
+
+bool check_mat3D_svd_rel(const zMat3D *m, int rank)
+{
+  zMat3D u, v, us, m2;
+  zVec3D s;
+  int i;
+
+  if( zMat3DSVD( m, &u, &s, &v ) != rank ) return false;
+  if( !zMat3DIsOrthonormal( &u ) || !zMat3DIsOrthonormal( &v ) ) return false;
+  for( i=0; i<3; i++ ){
+    if( s.e[i] < 0 ) return false;
+    zVec3DMul( zMat3DVec(&u,i), s.e[i], zMat3DVec(&us,i) );
+  }
+  zMulMat3DMat3DT( &us, &v, &m2 );
+  zMat3DSubDRC( &m2, m );
+  return zMat3DIsTol( &m2, zTOL * zMat3DNorm( m ) );
+}
+
+void assert_mat3D_svd_singular(void)
+{
+  struct{
+    double s1, s2;
+    int rank;
+  } sv[] = {
+    { 0.5, 1.0e-7, 3 },
+    { 0.5, 1.0e-10, 3 },
+    { 0.5, 0, 2 },
+    { 1.0e-8, 0, 2 },
+    { 0, 0, 1 },
+  };
+  double scale[] = { 1.0e-8, 1, 1.0e8 };
+  zMat3D m;
+  int i, j, k, testnum = 100;
+  bool result = true, result_zero;
+
+  for( k=0; k<sizeof(sv)/sizeof(sv[0]); k++ )
+    for( j=0; j<sizeof(scale)/sizeof(double); j++ )
+      for( i=0; i<testnum; i++ ){
+        mat3D_create_illcond( &m, sv[k].s1, sv[k].s2, 0 );
+        zMat3DMulDRC( &m, scale[j] );
+        if( !check_mat3D_svd_rel( &m, sv[k].rank ) ) result = false;
+      }
+  zAssert( zMat3DSVD (nearly singular, rank-deficient, very small and large cases), result );
+  result_zero = check_mat3D_svd_rel( ZMAT3DZERO, 0 );
+  zAssert( zMat3DSVD (zero matrix), result_zero );
 }
 
 void assert_mat3D_ztk(void)
@@ -1000,8 +1083,10 @@ int main(void)
   assert_mat3D_rot();
   assert_mat3D_eig_power();
   assert_mat3D_sym_eig();
+  assert_mat3D_sym_eig_scale();
   assert_mat3D_sym_eig_min();
   assert_mat3D_svd();
+  assert_mat3D_svd_singular();
   assert_mat3D_ztk();
   assert_div_range_mat3d();
   return EXIT_SUCCESS;

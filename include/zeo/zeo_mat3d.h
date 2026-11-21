@@ -893,7 +893,8 @@ __ZEO_EXPORT double zMat3DEigPower(const zMat3D *m, zVec3D *eigvec, int iter);
  * \a iter is the maximum number of iterations. If 0 is given for the argument, Z_MAX_ITER_NUM defined
  * in zm_misc.h is applied.
  * \return
- * zMat3DEigPower() returns the smallest eigenvalue of \a m.
+ * zMat3DEigPowerInv() returns the smallest eigenvalue of \a m. If \a m is singular, it returns 0
+ * without modifying \a eigvec.
  * \sa
  * zMat3DEigPower
  */
@@ -930,6 +931,7 @@ __ZEO_EXPORT zVec3D *zMat3DSymEigMin(const zMat3D *m, zVec3D *eig);
  * \a m = \a u diag{ \a s[0], \a s[1], \a s[2] } \a v ^T.
  * \return
  * zMat3DSVD() returns the rank, namely, the number of non-zero singular values of \a m.
+ * A singular value that is not larger than zTOL times the largest one is regarded as zero.
  */
 __ZEO_EXPORT int zMat3DSVD(const zMat3D *m, zMat3D *u, zVec3D *sv, zMat3D *v);
 

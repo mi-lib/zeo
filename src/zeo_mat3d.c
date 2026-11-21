@@ -5,6 +5,7 @@
  */
 
 #include <zeo/zeo_mat3d.h>
+#include <float.h>
 
 /* 3x3 zero matrix and identity matrix. */
 #ifdef __cplusplus
@@ -881,8 +882,9 @@ double zMat3DEigPower(const zMat3D *m, zVec3D *eigvec, int iter)
     zMulMat3DVec3D( m, &ev, eigvec );
     eigval = zVec3DInnerProd( &ev, eigvec );
     zVec3DCat( eigvec, -eigval, &ev, &err );
-    if( zVec3DIsTiny( &err ) ) break;
+    if( _zVec3DNorm( &err ) <= zTOL * fabs( eigval ) ) break;
   }
+  if( i == iter ) ZITERWARN( iter );
   zVec3DDivDRC( eigvec, eigval );
   return eigval;
 }
@@ -891,13 +893,9 @@ double zMat3DEigPower(const zMat3D *m, zVec3D *eigvec, int iter)
 double zMat3DEigPowerInv(const zMat3D *m, zVec3D *eigvec, int iter)
 {
   zMat3D m_inv;
-  double eigval = 0;
 
-  if( zMat3DInv( m, &m_inv ) )
-    eigval = zMat3DEigPower( &m_inv, eigvec, iter );
-  else
-    ZRUNERROR( ZEO_ERR_MAT_SINGULAR );
-  return 1.0 / eigval;
+  if( !zMat3DInv( m, &m_inv ) ) return 0; /* the smallest eigenvalue of a singular matrix */
+  return 1.0 / zMat3DEigPower( &m_inv, eigvec, iter );
 }
 
 /* transformation of a symmetric matrix by Jacobi's rotation. */
@@ -907,7 +905,7 @@ static void _zMat3DSymEigRot(zMat3D *m, zMat3D *r, int i, int j)
   double v, t, ti, c, s;
   double tmp1, tmp2;
 
-  if( zIsTiny( m->e[j][i] ) ) return;
+  if( m->e[j][i] == 0 ) return;
   v = 0.5 * ( m->e[j][j] - m->e[i][i] ) / m->e[j][i];
   ti = sqrt( v * v + 1 );
   t = -v + ( v < 0 ? ti : -ti );
@@ -937,10 +935,13 @@ bool zMat3DSymEig(const zMat3D *m, zVec3D *eigval, zMat3D *eigbase)
   int iter;
   int i, j, i1, j1, i2, j2;
   zMat3D l;
+  double tol;
   bool ret = true;
 
   zMat3DCopy( m, &l );
   zMat3DIdent( eigbase );
+  /* non-diagonal components are negligible relatively to the norm of the matrix. */
+  tol = DBL_EPSILON * _zMat3DNorm( m );
   /* iterative elimination of non-diagonal components */
   i = 0; j = 1;
   for( iter=0; iter<Z_MAX_ITER_NUM; iter++ ){
@@ -952,7 +953,7 @@ bool zMat3DSymEig(const zMat3D *m, zVec3D *eigval, zMat3D *eigbase)
     } else{
       i = i2; j = j2;
     }
-    if( zIsTiny( l.e[j][i] ) ) goto TERMINATE;
+    if( fabs( l.e[j][i] ) <= tol ) goto TERMINATE;
   }
   ZITERWARN( Z_MAX_ITER_NUM );
   ret = false;
@@ -973,22 +974,78 @@ zVec3D *zMat3DSymEigMin(const zMat3D *m, zVec3D *eig)
   return zVec3DCopy( &eigbase.v[_zMat3DEigMinID( eigval.e )], eig );
 }
 
-/* singular value decomposition of a 3x3 matrix. */
+/* rotation of two columns of a 3x3 matrix to be orthogonal to each other (one-sided Jacobi's method). */
+static bool _zMat3DSVDRot(zMat3D *w, zMat3D *v, int i, int j)
+{
+  double a, b, g, z, t, c, s, tmp1, tmp2;
+  int k;
+
+  a = _zVec3DSqrNorm( &w->v[i] );
+  b = _zVec3DSqrNorm( &w->v[j] );
+  g = _zVec3DInnerProd( &w->v[i], &w->v[j] );
+  /* the margin of the threshold covers the rounding error of the inner product, which otherwise
+   * prevents the iteration from terminating in rare cases. */
+  if( !( fabs( g ) > 4 * DBL_EPSILON * sqrt( a * b ) ) ) return false;
+  z = 0.5 * ( b - a ) / g;
+  t = ( z >= 0 ? 1 : -1 ) / ( fabs( z ) + sqrt( 1 + z*z ) );
+  s = t * ( c = 1 / sqrt( 1 + t*t ) );
+  for( k=0; k<3; k++ ){
+    tmp1 = w->e[i][k];
+    tmp2 = w->e[j][k];
+    w->e[i][k] = c * tmp1 - s * tmp2;
+    w->e[j][k] = s * tmp1 + c * tmp2;
+    tmp1 = v->e[i][k];
+    tmp2 = v->e[j][k];
+    v->e[i][k] = c * tmp1 - s * tmp2;
+    v->e[j][k] = s * tmp1 + c * tmp2;
+  }
+  return true;
+}
+
+/* singular value decomposition of a 3x3 matrix by one-sided Jacobi's method. */
 int zMat3DSVD(const zMat3D *m, zMat3D *u, zVec3D *sv, zMat3D *v)
 {
-  zMat3D m2;
-  int i, rank;
+  zMat3D w;
+  int iter, i, p, q, r, rank;
+  bool rotated;
 
-  zMulMat3DMat3DT( m, m, &m2 );
-  zMat3DSymEig( &m2, sv, u );
-  zMulMat3DTMat3D( m, u, v );
-  for( rank=0, i=0; i<3; i++ ){
-    if( zIsTiny( sv->e[i] ) )
-      sv->e[i] = 0;
-    else{
-      zVec3DDivDRC( zMat3DVec(v,i), ( sv->e[i] = sqrt( sv->e[i] ) ) );
-      rank++;
-    }
+  /* orthogonalize columns of w = m v */
+  zMat3DCopy( m, &w );
+  zMat3DIdent( v );
+  for( iter=0; iter<Z_MAX_ITER_NUM; iter++ ){
+    rotated  = _zMat3DSVDRot( &w, v, 0, 1 );
+    rotated |= _zMat3DSVDRot( &w, v, 0, 2 );
+    rotated |= _zMat3DSVDRot( &w, v, 1, 2 );
+    if( !rotated ) break;
+  }
+  if( iter == Z_MAX_ITER_NUM ) ZITERWARN( Z_MAX_ITER_NUM );
+  for( i=0; i<3; i++ )
+    sv->e[i] = _zVec3DNorm( &w.v[i] );
+  /* p: largest, q: second largest, r: smallest */
+  p = sv->e[0] >= sv->e[1] ? ( sv->e[0] >= sv->e[2] ? 0 : 2 ) : ( sv->e[1] >= sv->e[2] ? 1 : 2 );
+  q = ( p + 1 ) % 3;
+  r = ( p + 2 ) % 3;
+  if( sv->e[q] < sv->e[r] ) zSwap( int, q, r );
+  if( sv->e[p] == 0 ){ /* null matrix */
+    zMat3DIdent( u );
+    return 0;
+  }
+  /* u = w diag{sv}^-1; columns for negligible singular values are complemented. */
+  zVec3DMul( &w.v[p], 1.0/sv->e[p], &u->v[p] );
+  rank = 1;
+  if( sv->e[q] > zTOL * sv->e[p] ){
+    zVec3DMul( &w.v[q], 1.0/sv->e[q], &u->v[q] );
+    rank++;
+  } else{
+    sv->e[q] = 0;
+    zVec3DOrthonormal( &u->v[p], &u->v[q] );
+  }
+  if( sv->e[r] > zTOL * sv->e[p] ){
+    zVec3DMul( &w.v[r], 1.0/sv->e[r], &u->v[r] );
+    rank++;
+  } else{
+    sv->e[r] = 0;
+    _zVec3DOuterProd( &u->v[p], &u->v[q], &u->v[r] );
   }
   return rank;
 }
