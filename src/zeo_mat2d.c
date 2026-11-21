@@ -267,6 +267,7 @@ zMat2D *zMulMat2DMat2DT(const zMat2D *m1, const zMat2D *m2, zMat2D *m)
 /* multiply a 2x2 matrix by the inverse of another matrix from leftside. */
 zMat2D *zMulInvMat2DMat2D(const zMat2D *m1, const zMat2D *m2, zMat2D *m)
 {
+  zMat2D tmp;
   double det;
 
   if( zIsTiny( ( det = _zMat2DDet( m1 ) ) ) ){
@@ -274,9 +275,10 @@ zMat2D *zMulInvMat2DMat2D(const zMat2D *m1, const zMat2D *m2, zMat2D *m)
     return NULL;
   }
   det = 1.0 / det;
-  _zMulAdjMat2DVec2D( m1, &m2->b.x, &m->b.x );
-  _zMulAdjMat2DVec2D( m1, &m2->b.y, &m->b.y );
-  _zMat2DMulDRC( m, det );
+  /* tmp is used so that m can be the same with m1. */
+  _zMulAdjMat2DVec2D( m1, &m2->b.x, &tmp.b.x );
+  _zMulAdjMat2DVec2D( m1, &m2->b.y, &tmp.b.y );
+  _zMat2DMul( &tmp, det, m );
   return m;
 }
 

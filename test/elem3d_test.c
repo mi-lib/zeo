@@ -29,6 +29,10 @@ void assert_line3D_commonperp(void)
 {
   zLine3D line1, line2, commonperp;
   zVec3D pos1, pos2, posp, dir, p1, p2, p1_ans, p2_ans, dp;
+  double thetas[] = { 1e-6, 1e-8, 1e-10 };
+  double a, h, theta;
+  int i;
+  bool result = true;
 
   /* trivial case */
   zVec3DCreate( &pos1, 1, 0, 0 );
@@ -72,6 +76,22 @@ void assert_line3D_commonperp(void)
   zAssert( zLine3DCommonPerp,
     zIsTiny( zVec3DInnerProd( zLine3DDir(&line1), zLine3DDir(&commonperp) ) ) &&
     zIsTiny( zVec3DInnerProd( zLine3DDir(&line2), zLine3DDir(&commonperp) ) ) );
+  /* nearly parallel case: line1 is the x-axis, and line2 passes (a,0,h) with the angle theta */
+  zVec3DCreate( &pos1, 0, 0, 0 );
+  zLine3DCreate( &line1, &pos1, ZVEC3DX );
+  for( i=0; i<3; i++ ){
+    a = zRandF(-1e3,1e3);
+    h = zRandF(-1e3,1e3);
+    theta = thetas[i];
+    zVec3DCreate( &pos2, a, 0, h );
+    zVec3DCreate( &dir, cos(theta), sin(theta), 0 );
+    zLine3DCreate( &line2, &pos2, &dir );
+    zLine3DCommonPerpEnd( &line1, &line2, &p1, &p2 );
+    zVec3DCreate( &p1_ans, a, 0, 0 );
+    if( !zVec3DIsTol( zVec3DSubDRC( &p1, &p1_ans ), zTOL*1e3 ) ||
+        !zVec3DIsTol( zVec3DSubDRC( &p2, &pos2 ), zTOL*1e3 ) ) result = false;
+  }
+  zAssert( zLine3DCommonPerpEnd (nearly parallel case), result );
 }
 
 void assert_line3D_distance(void)
@@ -794,6 +814,47 @@ void assert_aabox3D_dist(void)
   zAssert( zAABox3DPointDist, result );
 }
 
+bool check_tri3D_linscale(const zTri3D *tri, const zVec3D *p, const zVec3D *cp_ans, double d_ans)
+{
+  double l0, l1, l2, d;
+  zVec3D cp, v;
+
+  d = zTri3DLinScale( tri, p, &l0, &l1, &l2, &cp );
+  zVec3DMul( zTri3DVert(tri,0), l0, &v );
+  zVec3DCatDRC( &v, l1, zTri3DVert(tri,1) );
+  zVec3DCatDRC( &v, l2, zTri3DVert(tri,2) );
+  return zEqual( d, d_ans, zTOL ) && zVec3DEqual( &cp, cp_ans ) && zVec3DEqual( &v, cp_ans ) &&
+         l0 >= 0 && l1 >= 0 && l2 >= 0 && zEqual( l0+l1+l2, 1, zTOL );
+}
+
+void assert_tri3D_linscale_degenerate(void)
+{
+  zTri3D tri;
+  zVec3D v[3], p, cp;
+  bool result = true;
+
+  /* collinear vertices */
+  zVec3DCreate( &v[0], 0, 0, 0 );
+  zVec3DCreate( &v[1], 1, 0, 0 );
+  zVec3DCreate( &v[2], 2, 0, 0 );
+  zTri3DCreate( &tri, &v[0], &v[1], &v[2] );
+  zVec3DCreate( &p, 1.5, 1, 0 );
+  zVec3DCreate( &cp, 1.5, 0, 0 );
+  if( !check_tri3D_linscale( &tri, &p, &cp, 1 ) ) result = false;
+  zVec3DCreate( &p, 3, 1, 0 );
+  if( !check_tri3D_linscale( &tri, &p, &v[2], sqrt(2) ) ) result = false;
+  /* two coincident vertices */
+  zTri3DCreate( &tri, &v[0], &v[2], &v[2] );
+  zVec3DCreate( &p, 0.5, 0, 1 );
+  zVec3DCreate( &cp, 0.5, 0, 0 );
+  if( !check_tri3D_linscale( &tri, &p, &cp, 1 ) ) result = false;
+  /* three coincident vertices */
+  zTri3DCreate( &tri, &v[1], &v[1], &v[1] );
+  zVec3DCreate( &p, 1, 2, 0 );
+  if( !check_tri3D_linscale( &tri, &p, &v[1], 2 ) ) result = false;
+  zAssert( zTri3DLinScale (degenerate case), result );
+}
+
 int main(void)
 {
   zRandInit();
@@ -811,6 +872,7 @@ int main(void)
   assert_tri3D_point_is_inside();
   assert_tri3D_closest_trivial();
   assert_tri3D_closest();
+  assert_tri3D_linscale_degenerate();
   assert_tri3D_center();
   assert_tri3D_list_align();
   assert_tetra3D_closest_trivial();

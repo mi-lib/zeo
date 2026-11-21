@@ -124,6 +124,14 @@ void assert_mul(void)
 
   zMulInvMat2DMat2D( &m1, &m1, &m3 );
   zAssert( zMat2DInvMat2DMat2D, zMat2DIsIdent(&m3) );
+
+  zMulInvMat2DMat2D( &m1, &m2, &m3 );
+  zMat2DCopy( &m1, &m4 );
+  zMulInvMat2DMat2D( &m4, &m2, &m4 );
+  zAssert( zMulInvMat2DMat2D (destination identical with the first matrix), zMat2DMatch( &m3, &m4 ) );
+  zMat2DCopy( &m2, &m4 );
+  zMulInvMat2DMat2D( &m1, &m4, &m4 );
+  zAssert( zMulInvMat2DMat2D (destination identical with the second matrix), zMat2DMatch( &m3, &m4 ) );
 }
 
 void assert_rotation(void)

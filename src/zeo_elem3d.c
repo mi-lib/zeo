@@ -35,24 +35,25 @@ ZEO_ELEM_LINEXD_POINT_IS_ON( 3D )
 /* find two end points of the common perpendicular of two 3D lines. */
 void zLine3DCommonPerpEnd(const zLine3D *line1, const zLine3D *line2, zVec3D *p1, zVec3D *p2)
 {
-  double r11, r12, r22, det;
-  zVec3D dp, d1, d2;
+  zVec3D n, dp, v;
+  double nn;
 
-  r11 = zVec3DInnerProd( zLine3DDir(line1), zLine3DDir(line1) );
-  r12 = zVec3DInnerProd( zLine3DDir(line1), zLine3DDir(line2) );
-  r22 = zVec3DInnerProd( zLine3DDir(line2), zLine3DDir(line2) );
-  if( zIsTiny( ( det = r11 * r22 - r12 * r12 ) ) ){ /* parallel case */
+  /* n = d1 x d2, where |n| = |d1||d2|sin(theta) for the angle theta between the two lines. The
+   * cross products avoid the cancellation in |d1|^2|d2|^2-(d1.d2)^2 for nearly parallel lines. */
+  _zVec3DOuterProd( zLine3DDir(line1), zLine3DDir(line2), &n );
+  nn = _zVec3DSqrNorm( &n );
+  if( !( nn > zTOL * zTOL * _zVec3DSqrNorm(zLine3DDir(line1)) * _zVec3DSqrNorm(zLine3DDir(line2)) ) ){ /* parallel case */
     ZRUNWARN( ZEO_WARN_LINE3D_NOT_UNIQUE_COMMONPERP );
     zVec3DCopy( zLine3DOrg(line1), p1 );
     zLine3DProjPoint( line2, p1, p2 );
   } else{
-    zVec3DSub( zLine3DOrg(line2), zLine3DOrg(line1), &dp );
-    zVec3DMul( zLine3DDir(line1), r22, &d1 );
-    zVec3DCatDRC( &d1, -r12, zLine3DDir(line2) );
-    zVec3DMul( zLine3DDir(line1), r12, &d2 );
-    zVec3DCatDRC( &d2, -r11, zLine3DDir(line2) );
-    zLine3DPoint( line1, zVec3DInnerProd( &d1, &dp ) / det, p1 );
-    zLine3DPoint( line2, zVec3DInnerProd( &d2, &dp ) / det, p2 );
+    /* p1 = o1 + t1 d1 and p2 = o2 + t2 d2, where p2 - p1 is parallel to n, are satisfied by
+     * t1 = ((o2-o1) x d2).n / |n|^2 and t2 = ((o2-o1) x d1).n / |n|^2. */
+    _zVec3DSub( zLine3DOrg(line2), zLine3DOrg(line1), &dp );
+    _zVec3DOuterProd( &dp, zLine3DDir(line2), &v );
+    zLine3DPoint( line1, _zVec3DInnerProd( &v, &n ) / nn, p1 );
+    _zVec3DOuterProd( &dp, zLine3DDir(line1), &v );
+    zLine3DPoint( line2, _zVec3DInnerProd( &v, &n ) / nn, p2 );
   }
 }
 
@@ -444,7 +445,7 @@ double zTri3DLinScale(const zTri3D *tri, const zVec3D *p, double *l0, double *l1
   zVec2D v, l;
   zMat2D m;
   double d0, d1, d2, mc;
-  int i0, i1, i2;
+  int i0, i1, i2, flag;
 
   d0 = zVec3DSqrDist( p, zTri3DVert(tri,0) );
   d1 = zVec3DSqrDist( p, zTri3DVert(tri,1) );
@@ -461,14 +462,22 @@ double zTri3DLinScale(const zTri3D *tri, const zVec3D *p, double *l0, double *l1
   zVec2DCreate( &v, zVec3DInnerProd(&e1,&dp), zVec3DInnerProd(&e2,&dp) );
   mc = zVec3DInnerProd(&e1,&e2);
   zMat2DCreate( &m, 1.0, mc, mc, 1.0 );
-  zMulInvMat2DVec2D( &m, &v, &l );
-  switch( i0 ){
-  case 0: _zTri3DLinScaleVal( &l, d1, d2, l0, l1, l2 ); break;
-  case 1: _zTri3DLinScaleVal( &l, d1, d2, l1, l2, l0 ); break;
-  case 2: _zTri3DLinScaleVal( &l, d1, d2, l2, l0, l1 ); break;
-  default: ;
+  if( d1 == 0 || d2 == 0 || !zMulInvMat2DVec2D( &m, &v, &l ) ){
+    /* a degenerate triangle is regarded as its longest edge. */
+    d0 = zVec3DSqrDist( zTri3DVert(tri,0), zTri3DVert(tri,1) );
+    d1 = zVec3DSqrDist( zTri3DVert(tri,1), zTri3DVert(tri,2) );
+    d2 = zVec3DSqrDist( zTri3DVert(tri,2), zTri3DVert(tri,0) );
+    flag = ( d0 >= d1 && d0 >= d2 ) ? ( d0 == 0 ? 0x6 : 0x4 ) : ( d1 >= d2 ? 0x1 : 0x2 );
+  } else{
+    switch( i0 ){
+    case 0: _zTri3DLinScaleVal( &l, d1, d2, l0, l1, l2 ); break;
+    case 1: _zTri3DLinScaleVal( &l, d1, d2, l1, l2, l0 ); break;
+    case 2: _zTri3DLinScaleVal( &l, d1, d2, l2, l0, l1 ); break;
+    default: ;
+    }
+    flag = ( *l0 < 0 ? 1 : 0 ) | ( *l1 < 0 ? 2 : 0 ) | ( *l2 < 0 ? 4 : 0 );
   }
-  switch( ( *l0 < 0 ? 1 : 0 ) | ( *l1 < 0 ? 2 : 0 ) | ( *l2 < 0 ? 4 : 0 ) ){
+  switch( flag ){
   case 0x0: zVec3DCopy( p, cp ); return 0;
   case 0x1: _zTri3DLinScaleDeg2( tri, p, 1, 2, l0, l1, l2, cp ); break;
   case 0x2: _zTri3DLinScaleDeg2( tri, p, 2, 0, l1, l2, l0, cp ); break;

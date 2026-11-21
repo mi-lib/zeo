@@ -1,3 +1,8 @@
+2026.11.21. Added tests of zLine3DCommonPerpEnd for nearly parallel lines, of zTri3DLinScale for degenerate triangles, and of zMulInvMat2DMat2D for the destination identical with the operands. [test]
+2026.11.21. Debugged zMulInvMat2DMat2D to work even if the destination is the same with the first matrix. [zeo_mat2d]
+2026.11.21. Modified zLine3DCommonPerpEnd to compute the end points from outer products. [zeo_elem3d]
+2026.11.21. Modified zLine3DCommonPerpEnd to judge if two lines are parallel by the sine of the angle between them. [zeo_elem3d]
+2026.11.21. Debugged zTri3DLinScale to cope with a degenerate case. [zeo_elem3d]
 2026.11.21. Renamed enumerators Z_MPR_PORTAL_OUTSIDE, Z_MPR_PORTAL_TO_REFINE, Z_MPR_PORTAL_AT_POINT, and Z_MPR_PORTAL_ON_SEG to ZEO_MPR_PORTAL_OUTSIDE, ZEO_MPR_PORTAL_TO_REFINE, ZEO_MPR_PORTAL_AT_POINT, and ZEO_MPR_PORTAL_ON_SEG, respectively. [zeo_col_mpr]
 2026.11.21. Renamed a macro Z_MPR_BIAS to ZEO_MPR_BIAS. [zeo_col_mpr]
 2026.11.21. Renamed a macro Z_INTERSECT_PH3D_FAILURE to ZEO_INTERSECT_PH3D_FAILURE. [zeo_col_ph]
