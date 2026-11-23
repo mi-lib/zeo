@@ -103,6 +103,16 @@ zTri2D *zTri2DCreate(zTri2D *tri, const zVec2D *v1, const zVec2D *v2, const zVec
   return tri;
 }
 
+/* area of a 2D triangle. */
+double zTri2DArea(const zTri2D *tri)
+{
+  zVec2D d1, d2;
+
+  zVec2DSub( zTri2DVert(tri,1), zTri2DVert(tri,0), &d1 );
+  zVec2DSub( zTri2DVert(tri,2), zTri2DVert(tri,0), &d2 );
+  return 0.5 * zVec2DOuterProdNorm( &d1, &d2 );
+}
+
 /* barycenter of a triangle. */
 ZEO_ELEM_TRIXD_BARYCENTER( 2D )
 

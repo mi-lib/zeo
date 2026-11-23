@@ -78,6 +78,10 @@ zPH3D *zPH3DMirror(const zPH3D *src, zPH3D *dest, zAxis axis)
 {
   int i;
 
+  if( axis != zX && axis != zY && axis != zZ ){
+    ZRUNERROR( ZEO_ERR_INVALID_AXIS, axis );
+    return NULL;
+  }
   if( !zPH3DClone( src, dest ) ) return NULL;
   for( i=0; i<zPH3DVertNum(dest); i++ )
     zPH3DVert(dest,i)->e[(int)axis] *= -1;
@@ -147,7 +151,7 @@ zPH3D *zPH3DXformInv(const zPH3D *src, const zFrame3D *frame, zPH3D *dest)
   return dest;
 }
 
-/* find the contiguous vertix of a 3D polyhedron to a point. */
+/* find the contiguous vertex of a 3D polyhedron to a point. */
 const zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *point, double *distance)
 {
   int i;
@@ -271,7 +275,8 @@ zVec3D *zPH3DBarycenter(const zPH3D *ph, zVec3D *c)
     zVec3DMulDRC( &bc, v );
     zVec3DAddDRC( c, &bc );
   }
-  zVec3DDivDRC( c, vol );
+  if( vol > 0 )
+    zVec3DDivDRC( c, vol );
   return c;
 }
 

@@ -1,3 +1,7 @@
+2026.11.23. Modified zPH3DMirror to check if the specified axis is x, y, or z. [zeo_ph3d]
+2026.11.23. Added a test of zPG2D. [test]
+2026.11.23. Added zTri2DArea. [zeo_elem2d]
+2026.11.23. Debugged zPH3DBarycenter not to divide the barycenter by the volume of a given polyhedron. [zeo_ph3d]
 2026.11.23. Added tests of zPH3DClosest and zPH3DPointIsInside for a non-convex polyhedron, a planar polyhedron and a negative margin. [test]
 2026.11.23. Modified zPH3DPointIsInside to work for a non-convex polyhedron. [zeo_ph3d]
 2026.11.23. Modified zPH3DClosest to work for a non-convex polyhedron and a planar polyhedron. [zeo_ph3d]

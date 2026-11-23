@@ -109,7 +109,7 @@ __ZEO_EXPORT zPH3D *zPH3DInit(zPH3D *ph);
  * zPH3DAllocVert() and zPH3DAllocFace() return the true value if they succeed to allocate memory.
  * Otherwise, they return the false value.
  *
- * zPH3DAlloc() return a pointer \a ph if it succeeds to allocate memory. Otherwise, it returns the
+ * zPH3DAlloc() returns a pointer \a ph if it succeeds to allocate memory. Otherwise, it returns the
  * null pointer.
  */
 __ZEO_EXPORT bool zPH3DAllocVert(zPH3D *ph, int num_vert);
@@ -129,13 +129,13 @@ __ZEO_EXPORT void zPH3DDestroy(zPH3D *ph);
  *
  * zPH3DClone() clones a 3D polyhedron \a src to \a dest.
  *
- * zPH3DMirror() creates a 3D polylhedron \a dest which is a clone of \a src with all vertices mirrored
+ * zPH3DMirror() creates a 3D polyhedron \a dest which is a clone of \a src with all vertices mirrored
  * about the axis \a axis.
  *
- * zPH3DScale() creates a 3D polylhedron \a dest which is a clone of \a src with all vertices multiplied
+ * zPH3DScale() creates a 3D polyhedron \a dest which is a clone of \a src with all vertices multiplied
  * by \a scale.
  *
- * zPH3DFlip() creates a 3D polylhedron \a dest which is a clone of \a src with all faces flipped.
+ * zPH3DFlip() creates a 3D polyhedron \a dest which is a clone of \a src with all faces flipped.
  *
  * zPH3DScaleDRC() directly scales \a ph by multiplying all vertices by \a scale.
  *
@@ -170,7 +170,7 @@ __ZEO_EXPORT zPH3D *zPH3DXformInv(const zPH3D *src, const zFrame3D *frame, zPH3D
 /*! \brief return the contiguous vertex of a 3D polyhedron to a point.
  *
  * zPH3DContigVert() finds the closest vertex of a 3D polyhedron to the given point \a point.
- * The distance from \a point to the vertex is stored where \a d points if it is not the null pointer.
+ * The distance from \a point to the vertex is stored where \a distance points if it is not the null pointer.
  * \return
  * zPH3DContigVert() returns a pointer to the contiguous vertex of \a ph.
  */

@@ -192,6 +192,15 @@ __BEGIN_DECLS
 __ZEO_EXPORT zTri2D *zTri2DCreate(zTri2D *tri, const zVec2D *v1, const zVec2D *v2, const zVec2D *v3);
 #define zTri2DInit(t) zTri2DCreate( t, NULL, NULL, NULL )
 
+/*! \brief area of a 2D triangle.
+ *
+ * zTri2DArea() calculates the area of a triangle \a tri.
+ * \return
+ * zTri2DArea() returns the area calculated, which is not negative regardless of the order of the
+ * vertices.
+ */
+__ZEO_EXPORT double zTri2DArea(const zTri2D *tri);
+
 /*! \brief various centers of a 2D triangle.
  *
  * zTri2DBarycenter(), zTri2DCircumcenter(), zTri2DIncenter() and
