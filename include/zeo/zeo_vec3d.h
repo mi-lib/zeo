@@ -7,7 +7,7 @@
 #ifndef __ZEO_VEC3D_H__
 #define __ZEO_VEC3D_H__
 
-#include <zeo/zeo_misc.h>
+#include <zeo/zeo_orient.h>
 
 /*! \struct zVec3D
  * \brief 3D vector.
@@ -385,6 +385,23 @@ __ZEO_EXPORT double zVec3DGrassmannProd(const zVec3D *v1, const zVec3D *v2, cons
   _zVec3DOuterProd( v1, &__v, v );\
 } while(0)
 __ZEO_EXPORT zVec3D *zVec3DTripleProd(const zVec3D *v1, const zVec3D *v2, const zVec3D *v3, zVec3D *v);
+
+/*! \brief exact orientation of 3D points.
+ *
+ * zVec3DOrient3D() judges on which side of the plane passing three points \a a, \a b and \a c a point
+ * \a d lies, namely, the sign of ( \a b - \a a ) x ( \a c - \a a ) . ( \a d - \a a ).
+ *
+ * zVec3DOrient2D() judges the orientation of three points \a a, \a b and \a c projected onto the
+ * plane orthogonal to \a axis, namely, the sign of the \a axis component of
+ * ( \a b - \a a ) x ( \a c - \a a ).
+ * \return
+ * zVec3DOrient3D() and zVec3DOrient2D() return 1 if the value is positive, -1 if negative, and 0 if
+ * zero. The sign is exact in spite of rounding errors.
+ * \notes
+ * The same assumptions with zOrient3D() and zOrient2D() are made.
+ */
+__ZEO_EXPORT int zVec3DOrient3D(const zVec3D *a, const zVec3D *b, const zVec3D *c, const zVec3D *d);
+__ZEO_EXPORT int zVec3DOrient2D(const zVec3D *a, const zVec3D *b, const zVec3D *c, zAxis axis);
 
 /*! \brief calculate norm of a 3D vector.
  *

@@ -1,5 +1,6 @@
 OBJ=zeo_misc.o\
 	zeo_render_color.o zeo_render_optic.o\
+	zeo_orient.o\
 	zeo_vec2d.o zeo_vec2d_list.o\
 	zeo_mat2d.o zeo_coord2d.o zeo_frame2d.o\
 	zeo_elem2d.o zeo_elem2d_box.o zeo_elem2d_disk.o\

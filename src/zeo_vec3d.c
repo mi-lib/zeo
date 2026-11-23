@@ -233,6 +233,26 @@ zVec3D *zVec3DTripleProd(const zVec3D *v1, const zVec3D *v2, const zVec3D *v3, z
   return v;
 }
 
+/* orientation of four 3D points. */
+int zVec3DOrient3D(const zVec3D *a, const zVec3D *b, const zVec3D *c, const zVec3D *d)
+{
+  return zOrient3D( a->e, b->e, c->e, d->e );
+}
+
+/* orientation of three 3D points projected onto the plane orthogonal to an axis. */
+int zVec3DOrient2D(const zVec3D *a, const zVec3D *b, const zVec3D *c, zAxis axis)
+{
+  double pa[2], pb[2], pc[2];
+  int i, j;
+
+  i = ( axis + 1 ) % 3;
+  j = ( axis + 2 ) % 3;
+  pa[0] = a->e[i]; pa[1] = a->e[j];
+  pb[0] = b->e[i]; pb[1] = b->e[j];
+  pc[0] = c->e[i]; pc[1] = c->e[j];
+  return zOrient2D( pa, pb, pc );
+}
+
 /* squared norm of a 3D vector. */
 double zVec3DSqrNorm(const zVec3D *v)
 {

@@ -7,7 +7,7 @@
 #ifndef __ZEO_VEC2D_H__
 #define __ZEO_VEC2D_H__
 
-#include <zeo/zeo_misc.h>
+#include <zeo/zeo_orient.h>
 
 /*! \struct zVec2D
  * \brief 2D vector.
@@ -312,6 +312,18 @@ __ZEO_EXPORT double zVec2DInnerProd(const zVec2D *v1, const zVec2D *v2);
 #define _zVec2DOuterProd(v1,v2) ( (v1)->c.x * (v2)->c.y - (v1)->c.y * (v2)->c.x )
 __ZEO_EXPORT double zVec2DOuterProd(const zVec2D *v1, const zVec2D *v2);
 #define zVec2DOuterProdNorm(v1,v2) fabs( zVec2DOuterProd( v1, v2 ) )
+
+/*! \brief exact orientation of 2D points.
+ *
+ * zVec2DOrient2D() judges the orientation of three 2D points \a a, \a b and \a c, namely, the sign
+ * of ( \a b - \a a ) x ( \a c - \a a ).
+ * \return
+ * zVec2DOrient2D() returns 1 if \a a, \a b and \a c are counterclockwise, -1 if clockwise, and 0
+ * if they are collinear. The sign is exact in spite of rounding errors.
+ * \notes
+ * The same assumptions with zOrient2D() are made.
+ */
+__ZEO_EXPORT int zVec2DOrient2D(const zVec2D *a, const zVec2D *b, const zVec2D *c);
 
 /*! \brief norm of a 2D vector.
  *

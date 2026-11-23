@@ -199,6 +199,12 @@ double zVec2DOuterProd(const zVec2D *v1, const zVec2D *v2)
   return _zVec2DOuterProd( v1, v2 );
 }
 
+/* orientation of three 2D points. */
+int zVec2DOrient2D(const zVec2D *a, const zVec2D *b, const zVec2D *c)
+{
+  return zOrient2D( a->e, b->e, c->e );
+}
+
 /* squared norm of a 2D vector. */
 double zVec2DSqrNorm(const zVec2D *v)
 {
