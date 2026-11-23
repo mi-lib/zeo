@@ -168,32 +168,62 @@ const zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *point, double *dist
   return v;
 }
 
-/* the closest point to a 3D polyhedron.
- * note: this is not an exact computation because it supposes that
- *  - the polyhedron is convex
- *  - the polyhedron is closed
- *  - normal vectors of all facets of the polyhedron direct outward.
- */
-double zPH3DClosest(const zPH3D *ph, const zVec3D *point, zVec3D *closestpoint)
+/* signed solid angle of a triangle seen from a point, the sign of which depends on the side of the
+ * triangle on which the point lies, by the formula of A. Van Oosterom and J. Strackee (1983). */
+static double _zPH3DSolidAngle(const zTri3D *tri, const zVec3D *point)
+{
+  zVec3D a, b, c, bc;
+  double la, lb, lc;
+
+  _zVec3DSub( zTri3DVert(tri,0), point, &a );
+  _zVec3DSub( zTri3DVert(tri,1), point, &b );
+  _zVec3DSub( zTri3DVert(tri,2), point, &c );
+  la = _zVec3DNorm( &a );
+  lb = _zVec3DNorm( &b );
+  lc = _zVec3DNorm( &c );
+  _zVec3DOuterProd( &b, &c, &bc );
+  return 2 * atan2( _zVec3DInnerProd( &a, &bc ),
+    la*lb*lc + _zVec3DInnerProd( &a, &b )*lc + _zVec3DInnerProd( &b, &c )*la + _zVec3DInnerProd( &c, &a )*lb );
+}
+
+/* check if a point is inside of a closed polyhedron by the winding number, namely, the sum of the
+ * solid angles of the faces divided by 4 pi, which is 1 (or -1 if the faces are reversed) inside and
+ * 0 outside. It works also for a non-convex polyhedron. */
+static bool _zPH3DWindingIsInside(const zPH3D *ph, const zVec3D *point)
+{
+  double omega = 0;
+  int i;
+
+  for( i=0; i<zPH3DFaceNum(ph); i++ )
+    omega += _zPH3DSolidAngle( zPH3DFace(ph,i), point );
+  return fabs( omega ) > zPIx2;
+}
+
+/* the closest point on the boundary of a 3D polyhedron. */
+static double _zPH3DBoundaryClosest(const zPH3D *ph, const zVec3D *point, zVec3D *closestpoint)
 {
   int i;
-  zVec3D ncp;
+  zVec3D cp;
   double dist, dist_min = HUGE_VAL;
 
+  for( i=0; i<zPH3DFaceNum(ph); i++ )
+    if( ( dist = zTri3DClosest( zPH3DFace(ph,i), point, &cp ) ) < dist_min ){
+      zVec3DCopy( &cp, closestpoint );
+      dist_min = dist;
+    }
+  return dist_min;
+}
+
+/* the closest point to a 3D polyhedron. */
+double zPH3DClosest(const zPH3D *ph, const zVec3D *point, zVec3D *closestpoint)
+{
   zVec3DCopy( point, closestpoint );
   if( zPH3DFaceNum(ph) == 0 ){
     ZRUNWARN( ZEO_ERR_NOFACE );
     return 0;
   }
-  for( i=0; i<zPH3DFaceNum(ph); i++ ){
-    if( ( dist = zTri3DSignedClosest( zPH3DFace(ph,i), point, &ncp ) ) > 0 ){
-      if( dist < dist_min ){
-        zVec3DCopy( &ncp, closestpoint );
-        dist_min = dist;
-      }
-    }
-  }
-  return dist_min == HUGE_VAL ? 0 : dist_min;
+  if( _zPH3DWindingIsInside( ph, point ) ) return 0;
+  return _zPH3DBoundaryClosest( ph, point, closestpoint );
 }
 
 /* distance from a point to a 3D polyhedron. */
@@ -206,11 +236,13 @@ double zPH3DDistFromPoint(const zPH3D *ph, const zVec3D *point)
 /* check if a point is inside of a polyhedron. */
 bool zPH3DPointIsInside(const zPH3D *ph, const zVec3D *point, double margin)
 {
-  int i;
+  zVec3D cp;
 
-  for( i=0; i<zPH3DFaceNum(ph); i++ )
-    if( zTri3DDistFromPointToPlane( zPH3DFace(ph,i), point ) >= margin ) return false;
-  return true;
+  if( zPH3DFaceNum(ph) == 0 ) return false;
+  /* the signed distance from the boundary, which is negative inside, is compared with the margin. */
+  if( _zPH3DWindingIsInside( ph, point ) )
+    return margin > 0 || _zPH3DBoundaryClosest( ph, point, &cp ) > -margin;
+  return margin > 0 && _zPH3DBoundaryClosest( ph, point, &cp ) < margin;
 }
 
 /* volume of a 3D polyhedron. */

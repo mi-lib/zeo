@@ -179,16 +179,22 @@ __ZEO_EXPORT const zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *point,
 /*! \brief check if a point is inside of a 3D polyhedron.
  *
  * zPH3DClosest() finds the closest point from a point \a point on a 3D polyhedron \a ph. The result is
- * put into \a closestpoint.
+ * put into \a closestpoint. If \a point is inside of \a ph, \a point itself is the closest point.
+ * zPH3DDistFromPoint() computes the distance from \a point to \a ph.
  *
  * zPH3DPointIsInside() checks if a point \a point is inside of a 3D polyhedron \a ph. \a margin is a
- * margin of the inside area outward from the boundary of \a ph.
+ * margin of the inside area outward from the boundary of \a ph, namely, \a point is regarded to be
+ * inside if the signed distance from the boundary, which is negative inside, is less than \a margin.
+ * A negative \a margin shrinks the inside area.
  * \return
+ * zPH3DClosest() and zPH3DDistFromPoint() return the distance from \a point to \a ph, which is zero
+ * if \a point is inside of \a ph.
  * zPH3DPointIsInside() returns the true value if \a point is inside of \a ph. Otherwise, it returns
  * the false value.
  * \notes
- * zPH3DPointIsInside() assumes that \a ph is convex, \a ph is closed, and the normal vectors of all facets
- * of \a ph direct outward.
+ * \a ph can be non-convex, but has to be closed, namely, every edge is shared by two faces in the
+ * opposite directions. A planar polyhedron that consists of triangles facing both sides of a plane is
+ * also accepted, which has no inside area.
  */
 __ZEO_EXPORT double zPH3DClosest(const zPH3D *ph, const zVec3D *point, zVec3D *closestpoint);
 __ZEO_EXPORT double zPH3DDistFromPoint(const zPH3D *ph, const zVec3D *point);

@@ -1,3 +1,7 @@
+2026.11.23. Added tests of zPH3DClosest and zPH3DPointIsInside for a non-convex polyhedron, a planar polyhedron and a negative margin. [test]
+2026.11.23. Modified zPH3DPointIsInside to work for a non-convex polyhedron. [zeo_ph3d]
+2026.11.23. Modified zPH3DClosest to work for a non-convex polyhedron and a planar polyhedron. [zeo_ph3d]
+2026.11.23. Added _zPH3DSolidAngle, _zPH3DWindingIsInside, and _zPH3DBoundaryClosest for inside-outside check of non-convex polyhedra. [zeo_ph3d]
 2026.11.23. Abolished zVec3DDataConvexHull2DPH3D, since zVec3DDataConvexHull computes the convex hull of coplanar points. [zeo_bv2d_convexhull, example]
 2026.11.22. Added tests of zVec3DDataConvexHull and zVec3DDataConvexHullSimplify for various sets of points and degenerate sets. [test]
 2026.11.22. Added zVec3DDataConvexHullSimplify, which removes vertices of the convex hull close to the convex hull of the other vertices within a tolerance. [zeo_bv3d_convexhull]
