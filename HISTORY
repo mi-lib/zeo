@@ -1,3 +1,6 @@
+2026.11.23. Added a test of zVec3DDataOBB. [test]
+2026.11.23. Debugged zVec3DDataOBB not to choose a degenerate face of the convex hull. [zeo_bv3d_obb]
+2026.11.23. Modified zVec3DDataOBB to find the minimum-area rectangle on the plane by the rotating calipers for the convex hull computed by zVec2DDataConvexHull. [zeo_bv3d_obb]
 2026.11.23. Modified the test of zVec3DDataConvexHull to reduce the computation time. [test]
 2026.11.23. Added a test of zVec2DDataConvexHull. [test]
 2026.11.23. Added zVec2DDataConvexHull. [zeo_bv2d_convexhull, zeo_bv2d]
