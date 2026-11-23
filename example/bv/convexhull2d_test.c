@@ -36,23 +36,10 @@ void output_convexhull(zLoop3D *ch, const char filename[])
   fclose( fp );
 }
 
-void output_convexhull_ph(zPH3D *ph, const char filename[])
-{
-  FILE *fp;
-  int i;
-
-  fp = fopen( filename, "w" );
-  for( i=0; i<zPH3DVertNum(ph); i++ )
-    zVec3DValueNLFPrint( fp, zPH3DVert(ph,i) );
-  zVec3DValueNLFPrint( fp, zPH3DVert(ph,0) );
-  fclose( fp );
-}
-
 int main(void)
 {
   zVec3DData data_array, data_list;
   zLoop3D ch;
-  zPH3D ph;
 
   zRandInit();
   generate_points( &data_array, &data_list, N, "v" );
@@ -65,10 +52,6 @@ int main(void)
   output_convexhull( &ch, "l" );
   zLoop3DDestroy( &ch );
 
-  zVec3DDataConvexHull2DPH3D( &data_array, &ph );
-  output_convexhull_ph( &ph, "h" );
-
-  zPH3DDestroy( &ph );
   zVec3DDataDestroy( &data_array );
   zVec3DDataDestroy( &data_list );
   return 0;

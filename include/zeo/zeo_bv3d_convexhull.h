@@ -16,13 +16,10 @@ __BEGIN_DECLS
  * zVec3DDataConvexHull() computes the convex hull of a set of points \a data based on the
  * quickhull algorithm by C. Barber, D. Dobkin and H. Huhdanpaa (1996).
  * The result is put into \a ch.
- * The vertices of \a ch are points of \a data, and the faces are triangles. Coplanar triangles
- * can be contiguous. \a ch is the exact convex hull of \a data, where points on faces and edges
- * are not vertices. If all points of \a data are on a plane, \a ch is a planar polygon that
- * consists of triangles facing both sides of the plane.
- * The normal vectors of the faces are computed by zTri3DCalcNorm(). Note that the exact convex hull
- * of nearly coplanar points, e.g., points on a plane with rounding errors, can include thin
- * triangles, the normal vectors of which can be the zero vector.
+ * The vertices of \a ch are points of \a data, and the faces are triangles. Coplanar triangles can be
+ * contiguous. \a ch is the exact convex hull of \a data, where points on faces and edges are not vertices.
+ * If all points of \a data are on an identical plane, \a ch is a planar polygon that consists of triangles
+ * facing both sides of the plane.
  *
  * zVec3DDataConvexHullSimplify() computes the convex hull of \a data in the same way with
  * zVec3DDataConvexHull(), and then removes vertices close to the convex hull of the other vertices

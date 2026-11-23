@@ -20,19 +20,13 @@ __BEGIN_DECLS
  * The points are regarded as degenerate if all of them are within zTOL from one point,
  * or the ratio of the distances between the points and a line to the extent of the points
  * along the line is not larger than zTOL.
- *
- * zVec3DConvexHull2DPH3D() creates a planar convex hull of a set of 3D points \a data as
- * a polyhedron \a ch with dual-face triangles.
+ * A planar convex hull as a polyhedron is computed by zVec3DDataConvexHull().
  * \return
  * zVec3DDataConvexHull2D() returns a pointer \a chloop, if it succeeds.
  * If the points are degenerate, or it fails to allocate memory for cells of the list, it
  * returns the null pointer.
- *
- * zVec3DConvexHull2DPH3D() returns a pointer \a ch, if it succeeds.
- * If it fails to create it, the null pointer is returned.
  */
 __ZEO_EXPORT zLoop3D *zVec3DDataConvexHull2D(zVec3DData *data, zLoop3D *chloop);
-__ZEO_EXPORT zPH3D *zVec3DDataConvexHull2DPH3D(zVec3DData *data, zPH3D *ch);
 
 /*! \brief the closest point in a convex hull to a point.
  *

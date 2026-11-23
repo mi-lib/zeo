@@ -107,28 +107,6 @@ static zLoop3D *_zConvexHull2D(zVec3DAddrList *addrlist, zLoop3D *chloop)
   return chloop;
 }
 
-/* convert a planar convex hull to a polyhedron. */
-static zPH3D *_zConvexHull2DToPH3D(zPH3D *ch, zLoop3D *chloop)
-{
-  zLoop3DCell *vc;
-  int vn, i;
-
-  vn = zListSize( chloop );
-  if( !( ch = zPH3DAlloc( ch, vn, 2*(vn-2) ) ) ) return NULL;
-  i = 0;
-  /* vertices */
-  zListForEach( chloop, vc )
-    zVec3DCopy( vc->data, zPH3DVert(ch,i++) );
-  /* faces */
-  for( i=2; i<vn; i++ ){
-    zTri3DCreate( zPH3DFace(ch,i-2),
-      zPH3DVert(ch,0), zPH3DVert(ch,i-1), zPH3DVert(ch,i) );
-    zTri3DCreate( zPH3DFace(ch,i+vn-4),
-      zPH3DVert(ch,0), zPH3DVert(ch,i),   zPH3DVert(ch,i-1) );
-  }
-  return ch;
-}
-
 /* create the convex hull of 3D points on a plane. */
 zLoop3D *zVec3DDataConvexHull2D(zVec3DData *data, zLoop3D *chloop)
 {
@@ -144,18 +122,6 @@ zLoop3D *zVec3DDataConvexHull2D(zVec3DData *data, zLoop3D *chloop)
   if( !ret )
     zLoop3DDestroy( chloop );
   return ret;
-}
-
-/* convert a planar convex hull to a polyhedron. */
-zPH3D *zVec3DDataConvexHull2DPH3D(zVec3DData *data, zPH3D *ch)
-{
-  zLoop3D chloop;
-
-  zPH3DInit( ch );
-  if( !zVec3DDataConvexHull2D( data, &chloop ) ) return NULL;
-  ch = _zConvexHull2DToPH3D( ch, &chloop );
-  zLoop3DDestroy( &chloop );
-  return ch;
 }
 
 /* the closest point in a convex hull to a point. */
