@@ -1,3 +1,6 @@
+2026.11.23. Modified the test of zVec3DDataConvexHull to reduce the computation time. [test]
+2026.11.23. Added a test of zVec2DDataConvexHull. [test]
+2026.11.23. Added zVec2DDataConvexHull. [zeo_bv2d_convexhull, zeo_bv2d]
 2026.11.23. Modified zPH3DMirror to check if the specified axis is x, y, or z. [zeo_ph3d]
 2026.11.23. Added a test of zPG2D. [test]
 2026.11.23. Added zTri2DArea. [zeo_elem2d]

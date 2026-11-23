@@ -14,8 +14,8 @@ void create_rot(zMat3D *r)
 /* types of point sets */
 enum{ RANDOM_CUBE = 0, SPHERE, CUBE_SURFACE, GRID, BOX_EDGES, CYLINDER, DUPLICATE, NEAR_PLANAR, PLANAR, PLANAR_GRID, PLANAR_CIRCLE, TYPE_NUM };
 
-/* generate a set of points, which are rotated, scaled and translated. */
-void create_points(zVec3DData *data, int type, double scale, double offset, bool rotate)
+/* generate a set of n points, which are rotated, scaled and translated. */
+void create_points(zVec3DData *data, int type, int n, double scale, double offset, bool rotate)
 {
   zVec3D p, q[10], t;
   zMat3D r;
@@ -27,7 +27,7 @@ void create_points(zVec3DData *data, int type, double scale, double offset, bool
   zVec3DCreate( &t, offset, 0.7*offset, -0.3*offset );
   for( j=0; j<10; j++ ) zVec3DCreate( &q[j], zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
   m = type == GRID ? 5 : 14;
-  for( i=0; i<N; i++ ){
+  for( i=0; i<n; i++ ){
     if( type == GRID && i >= m*m*m ) break; /* a complete cubic grid */
     switch( type ){
     case RANDOM_CUBE:  zVec3DCreate( &p, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) ); break;
@@ -40,7 +40,7 @@ void create_points(zVec3DData *data, int type, double scale, double offset, bool
     case NEAR_PLANAR:  zVec3DCreate( &p, zRandF(-1,1), zRandF(-1,1), zRandF(-1.0e-9,1.0e-9) ); break;
     case PLANAR:       zVec3DCreate( &p, zRandF(-1,1), zRandF(-1,1), 0 ); break;
     case PLANAR_GRID:  zVec3DCreate( &p, i%m, (i/m)%m, 0 ); break;
-    case PLANAR_CIRCLE: zVec3DCreate( &p, cos(zPIx2*i/N), sin(zPIx2*i/N), 0 ); break;
+    case PLANAR_CIRCLE: zVec3DCreate( &p, cos(zPIx2*i/n), sin(zPIx2*i/n), 0 ); break;
     default: ;
     }
     zMulMat3DVec3DDRC( &r, &p );
@@ -141,8 +141,9 @@ bool check_convexhull(zVec3DData *data, zPH3D *ch, double tol)
           if( zTri3DVert(zPH3DFace(ch,k),l) == b && zTri3DVert(zPH3DFace(ch,k),(l+1)%3) == a ) n++;
       if( n != 1 ) return false;
     }
-    for( j=0; j<zPH3DVertNum(ch); j++ )
-      if( zVec3DOrient3D( zTri3DVert(f,0), zTri3DVert(f,1), zTri3DVert(f,2), zPH3DVert(ch,j) ) > 0 ) return false;
+    if( tol > 0 ) /* the convexity is checked below together with the points if tol = 0. */
+      for( j=0; j<zPH3DVertNum(ch); j++ )
+        if( zVec3DOrient3D( zTri3DVert(f,0), zTri3DVert(f,1), zTri3DVert(f,2), zPH3DVert(ch,j) ) > 0 ) return false;
   }
   zVec3DDataRewind( data );
   while( ( v = zVec3DDataFetch( data ) ) ){
@@ -158,26 +159,34 @@ bool check_convexhull(zVec3DData *data, zPH3D *ch, double tol)
   return true;
 }
 
-/* check if a vertex of a convex hull is on a face or an edge of the convex hull of the other vertices. */
+/* check if a vertex of a convex hull is on a face or an edge of the convex hull of the other vertices.
+ * For a convex hull, it is equivalent to that the vertex is inside of or on the convex hull of the
+ * vertices adjacent to it (the link), since the link surrounds the vertex on the surface. */
 bool check_convexhull_redundant(zPH3D *ch)
 {
   zVec3DData data;
   zPH3D ch2;
+  zVec3D *v, *w;
   bool result = false;
-  int i, j;
+  int i, j, k;
 
-  for( i=0; i<zPH3DVertNum(ch); i++ ){
+  for( i=0; i<zPH3DVertNum(ch) && !result; i++ ){
+    v = zPH3DVert(ch,i);
     zVec3DDataInitList( &data );
-    for( j=0; j<zPH3DVertNum(ch); j++ )
-      if( j != i ) zVec3DDataAdd( &data, zPH3DVert(ch,j) );
+    for( j=0; j<zPH3DFaceNum(ch); j++ ){
+      for( k=0; k<3; k++ )
+        if( zPH3DFaceVert(ch,j,k) == v ) break;
+      if( k == 3 ) continue;
+      for( k=0; k<3; k++ )
+        if( ( w = zPH3DFaceVert(ch,j,k) ) != v ) zVec3DDataAdd( &data, w ); /* duplicates are harmless */
+    }
     if( zVec3DDataConvexHull( &data, &ch2 ) ){
       for( j=0; j<zPH3DFaceNum(&ch2); j++ )
-        if( zVec3DOrient3D( zTri3DVert(zPH3DFace(&ch2,j),0), zTri3DVert(zPH3DFace(&ch2,j),1), zTri3DVert(zPH3DFace(&ch2,j),2), zPH3DVert(ch,i) ) > 0 ) break;
+        if( zVec3DOrient3D( zTri3DVert(zPH3DFace(&ch2,j),0), zTri3DVert(zPH3DFace(&ch2,j),1), zTri3DVert(zPH3DFace(&ch2,j),2), v ) > 0 ) break;
       if( j == zPH3DFaceNum(&ch2) ) result = true; /* the i-th vertex is redundant */
+      zPH3DDestroy( &ch2 );
     }
-    zPH3DDestroy( &ch2 );
     zVec3DDataDestroy( &data );
-    if( result ) break;
   }
   return result;
 }
@@ -195,7 +204,9 @@ void assert_convexhull3d(void)
     for( i=0; i<3; i++ )
       for( j=0; j<2; j++ )
         for( k=0; k<testnum; k++ ){
-          create_points( &data, type, scale[i], offset[j], k > 0 );
+          /* points on a circle are fewer, since all of them are vertices of the convex hull and
+             are nearly coplanar with all faces if rotated, which takes time to check exactly. */
+          create_points( &data, type, type == PLANAR_CIRCLE ? N/4 : N, scale[i], offset[j], k > 0 );
           if( !check_convexhull( &data, zVec3DDataConvexHull( &data, &ch ), 0 ) ) result = false;
           if( k == 0 && type < PLANAR && check_convexhull_redundant( &ch ) ) result_redundant = false;
           zPH3DDestroy( &ch );
@@ -215,13 +226,13 @@ void assert_convexhull3d_tol(void)
   bool result = true, result_grid = true, result_norm = true;
 
   for( i=0; i<testnum; i++ ){
-    create_points( &data, GRID, 1, 0, true ); /* the corners of a cube are left */
+    create_points( &data, GRID, N, 1, 0, true ); /* the corners of a cube are left */
     if( !check_convexhull( &data, zVec3DDataConvexHullSimplify( &data, &ch, tol ), tol ) ) result = false;
     if( zPH3DVertNum(&ch) != 8 || zPH3DFaceNum(&ch) != 12 ) result_grid = false;
     if( !check_nonzero_norm( &ch ) ) result_norm = false;
     zPH3DDestroy( &ch );
     zVec3DDataDestroy( &data );
-    create_points( &data, i % 2 ? BOX_EDGES : CUBE_SURFACE, 1, 1.0e3, true );
+    create_points( &data, i % 2 ? BOX_EDGES : CUBE_SURFACE, N, 1, 1.0e3, true );
     if( !check_convexhull( &data, zVec3DDataConvexHullSimplify( &data, &ch, tol ), tol ) ) result = false;
     if( !check_nonzero_norm( &ch ) ) result_norm = false;
     zPH3DDestroy( &ch );
@@ -242,7 +253,7 @@ void assert_convexhull3d_tol_planar(void)
   bool result = true, result_reduce = true;
 
   for( i=0; i<testnum; i++ ){
-    create_points( &data, i % 2 ? PLANAR : PLANAR_CIRCLE, 1, 0, false );
+    create_points( &data, i % 2 ? PLANAR : PLANAR_CIRCLE, N, 1, 0, false );
     if( !check_convexhull( &data, zVec3DDataConvexHullSimplify( &data, &ch, tol ), tol ) ) result = false;
     /* a planar convex hull consists of triangles facing both sides */
     if( zPH3DFaceNum(&ch) != 2 * ( zPH3DVertNum(&ch) - 2 ) ) result = false;

@@ -12,6 +12,7 @@
 #include <zeo/zeo_ph3d.h>
 
 #include <zeo/zeo_vec2d_data.h>
+#include <zeo/zeo_pg2d.h>
 #include <zeo/zeo_bv2d_aabb.h>
 #include <zeo/zeo_bv2d_boundingball.h>
 #include <zeo/zeo_bv2d_convexhull.h>
