@@ -9,6 +9,37 @@
 
 /* NOTE: never include this header file in user programs. */
 
+/* The algorithm by Welzl (1991) runs in expected linear time only when points are processed in a
+ * random order. Since a set of points given in a spatially sorted order, e.g., vertices of a mesh,
+ * makes it take O(n^3) time, points are shuffled in advance. A random number generator with a fixed
+ * seed is used so that the result is reproducible and the default generator is not disturbed.
+ * The addresses of points are swapped among cells of the list instead of relinking the cells, since
+ * traversing cells scattered in memory makes cache misses frequent for a large set of points. */
+
+#define ZEO_BOUNDINGBALL_SHUFFLE_SEED 1
+
+#define ZEO_BOUNDINGBALL_ADDRLIST_DEF_METHOD(XD) \
+static bool _zBoundingBall##XD##AddrList(zVec##XD##Data *data, zVec##XD##AddrList *addrlist) \
+{ \
+  zVec##XD##AddrListCell **cell, *cp; \
+  zVec##XD *v; \
+  zRandMT mt; \
+  int i, j, n; \
+\
+  if( !zVec##XD##DataToAddrList( data, addrlist ) ) return false; \
+  if( ( n = zListSize(addrlist) ) < 2 ) return true; \
+  if( !( cell = zAlloc( zVec##XD##AddrListCell*, n ) ) ) return true; /* not shuffled */ \
+  i = 0; \
+  zListForEach( addrlist, cp ) cell[i++] = cp; \
+  zRandInitSeedMT( &mt, ZEO_BOUNDINGBALL_SHUFFLE_SEED ); \
+  for( i=n-1; i>0; i-- ){ /* Fisher-Yates shuffle */ \
+    j = zRandMTI( &mt, 0, i ); \
+    v = cell[i]->data; cell[i]->data = cell[j]->data; cell[j]->data = v; \
+  } \
+  free( cell ); \
+  return true; \
+}
+
 /* A recursive implementation of the bounding ball algorithm based on the original algorithm
  * proposed by Welzl (1991). This is possibly violated due to stack-overflow. */
 
@@ -38,7 +69,7 @@ int zVec##XD##DataBoundingBallRecursive(zVec##XD##Data *data, BALLTYPE *bb, zVec
   int num; \
 \
   zListInit( &shell ); \
-  if( !zVec##XD##DataToAddrList( data, &addrlist ) ) return 0; \
+  if( !_zBoundingBall##XD##AddrList( data, &addrlist ) ) return 0; \
   num = _zBoundingBall##XD##Recursive( bb, &addrlist, &shell, vp ); \
   zVec##XD##AddrListDestroy( &shell ); \
   zVec##XD##AddrListDestroy( &addrlist ); \
@@ -75,7 +106,7 @@ static bool _zBoundingBall##XD##DataAlloc(_zBoundingBall##XD##Data *data, zVec##
   zBoundingBallActionStackCell *sp; \
   int i; \
 \
-  zVec##XD##DataToAddrList( pointdata, &data->pointstack ); \
+  _zBoundingBall##XD##AddrList( pointdata, &data->pointstack ); \
   zListInit( &data->pointsavestack ); \
   zListInit( &data->shellstack ); \
   zListInit( &data->shellsavestack ); \

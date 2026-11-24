@@ -68,6 +68,9 @@ static int _zBoundingBall2DDirect(zDisk2D *bb, zVec2DAddrList *pl, zVec2D **vp)
   return 0;
 }
 
+/* a list of addresses of points in a random order */
+ZEO_BOUNDINGBALL_ADDRLIST_DEF_METHOD( 2D )
+
 /* a recursive implementation */
 ZEO_BOUNDINGBALL_RECURSIVE_DEF_METHOD( 2D, 3, zDisk2D )
 

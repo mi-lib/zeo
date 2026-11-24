@@ -76,6 +76,36 @@ void assert_boundingball2D(void)
   zArrayFree( &array );
 }
 
+int cmp_dist2D(void *v1, void *v2, void *dummy)
+{
+  double d;
+
+  d = zVec2DSqrNorm((zVec2D *)v1) - zVec2DSqrNorm((zVec2D *)v2);
+  return d < 0 ? -1 : ( d > 0 ? 1 : 0 );
+}
+
+void assert_boundingball2D_sorted(void)
+{
+  zVec2DArray array;
+  zVec2DData data;
+  zDisk2D bb, bb_rec;
+  zVec2D *vp[3];
+  int n;
+  bool result;
+
+  generate_points2D( &array, N, 5 );
+  zQuickSort( zArrayBuf(&array), zArraySize(&array), sizeof(zVec2D), cmp_dist2D, NULL );
+  zVec2DDataAssignArray( &data, &array );
+  n = zVec2DDataBoundingBall( &data, &bb, vp );
+  zAssert( zVec2DDataBoundingBall (points sorted by distance), test_boundingball2D( &bb, vp, n, &array ) );
+  n = zVec2DDataBoundingBallRecursive( &data, &bb_rec, vp );
+  result = test_boundingball2D( &bb_rec, vp, n, &array );
+  zAssert( zVec2DDataBoundingBallRecursive (points sorted by distance), result &&
+    zIsTol( zDisk2DRadius(&bb_rec) - zDisk2DRadius(&bb), zTOL ) );
+  zVec2DDataDestroy( &data );
+  zArrayFree( &array );
+}
+
 /* 3D bounding ball (sphere) */
 
 bool generate_points3D(zVec3DArray *array, int n, double radius)
@@ -150,10 +180,42 @@ void assert_boundingball3D(void)
   zArrayFree( &array );
 }
 
+int cmp_dist3D(void *v1, void *v2, void *dummy)
+{
+  double d;
+
+  d = zVec3DSqrNorm((zVec3D *)v1) - zVec3DSqrNorm((zVec3D *)v2);
+  return d < 0 ? -1 : ( d > 0 ? 1 : 0 );
+}
+
+void assert_boundingball3D_sorted(void)
+{
+  zVec3DArray array;
+  zVec3DData data;
+  zSphere3D bb, bb_rec;
+  zVec3D *vp[4];
+  int n;
+  bool result;
+
+  generate_points3D( &array, N, 5 );
+  zQuickSort( zArrayBuf(&array), zArraySize(&array), sizeof(zVec3D), cmp_dist3D, NULL );
+  zVec3DDataAssignArray( &data, &array );
+  n = zVec3DDataBoundingBall( &data, &bb, vp );
+  zAssert( zVec3DDataBoundingBall (points sorted by distance), test_boundingball3D( &bb, vp, n, &array ) );
+  n = zVec3DDataBoundingBallRecursive( &data, &bb_rec, vp );
+  result = test_boundingball3D( &bb_rec, vp, n, &array );
+  zAssert( zVec3DDataBoundingBallRecursive (points sorted by distance), result &&
+    zIsTol( zSphere3DRadius(&bb_rec) - zSphere3DRadius(&bb), zTOL ) );
+  zVec3DDataDestroy( &data );
+  zArrayFree( &array );
+}
+
 int main(void)
 {
   zRandInit();
   assert_boundingball2D();
+  assert_boundingball2D_sorted();
   assert_boundingball3D();
+  assert_boundingball3D_sorted();
   return 0;
 }

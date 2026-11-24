@@ -86,6 +86,9 @@ static int _zBoundingBall3DDirect(zSphere3D *bb, zVec3DAddrList *pl, zVec3D **vp
   return 0;
 }
 
+/* a list of addresses of points in a random order */
+ZEO_BOUNDINGBALL_ADDRLIST_DEF_METHOD( 3D )
+
 /* a recursive implementation */
 ZEO_BOUNDINGBALL_RECURSIVE_DEF_METHOD( 3D, 4, zSphere3D )
 

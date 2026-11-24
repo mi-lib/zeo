@@ -1,3 +1,5 @@
+2026.11.25. Added a test of the bounding balls for points sorted by the distance from the origin. [test]
+2026.11.25. Modified zVec2DDataBoundingBall, zVec2DDataBoundingBallRecursive, zVec3DDataBoundingBall and zVec3DDataBoundingBallRecursive to shuffle points in advance to avoids O(n^3) time for points in a spatially sorted order. [zeo_bvxd_boundingball, zeo_bv2d_boundingball, zeo_bv3d_boundingball]
 2026.11.24. Added a cut of the surface by a polyhedron to the example of the 3D cell complex on non-convex polyhedra. [example]
 2026.11.24. Added a test of zCC3DCut. [test]
 2026.11.24. Added zCC3DCut to cut the surface of the solid of the 3D cell complex by a polyhedron, and modified operations of the 3D cell complex to renew the tag of faces even if no face is made. [zeo_cc3d]
