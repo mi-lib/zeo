@@ -22,6 +22,7 @@ OBJ=zeo_misc.o\
 	zeo_shape3d_box.o zeo_shape3d_sphere.o zeo_shape3d_ellips.o zeo_shape3d_cyl.o zeo_shape3d_capsule.o zeo_shape3d_ecyl.o zeo_shape3d_cone.o zeo_shape3d_ph.o zeo_shape3d_nurbs.o\
 	zeo_nurbs3d_shape.o\
 	zeo_brep.o zeo_brep_trunc.o zeo_brep_bool.o\
+	zeo_cc3d.o\
 	zeo_col.o zeo_col_box.o zeo_col_minkowski.o zeo_col_gjk.o zeo_col_mpr.o zeo_col_ph.o\
 	zeo_multishape3d.o\
 	zeo_map.o zeo_map_terra.o\

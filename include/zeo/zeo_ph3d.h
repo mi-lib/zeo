@@ -242,6 +242,19 @@ __ZEO_EXPORT zMat3D *zPH3DBaryInertiaMass(const zPH3D *ph, double mass, zMat3D *
 /*! \brief axis-aligned bounding box of a 3D polyhedron. */
 __ZEO_EXPORT zAABox3D *zPH3DAABB(const zPH3D *ph, zAABox3D *aabb);
 
+/*! \brief check if a 3D polyhedron is closed.
+ *
+ * zPH3DIsClosed() checks if a 3D polyhedron \a ph is closed and consistently oriented, namely, if
+ * the faces that share each edge run along it in the both directions in equal numbers. It accepts
+ * an edge shared by more than two faces, e.g., an edge along which two solids touch each other.
+ * Vertices are identified by their indices, so that two vertices at the same position are regarded
+ * as different ones. Whether the faces are oriented outward or inward is not checked.
+ * \return
+ * zPH3DIsClosed() returns the true value if \a ph is closed. If \a ph has no face, if a face has
+ * duplicate vertices, or if it fails to allocate internal memory, it returns the false value.
+ */
+__ZEO_EXPORT bool zPH3DIsClosed(const zPH3D *ph);
+
 /* solid modeling */
 
 /*! \brief create prism and pyramid by extrusion.

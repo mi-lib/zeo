@@ -333,6 +333,49 @@ zAABox3D *zPH3DAABB(const zPH3D *ph, zAABox3D *aabb)
   return aabb;
 }
 
+/* comparison of edges given by pairs of vertex indices and directions. */
+static int _zPH3DEdgeCmp(const void *e1, const void *e2)
+{
+  const int *a = (const int *)e1, *b = (const int *)e2;
+
+  if( a[0] != b[0] ) return a[0] < b[0] ? -1 : 1;
+  return a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0;
+}
+
+/* check if a 3D polyhedron is closed. */
+bool zPH3DIsClosed(const zPH3D *ph)
+{
+  int *edge, n, i, j, k, u, v, sum;
+  bool ret = false;
+
+  if( zPH3DFaceNum(ph) <= 0 ) return false;
+  n = 3 * zPH3DFaceNum(ph);
+  if( !( edge = zAlloc( int, 3*n ) ) ){
+    ZALLOCERROR();
+    return false;
+  }
+  for( i=0; i<zPH3DFaceNum(ph); i++ )
+    for( j=0; j<3; j++ ){
+      u = zPH3DFaceVert(ph,i,j) - zPH3DVertBuf(ph);
+      v = zPH3DFaceVert(ph,i,(j+1)%3) - zPH3DVertBuf(ph);
+      if( u == v ) goto TERMINATE; /* degenerate face */
+      k = 9*i + 3*j;
+      edge[k  ] = zMin( u, v );
+      edge[k+1] = zMax( u, v );
+      edge[k+2] = u < v ? 1 : -1; /* direction */
+    }
+  qsort( edge, n, sizeof(int)*3, _zPH3DEdgeCmp );
+  /* the numbers of faces running along an edge in both directions are equal */
+  for( i=0; i<n; i=j ){
+    for( sum=0, j=i; j<n && _zPH3DEdgeCmp( &edge[3*i], &edge[3*j] ) == 0; j++ ) sum += edge[3*j+2];
+    if( sum != 0 ) goto TERMINATE;
+  }
+  ret = true;
+ TERMINATE:
+  zFree( edge );
+  return ret;
+}
+
 /* solid modeling */
 
 /* next vertex of the bottom loop. */

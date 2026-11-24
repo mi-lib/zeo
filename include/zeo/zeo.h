@@ -31,6 +31,7 @@
 #include <zeo/zeo_vec3d_profile.h>
 #include <zeo/zeo_voronoi2d.h>
 #include <zeo/zeo_brep.h>
+#include <zeo/zeo_cc3d.h>
 #include <zeo/zeo_mapnet.h>
 
 #endif /* __ZEO_H__ */

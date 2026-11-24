@@ -133,6 +133,10 @@
 
 #define ZEO_ERR_BREP_CONV                     "cannot convert polyhedron to B-Rep solid"
 
+#define ZEO_ERR_CC3D_INCONSISTENT             "inconsistent topology of a cell complex"
+#define ZEO_ERR_CC3D_OPENPH                   "polyhedron not closed"
+#define ZEO_ERR_CC3D_INVERTEDPH               "polyhedron with faces oriented inward"
+
 #define ZEO_ERR_VORONOI_CONV                  "cannot convert Delaunay triangles to Voronoi cells"
 
 #define ZEO_ERR_COLCHK_LINE_PARALLEL          "lines are parallel"

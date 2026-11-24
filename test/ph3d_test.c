@@ -138,6 +138,70 @@ void assert_ph3d_aabb(void)
   zAssert( zPH3DAABB, zAABox3DEqual( &aabb1, &aabb2 ) );
 }
 
+void assert_ph3d_is_closed(void)
+{
+  zVec3DData data;
+  zVec3D p;
+  zPH3D ph;
+  zTri3D tri;
+  int i;
+  const int pointnum = 100;
+  bool result_closed, result_flipped, result_open, result_twisted, result_duplicate, result_nonmanifold;
+
+  zVec3DDataInitList( &data );
+  for( i=0; i<pointnum; i++ ){
+    zVec3DCreate( &p, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    zVec3DDataAdd( &data, &p );
+  }
+  zVec3DDataConvexHull( &data, &ph );
+  zVec3DDataDestroy( &data );
+  result_closed = zPH3DIsClosed( &ph );
+  zPH3DFlipDRC( &ph );
+  result_flipped = zPH3DIsClosed( &ph );
+  /* a face removed */
+  zCopy( zTri3D, zPH3DFace(&ph,0), &tri );
+  zPH3DSetFaceNum( &ph, zPH3DFaceNum(&ph) - 1 );
+  result_open = !zPH3DIsClosed( &ph );
+  zPH3DSetFaceNum( &ph, zPH3DFaceNum(&ph) + 1 );
+  /* a face flipped */
+  zTri3DFlip( &tri, zPH3DFace(&ph,0) );
+  result_twisted = !zPH3DIsClosed( &ph );
+  zCopy( zTri3D, &tri, zPH3DFace(&ph,0) );
+  zPH3DDestroy( &ph );
+  /* a tetrahedron, and the same one with a duplicate vertex used in a face */
+  zPH3DAlloc( &ph, 5, 4 );
+  zVec3DCreate( zPH3DVert(&ph,0), 0, 0, 0 );
+  zVec3DCreate( zPH3DVert(&ph,1), 1, 0, 0 );
+  zVec3DCreate( zPH3DVert(&ph,2), 0, 1, 0 );
+  zVec3DCreate( zPH3DVert(&ph,3), 0, 0, 1 );
+  zVec3DCopy( zPH3DVert(&ph,0), zPH3DVert(&ph,4) );
+  zTri3DCreate( zPH3DFace(&ph,0), zPH3DVert(&ph,0), zPH3DVert(&ph,2), zPH3DVert(&ph,1) );
+  zTri3DCreate( zPH3DFace(&ph,1), zPH3DVert(&ph,0), zPH3DVert(&ph,1), zPH3DVert(&ph,3) );
+  zTri3DCreate( zPH3DFace(&ph,2), zPH3DVert(&ph,0), zPH3DVert(&ph,3), zPH3DVert(&ph,2) );
+  zTri3DCreate( zPH3DFace(&ph,3), zPH3DVert(&ph,1), zPH3DVert(&ph,2), zPH3DVert(&ph,3) );
+  result_closed = result_closed && zPH3DIsClosed( &ph );
+  zTri3DCreate( zPH3DFace(&ph,2), zPH3DVert(&ph,4), zPH3DVert(&ph,3), zPH3DVert(&ph,2) );
+  result_duplicate = !zPH3DIsClosed( &ph );
+  zPH3DDestroy( &ph );
+  /* two tetrahedra sharing an edge, which is shared by four faces */
+  zPH3DAlloc( &ph, 6, 8 );
+  zVec3DCreate( zPH3DVert(&ph,0), 0, 0, 0 );
+  zVec3DCreate( zPH3DVert(&ph,1), 0, 0, 1 );
+  zVec3DCreate( zPH3DVert(&ph,2), 1, 0, 0 );
+  zVec3DCreate( zPH3DVert(&ph,3), 0, 1, 0 );
+  zVec3DCreate( zPH3DVert(&ph,4), -1, 0, 0 );
+  zVec3DCreate( zPH3DVert(&ph,5), 0, -1, 0 );
+  for( i=0; i<2; i++ ){
+    zTri3DCreate( zPH3DFace(&ph,4*i  ), zPH3DVert(&ph,0), zPH3DVert(&ph,2*i+3), zPH3DVert(&ph,2*i+2) );
+    zTri3DCreate( zPH3DFace(&ph,4*i+1), zPH3DVert(&ph,0), zPH3DVert(&ph,2*i+2), zPH3DVert(&ph,1) );
+    zTri3DCreate( zPH3DFace(&ph,4*i+2), zPH3DVert(&ph,0), zPH3DVert(&ph,1), zPH3DVert(&ph,2*i+3) );
+    zTri3DCreate( zPH3DFace(&ph,4*i+3), zPH3DVert(&ph,1), zPH3DVert(&ph,2*i+2), zPH3DVert(&ph,2*i+3) );
+  }
+  result_nonmanifold = zPH3DIsClosed( &ph ) && zIsTol( zPH3DVolume( &ph ) - 1.0/3, zTOL );
+  zPH3DDestroy( &ph );
+  zAssert( zPH3DIsClosed, result_closed && result_flipped && result_open && result_twisted && result_duplicate && result_nonmanifold );
+}
+
 int main(int argc, char *argv[])
 {
   zRandInit();
@@ -145,5 +209,6 @@ int main(int argc, char *argv[])
   assert_ph3d_closest_nonconvex();
   assert_ph3d_closest_degenerate();
   assert_ph3d_aabb();
+  assert_ph3d_is_closed();
   return 0;
 }
