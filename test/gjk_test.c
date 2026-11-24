@@ -212,6 +212,15 @@ void assert_gjk_mpr_scale(void)
 
 /* points in a box [x0,x0+1]x[0,1]x[0,1] including the corners, which are rotated, translated by
  * offset and scaled by scale. */
+/* a point p shifted by shift (if not NULL), rotated, translated by offset and scaled by scale. */
+zVec3D *create_box_point_xform(zVec3D *p, zVec3D *shift, zMat3D *r, double offset, double scale, zVec3D *q)
+{
+  if( shift ) zVec3DAdd( p, shift, q );
+  else zVec3DCopy( p, q );
+  zMulMat3DVec3DDRC( r, q );
+  return zVec3DCreate( q, ( q->c.x + offset ) * scale, ( q->c.y - offset ) * scale, ( q->c.z + offset ) * scale );
+}
+
 void create_box_points_xform(zVec3DData *data, double x0, zMat3D *r, double offset, double scale, int n)
 {
   zVec3D p;
@@ -256,6 +265,43 @@ void assert_gjk_box_scale(void)
   zAssert( zGJK (distance between boxes of various sizes and positions), result_dist );
 }
 
+/* two boxes of the same orientation overlapping each other of various sizes and positions, for
+ * which the penetration depth is the minimum overlap along the axes. */
+void assert_gjk_depth_box(void)
+{
+  zVec3DData data1, data2;
+  zVec3D c1, c2, p, shift;
+  zMat3D r;
+  double scale, offset, d, depth;
+  int i, j, k, n = 50;
+  bool result_col = true, result_depth = true;
+
+  for( i=0; i<N; i++ ){
+    scale = pow( 10, zRandF(-9,9) );
+    offset = i % 2 ? 1.0e3 : 0;
+    zMat3DFromZYX( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    zVec3DCreate( &shift, zRandF(-0.9,0.9), zRandF(-0.9,0.9), zRandF(-0.9,0.9) );
+    if( i % 4 == 0 ) shift.c.x = i % 8 ? 1 : 0; /* touching or coinciding boxes */
+    for( depth=HUGE_VAL, k=0; k<3; k++ )
+      if( 1 - fabs( shift.e[k] ) < depth ) depth = 1 - fabs( shift.e[k] );
+    zVec3DDataInitArray( &data1, n + 8 );
+    zVec3DDataInitArray( &data2, n + 8 );
+    for( j=0; j<n+8; j++ ){
+      if( j < 8 ) zVec3DCreate( &p, j & 1, ( j >> 1 ) & 1, ( j >> 2 ) & 1 );
+      else zVec3DCreate( &p, zRandF(0,1), zRandF(0,1), zRandF(0,1) );
+      zVec3DDataAdd( &data1, create_box_point_xform( &p, NULL, &r, offset, scale, &c1 ) );
+      zVec3DDataAdd( &data2, create_box_point_xform( &p, &shift, &r, offset, scale, &c1 ) );
+    }
+    if( !zGJKDepth( &data1, &data2, &c1, &c2 ) ) result_col = false;
+    d = zVec3DDist( &c1, &c2 ) / scale;
+    if( fabs( d - depth ) > 1.0e-9 ) result_depth = false;
+    zVec3DDataDestroy( &data1 );
+    zVec3DDataDestroy( &data2 );
+  }
+  zAssert( zGJKDepth (boxes of various sizes and positions), result_col );
+  zAssert( zGJKDepth (penetration depth of boxes of various sizes and positions), result_depth );
+}
+
 /* a point outside of, on the face of and inside of a box of various sizes and positions. */
 void assert_gjk_point_scale(void)
 {
@@ -295,5 +341,6 @@ int main(int argc, char *argv[])
   assert_gjk_mpr_scale();
   assert_gjk_box_scale();
   assert_gjk_point_scale();
+  assert_gjk_depth_box();
   return 0;
 }

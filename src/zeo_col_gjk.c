@@ -6,8 +6,6 @@
 
 #include <zeo/zeo_col.h>
 
-#define DEBUG 0
-
 typedef struct{
   bool sw_w;  /* included in W (the smallest simplex) */
   bool sw_y;  /* included in Y (the updated simplex) */
@@ -212,218 +210,6 @@ static void _zGJKPair(zGJKSimplex *s, zVec3D *c1, zVec3D *c2)
     }
 }
 
-/* param[in]  ph  polytope (convex hull) */
-/* param[in]  p   target 3D point */
-/* param[out] cp  closest 3D point in the `ph` faces */
-/* param[out] id  id of the `ph` faces, which is closest */
-/* return  closest(minimum) distance for the face of the `ph` */
-static double _zGJKPH3DClosest(zPH3D *ph, zVec3D *p, zVec3D *cp, int *id)
-{
-  int i;
-  zVec3D ncp;
-  double d, dmin;
-
-  if( zPH3DFaceNum(ph) == 0 ){
-    ZRUNWARN( ZEO_ERR_NOFACE );
-    zVec3DCopy( p, cp );
-    return 0;
-  }
-  dmin = zTri3DClosest( zPH3DFace(ph,0), p, cp );
-  *id = 0;
-  for( i=1; i<zPH3DFaceNum(ph); i++ )
-    if( ( d = zTri3DClosest( zPH3DFace(ph,i), p, &ncp ) ) < dmin ){
-      zVec3DCopy( &ncp, cp );
-      dmin = d;
-      *id = i;
-    }
-  return dmin;
-}
-
-ZEDA_DEF_LIST_CLASS( zGJKSlotList, zGJKSlotListCell, zGJKSlot );
-
-static zGJKSlotListCell *_zGJKSlotListInsert(zGJKSlotList *sl, zGJKSlot *s)
-{
-  zGJKSlotListCell *sc;
-
-  if( zVec3DIsNan(&s->w) )
-    return NULL;
-  if( !( sc = zAlloc( zGJKSlotListCell, 1 ) ) ){
-    ZALLOCERROR();
-    return NULL;
-  }
-  zVec3DCopy( &s->w, &sc->data.w );
-  sc->data.p1 = s->p1;
-  sc->data.p2 = s->p2;
-  zListInsertHead( sl, sc );
-  return sc;
-}
-
-/* @param[in]     data1      3D vertices 1 (must be made from convex hull) */
-/* @param[in]     data2      3D vertices 2 (must be made from convex hull) */
-/* @param[in,out] slist      A list for accumulating slots that are simplex elements (3D vertex w, etc.) alongside the update process of simplex `s` */
-/* @param[in,out] vert_data  A set of 3D vertices `s->w` which `slist` has */
-/* @param[in]     v          */
-/* @param[in]     edge       */
-/* @param[in]     tri        */
-static bool _zGJKPDAddPoint(zVec3DData *data1, zVec3DData *data2, zGJKSlotList *slist, zVec3DData *vert_data, zVec3D *v, zEdge3D *edge, zTri3D *tri)
-{
-  zGJKSlot  ns;
-
-  _zGJKSupportMap( &ns, data1, data2, v );
-  if( ( edge != NULL && zIsTiny( zEdge3DDistFromPoint( edge, &ns.w ) ) ) ||
-      ( tri != NULL && zIsTiny( zTri3DDistFromPoint( tri, &ns.w ) ) ) )
-    return false;
-  _zGJKSlotListInsert( slist, &ns );
-  zVec3DDataAdd( vert_data, &ns.w );
-  return true;
-}
-
-/* This function aims to convert the simplex into a 3D solid (with n vertices ≥ 4). */
-/* Assumption: The number of vertices n in the simplex should be 2 ≤ n ≤ 4. */
-/* @param[in]     data1      3D vertices 1 (must be made from convex hull) */
-/* @param[in]     data2      3D vertices 2 (must be made from convex hull) */
-/* @param[in]     s          simplex from GJK */
-/* @param[in,out] slist      A list for accumulating slots that are simplex elements (3D vertex w, etc.) alongside the update process of simplex `s` */
-/* @param[out]    vert_data  A set of 3D vertices `s->w` which `slist` has */
-static bool _zGJKPDInit(zVec3DData *data1, zVec3DData *data2, zGJKSimplex *s, zGJKSlotList *slist, zVec3DData *vert_data)
-{
-  int i;
-  zGJKSlotListCell *sc;
-  zPH3D ph;
-  zTri3D tri;
-  zEdge3D edge;
-  zVec3D v1, v2;
-
-  for( i=0; i<s->n; i++ )
-    _zGJKSlotListInsert( slist, &s->slot[i] );
-  zListForEach( slist, sc )
-    zVec3DDataAdd( vert_data, &sc->data.w );
-
-  if( s->n < 2 ){
-    ZRUNERROR("Invalid size=%d of syntax list. It must be between 2(edge) or 3(plane) or 4(tetrahedron) after _GJK().", s->n );
-    return false;
-  } else
-  if( s->n == 2 ){
-    /* edge exists in the Minkowski difference space */
-    if( zEdge3DCreate( &edge, &s->slot[0].w, &s->slot[1].w ) == NULL )
-      return false;
-    if( !zVec3DOrthoSpace( zEdge3DVec(&edge), &v1, &v2 ) )
-      return false;
-    /* v1 is the one separating axis vector in the Minkowski difference space */
-    if( !_zGJKPDAddPoint( data1, data2, slist, vert_data, &v1, &edge, NULL ) )
-      return false;
-    /* v2 is the another separating axis vector in the Minkowski difference space */
-    if( !_zGJKPDAddPoint( data1, data2, slist, vert_data, &v2, &edge, NULL ) )
-      return false;
-    /* -v1 */
-    if( !_zGJKPDAddPoint( data1, data2, slist, vert_data, zVec3DRevDRC( &v1 ), &edge, NULL ) )
-      return false;
-    /* -v2 */
-    if( !_zGJKPDAddPoint( data1, data2, slist, vert_data, zVec3DRevDRC( &v2 ), &edge, NULL ) )
-      return false;
-    if( zVec3DDataConvexHull( vert_data, &ph ) == NULL )
-      return false;
-    if( !zPH3DPointIsInside( &ph, ZVEC3DZERO, -zTOL ) ){
-      zPH3DDestroy( &ph );
-      return false;
-    }
-    zPH3DDestroy(&ph);
-  } else
-  if( s->n == 3 ){
-    if( zTri3DCreate( &tri, &s->slot[0].w, &s->slot[1].w, &s->slot[2].w ) == NULL )
-      return false;
-    /* normal vector of plane of 3 vertices */
-    if( !_zGJKPDAddPoint( data1, data2, slist, vert_data, zTri3DNorm(&tri), NULL, &tri ) )
-      return false;
-    /* inversed normal vector */
-    if( !_zGJKPDAddPoint( data1, data2, slist, vert_data, zVec3DRev( zTri3DNorm(&tri), &v1 ), NULL, &tri ) )
-      return false;
-  }
-
-  return true;
-}
-
-/* initialize simplex as tetrahedron */
-/* @param[in]  data1      3D vertices 1 (must be made from convex hull) */
-/* @param[in]  data2      3D vertices 2 (must be made from convex hull) */
-/* @param[in]  s          simplex from GJK */
-/* @param[out] slist      A list for accumulating slots that are simplex elements (3D vertex w, etc.) alongside the update process of simplex `s` */
-/* @param[out] vert_data  A set of 3D vertices `s->w` which `slist` has */
-/* @return  If successful, true */
-static bool _zGJKPDInitSimplex3D(zVec3DData *data1, zVec3DData *data2, zGJKSimplex *s, zGJKSlotList *slist, zVec3DData *vert_data)
-{
-  zListInit( slist );
-  zVec3DDataInitList( vert_data );
-  if( _zGJKPDInit( data1, data2, s, slist, vert_data ) )
-    return true;
-  zVec3DDataDestroy( vert_data );
-  zListDestroy( zGJKSlotListCell, slist );
-  return false;
-}
-
-/* penetration depth */
-/* @param[in]  data1  3D vertices 1 (must be made from convex hull) */
-/* @param[in]  data2  3D vertices 2 (must be made from convex hull) */
-/* @param[out] c1     deepest penetration depth of data1 */
-/* @param[out] c2     deepest penetration depth of data2 */
-/* @param[in]  s      simplex from GJK */
-/* @return  If the search for depth succeeds, true */
-static bool _zGJKPD(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2, zGJKSimplex *s)
-{
-  int i, j;
-  zGJKSlot  ns;
-  zGJKSlotList slist;
-  zGJKSlotListCell *sc;
-  zVec3D v, v_temp;
-  zVec3DData vert_data;
-  zPH3D ph;
-  int id = 0;
-  double l[3];
-
-  /* Question (Naive Approach): */
-  /*  When the simplex vertices are 1, 2, and 3,       */
-  /*  this means the penetration depth is 0,           */
-  /*  so shouldn't the function terminate immediately? */
-  if( !_zGJKPDInitSimplex3D( data1, data2, s, &slist, &vert_data ) ) return false;
-  zVec3DZero( &v_temp );
-  while( 1 ){
-    if( zVec3DDataConvexHull( &vert_data, &ph ) == NULL ){
-      zVec3DDataDestroy( &vert_data );
-      zListDestroy( zGJKSlotListCell, &slist );
-      return false;
-    }
-    _zGJKPH3DClosest( &ph, ZVEC3DZERO, &v, &id );
-    if( zVec3DEqual( &v, &v_temp ) ) break; /* success! */
-    zVec3DCopy( &v, &v_temp );
-    zVec3DRevDRC( &v );
-    _zGJKSupportMap( &ns, data1, data2, &v );
-    zListForEach( &slist, sc )
-      if( zVec3DEqual( &ns.w, &sc->data.w ) ) goto BREAK;
-    _zGJKSlotListInsert( &slist, &ns );
-    zVec3DDataAdd( &vert_data, &ns.w );
-    zPH3DDestroy( &ph );
-  }
- BREAK:
-  zVec3DZero( c1 );
-  zVec3DZero( c2 );
-  j = 0;
-  zTri3DLinScale( zPH3DFace(&ph,id), &v, &l[0], &l[1], &l[2], &v_temp );
-  zListForEach( &slist, sc ){
-    for( i=0; i<3; i++ ){
-      if( zVec3DEqual( zPH3DFaceVert(&ph,id,i), &sc->data.w ) ){
-        zVec3DCatDRC( c1, l[i], sc->data.p1 );
-        zVec3DCatDRC( c2, l[i], sc->data.p2 );
-        j++;
-      }
-    }
-    if( j == 3 ) break;
-  }
-  zPH3DDestroy( &ph );
-  zVec3DDataDestroy( &vert_data );
-  zListDestroy( zGJKSlotListCell, &slist );
-  return true;
-}
-
 /* The tolerances of the termination are relative to the size of the problem, namely, the maximum
  * norm of the support points of the simplex and the corresponding points on the original convex
  * hulls, so that they do not depend on the scale and the position of the convex hulls. The norms of
@@ -509,15 +295,6 @@ bool zGJK(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2)
   return _zGJK( data1, data2, c1, c2, NULL );
 }
 
-/* GJK algorithm followed by Johnson's penetration depth */
-bool zGJKDepth(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2)
-{
-  zGJKSimplex s;
-
-  return _zGJK( data1, data2, c1, c2, &s ) ?
-    _zGJKPD( data1, data2, c1, c2, &s ) : false;
-}
-
 /* support map of Minkowski difference. */
 static zVec3D *_zGJKPointSupportMap(zGJKSlot *s, zVec3DData *data, zVec3D *v)
 {
@@ -565,4 +342,383 @@ bool zGJKPoint(zVec3DData *data, zVec3D *p, zVec3D *c)
   } while( s.n < 4 && ++iter < ZEO_GJK_MAX_ITER );
   _zGJKPointClosest( &s, c );
   return _zGJKCheck( &s, &proximity, r2 );
+}
+
+/* Expanding Polytope Algorithm (EPA) for the penetration depth based on a method proposed by van den
+ * Bergen:
+ *   G. van den Bergen, Proximity Queries and Penetration Depth Computation on 3D Game Objects, Game
+ *   Developers Conference, 2001.
+ * The polytope is initialized with the simplex found by GJK that contains the origin, and is expanded
+ * toward the boundary of the Minkowski difference by adding the support point in the direction of the
+ * face closest to the origin. The faces visible from the new support point are removed, and the
+ * horizon is connected with the support point. Since the visibility is judged by the exact orientation
+ * predicate, the polytope is kept to be convex without computing the convex hull of the vertices. */
+
+/* a face of the polytope */
+typedef struct{
+  int v[3];    /* vertex indices in counterclockwise order viewed from outside */
+  int adj[3];  /* faces adjacent across the edges v[i]-v[i+1] */
+  int adje[3]; /* edge indices of the adjacent faces */
+  zVec3D n;    /* unit outward normal vector */
+  double d;    /* signed distance of the face from the origin */
+  bool alive;  /* false if removed */
+} zEPAFace;
+
+/* an edge of the horizon, namely, an edge of an alive face adjacent to a removed face */
+typedef struct{
+  int f; /* face index */
+  int e; /* edge index */
+} zEPAEdge;
+
+ZEDA_DEF_ARRAY_CLASS( zEPAVertArray, zGJKSlot );
+ZEDA_DEF_ARRAY_CLASS( zEPAFaceArray, zEPAFace );
+ZEDA_DEF_ARRAY_CLASS( zEPAEdgeArray, zEPAEdge );
+
+typedef struct{
+  zVec3DData *data1, *data2;
+  zEPAVertArray vert;
+  zEPAFaceArray face;
+  zEPAEdgeArray horizon;
+  double r2; /* squared size of the problem */
+} zEPA;
+
+#define _zEPAVert(epa,i)   ( &zArrayElemNC(&(epa)->vert,i)->w )
+#define _zEPAFace(epa,i)   zArrayElemNC(&(epa)->face,i)
+#define _zEPAFaceVert(epa,f,i) _zEPAVert( epa, (f)->v[i] )
+
+/* tolerance of the problem, namely, zTOL times the size of the problem. */
+#define _zEPATol(epa)      ( zTOL * sqrt( (epa)->r2 ) )
+
+/* reserve a cell of an array, which is doubled if full. */
+#define _zEPAArrayReserve(array,type) do{\
+  if( zArraySize(array) == zArrayCapacity(array) )\
+    zArrayRealloc( array, type, zArrayCapacity(array) > 0 ? 2 * zArrayCapacity(array) : 16 );\
+} while(0)
+
+/* initialize the polytope. */
+static void _zEPAInit(zEPA *epa, zVec3DData *data1, zVec3DData *data2)
+{
+  epa->data1 = data1;
+  epa->data2 = data2;
+  zArrayInit( &epa->vert );
+  zArrayInit( &epa->face );
+  zArrayInit( &epa->horizon );
+  epa->r2 = 0;
+}
+
+/* destroy the polytope. */
+static void _zEPADestroy(zEPA *epa)
+{
+  zArrayFree( &epa->vert );
+  zArrayFree( &epa->face );
+  zArrayFree( &epa->horizon );
+}
+
+/* support point of the Minkowski difference in the direction of u. */
+static void _zEPASupportMap(zEPA *epa, const zVec3D *u, zGJKSlot *slot)
+{
+  zVec3D v;
+
+  zVec3DRev( u, &v );
+  _zGJKSupportMap( slot, epa->data1, epa->data2, &v );
+  _zGJKUpdateSqrSize( epa->r2, slot );
+}
+
+/* add a vertex to the polytope. The index of the vertex is returned, or -1 on failure. */
+static int _zEPAAddVert(zEPA *epa, const zGJKSlot *slot)
+{
+  _zEPAArrayReserve( &epa->vert, zGJKSlot );
+  if( zArraySize(&epa->vert) == zArrayCapacity(&epa->vert) ) return -1;
+  *zArrayElemNC(&epa->vert,zArraySize(&epa->vert)) = *slot;
+  _zGJKUpdateSqrSize( epa->r2, slot );
+  return zArraySize(&epa->vert)++;
+}
+
+/* add a face of vertices a, b and c to the polytope. The index of the face is returned, or -1 on
+ * failure. A degenerate face, which has the zero normal vector, is put the infinite distance so as not
+ * to be chosen as the closest face. */
+static int _zEPAAddFace(zEPA *epa, int a, int b, int c)
+{
+  zEPAFace *f;
+  zVec3D e1, e2;
+  double l;
+
+  _zEPAArrayReserve( &epa->face, zEPAFace );
+  if( zArraySize(&epa->face) == zArrayCapacity(&epa->face) ) return -1;
+  f = _zEPAFace( epa, zArraySize(&epa->face) );
+  f->v[0] = a; f->v[1] = b; f->v[2] = c;
+  f->adj[0] = f->adj[1] = f->adj[2] = -1;
+  f->adje[0] = f->adje[1] = f->adje[2] = -1;
+  f->alive = true;
+  zVec3DSub( _zEPAVert(epa,b), _zEPAVert(epa,a), &e1 );
+  zVec3DSub( _zEPAVert(epa,c), _zEPAVert(epa,a), &e2 );
+  zVec3DOuterProd( &e1, &e2, &f->n );
+  if( ( l = zVec3DNorm( &f->n ) ) > 0 ){
+    zVec3DDivDRC( &f->n, l );
+    f->d = zVec3DInnerProd( &f->n, _zEPAVert(epa,a) );
+  } else
+    f->d = HUGE_VAL;
+  return zArraySize(&epa->face)++;
+}
+
+/* link the edges of the faces in [first,last) that are not linked yet with each other. */
+static void _zEPALink(zEPA *epa, int first, int last)
+{
+  zEPAFace *f, *g;
+  int i, j, k, l;
+
+  for( i=first; i<last; i++ ){
+    f = _zEPAFace( epa, i );
+    for( j=0; j<3; j++ ){
+      if( f->adj[j] >= 0 ) continue;
+      for( k=i+1; k<last; k++ ){
+        g = _zEPAFace( epa, k );
+        for( l=0; l<3; l++ )
+          if( g->adj[l] < 0 && g->v[l] == f->v[(j+1)%3] && g->v[(l+1)%3] == f->v[j] ){
+            f->adj[j] = k; f->adje[j] = l;
+            g->adj[l] = i; g->adje[l] = j;
+            goto NEXT;
+          }
+      }
+     NEXT: ;
+    }
+  }
+}
+
+/* check if a point p is strictly in front of a face. */
+static bool _zEPAFaceIsVisible(zEPA *epa, zEPAFace *f, const zVec3D *p)
+{
+  return zOrient3D( _zEPAFaceVert(epa,f,0)->e, _zEPAFaceVert(epa,f,1)->e, _zEPAFaceVert(epa,f,2)->e, p->e ) > 0;
+}
+
+/* find the horizon from a point p by the depth-first search from the e-th edge of the i-th face. The
+ * faces visible from p are removed. */
+static bool _zEPASilhouette(zEPA *epa, int i, int e, const zVec3D *p)
+{
+  zEPAFace *f;
+  zEPAEdge edge;
+
+  if( i < 0 ) return false; /* not linked, which never happens */
+  if( !( f = _zEPAFace( epa, i ) )->alive ) return true;
+  if( !_zEPAFaceIsVisible( epa, f, p ) ){
+    _zEPAArrayReserve( &epa->horizon, zEPAEdge );
+    if( zArraySize(&epa->horizon) == zArrayCapacity(&epa->horizon) ) return false;
+    edge.f = i; edge.e = e;
+    *zArrayElemNC(&epa->horizon,zArraySize(&epa->horizon)++) = edge;
+    return true;
+  }
+  f->alive = false;
+  return _zEPASilhouette( epa, f->adj[(e+1)%3], f->adje[(e+1)%3], p ) &&
+         _zEPASilhouette( epa, f->adj[(e+2)%3], f->adje[(e+2)%3], p );
+}
+
+/* expand the polytope by a vertex of index iv visible from the i-th face. */
+static bool _zEPAExpand(zEPA *epa, int i, int iv)
+{
+  zEPAFace *f;
+  zEPAEdge *edge;
+  int j, k, first;
+
+  zArraySetSize( &epa->horizon, 0 );
+  f = _zEPAFace( epa, i );
+  f->alive = false;
+  for( j=0; j<3; j++ )
+    if( !_zEPASilhouette( epa, f->adj[j], f->adje[j], _zEPAVert(epa,iv) ) ) return false;
+  first = zArraySize(&epa->face);
+  for( j=0; j<zArraySize(&epa->horizon); j++ ){
+    edge = zArrayElemNC( &epa->horizon, j );
+    f = _zEPAFace( epa, edge->f );
+    if( ( k = _zEPAAddFace( epa, f->v[(edge->e+1)%3], f->v[edge->e], iv ) ) < 0 ) return false;
+    f = _zEPAFace( epa, edge->f ); /* the array of faces might be reallocated */
+    f->adj[edge->e] = k; f->adje[edge->e] = 0;
+    _zEPAFace(epa,k)->adj[0] = edge->f;
+    _zEPAFace(epa,k)->adje[0] = edge->e;
+  }
+  _zEPALink( epa, first, zArraySize(&epa->face) );
+  return true;
+}
+
+/* the alive face closest to the origin. */
+static int _zEPAClosestFace(zEPA *epa)
+{
+  zEPAFace *f;
+  double dmin = HUGE_VAL;
+  int i, imin = -1;
+
+  for( i=0; i<zArraySize(&epa->face); i++ ){
+    f = _zEPAFace( epa, i );
+    if( f->alive && f->d < dmin ){
+      dmin = f->d;
+      imin = i;
+    }
+  }
+  return imin;
+}
+
+/* add a vertex to a simplex of vertices in the polytope, which is chosen from candidates cand[] or the
+ * support points in the directions of u[], so that its distance from the affine hull of the simplex
+ * is larger than the tolerance. The distance of a point p is computed by dist(epa,p,util). If no such
+ * vertex is found, the Minkowski difference is regarded to be degenerate. */
+static int _zEPASimplexAdd(zEPA *epa, zGJKSlot cand[], int nc, zVec3D u[], int nu, double (* dist)(zEPA*,const zVec3D*,void*), void *util)
+{
+  zGJKSlot slot;
+  double d, dmax = 0;
+  int i, imax = -1;
+
+  for( i=0; i<nc; i++ )
+    if( ( d = dist( epa, &cand[i].w, util ) ) > dmax ){
+      dmax = d;
+      imax = i;
+    }
+  if( imax >= 0 && dmax > _zEPATol(epa) ) return _zEPAAddVert( epa, &cand[imax] );
+  for( i=0; i<nu; i++ ){
+    _zEPASupportMap( epa, &u[i], &slot );
+    if( dist( epa, &slot.w, util ) > _zEPATol(epa) ) return _zEPAAddVert( epa, &slot );
+  }
+  return -2; /* degenerate */
+}
+
+/* distance from the first vertex. */
+static double _zEPADistFromPoint(zEPA *epa, const zVec3D *p, void *util)
+{
+  return zVec3DDist( p, _zEPAVert(epa,0) );
+}
+
+/* distance from the line passing the first and second vertices, whose direction is util. */
+static double _zEPADistFromLine(zEPA *epa, const zVec3D *p, void *util)
+{
+  zVec3D d, e;
+
+  zVec3DSub( p, _zEPAVert(epa,0), &d );
+  zVec3DOuterProd( (zVec3D *)util, &d, &e );
+  return zVec3DNorm( &e );
+}
+
+/* distance from the plane passing the first three vertices, whose normal vector is util. */
+static double _zEPADistFromPlane(zEPA *epa, const zVec3D *p, void *util)
+{
+  zVec3D d;
+
+  zVec3DSub( p, _zEPAVert(epa,0), &d );
+  return fabs( zVec3DInnerProd( (zVec3D *)util, &d ) );
+}
+
+/* create a tetrahedron from the simplex found by GJK. If the simplex is not a tetrahedron, namely, the
+ * origin is reached on a lower-dimensional simplex, vertices are added from the support points in the
+ * directions orthogonal to the simplex. Note that the simplex can be a single point which is not on
+ * the boundary of the Minkowski difference, if GJK starts from coincident points. It returns 1 if a
+ * tetrahedron is created, 0 if the Minkowski difference is degenerate, namely, thinner than the
+ * tolerance in a direction, in which case the penetration depth is regarded as zero, and -1 on
+ * failure. */
+static int _zEPACreateTetra(zEPA *epa, zGJKSimplex *s)
+{
+  zGJKSlot cand[4];
+  zVec3D e, u[6];
+  int i, nc, ret;
+
+  for( nc=0, i=0; i<4; i++ )
+    if( s->slot[i].sw_w ) cand[nc++] = s->slot[i];
+  for( i=0; i<nc; i++ ) _zGJKUpdateSqrSize( epa->r2, &cand[i] );
+  if( nc == 0 || _zEPAAddVert( epa, &cand[0] ) < 0 ) return -1;
+  /* second vertex */
+  for( i=0; i<3; i++ ){
+    zVec3DZero( &u[i] );
+    u[i].e[i] = 1;
+  }
+  zVec3DRev( &u[0], &u[3] );
+  zVec3DRev( &u[1], &u[4] );
+  zVec3DRev( &u[2], &u[5] );
+  if( ( ret = _zEPASimplexAdd( epa, cand+1, nc-1, u, 6, _zEPADistFromPoint, NULL ) ) < 0 )
+    return ret == -2 ? 0 : -1;
+  /* third vertex */
+  zVec3DSub( _zEPAVert(epa,1), _zEPAVert(epa,0), &e );
+  zVec3DDivDRC( &e, zVec3DNorm( &e ) ); /* not normalized with the absolute tolerance */
+  if( !zVec3DOrthonormalSpace( &e, &u[0], &u[2] ) ) return -1;
+  zVec3DRev( &u[0], &u[1] );
+  zVec3DRev( &u[2], &u[3] );
+  if( ( ret = _zEPASimplexAdd( epa, cand+1, nc-1, u, 4, _zEPADistFromLine, &e ) ) < 0 )
+    return ret == -2 ? 0 : -1;
+  /* fourth vertex */
+  zVec3DSub( _zEPAVert(epa,1), _zEPAVert(epa,0), &e );
+  zVec3DSub( _zEPAVert(epa,2), _zEPAVert(epa,0), &u[1] );
+  zVec3DOuterProd( &e, &u[1], &u[0] );
+  zVec3DDivDRC( &u[0], zVec3DNorm( &u[0] ) );
+  zVec3DRev( &u[0], &u[1] );
+  if( ( ret = _zEPASimplexAdd( epa, cand+1, nc-1, u, 2, _zEPADistFromPlane, &u[0] ) ) < 0 )
+    return ret == -2 ? 0 : -1;
+  /* faces directing outward */
+  if( ( i = zOrient3D( _zEPAVert(epa,0)->e, _zEPAVert(epa,1)->e, _zEPAVert(epa,2)->e, _zEPAVert(epa,3)->e ) ) == 0 )
+    return 0;
+  if( i < 0 ){
+    if( _zEPAAddFace( epa, 0, 1, 2 ) < 0 || _zEPAAddFace( epa, 0, 3, 1 ) < 0 ||
+        _zEPAAddFace( epa, 1, 3, 2 ) < 0 || _zEPAAddFace( epa, 0, 2, 3 ) < 0 ) return -1;
+  } else{
+    if( _zEPAAddFace( epa, 0, 2, 1 ) < 0 || _zEPAAddFace( epa, 0, 1, 3 ) < 0 ||
+        _zEPAAddFace( epa, 1, 2, 3 ) < 0 || _zEPAAddFace( epa, 0, 3, 2 ) < 0 ) return -1;
+  }
+  _zEPALink( epa, 0, 4 );
+  return 1;
+}
+
+/* a pair of points on the original convex hulls that corresponds to the foot of the perpendicular
+ * from the origin to a face. */
+static void _zEPAPair(zEPA *epa, zEPAFace *f, zVec3D *c1, zVec3D *c2)
+{
+  zVec3D p, d1, d2, e;
+  zGJKSlot *slot;
+  double l[3], s;
+  int i;
+
+  zVec3DMul( &f->n, f->d, &p );
+  for( s=0, i=0; i<3; i++ ){
+    zVec3DSub( _zEPAFaceVert(epa,f,(i+1)%3), &p, &d1 );
+    zVec3DSub( _zEPAFaceVert(epa,f,(i+2)%3), &p, &d2 );
+    zVec3DOuterProd( &d1, &d2, &e );
+    s += ( l[i] = zVec3DInnerProd( &f->n, &e ) );
+  }
+  zVec3DZero( c1 );
+  zVec3DZero( c2 );
+  for( i=0; i<3; i++ ){
+    slot = zArrayElemNC( &epa->vert, f->v[i] );
+    zVec3DCatDRC( c1, l[i]/s, slot->p1 );
+    zVec3DCatDRC( c2, l[i]/s, slot->p2 );
+  }
+}
+
+/* penetration depth by EPA. If the penetration depth is regarded as zero, c1 and c2 are not modified. */
+static bool _zEPA(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2, zGJKSimplex *s)
+{
+  zEPA epa;
+  zEPAFace *f;
+  zGJKSlot slot;
+  int i, iv, iter;
+  bool ret = false;
+
+  _zEPAInit( &epa, data1, data2 );
+  if( ( i = _zEPACreateTetra( &epa, s ) ) <= 0 ){
+    ret = i == 0;
+    goto TERMINATE;
+  }
+  for( iter=0; ; iter++ ){
+    if( ( i = _zEPAClosestFace( &epa ) ) < 0 ) goto TERMINATE;
+    f = _zEPAFace( &epa, i );
+    _zEPASupportMap( &epa, &f->n, &slot );
+    /* the penetration depth is between the distance of the closest face and that of the support plane */
+    if( iter >= ZEO_GJK_MAX_ITER || !_zEPAFaceIsVisible( &epa, f, &slot.w ) ||
+        zVec3DInnerProd( &f->n, &slot.w ) - f->d <= _zEPATol(&epa) ) break;
+    if( ( iv = _zEPAAddVert( &epa, &slot ) ) < 0 || !_zEPAExpand( &epa, i, iv ) ) goto TERMINATE;
+  }
+  _zEPAPair( &epa, f, c1, c2 );
+  ret = true;
+ TERMINATE:
+  _zEPADestroy( &epa );
+  return ret;
+}
+
+/* GJK algorithm followed by EPA for the penetration depth. */
+bool zGJKDepth(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2)
+{
+  zGJKSimplex s;
+
+  return _zGJK( data1, data2, c1, c2, &s ) ? _zEPA( data1, data2, c1, c2, &s ) : false;
 }

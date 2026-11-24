@@ -1,3 +1,5 @@
+2026.11.24. Added a test of zGJKDepth for overlapping boxes of various sizes and positions. [test]
+2026.11.24. Reimplemented zGJKDepth based on the expanding polytope algorithm to expands the simplex of GJK incrementally without computing the convex hull at every iteration. [zeo_col_gjk]
 2026.11.24. Added tests of zGJK and zGJKPoint for boxes and points of various sizes and positions, including touching cases. [test]
 2026.11.24. Modified zGJK and zGJKPoint to judge the convergence and the collision with tolerances relative to the size of the problem. [zeo_col_gjk]
 2026.11.24. Debugged zGJK and zGJKPoint to terminate when the origin is reached in the Minkowski difference, and to limit the number of iterations. [zeo_col_gjk]
