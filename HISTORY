@@ -1,3 +1,7 @@
+2026.11.24. Added tests of zIntersectPH3D for boxes including thin intersections, shared face planes, identical and touching boxes, and for random polyhedra. [test]
+2026.11.24. Abolished ZEO_INTERSECT_PH3D_THRESHOLD, and modified zIntersectPH3D to judge the degenerate intersection with the tolerance relative to the size of the polyhedra. [zeo_col_ph]
+2026.11.24. Modified zIntersectPH3D to compute the vertices of the intersection from the dual points without the differences of them. [zeo_col_ph]
+2026.11.24. Modified zIntersectPH3D to choose the base point of the dual transformation at the Chebyshev center of the intersection. [zeo_col_ph]
 2026.11.24. Added a test of zGJKDepth for overlapping boxes of various sizes and positions. [test]
 2026.11.24. Reimplemented zGJKDepth based on the expanding polytope algorithm to expands the simplex of GJK incrementally without computing the convex hull at every iteration. [zeo_col_gjk]
 2026.11.24. Added tests of zGJK and zGJKPoint for boxes and points of various sizes and positions, including touching cases. [test]

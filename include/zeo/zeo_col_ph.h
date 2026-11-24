@@ -18,17 +18,20 @@ __BEGIN_DECLS
  */
 __ZEO_EXPORT bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, zVec3D *p1, zVec3D *p2);
 
-#define ZEO_INTERSECT_PH3D_THRESHOLD ( 1.0e-4 )
-
-/*! \brief intersect of two polyhedra by Muller-Preparata's algorithm.
+/*! \brief intersection of two convex polyhedra.
  *
- * zIntersectPH3D() computes the intersection of two 3D convex
- * polyhedra \a ph1 and \a ph2 based on Muller-Preparats's algorithm.
- * \a phcol is the resultant polyhedral intersection.
- * \a ph1 and \a ph2 have to be convices. If not, anything might
- * happen.
- *
- * \return a pointer \a phcol.
+ * zIntersectPH3D() computes the intersection of two convex polyhedra \a ph1 and \a ph2 based on
+ * Muller-Preparata's algorithm:
+ *   D. E. Muller and F. P. Preparata, Finding the Intersection of Two Convex Polyhedra, Theoretical
+ *   Computer Science, 7(2):217-236, 1978.
+ * The resultant polyhedron is put into \a phcol.
+ * \a ph1 and \a ph2 have to be convex, and the normal vectors of their faces have to direct outward.
+ * If not, anything might happen.
+ * \return
+ * zIntersectPH3D() returns a pointer \a phcol if it succeeds. If the polyhedra do not intersect, or the
+ * intersection is degenerate, namely, the radius of the largest ball inscribed in it is not larger
+ * than zTOL times the size of the polyhedra (the maximum distance of their vertices from their
+ * centroid), the null pointer is returned.
  */
 __ZEO_EXPORT zPH3D *zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol);
 
