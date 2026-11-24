@@ -1,3 +1,4 @@
+2026.11.24. Loosened the tolerance of the test of zIntersectPH3D for random polyhedra. [test]
 2026.11.24. Added a test of zGJKDepth for boxes aligned along an axis. [test]
 2026.11.24. Debugged zGJKDepth by restricting the candidates of the closest face to those onto which the projection of the origin is inside. [zeo_col_gjk]
 2026.11.24. Added tests of zIntersectPH3D for boxes including thin intersections, shared face planes, identical and touching boxes, and for random polyhedra. [test]

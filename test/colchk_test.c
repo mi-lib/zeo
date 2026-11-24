@@ -118,7 +118,9 @@ void assert_intersect_ph_box(void)
   zAssert( zIntersectPH3D (touching boxes), result[4] );
 }
 
-/* intersection of random convex polyhedra compared with that computed by the boundary representation. */
+/* intersection of random convex polyhedra compared with that computed by the boundary representation.
+ * The tolerance of the volume is loose, since the vertices computed from three nearly coplanar planes
+ * have errors up to about 1e-7 in rare cases. */
 void assert_intersect_ph_random(void)
 {
   zPH3D ph1, ph2, ph, ph_brep;
@@ -145,7 +147,7 @@ void assert_intersect_ph_random(void)
     if( !zIntersectPH3D( &ph1, &ph2, &ph ) || !zIntersectPH3DBREP( &ph1, &ph2, &ph_brep ) ){
       result = false;
     } else{
-      if( !zIsTol( volume_ph( &ph ) - volume_ph( &ph_brep ), 1.0e-9 ) ) result = false;
+      if( !zIsTol( volume_ph( &ph ) - volume_ph( &ph_brep ), 1.0e-6 ) ) result = false;
       zPH3DDestroy( &ph );
       zPH3DDestroy( &ph_brep );
     }
