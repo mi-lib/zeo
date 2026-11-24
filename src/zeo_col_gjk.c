@@ -361,6 +361,7 @@ typedef struct{
   int adje[3]; /* edge indices of the adjacent faces */
   zVec3D n;    /* unit outward normal vector */
   double d;    /* signed distance of the face from the origin */
+  bool inner;  /* true if the projection of the origin onto the face is inside of it */
   bool alive;  /* false if removed */
 } zEPAFace;
 
@@ -434,6 +435,27 @@ static int _zEPAAddVert(zEPA *epa, const zGJKSlot *slot)
   return zArraySize(&epa->vert)++;
 }
 
+/* check if the projection of the origin onto a face is inside of it within the tolerance, namely,
+ * the barycentric coordinates of the projection are not negative. */
+static bool _zEPAFaceIsInner(zEPA *epa, zEPAFace *f)
+{
+  zVec3D p, d1, d2, e;
+  double l[3], s;
+  int i;
+
+  zVec3DMul( &f->n, f->d, &p );
+  for( s=0, i=0; i<3; i++ ){
+    zVec3DSub( _zEPAFaceVert(epa,f,(i+1)%3), &p, &d1 );
+    zVec3DSub( _zEPAFaceVert(epa,f,(i+2)%3), &p, &d2 );
+    zVec3DOuterProd( &d1, &d2, &e );
+    s += ( l[i] = zVec3DInnerProd( &f->n, &e ) );
+  }
+  if( s <= 0 ) return false;
+  for( i=0; i<3; i++ )
+    if( l[i] < -zTOL * s ) return false;
+  return true;
+}
+
 /* add a face of vertices a, b and c to the polytope. The index of the face is returned, or -1 on
  * failure. A degenerate face, which has the zero normal vector, is put the infinite distance so as not
  * to be chosen as the closest face. */
@@ -456,8 +478,11 @@ static int _zEPAAddFace(zEPA *epa, int a, int b, int c)
   if( ( l = zVec3DNorm( &f->n ) ) > 0 ){
     zVec3DDivDRC( &f->n, l );
     f->d = zVec3DInnerProd( &f->n, _zEPAVert(epa,a) );
-  } else
+    f->inner = _zEPAFaceIsInner( epa, f );
+  } else{
     f->d = HUGE_VAL;
+    f->inner = false;
+  }
   return zArraySize(&epa->face)++;
 }
 
@@ -538,21 +563,29 @@ static bool _zEPAExpand(zEPA *epa, int i, int iv)
   return true;
 }
 
-/* the alive face closest to the origin. */
+/* the alive face closest to the origin. The candidates are restricted to the faces onto which the
+ * projection of the origin is inside, as proposed by van den Bergen. It is because the closest point
+ * of the polytope to the origin is inside of such a face, and the normal vector of a nearly degenerate
+ * face is inaccurate, which can make its distance from the origin wrong, even negative. If no such
+ * face is found due to rounding errors, all the alive faces are the candidates. */
 static int _zEPAClosestFace(zEPA *epa)
 {
   zEPAFace *f;
-  double dmin = HUGE_VAL;
-  int i, imin = -1;
+  double dmin = HUGE_VAL, dmin_all = HUGE_VAL;
+  int i, imin = -1, imin_all = -1;
 
   for( i=0; i<zArraySize(&epa->face); i++ ){
-    f = _zEPAFace( epa, i );
-    if( f->alive && f->d < dmin ){
+    if( !( f = _zEPAFace( epa, i ) )->alive ) continue;
+    if( f->inner && f->d < dmin ){
       dmin = f->d;
       imin = i;
     }
+    if( f->d < dmin_all ){
+      dmin_all = f->d;
+      imin_all = i;
+    }
   }
-  return imin;
+  return imin >= 0 ? imin : imin_all;
 }
 
 /* add a vertex to a simplex of vertices in the polytope, which is chosen from candidates cand[] or the
