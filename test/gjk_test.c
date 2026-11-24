@@ -210,12 +210,90 @@ void assert_gjk_mpr_scale(void)
   zAssert( zGJK (distance for various sizes), result_dist );
 }
 
+/* points in a box [x0,x0+1]x[0,1]x[0,1] including the corners, which are rotated, translated by
+ * offset and scaled by scale. */
+void create_box_points_xform(zVec3DData *data, double x0, zMat3D *r, double offset, double scale, int n)
+{
+  zVec3D p;
+  int i;
+
+  zVec3DDataInitArray( data, n + 8 );
+  for( i=0; i<n+8; i++ ){
+    if( i < 8 ) zVec3DCreate( &p, x0 + ( i & 1 ), ( i >> 1 ) & 1, ( i >> 2 ) & 1 );
+    else zVec3DCreate( &p, x0 + zRandF(0,1), zRandF(0,1), zRandF(0,1) );
+    zMulMat3DVec3DDRC( r, &p );
+    zVec3DCreate( &p, ( p.c.x + offset ) * scale, ( p.c.y - offset ) * scale, ( p.c.z + offset ) * scale );
+    zVec3DDataAdd( data, &p );
+  }
+}
+
+/* two boxes separated by a gap, touching each other (gap = 0) or overlapping (gap < 0), of various
+ * sizes and positions, for which zGJK has to terminate and the distance has to be proportional to the
+ * scale. */
+void assert_gjk_box_scale(void)
+{
+  zVec3DData data1, data2;
+  zVec3D c1, c2;
+  zMat3D r;
+  double gap[] = { 0.1, 1.0e-6, 0, -0.1 }, scale, offset, d;
+  int i, j, n = 50;
+  bool result_col = true, result_dist = true;
+
+  for( i=0; i<N; i++ ){
+    j = i % 4;
+    scale = pow( 10, zRandF(-9,9) );
+    offset = i % 2 ? 1.0e3 : 0;
+    zMat3DFromZYX( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    create_box_points_xform( &data1, 0, &r, offset, scale, n );
+    create_box_points_xform( &data2, 1 + gap[j], &r, offset, scale, n );
+    if( zGJK( &data1, &data2, &c1, &c2 ) != ( gap[j] <= 0 ) ) result_col = false;
+    d = zVec3DDist( &c1, &c2 ) / scale;
+    if( gap[j] > 0 && fabs( d - gap[j] ) > 1.0e-9 ) result_dist = false;
+    zVec3DDataDestroy( &data1 );
+    zVec3DDataDestroy( &data2 );
+  }
+  zAssert( zGJK (boxes of various sizes and positions), result_col );
+  zAssert( zGJK (distance between boxes of various sizes and positions), result_dist );
+}
+
+/* a point outside of, on the face of and inside of a box of various sizes and positions. */
+void assert_gjk_point_scale(void)
+{
+  zVec3DData data;
+  zVec3D p, c, pc;
+  zMat3D r;
+  double depth[] = { -0.1, -1.0e-6, 0, 0.1 }, scale, offset;
+  int i, j, n = 50;
+  bool result_col = true, result_dist = true;
+
+  for( i=0; i<N; i++ ){
+    j = i % 4;
+    scale = pow( 10, zRandF(-9,9) );
+    offset = i % 2 ? 1.0e3 : 0;
+    zMat3DFromZYX( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    create_box_points_xform( &data, 0, &r, offset, scale, n );
+    /* the point is at depth[j] from the face x = 0 inward, and pc is the closest point on the face */
+    zVec3DCreate( &pc, 0, zRandF(0.2,0.8), zRandF(0.2,0.8) );
+    zVec3DCreate( &p, depth[j], pc.c.y, pc.c.z );
+    zMulMat3DVec3DDRC( &r, &p );
+    zVec3DCreate( &p, ( p.c.x + offset ) * scale, ( p.c.y - offset ) * scale, ( p.c.z + offset ) * scale );
+    if( zGJKPoint( &data, &p, &c ) != ( depth[j] >= 0 ) ) result_col = false;
+    if( depth[j] < 0 && fabs( zVec3DDist( &p, &c ) / scale + depth[j] ) > 1.0e-9 ) result_dist = false;
+    zVec3DDataDestroy( &data );
+  }
+  zAssert( zGJKPoint (boxes of various sizes and positions), result_col );
+  zAssert( zGJKPoint (distance to boxes of various sizes and positions), result_dist );
+}
+
 int main(int argc, char *argv[])
 {
+  zRandInit();
   assert_box();
   assert_point_volume();
   assert_point_plane();
   assert_mpr_scale();
   assert_gjk_mpr_scale();
+  assert_gjk_box_scale();
+  assert_gjk_point_scale();
   return 0;
 }

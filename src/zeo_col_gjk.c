@@ -424,23 +424,56 @@ static bool _zGJKPD(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2
   return true;
 }
 
-/* check if the two convex hulls collide, namely, the simplex contains the origin, or the distance
- * from the origin, which is the distance between the convex hulls, is not larger than zTOL. */
-static bool _zGJKCheck(zGJKSimplex *s, const zVec3D *v)
+/* The tolerances of the termination are relative to the size of the problem, namely, the maximum
+ * norm of the support points of the simplex and the corresponding points on the original convex
+ * hulls, so that they do not depend on the scale and the position of the convex hulls. The norms of
+ * the original points are taken into account, since the rounding errors of the support points are
+ * proportional to them. */
+
+/* maximum number of iterations, which is a safety guard against an infinite loop. */
+#define ZEO_GJK_MAX_ITER Z_MAX_ITER_NUM
+
+/* squared size of a slot. */
+static double _zGJKSlotSqrSize(const zGJKSlot *slot)
 {
-  return s->n == 4 || _zVec3DSqrNorm( v ) <= zTOL * zTOL;
+  double r2, l2;
+
+  r2 = _zVec3DSqrNorm( &slot->w );
+  if( ( l2 = _zVec3DSqrNorm( slot->p1 ) ) > r2 ) r2 = l2;
+  if( ( l2 = _zVec3DSqrNorm( slot->p2 ) ) > r2 ) r2 = l2;
+  return r2;
+}
+
+/* update the squared size of the problem with a new slot. */
+#define _zGJKUpdateSqrSize(r2,slot) do{\
+  double __r2 = _zGJKSlotSqrSize( slot );\
+  if( __r2 > (r2) ) (r2) = __r2;\
+} while(0)
+
+/* check if the origin is reached, namely, the distance between the two convex hulls, which is the
+ * norm of v, is not larger than zTOL times the size of the problem (r2 is the squared size). */
+static bool _zGJKIsTouched(const zVec3D *v, double r2)
+{
+  return _zVec3DSqrNorm( v ) <= zTOL * zTOL * r2;
 }
 
 /* check if the iteration of GJK converges. v is the closest point of the current simplex to the
  * origin, and w is the support point in the direction of -v. The distance between the convex hulls
  * is between v.w/|v| and |v|, so that the iteration terminates if the difference is not larger
- * than zTOL, namely, |v|^2 - v.w <= zTOL |v|. */
-static bool _zGJKIsConverged(const zVec3D *v, const zVec3D *w)
+ * than zTOL times the size of the problem, namely, |v|^2 - v.w <= zTOL |v| r. */
+static bool _zGJKIsConverged(const zVec3D *v, const zVec3D *w, double r2)
 {
-  double vv;
+  double vv, d;
 
   vv = _zVec3DSqrNorm( v );
-  return vv - _zVec3DInnerProd( v, w ) <= zTOL * sqrt( vv );
+  return ( d = vv - _zVec3DInnerProd( v, w ) ) <= 0 || d * d <= zTOL * zTOL * vv * r2;
+}
+
+/* check if the two convex hulls collide, namely, the simplex contains the origin, or the origin is
+ * reached. */
+static bool _zGJKCheck(zGJKSimplex *s, const zVec3D *v, double r2)
+{
+  return s->n == 4 || _zGJKIsTouched( v, r2 );
 }
 
 static bool _zGJK(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2, zGJKSimplex *s)
@@ -448,6 +481,8 @@ static bool _zGJK(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2, 
   zGJKSimplex _s; /* simplex */
   zGJKSlot slot;
   zVec3D proximity;
+  double r2 = 0;
+  int iter = 0;
 
   if( s == NULL ) s = &_s;
   zVec3DDataRewind( data1 );
@@ -456,14 +491,16 @@ static bool _zGJK(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2, 
   _zGJKSimplexInit( s );
   do{
     _zGJKSupportMap( &slot, data1, data2, &proximity );
-    if( ( s->n > 0 && _zGJKIsConverged( &proximity, &slot.w ) ) ||
+    _zGJKUpdateSqrSize( r2, &slot );
+    if( ( s->n > 0 && _zGJKIsConverged( &proximity, &slot.w, r2 ) ) ||
         _zGJKSimplexCheckDupSlot( s, &slot ) )
       break; /* succeed */
     _zGJKSimplexAddSlot( s, &slot );
     _zGJKSimplexClosest( s, &proximity );
-  } while( s->n < 4 );
+    if( _zGJKIsTouched( &proximity, r2 ) ) break; /* collide */
+  } while( s->n < 4 && ++iter < ZEO_GJK_MAX_ITER );
   _zGJKPair( s, c1, c2 );
-  return _zGJKCheck( s, &proximity );
+  return _zGJKCheck( s, &proximity, r2 );
 }
 
 /* Gilbert-Johnson-Keerthi algorithm. */
@@ -509,6 +546,8 @@ bool zGJKPoint(zVec3DData *data, zVec3D *p, zVec3D *c)
   zGJKSimplex s; /* simplex */
   zGJKSlot slot;
   zVec3D proximity;
+  double r2 = 0;
+  int iter = 0;
 
   slot.p2 = p;
   zVec3DDataRewind( data );
@@ -516,12 +555,14 @@ bool zGJKPoint(zVec3DData *data, zVec3D *p, zVec3D *c)
   _zGJKSimplexInit( &s );
   do{
     _zGJKPointSupportMap( &slot, data, &proximity );
-    if( ( s.n > 0 && _zGJKIsConverged( &proximity, &slot.w ) ) ||
+    _zGJKUpdateSqrSize( r2, &slot );
+    if( ( s.n > 0 && _zGJKIsConverged( &proximity, &slot.w, r2 ) ) ||
         _zGJKSimplexCheckDupSlot( &s, &slot ) )
       break; /* succeed */
     _zGJKSimplexAddSlot( &s, &slot );
     _zGJKSimplexClosest( &s, &proximity );
-  } while( s.n < 4 );
+    if( _zGJKIsTouched( &proximity, r2 ) ) break; /* collide */
+  } while( s.n < 4 && ++iter < ZEO_GJK_MAX_ITER );
   _zGJKPointClosest( &s, c );
-  return _zGJKCheck( &s, &proximity );
+  return _zGJKCheck( &s, &proximity, r2 );
 }

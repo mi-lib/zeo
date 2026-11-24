@@ -1,3 +1,6 @@
+2026.11.24. Added tests of zGJK and zGJKPoint for boxes and points of various sizes and positions, including touching cases. [test]
+2026.11.24. Modified zGJK and zGJKPoint to judge the convergence and the collision with tolerances relative to the size of the problem. [zeo_col_gjk]
+2026.11.24. Debugged zGJK and zGJKPoint to terminate when the origin is reached in the Minkowski difference, and to limit the number of iterations. [zeo_col_gjk]
 2026.11.23. Abolished zVec3DDataConvexHull2D and zConvexHull2DClosest. [zeo_bv2d_convexhull, zeo_bv2d]
 2026.11.23. Modified the test of the 2D convex hull and the examples to use zVec2DDataConvexHull and zPG2DClosest. [test, example]
 2026.11.23. Added a test of zVec3DDataOBB. [test]
