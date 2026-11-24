@@ -24,18 +24,21 @@ int main(void)
 {
   int i, n;
   zVec3DData data;
-  zLoop3D ch;
-  zLoop3DCell *vp;
-  zVec3D v, ip[N], po;
+  zVec2DData data2d;
+  zPG2D ch;
+  zVec2D q;
+  zVec3D v, ip[N], po, chv[N];
   zPlane3D pl;
   FILE *fp;
 
   zRandInit();
   zVec3DDataInitList( &data );
+  zVec2DDataInitList( &data2d );
   fp = fopen( "src", "w" );
   for( i=0; i<N; i++ ){
     zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), 0 );
     zVec3DDataAdd( &data, &v );
+    zVec2DDataAdd( &data2d, zVec2DCreate( &q, v.c.x, v.c.y ) );
     zVec3DValueNLFPrint( fp, &v );
   }
   fclose( fp );
@@ -49,15 +52,19 @@ int main(void)
     zVec3DValueNLFPrint( fp, &ip[i] );
   fclose( fp );
 
-  zVec3DDataConvexHull2D( &data, &ch );
+  /* convex hull on the plane z = 0, the vertices of which are in counterclockwise order */
+  zVec2DDataConvexHull( &data2d, &ch );
+  zVec2DDataDestroy( &data2d );
   fp = fopen( "ch", "w" );
-  zListForEach( &ch, vp )
-    zVec3DValueNLFPrint( fp, vp->data );
-  zVec3DValueNLFPrint( fp, zListTail(&ch)->data );
+  for( i=0; i<zPG2DVertNum(&ch); i++ ){
+    zVec3DCreate( &chv[i], zPG2DVert(&ch,i)->c.x, zPG2DVert(&ch,i)->c.y, 0 );
+    zVec3DValueNLFPrint( fp, &chv[i] );
+  }
+  zVec3DValueNLFPrint( fp, &chv[0] );
   fclose( fp );
   zVec3DDataDestroy( &data );
 
-  zVec3DDataAssignAddrList( &data, &ch );
+  zVec3DDataAssignArrayDirect( &data, chv, zPG2DVertNum(&ch) );
   n = intersect_vec_plane( &data, &pl, ip );
   fp = fopen( "ipch", "w" );
   for( i=0; i<n; i++ )
@@ -65,6 +72,6 @@ int main(void)
   fclose( fp );
   zVec3DDataDestroy( &data );
 
-  zLoop3DDestroy( &ch );
+  zPG2DDestroy( &ch );
   return 0;
 }

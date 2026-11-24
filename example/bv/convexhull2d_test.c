@@ -2,57 +2,58 @@
 
 #define N 1000
 
-void generate_points(zVec3DData *data_array, zVec3DData *data_list, int n, const char filename[])
+void generate_points(zVec2DData *data_array, zVec2DData *data_list, int n, const char filename[])
 {
-  zVec3D v;
+  zVec2D v;
   int i;
   FILE *fp;
 
-  zVec3DDataInitArray( data_array, n );
-  zVec3DDataInitList( data_list );
+  zVec2DDataInitArray( data_array, n );
+  zVec2DDataInitList( data_list );
   fp = fopen( filename, "w" );
   for( i=0; i<n; i++ ){
 #if 0
-    zVec3DCreate( &v, zRandF(-10,10), zRandF(-10,10), 0 );
+    zVec2DCreate( &v, zRandF(-10,10), zRandF(-10,10) );
 #else
-    zVec3DCreatePolar( &v, zRandF(-10,10), 0.5*zPI, zRandF(-zPI,zPI) );
+    zVec2DCreatePolar( &v, zRandF(-10,10), zRandF(-zPI,zPI) );
 #endif
-    zVec3DValueNLFPrint( fp, &v );
-    zVec3DDataAdd( data_array, &v );
-    zVec3DDataAdd( data_list, &v );
+    zVec2DValueNLFPrint( fp, &v );
+    zVec2DDataAdd( data_array, &v );
+    zVec2DDataAdd( data_list, &v );
   }
   fclose( fp );
 }
 
-void output_convexhull(zLoop3D *ch, const char filename[])
+/* output vertices of a convex hull, which are in counterclockwise order, as a closed loop. */
+void output_convexhull(zPG2D *ch, const char filename[])
 {
   FILE *fp;
-  zLoop3DCell *vc;
+  int i;
 
   fp = fopen( filename, "w" );
-  zListForEach( ch, vc )
-    zVec3DValueNLFPrint( fp, vc->data );
-  zVec3DValueNLFPrint( fp, zListTail(ch)->data );
+  for( i=0; i<zPG2DVertNum(ch); i++ )
+    zVec2DValueNLFPrint( fp, zPG2DVert(ch,i) );
+  zVec2DValueNLFPrint( fp, zPG2DVert(ch,0) );
   fclose( fp );
 }
 
 int main(void)
 {
-  zVec3DData data_array, data_list;
-  zLoop3D ch;
+  zVec2DData data_array, data_list;
+  zPG2D ch;
 
   zRandInit();
   generate_points( &data_array, &data_list, N, "v" );
 
-  zVec3DDataConvexHull2D( &data_array, &ch );
+  zVec2DDataConvexHull( &data_array, &ch );
   output_convexhull( &ch, "a" );
-  zLoop3DDestroy( &ch );
+  zPG2DDestroy( &ch );
 
-  zVec3DDataConvexHull2D( &data_list, &ch );
+  zVec2DDataConvexHull( &data_list, &ch );
   output_convexhull( &ch, "l" );
-  zLoop3DDestroy( &ch );
+  zPG2DDestroy( &ch );
 
-  zVec3DDataDestroy( &data_array );
-  zVec3DDataDestroy( &data_list );
+  zVec2DDataDestroy( &data_array );
+  zVec2DDataDestroy( &data_list );
   return 0;
 }

@@ -29,38 +29,6 @@ __BEGIN_DECLS
  */
 __ZEO_EXPORT zPG2D *zVec2DDataConvexHull(zVec2DData *data, zPG2D *ch);
 
-/*! \brief planar convex hull.
- *
- * zVec3DDataConvexHull2D() creates a planar convex hull of a set of 3D points \a data,
- * which are supposed to be on a common plane.
- * The convex hull is represented as a list of pointers to the vertices in \a data, which
- * is stored where \a chloop points.
- * The points are regarded as degenerate if all of them are within zTOL from one point,
- * or the ratio of the distances between the points and a line to the extent of the points
- * along the line is not larger than zTOL.
- * A planar convex hull as a polyhedron is computed by zVec3DDataConvexHull().
- * \return
- * zVec3DDataConvexHull2D() returns a pointer \a chloop, if it succeeds.
- * If the points are degenerate, or it fails to allocate memory for cells of the list, it
- * returns the null pointer.
- */
-__ZEO_EXPORT zLoop3D *zVec3DDataConvexHull2D(zVec3DData *data, zLoop3D *chloop);
-
-/*! \brief the closest point in a convex hull to a point.
- *
- * zConvexHull2DClosest() finds the closest point in a convex hull \a ch to
- * a point \a p. \a ch is represented as a list of vertices. The result
- * is stored where \a cp points.
- * If \a p is inside of \a ch, \a p is copied to \a cp.
- * If \a ch is a non-convex hull, this function does not work validly.
- * \return
- * zConvexHull2DClosest() returns the distance from \a p to \a ch.
- * If \a p is inside of \a ch, the value returned is zero.
- * \notes
- * If \a ch is a non-convex hull, anything might happen.
- */
-__ZEO_EXPORT double zConvexHull2DClosest(zLoop3D *ch, zVec3D *p, zVec3D *cp);
-
 __END_DECLS
 
 #endif /* __ZEO_BV2D_CONVEXHULL_H__ */

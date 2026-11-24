@@ -1,3 +1,5 @@
+2026.11.23. Abolished zVec3DDataConvexHull2D and zConvexHull2DClosest. [zeo_bv2d_convexhull, zeo_bv2d]
+2026.11.23. Modified the test of the 2D convex hull and the examples to use zVec2DDataConvexHull and zPG2DClosest. [test, example]
 2026.11.23. Added a test of zVec3DDataOBB. [test]
 2026.11.23. Debugged zVec3DDataOBB not to choose a degenerate face of the convex hull. [zeo_bv3d_obb]
 2026.11.23. Modified zVec3DDataOBB to find the minimum-area rectangle on the plane by the rotating calipers for the convex hull computed by zVec2DDataConvexHull. [zeo_bv3d_obb]

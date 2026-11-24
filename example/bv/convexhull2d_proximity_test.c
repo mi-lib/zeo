@@ -4,38 +4,38 @@
 
 int main(void)
 {
-  zVec3D p, cp;
-  zVec3D v[N];
-  zVec3DData data;
-  zLoop3D ch;
-  zLoop3DCell *vc;
+  zVec2D p, cp;
+  zVec2D v[N];
+  zVec2DData data;
+  zPG2D ch;
   FILE *fp;
   int i;
 
   zRandInit();
   fp = fopen( "v", "w" );
   for( i=0; i<N; i++ ){
-    zVec3DCreatePolar( &v[i], zRandF(-10,10), 0.5*zPI, zRandF(-zPI,zPI) );
-    zVec3DValueNLFPrint( fp, &v[i] );
+    zVec2DCreatePolar( &v[i], zRandF(-10,10), zRandF(-zPI,zPI) );
+    zVec2DValueNLFPrint( fp, &v[i] );
   }
   fclose( fp );
-  zVec3DDataAssignArrayDirect( &data, v, N );
-  zVec3DDataConvexHull2D( &data, &ch );
-  zVec3DDataDestroy( &data );
+  zVec2DDataAssignArrayDirect( &data, v, N );
+  zVec2DDataConvexHull( &data, &ch );
+  zVec2DDataDestroy( &data );
 
+  /* vertices of the convex hull in counterclockwise order */
   fp = fopen( "c", "w" );
-  zListForEach( &ch, vc )
-    zVec3DValueNLFPrint( fp, vc->data );
-  zVec3DValueNLFPrint( fp, zListTail(&ch)->data );
+  for( i=0; i<zPG2DVertNum(&ch); i++ )
+    zVec2DValueNLFPrint( fp, zPG2DVert(&ch,i) );
+  zVec2DValueNLFPrint( fp, zPG2DVert(&ch,0) );
   fclose( fp );
 
-  zVec3DCreate( &p, zRandF(-12,12), zRandF(-12,12), 0 );
-  zConvexHull2DClosest( &ch, &p, &cp );
+  zVec2DCreate( &p, zRandF(-12,12), zRandF(-12,12) );
+  zPG2DClosest( &ch, &p, &cp );
   fp = fopen( "e", "w" );
-  zVec3DValueNLFPrint( fp, &p );
-  zVec3DValueNLFPrint( fp, &cp );
+  zVec2DValueNLFPrint( fp, &p );
+  zVec2DValueNLFPrint( fp, &cp );
   fclose( fp );
 
-  zLoop3DDestroy( &ch );
+  zPG2DDestroy( &ch );
   return 0;
 }
