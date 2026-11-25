@@ -40,26 +40,63 @@
 /* memory management
  * ********************************************************** */
 
-/* reserve an array. */
-static bool _zCC3DReserve(void **buf, int *cap, int size, size_t elemsize)
-{
-  int newcap;
-  void *p;
+/* accessors of vertices and half-edges. */
+#define _zCC3DV(cc,i)     zArrayElemNC(&(cc)->vert,i)
+#define _zCC3DHE(cc,i)    zArrayElemNC(&(cc)->he,i)
+#define _zCC3DHENum(cc)   zArraySize(&(cc)->he)
 
-  if( size <= *cap ) return true;
-  for( newcap=( *cap > 0 ? *cap : 16 ); newcap<size; newcap*=2 );
-  if( !( p = realloc( *buf, elemsize * newcap ) ) ){
-    ZALLOCERROR();
-    return false;
-  }
-  *buf = p;
-  *cap = newcap;
+/* append a cell to an array, which returns the new cell, or the null pointer if it fails. */
+#define _zCC3DArrayPush(array,type,cell) do{ \
+  int __n; \
+  __n = zArraySize(array); \
+  zArrayExpand( array, type, __n+1 ); \
+  (cell) = zArraySize(array) == __n+1 ? zArrayElemNC(array,__n) : NULL; \
+} while(0)
+
+/* expand the capacities of the full arrays of a cell complex for one more cell, where the sizes
+ * are unchanged. It is shared by the arrays, so that the functions to add a cell are inlined. */
+#define _zCC3DArrayReserve(array,type) do{ \
+  int __n; \
+  if( ( __n = zArraySize(array) ) == zArrayCapacity(array) ){ \
+    zArrayExpand( array, type, __n+1 ); \
+    if( zArraySize(array) != __n+1 ) return false; \
+    zArraySetSize( array, __n ); \
+  } \
+} while(0)
+static bool _zCC3DReserve(zCC3D *cc)
+{
+  _zCC3DArrayReserve( &cc->vert, zCC3DVert );
+  _zCC3DArrayReserve( &cc->he,   zCC3DHalfEdge );
+  _zCC3DArrayReserve( &cc->face, zCC3DFace );
+  _zCC3DArrayReserve( &cc->cell, zCC3DCell );
   return true;
 }
 
-/* growable array of integers. */
-#define _zCC3DIntVecInit(v) do{ (v)->buf = NULL; (v)->num = (v)->cap = 0; } while(0)
-#define _zCC3DIntVecDestroy(v) do{ free( (v)->buf ); _zCC3DIntVecInit( v ); } while(0)
+/* append a cell to an array of a cell complex, which is frequently used. */
+#define _zCC3DPush(cc,array,cell) do{ \
+  if( zArraySize(array) == zArrayCapacity(array) && !_zCC3DReserve( cc ) ){ \
+    (cell) = NULL; \
+    break; \
+  } \
+  zArraySetSize( array, zArraySize(array)+1 ); \
+  (cell) = zArrayHead(array); \
+} while(0)
+
+/* push an integer to an array, which is a macro to be expanded inline in frequent uses, where the
+ * array and the value are evaluated more than once. The expansion of the array is separated, so that
+ * the code expanded inline is small. */
+static bool _zCC3DIndexPushExpand(zIndexStruct *v, int val)
+{
+  int *p;
+
+  _zCC3DArrayPush( v, int, p );
+  if( !p ) return false;
+  *p = val;
+  return true;
+}
+#define _zCC3DIndexPush(v,val) ( zArraySize(v) < zArrayCapacity(v) ? \
+  ( zIndexSetElemNC( v, zArraySize(v), val ), zArraySetSize( v, zArraySize(v)+1 ), true ) : \
+  _zCC3DIndexPushExpand( v, val ) )
 
 /* workspaces in a cell complex */
 enum{
@@ -74,17 +111,10 @@ enum{
 };
 
 /* a workspace, which is emptied. */
-static _zCC3DIntVec *_zCC3DWS(zCC3D *cc, int i)
+static zIndexStruct *_zCC3DWS(zCC3D *cc, int i)
 {
-  cc->_ws[i].num = 0;
+  zArraySetSize( &cc->_ws[i], 0 );
   return &cc->_ws[i];
-}
-
-static bool _zCC3DIntVecPush(_zCC3DIntVec *v, int val)
-{
-  if( !_zCC3DReserve( (void **)&v->buf, &v->cap, v->num+1, sizeof(int) ) ) return false;
-  v->buf[v->num++] = val;
-  return true;
 }
 
 /* add a vertex. */
@@ -92,12 +122,12 @@ static int _zCC3DAddVert(zCC3D *cc, const zVec3D *p)
 {
   zCC3DVert *v;
 
-  if( !_zCC3DReserve( (void **)&cc->vert, &cc->_vertcap, cc->vertnum+1, sizeof(zCC3DVert) ) ) return -1;
-  v = &cc->vert[cc->vertnum];
+  _zCC3DPush( cc, &cc->vert, v );
+  if( !v ) return -1;
   zVec3DCopy( p, &v->p );
   v->_stamp = v->_visit = v->_on = 0;
   v->_side = 0;
-  return cc->vertnum++;
+  return zCC3DVertNum(cc) - 1;
 }
 
 /* add a half-edge. */
@@ -105,14 +135,14 @@ static int _zCC3DAddHalfEdge(zCC3D *cc, int org, int face, int side)
 {
   zCC3DHalfEdge *h;
 
-  if( !_zCC3DReserve( (void **)&cc->he, &cc->_hecap, cc->henum+1, sizeof(zCC3DHalfEdge) ) ) return -1;
-  h = &cc->he[cc->henum];
+  _zCC3DPush( cc, &cc->he, h );
+  if( !h ) return -1;
   h->org = org;
   h->next = h->prev = h->twin = h->mate = -1;
   h->face = face;
   h->side = side;
   h->_aux = 0;
-  return cc->henum++;
+  return _zCC3DHENum(cc) - 1;
 }
 
 /* add a face. */
@@ -120,13 +150,13 @@ static int _zCC3DAddFace(zCC3D *cc, int cell0, int cell1, int tag)
 {
   zCC3DFace *f;
 
-  if( !_zCC3DReserve( (void **)&cc->face, &cc->_facecap, cc->facenum+1, sizeof(zCC3DFace) ) ) return -1;
-  f = &cc->face[cc->facenum];
+  _zCC3DPush( cc, &cc->face, f );
+  if( !f ) return -1;
   f->cell[0] = cell0;
   f->cell[1] = cell1;
   f->he[0] = f->he[1] = -1;
   f->tag = tag;
-  return cc->facenum++;
+  return zCC3DFaceNum(cc) - 1;
 }
 
 /* add a cell. */
@@ -134,13 +164,13 @@ static int _zCC3DAddCell(zCC3D *cc, bool solid)
 {
   zCC3DCell *c;
 
-  if( !_zCC3DReserve( (void **)&cc->cell, &cc->_cellcap, cc->cellnum+1, sizeof(zCC3DCell) ) ) return -1;
-  c = &cc->cell[cc->cellnum];
+  _zCC3DPush( cc, &cc->cell, c );
+  if( !c ) return -1;
   c->he = -1;
   c->solid = solid;
   zAABox3DInit( &c->aabb );
   c->_cand = false;
-  return cc->cellnum++;
+  return zCC3DCellNum(cc) - 1;
 }
 
 /* initialize a 3D cell complex. */
@@ -150,18 +180,16 @@ zCC3D *zCC3DInit(zCC3D *cc)
 
   zAABox3DInit( &cc->universe );
   cc->tol = 0;
-  cc->vert = NULL;
-  cc->he = NULL;
-  cc->face = NULL;
-  cc->cell = NULL;
-  cc->vertnum = cc->henum = cc->facenum = cc->cellnum = 0;
-  cc->_vertcap = cc->_hecap = cc->_facecap = cc->_cellcap = 0;
+  zArrayInit( &cc->vert );
+  zArrayInit( &cc->he );
+  zArrayInit( &cc->face );
+  zArrayInit( &cc->cell );
   cc->_stamp = 0;
   cc->_tag = 0;
   cc->_plane = 0;
   cc->_useon = true;
   for( i=0; i<8; i++ ) cc->_corner[i] = -1;
-  for( i=0; i<_ZEO_CC3D_WS_NUM; i++ ) _zCC3DIntVecInit( &cc->_ws[i] );
+  for( i=0; i<_ZEO_CC3D_WS_NUM; i++ ) zArrayInit( &cc->_ws[i] );
   return cc;
 }
 
@@ -170,11 +198,11 @@ void zCC3DDestroy(zCC3D *cc)
 {
   int i;
 
-  for( i=0; i<_ZEO_CC3D_WS_NUM; i++ ) free( cc->_ws[i].buf );
-  free( cc->vert );
-  free( cc->he );
-  free( cc->face );
-  free( cc->cell );
+  for( i=0; i<_ZEO_CC3D_WS_NUM; i++ ) zArrayFree( &cc->_ws[i] );
+  zArrayFree( &cc->vert );
+  zArrayFree( &cc->he );
+  zArrayFree( &cc->face );
+  zArrayFree( &cc->cell );
   zCC3DInit( cc );
 }
 
@@ -208,25 +236,25 @@ zCC3D *zCC3DCreate(zCC3D *cc, const zAABox3D *universe)
     if( _zCC3DAddVert( cc, &p ) < 0 ) goto FAILURE;
   }
   if( _zCC3DAddCell( cc, false ) < 0 ) goto FAILURE;
-  zCopy( zAABox3D, universe, &cc->cell[0].aabb );
+  zCopy( zAABox3D, universe, &zCC3DCell(cc,0)->aabb );
   for( i=0; i<6; i++ ){
     if( _zCC3DAddFace( cc, 0, -1, 0 ) < 0 ) goto FAILURE;
     for( j=0; j<4; j++ )
       if( _zCC3DAddHalfEdge( cc, facevert[i][j], i, 0 ) < 0 ) goto FAILURE;
     for( j=0; j<4; j++ ){
       h = 4*i + j;
-      cc->he[h].next = 4*i + (j+1)%4;
-      cc->he[h].prev = 4*i + (j+3)%4;
+      _zCC3DHE(cc,h)->next = 4*i + (j+1)%4;
+      _zCC3DHE(cc,h)->prev = 4*i + (j+3)%4;
     }
-    cc->face[i].he[0] = 4*i;
+    zCC3DFace(cc,i)->he[0] = 4*i;
   }
   for( h=0; h<24; h++ ) /* twins */
     for( k=0; k<24; k++ )
-      if( cc->he[k].org == cc->he[cc->he[h].next].org && cc->he[cc->he[k].next].org == cc->he[h].org ){
-        cc->he[h].twin = k;
+      if( _zCC3DHE(cc,k)->org == _zCC3DHE(cc,_zCC3DHE(cc,h)->next)->org && _zCC3DHE(cc,_zCC3DHE(cc,k)->next)->org == _zCC3DHE(cc,h)->org ){
+        _zCC3DHE(cc,h)->twin = k;
         break;
       }
-  cc->cell[0].he = 0;
+  zCC3DCell(cc,0)->he = 0;
   for( i=0; i<8; i++ ) cc->_corner[i] = i;
   return cc;
 
@@ -239,11 +267,11 @@ zCC3D *zCC3DCreate(zCC3D *cc, const zAABox3D *universe)
 /* cut of a cell by a plane
  * ********************************************************** */
 
-#define _zCC3DTarget(cc,h)   (cc)->he[(cc)->he[h].next].org
-#define _zCC3DRotate(cc,h)   (cc)->he[(cc)->he[h].prev].twin /* next outgoing half-edge around the origin */
+#define _zCC3DTarget(cc,h)   _zCC3DHE(cc,_zCC3DHE(cc,h)->next)->org
+#define _zCC3DRotate(cc,h)   _zCC3DHE(cc,_zCC3DHE(cc,h)->prev)->twin /* next outgoing half-edge around the origin */
 
 /* check if a vertex is regarded as on the current cutting plane. */
-#define _zCC3DIsOn(cc,v) ( (cc)->_useon && (cc)->vert[v]._on == (cc)->_plane )
+#define _zCC3DIsOn(cc,v) ( (cc)->_useon && _zCC3DV(cc,v)->_on == (cc)->_plane )
 
 /* signed distance of a vertex from a plane. A vertex within the tolerance is marked as on the plane. */
 static double _zCC3DDist(zCC3D *cc, int v, const zPlane3D *plane)
@@ -253,10 +281,10 @@ static double _zCC3DDist(zCC3D *cc, int v, const zPlane3D *plane)
   double s;
 
   if( _zCC3DIsOn( cc, v ) ) return 0;
-  zVec3DSub( &cc->vert[v].p, zPlane3DOrg(plane), &d );
+  zVec3DSub( &_zCC3DV(cc,v)->p, zPlane3DOrg(plane), &d );
   s = zVec3DInnerProd( &d, zPlane3DNorm(plane) );
   if( cc->_useon && fabs( s ) <= cc->tol ){ /* regarded as on the plane */
-    cc->vert[v]._on = cc->_plane;
+    _zCC3DV(cc,v)->_on = cc->_plane;
     return 0;
   }
   return s;
@@ -278,7 +306,7 @@ static bool _zCC3DIsCorner(zCC3D *cc, int h)
 /* the last half-edge of a chain from a corner, which ends at a corner. */
 static int _zCC3DChainEnd(zCC3D *cc, int h)
 {
-  while( !_zCC3DIsCorner( cc, cc->he[h].next ) ) h = cc->he[h].next;
+  while( !_zCC3DIsCorner( cc, _zCC3DHE(cc,h)->next ) ) h = _zCC3DHE(cc,h)->next;
   return h;
 }
 
@@ -287,18 +315,18 @@ static int _zCC3DChainEnd(zCC3D *cc, int h)
  * farther is the farthest. Vertices at the same distance within the tolerance, which lie on a face
  * or an edge parallel to the plane or on tiny edges made by numerical errors, are searched
  * breadth-first to find a farther neighbor. */
-static int _zCC3DClimb(zCC3D *cc, int h, const zPlane3D *plane, double sign, double *s, _zCC3DIntVec *queue)
+static int _zCC3DClimb(zCC3D *cc, int h, const zPlane3D *plane, double sign, double *s, zIndexStruct *queue)
 {
   int i, g, hp, best, w;
   double sv, sw, sb;
 
   cc->_stamp++;
-  cc->vert[cc->he[h].org]._visit = cc->_stamp;
-  sv = sign * _zCC3DDist( cc, cc->he[h].org, plane );
-  queue->num = 0;
-  if( !_zCC3DIntVecPush( queue, h ) ) return -1;
-  for( i=0; i<queue->num; i++ ){
-    hp = queue->buf[i];
+  _zCC3DV(cc,_zCC3DHE(cc,h)->org)->_visit = cc->_stamp;
+  sv = sign * _zCC3DDist( cc, _zCC3DHE(cc,h)->org, plane );
+  zArraySetSize( queue, 0 );
+  if( !_zCC3DIndexPush( queue, h ) ) return -1;
+  for( i=0; i<zArraySize(queue); i++ ){
+    hp = zIndexElemNC(queue,i);
     best = -1;
     sb = sv;
     g = hp;
@@ -310,11 +338,11 @@ static int _zCC3DClimb(zCC3D *cc, int h, const zPlane3D *plane, double sign, dou
       g = _zCC3DRotate( cc, g );
     } while( g != hp );
     if( best >= 0 ){ /* climb up, which never makes a loop since the distance strictly increases */
-      h = cc->he[best].next;
-      cc->vert[cc->he[h].org]._visit = ++cc->_stamp; /* plateau is searched again at the new level */
+      h = _zCC3DHE(cc,best)->next;
+      _zCC3DV(cc,_zCC3DHE(cc,h)->org)->_visit = ++cc->_stamp; /* plateau is searched again at the new level */
       sv = sb;
-      queue->num = 0;
-      if( !_zCC3DIntVecPush( queue, h ) ) return -1;
+      zArraySetSize( queue, 0 );
+      if( !_zCC3DIndexPush( queue, h ) ) return -1;
       i = -1;
       continue;
     }
@@ -322,9 +350,9 @@ static int _zCC3DClimb(zCC3D *cc, int h, const zPlane3D *plane, double sign, dou
     g = hp;
     do{
       w = _zCC3DTarget( cc, g );
-      if( cc->vert[w]._visit != cc->_stamp && sign * _zCC3DDist( cc, w, plane ) >= sv - cc->tol ){
-        cc->vert[w]._visit = cc->_stamp;
-        if( !_zCC3DIntVecPush( queue, cc->he[g].next ) ) return -1;
+      if( _zCC3DV(cc,w)->_visit != cc->_stamp && sign * _zCC3DDist( cc, w, plane ) >= sv - cc->tol ){
+        _zCC3DV(cc,w)->_visit = cc->_stamp;
+        if( !_zCC3DIndexPush( queue, _zCC3DHE(cc,g)->next ) ) return -1;
       }
       g = _zCC3DRotate( cc, g );
     } while( g != hp );
@@ -341,13 +369,13 @@ static int _zCC3DToCorner(zCC3D *cc, int h, const zPlane3D *plane, double sign, 
   double s1, s2;
 
   if( _zCC3DIsCorner( cc, h ) ){
-    *s = _zCC3DDist( cc, cc->he[h].org, plane );
+    *s = _zCC3DDist( cc, _zCC3DHE(cc,h)->org, plane );
     return h;
   }
-  h1 = cc->he[_zCC3DChainEnd( cc, h )].next;
-  h2 = cc->he[_zCC3DChainEnd( cc, _zCC3DRotate( cc, h ) )].next;
-  s1 = _zCC3DDist( cc, cc->he[h1].org, plane );
-  s2 = _zCC3DDist( cc, cc->he[h2].org, plane );
+  h1 = _zCC3DHE(cc,_zCC3DChainEnd( cc, h ))->next;
+  h2 = _zCC3DHE(cc,_zCC3DChainEnd( cc, _zCC3DRotate( cc, h ) ))->next;
+  s1 = _zCC3DDist( cc, _zCC3DHE(cc,h1)->org, plane );
+  s2 = _zCC3DDist( cc, _zCC3DHE(cc,h2)->org, plane );
   if( sign * s1 >= sign * s2 ){
     *s = s1;
     return h1;
@@ -359,10 +387,10 @@ static int _zCC3DToCorner(zCC3D *cc, int h, const zPlane3D *plane, double sign, 
 /* workspace for a cut. */
 typedef struct{
   int stamp;          /* stamp of V1 */
-  _zCC3DIntVec *v1;   /* outgoing half-edges of corners in V1 */
-  _zCC3DIntVec *in;   /* half-edges entering V1 from V2 */
-  _zCC3DIntVec *loop; /* half-edges entering V1 in the order of the loop */
-  _zCC3DIntVec *buf;  /* buffer */
+  zIndexStruct *v1;   /* outgoing half-edges of corners in V1 */
+  zIndexStruct *in;   /* half-edges entering V1 from V2 */
+  zIndexStruct *loop; /* half-edges entering V1 in the order of the loop */
+  zIndexStruct *buf;  /* buffer */
 } _zCC3DCutWS;
 
 static void _zCC3DCutWSInit(zCC3D *cc, _zCC3DCutWS *ws)
@@ -371,27 +399,27 @@ static void _zCC3DCutWSInit(zCC3D *cc, _zCC3DCutWS *ws)
   ws->v1 = _zCC3DWS( cc, _ZEO_CC3D_WS_V1 );
   ws->in = _zCC3DWS( cc, _ZEO_CC3D_WS_IN );
   ws->loop = _zCC3DWS( cc, _ZEO_CC3D_WS_LOOP );
-  ws->buf = _zCC3DWS( cc, _ZEO_CC3D_WS_BUF );
+  zArrayBuf(ws) = _zCC3DWS( cc, _ZEO_CC3D_WS_BUF );
 }
 
-#define _zCC3DIsV1(cc,ws,v) ( (cc)->vert[v]._stamp == (ws)->stamp && (cc)->vert[v]._side == 1 )
-#define _zCC3DSetV1(cc,ws,v) do{ (cc)->vert[v]._stamp = (ws)->stamp; (cc)->vert[v]._side = 1; } while(0)
+#define _zCC3DIsV1(cc,ws,v) ( _zCC3DV(cc,v)->_stamp == (ws)->stamp && _zCC3DV(cc,v)->_side == 1 )
+#define _zCC3DSetV1(cc,ws,v) do{ _zCC3DV(cc,v)->_stamp = (ws)->stamp; _zCC3DV(cc,v)->_side = 1; } while(0)
 
 /* find corners in V1 connected to a corner by the breadth-first search. */
 static bool _zCC3DFindV1(zCC3D *cc, _zCC3DCutWS *ws, int h, const zPlane3D *plane)
 {
   int i, g, e, b;
 
-  _zCC3DSetV1( cc, ws, cc->he[h].org );
-  if( !_zCC3DIntVecPush( ws->v1, h ) ) return false;
-  for( i=0; i<ws->v1->num; i++ ){
-    g = h = ws->v1->buf[i];
+  _zCC3DSetV1( cc, ws, _zCC3DHE(cc,h)->org );
+  if( !_zCC3DIndexPush( ws->v1, h ) ) return false;
+  for( i=0; i<zArraySize(ws->v1); i++ ){
+    g = h = zIndexElemNC(ws->v1,i);
     do{
       e = _zCC3DChainEnd( cc, g );
       b = _zCC3DTarget( cc, e );
       if( !_zCC3DIsV1( cc, ws, b ) && _zCC3DDist( cc, b, plane ) > cc->tol ){
         _zCC3DSetV1( cc, ws, b );
-        if( !_zCC3DIntVecPush( ws->v1, cc->he[e].next ) ) return false;
+        if( !_zCC3DIndexPush( ws->v1, _zCC3DHE(cc,e)->next ) ) return false;
       }
       g = _zCC3DRotate( cc, g );
     } while( g != h );
@@ -404,25 +432,25 @@ static bool _zCC3DFindBoundary(zCC3D *cc, _zCC3DCutWS *ws, const zPlane3D *plane
 {
   int i, j, k, g, h, b;
 
-  ws->in->num = 0;
-  for( i=0; i<ws->v1->num; i++ ){
-    g = h = ws->v1->buf[i];
+  zArraySetSize( ws->in, 0 );
+  for( i=0; i<zArraySize(ws->v1); i++ ){
+    g = h = zIndexElemNC(ws->v1,i);
     do{
       /* half-edges on the chain */
-      ws->buf->num = 0;
-      for( k=g; ; k=cc->he[k].next ){
-        if( !_zCC3DIntVecPush( ws->buf, k ) ) return false;
-        if( _zCC3DIsCorner( cc, cc->he[k].next ) ) break;
+      zArraySize(zArrayBuf(ws)) = 0;
+      for( k=g; ; k=_zCC3DHE(cc,k)->next ){
+        if( !_zCC3DIndexPush( zArrayBuf(ws), k ) ) return false;
+        if( _zCC3DIsCorner( cc, _zCC3DHE(cc,k)->next ) ) break;
       }
       b = _zCC3DTarget( cc, k );
       if( _zCC3DIsV1( cc, ws, b ) ){
-        for( j=0; j<ws->buf->num-1; j++ ) _zCC3DSetV1( cc, ws, _zCC3DTarget( cc, ws->buf->buf[j] ) );
+        for( j=0; j<zArraySize(zArrayBuf(ws))-1; j++ ) _zCC3DSetV1( cc, ws, _zCC3DTarget( cc, zIndexElemNC(ws->buf,j) ) );
       } else{
         /* the chain crosses the plane at the first vertex in front of it from V2 */
-        for( k=ws->buf->num-1; k>0; k-- )
-          if( _zCC3DDist( cc, cc->he[ws->buf->buf[k]].org, plane ) > 0 ) break;
-        for( j=0; j<k; j++ ) _zCC3DSetV1( cc, ws, _zCC3DTarget( cc, ws->buf->buf[j] ) );
-        if( !_zCC3DIntVecPush( ws->in, cc->he[ws->buf->buf[k]].twin ) ) return false;
+        for( k=zArraySize(zArrayBuf(ws))-1; k>0; k-- )
+          if( _zCC3DDist( cc, _zCC3DHE(cc,zIndexElemNC(ws->buf,k))->org, plane ) > 0 ) break;
+        for( j=0; j<k; j++ ) _zCC3DSetV1( cc, ws, _zCC3DTarget( cc, zIndexElemNC(ws->buf,j) ) );
+        if( !_zCC3DIndexPush( ws->in, _zCC3DHE(cc,zIndexElemNC(ws->buf,k))->twin ) ) return false;
       }
       g = _zCC3DRotate( cc, g );
     } while( g != h );
@@ -435,8 +463,8 @@ static int _zCC3DNextEntering(zCC3D *cc, _zCC3DCutWS *ws, int e)
 {
   int f;
 
-  for( f=cc->he[e].next; _zCC3DIsV1( cc, ws, _zCC3DTarget( cc, f ) ); f=cc->he[f].next );
-  return cc->he[f].twin;
+  for( f=_zCC3DHE(cc,e)->next; _zCC3DIsV1( cc, ws, _zCC3DTarget( cc, f ) ); f=_zCC3DHE(cc,f)->next );
+  return _zCC3DHE(cc,f)->twin;
 }
 
 /* trace the loop of the boundary between V1 and V2. */
@@ -446,16 +474,16 @@ static bool _zCC3DTraceLoop(zCC3D *cc, _zCC3DCutWS *ws, bool *single)
 
   *single = false;
   stamp = ++cc->_stamp;
-  for( i=0; i<ws->in->num; i++ ) cc->he[ws->in->buf[i]]._aux = stamp;
-  ws->loop->num = 0;
-  if( ws->in->num < 3 ) return true;
-  e = ws->in->buf[0];
+  for( i=0; i<zArraySize(ws->in); i++ ) _zCC3DHE(cc,zIndexElemNC(ws->in,i))->_aux = stamp;
+  zArraySetSize( ws->loop, 0 );
+  if( zArraySize(ws->in) < 3 ) return true;
+  e = zIndexElemNC(ws->in,0);
   do{
-    if( cc->he[e]._aux != stamp || ws->loop->num >= ws->in->num ) return true;
-    if( !_zCC3DIntVecPush( ws->loop, e ) ) return false;
+    if( _zCC3DHE(cc,e)->_aux != stamp || zArraySize(ws->loop) >= zArraySize(ws->in) ) return true;
+    if( !_zCC3DIndexPush( ws->loop, e ) ) return false;
     e = _zCC3DNextEntering( cc, ws, e );
-  } while( e != ws->in->buf[0] );
-  *single = ws->loop->num == ws->in->num;
+  } while( e != zIndexElemNC(ws->in,0) );
+  *single = zArraySize(ws->loop) == zArraySize(ws->in);
   return true;
 }
 
@@ -463,48 +491,48 @@ static bool _zCC3DTraceLoop(zCC3D *cc, _zCC3DCutWS *ws, bool *single)
  * required only in numerically inconsistent cases. */
 static bool _zCC3DMakeV2Connected(zCC3D *cc, _zCC3DCutWS *ws, int hmin)
 {
-  _zCC3DIntVec *queue;
+  zIndexStruct *queue;
   int i, g, h, e, b, visit;
   bool ret = false;
 
   queue = _zCC3DWS( cc, _ZEO_CC3D_WS_QUEUE );
   /* corners in V2 connected to the nearest corner */
   visit = ++cc->_stamp;
-  cc->vert[cc->he[hmin].org]._visit = visit;
-  if( !_zCC3DIntVecPush( queue, hmin ) ) goto TERMINATE;
-  for( i=0; i<queue->num; i++ ){
-    g = h = queue->buf[i];
+  _zCC3DV(cc,_zCC3DHE(cc,hmin)->org)->_visit = visit;
+  if( !_zCC3DIndexPush( queue, hmin ) ) goto TERMINATE;
+  for( i=0; i<zArraySize(queue); i++ ){
+    g = h = zIndexElemNC(queue,i);
     do{
       e = _zCC3DChainEnd( cc, g );
       b = _zCC3DTarget( cc, e );
-      if( !_zCC3DIsV1( cc, ws, b ) && cc->vert[b]._visit != visit ){
-        cc->vert[b]._visit = visit;
-        if( !_zCC3DIntVecPush( queue, cc->he[e].next ) ) goto TERMINATE;
+      if( !_zCC3DIsV1( cc, ws, b ) && _zCC3DV(cc,b)->_visit != visit ){
+        _zCC3DV(cc,b)->_visit = visit;
+        if( !_zCC3DIndexPush( queue, _zCC3DHE(cc,e)->next ) ) goto TERMINATE;
       }
       g = _zCC3DRotate( cc, g );
     } while( g != h );
   }
   /* the other corners are moved to V1 */
-  queue->num = 0;
-  if( !_zCC3DIntVecPush( queue, hmin ) ) goto TERMINATE;
+  zArraySetSize( queue, 0 );
+  if( !_zCC3DIndexPush( queue, hmin ) ) goto TERMINATE;
   visit = ++cc->_stamp; /* visit of half-edges */
-  cc->he[hmin]._aux = visit;
-  for( i=0; i<queue->num; i++ ){
-    h = queue->buf[i];
-    if( !_zCC3DIsV1( cc, ws, cc->he[h].org ) && cc->vert[cc->he[h].org]._visit != visit - 1 &&
+  _zCC3DHE(cc,hmin)->_aux = visit;
+  for( i=0; i<zArraySize(queue); i++ ){
+    h = zIndexElemNC(queue,i);
+    if( !_zCC3DIsV1( cc, ws, _zCC3DHE(cc,h)->org ) && _zCC3DV(cc,_zCC3DHE(cc,h)->org)->_visit != visit - 1 &&
         _zCC3DIsCorner( cc, h ) ){
-      _zCC3DSetV1( cc, ws, cc->he[h].org );
-      if( !_zCC3DIntVecPush( ws->v1, h ) ) goto TERMINATE;
+      _zCC3DSetV1( cc, ws, _zCC3DHE(cc,h)->org );
+      if( !_zCC3DIndexPush( ws->v1, h ) ) goto TERMINATE;
     }
-    g = cc->he[h].next;
-    if( cc->he[g]._aux != visit ){
-      cc->he[g]._aux = visit;
-      if( !_zCC3DIntVecPush( queue, g ) ) goto TERMINATE;
+    g = _zCC3DHE(cc,h)->next;
+    if( _zCC3DHE(cc,g)->_aux != visit ){
+      _zCC3DHE(cc,g)->_aux = visit;
+      if( !_zCC3DIndexPush( queue, g ) ) goto TERMINATE;
     }
-    g = cc->he[h].twin;
-    if( cc->he[g]._aux != visit ){
-      cc->he[g]._aux = visit;
-      if( !_zCC3DIntVecPush( queue, g ) ) goto TERMINATE;
+    g = _zCC3DHE(cc,h)->twin;
+    if( _zCC3DHE(cc,g)->_aux != visit ){
+      _zCC3DHE(cc,g)->_aux = visit;
+      if( !_zCC3DIndexPush( queue, g ) ) goto TERMINATE;
     }
   }
   ret = true;
@@ -513,55 +541,55 @@ static bool _zCC3DMakeV2Connected(zCC3D *cc, _zCC3DCutWS *ws, int hmin)
 }
 
 /* divide an edge by a vertex on all faces around the edge. */
-static bool _zCC3DSplitEdge(zCC3D *cc, int e, int x, _zCC3DIntVec *s)
+static bool _zCC3DSplitEdge(zCC3D *cc, int e, int x, zIndexStruct *s)
 {
   int i, h, t, n, tw, mt;
 
   /* half-edges around the edge */
-  s->num = 0;
+  zArraySetSize( s, 0 );
   for( h=e; ; ){
-    t = cc->he[h].twin;
-    if( !_zCC3DIntVecPush( s, h ) || !_zCC3DIntVecPush( s, t ) ) return false;
-    if( ( h = cc->he[t].mate ) < 0 || h == e ) break;
+    t = _zCC3DHE(cc,h)->twin;
+    if( !_zCC3DIndexPush( s, h ) || !_zCC3DIndexPush( s, t ) ) return false;
+    if( ( h = _zCC3DHE(cc,t)->mate ) < 0 || h == e ) break;
   }
   if( h < 0 )
-    for( h=cc->he[e].mate; h>=0; h=cc->he[t].mate ){
-      t = cc->he[h].twin;
-      if( !_zCC3DIntVecPush( s, h ) || !_zCC3DIntVecPush( s, t ) ) return false;
+    for( h=_zCC3DHE(cc,e)->mate; h>=0; h=_zCC3DHE(cc,t)->mate ){
+      t = _zCC3DHE(cc,h)->twin;
+      if( !_zCC3DIndexPush( s, h ) || !_zCC3DIndexPush( s, t ) ) return false;
     }
   /* divide half-edges */
-  n = s->num;
+  n = zArraySize(s);
   for( i=0; i<n; i++ ){
-    h = s->buf[i];
-    if( ( t = _zCC3DAddHalfEdge( cc, x, cc->he[h].face, cc->he[h].side ) ) < 0 ) return false;
-    cc->he[t].next = cc->he[h].next;
-    cc->he[t].prev = h;
-    cc->he[cc->he[h].next].prev = t;
-    cc->he[h].next = t;
-    cc->he[t].twin = cc->he[h].twin; /* old twin and mate temporarily */
-    cc->he[t].mate = cc->he[h].mate;
-    cc->he[h]._aux = t;
+    h = zIndexElemNC(s,i);
+    if( ( t = _zCC3DAddHalfEdge( cc, x, _zCC3DHE(cc,h)->face, _zCC3DHE(cc,h)->side ) ) < 0 ) return false;
+    _zCC3DHE(cc,t)->next = _zCC3DHE(cc,h)->next;
+    _zCC3DHE(cc,t)->prev = h;
+    _zCC3DHE(cc,_zCC3DHE(cc,h)->next)->prev = t;
+    _zCC3DHE(cc,h)->next = t;
+    _zCC3DHE(cc,t)->twin = _zCC3DHE(cc,h)->twin; /* old twin and mate temporarily */
+    _zCC3DHE(cc,t)->mate = _zCC3DHE(cc,h)->mate;
+    _zCC3DHE(cc,h)->_aux = t;
   }
   for( i=0; i<n; i++ ){
-    h = s->buf[i];
-    t = cc->he[h].next;
-    tw = cc->he[t].twin;
-    mt = cc->he[t].mate;
-    cc->he[h].twin = cc->he[tw]._aux;
-    cc->he[t].twin = tw;
+    h = zIndexElemNC(s,i);
+    t = _zCC3DHE(cc,h)->next;
+    tw = _zCC3DHE(cc,t)->twin;
+    mt = _zCC3DHE(cc,t)->mate;
+    _zCC3DHE(cc,h)->twin = _zCC3DHE(cc,tw)->_aux;
+    _zCC3DHE(cc,t)->twin = tw;
     if( mt >= 0 ){
-      cc->he[h].mate = cc->he[mt]._aux;
-      cc->he[t].mate = mt;
+      _zCC3DHE(cc,h)->mate = _zCC3DHE(cc,mt)->_aux;
+      _zCC3DHE(cc,t)->mate = mt;
     }
   }
-  for( i=0; i<n; i++ ) cc->he[s->buf[i]]._aux = 0; /* not to be confused with stamps */
+  for( i=0; i<n; i++ ) _zCC3DHE(cc,zIndexElemNC(s,i))->_aux = 0; /* not to be confused with stamps */
   return true;
 }
 
 /* update the cell of faces and the bounding box of a cell by traversing its half-edges. */
 static bool _zCC3DUpdateCell(zCC3D *cc, int c)
 {
-  _zCC3DIntVec *queue;
+  zIndexStruct *queue;
   zCC3DHalfEdge *h;
   zVec3D *p;
   int i, g, visit;
@@ -569,24 +597,24 @@ static bool _zCC3DUpdateCell(zCC3D *cc, int c)
 
   queue = _zCC3DWS( cc, _ZEO_CC3D_WS_QUEUE );
   visit = ++cc->_stamp;
-  cc->he[cc->cell[c].he]._aux = visit;
-  if( !_zCC3DIntVecPush( queue, cc->cell[c].he ) ) goto TERMINATE;
-  p = &cc->vert[cc->he[cc->cell[c].he].org].p;
-  zVec3DCopy( p, &cc->cell[c].aabb.min );
-  zVec3DCopy( p, &cc->cell[c].aabb.max );
-  for( i=0; i<queue->num; i++ ){
-    h = &cc->he[queue->buf[i]];
-    cc->face[h->face].cell[h->side] = c;
-    zAABox3DEnlarge( &cc->cell[c].aabb, &cc->vert[h->org].p );
+  _zCC3DHE(cc,zCC3DCell(cc,c)->he)->_aux = visit;
+  if( !_zCC3DIndexPush( queue, zCC3DCell(cc,c)->he ) ) goto TERMINATE;
+  p = &_zCC3DV(cc,_zCC3DHE(cc,zCC3DCell(cc,c)->he)->org)->p;
+  zVec3DCopy( p, &zCC3DCell(cc,c)->aabb.min );
+  zVec3DCopy( p, &zCC3DCell(cc,c)->aabb.max );
+  for( i=0; i<zArraySize(queue); i++ ){
+    h = _zCC3DHE(cc,zIndexElemNC(queue,i));
+    zCC3DFace(cc,h->face)->cell[h->side] = c;
+    zAABox3DEnlarge( &zCC3DCell(cc,c)->aabb, &_zCC3DV(cc,h->org)->p );
     g = h->next;
-    if( cc->he[g]._aux != visit ){
-      cc->he[g]._aux = visit;
-      if( !_zCC3DIntVecPush( queue, g ) ) goto TERMINATE;
+    if( _zCC3DHE(cc,g)->_aux != visit ){
+      _zCC3DHE(cc,g)->_aux = visit;
+      if( !_zCC3DIndexPush( queue, g ) ) goto TERMINATE;
     }
-    g = cc->he[queue->buf[i]].twin;
-    if( cc->he[g]._aux != visit ){
-      cc->he[g]._aux = visit;
-      if( !_zCC3DIntVecPush( queue, g ) ) goto TERMINATE;
+    g = _zCC3DHE(cc,zIndexElemNC(queue,i))->twin;
+    if( _zCC3DHE(cc,g)->_aux != visit ){
+      _zCC3DHE(cc,g)->_aux = visit;
+      if( !_zCC3DIndexPush( queue, g ) ) goto TERMINATE;
     }
   }
   ret = true;
@@ -599,8 +627,8 @@ static bool _zCC3DLoopIsDup(zCC3D *cc, _zCC3DCutWS *ws, int i)
 {
   int u;
 
-  u = cc->he[ws->loop->buf[i]].org;
-  return _zCC3DIsOn( cc, u ) && u == cc->he[ws->loop->buf[(i+1)%ws->loop->num]].org;
+  u = _zCC3DHE(cc,zIndexElemNC(ws->loop,i))->org;
+  return _zCC3DIsOn( cc, u ) && u == _zCC3DHE(cc,zIndexElemNC(ws->loop,(i+1)%zArraySize(ws->loop)))->org;
 }
 
 /* check if vertices on the cutting plane can be reused as vertices of the cutting face. The
@@ -611,30 +639,30 @@ static bool _zCC3DCheckReuse(zCC3D *cc, _zCC3DCutWS *ws)
 {
   int i, i0, k, m, n, u, h, g, visit;
 
-  n = ws->loop->num;
+  n = zArraySize(ws->loop);
   for( i0=0; i0<n && _zCC3DLoopIsDup( cc, ws, (i0+n-1)%n ); i0++ );
   if( i0 == n ) return false;
   visit = ++cc->_stamp;
   for( m=0, k=0; k<n; k++ ){
     i = ( i0 + k ) % n;
     if( !_zCC3DLoopIsDup( cc, ws, i ) ) m++;
-    if( !_zCC3DIsOn( cc, ( u = cc->he[ws->loop->buf[i]].org ) ) ) continue;
+    if( !_zCC3DIsOn( cc, ( u = _zCC3DHE(cc,zIndexElemNC(ws->loop,i))->org ) ) ) continue;
     if( k > 0 && _zCC3DLoopIsDup( cc, ws, (i+n-1)%n ) ) continue; /* in a run of the vertex */
-    if( cc->vert[u]._visit == visit ) return false;
-    cc->vert[u]._visit = visit;
+    if( _zCC3DV(cc,u)->_visit == visit ) return false;
+    _zCC3DV(cc,u)->_visit = visit;
   }
   if( m < 3 ) return false;
   for( i=0; i<n; i++ ){
-    if( !_zCC3DIsOn( cc, cc->he[ws->loop->buf[i]].org ) ||
-        !_zCC3DIsOn( cc, cc->he[ws->loop->buf[(i+1)%n]].org ) ||
+    if( !_zCC3DIsOn( cc, _zCC3DHE(cc,zIndexElemNC(ws->loop,i))->org ) ||
+        !_zCC3DIsOn( cc, _zCC3DHE(cc,zIndexElemNC(ws->loop,(i+1)%n))->org ) ||
         _zCC3DLoopIsDup( cc, ws, i ) ) continue;
-    h = cc->he[ws->loop->buf[i]].prev;
-    if( cc->he[cc->he[ws->loop->buf[(i+1)%n]].twin].next != h ) continue;
-    g = cc->he[h].twin;
+    h = _zCC3DHE(cc,zIndexElemNC(ws->loop,i))->prev;
+    if( _zCC3DHE(cc,_zCC3DHE(cc,zIndexElemNC(ws->loop,(i+1)%n))->twin)->next != h ) continue;
+    g = _zCC3DHE(cc,h)->twin;
     do{
-      if( _zCC3DIsV1( cc, ws, cc->he[g].org ) ) return false;
-      g = cc->he[g].next;
-    } while( g != cc->he[h].twin );
+      if( _zCC3DIsV1( cc, ws, _zCC3DHE(cc,g)->org ) ) return false;
+      g = _zCC3DHE(cc,g)->next;
+    } while( g != _zCC3DHE(cc,h)->twin );
   }
   return true;
 }
@@ -644,7 +672,7 @@ static bool _zCC3DCheckReuse(zCC3D *cc, _zCC3DCutWS *ws)
  * was made on the same plane by a cut of a neighbor cell. Otherwise, the edge is divided. */
 static int _zCC3DSplitCell(zCC3D *cc, int c, _zCC3DCutWS *ws, const zPlane3D *plane, int tag)
 {
-  _zCC3DIntVec *x, *k0, *k1;
+  zIndexStruct *x, *k0, *k1;
   zVec3D p;
   double su, sw, t;
   int n, ne, i, j, l, e, u, w, cf, cap, g, a, b, cb, cfh, nb, nf, sc, sn, f, m, q, mp, be, tb;
@@ -654,13 +682,13 @@ static int _zCC3DSplitCell(zCC3D *cc, int c, _zCC3DCutWS *ws, const zPlane3D *pl
   x = _zCC3DWS( cc, _ZEO_CC3D_WS_X );
   k0 = _zCC3DWS( cc, _ZEO_CC3D_WS_K0 );
   k1 = _zCC3DWS( cc, _ZEO_CC3D_WS_K1 );
-  n = ws->loop->num;
+  n = zArraySize(ws->loop);
   /* vertices of the cutting face on edges entering V1 */
   for( i=0; i<n; i++ ){
-    e = ws->loop->buf[i];
-    u = cc->he[e].org;
+    e = zIndexElemNC(ws->loop,i);
+    u = _zCC3DHE(cc,e)->org;
     if( _zCC3DIsOn( cc, u ) ){ /* reuse */
-      if( !_zCC3DIntVecPush( x, u ) ) goto TERMINATE;
+      if( !_zCC3DIndexPush( x, u ) ) goto TERMINATE;
       continue;
     }
     w = _zCC3DTarget( cc, e );
@@ -669,105 +697,105 @@ static int _zCC3DSplitCell(zCC3D *cc, int c, _zCC3DCutWS *ws, const zPlane3D *pl
     t = sw > su ? zLimit( -su / ( sw - su ), 0, 1 ) : 0.5;
     /* the coordinate shared by both ends is exactly kept, so that vertices on the boundary of the
      * universe are exactly on it */
-    _zVec3DInterDiv( &cc->vert[u].p, &cc->vert[w].p, t, &p );
-    if( ( j = _zCC3DAddVert( cc, &p ) ) < 0 || !_zCC3DIntVecPush( x, j ) ||
-        !_zCC3DSplitEdge( cc, e, j, ws->buf ) ) goto TERMINATE;
-    cc->vert[j]._on = cc->_plane;
+    _zVec3DInterDiv( &_zCC3DV(cc,u)->p, &_zCC3DV(cc,w)->p, t, &p );
+    if( ( j = _zCC3DAddVert( cc, &p ) ) < 0 || !_zCC3DIndexPush( x, j ) ||
+        !_zCC3DSplitEdge( cc, e, j, zArrayBuf(ws) ) ) goto TERMINATE;
+    _zCC3DV(cc,j)->_on = cc->_plane;
   }
   /* entries of the loop which make edges of the cutting face. An entry followed by the same
    * reused vertex is skipped, since the face across it is entirely in front of the plane except
    * the vertex. */
-  ws->in->num = 0;
+  zArraySetSize( ws->in, 0 );
   for( i=0; i<n; i++ )
-    if( x->buf[i] != x->buf[(i+1)%n] && !_zCC3DIntVecPush( ws->in, i ) ) goto TERMINATE;
-  ne = ws->in->num;
+    if( zIndexElemNC(x,i) != zIndexElemNC(x,(i+1)%n) && !_zCC3DIndexPush( ws->in, i ) ) goto TERMINATE;
+  ne = zArraySize(ws->in);
   /* new cell and cutting face */
-  if( ( cf = _zCC3DAddCell( cc, cc->cell[c].solid ) ) < 0 ||
+  if( ( cf = _zCC3DAddCell( cc, zCC3DCell(cc,c)->solid ) ) < 0 ||
       ( cap = _zCC3DAddFace( cc, c, cf, tag ) ) < 0 ) goto TERMINATE;
   for( l=0; l<ne; l++ ){
-    i = ws->in->buf[l];
-    if( ( j = _zCC3DAddHalfEdge( cc, x->buf[(i+1)%n], cap, 0 ) ) < 0 || !_zCC3DIntVecPush( k0, j ) ||
-        ( j = _zCC3DAddHalfEdge( cc, x->buf[i], cap, 1 ) ) < 0 || !_zCC3DIntVecPush( k1, j ) ) goto TERMINATE;
+    i = zIndexElemNC(ws->in,l);
+    if( ( j = _zCC3DAddHalfEdge( cc, zIndexElemNC(x,(i+1)%n), cap, 0 ) ) < 0 || !_zCC3DIndexPush( k0, j ) ||
+        ( j = _zCC3DAddHalfEdge( cc, zIndexElemNC(x,i), cap, 1 ) ) < 0 || !_zCC3DIndexPush( k1, j ) ) goto TERMINATE;
   }
   for( l=0; l<ne; l++ ){
     /* side 0 of the cutting face: x[i+1] -> x[i], outward for the cell behind the plane */
-    cc->he[k0->buf[l]].next = k0->buf[(l+ne-1)%ne];
-    cc->he[k0->buf[l]].prev = k0->buf[(l+1)%ne];
-    cc->he[k0->buf[l]].mate = k1->buf[l];
+    _zCC3DHE(cc,zIndexElemNC(k0,l))->next = zIndexElemNC(k0,(l+ne-1)%ne);
+    _zCC3DHE(cc,zIndexElemNC(k0,l))->prev = zIndexElemNC(k0,(l+1)%ne);
+    _zCC3DHE(cc,zIndexElemNC(k0,l))->mate = zIndexElemNC(k1,l);
     /* side 1 of the cutting face: x[i] -> x[i+1], outward for the cell in front of the plane */
-    cc->he[k1->buf[l]].next = k1->buf[(l+1)%ne];
-    cc->he[k1->buf[l]].prev = k1->buf[(l+ne-1)%ne];
-    cc->he[k1->buf[l]].mate = k0->buf[l];
+    _zCC3DHE(cc,zIndexElemNC(k1,l))->next = zIndexElemNC(k1,(l+1)%ne);
+    _zCC3DHE(cc,zIndexElemNC(k1,l))->prev = zIndexElemNC(k1,(l+ne-1)%ne);
+    _zCC3DHE(cc,zIndexElemNC(k1,l))->mate = zIndexElemNC(k0,l);
   }
-  cc->face[cap].he[0] = k0->buf[0];
-  cc->face[cap].he[1] = k1->buf[0];
+  zCC3DFace(cc,cap)->he[0] = zIndexElemNC(k0,0);
+  zCC3DFace(cc,cap)->he[1] = zIndexElemNC(k1,0);
   /* split faces across the loop */
   for( l=0; l<ne; l++ ){
-    i = ws->in->buf[l];
-    e = ws->loop->buf[i];
-    ri = x->buf[i] == cc->he[e].org;
-    rj = x->buf[(i+1)%n] == cc->he[ws->loop->buf[(i+1)%n]].org;
+    i = zIndexElemNC(ws->in,l);
+    e = zIndexElemNC(ws->loop,i);
+    ri = zIndexElemNC(x,i) == _zCC3DHE(cc,e)->org;
+    rj = zIndexElemNC(x,(i+1)%n) == _zCC3DHE(cc,zIndexElemNC(ws->loop,(i+1)%n))->org;
     if( ri ){
       a = e;                           /* x[i] -> w: the first half-edge in front of the plane */
-      be = cc->he[e].prev;             /* -> x[i]: the last half-edge behind the plane */
+      be = _zCC3DHE(cc,e)->prev;             /* -> x[i]: the last half-edge behind the plane */
     } else{
       be = e;
-      a = cc->he[e].next;
+      a = _zCC3DHE(cc,e)->next;
     }
-    tb = cc->he[ws->loop->buf[(i+1)%n]].twin;
+    tb = _zCC3DHE(cc,zIndexElemNC(ws->loop,(i+1)%n))->twin;
     if( rj ){
       b = tb;                          /* w' -> x[i+1]: the last half-edge in front of the plane */
-      q = cc->he[tb].next;             /* x[i+1] -> : the first half-edge behind the plane */
+      q = _zCC3DHE(cc,tb)->next;             /* x[i+1] -> : the first half-edge behind the plane */
     } else{
       q = tb;
-      b = cc->he[tb].prev;
+      b = _zCC3DHE(cc,tb)->prev;
     }
     if( q == be ){ /* the edge x[i+1] -> x[i] becomes an edge of the cutting face */
-      tb = cc->he[be].twin;
-      cc->he[tb].twin = k0->buf[l]; cc->he[k0->buf[l]].twin = tb;
-      cc->he[be].twin = k1->buf[l]; cc->he[k1->buf[l]].twin = be;
+      tb = _zCC3DHE(cc,be)->twin;
+      _zCC3DHE(cc,tb)->twin = zIndexElemNC(k0,l); _zCC3DHE(cc,zIndexElemNC(k0,l))->twin = tb;
+      _zCC3DHE(cc,be)->twin = zIndexElemNC(k1,l); _zCC3DHE(cc,zIndexElemNC(k1,l))->twin = be;
       continue;
     }
-    f = cc->he[e].face;
-    sc = cc->he[e].side;
+    f = _zCC3DHE(cc,e)->face;
+    sc = _zCC3DHE(cc,e)->side;
     sn = 1 - sc;
-    if( ( g = _zCC3DAddFace( cc, sc == 0 ? cf : cc->face[f].cell[0], sc == 1 ? cf : cc->face[f].cell[1], cc->face[f].tag ) ) < 0 ) goto TERMINATE;
+    if( ( g = _zCC3DAddFace( cc, sc == 0 ? cf : zCC3DFace(cc,f)->cell[0], sc == 1 ? cf : zCC3DFace(cc,f)->cell[1], zCC3DFace(cc,f)->tag ) ) < 0 ) goto TERMINATE;
     /* chords on the side of the cell */
-    if( ( cb = _zCC3DAddHalfEdge( cc, x->buf[i], f, sc ) ) < 0 ||
-        ( cfh = _zCC3DAddHalfEdge( cc, x->buf[(i+1)%n], g, sc ) ) < 0 ) goto TERMINATE;
-    cc->he[be].next = cb; cc->he[cb].prev = be; cc->he[cb].next = q; cc->he[q].prev = cb;
-    cc->he[b].next = cfh; cc->he[cfh].prev = b; cc->he[cfh].next = a; cc->he[a].prev = cfh;
-    for( m=a; m!=cfh; m=cc->he[m].next ) cc->he[m].face = g;
-    cc->he[cfh].face = g;
-    cc->he[cb].twin = k0->buf[l]; cc->he[k0->buf[l]].twin = cb;
-    cc->he[cfh].twin = k1->buf[l]; cc->he[k1->buf[l]].twin = cfh;
-    cc->face[f].he[sc] = cb;
-    cc->face[g].he[sc] = cfh;
+    if( ( cb = _zCC3DAddHalfEdge( cc, zIndexElemNC(x,i), f, sc ) ) < 0 ||
+        ( cfh = _zCC3DAddHalfEdge( cc, zIndexElemNC(x,(i+1)%n), g, sc ) ) < 0 ) goto TERMINATE;
+    _zCC3DHE(cc,be)->next = cb; _zCC3DHE(cc,cb)->prev = be; _zCC3DHE(cc,cb)->next = q; _zCC3DHE(cc,q)->prev = cb;
+    _zCC3DHE(cc,b)->next = cfh; _zCC3DHE(cc,cfh)->prev = b; _zCC3DHE(cc,cfh)->next = a; _zCC3DHE(cc,a)->prev = cfh;
+    for( m=a; m!=cfh; m=_zCC3DHE(cc,m)->next ) _zCC3DHE(cc,m)->face = g;
+    _zCC3DHE(cc,cfh)->face = g;
+    _zCC3DHE(cc,cb)->twin = zIndexElemNC(k0,l); _zCC3DHE(cc,zIndexElemNC(k0,l))->twin = cb;
+    _zCC3DHE(cc,cfh)->twin = zIndexElemNC(k1,l); _zCC3DHE(cc,zIndexElemNC(k1,l))->twin = cfh;
+    zCC3DFace(cc,f)->he[sc] = cb;
+    zCC3DFace(cc,g)->he[sc] = cfh;
     /* chords on the other side of the face */
-    if( cc->face[f].cell[sn] >= 0 ){
-      if( ( nb = _zCC3DAddHalfEdge( cc, x->buf[(i+1)%n], f, sn ) ) < 0 ||
-          ( nf = _zCC3DAddHalfEdge( cc, x->buf[i], g, sn ) ) < 0 ) goto TERMINATE;
-      mp = cc->he[q].mate;             /* -> x[i+1] */
-      m = cc->he[be].mate;             /* x[i] -> */
-      cc->he[mp].next = nb; cc->he[nb].prev = mp; cc->he[nb].next = m; cc->he[m].prev = nb;
-      cc->he[cc->he[a].mate].next = nf; cc->he[nf].prev = cc->he[a].mate;
-      cc->he[nf].next = cc->he[b].mate; cc->he[cc->he[b].mate].prev = nf;
+    if( zCC3DFace(cc,f)->cell[sn] >= 0 ){
+      if( ( nb = _zCC3DAddHalfEdge( cc, zIndexElemNC(x,(i+1)%n), f, sn ) ) < 0 ||
+          ( nf = _zCC3DAddHalfEdge( cc, zIndexElemNC(x,i), g, sn ) ) < 0 ) goto TERMINATE;
+      mp = _zCC3DHE(cc,q)->mate;             /* -> x[i+1] */
+      m = _zCC3DHE(cc,be)->mate;             /* x[i] -> */
+      _zCC3DHE(cc,mp)->next = nb; _zCC3DHE(cc,nb)->prev = mp; _zCC3DHE(cc,nb)->next = m; _zCC3DHE(cc,m)->prev = nb;
+      _zCC3DHE(cc,_zCC3DHE(cc,a)->mate)->next = nf; _zCC3DHE(cc,nf)->prev = _zCC3DHE(cc,a)->mate;
+      _zCC3DHE(cc,nf)->next = _zCC3DHE(cc,b)->mate; _zCC3DHE(cc,_zCC3DHE(cc,b)->mate)->prev = nf;
       for( m=nf; ; ){
-        cc->he[m].face = g;
-        if( ( m = cc->he[m].next ) == nf ) break;
+        _zCC3DHE(cc,m)->face = g;
+        if( ( m = _zCC3DHE(cc,m)->next ) == nf ) break;
       }
-      cc->he[nb].twin = nf; cc->he[nf].twin = nb;
-      cc->he[nb].mate = cb; cc->he[cb].mate = nb;
-      cc->he[nf].mate = cfh; cc->he[cfh].mate = nf;
-      cc->face[f].he[sn] = nb;
-      cc->face[g].he[sn] = nf;
+      _zCC3DHE(cc,nb)->twin = nf; _zCC3DHE(cc,nf)->twin = nb;
+      _zCC3DHE(cc,nb)->mate = cb; _zCC3DHE(cc,cb)->mate = nb;
+      _zCC3DHE(cc,nf)->mate = cfh; _zCC3DHE(cc,cfh)->mate = nf;
+      zCC3DFace(cc,f)->he[sn] = nb;
+      zCC3DFace(cc,g)->he[sn] = nf;
     }
   }
   /* cells */
-  cc->cell[c].he = k0->buf[0];
-  cc->cell[cf].he = k1->buf[0];
+  zCC3DCell(cc,c)->he = zIndexElemNC(k0,0);
+  zCC3DCell(cc,cf)->he = zIndexElemNC(k1,0);
   if( !_zCC3DUpdateCell( cc, cf ) ) goto TERMINATE;
-  for( i=0; i<n; i++ ) zAABox3DEnlarge( &cc->cell[c].aabb, &cc->vert[x->buf[i]].p );
+  for( i=0; i<n; i++ ) zAABox3DEnlarge( &zCC3DCell(cc,c)->aabb, &_zCC3DV(cc,zIndexElemNC(x,i))->p );
   ret = cf;
  TERMINATE:
   return ret;
@@ -796,12 +824,12 @@ static bool _zCC3DClassify(zCC3D *cc, int c, _zCC3DCutWS *ws, int hmax, const zP
   bool single;
 
   ws->stamp = ++cc->_stamp;
-  ws->v1->num = 0;
+  zArraySetSize( ws->v1, 0 );
   if( !_zCC3DFindV1( cc, ws, hmax, plane ) ||
       !_zCC3DFindBoundary( cc, ws, plane ) ||
       !_zCC3DTraceLoop( cc, ws, &single ) ) return false;
   if( !single ){
-    if( ( hmin = _zCC3DClimb( cc, cc->cell[c].he, plane, -1, &smin, ws->buf ) ) < 0 ) return false;
+    if( ( hmin = _zCC3DClimb( cc, zCC3DCell(cc,c)->he, plane, -1, &smin, zArrayBuf(ws) ) ) < 0 ) return false;
     hmin = _zCC3DToCorner( cc, hmin, plane, -1, &smin );
     if( !_zCC3DMakeV2Connected( cc, ws, hmin ) ||
         !_zCC3DFindBoundary( cc, ws, plane ) ||
@@ -823,20 +851,20 @@ static int _zCC3DSplit(zCC3D *cc, int c, const zPlane3D *plane, int tag, int *cf
   int hmax, hmin, ret = -1;
   double smax, smin;
 
-  _zCC3DAABBDist( &cc->cell[c].aabb, plane, &smin, &smax );
+  _zCC3DAABBDist( &zCC3DCell(cc,c)->aabb, plane, &smin, &smax );
   if( smax <= cc->tol ) return 0;
   if( smin >= -cc->tol ) return 1;
   _zCC3DCutWSInit( cc, &ws );
-  if( ( hmax = _zCC3DClimb( cc, cc->cell[c].he, plane, 1, &smax, ws.buf ) ) < 0 ) goto TERMINATE;
+  if( ( hmax = _zCC3DClimb( cc, zCC3DCell(cc,c)->he, plane, 1, &smax, zArrayBuf(&ws) ) ) < 0 ) goto TERMINATE;
   hmax = _zCC3DToCorner( cc, hmax, plane, 1, &smax );
   if( smax <= cc->tol ){
     ret = 0;
     goto TERMINATE;
   }
   /* the nearest vertex is necessary only if the start vertex is not behind the plane */
-  hmin = cc->cell[c].he;
-  if( ( smin = _zCC3DDist( cc, cc->he[hmin].org, plane ) ) >= -cc->tol &&
-      ( hmin = _zCC3DClimb( cc, hmin, plane, -1, &smin, ws.buf ) ) < 0 ) goto TERMINATE;
+  hmin = zCC3DCell(cc,c)->he;
+  if( ( smin = _zCC3DDist( cc, _zCC3DHE(cc,hmin)->org, plane ) ) >= -cc->tol &&
+      ( hmin = _zCC3DClimb( cc, hmin, plane, -1, &smin, zArrayBuf(&ws) ) ) < 0 ) goto TERMINATE;
   if( smin >= -cc->tol ){
     ret = 1;
     goto TERMINATE;
@@ -902,7 +930,7 @@ static unsigned long _zCC3DSpreadBits(unsigned long v)
   return r;
 }
 
-static _zCC3DFaceOrder *_zCC3DFaceOrderCreate(const zPH3D *ph, const zAABox3D *box, const _zCC3DIntVec *sel)
+static _zCC3DFaceOrder *_zCC3DFaceOrderCreate(const zPH3D *ph, const zAABox3D *box, const zIndexStruct *sel)
 {
   _zCC3DFaceOrder *order;
   zVec3D c;
@@ -910,12 +938,12 @@ static _zCC3DFaceOrder *_zCC3DFaceOrderCreate(const zPH3D *ph, const zAABox3D *b
   unsigned long q[3];
   int i, j, k;
 
-  if( !( order = zAlloc( _zCC3DFaceOrder, sel->num ) ) ){
+  if( !( order = zAlloc( _zCC3DFaceOrder, zArraySize(sel) ) ) ){
     ZALLOCERROR();
     return NULL;
   }
-  for( j=0; j<sel->num; j++ ){
-    i = sel->buf[j];
+  for( j=0; j<zArraySize(sel); j++ ){
+    i = zIndexElemNC(sel,j);
     zTri3DBarycenter( zPH3DFace(ph,i), &c );
     for( k=0; k<3; k++ ){
       w = box->max.e[k] - box->min.e[k];
@@ -924,7 +952,7 @@ static _zCC3DFaceOrder *_zCC3DFaceOrderCreate(const zPH3D *ph, const zAABox3D *b
     order[j].key = _zCC3DSpreadBits( q[0] ) | _zCC3DSpreadBits( q[1] ) << 1 | _zCC3DSpreadBits( q[2] ) << 2;
     order[j].id = i;
   }
-  qsort( order, sel->num, sizeof(_zCC3DFaceOrder), _zCC3DFaceOrderCmp );
+  qsort( order, zArraySize(sel), sizeof(_zCC3DFaceOrder), _zCC3DFaceOrderCmp );
   return order;
 }
 
@@ -945,7 +973,7 @@ static bool _zCC3DPH3DFaceIsDegenerate(const zPH3D *ph, int i, double tol)
 }
 
 /* cut candidate cells by planes of selected faces of a convex polyhedron, and mark those inside of it. */
-static bool _zCC3DSplitConvexPH3D(zCC3D *cc, const zPH3D *ph, const zAABox3D *box, const _zCC3DIntVec *sel, _zCC3DIntVec *cand)
+static bool _zCC3DSplitConvexPH3D(zCC3D *cc, const zPH3D *ph, const zAABox3D *box, const zIndexStruct *sel, zIndexStruct *cand)
 {
   _zCC3DFaceOrder *order;
   zPlane3D plane;
@@ -953,18 +981,18 @@ static bool _zCC3DSplitConvexPH3D(zCC3D *cc, const zPH3D *ph, const zAABox3D *bo
   bool result = false;
 
   if( !( order = _zCC3DFaceOrderCreate( ph, box, sel ) ) ) return false;
-  for( j=0; j<sel->num && cand->num>0; j++ ){
+  for( j=0; j<zArraySize(sel) && zArraySize(cand)>0; j++ ){
     i = order[j].id;
     if( _zCC3DPH3DFaceIsDegenerate( ph, i, cc->tol ) ) continue;
     zPlane3DCreate( &plane, zTri3DVert(zPH3DFace(ph,i),0), zTri3DNorm(zPH3DFace(ph,i)) );
     cc->_plane++;
-    for( n=0, c=0; c<cand->num; c++ ){
-      if( ( ret = _zCC3DSplit( cc, cand->buf[c], &plane, cc->_tag, &cf ) ) < 0 ) goto TERMINATE;
-      if( ret != 1 ) cand->buf[n++] = cand->buf[c];
+    for( n=0, c=0; c<zArraySize(cand); c++ ){
+      if( ( ret = _zCC3DSplit( cc, zIndexElemNC(cand,c), &plane, cc->_tag, &cf ) ) < 0 ) goto TERMINATE;
+      if( ret != 1 ) zIndexElemNC(cand,n++) = zIndexElemNC(cand,c);
     }
-    cand->num = n;
+    zArraySetSize( cand, n );
   }
-  for( j=0; j<cand->num; j++ ) cc->cell[cand->buf[j]]._cand = true;
+  for( j=0; j<zArraySize(cand); j++ ) zCC3DCell(cc,zIndexElemNC(cand,j))->_cand = true;
   result = true;
  TERMINATE:
   free( order );
@@ -990,60 +1018,66 @@ typedef struct{
 } _zCC3DFrag;
 
 /* pool of fragments. */
+ZEDA_DEF_ARRAY_CLASS( _zCC3DFragArray, _zCC3DFrag );
+ZEDA_DEF_ARRAY_CLASS( _zCC3DDoubleArray, double );
 typedef struct{
   const zPH3D *ph;
   double tol;
-  _zCC3DFrag *frag;
-  int fragnum, fragcap;
-  zVec3D *v;
-  int vnum, vcap;
-  double *s;
-  int scap;
+  _zCC3DFragArray frag; /* fragments */
+  zVec3DArray v;        /* vertices of fragments */
+  _zCC3DDoubleArray s;  /* signed distances of vertices of a fragment from a plane */
 } _zCC3DFragPool;
+
+#define _zCC3DFragElem(pool,i) zArrayElemNC(&(pool)->frag,i)
+#define _zCC3DFragVert(pool,i) zArrayElemNC(&(pool)->v,i)
+#define _zCC3DFragDist(pool,i) zArrayBuf(&(pool)->s)[i]
 
 static void _zCC3DFragPoolInit(_zCC3DFragPool *pool, const zPH3D *ph, double tol)
 {
   pool->ph = ph;
   pool->tol = tol;
-  pool->frag = NULL;
-  pool->fragnum = pool->fragcap = 0;
-  pool->v = NULL;
-  pool->vnum = pool->vcap = 0;
-  pool->s = NULL;
-  pool->scap = 0;
+  zArrayInit( &pool->frag );
+  zArrayInit( &pool->v );
+  zArrayInit( &pool->s );
 }
 
 static void _zCC3DFragPoolDestroy(_zCC3DFragPool *pool)
 {
-  free( pool->frag );
-  free( pool->v );
-  free( pool->s );
+  zArrayFree( &pool->frag );
+  zArrayFree( &pool->v );
+  zArrayFree( &pool->s );
   _zCC3DFragPoolInit( pool, NULL, 0 );
 }
 
 /* add a fragment of a face, whose vertices are to be added after it. */
 static int _zCC3DFragAdd(_zCC3DFragPool *pool, int face)
 {
-  if( !_zCC3DReserve( (void **)&pool->frag, &pool->fragcap, pool->fragnum+1, sizeof(_zCC3DFrag) ) ) return -1;
-  pool->frag[pool->fragnum].face = face;
-  pool->frag[pool->fragnum].vs = pool->vnum;
-  pool->frag[pool->fragnum].vn = 0;
-  return pool->fragnum++;
+  _zCC3DFrag *frag;
+
+  _zCC3DArrayPush( &pool->frag, _zCC3DFrag, frag );
+  if( !frag ) return -1;
+  frag->face = face;
+  frag->vs = zArraySize(&pool->v);
+  frag->vn = 0;
+  return zArraySize(&pool->frag) - 1;
 }
 
 /* add a vertex to the last fragment. */
 static bool _zCC3DFragAddVert(_zCC3DFragPool *pool, const zVec3D *p)
 {
-  if( !_zCC3DReserve( (void **)&pool->v, &pool->vcap, pool->vnum+1, sizeof(zVec3D) ) ) return false;
-  zVec3DCopy( p, &pool->v[pool->vnum++] );
-  pool->frag[pool->fragnum-1].vn++;
+  zVec3D *v;
+
+  _zCC3DArrayPush( &pool->v, zVec3D, v );
+  if( !v ) return false;
+  zVec3DCopy( p, v );
+  _zCC3DFragElem(pool,zArraySize(&pool->frag)-1)->vn++;
   return true;
 }
 
 /* plane of a fragment. */
 static zPlane3D *_zCC3DFragPlane(_zCC3DFragPool *pool, int f, zPlane3D *plane)
 {
-  const zTri3D *tri = zPH3DFace(pool->ph,pool->frag[f].face);
+  const zTri3D *tri = zPH3DFace(pool->ph,_zCC3DFragElem(pool,f)->face);
   return zPlane3DCreate( plane, zTri3DVert(tri,0), zTri3DNorm(tri) );
 }
 
@@ -1055,13 +1089,16 @@ static int _zCC3DFragClassify(_zCC3DFragPool *pool, int f, const zPlane3D *plane
   int i;
   bool back = false, front = false;
 
-  if( !_zCC3DReserve( (void **)&pool->s, &pool->scap, pool->frag[f].vn, sizeof(double) ) ) return -2;
-  for( i=0; i<pool->frag[f].vn; i++ ){
-    zVec3DSub( &pool->v[pool->frag[f].vs+i], zPlane3DOrg(plane), &d );
-    pool->s[i] = zVec3DInnerProd( &d, zPlane3DNorm(plane) );
-    if( pool->s[i] < -pool->tol ) back = true;
-    else if( pool->s[i] > pool->tol ) front = true;
-    else pool->s[i] = 0;
+  if( zArrayCapacity(&pool->s) < _zCC3DFragElem(pool,f)->vn ){ /* used as a buffer regardless of the size */
+    zArrayExpand( &pool->s, double, _zCC3DFragElem(pool,f)->vn );
+    if( zArraySize(&pool->s) != _zCC3DFragElem(pool,f)->vn ) return -2;
+  }
+  for( i=0; i<_zCC3DFragElem(pool,f)->vn; i++ ){
+    zVec3DSub( _zCC3DFragVert(pool,_zCC3DFragElem(pool,f)->vs+i), zPlane3DOrg(plane), &d );
+    _zCC3DFragDist(pool,i) = zVec3DInnerProd( &d, zPlane3DNorm(plane) );
+    if( _zCC3DFragDist(pool,i) < -pool->tol ) back = true;
+    else if( _zCC3DFragDist(pool,i) > pool->tol ) front = true;
+    else _zCC3DFragDist(pool,i) = 0;
   }
   return back ? ( front ? 2 : -1 ) : ( front ? 1 : 0 );
 }
@@ -1074,15 +1111,18 @@ static int _zCC3DFragClip(_zCC3DFragPool *pool, int f, double sign)
   int i, j, n, nf;
   double si, sj;
 
-  if( ( nf = _zCC3DFragAdd( pool, pool->frag[f].face ) ) < 0 ) return -1;
-  n = pool->frag[f].vn;
+  if( ( nf = _zCC3DFragAdd( pool, _zCC3DFragElem(pool,f)->face ) ) < 0 ) return -1;
+  n = _zCC3DFragElem(pool,f)->vn;
   for( i=0; i<n; i++ ){
     j = ( i + 1 ) % n;
-    si = sign * pool->s[i];
-    sj = sign * pool->s[j];
-    if( si >= 0 && !_zCC3DFragAddVert( pool, &pool->v[pool->frag[f].vs+i] ) ) return -1;
+    si = sign * _zCC3DFragDist(pool,i);
+    sj = sign * _zCC3DFragDist(pool,j);
+    if( si >= 0 ){ /* copied, since pool->v might be reallocated */
+      zVec3DCopy( _zCC3DFragVert(pool,_zCC3DFragElem(pool,f)->vs+i), &p );
+      if( !_zCC3DFragAddVert( pool, &p ) ) return -1;
+    }
     if( ( si > 0 && sj < 0 ) || ( si < 0 && sj > 0 ) ){
-      _zVec3DInterDiv( &pool->v[pool->frag[f].vs+i], &pool->v[pool->frag[f].vs+j], si/(si-sj), &p );
+      _zVec3DInterDiv( _zCC3DFragVert(pool,_zCC3DFragElem(pool,f)->vs+i), _zCC3DFragVert(pool,_zCC3DFragElem(pool,f)->vs+j), si/(si-sj), &p );
       if( !_zCC3DFragAddVert( pool, &p ) ) return -1;
     }
   }
@@ -1126,32 +1166,29 @@ typedef struct{
   bool in;    /* the region is inside of the polyhedron if no fragment is in it */
 } _zCC3DBSPTask;
 
-typedef struct{
-  _zCC3DBSPTask *buf;
-  int num, cap;
-} _zCC3DBSPTaskStack;
+ZEDA_DEF_ARRAY_CLASS( _zCC3DBSPTaskStack, _zCC3DBSPTask );
 
 /* push a task with fragments and cells in a region. */
-static bool _zCC3DBSPTaskPush(_zCC3DBSPTaskStack *task, _zCC3DIntVec *fstack, const _zCC3DIntVec *frag, _zCC3DIntVec *cstack, const _zCC3DIntVec *cell, bool in)
+static bool _zCC3DBSPTaskPush(_zCC3DBSPTaskStack *task, zIndexStruct *fstack, const zIndexStruct *frag, zIndexStruct *cstack, const zIndexStruct *cell, bool in)
 {
   _zCC3DBSPTask *t;
   int i;
 
-  if( cell->num == 0 ) return true; /* no cell in the region */
-  if( !_zCC3DReserve( (void **)&task->buf, &task->cap, task->num+1, sizeof(_zCC3DBSPTask) ) ) return false;
-  t = &task->buf[task->num++];
-  t->fs = fstack->num; t->fn = frag->num;
-  t->cs = cstack->num; t->cn = cell->num;
+  if( zArraySize(cell) == 0 ) return true; /* no cell in the region */
+  _zCC3DArrayPush( task, _zCC3DBSPTask, t );
+  if( !t ) return false;
+  t->fs = zArraySize(fstack); t->fn = zArraySize(frag);
+  t->cs = zArraySize(cstack); t->cn = zArraySize(cell);
   t->in = in;
-  for( i=0; i<frag->num; i++ )
-    if( !_zCC3DIntVecPush( fstack, frag->buf[i] ) ) return false;
-  for( i=0; i<cell->num; i++ )
-    if( !_zCC3DIntVecPush( cstack, cell->buf[i] ) ) return false;
+  for( i=0; i<zArraySize(frag); i++ )
+    if( !_zCC3DIndexPush( fstack, zIndexElemNC(frag,i) ) ) return false;
+  for( i=0; i<zArraySize(cell); i++ )
+    if( !_zCC3DIndexPush( cstack, zIndexElemNC(cell,i) ) ) return false;
   return true;
 }
 
 /* add a fragment of a face of a polyhedron clipped by a region (NULL for no region). */
-static bool _zCC3DFragAddFace(_zCC3DFragPool *pool, int face, const zAABox3D *region, _zCC3DIntVec *frag)
+static bool _zCC3DFragAddFace(_zCC3DFragPool *pool, int face, const zAABox3D *region, zIndexStruct *frag)
 {
   zPlane3D plane;
   zVec3D org, norm;
@@ -1177,70 +1214,72 @@ static bool _zCC3DFragAddFace(_zCC3DFragPool *pool, int face, const zAABox3D *re
         }
       }
   }
-  return _zCC3DIntVecPush( frag, f );
+  return _zCC3DIndexPush( frag, f );
 }
 
 /* cut candidate cells along the solid BSP tree of selected faces of a polyhedron, and mark those
  * inside of it. If a region is given, the fragments are clipped by it, so that an empty region of
  * the tree is adjacent to the fragment of the last splitter within the region; the candidate cells
  * have to be in the region. */
-static bool _zCC3DSplitBSPPH3D(zCC3D *cc, const zPH3D *ph, const zAABox3D *region, const _zCC3DIntVec *sel, _zCC3DIntVec *cand)
+static bool _zCC3DSplitBSPPH3D(zCC3D *cc, const zPH3D *ph, const zAABox3D *region, const zIndexStruct *sel, zIndexStruct *cand)
 {
   _zCC3DFragPool pool;
-  _zCC3DBSPTaskStack task = { NULL, 0, 0 };
+  _zCC3DBSPTaskStack task;
   _zCC3DBSPTask t;
-  _zCC3DIntVec fstack, cstack, frag, fb, ff, cb, cf;
+  zIndexStruct fstack, cstack, frag, fb, ff, cb, cf;
   zPlane3D plane;
   int i, f, c, cnew, ret, splitter;
   bool result = false;
 
   _zCC3DFragPoolInit( &pool, ph, cc->tol );
-  _zCC3DIntVecInit( &fstack ); _zCC3DIntVecInit( &cstack ); _zCC3DIntVecInit( &frag );
-  _zCC3DIntVecInit( &fb ); _zCC3DIntVecInit( &ff ); _zCC3DIntVecInit( &cb ); _zCC3DIntVecInit( &cf );
-  for( i=0; i<sel->num; i++ ){
-    if( _zCC3DPH3DFaceIsDegenerate( ph, sel->buf[i], cc->tol ) ) continue; /* not to be a splitter */
-    if( !_zCC3DFragAddFace( &pool, sel->buf[i], region, &frag ) ) goto TERMINATE;
+  zArrayInit( &task );
+  zArrayInit( &fstack ); zArrayInit( &cstack ); zArrayInit( &frag );
+  zArrayInit( &fb ); zArrayInit( &ff ); zArrayInit( &cb ); zArrayInit( &cf );
+  for( i=0; i<zArraySize(sel); i++ ){
+    if( _zCC3DPH3DFaceIsDegenerate( ph, zIndexElemNC(sel,i), cc->tol ) ) continue; /* not to be a splitter */
+    if( !_zCC3DFragAddFace( &pool, zIndexElemNC(sel,i), region, &frag ) ) goto TERMINATE;
   }
-  if( frag.num == 0 ){
+  if( zArraySize(&frag) == 0 ){
     ZRUNERROR( ZEO_ERR_EMPTYSET );
     goto TERMINATE;
   }
   if( !_zCC3DBSPTaskPush( &task, &fstack, &frag, &cstack, cand, false ) ) goto TERMINATE;
-  while( task.num > 0 ){
-    t = task.buf[--task.num];
+  while( zArraySize(&task) > 0 ){
+    t = *zArrayHead(&task);
+    zArraySetSize( &task, zArraySize(&task)-1 );
     if( t.fn == 0 ){ /* leaf */
       if( t.in )
-        for( i=0; i<t.cn; i++ ) cc->cell[cstack.buf[t.cs+i]]._cand = true;
-      fstack.num = t.fs;
-      cstack.num = t.cs;
+        for( i=0; i<t.cn; i++ ) zCC3DCell(cc,zIndexElemNC(&cstack,t.cs+i))->_cand = true;
+      zArraySetSize( &fstack, t.fs );
+      zArraySetSize( &cstack, t.cs );
       continue;
     }
     /* the fragments and cells of the task are on the top of the stacks */
-    frag.num = 0;
+    zArraySetSize( &frag, 0 );
     for( i=0; i<t.fn; i++ )
-      if( !_zCC3DIntVecPush( &frag, fstack.buf[t.fs+i] ) ) goto TERMINATE;
-    fstack.num = t.fs;
-    if( ( splitter = _zCC3DFragChooseSplitter( &pool, frag.buf, frag.num ) ) < 0 ) goto TERMINATE;
+      if( !_zCC3DIndexPush( &frag, zIndexElemNC(&fstack,t.fs+i) ) ) goto TERMINATE;
+    zArraySetSize( &fstack, t.fs );
+    if( ( splitter = _zCC3DFragChooseSplitter( &pool, zArrayBuf(&frag), zArraySize(&frag) ) ) < 0 ) goto TERMINATE;
     _zCC3DFragPlane( &pool, splitter, &plane );
     cc->_plane++;
-    cb.num = cf.num = 0;
+    zArraySetSize( &cb, 0 ); zArraySetSize( &cf, 0 );
     for( i=0; i<t.cn; i++ ){
-      c = cstack.buf[t.cs+i];
+      c = zIndexElemNC(&cstack,t.cs+i);
       if( ( ret = _zCC3DSplit( cc, c, &plane, cc->_tag, &cnew ) ) < 0 ) goto TERMINATE;
-      if( !_zCC3DIntVecPush( ret == 1 ? &cf : &cb, c ) ||
-          ( ret == 2 && !_zCC3DIntVecPush( &cf, cnew ) ) ) goto TERMINATE;
+      if( !_zCC3DIndexPush( ret == 1 ? &cf : &cb, c ) ||
+          ( ret == 2 && !_zCC3DIndexPush( &cf, cnew ) ) ) goto TERMINATE;
     }
-    cstack.num = t.cs;
+    zArraySetSize( &cstack, t.cs );
     /* the splitter and fragments on the plane are consumed */
-    fb.num = ff.num = 0;
-    for( i=0; i<frag.num; i++ ){
-      if( ( f = frag.buf[i] ) == splitter ) continue;
+    zArraySetSize( &fb, 0 ); zArraySetSize( &ff, 0 );
+    for( i=0; i<zArraySize(&frag); i++ ){
+      if( ( f = zIndexElemNC(&frag,i) ) == splitter ) continue;
       switch( _zCC3DFragClassify( &pool, f, &plane ) ){
-      case -1: if( cb.num > 0 && !_zCC3DIntVecPush( &fb, f ) ) goto TERMINATE; break;
-      case  1: if( cf.num > 0 && !_zCC3DIntVecPush( &ff, f ) ) goto TERMINATE; break;
+      case -1: if( zArraySize(&cb) > 0 && !_zCC3DIndexPush( &fb, f ) ) goto TERMINATE; break;
+      case  1: if( zArraySize(&cf) > 0 && !_zCC3DIndexPush( &ff, f ) ) goto TERMINATE; break;
       case  2:
-        if( cb.num > 0 && ( ( ret = _zCC3DFragClip( &pool, f, -1 ) ) < 0 || !_zCC3DIntVecPush( &fb, ret ) ) ) goto TERMINATE;
-        if( cf.num > 0 && ( ( ret = _zCC3DFragClip( &pool, f,  1 ) ) < 0 || !_zCC3DIntVecPush( &ff, ret ) ) ) goto TERMINATE;
+        if( zArraySize(&cb) > 0 && ( ( ret = _zCC3DFragClip( &pool, f, -1 ) ) < 0 || !_zCC3DIndexPush( &fb, ret ) ) ) goto TERMINATE;
+        if( zArraySize(&cf) > 0 && ( ( ret = _zCC3DFragClip( &pool, f,  1 ) ) < 0 || !_zCC3DIndexPush( &ff, ret ) ) ) goto TERMINATE;
         break;
       case -2: goto TERMINATE;
       default: ;
@@ -1251,19 +1290,19 @@ static bool _zCC3DSplitBSPPH3D(zCC3D *cc, const zPH3D *ph, const zAABox3D *regio
   }
   result = true;
  TERMINATE:
-  free( task.buf );
-  _zCC3DIntVecDestroy( &fstack ); _zCC3DIntVecDestroy( &cstack ); _zCC3DIntVecDestroy( &frag );
-  _zCC3DIntVecDestroy( &fb ); _zCC3DIntVecDestroy( &ff ); _zCC3DIntVecDestroy( &cb ); _zCC3DIntVecDestroy( &cf );
+  zArrayFree( &task );
+  zArrayFree( &fstack ); zArrayFree( &cstack ); zArrayFree( &frag );
+  zArrayFree( &fb ); zArrayFree( &ff ); zArrayFree( &cb ); zArrayFree( &cf );
   _zCC3DFragPoolDestroy( &pool );
   return result;
 }
 
 /* select faces of a polyhedron whose axis-aligned bounding boxes overlap a region (all faces if the
  * region is NULL). It is also checked if any face actually intersects the region. */
-static bool _zCC3DPH3DSelectFaces(const zPH3D *ph, const zAABox3D *region, double tol, _zCC3DIntVec *sel, bool *hit)
+static bool _zCC3DPH3DSelectFaces(const zPH3D *ph, const zAABox3D *region, double tol, zIndexStruct *sel, bool *hit)
 {
   _zCC3DFragPool pool;
-  _zCC3DIntVec frag;
+  zIndexStruct frag;
   const zTri3D *tri;
   double lo, hi;
   int i, j, k;
@@ -1283,20 +1322,20 @@ static bool _zCC3DPH3DSelectFaces(const zPH3D *ph, const zAABox3D *region, doubl
       }
       if( k < 3 ) continue;
     }
-    if( !_zCC3DIntVecPush( sel, i ) ) return false;
+    if( !_zCC3DIndexPush( sel, i ) ) return false;
   }
   if( *hit ) return true;
   /* a face that remains after being clipped by the region */
   _zCC3DFragPoolInit( &pool, ph, tol );
-  _zCC3DIntVecInit( &frag );
-  for( i=0; i<sel->num && frag.num==0; i++ ){
-    if( _zCC3DPH3DFaceIsDegenerate( ph, sel->buf[i], tol ) ) continue; /* not used for the cut */
-    if( !_zCC3DFragAddFace( &pool, sel->buf[i], region, &frag ) ) goto TERMINATE;
+  zArrayInit( &frag );
+  for( i=0; i<zArraySize(sel) && zArraySize(&frag)==0; i++ ){
+    if( _zCC3DPH3DFaceIsDegenerate( ph, zIndexElemNC(sel,i), tol ) ) continue; /* not used for the cut */
+    if( !_zCC3DFragAddFace( &pool, zIndexElemNC(sel,i), region, &frag ) ) goto TERMINATE;
   }
-  *hit = frag.num > 0;
+  *hit = zArraySize(&frag) > 0;
   ret = true;
  TERMINATE:
-  _zCC3DIntVecDestroy( &frag );
+  zArrayFree( &frag );
   _zCC3DFragPoolDestroy( &pool );
   return ret;
 }
@@ -1310,24 +1349,24 @@ static bool _zCC3DPH3DSelectFaces(const zPH3D *ph, const zAABox3D *region, doubl
  * inside or outside of the polyhedron. */
 static bool _zCC3DSplitPH3D(zCC3D *cc, const zPH3D *ph, bool solid, bool convex, const zAABox3D *region)
 {
-  _zCC3DIntVec cand, sel;
+  zIndexStruct cand, sel;
   zAABox3D box;
   zVec3D center;
   int c;
   bool hit, result = false;
 
   cc->_tag++; /* tag of faces made by the operation, which is renewed even if no face is made */
-  for( c=0; c<cc->cellnum; c++ ) cc->cell[c]._cand = false;
+  for( c=0; c<zCC3DCellNum(cc); c++ ) zCC3DCell(cc,c)->_cand = false;
   if( !_zCC3DPH3DAABB( ph, &box ) ){
     ZRUNERROR( ZEO_ERR_EMPTYSET );
     return false;
   }
-  _zCC3DIntVecInit( &cand );
-  _zCC3DIntVecInit( &sel );
-  for( c=0; c<cc->cellnum; c++ )
-    if( cc->cell[c].solid == solid && !_zCC3DAABBIsApart( &box, &cc->cell[c].aabb, cc->tol ) )
-      if( !_zCC3DIntVecPush( &cand, c ) ) goto TERMINATE;
-  if( cand.num == 0 ){
+  zArrayInit( &cand );
+  zArrayInit( &sel );
+  for( c=0; c<zCC3DCellNum(cc); c++ )
+    if( zCC3DCell(cc,c)->solid == solid && !_zCC3DAABBIsApart( &box, &zCC3DCell(cc,c)->aabb, cc->tol ) )
+      if( !_zCC3DIndexPush( &cand, c ) ) goto TERMINATE;
+  if( zArraySize(&cand) == 0 ){
     result = true;
     goto TERMINATE;
   }
@@ -1335,15 +1374,15 @@ static bool _zCC3DSplitPH3D(zCC3D *cc, const zPH3D *ph, bool solid, bool convex,
   if( !hit ){ /* no face in the region */
     zAABox3DCenter( region, &center );
     if( zPH3DPointIsInside( ph, &center, 0 ) )
-      for( c=0; c<cand.num; c++ ) cc->cell[cand.buf[c]]._cand = true;
+      for( c=0; c<zArraySize(&cand); c++ ) zCC3DCell(cc,zIndexElemNC(&cand,c))->_cand = true;
     result = true;
     goto TERMINATE;
   }
   result = convex ?
     _zCC3DSplitConvexPH3D( cc, ph, &box, &sel, &cand ) : _zCC3DSplitBSPPH3D( cc, ph, region, &sel, &cand );
  TERMINATE:
-  _zCC3DIntVecDestroy( &cand );
-  _zCC3DIntVecDestroy( &sel );
+  zArrayFree( &cand );
+  zArrayFree( &sel );
   return result;
 }
 
@@ -1375,7 +1414,7 @@ static bool _zCC3DPH3DCheck(const zPH3D *ph, bool *convex)
 /* code of a coordinate with respect to the old universe: 1 on the minimum, 2 on the maximum. */
 static int _zCC3DBoundCode(const zCC3D *cc, int v, int k)
 {
-  const zVec3D *p = &cc->vert[v].p;
+  const zVec3D *p = &_zCC3DV(cc,v)->p;
   return p->e[k] == cc->universe.min.e[k] ? 1 : ( p->e[k] == cc->universe.max.e[k] ? 2 : 0 );
 }
 
@@ -1405,14 +1444,14 @@ static bool _zCC3DAddFaceSide(zCC3D *cc, int f, int side, const int *vert, int n
 {
   int i, h0;
 
-  h0 = cc->henum;
+  h0 = _zCC3DHENum(cc);
   for( i=0; i<n; i++ )
     if( _zCC3DAddHalfEdge( cc, vert[i], f, side ) < 0 ) return false;
   for( i=0; i<n; i++ ){
-    cc->he[h0+i].next = h0 + (i+1)%n;
-    cc->he[h0+i].prev = h0 + (i+n-1)%n;
+    _zCC3DHE(cc,h0+i)->next = h0 + (i+1)%n;
+    _zCC3DHE(cc,h0+i)->prev = h0 + (i+n-1)%n;
   }
-  cc->face[f].he[side] = h0;
+  zCC3DFace(cc,f)->he[side] = h0;
   return true;
 }
 
@@ -1429,33 +1468,33 @@ static int _zCC3DEdgeKeyCmp(const void *k1, const void *k2)
   return a->v2 < b->v2 ? -1 : ( a->v2 > b->v2 ? 1 : 0 );
 }
 
-static bool _zCC3DPairTwins(zCC3D *cc, _zCC3DIntVec *hes)
+static bool _zCC3DPairTwins(zCC3D *cc, zIndexStruct *hes)
 {
   _zCC3DEdgeKey *key;
   int i, u, v;
   bool ret = false;
 
-  if( !( key = zAlloc( _zCC3DEdgeKey, hes->num ) ) ){
+  if( !( key = zAlloc( _zCC3DEdgeKey, zArraySize(hes) ) ) ){
     ZALLOCERROR();
     return false;
   }
-  for( i=0; i<hes->num; i++ ){
-    u = cc->he[hes->buf[i]].org;
-    v = _zCC3DTarget( cc, hes->buf[i] );
+  for( i=0; i<zArraySize(hes); i++ ){
+    u = _zCC3DHE(cc,zIndexElemNC(hes,i))->org;
+    v = _zCC3DTarget( cc, zIndexElemNC(hes,i) );
     key[i].v1 = zMin( u, v );
     key[i].v2 = zMax( u, v );
-    key[i].he = hes->buf[i];
+    key[i].he = zIndexElemNC(hes,i);
   }
-  qsort( key, hes->num, sizeof(_zCC3DEdgeKey), _zCC3DEdgeKeyCmp );
-  for( i=0; i<hes->num; i+=2 ){
-    if( i+1 >= hes->num || _zCC3DEdgeKeyCmp( &key[i], &key[i+1] ) != 0 ||
-        ( i+2 < hes->num && _zCC3DEdgeKeyCmp( &key[i], &key[i+2] ) == 0 ) ||
-        cc->he[key[i].he].org == cc->he[key[i+1].he].org ){
+  qsort( key, zArraySize(hes), sizeof(_zCC3DEdgeKey), _zCC3DEdgeKeyCmp );
+  for( i=0; i<zArraySize(hes); i+=2 ){
+    if( i+1 >= zArraySize(hes) || _zCC3DEdgeKeyCmp( &key[i], &key[i+1] ) != 0 ||
+        ( i+2 < zArraySize(hes) && _zCC3DEdgeKeyCmp( &key[i], &key[i+2] ) == 0 ) ||
+        _zCC3DHE(cc,key[i].he)->org == _zCC3DHE(cc,key[i+1].he)->org ){
       ZRUNERROR( ZEO_ERR_CC3D_INCONSISTENT );
       goto TERMINATE;
     }
-    cc->he[key[i].he].twin = key[i+1].he;
-    cc->he[key[i+1].he].twin = key[i].he;
+    _zCC3DHE(cc,key[i].he)->twin = key[i+1].he;
+    _zCC3DHE(cc,key[i+1].he)->twin = key[i].he;
   }
   ret = true;
  TERMINATE:
@@ -1470,14 +1509,14 @@ static bool _zCC3DEnlargeUniverse(zCC3D *cc, const zAABox3D *box)
   double grid[3][4], d, scale;
   zVec3D p;
   int gid[64], cell[27], *nb = NULL, chainstart[12], chainlen[12];
-  _zCC3DIntVec chain, poly, hes;
+  zIndexStruct chain, poly, hes;
   int i, j, k, a, b, c, k1, k2, f, h, n, u, v, e, side, blk[2], idx[3], corner[4][3], nf0;
   bool ret = false;
 
-  nf0 = cc->facenum; /* faces of the old universe */
-  _zCC3DIntVecInit( &chain );
-  _zCC3DIntVecInit( &poly );
-  _zCC3DIntVecInit( &hes );
+  nf0 = zCC3DFaceNum(cc); /* faces of the old universe */
+  zArrayInit( &chain );
+  zArrayInit( &poly );
+  zArrayInit( &hes );
   /* new universe */
   for( d=0, k=0; k<3; k++ ) d = zMax( d, box->max.e[k] - box->min.e[k] );
   if( d <= 0 )
@@ -1491,24 +1530,24 @@ static bool _zCC3DEnlargeUniverse(zCC3D *cc, const zAABox3D *box)
     grid[k][3] = uv.max.e[k];
   }
   /* vertices on the edges of the old universe */
-  if( !( nb = zAlloc( int, 2*cc->vertnum ) ) ){
+  if( !( nb = zAlloc( int, 2*zCC3DVertNum(cc) ) ) ){
     ZALLOCERROR();
     goto TERMINATE;
   }
-  for( i=0; i<2*cc->vertnum; i++ ) nb[i] = -1;
-  for( f=0; f<cc->facenum; f++ ){
-    if( cc->face[f].cell[1] >= 0 ) continue; /* not on the boundary of the universe */
-    h = cc->face[f].he[0];
+  for( i=0; i<2*zCC3DVertNum(cc); i++ ) nb[i] = -1;
+  for( f=0; f<zCC3DFaceNum(cc); f++ ){
+    if( zCC3DFace(cc,f)->cell[1] >= 0 ) continue; /* not on the boundary of the universe */
+    h = zCC3DFace(cc,f)->he[0];
     do{
-      u = cc->he[h].org;
+      u = _zCC3DHE(cc,h)->org;
       v = _zCC3DTarget( cc, h );
       if( _zCC3DOldEdgeID( cc, u, v ) >= 0 ){
         /* neighbors on the edge (corners are excluded since they are on three edges) */
         if( nb[2*u] != v && nb[2*u+1] != v ) nb[2*u+( nb[2*u] < 0 ? 0 : 1 )] = v;
         if( nb[2*v] != u && nb[2*v+1] != u ) nb[2*v+( nb[2*v] < 0 ? 0 : 1 )] = u;
       }
-      h = cc->he[h].next;
-    } while( h != cc->face[f].he[0] );
+      h = _zCC3DHE(cc,h)->next;
+    } while( h != zCC3DFace(cc,f)->he[0] );
   }
   /* chains of vertices on the edges from the smaller corner to the larger one; corners themselves
    * are not stored. */
@@ -1518,28 +1557,28 @@ static bool _zCC3DEnlargeUniverse(zCC3D *cc, const zAABox3D *box)
     u = cc->_corner[(idx[0]-1)|(idx[1]-1)<<1|(idx[2]-1)<<2];
     idx[k] = 2;
     v = cc->_corner[(idx[0]-1)|(idx[1]-1)<<1|(idx[2]-1)<<2];
-    chainstart[e] = chain.num;
+    chainstart[e] = zArraySize(&chain);
     /* the first vertex next to the corner u on this edge */
-    for( n=-1, f=0; f<cc->facenum && n<0; f++ ){
-      if( cc->face[f].cell[1] >= 0 ) continue;
-      h = cc->face[f].he[0];
+    for( n=-1, f=0; f<zCC3DFaceNum(cc) && n<0; f++ ){
+      if( zCC3DFace(cc,f)->cell[1] >= 0 ) continue;
+      h = zCC3DFace(cc,f)->he[0];
       do{
-        if( cc->he[h].org == u && _zCC3DOldEdgeID( cc, u, _zCC3DTarget( cc, h ) ) == e ){
+        if( _zCC3DHE(cc,h)->org == u && _zCC3DOldEdgeID( cc, u, _zCC3DTarget( cc, h ) ) == e ){
           n = _zCC3DTarget( cc, h );
           break;
         }
-        h = cc->he[h].next;
-      } while( h != cc->face[f].he[0] );
+        h = _zCC3DHE(cc,h)->next;
+      } while( h != zCC3DFace(cc,f)->he[0] );
     }
     if( n < 0 ) goto INCONSISTENT;
     for( a=u; n!=v; ){
-      if( !_zCC3DIntVecPush( &chain, n ) || chain.num > cc->vertnum ) goto INCONSISTENT;
+      if( !_zCC3DIndexPush( &chain, n ) || zArraySize(&chain) > zCC3DVertNum(cc) ) goto INCONSISTENT;
       b = nb[2*n] == a ? nb[2*n+1] : nb[2*n];
       if( b < 0 ) goto INCONSISTENT;
       a = n;
       n = b;
     }
-    chainlen[e] = chain.num - chainstart[e];
+    chainlen[e] = zArraySize(&chain) - chainstart[e];
   }
   /* grid points */
   for( c=0; c<4; c++ )
@@ -1562,8 +1601,8 @@ static bool _zCC3DEnlargeUniverse(zCC3D *cc, const zAABox3D *box)
         }
         if( ( i = _zCC3DAddCell( cc, false ) ) < 0 ) goto TERMINATE;
         cell[_zCC3DBoxID(a,b,c)] = i;
-        zVec3DCreate( &cc->cell[i].aabb.min, grid[0][a], grid[1][b], grid[2][c] );
-        zVec3DCreate( &cc->cell[i].aabb.max, grid[0][a+1], grid[1][b+1], grid[2][c+1] );
+        zVec3DCreate( &zCC3DCell(cc,i)->aabb.min, grid[0][a], grid[1][b], grid[2][c] );
+        zVec3DCreate( &zCC3DCell(cc,i)->aabb.max, grid[0][a+1], grid[1][b+1], grid[2][c+1] );
       }
   /* faces between grid boxes perpendicular to the k-axis at the grid plane a */
   for( k=0; k<3; k++ ){
@@ -1586,10 +1625,10 @@ static bool _zCC3DEnlargeUniverse(zCC3D *cc, const zAABox3D *box)
             corner[i][k1] = b + ( i == 1 || i == 2 );
             corner[i][k2] = c + ( i >= 2 );
           }
-          poly.num = 0;
+          zArraySetSize( &poly, 0 );
           for( i=0; i<4; i++ ){
             u = gid[_zCC3DGridID(corner[i][0],corner[i][1],corner[i][2])];
-            if( !_zCC3DIntVecPush( &poly, u ) ) goto TERMINATE;
+            if( !_zCC3DIndexPush( &poly, u ) ) goto TERMINATE;
             /* vertices on an edge of the old universe */
             v = gid[_zCC3DGridID(corner[(i+1)%4][0],corner[(i+1)%4][1],corner[(i+1)%4][2])];
             for( j=0; j<3; j++ )
@@ -1601,79 +1640,79 @@ static bool _zCC3DEnlargeUniverse(zCC3D *cc, const zAABox3D *box)
               if( corner[i][ek1] != 1 + (e%2) || corner[i][ek2] != 1 + (e/2)%2 ) continue;
               if( corner[i][ek] < corner[(i+1)%4][ek] ){
                 for( j=0; j<chainlen[e]; j++ )
-                  if( !_zCC3DIntVecPush( &poly, chain.buf[chainstart[e]+j] ) ) goto TERMINATE;
+                  if( !_zCC3DIndexPush( &poly, zIndexElemNC(&chain,chainstart[e]+j) ) ) goto TERMINATE;
               } else{
                 for( j=chainlen[e]-1; j>=0; j-- )
-                  if( !_zCC3DIntVecPush( &poly, chain.buf[chainstart[e]+j] ) ) goto TERMINATE;
+                  if( !_zCC3DIndexPush( &poly, zIndexElemNC(&chain,chainstart[e]+j) ) ) goto TERMINATE;
               }
               break;
             }
           }
           if( blk[0] < 0 ){ /* a face on the boundary of the universe is outward for the inner cell */
-            for( i=0; i<poly.num/2; i++ ) zSwap( int, poly.buf[i], poly.buf[poly.num-1-i] );
+            for( i=0; i<zArraySize(&poly)/2; i++ ) zSwap( int, zIndexElemNC(&poly,i), zIndexElemNC(&poly,zArraySize(&poly)-1-i) );
             blk[0] = blk[1];
             blk[1] = -1;
           }
           if( ( f = _zCC3DAddFace( cc, blk[0], blk[1], 0 ) ) < 0 ) goto TERMINATE;
-          if( !_zCC3DAddFaceSide( cc, f, 0, poly.buf, poly.num ) ) goto TERMINATE;
+          if( !_zCC3DAddFaceSide( cc, f, 0, zArrayBuf(&poly), zArraySize(&poly) ) ) goto TERMINATE;
           if( blk[1] >= 0 ){
-            for( i=0; i<poly.num/2; i++ ) zSwap( int, poly.buf[i], poly.buf[poly.num-1-i] );
-            if( !_zCC3DAddFaceSide( cc, f, 1, poly.buf, poly.num ) ) goto TERMINATE;
+            for( i=0; i<zArraySize(&poly)/2; i++ ) zSwap( int, zIndexElemNC(&poly,i), zIndexElemNC(&poly,zArraySize(&poly)-1-i) );
+            if( !_zCC3DAddFaceSide( cc, f, 1, zArrayBuf(&poly), zArraySize(&poly) ) ) goto TERMINATE;
           }
           if( blk[1] >= 0 ){ /* mates */
-            h = cc->face[f].he[0];
+            h = zCC3DFace(cc,f)->he[0];
             do{
               /* the mate of u->v on side 1 starts at v */
-              for( j=cc->face[f].he[1]; cc->he[j].org != _zCC3DTarget( cc, h ); j=cc->he[j].next );
-              cc->he[h].mate = j;
-              cc->he[j].mate = h;
-              h = cc->he[h].next;
-            } while( h != cc->face[f].he[0] );
+              for( j=zCC3DFace(cc,f)->he[1]; _zCC3DHE(cc,j)->org != _zCC3DTarget( cc, h ); j=_zCC3DHE(cc,j)->next );
+              _zCC3DHE(cc,h)->mate = j;
+              _zCC3DHE(cc,j)->mate = h;
+              h = _zCC3DHE(cc,h)->next;
+            } while( h != zCC3DFace(cc,f)->he[0] );
           }
         }
   }
   /* faces on the boundary of the old universe are shared by the adjacent boxes */
   for( f=0; f<nf0; f++ ){
-    if( cc->face[f].cell[1] >= 0 ) continue;
-    h = cc->face[f].he[0];
+    if( zCC3DFace(cc,f)->cell[1] >= 0 ) continue;
+    h = zCC3DFace(cc,f)->he[0];
     for( k=0; k<3; k++ ){ /* the side of the old universe on which the face lies */
-      if( ( n = _zCC3DBoundCode( cc, cc->he[h].org, k ) ) == 0 ) continue;
-      for( j=cc->he[h].next; j!=h; j=cc->he[j].next )
-        if( _zCC3DBoundCode( cc, cc->he[j].org, k ) != n ) break;
+      if( ( n = _zCC3DBoundCode( cc, _zCC3DHE(cc,h)->org, k ) ) == 0 ) continue;
+      for( j=_zCC3DHE(cc,h)->next; j!=h; j=_zCC3DHE(cc,j)->next )
+        if( _zCC3DBoundCode( cc, _zCC3DHE(cc,j)->org, k ) != n ) break;
       if( j == h ) break;
     }
     if( k == 3 ) goto INCONSISTENT;
     idx[0] = idx[1] = idx[2] = 1;
     idx[k] = n == 1 ? 0 : 2;
-    cc->face[f].cell[1] = cell[_zCC3DBoxID(idx[0],idx[1],idx[2])];
-    i = cc->henum;
+    zCC3DFace(cc,f)->cell[1] = cell[_zCC3DBoxID(idx[0],idx[1],idx[2])];
+    i = _zCC3DHENum(cc);
     do{ /* side 1: mates in the reversed order */
       if( ( j = _zCC3DAddHalfEdge( cc, _zCC3DTarget( cc, h ), f, 1 ) ) < 0 ) goto TERMINATE;
-      cc->he[j].mate = h;
-      cc->he[h].mate = j;
-      h = cc->he[h].next;
-    } while( h != cc->face[f].he[0] );
-    for( j=i; j<cc->henum; j++ ){
-      cc->he[j].next = cc->he[cc->he[cc->he[j].mate].prev].mate;
-      cc->he[cc->he[j].next].prev = j;
+      _zCC3DHE(cc,j)->mate = h;
+      _zCC3DHE(cc,h)->mate = j;
+      h = _zCC3DHE(cc,h)->next;
+    } while( h != zCC3DFace(cc,f)->he[0] );
+    for( j=i; j<_zCC3DHENum(cc); j++ ){
+      _zCC3DHE(cc,j)->next = _zCC3DHE(cc,_zCC3DHE(cc,_zCC3DHE(cc,j)->mate)->prev)->mate;
+      _zCC3DHE(cc,_zCC3DHE(cc,j)->next)->prev = j;
     }
-    cc->face[f].he[1] = i;
+    zCC3DFace(cc,f)->he[1] = i;
   }
   /* twins in each box, and the cell assignments */
   for( i=0; i<27; i++ ){
     if( cell[i] < 0 ) continue;
-    hes.num = 0;
-    for( f=0; f<cc->facenum; f++ )
+    zArraySetSize( &hes, 0 );
+    for( f=0; f<zCC3DFaceNum(cc); f++ )
       for( side=0; side<2; side++ ){
-        if( cc->face[f].cell[side] != cell[i] ) continue;
-        h = cc->face[f].he[side];
+        if( zCC3DFace(cc,f)->cell[side] != cell[i] ) continue;
+        h = zCC3DFace(cc,f)->he[side];
         do{
-          if( !_zCC3DIntVecPush( &hes, h ) ) goto TERMINATE;
-          h = cc->he[h].next;
-        } while( h != cc->face[f].he[side] );
+          if( !_zCC3DIndexPush( &hes, h ) ) goto TERMINATE;
+          h = _zCC3DHE(cc,h)->next;
+        } while( h != zCC3DFace(cc,f)->he[side] );
       }
     if( !_zCC3DPairTwins( cc, &hes ) ) goto TERMINATE;
-    cc->cell[cell[i]].he = hes.buf[0];
+    zCC3DCell(cc,cell[i])->he = zIndexElemNC(&hes,0);
   }
   /* the new universe */
   for( c=0; c<2; c++ )
@@ -1694,9 +1733,9 @@ static bool _zCC3DEnlargeUniverse(zCC3D *cc, const zAABox3D *box)
   ZRUNERROR( ZEO_ERR_CC3D_INCONSISTENT );
  TERMINATE:
   free( nb );
-  _zCC3DIntVecDestroy( &chain );
-  _zCC3DIntVecDestroy( &poly );
-  _zCC3DIntVecDestroy( &hes );
+  zArrayFree( &chain );
+  zArrayFree( &poly );
+  zArrayFree( &hes );
   return ret;
 }
 
@@ -1707,11 +1746,11 @@ zCC3D *zCC3DCutByPlane3D(zCC3D *cc, const zPlane3D *plane)
 
   cc->_tag++;
   cc->_plane++;
-  for( n=cc->cellnum, c=0; c<n; c++ ){
-    if( !cc->cell[c].solid ) continue;
+  for( n=zCC3DCellNum(cc), c=0; c<n; c++ ){
+    if( !zCC3DCell(cc,c)->solid ) continue;
     if( ( ret = _zCC3DSplit( cc, c, plane, cc->_tag, &cf ) ) < 0 ) return NULL;
-    if( ret == 1 ) cc->cell[c].solid = false;
-    if( ret == 2 ) cc->cell[cf].solid = false;
+    if( ret == 1 ) zCC3DCell(cc,c)->solid = false;
+    if( ret == 2 ) zCC3DCell(cc,cf)->solid = false;
   }
   return cc;
 }
@@ -1727,8 +1766,8 @@ static zCC3D *_zCC3DMerge(zCC3D *cc, const zPH3D *ph, bool convex)
         box.max.c.x > cc->universe.max.c.x || box.max.c.y > cc->universe.max.c.y || box.max.c.z > cc->universe.max.c.z ) &&
       !_zCC3DEnlargeUniverse( cc, &box ) ) return NULL;
   if( !_zCC3DSplitPH3D( cc, ph, false, convex, NULL ) ) return NULL;
-  for( c=0; c<cc->cellnum; c++ )
-    if( cc->cell[c]._cand ) cc->cell[c].solid = true;
+  for( c=0; c<zCC3DCellNum(cc); c++ )
+    if( zCC3DCell(cc,c)->_cand ) zCC3DCell(cc,c)->solid = true;
   return cc;
 }
 
@@ -1755,8 +1794,8 @@ static zCC3D *_zCC3DSubtract(zCC3D *cc, const zPH3D *ph, bool convex)
   int c;
 
   if( !_zCC3DSplitPH3D( cc, ph, true, convex, NULL ) ) return NULL;
-  for( c=0; c<cc->cellnum; c++ )
-    if( cc->cell[c]._cand ) cc->cell[c].solid = false;
+  for( c=0; c<zCC3DCellNum(cc); c++ )
+    if( zCC3DCell(cc,c)->_cand ) zCC3DCell(cc,c)->solid = false;
   return cc;
 }
 
@@ -1793,15 +1832,15 @@ static zCC3D *_zCC3DIntersect(zCC3D *cc, const zPH3D *ph, bool convex)
   int c, k, side;
   bool hassolid = false;
 
-  for( c=0; c<cc->cellnum; c++ ){
-    if( !cc->cell[c].solid ) continue;
+  for( c=0; c<zCC3DCellNum(cc); c++ ){
+    if( !zCC3DCell(cc,c)->solid ) continue;
     /* the bounding box of a cell might be larger than the cell, which is made tight */
     if( !_zCC3DUpdateCell( cc, c ) ) return NULL;
     if( !hassolid ){
-      zAABox3DCopy( &cc->cell[c].aabb, &solidbox );
+      zAABox3DCopy( &zCC3DCell(cc,c)->aabb, &solidbox );
       hassolid = true;
     } else
-      zAABox3DMerge( &solidbox, &cc->cell[c].aabb, &solidbox );
+      zAABox3DMerge( &solidbox, &zCC3DCell(cc,c)->aabb, &solidbox );
   }
   if( !hassolid || !_zCC3DPH3DAABB( ph, &phbox ) ) /* empty solid or polyhedron */
     return _zCC3DSplitPH3D( cc, ph, true, convex, NULL ) ? cc : NULL;
@@ -1810,7 +1849,7 @@ static zCC3D *_zCC3DIntersect(zCC3D *cc, const zPH3D *ph, bool convex)
     region.max.e[k] = zMin( solidbox.max.e[k], phbox.max.e[k] );
     if( region.min.e[k] > region.max.e[k] + cc->tol ){ /* apart from each other */
       cc->_tag++;
-      for( c=0; c<cc->cellnum; c++ ) cc->cell[c].solid = false;
+      for( c=0; c<zCC3DCellNum(cc); c++ ) zCC3DCell(cc,c)->solid = false;
       return cc;
     }
     d = zMax( d, region.max.e[k] - region.min.e[k] );
@@ -1831,8 +1870,8 @@ static zCC3D *_zCC3DIntersect(zCC3D *cc, const zPH3D *ph, bool convex)
     }
   }
   if( !_zCC3DSplitPH3D( cc, ph, true, convex, &region ) ) return NULL;
-  for( c=0; c<cc->cellnum; c++ )
-    if( cc->cell[c].solid && !cc->cell[c]._cand ) cc->cell[c].solid = false;
+  for( c=0; c<zCC3DCellNum(cc); c++ )
+    if( zCC3DCell(cc,c)->solid && !zCC3DCell(cc,c)->_cand ) zCC3DCell(cc,c)->solid = false;
   return cc;
 }
 
@@ -1913,7 +1952,7 @@ zCC3D *zCC3DFromAABox3D(zCC3D *cc, const zAABox3D *box)
     universe.max.e[k] = box->max.e[k] + d;
   }
   if( !zCC3DCreate( cc, &universe ) ) return NULL;
-  cc->cell[0].solid = true;
+  zCC3DCell(cc,0)->solid = true;
   for( k=0; k<3; k++ )
     for( side=0; side<2; side++ ){
       zVec3DZero( &norm );
@@ -1938,8 +1977,8 @@ static double _zCC3DTriArea(zCC3D *cc, int a, int b, int c)
 {
   zVec3D e1, e2, n;
 
-  zVec3DSub( &cc->vert[b].p, &cc->vert[a].p, &e1 );
-  zVec3DSub( &cc->vert[c].p, &cc->vert[a].p, &e2 );
+  zVec3DSub( &_zCC3DV(cc,b)->p, &_zCC3DV(cc,a)->p, &e1 );
+  zVec3DSub( &_zCC3DV(cc,c)->p, &_zCC3DV(cc,a)->p, &e2 );
   zVec3DOuterProd( &e1, &e2, &n );
   return zVec3DNorm( &n );
 }
@@ -2022,35 +2061,35 @@ static int _zCC3DTriangulate(zCC3D *cc, int *poly, int n, int *tri, _zCC3DEdgeSe
   return nt;
 }
 
-#define _zCC3DCellIsSolid(cc,c) ( (c) >= 0 && (cc)->cell[c].solid )
+#define _zCC3DCellIsSolid(cc,c) ( (c) >= 0 && zCC3DCell(cc,c)->solid )
 
 /* side of a face on the boundary of the solid (-1 if not on the boundary). */
-static int _zCC3DBoundarySide(zCC3D *cc, int f)
+static int _zCC3DBoundarySide(const zCC3D *cc, int f)
 {
   bool s0, s1;
 
-  s0 = _zCC3DCellIsSolid( cc, cc->face[f].cell[0] );
-  s1 = _zCC3DCellIsSolid( cc, cc->face[f].cell[1] );
+  s0 = _zCC3DCellIsSolid( cc, zCC3DFace(cc,f)->cell[0] );
+  s1 = _zCC3DCellIsSolid( cc, zCC3DFace(cc,f)->cell[1] );
   return s0 == s1 ? -1 : ( s0 ? 0 : 1 );
 }
 
 /* side of a face on the boundary of the solid to be selected, namely, whose tag is equal to a given
  * tag (except=false) or not (except=true). -1 if not selected. */
-static int _zCC3DSelectSide(zCC3D *cc, int f, int tag, bool except)
+static int _zCC3DSelectSide(const zCC3D *cc, int f, int tag, bool except)
 {
-  if( ( cc->face[f].tag == tag ) == except ) return -1;
+  if( ( zCC3DFace(cc,f)->tag == tag ) == except ) return -1;
   return _zCC3DBoundarySide( cc, f );
 }
 
 /* polygon of a side of a face. */
-static bool _zCC3DFacePolygon(zCC3D *cc, int f, int s, _zCC3DIntVec *poly)
+static bool _zCC3DFacePolygon(zCC3D *cc, int f, int s, zIndexStruct *poly)
 {
   int h;
 
-  h = cc->face[f].he[s];
-  for( poly->num=0; ; ){
-    if( !_zCC3DIntVecPush( poly, cc->he[h].org ) ) return false;
-    if( ( h = cc->he[h].next ) == cc->face[f].he[s] ) break;
+  h = zCC3DFace(cc,f)->he[s];
+  for( zArraySetSize( poly, 0 ); ; ){
+    if( !_zCC3DIndexPush( poly, _zCC3DHE(cc,h)->org ) ) return false;
+    if( ( h = _zCC3DHE(cc,h)->next ) == zCC3DFace(cc,f)->he[s] ) break;
   }
   return true;
 }
@@ -2058,76 +2097,77 @@ static bool _zCC3DFacePolygon(zCC3D *cc, int f, int s, _zCC3DIntVec *poly)
 /* convert faces on the boundary of the solid selected by a tag to a polyhedron. */
 static zPH3D *_zCC3DToPH3DByTag(zCC3D *cc, int tag, bool except, zPH3D *ph)
 {
-  _zCC3DIntVec poly, tri, cent;
+  zIndexStruct poly, tri, cent;
   _zCC3DEdgeSet set = { NULL, 0 };
   zVec3D p;
   int i, j, s, nv = 0, nt = 0, ne = 0, n, stamp;
   bool usec;
 
   zPH3DInit( ph );
-  _zCC3DIntVecInit( &poly );
-  _zCC3DIntVecInit( &tri );
-  _zCC3DIntVecInit( &cent );
+  zArrayInit( &poly );
+  zArrayInit( &tri );
+  zArrayInit( &cent );
   /* edges of the boundary */
-  for( i=0; i<cc->facenum; i++ ){
+  for( i=0; i<zCC3DFaceNum(cc); i++ ){
     if( ( s = _zCC3DSelectSide( cc, i, tag, except ) ) < 0 ) continue;
     if( !_zCC3DFacePolygon( cc, i, s, &poly ) ) goto FAILURE;
-    ne += 2 * poly.num;
+    ne += 2 * zArraySize(&poly);
   }
   if( ne == 0 ) goto FAILURE;
   if( !_zCC3DEdgeSetInit( &set, ne ) ) goto FAILURE;
-  for( i=0; i<cc->facenum; i++ ){
+  for( i=0; i<zCC3DFaceNum(cc); i++ ){
     if( ( s = _zCC3DSelectSide( cc, i, tag, except ) ) < 0 ) continue;
     _zCC3DFacePolygon( cc, i, s, &poly );
-    for( j=0; j<poly.num; j++ ) _zCC3DEdgeSetAdd( &set, poly.buf[j], poly.buf[(j+1)%poly.num] );
+    for( j=0; j<zArraySize(&poly); j++ ) _zCC3DEdgeSetAdd( &set, zIndexElemNC(&poly,j), zIndexElemNC(&poly,(j+1)%zArraySize(&poly)) );
   }
-  /* triangles, where centroids of polygons are identified by cc->vertnum and the followings */
-  for( i=0; i<cc->facenum; i++ ){
+  /* triangles, where centroids of polygons are identified by zCC3DVertNum(cc) and the followings */
+  for( i=0; i<zCC3DFaceNum(cc); i++ ){
     if( ( s = _zCC3DSelectSide( cc, i, tag, except ) ) < 0 ) continue;
     if( !_zCC3DFacePolygon( cc, i, s, &poly ) ) goto FAILURE;
-    if( poly.num < 3 ) continue;
-    if( !_zCC3DReserve( (void **)&tri.buf, &tri.cap, 3*( nt + poly.num ), sizeof(int) ) ) goto FAILURE;
-    nt += _zCC3DTriangulate( cc, poly.buf, poly.num, tri.buf+3*nt, &set, cc->vertnum + cent.num, &usec );
-    if( usec && !_zCC3DIntVecPush( &cent, i ) ) goto FAILURE;
+    if( zArraySize(&poly) < 3 ) continue;
+    zArrayExpand( &tri, int, 3*( nt + zArraySize(&poly) ) );
+    if( zArraySize(&tri) != 3*( nt + zArraySize(&poly) ) ) goto FAILURE;
+    nt += _zCC3DTriangulate( cc, zArrayBuf(&poly), zArraySize(&poly), zArrayBuf(&tri)+3*nt, &set, zCC3DVertNum(cc) + zArraySize(&cent), &usec );
+    if( usec && !_zCC3DIndexPush( &cent, i ) ) goto FAILURE;
   }
   if( nt == 0 ) goto FAILURE;
   stamp = ++cc->_stamp;
   for( i=0; i<3*nt; i++ )
-    if( tri.buf[i] < cc->vertnum && cc->vert[tri.buf[i]]._visit != stamp ){
-      cc->vert[tri.buf[i]]._visit = stamp;
-      cc->vert[tri.buf[i]]._side = nv++; /* temporarily used as an identifier */
+    if( zIndexElemNC(&tri,i) < zCC3DVertNum(cc) && _zCC3DV(cc,zIndexElemNC(&tri,i))->_visit != stamp ){
+      _zCC3DV(cc,zIndexElemNC(&tri,i))->_visit = stamp;
+      _zCC3DV(cc,zIndexElemNC(&tri,i))->_side = nv++; /* temporarily used as an identifier */
     }
-  if( !zPH3DAlloc( ph, nv + cent.num, nt ) ) goto FAILURE;
+  if( !zPH3DAlloc( ph, nv + zArraySize(&cent), nt ) ) goto FAILURE;
   for( i=0; i<3*nt; i++ )
-    if( tri.buf[i] < cc->vertnum )
-      zVec3DCopy( &cc->vert[tri.buf[i]].p, zPH3DVert(ph,cc->vert[tri.buf[i]]._side) );
-  for( i=0; i<cent.num; i++ ){
-    _zCC3DFacePolygon( cc, cent.buf[i], _zCC3DBoundarySide( cc, cent.buf[i] ), &poly );
+    if( zIndexElemNC(&tri,i) < zCC3DVertNum(cc) )
+      zVec3DCopy( &_zCC3DV(cc,zIndexElemNC(&tri,i))->p, zPH3DVert(ph,_zCC3DV(cc,zIndexElemNC(&tri,i))->_side) );
+  for( i=0; i<zArraySize(&cent); i++ ){
+    _zCC3DFacePolygon( cc, zIndexElemNC(&cent,i), _zCC3DBoundarySide( cc, zIndexElemNC(&cent,i) ), &poly );
     zVec3DZero( &p );
-    for( j=0; j<poly.num; j++ ) zVec3DAddDRC( &p, &cc->vert[poly.buf[j]].p );
-    zVec3DDiv( &p, poly.num, zPH3DVert(ph,nv+i) );
+    for( j=0; j<zArraySize(&poly); j++ ) zVec3DAddDRC( &p, &_zCC3DV(cc,zIndexElemNC(&poly,j))->p );
+    zVec3DDiv( &p, zArraySize(&poly), zPH3DVert(ph,nv+i) );
   }
   for( i=0; i<nt; i++ ){
     for( j=0; j<3; j++ ){
-      n = tri.buf[3*i+j];
-      n = n < cc->vertnum ? cc->vert[n]._side : nv + n - cc->vertnum;
+      n = zIndexElemNC(&tri,3*i+j);
+      n = n < zCC3DVertNum(cc) ? _zCC3DV(cc,n)->_side : nv + n - zCC3DVertNum(cc);
       zTri3DSetVert( zPH3DFace(ph,i), j, zPH3DVert(ph,n) );
     }
     zTri3DCalcNorm( zPH3DFace(ph,i) );
   }
   for( i=0; i<3*nt; i++ )
-    if( tri.buf[i] < cc->vertnum ) cc->vert[tri.buf[i]]._stamp = 0; /* reset stamps of sides */
+    if( zIndexElemNC(&tri,i) < zCC3DVertNum(cc) ) _zCC3DV(cc,zIndexElemNC(&tri,i))->_stamp = 0; /* reset stamps of sides */
   free( set.key );
-  _zCC3DIntVecDestroy( &poly );
-  _zCC3DIntVecDestroy( &tri );
-  _zCC3DIntVecDestroy( &cent );
+  zArrayFree( &poly );
+  zArrayFree( &tri );
+  zArrayFree( &cent );
   return ph;
 
  FAILURE:
   free( set.key );
-  _zCC3DIntVecDestroy( &poly );
-  _zCC3DIntVecDestroy( &tri );
-  _zCC3DIntVecDestroy( &cent );
+  zArrayFree( &poly );
+  zArrayFree( &tri );
+  zArrayFree( &cent );
   zPH3DDestroy( ph );
   return NULL;
 }
@@ -2139,12 +2179,110 @@ zPH3D *zCC3DToPH3D(zCC3D *cc, zPH3D *ph)
 }
 
 /* cut the solid by a polyhedron, and convert the rest of the boundary of the solid to a polyhedron. */
-zPH3D *zCC3DCut(zCC3D *cc, const zPH3D *ph, zPH3D *cut)
+static zPH3D *_zCC3DCut(zCC3D *cc, const zPH3D *ph, bool convex, zPH3D *cut)
 {
   zPH3DInit( cut );
-  if( !zCC3DSubtract( cc, ph ) ) return NULL;
+  if( !_zCC3DSubtract( cc, ph, convex ) ) return NULL;
   /* faces except those made by the subtraction */
   return _zCC3DToPH3DByTag( cc, cc->_tag, true, cut );
+}
+
+zPH3D *zCC3DCutConvex(zCC3D *cc, const zPH3D *ph, zPH3D *cut)
+{
+  return _zCC3DCut( cc, ph, true, cut );
+}
+
+zPH3D *zCC3DCutNonconvex(zCC3D *cc, const zPH3D *ph, zPH3D *cut)
+{
+  return _zCC3DCut( cc, ph, false, cut );
+}
+
+zPH3D *zCC3DCut(zCC3D *cc, const zPH3D *ph, zPH3D *cut)
+{
+  bool convex;
+
+  if( !_zCC3DPH3DCheck( ph, &convex ) ){
+    zPH3DInit( cut );
+    return NULL;
+  }
+  return _zCC3DCut( cc, ph, convex, cut );
+}
+
+/* volume and first moment of the solid about a reference point, which are integrated over cones
+ * from the reference point to the faces on the boundary of the solid. A side of a face is oriented
+ * outward from the cell on that side. */
+static double _zCC3DVolumeMoment(const zCC3D *cc, const zVec3D *ref, zVec3D *moment)
+{
+  zVec3D e0, e1, e2, n;
+  double v, vol = 0;
+  int f, s, h0, h1, h2;
+
+  zVec3DZero( moment );
+  for( f=0; f<zCC3DFaceNum(cc); f++ ){
+    if( ( s = _zCC3DBoundarySide( cc, f ) ) < 0 ) continue;
+    h0 = zCC3DFace(cc,f)->he[s];
+    zVec3DSub( &_zCC3DV(cc,_zCC3DHE(cc,h0)->org)->p, ref, &e0 );
+    for( h1=_zCC3DHE(cc,h0)->next; ( h2 = _zCC3DHE(cc,h1)->next ) != h0; h1=h2 ){
+      zVec3DSub( &_zCC3DV(cc,_zCC3DHE(cc,h1)->org)->p, ref, &e1 );
+      zVec3DSub( &_zCC3DV(cc,_zCC3DHE(cc,h2)->org)->p, ref, &e2 );
+      zVec3DOuterProd( &e1, &e2, &n );
+      vol += ( v = zVec3DInnerProd( &e0, &n ) / 6 );
+      /* the barycenter of a cone relative to the reference point is (e0+e1+e2)/4 */
+      zVec3DAdd( &e0, &e1, &n );
+      zVec3DAddDRC( &n, &e2 );
+      zVec3DCatDRC( moment, 0.25*v, &n );
+    }
+  }
+  return vol;
+}
+
+/* volume of the solid. */
+double zCC3DVolume(const zCC3D *cc)
+{
+  zVec3D ref, moment;
+
+  zAABox3DCenter( &cc->universe, &ref );
+  return _zCC3DVolumeMoment( cc, &ref, &moment );
+}
+
+/* barycenter of the solid. */
+zVec3D *zCC3DBarycenter(const zCC3D *cc, zVec3D *c)
+{
+  zVec3D ref, moment;
+  double vol;
+
+  zAABox3DCenter( &cc->universe, &ref );
+  if( ( vol = _zCC3DVolumeMoment( cc, &ref, &moment ) ) <= 0 ){
+    zVec3DZero( c );
+    return NULL;
+  }
+  zVec3DDivDRC( &moment, vol );
+  return zVec3DAdd( &ref, &moment, c );
+}
+
+/* area normal vector of the faces on the boundary of the solid made by the last operation. */
+zVec3D *zCC3DAreaNormalVec(const zCC3D *cc, zVec3D *norm)
+{
+  zVec3D e1, e2, n;
+  const zVec3D *p0;
+  int f, s, h0, h1, h2;
+  bool found = false;
+
+  zVec3DZero( norm );
+  for( f=0; f<zCC3DFaceNum(cc); f++ ){
+    if( ( s = _zCC3DSelectSide( cc, f, cc->_tag, false ) ) < 0 ) continue;
+    found = true;
+    h0 = zCC3DFace(cc,f)->he[s];
+    p0 = &_zCC3DV(cc,_zCC3DHE(cc,h0)->org)->p;
+    for( h1=_zCC3DHE(cc,h0)->next; ( h2 = _zCC3DHE(cc,h1)->next ) != h0; h1=h2 ){
+      zVec3DSub( &_zCC3DV(cc,_zCC3DHE(cc,h1)->org)->p, p0, &e1 );
+      zVec3DSub( &_zCC3DV(cc,_zCC3DHE(cc,h2)->org)->p, p0, &e2 );
+      zVec3DOuterProd( &e1, &e2, &n );
+      zVec3DAddDRC( norm, &n );
+    }
+  }
+  zVec3DMulDRC( norm, 0.5 );
+  return found ? norm : NULL;
 }
 
 /* ********************************************************** */
@@ -2154,39 +2292,39 @@ zPH3D *zCC3DCut(zCC3D *cc, const zPH3D *ph, zPH3D *cut)
 /* check the consistency of a 3D cell complex. */
 bool zCC3DCheck(zCC3D *cc)
 {
-  _zCC3DIntVec queue;
+  zIndexStruct queue;
   zCC3DHalfEdge *h;
   int c, i, g, nv, nf, visit, vstamp, fstamp, *fmark = NULL;
   bool ret = false;
 
-  _zCC3DIntVecInit( &queue );
-  if( !( fmark = zAlloc( int, cc->facenum+1 ) ) ){
+  zArrayInit( &queue );
+  if( !( fmark = zAlloc( int, zCC3DFaceNum(cc)+1 ) ) ){
     ZALLOCERROR();
     return false;
   }
-  for( c=0; c<cc->cellnum; c++ ){
-    if( cc->cell[c].he < 0 || cc->cell[c].he >= cc->henum ) goto TERMINATE;
+  for( c=0; c<zCC3DCellNum(cc); c++ ){
+    if( zCC3DCell(cc,c)->he < 0 || zCC3DCell(cc,c)->he >= _zCC3DHENum(cc) ) goto TERMINATE;
     visit = ++cc->_stamp;
     vstamp = ++cc->_stamp;
     fstamp = c + 1;
-    queue.num = 0;
-    cc->he[cc->cell[c].he]._aux = visit;
-    if( !_zCC3DIntVecPush( &queue, cc->cell[c].he ) ) goto TERMINATE;
-    for( nv=nf=0, i=0; i<queue.num; i++ ){
-      h = &cc->he[queue.buf[i]];
+    zArraySetSize( &queue, 0 );
+    _zCC3DHE(cc,zCC3DCell(cc,c)->he)->_aux = visit;
+    if( !_zCC3DIndexPush( &queue, zCC3DCell(cc,c)->he ) ) goto TERMINATE;
+    for( nv=nf=0, i=0; i<zArraySize(&queue); i++ ){
+      h = _zCC3DHE(cc,zIndexElemNC(&queue,i));
       if( h->next < 0 || h->prev < 0 || h->twin < 0 ) goto TERMINATE;
-      if( cc->he[h->next].prev != queue.buf[i] || cc->he[h->prev].next != queue.buf[i] ) goto TERMINATE;
-      if( cc->he[h->twin].twin != queue.buf[i] ) goto TERMINATE;
-      if( cc->he[h->twin].org != cc->he[h->next].org || h->org == cc->he[h->next].org ) goto TERMINATE;
-      if( cc->he[h->next].face != h->face || cc->he[h->next].side != h->side ) goto TERMINATE;
-      if( cc->face[h->face].cell[h->side] != c ) goto TERMINATE;
+      if( _zCC3DHE(cc,h->next)->prev != zIndexElemNC(&queue,i) || _zCC3DHE(cc,h->prev)->next != zIndexElemNC(&queue,i) ) goto TERMINATE;
+      if( _zCC3DHE(cc,h->twin)->twin != zIndexElemNC(&queue,i) ) goto TERMINATE;
+      if( _zCC3DHE(cc,h->twin)->org != _zCC3DHE(cc,h->next)->org || h->org == _zCC3DHE(cc,h->next)->org ) goto TERMINATE;
+      if( _zCC3DHE(cc,h->next)->face != h->face || _zCC3DHE(cc,h->next)->side != h->side ) goto TERMINATE;
+      if( zCC3DFace(cc,h->face)->cell[h->side] != c ) goto TERMINATE;
       if( h->mate >= 0 ){
-        if( cc->he[h->mate].mate != queue.buf[i] || cc->he[h->mate].face != h->face ||
-            cc->he[h->mate].side == h->side || cc->he[h->mate].org != cc->he[h->next].org ) goto TERMINATE;
+        if( _zCC3DHE(cc,h->mate)->mate != zIndexElemNC(&queue,i) || _zCC3DHE(cc,h->mate)->face != h->face ||
+            _zCC3DHE(cc,h->mate)->side == h->side || _zCC3DHE(cc,h->mate)->org != _zCC3DHE(cc,h->next)->org ) goto TERMINATE;
       } else
-      if( cc->face[h->face].cell[1-h->side] >= 0 ) goto TERMINATE;
-      if( cc->vert[h->org]._visit != vstamp ){
-        cc->vert[h->org]._visit = vstamp;
+      if( zCC3DFace(cc,h->face)->cell[1-h->side] >= 0 ) goto TERMINATE;
+      if( _zCC3DV(cc,h->org)->_visit != vstamp ){
+        _zCC3DV(cc,h->org)->_visit = vstamp;
         nv++;
       }
       if( fmark[h->face] != fstamp ){
@@ -2194,25 +2332,25 @@ bool zCC3DCheck(zCC3D *cc)
         nf++;
       }
       for( g=h->next; ; ){
-        if( cc->he[g]._aux != visit ){
-          cc->he[g]._aux = visit;
-          if( !_zCC3DIntVecPush( &queue, g ) ) goto TERMINATE;
+        if( _zCC3DHE(cc,g)->_aux != visit ){
+          _zCC3DHE(cc,g)->_aux = visit;
+          if( !_zCC3DIndexPush( &queue, g ) ) goto TERMINATE;
         }
         if( g == h->twin ) break;
         g = h->twin;
       }
-      h = &cc->he[queue.buf[i]];
+      h = _zCC3DHE(cc,zIndexElemNC(&queue,i));
     }
-    if( nv - queue.num/2 + nf != 2 ) goto TERMINATE; /* Euler's formula */
+    if( nv - zArraySize(&queue)/2 + nf != 2 ) goto TERMINATE; /* Euler's formula */
   }
-  for( i=0; i<cc->facenum; i++ )
+  for( i=0; i<zCC3DFaceNum(cc); i++ )
     for( c=0; c<2; c++ )
-      if( ( cc->face[i].cell[c] >= 0 ) != ( cc->face[i].he[c] >= 0 ) ||
-          ( cc->face[i].he[c] >= 0 && ( cc->he[cc->face[i].he[c]].face != i || cc->he[cc->face[i].he[c]].side != c ) ) )
+      if( ( zCC3DFace(cc,i)->cell[c] >= 0 ) != ( zCC3DFace(cc,i)->he[c] >= 0 ) ||
+          ( zCC3DFace(cc,i)->he[c] >= 0 && ( _zCC3DHE(cc,zCC3DFace(cc,i)->he[c])->face != i || _zCC3DHE(cc,zCC3DFace(cc,i)->he[c])->side != c ) ) )
         goto TERMINATE;
   ret = true;
  TERMINATE:
   free( fmark );
-  _zCC3DIntVecDestroy( &queue );
+  zArrayFree( &queue );
   return ret;
 }

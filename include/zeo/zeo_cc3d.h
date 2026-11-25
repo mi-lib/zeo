@@ -65,44 +65,40 @@ typedef struct{
   /*! \endcond */
 } zCC3DCell;
 
+/* arrays of vertices, half-edges, faces and cells */
+ZEDA_DEF_ARRAY_CLASS( zCC3DVertArray, zCC3DVert );
+ZEDA_DEF_ARRAY_CLASS( zCC3DHalfEdgeArray, zCC3DHalfEdge );
+ZEDA_DEF_ARRAY_CLASS( zCC3DFaceArray, zCC3DFace );
+ZEDA_DEF_ARRAY_CLASS( zCC3DCellArray, zCC3DCell );
+
 /*! \cond */
-/* growable array of integers used as workspaces */
-typedef struct{
-  int *buf;
-  int num, cap;
-} _zCC3DIntVec;
 #define _ZEO_CC3D_WS_NUM 8
 /*! \endcond */
 
 ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zCC3D ){
-  zAABox3D universe; /*!< universe */
-  double tol;        /*!< tolerance relative to the size of the universe */
-  zCC3DVert *vert;   /*!< array of vertices */
-  zCC3DHalfEdge *he; /*!< array of half-edges */
-  zCC3DFace *face;   /*!< array of faces */
-  zCC3DCell *cell;   /*!< array of cells */
-  int vertnum;       /*!< number of vertices */
-  int henum;         /*!< number of half-edges */
-  int facenum;       /*!< number of faces */
-  int cellnum;       /*!< number of cells */
+  zAABox3D universe;       /*!< universe */
+  double tol;              /*!< tolerance relative to the size of the universe */
+  zCC3DVertArray vert;     /*!< array of vertices */
+  zCC3DHalfEdgeArray he;   /*!< array of half-edges */
+  zCC3DFaceArray face;     /*!< array of faces */
+  zCC3DCellArray cell;     /*!< array of cells */
   /*! \cond */
-  int _vertcap, _hecap, _facecap, _cellcap;
   int _stamp;
   int _tag;
   int _plane;                      /* identifier of the current cutting plane */
   bool _useon;                     /* flag to reuse vertices on the cutting plane */
   int _corner[8];                  /* corners of the universe */
-  _zCC3DIntVec _ws[_ZEO_CC3D_WS_NUM]; /* workspaces reused in operations */
+  zIndexStruct _ws[_ZEO_CC3D_WS_NUM]; /* workspaces reused in operations */
   /*! \endcond */
 };
 
-#define zCC3DVertNum(cc)       (cc)->vertnum
-#define zCC3DFaceNum(cc)       (cc)->facenum
-#define zCC3DCellNum(cc)       (cc)->cellnum
-#define zCC3DVert(cc,i)        ( &(cc)->vert[i].p )
-#define zCC3DFace(cc,i)        ( &(cc)->face[i] )
-#define zCC3DCell(cc,i)        ( &(cc)->cell[i] )
-#define zCC3DCellIsSolid(cc,i) (cc)->cell[i].solid
+#define zCC3DVertNum(cc)       zArraySize(&(cc)->vert)
+#define zCC3DFaceNum(cc)       zArraySize(&(cc)->face)
+#define zCC3DCellNum(cc)       zArraySize(&(cc)->cell)
+#define zCC3DVert(cc,i)        ( &zArrayElemNC(&(cc)->vert,i)->p )
+#define zCC3DFace(cc,i)        zArrayElemNC(&(cc)->face,i)
+#define zCC3DCell(cc,i)        zArrayElemNC(&(cc)->cell,i)
+#define zCC3DCellIsSolid(cc,i) zCC3DCell(cc,i)->solid
 
 /*! \brief initialize, create and destroy a 3D cell complex.
  *
@@ -206,12 +202,41 @@ __ZEO_EXPORT zPH3D *zCC3DToPH3D(zCC3D *cc, zPH3D *ph);
  * surface of the original solid outside of \a ph, which is open in general, e.g., a vessel.
  * The part of the surface on which a face of \a ph lies is included in \a cut.
  * \a cc keeps the result of the subtraction.
+ *
+ * zCC3DCutConvex() and zCC3DCutNonconvex() do the same thing for a convex polyhedron and a general
+ * polyhedron, respectively, without checking \a ph, as zCC3DSubtractConvex() and
+ * zCC3DSubtractNonconvex() do.
  * \return
- * zCC3DCut() returns a pointer \a cut if it succeeds. If \a cut is empty, if \a ph does not satisfy
- * the condition, or if it fails to allocate memory or finds an inconsistency of the internal data,
- * it returns the null pointer.
+ * zCC3DCut(), zCC3DCutConvex() and zCC3DCutNonconvex() return a pointer \a cut if they succeed. If
+ * \a cut is empty, if \a ph does not satisfy the condition (only for zCC3DCut()), or if they fail to
+ * allocate memory or find an inconsistency of the internal data, they return the null pointer.
  */
 __ZEO_EXPORT zPH3D *zCC3DCut(zCC3D *cc, const zPH3D *ph, zPH3D *cut);
+__ZEO_EXPORT zPH3D *zCC3DCutConvex(zCC3D *cc, const zPH3D *ph, zPH3D *cut);
+__ZEO_EXPORT zPH3D *zCC3DCutNonconvex(zCC3D *cc, const zPH3D *ph, zPH3D *cut);
+
+/*! \brief volume, barycenter and area normal vector of a solid.
+ *
+ * zCC3DVolume() calculates the volume of the solid represented by a 3D cell complex \a cc.
+ *
+ * zCC3DBarycenter() calculates the barycenter of the solid represented by \a cc. The result is put
+ * where \a c points.
+ *
+ * zCC3DAreaNormalVec() calculates the area normal vector of the part of the boundary of the solid
+ * represented by \a cc made by the last operation, namely, the sum of the normal vectors of the
+ * faces multiplied by their areas. The normal vectors are directed outward from the solid. For
+ * example, after zCC3DIntersect() or its versions with a polyhedron, it is that of the faces of the
+ * polyhedron inside of the original solid. The result is put where \a norm points.
+ * \return
+ * zCC3DVolume() returns the volume calculated.
+ * zCC3DBarycenter() returns a pointer \a c. If the solid is empty, it returns the null pointer, and
+ * \a c is set for the zero vector.
+ * zCC3DAreaNormalVec() returns a pointer \a norm. If no part of the boundary is made by the last
+ * operation, it returns the null pointer, and \a norm is set for the zero vector.
+ */
+__ZEO_EXPORT double zCC3DVolume(const zCC3D *cc);
+__ZEO_EXPORT zVec3D *zCC3DBarycenter(const zCC3D *cc, zVec3D *c);
+__ZEO_EXPORT zVec3D *zCC3DAreaNormalVec(const zCC3D *cc, zVec3D *norm);
 
 /*! \brief check the consistency of a 3D cell complex.
  *

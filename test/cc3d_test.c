@@ -438,7 +438,6 @@ void assert_cc3d_nonconvex(void)
   zAssert( zCC3DMerge (non-convex polyhedra), result[3] );
 }
 
-/* polyhedra not to be accepted: an open one and one with faces oriented inward. */
 /* operation of a given type on a cell complex: 0 for intersection, 1 for subtraction, 2 for merge;
  * the version is 0 for the automatic choice, 1 for the convex one, and 2 for the general one. */
 zCC3D *operate(zCC3D *cc, const zPH3D *ph, int op, int version)
@@ -650,6 +649,7 @@ void assert_cc3d_two_components(void)
   zAssert( zCC3DSubtract (polyhedron of two components), result[2] );
 }
 
+/* polyhedra not to be accepted: an open one and one with faces oriented inward. */
 void assert_cc3d_invalid(void)
 {
   zCC3D cc;
@@ -682,6 +682,13 @@ double area_ph(zPH3D *ph)
   return area;
 }
 
+/* cut of a given version: 0 for the automatic choice, 1 for the convex one, and 2 for the general one. */
+zPH3D *cut_version(zCC3D *cc, const zPH3D *ph, int version, zPH3D *cut)
+{
+  static zPH3D *(* f[3])(zCC3D*,const zPH3D*,zPH3D*) = { zCC3DCut, zCC3DCutConvex, zCC3DCutNonconvex };
+  return f[version]( cc, ph, cut );
+}
+
 /* cut of the surface of a unit cube by a box which removes a half of it, a rod through it, a box
  * apart from it and a box including it. */
 void assert_cc3d_cut_by_ph3d(void)
@@ -692,9 +699,9 @@ void assert_cc3d_cut_by_ph3d(void)
   zMat3D r;
   double w;
   bool result[4] = { true, true, true, true };
-  int i;
+  int i, version;
 
-  for( i=0; i<N/10; i++ ){
+  for( i=0; i<N/10; i++ ) for( version=0; version<3; version++ ){
     zMat3DFromZYX( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
     zVec3DCreate( &lo, 0, 0, 0 );
     zVec3DCreate( &hi, 1, 1, 1 );
@@ -705,7 +712,7 @@ void assert_cc3d_cut_by_ph3d(void)
     zVec3DCreate( &hi, 2, 2, 2 );
     create_box_ph( &box, &lo, &hi, &r, 0, 1 );
     zCC3DFromPH3D( &cc, &cube );
-    if( !zCC3DCut( &cc, &box, &cut ) ) result[0] = false;
+    if( !cut_version( &cc, &box, version, &cut ) ) result[0] = false;
     else{
       if( zPH3DIsClosed( &cut ) || !zIsTol( area_ph( &cut ) - ( 1 + 4*w ), 1.0e-10 ) ) result[0] = false;
       zPH3DDestroy( &cut );
@@ -718,7 +725,7 @@ void assert_cc3d_cut_by_ph3d(void)
     zVec3DCreate( &hi, 0.5+0.5*w, 0.5+0.5*w, 2 );
     create_box_ph( &box, &lo, &hi, &r, 0, 1 );
     zCC3DFromPH3D( &cc, &cube );
-    if( !zCC3DCut( &cc, &box, &cut ) ) result[1] = false;
+    if( !cut_version( &cc, &box, version, &cut ) ) result[1] = false;
     else{
       if( zPH3DIsClosed( &cut ) || !zIsTol( area_ph( &cut ) - ( 6 - 2*w*w ), 1.0e-10 ) ) result[1] = false;
       zPH3DDestroy( &cut );
@@ -730,7 +737,7 @@ void assert_cc3d_cut_by_ph3d(void)
     zVec3DCreate( &hi, 3, 3, 3 );
     create_box_ph( &box, &lo, &hi, &r, 0, 1 );
     zCC3DFromPH3D( &cc, &cube );
-    if( !zCC3DCut( &cc, &box, &cut ) ) result[2] = false;
+    if( !cut_version( &cc, &box, version, &cut ) ) result[2] = false;
     else{
       if( !zPH3DIsClosed( &cut ) || !zIsTol( area_ph( &cut ) - 6, 1.0e-10 ) ) result[2] = false;
       zPH3DDestroy( &cut );
@@ -742,15 +749,164 @@ void assert_cc3d_cut_by_ph3d(void)
     zVec3DCreate( &hi, 2, 2, 2 );
     create_box_ph( &box, &lo, &hi, &r, 0, 1 );
     zCC3DFromPH3D( &cc, &cube );
-    if( zCC3DCut( &cc, &box, &cut ) ) result[3] = false;
+    if( cut_version( &cc, &box, version, &cut ) ) result[3] = false;
     zCC3DDestroy( &cc );
     zPH3DDestroy( &box );
     zPH3DDestroy( &cube );
   }
-  zAssert( zCC3DCut (half of a cube), result[0] );
-  zAssert( zCC3DCut (rod through a cube), result[1] );
-  zAssert( zCC3DCut (box apart from a cube), result[2] );
-  zAssert( zCC3DCut (box including a cube), result[3] );
+  zAssert( zCC3DCut + zCC3DCutConvex + zCC3DCutNonconvex (half of a cube), result[0] );
+  zAssert( zCC3DCut + zCC3DCutConvex + zCC3DCutNonconvex (rod through a cube), result[1] );
+  zAssert( zCC3DCut + zCC3DCutConvex + zCC3DCutNonconvex (box apart from a cube), result[2] );
+  zAssert( zCC3DCut + zCC3DCutConvex + zCC3DCutNonconvex (box including a cube), result[3] );
+}
+
+/* sum of the area normal vectors of the faces of a polyhedron. */
+zVec3D *area_normal_ph(zPH3D *ph, zVec3D *norm)
+{
+  int i;
+
+  zVec3DZero( norm );
+  for( i=0; i<zPH3DFaceNum(ph); i++ )
+    zVec3DCatDRC( norm, zTri3DArea( zPH3DFace(ph,i) ), zTri3DNorm( zPH3DFace(ph,i) ) );
+  return norm;
+}
+
+/* volume, barycenter and area normal vector of a half of a unit cube cut by a box, and those of an
+ * empty solid and a solid without faces made by the last operation. */
+void assert_cc3d_mass_property_cube(void)
+{
+  zCC3D cc;
+  zPH3D cube, box;
+  zVec3D lo, hi, c, norm, c_expected, norm_expected;
+  zMat3D r;
+  double w;
+  bool result[3] = { true, true, true };
+  int i;
+
+  for( i=0; i<N; i++ ){
+    zMat3DFromZYX( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    zVec3DCreate( &lo, 0, 0, 0 );
+    zVec3DCreate( &hi, 1, 1, 1 );
+    create_box_ph( &cube, &lo, &hi, &r, 0, 1 );
+    w = zRandF(0.1,0.9);
+    /* a half */
+    zVec3DCreate( &lo, w, -1, -1 );
+    zVec3DCreate( &hi, 2, 2, 2 );
+    create_box_ph( &box, &lo, &hi, &r, 0, 1 );
+    zVec3DCreate( &c, 0.5*(1+w), 0.5, 0.5 );
+    zMulMat3DVec3D( &r, &c, &c_expected );
+    zVec3DCreate( &norm, -1, 0, 0 );
+    zMulMat3DVec3D( &r, &norm, &norm_expected );
+    if( !zCC3DFromPH3D( &cc, &cube ) || !zCC3DIntersect( &cc, &box ) ||
+        !zIsTol( zCC3DVolume( &cc ) - ( 1 - w ), 1.0e-12 ) ||
+        !zCC3DBarycenter( &cc, &c ) || !zVec3DEqual( &c, &c_expected ) ||
+        !zCC3DAreaNormalVec( &cc, &norm ) || !zVec3DEqual( &norm, &norm_expected ) ) result[0] = false;
+    zCC3DDestroy( &cc );
+    zPH3DDestroy( &box );
+    /* a box apart from the cube */
+    zVec3DCreate( &lo, 2, 2, 2 );
+    zVec3DCreate( &hi, 3, 3, 3 );
+    create_box_ph( &box, &lo, &hi, &r, 0, 1 );
+    if( !zCC3DFromPH3D( &cc, &cube ) || !zCC3DIntersect( &cc, &box ) ||
+        zCC3DVolume( &cc ) != 0 ||
+        zCC3DBarycenter( &cc, &c ) || !zVec3DIsTiny( &c ) ||
+        zCC3DAreaNormalVec( &cc, &norm ) || !zVec3DIsTiny( &norm ) ) result[1] = false;
+    zCC3DDestroy( &cc );
+    zPH3DDestroy( &box );
+    /* a box including the cube */
+    zVec3DCreate( &lo, -1, -1, -1 );
+    zVec3DCreate( &hi, 2, 2, 2 );
+    create_box_ph( &box, &lo, &hi, &r, 0, 1 );
+    zVec3DCreate( &c, 0.5, 0.5, 0.5 );
+    zMulMat3DVec3D( &r, &c, &c_expected );
+    if( !zCC3DFromPH3D( &cc, &cube ) || !zCC3DIntersect( &cc, &box ) ||
+        !zIsTol( zCC3DVolume( &cc ) - 1, 1.0e-12 ) ||
+        !zCC3DBarycenter( &cc, &c ) || !zVec3DEqual( &c, &c_expected ) ||
+        zCC3DAreaNormalVec( &cc, &norm ) || !zVec3DIsTiny( &norm ) ) result[2] = false;
+    zCC3DDestroy( &cc );
+    zPH3DDestroy( &box );
+    zPH3DDestroy( &cube );
+  }
+  zAssert( zCC3DVolume + zCC3DBarycenter + zCC3DAreaNormalVec (half of a cube), result[0] );
+  zAssert( zCC3DVolume + zCC3DBarycenter + zCC3DAreaNormalVec (empty solid), result[1] );
+  zAssert( zCC3DAreaNormalVec (no face made by the last operation), result[2] );
+}
+
+/* volume and barycenter compared with those of the converted polyhedron, and area normal vectors
+ * after the intersection and the subtraction, which are opposite to each other, and the latter of
+ * which is opposite to that of the rest of the original surface. */
+bool check_mass_property(zPH3D *ph1, zPH3D *ph2, bool convex, double scale)
+{
+  zCC3D cc;
+  zPH3D ph;
+  zVec3D c, c_expected, ni, ns, nc;
+  double s2, s3;
+  bool ret = true;
+
+  s2 = scale * scale;
+  s3 = s2 * scale;
+  if( !( convex ? zCC3DFromPH3DConvex( &cc, ph1 ) : zCC3DFromPH3DNonconvex( &cc, ph1 ) ) ) return false;
+  if( !( convex ? zCC3DIntersectConvex( &cc, ph2 ) : zCC3DIntersectNonconvex( &cc, ph2 ) ) ){
+    ret = false;
+    goto TERMINATE;
+  }
+  if( !zCC3DToPH3D( &cc, &ph ) ){ /* empty */
+    if( zCC3DVolume( &cc ) != 0 || zCC3DBarycenter( &cc, &c ) ) ret = false;
+    goto TERMINATE;
+  }
+  zPH3DBarycenter( &ph, &c_expected );
+  if( !zIsTol( zCC3DVolume( &cc ) - zPH3DVolume( &ph ), 1.0e-9 * s3 ) ||
+      !zCC3DBarycenter( &cc, &c ) || !zVec3DIsTol( zVec3DSubDRC( &c, &c_expected ), 1.0e-9 * scale ) ) ret = false;
+  zPH3DDestroy( &ph );
+  if( !zCC3DAreaNormalVec( &cc, &ni ) ) zVec3DZero( &ni );
+  zCC3DDestroy( &cc );
+
+  if( !( convex ? zCC3DFromPH3DConvex( &cc, ph1 ) : zCC3DFromPH3DNonconvex( &cc, ph1 ) ) ) return false;
+  if( !( convex ? zCC3DCutConvex( &cc, ph2, &ph ) : zCC3DCutNonconvex( &cc, ph2, &ph ) ) ){
+    ret = false;
+    goto TERMINATE;
+  }
+  area_normal_ph( &ph, &nc );
+  zPH3DDestroy( &ph );
+  if( !zCC3DAreaNormalVec( &cc, &ns ) ) zVec3DZero( &ns );
+  zVec3DAddDRC( &ni, &ns );
+  zVec3DAddDRC( &ns, &nc );
+  if( !zVec3DIsTol( &ni, 1.0e-9 * s2 ) || !zVec3DIsTol( &ns, 1.0e-9 * s2 ) ) ret = false;
+ TERMINATE:
+  zCC3DDestroy( &cc );
+  return ret;
+}
+
+void assert_cc3d_mass_property(void)
+{
+  zPH3D ph1, ph2;
+  zMat3D r;
+  double scale;
+  int i, k, occ1, occ2, offset1[3] = { 0, 0, 0 }, offset2[3];
+  bool result[2] = { true, true };
+
+  for( i=0; i<N/2; i++ ){
+    scale = pow( 10, zRandF(-3,3) );
+    create_random_ph( &ph1, 0, scale );
+    create_random_ph( &ph2, zRandF(0,0.8), scale );
+    if( !check_mass_property( &ph1, &ph2, true, scale ) ) result[0] = false;
+    zPH3DDestroy( &ph1 );
+    zPH3DDestroy( &ph2 );
+  }
+  for( i=0; i<N/2; i++ ){
+    scale = pow( 10, zRandF(-3,3) );
+    zMat3DFromZYX( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    occ1 = zRandI( 1, ( 1 << 27 ) - 1 );
+    occ2 = zRandI( 1, ( 1 << 27 ) - 1 );
+    for( k=0; k<3; k++ ) offset2[k] = zRandI(0,3);
+    if( !create_grid_ph( &ph1, occ1, offset1, &r, scale ) ||
+        !create_grid_ph( &ph2, occ2, offset2, &r, scale ) ) continue;
+    if( !check_mass_property( &ph1, &ph2, false, scale ) ) result[1] = false;
+    zPH3DDestroy( &ph1 );
+    zPH3DDestroy( &ph2 );
+  }
+  zAssert( zCC3DVolume + zCC3DBarycenter + zCC3DAreaNormalVec (convex polyhedra), result[0] );
+  zAssert( zCC3DVolume + zCC3DBarycenter + zCC3DAreaNormalVec (non-convex polyhedra), result[1] );
 }
 
 int main(void)
@@ -768,5 +924,7 @@ int main(void)
   assert_cc3d_from_aabox();
   assert_cc3d_invalid();
   assert_cc3d_cut_by_ph3d();
+  assert_cc3d_mass_property_cube();
+  assert_cc3d_mass_property();
   return 0;
 }
