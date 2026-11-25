@@ -106,6 +106,39 @@ void assert_boundingball2D_sorted(void)
   zArrayFree( &array );
 }
 
+/* check if all points are in a disk. */
+bool check_bounding2D(zDisk2D *bb, zVec2DArray *array)
+{
+  int i;
+
+  for( i=0; i<zArraySize(array); i++ )
+    if( zVec2DDist( zDisk2DCenter(bb), zArrayElem(array,i) ) > zDisk2DRadius(bb) + zTOL ) return false;
+  return true;
+}
+
+/* compare the recursive and non-recursive implementations for many sets of points. */
+void assert_boundingball2D_recursive(void)
+{
+  zVec2DArray array;
+  zVec2DData data;
+  zDisk2D bb, bb_rec;
+  int i;
+  bool result = true;
+  const int testnum = 1000; /* the failure of the recursive version used to be rare in 2D */
+
+  for( i=0; i<testnum; i++ ){
+    generate_points2D( &array, N, 5 );
+    zVec2DDataAssignArray( &data, &array );
+    zVec2DDataBoundingBall( &data, &bb, NULL );
+    zVec2DDataBoundingBallRecursive( &data, &bb_rec, NULL );
+    if( !check_bounding2D( &bb, &array ) || !check_bounding2D( &bb_rec, &array ) ||
+        !zIsTol( zDisk2DRadius(&bb_rec) - zDisk2DRadius(&bb), zTOL ) ) result = false;
+    zVec2DDataDestroy( &data );
+    zArrayFree( &array );
+  }
+  zAssert( zVec2DDataBoundingBall + zVec2DDataBoundingBallRecursive (random sets), result );
+}
+
 /* 3D bounding ball (sphere) */
 
 bool generate_points3D(zVec3DArray *array, int n, double radius)
@@ -210,12 +243,47 @@ void assert_boundingball3D_sorted(void)
   zArrayFree( &array );
 }
 
+/* check if all points are in a ball. */
+bool check_bounding3D(zSphere3D *bb, zVec3DArray *array)
+{
+  int i;
+
+  for( i=0; i<zArraySize(array); i++ )
+    if( zVec3DDist( zSphere3DCenter(bb), zArrayElem(array,i) ) > zSphere3DRadius(bb) + zTOL ) return false;
+  return true;
+}
+
+/* compare the recursive and non-recursive implementations for many sets of points. */
+void assert_boundingball3D_recursive(void)
+{
+  zVec3DArray array;
+  zVec3DData data;
+  zSphere3D bb, bb_rec;
+  int i;
+  bool result = true;
+  const int testnum = 100;
+
+  for( i=0; i<testnum; i++ ){
+    generate_points3D( &array, N, 5 );
+    zVec3DDataAssignArray( &data, &array );
+    zVec3DDataBoundingBall( &data, &bb, NULL );
+    zVec3DDataBoundingBallRecursive( &data, &bb_rec, NULL );
+    if( !check_bounding3D( &bb, &array ) || !check_bounding3D( &bb_rec, &array ) ||
+        !zIsTol( zSphere3DRadius(&bb_rec) - zSphere3DRadius(&bb), zTOL ) ) result = false;
+    zVec3DDataDestroy( &data );
+    zArrayFree( &array );
+  }
+  zAssert( zVec3DDataBoundingBall + zVec3DDataBoundingBallRecursive (random sets), result );
+}
+
 int main(void)
 {
   zRandInit();
   assert_boundingball2D();
   assert_boundingball2D_sorted();
+  assert_boundingball2D_recursive();
   assert_boundingball3D();
   assert_boundingball3D_sorted();
+  assert_boundingball3D_recursive();
   return 0;
 }

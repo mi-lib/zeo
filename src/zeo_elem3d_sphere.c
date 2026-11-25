@@ -125,6 +125,10 @@ zSphere3D *zSphere3DFrom4(zSphere3D *sphere, const zVec3D *v1, const zVec3D *v2,
   zVec3DSub( v2, v1, &e1 );
   zVec3DSub( v3, v1, &e2 );
   zVec3DSub( v4, v1, &e3 );
+  /* the triple product, namely, six times the volume of the tetrahedron, is compared with the
+   * product of the lengths of the edges. */
+  if( !( fabs( zVec3DGrassmannProd( &e1, &e2, &e3 ) ) > zTOL * zVec3DNorm(&e1) * zVec3DNorm(&e2) * zVec3DNorm(&e3) ) )
+    return NULL;
   zTri3DCreate( &t, &e1, &e2, &e3 );
   r = zVec3DNorm( zTri3DConeCircumcenter( &t, &c ) );
   zVec3DAddDRC( &c, v1 );

@@ -37,7 +37,9 @@ static int _zBoundingBall2D3(zDisk2D *bb, zVec2D *v[], zVec2D **vp)
   return 3;
 }
 
-/* bounding ball of up to three points. */
+/* the smallest disk that has all of up to three points on its boundary, which is the base case of
+ * Welzl's algorithm. If the three points are collinear, the smallest disk that bounds them is made
+ * instead. */
 static int _zBoundingBall2DDirect(zDisk2D *bb, zVec2DAddrList *pl, zVec2D **vp)
 {
   zVec2D *v[3];
@@ -61,7 +63,12 @@ static int _zBoundingBall2DDirect(zDisk2D *bb, zVec2DAddrList *pl, zVec2D **vp)
     v[0] = zListTail(pl)->data;
     v[1] = zListCellNext(zListTail(pl))->data;
     v[2] = zListHead(pl)->data;
-    return _zBoundingBall2D3( bb, v, vp );
+    if( !zDisk2DFrom3( bb, v[0], v[1], v[2] ) ) /* collinear */
+      return _zBoundingBall2D3( bb, v, vp );
+    if( vp ){
+      vp[0] = v[0]; vp[1] = v[1]; vp[2] = v[2];
+    }
+    return 3;
   default:
     ZRUNERROR( ZEO_ERR_FATAL );
   }

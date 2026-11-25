@@ -1,3 +1,7 @@
+2026.11.25. Added a test to compare the recursive and non-recursive implementations of the bounding balls for many sets of points. [test]
+2026.11.25. Debugged _zBoundingBall3D4. [zeo_bv2d_boundingball, zeo_bv3d_boundingball]
+2026.11.25. Debugged zVec2DDataBoundingBallRecursive and zVec3DDataBoundingBallRecursive not to miss some points on the surface. [zeo_bv2d_boundingball, zeo_bv3d_boundingball]
+2026.11.25. Modified zSphere3DFrom4 to return the null pointer for four coplanar points. [zeo_elem3d_sphere]
 2026.11.25. Added a test of zShape3DToPH to check if every type of shapes is converted to a closed polyhedron with faces oriented outward. [test]
 2026.11.25. Debugged zCapsule3DToPH to allocate a consistent number of vertices and faces and not to leak memory when the axis is degenerate. [zeo_shape3d_capsule]
 2026.11.25. Debugged zSphere3DToPH and zEllips3DToPH to order the vertices around the poles correctly. [zeo_shape3d_sphere, zeo_shape3d_ellips]

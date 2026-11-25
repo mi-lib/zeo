@@ -20,8 +20,7 @@ static zSphere3D *_zBoundingBall3DTest2(zSphere3D *bb, zVec3D *v1, zVec3D *v2, z
 /* test if a circum ball of the first three points bounds the last point. */
 static zSphere3D *_zBoundingBall3DTest3(zSphere3D *bb, zVec3D *v1, zVec3D *v2, zVec3D *v3, zVec3D *v4, zVec3D **vp)
 {
-  zSphere3DFrom3( bb, v1, v2, v3 );
-  if( !zSphere3DPointIsInside(bb,v4,zTOL) ) return NULL;
+  if( !zSphere3DFrom3( bb, v1, v2, v3 ) || !zSphere3DPointIsInside(bb,v4,zTOL) ) return NULL;
   if( vp ){
     vp[0] = v1; vp[1] = v2; vp[2] = v3;
   }
@@ -48,12 +47,15 @@ static int _zBoundingBall3D4(zSphere3D *bb, zVec3D *v[], zVec3D **vp)
       _zBoundingBall3DTest2( bb, v[2], v[3], v[0], v[1], vp ) ) return 2;
   if( _zBoundingBall3DTest3( bb, v[0], v[1], v[2], v[3], vp ) ||
       _zBoundingBall3DTest3( bb, v[0], v[1], v[3], v[2], vp ) ||
+      _zBoundingBall3DTest3( bb, v[0], v[2], v[3], v[1], vp ) ||
       _zBoundingBall3DTest3( bb, v[1], v[2], v[3], v[0], vp ) ) return 3;
   _zBoundingBall3DTest4( bb, v[0], v[1], v[2], v[3], vp );
   return 4;
 }
 
-/* bounding ball of up to four points. */
+/* the smallest ball that has all of up to four points on its boundary, which is the base case of
+ * Welzl's algorithm. If the points are degenerate, namely, three collinear points or four coplanar
+ * points, the smallest ball that bounds them is made instead. */
 static int _zBoundingBall3DDirect(zSphere3D *bb, zVec3DAddrList *pl, zVec3D **vp)
 {
   zVec3D *v[4];
@@ -74,12 +76,26 @@ static int _zBoundingBall3DDirect(zSphere3D *bb, zVec3DAddrList *pl, zVec3D **vp
     }
     return 2;
   case 3:
+    v[0] = zListTail(pl)->data;
+    v[1] = zListCellNext(zListTail(pl))->data;
+    v[2] = v[3] = zListHead(pl)->data;
+    if( !zSphere3DFrom3( bb, v[0], v[1], v[2] ) ) /* collinear */
+      return _zBoundingBall3D4( bb, v, vp );
+    if( vp ){
+      vp[0] = v[0]; vp[1] = v[1]; vp[2] = v[2];
+    }
+    return 3;
   case 4:
     v[0] = zListTail(pl)->data;
     v[1] = zListCellNext(zListTail(pl))->data;
     v[2] = zListCellNext(zListCellNext(zListTail(pl)))->data;
     v[3] = zListHead(pl)->data;
-    return _zBoundingBall3D4( bb, v, vp );
+    if( !zSphere3DFrom4( bb, v[0], v[1], v[2], v[3] ) ) /* coplanar */
+      return _zBoundingBall3D4( bb, v, vp );
+    if( vp ){
+      vp[0] = v[0]; vp[1] = v[1]; vp[2] = v[2]; vp[3] = v[3];
+    }
+    return 4;
   default:
     ZRUNERROR( ZEO_ERR_FATAL );
   }
