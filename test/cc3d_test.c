@@ -439,6 +439,217 @@ void assert_cc3d_nonconvex(void)
 }
 
 /* polyhedra not to be accepted: an open one and one with faces oriented inward. */
+/* operation of a given type on a cell complex: 0 for intersection, 1 for subtraction, 2 for merge;
+ * the version is 0 for the automatic choice, 1 for the convex one, and 2 for the general one. */
+zCC3D *operate(zCC3D *cc, const zPH3D *ph, int op, int version)
+{
+  static zCC3D *(* f[3][3])(zCC3D*,const zPH3D*) = {
+    { zCC3DIntersect, zCC3DIntersectConvex, zCC3DIntersectNonconvex },
+    { zCC3DSubtract, zCC3DSubtractConvex, zCC3DSubtractNonconvex },
+    { zCC3DMerge, zCC3DMergeConvex, zCC3DMergeNonconvex },
+  };
+  return f[op][version]( cc, ph );
+}
+
+/* versions for convex and general polyhedra, which do not check the polyhedra. The convex ones are
+ * tested on random convex polyhedra, and the general ones on both of them and unions of cubes. */
+void assert_cc3d_versions(void)
+{
+  zCC3D cc;
+  zPH3D ph1, ph2, ph;
+  zMat3D r;
+  double scale, v[3], v1, v2, vi, v3;
+  int i, k, op, version, occ1, occ2, offset1[3] = { 0, 0, 0 }, offset2[3];
+  bool result[2][4] = { { true, true, true, true }, { true, true, true, true } };
+
+  for( i=0; i<N/2; i++ ){
+    scale = pow( 10, zRandF(-4,4) );
+    create_random_ph( &ph1, 0, scale );
+    create_random_ph( &ph2, zRandF(0,0.8), scale );
+    v1 = volume_ph( &ph1 );
+    v2 = volume_ph( &ph2 );
+    if( zIntersectPH3D( &ph1, &ph2, &ph ) ){
+      vi = volume_ph( &ph );
+      zPH3DDestroy( &ph );
+    } else
+      vi = 0;
+    v3 = scale * scale * scale;
+    v[0] = vi; v[1] = v1 - vi; v[2] = v1 + v2 - vi;
+    for( version=1; version<=2; version++ ){
+      if( !( version == 1 ? zCC3DFromPH3DConvex( &cc, &ph1 ) : zCC3DFromPH3DNonconvex( &cc, &ph1 ) ) ||
+          !check_result( &cc, v1, 1.0e-6 * v3 ) ) result[version-1][0] = false;
+      zCC3DDestroy( &cc );
+      for( op=0; op<3; op++ ){
+        if( !create_cc( &cc, &ph1, &ph2 ) || !operate( &cc, &ph2, op, version ) ||
+            !check_result( &cc, v[op], 1.0e-6 * v3 ) ) result[version-1][op+1] = false;
+        zCC3DDestroy( &cc );
+      }
+    }
+    zPH3DDestroy( &ph1 );
+    zPH3DDestroy( &ph2 );
+  }
+  for( i=0; i<N/2; i++ ){
+    scale = pow( 10, zRandF(-3,3) );
+    zMat3DFromZYX( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    occ1 = zRandI( 1, ( 1 << 27 ) - 1 );
+    occ2 = zRandI( 1, ( 1 << 27 ) - 1 );
+    for( k=0; k<3; k++ ) offset2[k] = zRandI(0,3);
+    if( !create_grid_ph( &ph1, occ1, offset1, &r, scale ) ||
+        !create_grid_ph( &ph2, occ2, offset2, &r, scale ) ) continue;
+    grid_volume( occ1, offset1, occ2, offset2, v );
+    v3 = scale * scale * scale;
+    if( !zCC3DFromPH3DNonconvex( &cc, &ph1 ) || !check_result( &cc, ( v[1] + v[0] ) * v3, 1.0e-9 * v3 ) ) result[1][0] = false;
+    zCC3DDestroy( &cc );
+    for( op=0; op<3; op++ ){
+      if( !create_cc( &cc, &ph1, &ph2 ) || !operate( &cc, &ph2, op, 2 ) ||
+          !check_result( &cc, v[op] * v3, 1.0e-9 * v3 ) ) result[1][op+1] = false;
+      zCC3DDestroy( &cc );
+    }
+    zPH3DDestroy( &ph1 );
+    zPH3DDestroy( &ph2 );
+  }
+  zAssert( zCC3DFromPH3DConvex, result[0][0] );
+  zAssert( zCC3DIntersectConvex, result[0][1] );
+  zAssert( zCC3DSubtractConvex, result[0][2] );
+  zAssert( zCC3DMergeConvex, result[0][3] );
+  zAssert( zCC3DFromPH3DNonconvex, result[1][0] );
+  zAssert( zCC3DIntersectNonconvex, result[1][1] );
+  zAssert( zCC3DSubtractNonconvex, result[1][2] );
+  zAssert( zCC3DMergeNonconvex, result[1][3] );
+}
+
+/* intersection of two polyhedra starting from the intersection of their bounding boxes, which is
+ * the way to compute the interference of two solids. The latter cases have no face of the second
+ * polyhedron in the region where the first one is. */
+void assert_cc3d_from_aabox(void)
+{
+  zCC3D cc;
+  zPH3D ph1, ph2;
+  zAABox3D box;
+  zVec3D lo, hi;
+  zMat3D r;
+  double scale, v[3], d, v3;
+  int i, k, occ1, occ2, offset1[3] = { 0, 0, 0 }, offset2[3];
+  bool result[4] = { true, true, true, true };
+
+  for( i=0; i<N/2; i++ ){
+    zAABox3DCreate( &box, zRandF(-2,-1), zRandF(-2,-1), zRandF(-2,-1), zRandF(1,2), zRandF(1,2), zRandF(1,2) );
+    if( !zCC3DFromAABox3D( &cc, &box ) ||
+        !check_result( &cc, zAABox3DVolume(&box), zTOL ) ) result[0] = false;
+    zCC3DDestroy( &cc );
+  }
+  for( i=0; i<N/2; i++ ){
+    scale = pow( 10, zRandF(-3,3) );
+    zMat3DFromZYX( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    occ1 = zRandI( 1, ( 1 << 27 ) - 1 );
+    occ2 = zRandI( 1, ( 1 << 27 ) - 1 );
+    for( k=0; k<3; k++ ) offset2[k] = zRandI(0,3);
+    if( !create_grid_ph( &ph1, occ1, offset1, &r, scale ) ||
+        !create_grid_ph( &ph2, occ2, offset2, &r, scale ) ) continue;
+    grid_volume( occ1, offset1, occ2, offset2, v );
+    v3 = scale * scale * scale;
+    if( zIntersectPH3DBox( &ph1, &ph2, &box ) ){
+      d = zMax3( box.max.c.x - box.min.c.x, box.max.c.y - box.min.c.y, box.max.c.z - box.min.c.z );
+      for( k=0; k<3; k++ ){
+        box.min.e[k] -= 1.0e-3 * d;
+        box.max.e[k] += 1.0e-3 * d;
+      }
+      if( !zCC3DFromAABox3D( &cc, &box ) || !zCC3DIntersectNonconvex( &cc, &ph1 ) || !zCC3DIntersectNonconvex( &cc, &ph2 ) ||
+          !check_result( &cc, v[0] * v3, 1.0e-9 * v3 ) ) result[1] = false;
+      zCC3DDestroy( &cc );
+    } else
+      if( !zIsTol( v[0], 1.0e-9 ) ) result[1] = false;
+    zPH3DDestroy( &ph1 );
+    zPH3DDestroy( &ph2 );
+  }
+  /* an L-shaped solid of three cubes, and a small cube in its notch or in it */
+  zMat3DIdent( &r );
+  if( !create_grid_ph( &ph2, 1 | 1<<1 | 1<<3, offset1, &r, 1 ) ){
+    result[2] = result[3] = false;
+  } else{
+    for( i=0; i<2; i++ ){
+      zVec3DCreate( &lo, 1.4, 1.4, 0.4 ); /* in the notch */
+      if( i == 1 ) zVec3DCreate( &lo, 0.4, 0.4, 0.4 ); /* in the solid */
+      zVec3DCreate( &hi, lo.c.x + 0.2, lo.c.y + 0.2, lo.c.z + 0.2 );
+      create_box_ph( &ph1, &lo, &hi, &r, 0, 1 );
+      if( !zCC3DFromPH3D( &cc, &ph1 ) || !zCC3DIntersectNonconvex( &cc, &ph2 ) ||
+          !check_result( &cc, i == 0 ? 0 : 0.008, 1.0e-12 ) ) result[2+i] = false;
+      zCC3DDestroy( &cc );
+      zPH3DDestroy( &ph1 );
+    }
+    zPH3DDestroy( &ph2 );
+  }
+  zAssert( zCC3DFromAABox3D, result[0] );
+  zAssert( zCC3DFromAABox3D + zCC3DIntersectNonconvex (non-convex polyhedra), result[1] );
+  zAssert( zCC3DIntersectNonconvex (region outside without face), result[2] );
+  zAssert( zCC3DIntersectNonconvex (region inside without face), result[3] );
+}
+
+/* a polyhedron that consists of two polyhedra. */
+bool concat_ph(zPH3D *ph1, zPH3D *ph2, zPH3D *ph)
+{
+  int i;
+
+  if( !zPH3DAlloc( ph, zPH3DVertNum(ph1)+zPH3DVertNum(ph2), zPH3DFaceNum(ph1)+zPH3DFaceNum(ph2) ) ) return false;
+  for( i=0; i<zPH3DVertNum(ph1); i++ ) zVec3DCopy( zPH3DVert(ph1,i), zPH3DVert(ph,i) );
+  for( i=0; i<zPH3DVertNum(ph2); i++ ) zVec3DCopy( zPH3DVert(ph2,i), zPH3DVert(ph,zPH3DVertNum(ph1)+i) );
+  for( i=0; i<zPH3DFaceNum(ph1); i++ )
+    zTri3DCreate( zPH3DFace(ph,i),
+      zPH3DVert(ph,zPH3DFaceVert(ph1,i,0)-zPH3DVertBuf(ph1)),
+      zPH3DVert(ph,zPH3DFaceVert(ph1,i,1)-zPH3DVertBuf(ph1)),
+      zPH3DVert(ph,zPH3DFaceVert(ph1,i,2)-zPH3DVertBuf(ph1)) );
+  for( i=0; i<zPH3DFaceNum(ph2); i++ )
+    zTri3DCreate( zPH3DFace(ph,zPH3DFaceNum(ph1)+i),
+      zPH3DVert(ph,zPH3DVertNum(ph1)+(zPH3DFaceVert(ph2,i,0)-zPH3DVertBuf(ph2))),
+      zPH3DVert(ph,zPH3DVertNum(ph1)+(zPH3DFaceVert(ph2,i,1)-zPH3DVertBuf(ph2))),
+      zPH3DVert(ph,zPH3DVertNum(ph1)+(zPH3DFaceVert(ph2,i,2)-zPH3DVertBuf(ph2))) );
+  return true;
+}
+
+/* a polyhedron that consists of two convex components, each of which is locally convex at every
+ * edge but which is not convex as a whole. */
+void assert_cc3d_two_components(void)
+{
+  zCC3D cc;
+  zPH3D b1, b2, two, big;
+  zVec3D lo, hi;
+  zMat3D r;
+  double scale, d;
+  int i;
+  bool result[3] = { true, true, true };
+
+  for( i=0; i<N/2; i++ ){
+    scale = pow( 10, zRandF(-3,3) );
+    d = zRandF( 1.5, 3 ); /* distance between the two unit cubes */
+    zMat3DFromZYX( &r, zRandF(-zPI,zPI), zRandF(-zPI,zPI), zRandF(-zPI,zPI) );
+    zVec3DCreate( &lo, 0, 0, 0 ); zVec3DCreate( &hi, 1, 1, 1 );
+    create_box_ph( &b1, &lo, &hi, &r, 0, scale );
+    zVec3DCreate( &lo, d, 0, 0 ); zVec3DCreate( &hi, d+1, 1, 1 );
+    create_box_ph( &b2, &lo, &hi, &r, 0, scale );
+    zVec3DCreate( &lo, -1, -1, -1 ); zVec3DCreate( &hi, d+2, 2, 2 );
+    create_box_ph( &big, &lo, &hi, &r, 0, scale );
+    if( !concat_ph( &b1, &b2, &two ) ){
+      result[0] = result[1] = result[2] = false;
+      break;
+    }
+    if( !zCC3DFromPH3D( &cc, &two ) || !check_result( &cc, 2*scale*scale*scale, 1.0e-9*scale*scale*scale ) ) result[0] = false;
+    zCC3DDestroy( &cc );
+    if( !zCC3DFromPH3D( &cc, &big ) || !zCC3DIntersect( &cc, &two ) ||
+        !check_result( &cc, 2*scale*scale*scale, 1.0e-9*scale*scale*scale ) ) result[1] = false;
+    zCC3DDestroy( &cc );
+    if( !zCC3DFromPH3D( &cc, &big ) || !zCC3DSubtract( &cc, &two ) ||
+        !check_result( &cc, ( 9*(d+3) - 2 )*scale*scale*scale, 1.0e-9*scale*scale*scale ) ) result[2] = false;
+    zCC3DDestroy( &cc );
+    zPH3DDestroy( &b1 );
+    zPH3DDestroy( &b2 );
+    zPH3DDestroy( &big );
+    zPH3DDestroy( &two );
+  }
+  zAssert( zCC3DFromPH3D (polyhedron of two components), result[0] );
+  zAssert( zCC3DIntersect (polyhedron of two components), result[1] );
+  zAssert( zCC3DSubtract (polyhedron of two components), result[2] );
+}
+
 void assert_cc3d_invalid(void)
 {
   zCC3D cc;
@@ -552,6 +763,9 @@ int main(void)
   assert_cc3d_topology();
   assert_cc3d_enlarge();
   assert_cc3d_nonconvex();
+  assert_cc3d_two_components();
+  assert_cc3d_versions();
+  assert_cc3d_from_aabox();
   assert_cc3d_invalid();
   assert_cc3d_cut_by_ph3d();
   return 0;

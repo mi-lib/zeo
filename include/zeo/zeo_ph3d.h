@@ -255,6 +255,18 @@ __ZEO_EXPORT zAABox3D *zPH3DAABB(const zPH3D *ph, zAABox3D *aabb);
  */
 __ZEO_EXPORT bool zPH3DIsClosed(const zPH3D *ph);
 
+/*! \brief check if a 3D polyhedron is convex.
+ *
+ * zPH3DIsConvex() checks if a 3D polyhedron \a ph is convex within a tolerance relative to its size.
+ * \a ph has to be closed (see zPH3DIsClosed()), have faces oriented outward, and not intersect
+ * itself, which are not checked. A polyhedron that has an edge shared by more than two faces or
+ * consists of more than one components is not convex.
+ * \return
+ * zPH3DIsConvex() returns the true value if \a ph is convex. If not, if \a ph has no face, or if it
+ * fails to allocate internal memory, it returns the false value.
+ */
+__ZEO_EXPORT bool zPH3DIsConvex(const zPH3D *ph);
+
 /* solid modeling */
 
 /*! \brief create prism and pyramid by extrusion.

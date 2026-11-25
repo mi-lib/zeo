@@ -6,6 +6,7 @@
 
 #include <zeo/zeo_ph3d.h>
 #include <zeo/zeo_vec2d.h>
+#include <zeo/zeo_bv3d.h>
 
 /* initialize a 3D polyhedron. */
 zPH3D *zPH3DInit(zPH3D *ph)
@@ -373,6 +374,135 @@ bool zPH3DIsClosed(const zPH3D *ph)
   ret = true;
  TERMINATE:
   zFree( edge );
+  return ret;
+}
+
+/* check if a face of a 3D polyhedron is degenerate, namely, its height is within a tolerance, since
+ * the normal vector of such a face is not reliable. */
+static bool _zPH3DFaceIsDegenerate(const zPH3D *ph, int i, double tol)
+{
+  zVec3D e[3], n;
+  double l, lmax = 0;
+  int j;
+
+  for( j=0; j<3; j++ ){
+    zVec3DSub( zPH3DFaceVert(ph,i,(j+1)%3), zPH3DFaceVert(ph,i,j), &e[j] );
+    if( ( l = zVec3DNorm( &e[j] ) ) > lmax ) lmax = l;
+  }
+  zVec3DOuterProd( &e[0], &e[1], &n );
+  return zVec3DNorm( &n ) <= tol * lmax;
+}
+
+/* check if a closed 3D polyhedron is convex, namely, if the volume of its convex hull is equal to
+ * its volume within a tolerance. This is used for a polyhedron with degenerate faces, on which the
+ * convexity at edges is not reliable. */
+static bool _zPH3DIsConvexHull(const zPH3D *ph, double tol)
+{
+  zVec3DData data;
+  zPH3D hull;
+  double area = 0;
+  int i;
+  bool ret;
+
+  if( !zVec3DDataAssignArrayDirect( &data, (zVec3D *)zPH3DVertBuf(ph), zPH3DVertNum(ph) ) ) return false;
+  if( !zVec3DDataConvexHull( &data, &hull ) ){
+    zVec3DDataDestroy( &data );
+    return false;
+  }
+  for( i=0; i<zPH3DFaceNum(ph); i++ ) area += zTri3DArea( zPH3DFace(ph,i) );
+  ret = zPH3DVolume( &hull ) - zPH3DVolume( ph ) <= tol * area;
+  zPH3DDestroy( &hull );
+  zVec3DDataDestroy( &data );
+  return ret;
+}
+
+/* comparison of edges given by pairs of vertex indices, followed by a face and the opposite vertex. */
+static int _zPH3DEdgeFaceCmp(const void *e1, const void *e2)
+{
+  const int *a = (const int *)e1, *b = (const int *)e2;
+
+  if( a[0] != b[0] ) return a[0] < b[0] ? -1 : 1;
+  return a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0;
+}
+
+/* root of a face in the union-find forest. */
+static int _zPH3DFaceRoot(int *parent, int i)
+{
+  int r, next;
+
+  for( r=i; parent[r]!=r; r=parent[r] );
+  while( parent[i] != r ){ /* path compression */
+    next = parent[i];
+    parent[i] = r;
+    i = next;
+  }
+  return r;
+}
+
+/* check if a closed 3D polyhedron is convex.
+ * Due to the theorem by Tietze, a connected closed surface without self-intersection is convex if
+ * it is locally convex at every edge, namely, the vertex of a face opposite to an edge is not in
+ * front of the plane of the other face sharing the edge. A polyhedron that has an edge shared by
+ * more than two faces or consists of more than one components is not convex. A vertex in front of
+ * the plane of a non-degenerate face proves the non-convexity even if the other face is degenerate.
+ * Since the normal vectors of degenerate faces are not reliable, concave edges might be hidden by
+ * them, so that the convexity of a polyhedron with degenerate faces that passes the above test is
+ * checked by its convex hull. */
+bool zPH3DIsConvex(const zPH3D *ph)
+{
+  zAABox3D aabb;
+  zVec3D d;
+  int *edge, *parent = NULL, n, i, j, k, u, v, f, g, ncomp;
+  bool *degenerate = NULL, hasdegenerate = false, ret = false;
+  double tol;
+
+  if( zPH3DFaceNum(ph) <= 0 ) return false;
+  zPH3DAABB( ph, &aabb );
+  tol = zTOL * zMax3( aabb.max.c.x - aabb.min.c.x, aabb.max.c.y - aabb.min.c.y, aabb.max.c.z - aabb.min.c.z );
+  n = 3 * zPH3DFaceNum(ph);
+  if( !( edge = zAlloc( int, 4*n ) ) || !( parent = zAlloc( int, zPH3DFaceNum(ph) ) ) ||
+      !( degenerate = zAlloc( bool, zPH3DFaceNum(ph) ) ) ){
+    ZALLOCERROR();
+    goto TERMINATE;
+  }
+  /* each record: the smaller and larger indices of vertices, face, and the opposite vertex */
+  for( i=0; i<zPH3DFaceNum(ph); i++ ){
+    parent[i] = i;
+    if( ( degenerate[i] = _zPH3DFaceIsDegenerate( ph, i, tol ) ) ) hasdegenerate = true;
+    for( j=0; j<3; j++ ){
+      u = zPH3DFaceVert(ph,i,j) - zPH3DVertBuf(ph);
+      v = zPH3DFaceVert(ph,i,(j+1)%3) - zPH3DVertBuf(ph);
+      k = 12*i + 4*j;
+      edge[k  ] = zMin( u, v );
+      edge[k+1] = zMax( u, v );
+      edge[k+2] = i;
+      edge[k+3] = zPH3DFaceVert(ph,i,(j+2)%3) - zPH3DVertBuf(ph);
+    }
+  }
+  qsort( edge, n, sizeof(int)*4, _zPH3DEdgeFaceCmp );
+  for( ncomp=zPH3DFaceNum(ph), i=0; i<n; i+=2 ){
+    if( i+1 >= n || _zPH3DEdgeFaceCmp( &edge[4*i], &edge[4*(i+1)] ) != 0 ||
+        ( i+2 < n && _zPH3DEdgeFaceCmp( &edge[4*i], &edge[4*(i+2)] ) == 0 ) )
+      goto TERMINATE; /* an edge shared by more than two faces */
+    f = edge[4*i+2];
+    g = edge[4*(i+1)+2];
+    /* local convexity on both sides */
+    zVec3DSub( zPH3DVert(ph,edge[4*(i+1)+3]), zPH3DVert(ph,edge[4*i]), &d );
+    if( !degenerate[f] && zVec3DInnerProd( zTri3DNorm(zPH3DFace(ph,f)), &d ) > tol ) goto TERMINATE;
+    zVec3DSub( zPH3DVert(ph,edge[4*i+3]), zPH3DVert(ph,edge[4*i]), &d );
+    if( !degenerate[g] && zVec3DInnerProd( zTri3DNorm(zPH3DFace(ph,g)), &d ) > tol ) goto TERMINATE;
+    /* union of the two faces */
+    if( ( f = _zPH3DFaceRoot( parent, f ) ) != ( g = _zPH3DFaceRoot( parent, g ) ) ){
+      parent[f] = g;
+      ncomp--;
+    }
+  }
+  if( ncomp == 1 )
+    ret = hasdegenerate ? _zPH3DIsConvexHull( ph, tol ) : true;
+ TERMINATE:
+  zFree( edge );
+  zFree( parent );
+  zFree( degenerate );
   return ret;
 }
 

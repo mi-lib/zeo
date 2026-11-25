@@ -5,7 +5,6 @@
  */
 
 #include <zeo/zeo_cc3d.h>
-#include <zeo/zeo_bv3d.h>
 
 /* Data structure:
  * Each face has two sides. The half-edges on side 0 make a loop counterclockwise about the normal
@@ -903,28 +902,29 @@ static unsigned long _zCC3DSpreadBits(unsigned long v)
   return r;
 }
 
-static _zCC3DFaceOrder *_zCC3DFaceOrderCreate(const zPH3D *ph, const zAABox3D *box)
+static _zCC3DFaceOrder *_zCC3DFaceOrderCreate(const zPH3D *ph, const zAABox3D *box, const _zCC3DIntVec *sel)
 {
   _zCC3DFaceOrder *order;
   zVec3D c;
   double w;
   unsigned long q[3];
-  int i, k;
+  int i, j, k;
 
-  if( !( order = zAlloc( _zCC3DFaceOrder, zPH3DFaceNum(ph) ) ) ){
+  if( !( order = zAlloc( _zCC3DFaceOrder, sel->num ) ) ){
     ZALLOCERROR();
     return NULL;
   }
-  for( i=0; i<zPH3DFaceNum(ph); i++ ){
+  for( j=0; j<sel->num; j++ ){
+    i = sel->buf[j];
     zTri3DBarycenter( zPH3DFace(ph,i), &c );
     for( k=0; k<3; k++ ){
       w = box->max.e[k] - box->min.e[k];
       q[k] = (unsigned long)( ( w > 0 ? zLimit( ( c.e[k] - box->min.e[k] ) / w, 0, 1 ) : 0 ) * 0x1fffff );
     }
-    order[i].key = _zCC3DSpreadBits( q[0] ) | _zCC3DSpreadBits( q[1] ) << 1 | _zCC3DSpreadBits( q[2] ) << 2;
-    order[i].id = i;
+    order[j].key = _zCC3DSpreadBits( q[0] ) | _zCC3DSpreadBits( q[1] ) << 1 | _zCC3DSpreadBits( q[2] ) << 2;
+    order[j].id = i;
   }
-  qsort( order, zPH3DFaceNum(ph), sizeof(_zCC3DFaceOrder), _zCC3DFaceOrderCmp );
+  qsort( order, sel->num, sizeof(_zCC3DFaceOrder), _zCC3DFaceOrderCmp );
   return order;
 }
 
@@ -944,16 +944,16 @@ static bool _zCC3DPH3DFaceIsDegenerate(const zPH3D *ph, int i, double tol)
   return zVec3DNorm( &n ) <= tol * lmax;
 }
 
-/* cut candidate cells by planes of faces of a convex polyhedron, and mark those inside of it. */
-static bool _zCC3DSplitConvexPH3D(zCC3D *cc, const zPH3D *ph, const zAABox3D *box, _zCC3DIntVec *cand)
+/* cut candidate cells by planes of selected faces of a convex polyhedron, and mark those inside of it. */
+static bool _zCC3DSplitConvexPH3D(zCC3D *cc, const zPH3D *ph, const zAABox3D *box, const _zCC3DIntVec *sel, _zCC3DIntVec *cand)
 {
   _zCC3DFaceOrder *order;
   zPlane3D plane;
   int i, j, n, c, cf, ret;
   bool result = false;
 
-  if( !( order = _zCC3DFaceOrderCreate( ph, box ) ) ) return false;
-  for( j=0; j<zPH3DFaceNum(ph) && cand->num>0; j++ ){
+  if( !( order = _zCC3DFaceOrderCreate( ph, box, sel ) ) ) return false;
+  for( j=0; j<sel->num && cand->num>0; j++ ){
     i = order[j].id;
     if( _zCC3DPH3DFaceIsDegenerate( ph, i, cc->tol ) ) continue;
     zPlane3DCreate( &plane, zTri3DVert(zPH3DFace(ph,i),0), zTri3DNorm(zPH3DFace(ph,i)) );
@@ -1150,8 +1150,41 @@ static bool _zCC3DBSPTaskPush(_zCC3DBSPTaskStack *task, _zCC3DIntVec *fstack, co
   return true;
 }
 
-/* cut candidate cells along the solid BSP tree of a polyhedron, and mark those inside of it. */
-static bool _zCC3DSplitBSPPH3D(zCC3D *cc, const zPH3D *ph, _zCC3DIntVec *cand)
+/* add a fragment of a face of a polyhedron clipped by a region (NULL for no region). */
+static bool _zCC3DFragAddFace(_zCC3DFragPool *pool, int face, const zAABox3D *region, _zCC3DIntVec *frag)
+{
+  zPlane3D plane;
+  zVec3D org, norm;
+  int f, k, side;
+
+  if( ( f = _zCC3DFragAdd( pool, face ) ) < 0 ||
+      !_zCC3DFragAddVert( pool, zTri3DVert(zPH3DFace(pool->ph,face),0) ) ||
+      !_zCC3DFragAddVert( pool, zTri3DVert(zPH3DFace(pool->ph,face),1) ) ||
+      !_zCC3DFragAddVert( pool, zTri3DVert(zPH3DFace(pool->ph,face),2) ) ) return false;
+  if( region ){
+    for( k=0; k<3; k++ )
+      for( side=0; side<2; side++ ){ /* the region is behind its six planes */
+        zVec3DZero( &norm );
+        norm.e[k] = side == 0 ? -1 : 1;
+        zVec3DZero( &org );
+        org.e[k] = side == 0 ? region->min.e[k] : region->max.e[k];
+        zPlane3DCreate( &plane, &org, &norm );
+        switch( _zCC3DFragClassify( pool, f, &plane ) ){
+        case  1: return true; /* out of the region */
+        case  2: if( ( f = _zCC3DFragClip( pool, f, -1 ) ) < 0 ) return false; break;
+        case -2: return false;
+        default: ;
+        }
+      }
+  }
+  return _zCC3DIntVecPush( frag, f );
+}
+
+/* cut candidate cells along the solid BSP tree of selected faces of a polyhedron, and mark those
+ * inside of it. If a region is given, the fragments are clipped by it, so that an empty region of
+ * the tree is adjacent to the fragment of the last splitter within the region; the candidate cells
+ * have to be in the region. */
+static bool _zCC3DSplitBSPPH3D(zCC3D *cc, const zPH3D *ph, const zAABox3D *region, const _zCC3DIntVec *sel, _zCC3DIntVec *cand)
 {
   _zCC3DFragPool pool;
   _zCC3DBSPTaskStack task = { NULL, 0, 0 };
@@ -1164,13 +1197,9 @@ static bool _zCC3DSplitBSPPH3D(zCC3D *cc, const zPH3D *ph, _zCC3DIntVec *cand)
   _zCC3DFragPoolInit( &pool, ph, cc->tol );
   _zCC3DIntVecInit( &fstack ); _zCC3DIntVecInit( &cstack ); _zCC3DIntVecInit( &frag );
   _zCC3DIntVecInit( &fb ); _zCC3DIntVecInit( &ff ); _zCC3DIntVecInit( &cb ); _zCC3DIntVecInit( &cf );
-  for( i=0; i<zPH3DFaceNum(ph); i++ ){
-    if( _zCC3DPH3DFaceIsDegenerate( ph, i, cc->tol ) ) continue; /* not to be a splitter */
-    if( ( f = _zCC3DFragAdd( &pool, i ) ) < 0 ||
-        !_zCC3DFragAddVert( &pool, zTri3DVert(zPH3DFace(ph,i),0) ) ||
-        !_zCC3DFragAddVert( &pool, zTri3DVert(zPH3DFace(ph,i),1) ) ||
-        !_zCC3DFragAddVert( &pool, zTri3DVert(zPH3DFace(ph,i),2) ) ||
-        !_zCC3DIntVecPush( &frag, f ) ) goto TERMINATE;
+  for( i=0; i<sel->num; i++ ){
+    if( _zCC3DPH3DFaceIsDegenerate( ph, sel->buf[i], cc->tol ) ) continue; /* not to be a splitter */
+    if( !_zCC3DFragAddFace( &pool, sel->buf[i], region, &frag ) ) goto TERMINATE;
   }
   if( frag.num == 0 ){
     ZRUNERROR( ZEO_ERR_EMPTYSET );
@@ -1229,36 +1258,63 @@ static bool _zCC3DSplitBSPPH3D(zCC3D *cc, const zPH3D *ph, _zCC3DIntVec *cand)
   return result;
 }
 
-/* check if a closed polyhedron is convex, namely, if the volume of its convex hull is equal to
- * its volume within a tolerance. The convexity at every edge is not examined, since the polyhedron
- * might have degenerate faces. */
-static bool _zCC3DPH3DIsConvex(const zPH3D *ph, double tol, bool *convex)
+/* select faces of a polyhedron whose axis-aligned bounding boxes overlap a region (all faces if the
+ * region is NULL). It is also checked if any face actually intersects the region. */
+static bool _zCC3DPH3DSelectFaces(const zPH3D *ph, const zAABox3D *region, double tol, _zCC3DIntVec *sel, bool *hit)
 {
-  zVec3DData data;
-  zPH3D hull;
-  double area = 0;
-  int i;
+  _zCC3DFragPool pool;
+  _zCC3DIntVec frag;
+  const zTri3D *tri;
+  double lo, hi;
+  int i, j, k;
+  bool ret = false;
 
-  *convex = false;
-  if( !zVec3DDataAssignArrayDirect( &data, (zVec3D *)zPH3DVertBuf(ph), zPH3DVertNum(ph) ) ) return false;
-  if( !zVec3DDataConvexHull( &data, &hull ) ){
-    zVec3DDataDestroy( &data );
-    return false;
+  *hit = region == NULL;
+  for( i=0; i<zPH3DFaceNum(ph); i++ ){
+    if( region ){
+      tri = zPH3DFace(ph,i);
+      for( k=0; k<3; k++ ){
+        lo = hi = zTri3DVert(tri,0)->e[k];
+        for( j=1; j<3; j++ ){
+          lo = zMin( lo, zTri3DVert(tri,j)->e[k] );
+          hi = zMax( hi, zTri3DVert(tri,j)->e[k] );
+        }
+        if( hi < region->min.e[k] - tol || lo > region->max.e[k] + tol ) break;
+      }
+      if( k < 3 ) continue;
+    }
+    if( !_zCC3DIntVecPush( sel, i ) ) return false;
   }
-  for( i=0; i<zPH3DFaceNum(ph); i++ ) area += zTri3DArea( zPH3DFace(ph,i) );
-  *convex = zPH3DVolume( &hull ) - zPH3DVolume( ph ) <= tol * area;
-  zPH3DDestroy( &hull );
-  zVec3DDataDestroy( &data );
-  return true;
+  if( *hit ) return true;
+  /* a face that remains after being clipped by the region */
+  _zCC3DFragPoolInit( &pool, ph, tol );
+  _zCC3DIntVecInit( &frag );
+  for( i=0; i<sel->num && frag.num==0; i++ ){
+    if( _zCC3DPH3DFaceIsDegenerate( ph, sel->buf[i], tol ) ) continue; /* not used for the cut */
+    if( !_zCC3DFragAddFace( &pool, sel->buf[i], region, &frag ) ) goto TERMINATE;
+  }
+  *hit = frag.num > 0;
+  ret = true;
+ TERMINATE:
+  _zCC3DIntVecDestroy( &frag );
+  _zCC3DFragPoolDestroy( &pool );
+  return ret;
 }
 
-/* mark cells of a given label inside of a polyhedron as candidates by cutting them. */
-static bool _zCC3DSplitPH3D(zCC3D *cc, const zPH3D *ph, bool solid)
+/* mark cells of a given label inside of a polyhedron as candidates by cutting them. The polyhedron
+ * is assumed to satisfy the condition, which is not checked here.
+ * If a region is given, only the faces of the polyhedron in the region are used, where the candidate
+ * cells have to be in the region. For a convex polyhedron, the part of the region inside of the
+ * polyhedron is bounded by the planes of the faces in the region if any. For a general polyhedron,
+ * see the explanation of the solid BSP tree. If no face is in the region, the region is entirely
+ * inside or outside of the polyhedron. */
+static bool _zCC3DSplitPH3D(zCC3D *cc, const zPH3D *ph, bool solid, bool convex, const zAABox3D *region)
 {
-  _zCC3DIntVec cand;
+  _zCC3DIntVec cand, sel;
   zAABox3D box;
+  zVec3D center;
   int c;
-  bool convex, result = false;
+  bool hit, result = false;
 
   cc->_tag++; /* tag of faces made by the operation, which is renewed even if no face is made */
   for( c=0; c<cc->cellnum; c++ ) cc->cell[c]._cand = false;
@@ -1266,6 +1322,34 @@ static bool _zCC3DSplitPH3D(zCC3D *cc, const zPH3D *ph, bool solid)
     ZRUNERROR( ZEO_ERR_EMPTYSET );
     return false;
   }
+  _zCC3DIntVecInit( &cand );
+  _zCC3DIntVecInit( &sel );
+  for( c=0; c<cc->cellnum; c++ )
+    if( cc->cell[c].solid == solid && !_zCC3DAABBIsApart( &box, &cc->cell[c].aabb, cc->tol ) )
+      if( !_zCC3DIntVecPush( &cand, c ) ) goto TERMINATE;
+  if( cand.num == 0 ){
+    result = true;
+    goto TERMINATE;
+  }
+  if( !_zCC3DPH3DSelectFaces( ph, region, cc->tol, &sel, &hit ) ) goto TERMINATE;
+  if( !hit ){ /* no face in the region */
+    zAABox3DCenter( region, &center );
+    if( zPH3DPointIsInside( ph, &center, 0 ) )
+      for( c=0; c<cand.num; c++ ) cc->cell[cand.buf[c]]._cand = true;
+    result = true;
+    goto TERMINATE;
+  }
+  result = convex ?
+    _zCC3DSplitConvexPH3D( cc, ph, &box, &sel, &cand ) : _zCC3DSplitBSPPH3D( cc, ph, region, &sel, &cand );
+ TERMINATE:
+  _zCC3DIntVecDestroy( &cand );
+  _zCC3DIntVecDestroy( &sel );
+  return result;
+}
+
+/* check if a polyhedron satisfies the condition for operations, and if it is convex. */
+static bool _zCC3DPH3DCheck(const zPH3D *ph, bool *convex)
+{
   if( !zPH3DIsClosed( ph ) ){
     ZRUNERROR( ZEO_ERR_CC3D_OPENPH );
     return false;
@@ -1274,20 +1358,8 @@ static bool _zCC3DSplitPH3D(zCC3D *cc, const zPH3D *ph, bool solid)
     ZRUNERROR( ZEO_ERR_CC3D_INVERTEDPH );
     return false;
   }
-  _zCC3DIntVecInit( &cand );
-  for( c=0; c<cc->cellnum; c++ )
-    if( cc->cell[c].solid == solid && !_zCC3DAABBIsApart( &box, &cc->cell[c].aabb, cc->tol ) )
-      if( !_zCC3DIntVecPush( &cand, c ) ) goto TERMINATE;
-  if( cand.num == 0 ){
-    result = true;
-    goto TERMINATE;
-  }
-  if( !_zCC3DPH3DIsConvex( ph, cc->tol, &convex ) ) goto TERMINATE;
-  result = convex ?
-    _zCC3DSplitConvexPH3D( cc, ph, &box, &cand ) : _zCC3DSplitBSPPH3D( cc, ph, &cand );
- TERMINATE:
-  _zCC3DIntVecDestroy( &cand );
-  return result;
+  *convex = zPH3DIsConvex( ph );
+  return true;
 }
 
 /* ********************************************************** */
@@ -1645,7 +1717,7 @@ zCC3D *zCC3DCutByPlane3D(zCC3D *cc, const zPlane3D *plane)
 }
 
 /* merge a polyhedron to the solid. */
-zCC3D *zCC3DMerge(zCC3D *cc, const zPH3D *ph)
+static zCC3D *_zCC3DMerge(zCC3D *cc, const zPH3D *ph, bool convex)
 {
   zAABox3D box;
   int c;
@@ -1654,36 +1726,135 @@ zCC3D *zCC3DMerge(zCC3D *cc, const zPH3D *ph)
       ( box.min.c.x < cc->universe.min.c.x || box.min.c.y < cc->universe.min.c.y || box.min.c.z < cc->universe.min.c.z ||
         box.max.c.x > cc->universe.max.c.x || box.max.c.y > cc->universe.max.c.y || box.max.c.z > cc->universe.max.c.z ) &&
       !_zCC3DEnlargeUniverse( cc, &box ) ) return NULL;
-  if( !_zCC3DSplitPH3D( cc, ph, false ) ) return NULL;
+  if( !_zCC3DSplitPH3D( cc, ph, false, convex, NULL ) ) return NULL;
   for( c=0; c<cc->cellnum; c++ )
     if( cc->cell[c]._cand ) cc->cell[c].solid = true;
   return cc;
 }
 
+zCC3D *zCC3DMergeConvex(zCC3D *cc, const zPH3D *ph)
+{
+  return _zCC3DMerge( cc, ph, true );
+}
+
+zCC3D *zCC3DMergeNonconvex(zCC3D *cc, const zPH3D *ph)
+{
+  return _zCC3DMerge( cc, ph, false );
+}
+
+zCC3D *zCC3DMerge(zCC3D *cc, const zPH3D *ph)
+{
+  bool convex;
+
+  return _zCC3DPH3DCheck( ph, &convex ) ? _zCC3DMerge( cc, ph, convex ) : NULL;
+}
+
 /* subtract a polyhedron from the solid. */
-zCC3D *zCC3DSubtract(zCC3D *cc, const zPH3D *ph)
+static zCC3D *_zCC3DSubtract(zCC3D *cc, const zPH3D *ph, bool convex)
 {
   int c;
 
-  if( !_zCC3DSplitPH3D( cc, ph, true ) ) return NULL;
+  if( !_zCC3DSplitPH3D( cc, ph, true, convex, NULL ) ) return NULL;
   for( c=0; c<cc->cellnum; c++ )
     if( cc->cell[c]._cand ) cc->cell[c].solid = false;
   return cc;
 }
 
-/* intersection of the solid and a polyhedron. */
-zCC3D *zCC3DIntersect(zCC3D *cc, const zPH3D *ph)
+zCC3D *zCC3DSubtractConvex(zCC3D *cc, const zPH3D *ph)
 {
-  int c;
+  return _zCC3DSubtract( cc, ph, true );
+}
 
-  if( !_zCC3DSplitPH3D( cc, ph, true ) ) return NULL;
+zCC3D *zCC3DSubtractNonconvex(zCC3D *cc, const zPH3D *ph)
+{
+  return _zCC3DSubtract( cc, ph, false );
+}
+
+zCC3D *zCC3DSubtract(zCC3D *cc, const zPH3D *ph)
+{
+  bool convex;
+
+  return _zCC3DPH3DCheck( ph, &convex ) ? _zCC3DSubtract( cc, ph, convex ) : NULL;
+}
+
+/* intersection of the solid and a polyhedron.
+ * Since the intersection is in the intersection of the axis-aligned bounding boxes of the solid and
+ * the polyhedron, the solid is cut by the planes of the box in advance, and only the faces of the
+ * polyhedron in the box are used. The box is slightly enlarged, so that its planes do not coincide
+ * with those of faces of the polyhedron, which would be left with the tags of the planes of the box.
+ * A plane of the box is not used if the solid is inside of it. */
+#define _ZEO_CC3D_REGION_MARGIN 1.0e-3
+static zCC3D *_zCC3DIntersect(zCC3D *cc, const zPH3D *ph, bool convex)
+{
+  zAABox3D solidbox, phbox, region;
+  zPlane3D plane;
+  zVec3D org, norm;
+  double d, margin;
+  int c, k, side;
+  bool hassolid = false;
+
+  for( c=0; c<cc->cellnum; c++ ){
+    if( !cc->cell[c].solid ) continue;
+    /* the bounding box of a cell might be larger than the cell, which is made tight */
+    if( !_zCC3DUpdateCell( cc, c ) ) return NULL;
+    if( !hassolid ){
+      zAABox3DCopy( &cc->cell[c].aabb, &solidbox );
+      hassolid = true;
+    } else
+      zAABox3DMerge( &solidbox, &cc->cell[c].aabb, &solidbox );
+  }
+  if( !hassolid || !_zCC3DPH3DAABB( ph, &phbox ) ) /* empty solid or polyhedron */
+    return _zCC3DSplitPH3D( cc, ph, true, convex, NULL ) ? cc : NULL;
+  for( d=0, k=0; k<3; k++ ){
+    region.min.e[k] = zMax( solidbox.min.e[k], phbox.min.e[k] );
+    region.max.e[k] = zMin( solidbox.max.e[k], phbox.max.e[k] );
+    if( region.min.e[k] > region.max.e[k] + cc->tol ){ /* apart from each other */
+      cc->_tag++;
+      for( c=0; c<cc->cellnum; c++ ) cc->cell[c].solid = false;
+      return cc;
+    }
+    d = zMax( d, region.max.e[k] - region.min.e[k] );
+  }
+  margin = zMax( _ZEO_CC3D_REGION_MARGIN * d, 10 * cc->tol );
+  for( k=0; k<3; k++ ){
+    region.min.e[k] -= margin;
+    region.max.e[k] += margin;
+    for( side=0; side<2; side++ ){
+      if( side == 0 ? region.min.e[k] <= solidbox.min.e[k] + cc->tol : region.max.e[k] >= solidbox.max.e[k] - cc->tol )
+        continue; /* the solid is inside of the plane */
+      zVec3DZero( &norm );
+      norm.e[k] = side == 0 ? -1 : 1;
+      zVec3DZero( &org );
+      org.e[k] = side == 0 ? region.min.e[k] : region.max.e[k];
+      zPlane3DCreate( &plane, &org, &norm );
+      if( !zCC3DCutByPlane3D( cc, &plane ) ) return NULL;
+    }
+  }
+  if( !_zCC3DSplitPH3D( cc, ph, true, convex, &region ) ) return NULL;
   for( c=0; c<cc->cellnum; c++ )
     if( cc->cell[c].solid && !cc->cell[c]._cand ) cc->cell[c].solid = false;
   return cc;
 }
 
+zCC3D *zCC3DIntersectConvex(zCC3D *cc, const zPH3D *ph)
+{
+  return _zCC3DIntersect( cc, ph, true );
+}
+
+zCC3D *zCC3DIntersectNonconvex(zCC3D *cc, const zPH3D *ph)
+{
+  return _zCC3DIntersect( cc, ph, false );
+}
+
+zCC3D *zCC3DIntersect(zCC3D *cc, const zPH3D *ph)
+{
+  bool convex;
+
+  return _zCC3DPH3DCheck( ph, &convex ) ? _zCC3DIntersect( cc, ph, convex ) : NULL;
+}
+
 /* create a 3D cell complex from a polyhedron. */
-zCC3D *zCC3DFromPH3D(zCC3D *cc, const zPH3D *ph)
+static zCC3D *_zCC3DFromPH3D(zCC3D *cc, const zPH3D *ph, bool convex)
 {
   zAABox3D box;
   double d;
@@ -1697,10 +1868,64 @@ zCC3D *zCC3DFromPH3D(zCC3D *cc, const zPH3D *ph)
   box.min.c.x -= d; box.min.c.y -= d; box.min.c.z -= d;
   box.max.c.x += d; box.max.c.y += d; box.max.c.z += d;
   if( !zCC3DCreate( cc, &box ) ) return NULL;
-  if( !zCC3DMerge( cc, ph ) ){
+  if( !_zCC3DMerge( cc, ph, convex ) ){
     zCC3DDestroy( cc );
     return NULL;
   }
+  return cc;
+}
+
+zCC3D *zCC3DFromPH3DConvex(zCC3D *cc, const zPH3D *ph)
+{
+  return _zCC3DFromPH3D( cc, ph, true );
+}
+
+zCC3D *zCC3DFromPH3DNonconvex(zCC3D *cc, const zPH3D *ph)
+{
+  return _zCC3DFromPH3D( cc, ph, false );
+}
+
+zCC3D *zCC3DFromPH3D(zCC3D *cc, const zPH3D *ph)
+{
+  bool convex;
+
+  zCC3DInit( cc );
+  return _zCC3DPH3DCheck( ph, &convex ) ? _zCC3DFromPH3D( cc, ph, convex ) : NULL;
+}
+
+/* create a 3D cell complex whose solid is an axis-aligned box. */
+zCC3D *zCC3DFromAABox3D(zCC3D *cc, const zAABox3D *box)
+{
+  zAABox3D universe;
+  zPlane3D plane;
+  zVec3D org, norm;
+  double d;
+  int k, side;
+
+  zCC3DInit( cc );
+  d = zMax3( box->max.c.x - box->min.c.x, box->max.c.y - box->min.c.y, box->max.c.z - box->min.c.z );
+  if( !( d > 0 ) || box->min.c.x > box->max.c.x || box->min.c.y > box->max.c.y || box->min.c.z > box->max.c.z ){
+    ZRUNERROR( ZEO_ERR_EMPTYSET );
+    return NULL;
+  }
+  for( k=0; k<3; k++ ){
+    universe.min.e[k] = box->min.e[k] - d;
+    universe.max.e[k] = box->max.e[k] + d;
+  }
+  if( !zCC3DCreate( cc, &universe ) ) return NULL;
+  cc->cell[0].solid = true;
+  for( k=0; k<3; k++ )
+    for( side=0; side<2; side++ ){
+      zVec3DZero( &norm );
+      norm.e[k] = side == 0 ? -1 : 1;
+      zVec3DZero( &org );
+      org.e[k] = side == 0 ? box->min.e[k] : box->max.e[k];
+      zPlane3DCreate( &plane, &org, &norm );
+      if( !zCC3DCutByPlane3D( cc, &plane ) ){
+        zCC3DDestroy( cc );
+        return NULL;
+      }
+    }
   return cc;
 }
 

@@ -202,6 +202,83 @@ void assert_ph3d_is_closed(void)
   zAssert( zPH3DIsClosed, result_closed && result_flipped && result_open && result_twisted && result_duplicate && result_nonmanifold );
 }
 
+/* tetrahedron at a position. */
+void create_tetrahedron(zPH3D *ph, int offset, double x)
+{
+  zVec3DCreate( zPH3DVert(ph,offset  ), x, 0, 0 );
+  zVec3DCreate( zPH3DVert(ph,offset+1), x+1, 0, 0 );
+  zVec3DCreate( zPH3DVert(ph,offset+2), x, 1, 0 );
+  zVec3DCreate( zPH3DVert(ph,offset+3), x, 0, 1 );
+  zTri3DCreate( zPH3DFace(ph,offset  ), zPH3DVert(ph,offset), zPH3DVert(ph,offset+2), zPH3DVert(ph,offset+1) );
+  zTri3DCreate( zPH3DFace(ph,offset+1), zPH3DVert(ph,offset), zPH3DVert(ph,offset+1), zPH3DVert(ph,offset+3) );
+  zTri3DCreate( zPH3DFace(ph,offset+2), zPH3DVert(ph,offset), zPH3DVert(ph,offset+3), zPH3DVert(ph,offset+2) );
+  zTri3DCreate( zPH3DFace(ph,offset+3), zPH3DVert(ph,offset+1), zPH3DVert(ph,offset+2), zPH3DVert(ph,offset+3) );
+}
+
+void assert_ph3d_is_convex(void)
+{
+  zVec3DData data;
+  zVec3D p, c;
+  zPH3D ph;
+  zSphere3D sphere;
+  int i, j;
+  double scale;
+  const int testnum = 100, pointnum = 100;
+  bool result_convex = true, result_dented = true, result_sphere = true, result_apart, result_nonmanifold;
+
+  for( i=0; i<testnum; i++ ){
+    scale = pow( 10, zRandF(-3,3) );
+    zVec3DDataInitList( &data );
+    for( j=0; j<pointnum; j++ ){
+      zVec3DCreate( &p, zRandF(-scale,scale), zRandF(-scale,scale), zRandF(-scale,scale) );
+      zVec3DDataAdd( &data, &p );
+    }
+    zVec3DDataConvexHull( &data, &ph );
+    zVec3DDataDestroy( &data );
+    if( !zPH3DIsConvex( &ph ) ) result_convex = false;
+    /* a vertex pushed toward the barycenter, which makes the polyhedron non-convex */
+    zPH3DBarycenter( &ph, &c );
+    j = zRandI( 0, zPH3DVertNum(&ph)-1 );
+    zVec3DMid( zPH3DVert(&ph,j), &c, &p );
+    zVec3DCopy( &p, zPH3DVert(&ph,j) );
+    for( j=0; j<zPH3DFaceNum(&ph); j++ ) zTri3DCalcNorm( zPH3DFace(&ph,j) );
+    if( zPH3DIsConvex( &ph ) ) result_dented = false;
+    zPH3DDestroy( &ph );
+    /* a polyhedron converted from a sphere */
+    zSphere3DCreate( &sphere, ZVEC3DZERO, scale, zRandI(4,64) );
+    zSphere3DToPH( &sphere, &ph );
+    if( !zPH3DIsConvex( &ph ) ) result_sphere = false;
+    zPH3DDestroy( &ph );
+  }
+  /* two tetrahedra apart from each other */
+  zPH3DAlloc( &ph, 8, 8 );
+  create_tetrahedron( &ph, 0, 0 );
+  create_tetrahedron( &ph, 4, 3 );
+  result_apart = zPH3DIsClosed( &ph ) && !zPH3DIsConvex( &ph );
+  zPH3DDestroy( &ph );
+  /* two tetrahedra sharing an edge, which is shared by four faces */
+  zPH3DAlloc( &ph, 6, 8 );
+  zVec3DCreate( zPH3DVert(&ph,0), 0, 0, 0 );
+  zVec3DCreate( zPH3DVert(&ph,1), 0, 0, 1 );
+  zVec3DCreate( zPH3DVert(&ph,2), 1, 0, 0 );
+  zVec3DCreate( zPH3DVert(&ph,3), 0, 1, 0 );
+  zVec3DCreate( zPH3DVert(&ph,4), -1, 0, 0 );
+  zVec3DCreate( zPH3DVert(&ph,5), 0, -1, 0 );
+  for( i=0; i<2; i++ ){
+    zTri3DCreate( zPH3DFace(&ph,4*i  ), zPH3DVert(&ph,0), zPH3DVert(&ph,2*i+3), zPH3DVert(&ph,2*i+2) );
+    zTri3DCreate( zPH3DFace(&ph,4*i+1), zPH3DVert(&ph,0), zPH3DVert(&ph,2*i+2), zPH3DVert(&ph,1) );
+    zTri3DCreate( zPH3DFace(&ph,4*i+2), zPH3DVert(&ph,0), zPH3DVert(&ph,1), zPH3DVert(&ph,2*i+3) );
+    zTri3DCreate( zPH3DFace(&ph,4*i+3), zPH3DVert(&ph,1), zPH3DVert(&ph,2*i+2), zPH3DVert(&ph,2*i+3) );
+  }
+  result_nonmanifold = zPH3DIsClosed( &ph ) && !zPH3DIsConvex( &ph );
+  zPH3DDestroy( &ph );
+  zAssert( zPH3DIsConvex (convex hulls), result_convex );
+  zAssert( zPH3DIsConvex (dented polyhedra), result_dented );
+  zAssert( zPH3DIsConvex (spheres), result_sphere );
+  zAssert( zPH3DIsConvex (two separate tetrahedra), result_apart );
+  zAssert( zPH3DIsConvex (two tetrahedra sharing an edge), result_nonmanifold );
+}
+
 int main(int argc, char *argv[])
 {
   zRandInit();
@@ -210,5 +287,6 @@ int main(int argc, char *argv[])
   assert_ph3d_closest_degenerate();
   assert_ph3d_aabb();
   assert_ph3d_is_closed();
+  assert_ph3d_is_convex();
   return 0;
 }

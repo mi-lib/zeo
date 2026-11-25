@@ -115,24 +115,37 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zCC3D ){
  * zCC3DFromPH3D() creates a 3D cell complex \a cc from a polyhedron \a ph, which has to satisfy
  * the same condition with that for the operations below. The universe is the axis-aligned bounding
  * box of \a ph enlarged by the maximum width of the box on every side.
+ * zCC3DFromPH3DConvex() and zCC3DFromPH3DNonconvex() do the same thing for a convex polyhedron and
+ * a general polyhedron, respectively, without checking \a ph (see the operations below).
+ *
+ * zCC3DFromAABox3D() creates a 3D cell complex \a cc whose solid is an axis-aligned box \a box.
+ * The universe is \a box enlarged by the maximum width of it on every side. It is useful to compute
+ * the intersection of polyhedra efficiently, since zCC3DIntersect() and its versions only process
+ * the faces of a polyhedron near the solid. Namely, the intersection of two polyhedra is computed by
+ * intersecting the solid made from the intersection of their bounding boxes (see zIntersectPH3DBox())
+ * with them one after the other. The box should be slightly enlarged, so that a face of a polyhedron
+ * does not lie on that of the box.
  *
  * zCC3DDestroy() destroys \a cc, freeing the internal memory.
  * \return
  * zCC3DInit() returns a pointer \a cc.
- * zCC3DCreate() and zCC3DFromPH3D() return a pointer \a cc if they succeed. Otherwise, they return
- * the null pointer.
+ * zCC3DCreate(), zCC3DFromPH3D(), zCC3DFromPH3DConvex(), zCC3DFromPH3DNonconvex() and
+ * zCC3DFromAABox3D() return a pointer \a cc if they succeed. Otherwise, they return the null pointer.
  * zCC3DDestroy() returns no value.
  */
 __ZEO_EXPORT zCC3D *zCC3DInit(zCC3D *cc);
 __ZEO_EXPORT zCC3D *zCC3DCreate(zCC3D *cc, const zAABox3D *universe);
 __ZEO_EXPORT zCC3D *zCC3DFromPH3D(zCC3D *cc, const zPH3D *ph);
+__ZEO_EXPORT zCC3D *zCC3DFromPH3DConvex(zCC3D *cc, const zPH3D *ph);
+__ZEO_EXPORT zCC3D *zCC3DFromPH3DNonconvex(zCC3D *cc, const zPH3D *ph);
+__ZEO_EXPORT zCC3D *zCC3DFromAABox3D(zCC3D *cc, const zAABox3D *box);
 __ZEO_EXPORT void zCC3DDestroy(zCC3D *cc);
 
 /*! \brief operations of a 3D cell complex.
  *
  * The following functions directly modify the solid represented by a 3D cell complex \a cc. A
  * polyhedron \a ph can be non-convex, but has to be closed (see zPH3DIsClosed()), have faces oriented
- * outward, and not intersect itself. The self-intersection is not checked.
+ * outward, and not intersect itself.
  *
  * zCC3DCutByPlane3D() cuts the solid by a plane \a plane, and leaves the part behind the plane,
  * namely, the opposite side to which the normal vector of \a plane directs.
@@ -144,15 +157,32 @@ __ZEO_EXPORT void zCC3DDestroy(zCC3D *cc);
  *
  * zCC3DIntersect() makes the intersection of the solid and \a ph, namely, cuts the solid by \a ph
  * and leaves the part inside of \a ph.
+ *
+ * zCC3DMerge(), zCC3DSubtract() and zCC3DIntersect() check if \a ph is closed and has faces oriented
+ * outward, and also check if it is convex (see zPH3DIsConvex()) to choose either of the following
+ * versions. The self-intersection is not checked.
+ *
+ * zCC3DMergeConvex(), zCC3DSubtractConvex() and zCC3DIntersectConvex() are versions for a convex
+ * polyhedron, and zCC3DMergeNonconvex(), zCC3DSubtractNonconvex() and zCC3DIntersectNonconvex() are
+ * those for a general polyhedron. They do not check \a ph, so that they are faster when the condition
+ * on \a ph is known in advance, e.g., when the same polyhedron is used repeatedly. The results for
+ * \a ph that does not satisfy the condition are not guaranteed. The versions for a general polyhedron
+ * also work for a convex polyhedron, but take more time than those for a convex polyhedron.
  * \return
- * These functions return a pointer \a cc if they succeed. If \a ph is not closed or has faces
- * oriented inward, if they fail to allocate memory, or if they find an inconsistency of the internal
- * data, they return the null pointer.
+ * These functions return a pointer \a cc if they succeed. If \a ph does not satisfy the condition
+ * (only for zCC3DMerge(), zCC3DSubtract() and zCC3DIntersect()), if they fail to allocate memory, or
+ * if they find an inconsistency of the internal data, they return the null pointer.
  */
 __ZEO_EXPORT zCC3D *zCC3DCutByPlane3D(zCC3D *cc, const zPlane3D *plane);
 __ZEO_EXPORT zCC3D *zCC3DMerge(zCC3D *cc, const zPH3D *ph);
+__ZEO_EXPORT zCC3D *zCC3DMergeConvex(zCC3D *cc, const zPH3D *ph);
+__ZEO_EXPORT zCC3D *zCC3DMergeNonconvex(zCC3D *cc, const zPH3D *ph);
 __ZEO_EXPORT zCC3D *zCC3DSubtract(zCC3D *cc, const zPH3D *ph);
+__ZEO_EXPORT zCC3D *zCC3DSubtractConvex(zCC3D *cc, const zPH3D *ph);
+__ZEO_EXPORT zCC3D *zCC3DSubtractNonconvex(zCC3D *cc, const zPH3D *ph);
 __ZEO_EXPORT zCC3D *zCC3DIntersect(zCC3D *cc, const zPH3D *ph);
+__ZEO_EXPORT zCC3D *zCC3DIntersectConvex(zCC3D *cc, const zPH3D *ph);
+__ZEO_EXPORT zCC3D *zCC3DIntersectNonconvex(zCC3D *cc, const zPH3D *ph);
 
 /*! \brief convert a 3D cell complex to a polyhedron.
  *
