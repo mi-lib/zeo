@@ -39,7 +39,7 @@ zPH3D *zSphere3DToPH(const zSphere3D *sphere, zPH3D *ph)
 
   /* arctic faces */
   for( n=0, i=1, j=zSphere3DDiv(sphere); i<=zSphere3DDiv(sphere); j=i++ )
-    zTri3DCreate( &face[n++], &vert[0], &vert[i], &vert[j] );
+    zTri3DCreate( &face[n++], &vert[0], &vert[j], &vert[i] );
   /* general */
   for( i=2; i<zSphere3DDiv(sphere); i++ )
     for( j=0, k=(i-1)*zSphere3DDiv(sphere)+1, l=i*zSphere3DDiv(sphere); j<zSphere3DDiv(sphere); j++, l=k++ ){
@@ -52,7 +52,7 @@ zPH3D *zSphere3DToPH(const zSphere3D *sphere, zPH3D *ph)
   for( i=zPH3DVertNum(ph)-zSphere3DDiv(sphere)-1, j=zPH3DVertNum(ph)-2;
        n<zPH3DFaceNum(ph); j=i++ )
     zTri3DCreate( &face[n++],
-      &vert[i], &vert[zPH3DVertNum(ph)-1], &vert[j] );
+      &vert[j], &vert[zPH3DVertNum(ph)-1], &vert[i] );
 
   return ph;
 }

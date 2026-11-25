@@ -219,7 +219,7 @@ zPH3D* zEllips3DToPH(const zEllips3D *ellips, zPH3D *ph)
   /* -- faces -- */
   /* arctic faces */
   for( n=0, i=1, j=zEllips3DDiv(ellips); i<=zEllips3DDiv(ellips); j=i++ )
-    zTri3DCreate( &face[n++], &vert[0], &vert[i], &vert[j] );
+    zTri3DCreate( &face[n++], &vert[0], &vert[j], &vert[i] );
   /* general */
   for( i=2; i<zEllips3DDiv(ellips); i++ )
     for( j=0, k=(i-1)*zEllips3DDiv(ellips)+1, l=i*zEllips3DDiv(ellips); j<zEllips3DDiv(ellips); j++, l=k++ ){
@@ -232,7 +232,7 @@ zPH3D* zEllips3DToPH(const zEllips3D *ellips, zPH3D *ph)
   for( i=zPH3DVertNum(ph)-zEllips3DDiv(ellips)-1, j=zPH3DVertNum(ph)-2;
        n<zPH3DFaceNum(ph); j=i++ )
     zTri3DCreate( &face[n++],
-      &vert[i], &vert[zPH3DVertNum(ph)-1], &vert[j] );
+      &vert[j], &vert[zPH3DVertNum(ph)-1], &vert[i] );
 
   return ph;
 }

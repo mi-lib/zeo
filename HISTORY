@@ -1,3 +1,6 @@
+2026.11.25. Added a test of zShape3DToPH to check if every type of shapes is converted to a closed polyhedron with faces oriented outward. [test]
+2026.11.25. Debugged zCapsule3DToPH to allocate a consistent number of vertices and faces and not to leak memory when the axis is degenerate. [zeo_shape3d_capsule]
+2026.11.25. Debugged zSphere3DToPH and zEllips3DToPH to order the vertices around the poles correctly. [zeo_shape3d_sphere, zeo_shape3d_ellips]
 2026.11.25. Added a test of the bounding balls for points sorted by the distance from the origin. [test]
 2026.11.25. Modified zVec2DDataBoundingBall, zVec2DDataBoundingBallRecursive, zVec3DDataBoundingBall and zVec3DDataBoundingBallRecursive to shuffle points in advance to avoids O(n^3) time for points in a spatially sorted order. [zeo_bvxd_boundingball, zeo_bv2d_boundingball, zeo_bv3d_boundingball]
 2026.11.24. Added a cut of the surface by a polyhedron to the example of the 3D cell complex on non-convex polyhedra. [example]

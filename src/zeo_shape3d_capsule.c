@@ -114,16 +114,19 @@ zPH3D *zCapsule3DToPH(const zCapsule3D *capsule, zPH3D *ph)
   int i, j, j2, n, nh, n1, n2, n3, n4;
   double lat;
 
-  if( !zPH3DAlloc( ph, zSqr( zCapsule3DDiv(capsule) ) / 2 + 2, zSqr( zCapsule3DDiv(capsule) ) ) )
-    return NULL;
-  vert = zPH3DVertBuf( ph );
-  face = zPH3DFaceBuf( ph );
-
   zCapsule3DAxis( capsule, &d );
   if( zVec3DIsTiny( &d ) ){
     ZRUNERROR( ZEO_ERR_SHAPE_ZEROC );
     return NULL;
   }
+  /* number of latitudinal divisions of each hemisphere, which is a quarter of the longitudinal
+   * divisions rounded up */
+  if( ( nh = ( zCapsule3DDiv(capsule) + 3 ) / 4 ) < 1 ) nh = 1;
+  if( !zPH3DAlloc( ph, 2*nh*zCapsule3DDiv(capsule) + 2, 4*nh*zCapsule3DDiv(capsule) ) )
+    return NULL;
+  vert = zPH3DVertBuf( ph );
+  face = zPH3DFaceBuf( ph );
+
   zVec3DNormalizeDRC( &d, 0 );
   /* one radial vector */
   zVec3DOrthonormal( &d, &s );
@@ -133,7 +136,6 @@ zPH3D *zCapsule3DToPH(const zCapsule3D *capsule, zPH3D *ph)
   /* north pole vertex */
   zVec3DAdd( zCapsule3DCenter(capsule,1), &dr, &vert[0] );
   /* north hemisphere vertices */
-  nh = zCapsule3DDiv(capsule) / 4;
   for( n=0, i=1; i<=nh; i++ ){
     lat = zPI_2 * i / nh;
     zVec3DMul( &dr, cos(lat), &r );
