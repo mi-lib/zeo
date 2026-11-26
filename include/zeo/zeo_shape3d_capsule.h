@@ -66,7 +66,8 @@ __BEGIN_DECLS
  *
  * zCapsule3DPointIsInside() checks if a 3D point \a point is inside of a 3D
  * capsule \a capsule. \a margin is a margin of the inside area outward
- * from the boundary of \a capsule.
+ * from the boundary of \a capsule. Namely, \a point is regarded to be inside if the signed distance from the boundary, which is negative
+ * inside, is less than \a margin.
  * \return
  * zCapsule3DPointIsInside() returns the true value if \a point is inside of \a capsule,
  * or the false value otherwise.

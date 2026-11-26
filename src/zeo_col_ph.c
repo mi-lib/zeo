@@ -6,8 +6,11 @@
 
 #include <zeo/zeo_col.h>
 
-/* check if two polyhedra intersect with each other. */
-bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, zVec3D *p1, zVec3D *p2)
+/* check if two polyhedra are in collision with each other.
+ * The signed distance between the convex hulls of them is the distance between them found by the GJK
+ * algorithm if they are apart from each other, and the negative of the penetration depth if they
+ * intersect. The latter is compared with the margin only if the margin is not positive. */
+bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, double margin, zVec3D *p1, zVec3D *p2)
 {
   zVec3D _p1, _p2;
   zVec3DData data1, data2;
@@ -16,7 +19,8 @@ bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, zVec3D *p1, zVec3D *p2)
   if( p2 == NULL ) p2 = &_p2;
   zVec3DDataAssignArray( &data1, zPH3DVertArray(ph1) );
   zVec3DDataAssignArray( &data2, zPH3DVertArray(ph2) );
-  return zGJK( &data1, &data2, p1, p2 );
+  if( margin <= 0 ) return _zGJKPenetrate( &data1, &data2, -margin, p1, p2 );
+  return zGJK( &data1, &data2, p1, p2 ) || zVec3DSqrDist( p1, p2 ) < margin * margin;
 }
 
 /* intersection of convex polyhedra based on Muller-Preparata's algorithm:
@@ -200,7 +204,7 @@ zPH3D *zIntersectPH3D(zPH3D *ph1, zPH3D *ph2, zPH3D *phcol)
   zPH3DInit( phcol );
   zPH3DInit( &ch );
   if( zPH3DVertNum(ph1) == 0 || zPH3DVertNum(ph2) == 0 ) return NULL;
-  if( !zColChkPH3D( ph1, ph2, NULL, NULL ) ) return NULL; /* quick rejection */
+  if( !zColChkPH3D( ph1, ph2, 0, NULL, NULL ) ) return NULL; /* quick rejection */
   if( !( plane = zAlloc( zIntersectPH3DPlane, zPH3DFaceNum(ph1) + zPH3DFaceNum(ph2) ) ) ){
     ZALLOCERROR();
     return NULL;

@@ -313,6 +313,16 @@ __ZEO_EXPORT zTri3D *zTri3DCopy(const zTri3D *src, zTri3D *dest);
 __ZEO_EXPORT double zTri3DArea(const zTri3D *tri);
 __ZEO_EXPORT zVec3D *zTri3DCalcNorm(zTri3D *tri);
 
+/*! \brief check if a 3D triangle is degenerate.
+ *
+ * zTri3DIsDegenerate() checks if a 3D triangle \a tri is degenerate, namely, if its minimum height,
+ * which is the height to the longest edge, is not larger than \a tol. Unlike zTri3DCalcNorm(),
+ * \a tol is an absolute length.
+ * \return
+ * zTri3DIsDegenerate() returns the true value if \a tri is degenerate, or the false value otherwise.
+ */
+__ZEO_EXPORT bool zTri3DIsDegenerate(const zTri3D *tri, double tol);
+
 /*! \brief various centers of a 3D triangle.
  *
  * zTri3DBarycenter(), zTri3DCircumcenter(), zTri3DIncenter() and
@@ -419,8 +429,8 @@ __ZEO_EXPORT double zTri3DSignedDistFromPoint(const zTri3D *tri, const zVec3D *p
 /*! \brief check if a point is inside of a triangle.
  *
  * zTri3DPointIsInside() checks if the given point \a point is inside of a triangle \a tri.
- * "\a point is inside of \a tri" means that the projection point of \a point to \a tri is inside of \a tri.
- * \a margin is a margin of the inside area outward from the boundary of \a tri.
+ * Namely, \a point is regarded to be inside if the distance from \a tri is less than \a margin.
+ * Since \a tri has no inside area, it returns the false value for a non-positive \a margin.
  * \return
  * zTri3DPointIsInside() returns the true value if \a point is inside of \a tri with a margin \a margin.
  * Otherwise, it returns the false value.

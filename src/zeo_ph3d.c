@@ -328,8 +328,13 @@ zAABox3D *zPH3DAABB(const zPH3D *ph, zAABox3D *aabb)
 {
   int i;
 
-  zAABox3DInit( aabb );
-  for( i=0; i<zPH3DVertNum(ph); i++ )
+  if( zPH3DVertNum(ph) <= 0 ){
+    zAABox3DInit( aabb );
+    return NULL;
+  }
+  zVec3DCopy( zPH3DVert(ph,0), &aabb->min );
+  zVec3DCopy( zPH3DVert(ph,0), &aabb->max );
+  for( i=1; i<zPH3DVertNum(ph); i++ )
     zAABox3DEnlarge( aabb, zPH3DVert(ph,i) );
   return aabb;
 }
@@ -375,22 +380,6 @@ bool zPH3DIsClosed(const zPH3D *ph)
  TERMINATE:
   zFree( edge );
   return ret;
-}
-
-/* check if a face of a 3D polyhedron is degenerate, namely, its height is within a tolerance, since
- * the normal vector of such a face is not reliable. */
-static bool _zPH3DFaceIsDegenerate(const zPH3D *ph, int i, double tol)
-{
-  zVec3D e[3], n;
-  double l, lmax = 0;
-  int j;
-
-  for( j=0; j<3; j++ ){
-    zVec3DSub( zPH3DFaceVert(ph,i,(j+1)%3), zPH3DFaceVert(ph,i,j), &e[j] );
-    if( ( l = zVec3DNorm( &e[j] ) ) > lmax ) lmax = l;
-  }
-  zVec3DOuterProd( &e[0], &e[1], &n );
-  return zVec3DNorm( &n ) <= tol * lmax;
 }
 
 /* check if a closed 3D polyhedron is convex, namely, if the volume of its convex hull is equal to
@@ -468,7 +457,7 @@ bool zPH3DIsConvex(const zPH3D *ph)
   /* each record: the smaller and larger indices of vertices, face, and the opposite vertex */
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
     parent[i] = i;
-    if( ( degenerate[i] = _zPH3DFaceIsDegenerate( ph, i, tol ) ) ) hasdegenerate = true;
+    if( ( degenerate[i] = zTri3DIsDegenerate( zPH3DFace(ph,i), tol ) ) ) hasdegenerate = true;
     for( j=0; j<3; j++ ){
       u = zPH3DFaceVert(ph,i,j) - zPH3DVertBuf(ph);
       v = zPH3DFaceVert(ph,i,(j+1)%3) - zPH3DVertBuf(ph);

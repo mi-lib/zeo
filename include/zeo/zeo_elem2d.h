@@ -264,7 +264,8 @@ __ZEO_EXPORT ZEO_ELEM_TRIXD_DIST_FROM_POINT_PROTOTYPE( 2D );
 /*! \brief check if a point is inside of a triangle.
  *
  * zTri2DPointIsInside() checks if a point \a point is inside of a 2D triangle \a tri.
- * \a margin is a margin of the inside area outward from the boundary of \a tri.
+ * \a margin is a margin of the inside area outward from the boundary of \a tri. Namely, \a point is regarded to be inside if the signed distance from the boundary, which is negative
+ * inside, is less than \a margin.
  * \return
  * zTri2DPointIsInside() returns the true value if \a point is inside of \a tri with a margin \a margin.
  * Otherwise, the false value is returned.

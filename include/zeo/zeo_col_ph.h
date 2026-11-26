@@ -11,12 +11,20 @@
 
 __BEGIN_DECLS
 
-/*! \brief check if two polyhedra intersect with each other.
+/*! \brief check if two polyhedra are in collision with each other.
  *
- * zColChkPH3D() checks if two polyhedra \a ph1 and \a ph2
- * intersect with each other.
+ * zColChkPH3D() checks if the convex hulls of two polyhedra \a ph1 and \a ph2 are in collision
+ * with each other within a margin \a margin (see zeo_col.h). Namely, \a ph1 and \a ph2 are regarded
+ * as convex. If they intersect and \a margin is negative, the penetration depth is computed by the
+ * expanding polytope algorithm in the same way with zGJKDepth(), which is heavier than zGJK(). The
+ * pair of the closest points of them, or a point in the intersection of them if they intersect, is
+ * put into \a p1 and \a p2 (see zGJK()).
+ * The null pointer can be given for \a p1 and \a p2.
+ * \return
+ * zColChkPH3D() returns the true value if \a ph1 and \a ph2 are in collision with each other.
+ * Otherwise, it returns the false value.
  */
-__ZEO_EXPORT bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, zVec3D *p1, zVec3D *p2);
+__ZEO_EXPORT bool zColChkPH3D(zPH3D *ph1, zPH3D *ph2, double margin, zVec3D *p1, zVec3D *p2);
 
 /*! \brief intersection of two convex polyhedra.
  *

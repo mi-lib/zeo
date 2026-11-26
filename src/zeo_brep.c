@@ -113,7 +113,7 @@ zBREP *zPH3D2BREPInBox(zPH3D *ph, zAABox3D *box, zBREP *brep)
   zListInit( &brep->elist );
   zListInit( &brep->flist );
   for( i=0; i<zPH3DFaceNum(ph); i++ ){
-    if( zColChkTriAABox3D( ( tri = zPH3DFace(ph,i) ), box ) ){
+    if( zColChkTriAABox3D( ( tri = zPH3DFace(ph,i) ), box, 0 ) ){
       if( !_zBREPFaceInsert( zPH3DFace(ph,i), &brep->flist, &brep->elist, &brep->vlist ) ){
         ZRUNERROR( ZEO_ERR_BREP_CONV );
         zBREPDestroy( brep );

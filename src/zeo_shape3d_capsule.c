@@ -56,14 +56,23 @@ double zCapsule3DDistFromPoint(const zCapsule3D *capsule, const zVec3D *point)
   if( d >= 0 && d <= l )
     return r <= zCapsule3DRadius(capsule) ? 0 : r - zCapsule3DRadius(capsule);
   if( d > l )
-    return ( r = zVec3DDist( point, zCapsule3DCenter(capsule,1) ) ) < zCapsule3DRadius(capsule) ? 0 : zCapsule3DRadius(capsule) - r;
-  return ( r = zVec3DDist( point, zCapsule3DCenter(capsule,0) ) ) < zCapsule3DRadius(capsule) ? 0 : zCapsule3DRadius(capsule) - r;
+    return ( r = zVec3DDist( point, zCapsule3DCenter(capsule,1) ) ) < zCapsule3DRadius(capsule) ? 0 : r - zCapsule3DRadius(capsule);
+  return ( r = zVec3DDist( point, zCapsule3DCenter(capsule,0) ) ) < zCapsule3DRadius(capsule) ? 0 : r - zCapsule3DRadius(capsule);
 }
 
-/* check if a point is inside of a capsule. */
+/* check if a point is inside of a capsule.
+ * The signed distance is the distance from the point to the axis segment minus the radius. */
 bool zCapsule3DPointIsInside(const zCapsule3D *capsule, const zVec3D *point, double margin)
 {
-  return zCapsule3DDistFromPoint( capsule, point ) < margin ? true : false;
+  zVec3D axis, v;
+  double l, r, d;
+
+  _zCapsule3DClosestPrep( capsule, point, &axis, &v, &l, &r, &d );
+  if( d > l )
+    r = zVec3DDist( point, zCapsule3DCenter(capsule,1) );
+  else if( d < 0 )
+    r = zVec3DDist( point, zCapsule3DCenter(capsule,0) );
+  return r - zCapsule3DRadius(capsule) < margin;
 }
 
 /* height of a 3D capsule. */

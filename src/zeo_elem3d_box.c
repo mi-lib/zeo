@@ -104,12 +104,32 @@ double zAABox3DSqrDistFromPoint(const zAABox3D *box, const zVec3D *point)
   return d2;
 }
 
+/* check if the signed distance of a point from a box is less than a margin, where e is the excesses
+ * of the coordinates of the point over the box along the three axes. The signed distance is the
+ * maximum of the excesses if all of them are non-positive, and the norm of the positive excesses
+ * otherwise. */
+static bool _zBox3DExcessIsInside(const double e[], double margin)
+{
+  double emax = -HUGE_VAL, d2 = 0;
+  int i;
+
+  for( i=0; i<3; i++ ){
+    if( e[i] >= margin ) return false;
+    if( e[i] > emax ) emax = e[i];
+    if( e[i] > 0 ) d2 += e[i] * e[i];
+  }
+  return emax <= 0 ? emax < margin : d2 < margin * margin;
+}
+
 /* check if a point is inside of a 3D axis-aligned box. */
 bool zAABox3DPointIsInside(const zAABox3D *box, const zVec3D *point, double margin)
 {
-  return point->e[zX] > box->min.e[zX] - margin && point->e[zX] <= box->max.e[zX] + margin &&
-         point->e[zY] > box->min.e[zY] - margin && point->e[zY] <= box->max.e[zY] + margin &&
-         point->e[zZ] > box->min.e[zZ] - margin && point->e[zZ] <= box->max.e[zZ] + margin ? true : false;
+  double e[3];
+  int i;
+
+  for( i=0; i<3; i++ )
+    e[i] = _zMax( box->min.e[i] - point->e[i], point->e[i] - box->max.e[i] );
+  return _zBox3DExcessIsInside( e, margin );
 }
 
 /* compute volume of a 3D axis-aligned box. */
@@ -140,6 +160,38 @@ zAABox3D *zAABox3DEnlarge(zAABox3D *aabox, const zVec3D *v)
   if( zAABox3DZMin(aabox) > v->c.z ) zAABox3DZMin(aabox) = v->c.z;
   if( zAABox3DZMax(aabox) < v->c.z ) zAABox3DZMax(aabox) = v->c.z;
   return aabox;
+}
+
+/* range of signed distance of a 3D axis-aligned box from a 3D plane. */
+void zAABox3DDistRangeFromPlane(const zAABox3D *box, const zPlane3D *plane, double *dmin, double *dmax)
+{
+  zVec3D c;
+  double r;
+
+  zAABox3DCenter( box, &c );
+  zVec3DSubDRC( &c, zPlane3DOrg(plane) );
+  /* half the length of the projection of the box onto the normal vector */
+  r = 0.5 * ( fabs( zPlane3DNorm(plane)->c.x ) * zAABox3DDepth(box)
+            + fabs( zPlane3DNorm(plane)->c.y ) * zAABox3DWidth(box)
+            + fabs( zPlane3DNorm(plane)->c.z ) * zAABox3DHeight(box) );
+  *dmax = zVec3DInnerProd( &c, zPlane3DNorm(plane) ) + r;
+  *dmin = *dmax - 2 * r;
+}
+
+/* planes of the six faces of a 3D axis-aligned box. */
+zPlane3D *zAABox3DFaceToPlane3D6(const zAABox3D *box, zPlane3D plane[6])
+{
+  zVec3D norm;
+  int k;
+
+  for( k=0; k<3; k++ ){
+    zVec3DZero( &norm );
+    norm.e[k] = -1;
+    zPlane3DCreate( &plane[2*k], &box->min, &norm );
+    norm.e[k] = 1;
+    zPlane3DCreate( &plane[2*k+1], &box->max, &norm );
+  }
+  return plane;
 }
 
 /* print out a 3D axis-aligned box to a file. */
@@ -307,16 +359,14 @@ double zBox3DDistFromPoint(const zBox3D *box, const zVec3D *p)
 /* check if a point is inside of a box. */
 bool zBox3DPointIsInside(const zBox3D *box, const zVec3D *p, double margin)
 {
-  zAxis axis;
   zVec3D pl;
-  double l;
+  double e[3];
+  int i;
 
   zXform3DInv( &box->frame, p, &pl );
-  for( axis=zX; axis<=zZ; axis++ ){
-    l = 0.5 * zBox3DSpan(box,axis) + margin;
-    if( pl.e[(int)axis] >= l || pl.e[(int)axis] <= -l ) return false;
-  }
-  return true;
+  for( i=zX; i<=zZ; i++ )
+    e[i] = fabs( pl.e[i] ) - 0.5 * zBox3DSpan(box,(zAxis)i);
+  return _zBox3DExcessIsInside( e, margin );
 }
 
 /* volume of a 3D box. */

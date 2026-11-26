@@ -239,7 +239,14 @@ __ZEO_EXPORT zMat3D *zPH3DInertiaMass(const zPH3D *ph, double mass, zMat3D *iner
 __ZEO_EXPORT zMat3D *zPH3DBaryInertia(const zPH3D *ph, double density, zMat3D *inertia);
 __ZEO_EXPORT zMat3D *zPH3DBaryInertiaMass(const zPH3D *ph, double mass, zMat3D *inertia);
 
-/*! \brief axis-aligned bounding box of a 3D polyhedron. */
+/*! \brief axis-aligned bounding box of a 3D polyhedron.
+ *
+ * zPH3DAABB() computes the axis-aligned bounding box of vertices of a 3D polyhedron \a ph.
+ * The result is put into \a aabb.
+ * \return
+ * zPH3DAABB() returns a pointer \a aabb. If \a ph has no vertices, it returns the null pointer,
+ * and \a aabb is initialized.
+ */
 __ZEO_EXPORT zAABox3D *zPH3DAABB(const zPH3D *ph, zAABox3D *aabb);
 
 /*! \brief check if a 3D polyhedron is closed.

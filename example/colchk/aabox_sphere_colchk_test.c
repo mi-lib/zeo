@@ -46,6 +46,6 @@ int main(int argc, char *argv[])
   zSphere3DCreate( &sphere, &center, zRandF(1,5), 0 );
   zAABox3DCreate( &aabox, zRandF(-5,0), zRandF(-5,0), zRandF(-5,0), zRandF(0,1), zRandF(0,1), zRandF(0,1) );
   output_sphere_aabox( &sphere, &aabox );
-  printf( "collision - %s\n", zBoolStr( zColChkSphereAABox3D( &sphere, &aabox ) ) );
+  printf( "collision - %s\n", zBoolStr( zColChkSphereAABox3D( &sphere, &aabox, 0 ) ) );
   return 0;
 }

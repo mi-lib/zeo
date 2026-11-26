@@ -71,7 +71,8 @@ __ZEO_EXPORT zCone3D *zCone3DXformInv(const zCone3D *src, const zFrame3D *frame,
  *
  * zCone3DPointIsInside() checks if a 3D point \a point is inside of a 3D cone
  * \a cone. \a margin is a margin of the inside area outward from the
- * boundary of \a cone.
+ * boundary of \a cone. Namely, \a point is regarded to be inside if the signed distance from the boundary, which is negative
+ * inside, is less than \a margin.
  * \return
  * zCone3DPointIsInside() returns the true value when \a point is inside of \a cone,
  * or the false value otherwise.

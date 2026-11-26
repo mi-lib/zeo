@@ -54,7 +54,7 @@ int main(void)
   zRandInit();
   box_create( &b1 );
   box_create( &b2 );
-  printf( "in collision? %s\n", zBoolStr( zColChkBox3D( &b1, &b2 ) ) );
+  printf( "in collision? %s\n", zBoolStr( zColChkBox3D( &b1, &b2, 0 ) ) );
   box_output( &b1, &b2 );
   return 0;
 }

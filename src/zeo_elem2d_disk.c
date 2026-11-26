@@ -120,6 +120,8 @@ double zEllips2DDistFromPoint(const zEllips2D *ellips, const zVec2D *p)
 /* check if a 2D point is inside of an ellipse. */
 bool zEllips2DPointIsInside(const zEllips2D *ellips, const zVec2D *p, double margin)
 {
+  /* approximately, the ellipse is enlarged or shrunk by the margin along the principal axes */
+  if( zEllips2DRadius(ellips,0) + margin <= 0 || zEllips2DRadius(ellips,1) + margin <= 0 ) return false;
   return zSqr( ( p->c.x - zEllips2DCenter(ellips)->c.x ) / ( zEllips2DRadius(ellips,0) + margin ) )
        + zSqr( ( p->c.y - zEllips2DCenter(ellips)->c.y ) / ( zEllips2DRadius(ellips,1) + margin ) ) < 1 ?
     true : false;

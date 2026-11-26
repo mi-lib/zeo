@@ -86,7 +86,8 @@ __ZEO_EXPORT double zAABox2DClosest(const zAABox2D *box, const zVec2D *point, zV
 __ZEO_EXPORT double zAABox2DSqrDistFromPoint(const zAABox2D *box, const zVec2D *point);
 #define zAABox2DDistFromPoint(box,point) sqrt( zAABox2DSqrDistFromPoint( box, point ) )
 
-/*! \brief check if a point is inside of a 2D axis-aligned box. */
+/*! \brief check if a point is inside of a 2D axis-aligned box, namely, if the signed distance of the
+ * point from the boundary of the box, which is negative inside, is less than a margin. */
 __ZEO_EXPORT bool zAABox2DPointIsInside(const zAABox2D *box, const zVec2D *p, double margin);
 
 /*! \brief compute area of a 2D axis-aligned box. */

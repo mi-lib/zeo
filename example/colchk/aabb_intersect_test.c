@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
   bool is_collide;
 
   test_box( &b1, &b2 );
-  printf( "in collision? %s\n", zBoolStr( ( is_collide = zColChkAABox3D( &b1, &b2 ) ) ) );
+  printf( "in collision? %s\n", zBoolStr( ( is_collide = zColChkAABox3D( &b1, &b2, 0 ) ) ) );
   if( is_collide ){
     zIntersectAABox3D( &b, &b1, &b2 );
     output( &b1, &b2, &b );

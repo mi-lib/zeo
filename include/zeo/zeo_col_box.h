@@ -16,11 +16,11 @@ __BEGIN_DECLS
 /*! \brief check if a 3D plane and a 3D axis-aligned box are in collision with each other.
  *
  * zColChkPlaneAABox3D() checks if a 3D plane \a p and a 3D axis-aligned box \a box are in
- * collision with each other.
+ * collision with each other within a margin \a margin.
  * \retval true if \a p and \a box are in collision.
  * \retval false if \a p and \a box are not in collision.
  */
-__ZEO_EXPORT bool zColChkPlaneAABox3D(const zPlane3D *p, const zAABox3D *box);
+__ZEO_EXPORT bool zColChkPlaneAABox3D(const zPlane3D *p, const zAABox3D *box, double margin);
 
 /*! \brief intersection of a plane and an axis-aligned box.
  *
@@ -34,11 +34,11 @@ __ZEO_EXPORT int zIntersectPlaneAABox3D(const zPlane3D *p, const zAABox3D *box, 
 /*! \brief check if a 3D triangle are in collision with a 3D axis-aligned box.
  *
  * zColChkTriAABox3D() checks if a 3D triangle \a t and a 3D axis-aligned box \a box are in
- * collision with each other.
+ * collision with each other within a margin \a margin.
  * \retval true if \a t and \a box are in collision with each other.
  * \retval false if \a t and \a box are not in collision with each other.
  */
-__ZEO_EXPORT bool zColChkTriAABox3D(const zTri3D *t, const zAABox3D *box);
+__ZEO_EXPORT bool zColChkTriAABox3D(const zTri3D *t, const zAABox3D *box, double margin);
 
 /*! \brief intersection of a 3D triangle and a 3D axis-aligned box.
  *
@@ -51,14 +51,21 @@ __ZEO_EXPORT int zIntersectTriAABox3D(const zTri3D *t, const zAABox3D *box, zVec
 
 /*! \brief check collision between two 3D axis-aligned boxes.
  *
- * zColChkAABox3D() checks if two 3D axis-aligned boxes \a b1 and \a b2 are in collision with each other.
+ * zColChkAABox3D() checks if two 3D axis-aligned boxes \a b1 and \a b2 are in collision with each
+ * other within a margin \a margin.
+ * \retval true if \a b1 and \a b2 are in collision with each other.
+ * \retval false if \a b1 and \a b2 are not in collision.
  */
-__ZEO_EXPORT bool zColChkAABox3D(const zAABox3D *b1, const zAABox3D *b2);
+__ZEO_EXPORT bool zColChkAABox3D(const zAABox3D *b1, const zAABox3D *b2, double margin);
 
 /*! \brief intersection of two 3D axis-aligned boxes.
  *
  * zIntersectAABox3D() finds the intersection of two 3D axis-aligned boxes \a src1 and \a src2, and
  * stores it into \a dst, which is another 3D axis-aligned box.
+ * \return
+ * zIntersectAABox3D() returns a pointer \a dst if \a src1 and \a src2 are in collision with each
+ * other in the sense of zColChkAABox3D() with a zero margin, namely, if they share a volume.
+ * Otherwise, it returns the null pointer.
  */
 __ZEO_EXPORT zAABox3D *zIntersectAABox3D(zAABox3D *dst, const zAABox3D *src1, const zAABox3D *src2);
 
@@ -66,6 +73,10 @@ __ZEO_EXPORT zAABox3D *zIntersectAABox3D(zAABox3D *dst, const zAABox3D *src1, co
  *
  * zIntersectPH3DBox() finds the intersection of 3D axis-aligned boxes of two polyhedra \a ph1 and
  * \a ph2, and stores it to \a box, which is another axis-aligned box.
+ * \return
+ * zIntersectPH3DBox() returns a pointer \a box if the bounding boxes of \a ph1 and \a ph2 intersect
+ * in the sense of zIntersectAABox3D(). Otherwise, or if either of \a ph1 and \a ph2 has no vertices,
+ * it returns the null pointer.
  */
 __ZEO_EXPORT zAABox3D *zIntersectPH3DBox(const zPH3D *ph1, const zPH3D *ph2, zAABox3D *box);
 
@@ -73,31 +84,32 @@ __ZEO_EXPORT zAABox3D *zIntersectPH3DBox(const zPH3D *ph1, const zPH3D *ph2, zAA
 
 /*! \brief check collision between two 3D boxes.
  *
- * zColChkBox3D() checks if a 3D box \a b1 and another \a b2 are in collision with each other.
+ * zColChkBox3D() checks if a 3D box \a b1 and another \a b2 are in collision with each other
+ * within a margin \a margin.
  * \retval true \a b1 and \a b2 are in collision with each other.
  * \retval false \a b1 and \a b2 are not in collision.
  */
-__ZEO_EXPORT bool zColChkBox3D(const zBox3D *b1, const zBox3D *b2);
+__ZEO_EXPORT bool zColChkBox3D(const zBox3D *b1, const zBox3D *b2, double margin);
 
 /* box vs sphere */
 
 /*! \brief check collision between a 3D sphere and a 3D axis-aligned box.
  *
  * zColChkSphereAABox3D() checks if a 3D sphere \a sphere and a 3D axis-aligned box \a box
- * are in collision with each other.
+ * are in collision with each other within a margin \a margin.
  * \retval true if \a sphere and \a box are in collision with each other.
  * \retval false if \a sphere and \a box are not in collision.
  */
-__ZEO_EXPORT bool zColChkSphereAABox3D(const zSphere3D *sphere, const zAABox3D *box);
+__ZEO_EXPORT bool zColChkSphereAABox3D(const zSphere3D *sphere, const zAABox3D *box, double margin);
 
 /*! \brief check collision between a 3D sphere and a 3D box.
  *
  * zColChkSphereBox3D() checks if a 3D sphere \a sphere and a 3D box \a box are in collision
- * with each other.
+ * with each other within a margin \a margin.
  * \retval true if \a sphere and \a box are in collision with each other.
  * \retval false if \a sphere and \a box are not in collision.
  */
-__ZEO_EXPORT bool zColChkSphereBox3D(const zSphere3D *sphere, const zBox3D *box);
+__ZEO_EXPORT bool zColChkSphereBox3D(const zSphere3D *sphere, const zBox3D *box, double margin);
 
 __END_DECLS
 

@@ -342,6 +342,38 @@ void assert_tri3D_calc_norm(void)
   zAssert( zTri3DCalcNorm (slivers), result_sliver );
 }
 
+void assert_tri3D_is_degenerate(void)
+{
+  zTri3D tri;
+  zVec3D v[3], d, e;
+  double l, h;
+  const int n = 1000;
+  int i, j;
+  bool result = true;
+
+  for( i=0; i<n; i++ ){
+    /* the height to the longest edge v[0]-v[1] is h */
+    zVec3DCreate( &v[0], zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    zVec3DCreate( &d, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+    l = zVec3DNorm( &d );
+    zVec3DAdd( &v[0], &d, &v[1] );
+    zVec3DOrthonormal( &d, &e );
+    h = zRandF(0.01,0.3) * l;
+    zVec3DInterDiv( &v[0], &v[1], zRandF(0.2,0.8), &v[2] );
+    zVec3DCatDRC( &v[2], h, &e );
+    for( j=0; j<3; j++ ){
+      zTri3DCreate( &tri, &v[j], &v[(j+1)%3], &v[(j+2)%3] );
+      if( !zTri3DIsDegenerate( &tri, h*(1+1.0e-6) ) || zTri3DIsDegenerate( &tri, h*(1-1.0e-6) ) ) result = false;
+      zTri3DCreate( &tri, &v[j], &v[(j+2)%3], &v[(j+1)%3] );
+      if( !zTri3DIsDegenerate( &tri, h*(1+1.0e-6) ) || zTri3DIsDegenerate( &tri, h*(1-1.0e-6) ) ) result = false;
+    }
+    /* coincident vertices */
+    zTri3DCreate( &tri, &v[0], &v[0], &v[1] );
+    if( !zTri3DIsDegenerate( &tri, 0 ) ) result = false;
+  }
+  zAssert( zTri3DIsDegenerate, result );
+}
+
 void assert_tri3D_contig(void)
 {
   zVec3D v[3], p;
@@ -939,6 +971,65 @@ void assert_aabox3D_dist(void)
   zAssert( zAABox3DPointDist, result );
 }
 
+void assert_aabox3D_dist_range_from_plane(void)
+{
+  zAABox3D box;
+  zPlane3D plane;
+  zVec3D p, n, v;
+  double dmin, dmax, d, dmin_ans, dmax_ans;
+  int i, j;
+  bool result = true;
+
+  for( i=0; i<N; i++ ){
+    zAABox3DCreate( &box, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    zVec3DCreate( &p, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    zVec3DCreate( &n, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+    if( i % 10 == 0 ) n.e[i/10%3] = 0; /* a plane parallel to an axis */
+    if( !zPlane3DCreate( &plane, &p, &n ) ) continue;
+    zAABox3DDistRangeFromPlane( &box, &plane, &dmin, &dmax );
+    dmin_ans = HUGE_VAL;
+    dmax_ans = -HUGE_VAL;
+    for( j=0; j<8; j++ ){
+      d = zPlane3DDistFromPoint( &plane, zAABox3DVert( &box, j, &v ) );
+      if( d < dmin_ans ) dmin_ans = d;
+      if( d > dmax_ans ) dmax_ans = d;
+    }
+    if( !zEqual( dmin, dmin_ans, zTOL ) || !zEqual( dmax, dmax_ans, zTOL ) ) result = false;
+  }
+  zAssert( zAABox3DDistRangeFromPlane, result );
+}
+
+void assert_aabox3D_face_to_plane3D6(void)
+{
+  zAABox3D box;
+  zPlane3D plane[6];
+  zVec3D v, c;
+  int i, j, k, side, on;
+  bool result = true;
+
+  for( i=0; i<N; i++ ){
+    zAABox3DCreate( &box, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+    if( zAABox3DFaceToPlane3D6( &box, plane ) != plane ) result = false;
+    zAABox3DCenter( &box, &c );
+    for( k=0; k<3; k++ )
+      for( side=0; side<2; side++ ){
+        if( zPlane3DNorm(&plane[2*k+side])->e[k] != ( side == 0 ? -1 : 1 ) ||
+            zPlane3DNorm(&plane[2*k+side])->e[(k+1)%3] != 0 ||
+            zPlane3DNorm(&plane[2*k+side])->e[(k+2)%3] != 0 ) result = false;
+        /* the center is behind the plane */
+        if( !zEqual( zPlane3DDistFromPoint( &plane[2*k+side], &c ), -0.5*( box.max.e[k] - box.min.e[k] ), zTOL ) ) result = false;
+        /* four vertices are on the plane, and the others are behind it */
+        for( on=0, j=0; j<8; j++ ){
+          zAABox3DVert( &box, j, &v );
+          if( zIsTiny( zPlane3DDistFromPoint( &plane[2*k+side], &v ) ) ) on++;
+          else if( zPlane3DDistFromPoint( &plane[2*k+side], &v ) > 0 ) result = false;
+        }
+        if( on != 4 ) result = false;
+      }
+  }
+  zAssert( zAABox3DFaceToPlane3D6, result );
+}
+
 bool check_tri3D_linscale(const zTri3D *tri, const zVec3D *p, const zVec3D *cp_ans, double d_ans)
 {
   double l0, l1, l2, d;
@@ -1010,6 +1101,9 @@ int main(void)
   assert_aabox3D_equal();
   assert_aabox3D_expand();
   assert_aabox3D_dist();
+  assert_aabox3D_dist_range_from_plane();
+  assert_aabox3D_face_to_plane3D6();
   assert_tri3D_calc_norm();
+  assert_tri3D_is_degenerate();
   return 0;
 }

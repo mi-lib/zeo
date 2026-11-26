@@ -122,20 +122,29 @@ void assert_ph3d_aabb(void)
   zVec3D p;
   zPH3D ph;
   zAABox3D aabb1, aabb2;
-  int i;
+  int i, k;
+  bool result = true;
   const int pointnum = 100;
 
-  zVec3DDataInitList( &data );
-  for( i=0; i<pointnum; i++ ){
-    zVec3DCreate( &p, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
-    zVec3DDataAdd( &data, &p );
+  for( k=0; k<2; k++ ){ /* the second set of points does not surround the origin */
+    zVec3DDataInitList( &data );
+    for( i=0; i<pointnum; i++ ){
+      if( k == 0 )
+        zVec3DCreate( &p, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+      else
+        zVec3DCreate( &p, zRandF(10,20), zRandF(-20,-10), zRandF(5,10) );
+      zVec3DDataAdd( &data, &p );
+    }
+    zVec3DDataConvexHull( &data, &ph );
+    if( !zPH3DAABB( &ph, &aabb1 ) ) result = false;
+    zVec3DDataAABB( &data, &aabb2, NULL );
+    zVec3DDataDestroy( &data );
+    zPH3DDestroy( &ph );
+    if( !zAABox3DEqual( &aabb1, &aabb2 ) ) result = false;
   }
-  zVec3DDataConvexHull( &data, &ph );
-  zPH3DAABB( &ph, &aabb1 );
-  zVec3DDataAABB( &data, &aabb2, NULL );
-  zVec3DDataDestroy( &data );
-  zPH3DDestroy( &ph );
-  zAssert( zPH3DAABB, zAABox3DEqual( &aabb1, &aabb2 ) );
+  zPH3DInit( &ph );
+  if( zPH3DAABB( &ph, &aabb1 ) || !zAABox3DEqual( &aabb1, zAABox3DInit( &aabb2 ) ) ) result = false;
+  zAssert( zPH3DAABB, result );
 }
 
 void assert_ph3d_is_closed(void)

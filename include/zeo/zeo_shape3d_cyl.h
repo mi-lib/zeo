@@ -70,7 +70,8 @@ __ZEO_EXPORT zCyl3D *zCyl3DXformInv(const zCyl3D *src, const zFrame3D *frame, zC
  *
  * zCyl3DPointIsInside() checks if a 3D point \a point is inside of a 3D
  * cylinder \a cyl. \a margin is a margin of the inside area outward
- * from the boundary of \a cyl.
+ * from the boundary of \a cyl. Namely, \a point is regarded to be inside if the signed distance from the boundary, which is negative
+ * inside, is less than \a margin.
  * \return
  * zCyl3DPointIsInside() returns the true value if \a point is inside of \a cyl,
  * or the false value otherwise.

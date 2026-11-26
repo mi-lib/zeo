@@ -85,7 +85,8 @@ __ZEO_EXPORT zSphere3D *zSphere3DXformInv(const zSphere3D *src, const zFrame3D *
  * zSphere3DDistFromPoint() calculates the distance from a 3D point \a point to a 3D sphere \a sphere.
  *
  * zSphere3DPointIsInside() checks if a 3D point \a point is inside of a 3D sphere \a sphere. \a margin is
- * a margin of the inside area outward from the boundary of \a sphere.
+ * a margin of the inside area outward from the boundary of \a sphere. Namely, \a point is regarded to be inside if the signed distance from the boundary, which is negative
+ * inside, is less than \a margin.
  * \return
  * zSphere3DClosest() and zSphere3DDistFromPoint() return the signed distance from \a point to \a sphere.
  * The result is

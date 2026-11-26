@@ -11,9 +11,18 @@
 
 __BEGIN_DECLS
 
+/* In the collision checking functions zColChk...(), two shapes are regarded to be in collision with
+ * each other if the signed distance between them is less than \a margin. The signed distance is the
+ * Euclidean distance between them if they are apart from each other, and the negative of the
+ * penetration depth, namely, the length of the shortest translation to separate them, if they
+ * intersect. Hence, two shapes touching each other are not in collision if \a margin is zero, and a
+ * negative \a margin allows shallow penetrations. The same rule is applied to checking if a point is
+ * inside of a shape by z...PointIsInside(). */
+
 /*! \brief collision and intersection between an edge and a plane.
  *
- * zColChkEdgePlane3D() checks if an edge \a edge and a plane \a plane intersect with each other.
+ * zColChkEdgePlane3D() checks if an edge \a edge and a plane \a plane are in collision with each
+ * other within a margin \a margin.
  *
  * zIntersectEdgePlane3D() calculates the all intersection points between \a edge and \a plane,
  * sets them into the array \a ip and returns the number of them.
@@ -28,12 +37,12 @@ __BEGIN_DECLS
  * Consequently, the number of intersection points is at most two, so that the size of \a ip
  * has to be more than or equal to two.
  * \return
- * zColChkEdgePlane3D() returns the true value if \a edge and \a plane intersect with each other.
- * Otherwise, the false value is returned.
+ * zColChkEdgePlane3D() returns the true value if \a edge and \a plane are in collision with each
+ * other. Otherwise, the false value is returned.
  *
  * zIntersectEdgePlane3D() returns the number of intersection points, 0, 1, or 2.
  */
-__ZEO_EXPORT bool zColChkEdgePlane3D(const zEdge3D *edge, const zPlane3D *plane);
+__ZEO_EXPORT bool zColChkEdgePlane3D(const zEdge3D *edge, const zPlane3D *plane, double margin);
 __ZEO_EXPORT int zIntersectEdgePlane3D(const zEdge3D *edge, const zPlane3D *plane, zVec3D ip[]);
 
 /*! \brief intersection between two 3D planes.
@@ -53,7 +62,8 @@ __ZEO_EXPORT int zIntersectPlane3D(const zPlane3D *plane1, const zPlane3D *plane
 
 /*! \brief collision and intersection of plane, edge and triangle.
  *
- * zColChkTriPlane3D() checks if 3D triangle \a tri and 3D plane \a plane intersect with each other.
+ * zColChkTriPlane3D() checks if 3D triangle \a tri and 3D plane \a plane are in collision with each
+ * other within a margin \a margin.
  * zIntersectTriPlane3D() calculates all the intersection points between \a tri and \a plane, sets
  * them into the array \a ip and returns the number of them.
  * In the case that \a tri is perfectly on \a plane, though infinite number of intersection points
@@ -61,7 +71,8 @@ __ZEO_EXPORT int zIntersectPlane3D(const zPlane3D *plane1, const zPlane3D *plane
  * \a ip. Consequently, the number of intersection points is at most three, so that the size
  * of \a ip has to be more than or equal to three.
  *
- * zColChkEdgeTri3D() checks if 3D edge \a edge and 3D triangle \a tri intersect with each other.
+ * zColChkEdgeTri3D() checks if 3D edge \a edge and 3D triangle \a tri are in collision with each
+ * other within a margin \a margin.
  * zIntersectEdgeTri3D() calculates all the intersection points between \a edge and \a tri and sets
  * them into \a ip.
  * In the case that \a edge is included in \a tri, though infinite number of intersection points
@@ -69,7 +80,8 @@ __ZEO_EXPORT int zIntersectPlane3D(const zPlane3D *plane1, const zPlane3D *plane
  * of \a ip. Consequently, the number of intersection points is at most two, so that the size of
  * \a ip has to be more than or equal to two.
  *
- * zColChkTri3D() checks if two 3D triangles \a tri1 and \a tri2 intersect with each other.
+ * zColChkTri3D() checks if two 3D triangles \a tri1 and \a tri2 are in collision with each other
+ * within a margin \a margin.
  * zIntersectTri3D() calculates all the intersection points between \a tri1 and \a tri2 and sets
  * them into \a ip.
  * In the case that one is included in the other (or the two perfectly coincide with each other),
@@ -79,16 +91,16 @@ __ZEO_EXPORT int zIntersectPlane3D(const zPlane3D *plane1, const zPlane3D *plane
  * to three.
  * \return
  * zColChkTriPlane3D(), zColChkEdgeTri3D() and zColChkTri3D() return the true value if the given
- * two elements intersect with each other. Otherwise, the false value is returned.
+ * two elements are in collision with each other. Otherwise, the false value is returned.
  *
  * zIntersectTriPlane3D(), zIntersectEdgeTri3D() and zIntersectTri3D() return the number of
  * intersection points.
  */
-__ZEO_EXPORT bool zColChkTriPlane3D(const zTri3D *tri, const zPlane3D *plane);
+__ZEO_EXPORT bool zColChkTriPlane3D(const zTri3D *tri, const zPlane3D *plane, double margin);
 __ZEO_EXPORT int zIntersectTriPlane3D(const zTri3D *tri, const zPlane3D *plane, zVec3D ip[]);
-__ZEO_EXPORT bool zColChkEdgeTri3D(const zEdge3D *edge, const zTri3D *tri);
+__ZEO_EXPORT bool zColChkEdgeTri3D(const zEdge3D *edge, const zTri3D *tri, double margin);
 __ZEO_EXPORT int zIntersectEdgeTri3D(const zEdge3D *edge, const zTri3D *tri, zVec3D ip[]);
-__ZEO_EXPORT bool zColChkTri3D(const zTri3D *tri1, const zTri3D *tri2);
+__ZEO_EXPORT bool zColChkTri3D(const zTri3D *tri1, const zTri3D *tri2, double margin);
 __ZEO_EXPORT int zIntersectTri3D(const zTri3D *tri1, const zTri3D *tri2, zVec3D ip[]);
 
 /*! \brief intersection between a loop of vertices and 3D plane.
@@ -100,6 +112,19 @@ __ZEO_EXPORT int zIntersectTri3D(const zTri3D *tri1, const zTri3D *tri2, zVec3D 
  * \notes the size of \a ip has to be larger than the valued returned by the function.
  */
 __ZEO_EXPORT int zIntersectVecListPlane3D(zVec3DList *vl, zPlane3D *plane, zVec3D ip[]);
+
+/*! \brief check if convex hulls of two sets of 3D points apart from each other are within a margin.
+ *
+ * _zColChkVec3DArray() checks if the distance between the convex hulls of two sets of 3D points \a v1
+ * and \a v2, the numbers of which are \a n1 and \a n2, respectively, is less than a margin \a margin,
+ * supposing that they are apart from each other.
+ * \return
+ * _zColChkVec3DArray() returns the true value if the distance is less than \a margin. Otherwise, it
+ * returns the false value.
+ * \notes
+ * This is for internal implementations of the library. No need to call this function in user's codes.
+ */
+__ZEO_EXPORT bool _zColChkVec3DArray(zVec3D v1[], int n1, zVec3D v2[], int n2, double margin);
 
 __END_DECLS
 

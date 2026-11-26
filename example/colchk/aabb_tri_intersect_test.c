@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
   int n;
 
   test_tri_box( p, &t, &b );
-  eprintf( "collision = %s\n", zBoolStr( zColChkTriAABox3D( &t, &b ) ) );
+  eprintf( "collision = %s\n", zBoolStr( zColChkTriAABox3D( &t, &b, 0 ) ) );
   n = zIntersectTriAABox3D( &t, &b, ip );
   eprintf( "num. of intersection point = %d\n", n );
   output( &t, &b, ip, n );

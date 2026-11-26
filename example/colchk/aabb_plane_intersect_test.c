@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 
   test_plane_box( &p0, &p, &b );
 
-  eprintf( "collision = %s\n", zBoolStr( zColChkPlaneAABox3D( &p, &b ) ) );
+  eprintf( "collision = %s\n", zBoolStr( zColChkPlaneAABox3D( &p, &b, 0 ) ) );
   n = zIntersectPlaneAABox3D( &p, &b, ip );
   eprintf( "num. of intersection point = %d\n", n );
   output( &p, &b, ip, n, "box.ztk" );

@@ -53,6 +53,19 @@ __ZEO_EXPORT bool zGJKPoint(zVec3DData *data, zVec3D *p, zVec3D *c);
  */
 __ZEO_EXPORT bool zGJKDepth(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2);
 
+/*! \brief check if two convex hulls penetrate each other deeper than a given depth.
+ *
+ * _zGJKPenetrate() checks if the penetration depth of the convex hulls of two sets of 3D points
+ * \a data1 and \a data2 is larger than a non-negative value \a depth. The pair of points found by
+ * zGJK() is stored in \a c1 and \a c2.
+ * \return
+ * _zGJKPenetrate() returns the true value if the penetration depth is larger than \a depth.
+ * Otherwise, it returns the false value.
+ * \notes
+ * This is for internal implementations of the library. No need to call this function in user's codes.
+ */
+__ZEO_EXPORT bool _zGJKPenetrate(zVec3DData *data1, zVec3DData *data2, double depth, zVec3D *c1, zVec3D *c2);
+
 __END_DECLS
 
 #endif /* __ZEO_COL_GJK_H__ */

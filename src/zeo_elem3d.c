@@ -262,6 +262,23 @@ zVec3D *zTri3DCalcNorm(zTri3D *tri)
   return zTri3DNorm(tri);
 }
 
+/* check if a 3D triangle is degenerate. */
+bool zTri3DIsDegenerate(const zTri3D *tri, double tol)
+{
+  zVec3D edge[3], n;
+  double l, lmax = 0;
+  int i;
+
+  for( i=0; i<3; i++ ){
+    _zVec3DSub( zTri3DVertNext(tri,i), zTri3DVert(tri,i), &edge[i] );
+    if( ( l = _zVec3DNorm( &edge[i] ) ) > lmax ) lmax = l;
+  }
+  /* the norm of the outer product, namely, twice the area, is the product of the longest edge and
+   * the minimum height. */
+  _zVec3DOuterProd( &edge[0], &edge[1], &n );
+  return _zVec3DNorm( &n ) <= tol * lmax;
+}
+
 /* barycenter of a 3D triangle. */
 ZEO_ELEM_TRIXD_BARYCENTER( 3D )
 

@@ -31,7 +31,8 @@ __ZEO_EXPORT zDisk2D *zDisk2DCreate(zDisk2D *disk, const zVec2D *c, double r);
 /*! \brief signed distance from a 2D point to a disk. */
 __ZEO_EXPORT double zDisk2DDistFromPoint(const zDisk2D *disk, const zVec2D *p);
 
-/*! \brief check if a 2D point is inside of a disk. */
+/*! \brief check if a 2D point is inside of a disk, namely, if the signed distance of the point from
+ * the boundary of the disk, which is negative inside, is less than a margin. */
 __ZEO_EXPORT bool zDisk2DPointIsInside(const zDisk2D *disk, const zVec2D *v, double margin);
 
 /*! \brief create a 2D disk from two points at both ends of diameter. */
@@ -68,7 +69,11 @@ __ZEO_EXPORT zVec2D *zEllips2DClosest(const zEllips2D *ellips, const zVec2D *p, 
 /*! \brief signed distance from a 2D point to an ellipse. */
 __ZEO_EXPORT double zEllips2DDistFromPoint(const zEllips2D *ellips, const zVec2D *p);
 
-/*! \brief check if a 2D point is inside of an ellipse. */
+/*! \brief check if a 2D point is inside of an ellipse.
+ * For a light computation, the point is approximately regarded to be inside if it is inside of the
+ * ellipse, the radii of which are increased by a margin. It is narrower than the exact offset of the
+ * ellipse by a positive margin, and wider by a negative margin. If either of the increased radii is
+ * not positive, the point is not inside. */
 __ZEO_EXPORT bool zEllips2DPointIsInside(const zEllips2D *ellips, const zVec2D *p, double margin);
 
 __END_DECLS

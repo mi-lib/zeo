@@ -143,6 +143,9 @@ bool zEllips3DPointIsInside(const zEllips3D *ellips, const zVec3D *p, double mar
 {
   zVec3D _p;
 
+  /* approximately, the ellipsoid is enlarged or shrunk by the margin along the principal axes */
+  if( zEllips3DRadiusX(ellips) + margin <= 0 || zEllips3DRadiusY(ellips) + margin <= 0 ||
+      zEllips3DRadiusZ(ellips) + margin <= 0 ) return false;
   zXform3DInv( &ellips->f, p, &_p );
   return zSqr(_p.c.x / ( zEllips3DRadiusX(ellips) + margin ) )
        + zSqr(_p.c.y / ( zEllips3DRadiusY(ellips) + margin ) )

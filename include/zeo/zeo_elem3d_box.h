@@ -41,6 +41,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zAABox3D ){
   double volume();
   zVec3D vert(int i);
   zAABox3D *enlarge(const zVec3D *v);
+  void distRangeFromPlane(const zPlane3D *plane, double *dmin, double *dmax);
+  zPlane3D *faceToPlane3D6(zPlane3D plane[6]);
   void fprint(FILE *fp = stdout);
   void fprintValue(FILE *fp = stdout);
 #endif /* __cplusplus */
@@ -92,7 +94,8 @@ __ZEO_EXPORT double zAABox3DClosest(const zAABox3D *box, const zVec3D *point, zV
 __ZEO_EXPORT double zAABox3DSqrDistFromPoint(const zAABox3D *box, const zVec3D *point);
 #define zAABox3DDistFromPoint(box,point) sqrt( zAABox3DSqrDistFromPoint( box, point ) )
 
-/*! \brief check if a point is inside of a 3D axis-aligned box. */
+/*! \brief check if a point is inside of a 3D axis-aligned box, namely, if the signed distance of the
+ * point from the boundary of the box, which is negative inside, is less than a margin. */
 __ZEO_EXPORT bool zAABox3DPointIsInside(const zAABox3D *box, const zVec3D *point, double margin);
 
 /*! \brief compute volume of a 3D axis-aligned box. */
@@ -103,6 +106,28 @@ __ZEO_EXPORT zVec3D *zAABox3DVert(const zAABox3D *box, int i, zVec3D *v);
 
 /*! \brief enlarge a 3D axis-aligned box. */
 __ZEO_EXPORT zAABox3D *zAABox3DEnlarge(zAABox3D *aabox, const zVec3D *v);
+
+/*! \brief range of signed distance of a 3D axis-aligned box from a 3D plane.
+ *
+ * zAABox3DDistRangeFromPlane() computes the minimum and maximum signed distances of points in a
+ * 3D axis-aligned box \a box from a 3D plane \a plane, where the distance is positive in front of
+ * \a plane. The results are put into \a dmin and \a dmax, respectively.
+ * \return
+ * zAABox3DDistRangeFromPlane() returns no value.
+ */
+__ZEO_EXPORT void zAABox3DDistRangeFromPlane(const zAABox3D *box, const zPlane3D *plane, double *dmin, double *dmax);
+
+/*! \brief planes of the six faces of a 3D axis-aligned box.
+ *
+ * zAABox3DFaceToPlane3D6() creates six planes \a plane of faces of a 3D axis-aligned box \a box,
+ * where the normal vectors are directed outward from \a box. plane[2*k] and plane[2*k+1] are the
+ * faces on the minimum and maximum sides along the k-th axis (k=0, 1, 2 for x, y, z), respectively.
+ * Since the planes refer to the vertices of \a box as their origins, \a box has to be kept while
+ * they are used.
+ * \return
+ * zAABox3DFaceToPlane3D6() returns a pointer \a plane.
+ */
+__ZEO_EXPORT zPlane3D *zAABox3DFaceToPlane3D6(const zAABox3D *box, zPlane3D plane[6]);
 
 /*! \brief print out a 3D axis-aligned box to a file. */
 __ZEO_EXPORT void zAABox3DFPrint(FILE *fp, const zAABox3D *box);
@@ -135,6 +160,8 @@ inline bool zAABox3D::pointIsInside(const zVec3D *point, double margin){ return 
 inline double zAABox3D::volume(){ return zAABox3DVolume( this ); }
 inline zVec3D zAABox3D::vert(int i){ zVec3D v; zAABox3DVert( this, i, &v ); return v; }
 inline zAABox3D *zAABox3D::enlarge(const zVec3D *v){ return zAABox3DEnlarge( this, v ); }
+inline void zAABox3D::distRangeFromPlane(const zPlane3D *plane, double *dmin, double *dmax){ zAABox3DDistRangeFromPlane( this, plane, dmin, dmax ); }
+inline zPlane3D *zAABox3D::faceToPlane3D6(zPlane3D plane[6]){ return zAABox3DFaceToPlane3D6( this, plane ); }
 inline void zAABox3D::fprint(FILE *fp){ return zAABox3DFPrint( fp, this ); }
 inline void zAABox3D::fprintValue(FILE *fp){ return zAABox3DValueFPrint( fp, this ); }
 inline bool operator==(zAABox3D &box1, zAABox3D &box2){ return zAABox3DEqual( &box1, &box2 ); }
@@ -246,11 +273,11 @@ __ZEO_EXPORT zBox3D *zBox3DXformInv(const zBox3D *src, const zFrame3D *frame, zB
  * zBox3DDistFromPoint() calculates the distance from a 3D point \a p to a box \a box.
  *
  * zBox3DPointIsInside() checks if a 3D point \a p is inside of a box \a box. \a margin is a margin of
- * the inside area outward from the boundary of \a box.
+ * the inside area outward from the boundary of \a box. Namely, \a p is regarded to be inside if the signed distance from the boundary, which is negative
+ * inside, is less than \a margin.
  * \return
- * zBox3DClosest() and zBox3DDistFromPoint() return the signed distance from \a p to \a box.
- * The result is a positive value when \a p is outside of \a box, or a negative value when \a p is
- * inside of \a box.
+ * zBox3DClosest() and zBox3DDistFromPoint() return the distance from \a p to \a box, which is zero
+ * if \a p is inside of \a box.
  *
  * zBox3DPointIsInside() returns the true value if \a p is inside of \a box, or the false value otherwise.
  */

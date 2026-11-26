@@ -97,8 +97,15 @@ double zAABox2DSqrDistFromPoint(const zAABox2D *box, const zVec2D *point)
 /* check if a point is inside of a 2D axis-aligned box. */
 bool zAABox2DPointIsInside(const zAABox2D *box, const zVec2D *p, double margin)
 {
-  return p->e[zX] > box->min.e[zX] - margin && p->e[zX] < box->max.e[zX] + margin &&
-         p->e[zY] > box->min.e[zY] - margin && p->e[zY] < box->max.e[zY] + margin ? true : false;
+  double ex, ey;
+
+  /* the signed distance is the maximum of the excesses of the coordinates of the point over the box
+   * if both of them are non-positive, and the norm of the positive excesses otherwise. */
+  ex = _zMax( box->min.e[zX] - p->e[zX], p->e[zX] - box->max.e[zX] );
+  ey = _zMax( box->min.e[zY] - p->e[zY], p->e[zY] - box->max.e[zY] );
+  if( ex >= margin || ey >= margin ) return false;
+  if( ex <= 0 && ey <= 0 ) return _zMax( ex, ey ) < margin;
+  return zSqr( _zMax( ex, 0 ) ) + zSqr( _zMax( ey, 0 ) ) < margin * margin;
 }
 
 /* compute area of a 2D axis-aligned box. */

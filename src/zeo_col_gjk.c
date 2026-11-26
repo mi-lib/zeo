@@ -755,3 +755,19 @@ bool zGJKDepth(zVec3DData *data1, zVec3DData *data2, zVec3D *c1, zVec3D *c2)
 
   return _zGJK( data1, data2, c1, c2, &s ) ? _zEPA( data1, data2, c1, c2, &s ) : false;
 }
+
+/* check if two convex hulls penetrate each other deeper than a given depth.
+ * If the final simplex of the GJK algorithm is a tetrahedron, the origin is strictly inside of it,
+ * since the vertices with tiny weights have been removed. Then, the origin is also strictly inside of
+ * the Minkowski difference, which contains the tetrahedron, namely, the penetration depth is
+ * positive. Hence, the expanding polytope algorithm is skipped in this case if the given depth is
+ * zero. */
+bool _zGJKPenetrate(zVec3DData *data1, zVec3DData *data2, double depth, zVec3D *c1, zVec3D *c2)
+{
+  zGJKSimplex s;
+  zVec3D d1, d2;
+
+  if( !_zGJK( data1, data2, c1, c2, &s ) ) return false;
+  if( depth == 0 && s.n == 4 ) return true;
+  return _zEPA( data1, data2, &d1, &d2, &s ) && zVec3DSqrDist( &d1, &d2 ) > depth * depth;
+}

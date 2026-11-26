@@ -130,22 +130,28 @@ double zCone3DDistFromPoint(const zCone3D *cone, const zVec3D *point)
   return sqrt( d*d + zSqr(r-zCone3DRadius(cone)) );
 }
 
-/* check if a point is inside of a cone. */
+/* check if a point is inside of a cone.
+ * The signed distance is computed on the half plane which contains the axis and the point, where the
+ * section of the cone is a triangle and its boundary consists of the base and the slant edges. */
 bool zCone3DPointIsInside(const zCone3D *cone, const zVec3D *point, double margin)
 {
   zVec3D axis, v;
-  zVec2D p2d, l2d;
-  double l, d;
+  double l, r, d, rr, l2, t, db, ds;
 
   zCone3DAxis( cone, &axis );
-  zVec3DSub( point, zCone3DVert(cone), &v );
   l = zVec3DNormalizeDRC( &axis, 0 );
-  d = -zVec3DInnerProd( &axis, &v );
-  if( d <= -margin || d >= l + margin ) return false;
-  zVec2DCreate( &p2d, d, sqrt( zVec3DSqrNorm(&v) - d*d ) );
-  zVec2DCreate( &l2d, -zCone3DRadius(cone), l );
-  zVec2DNormalizeNCDRC( &l2d );
-  return zVec2DInnerProd( &l2d, &p2d ) < margin ? true : false;
+  zVec3DSub( point, zCone3DCenter(cone), &v );
+  d = zVec3DInnerProd( &axis, &v ); /* axial coordinate from the base */
+  r = zVec3DOuterProdNorm( &axis, &v ); /* radial coordinate */
+  rr = zCone3DRadius(cone);
+  /* distance from the base edge */
+  db = r <= rr ? fabs( d ) : sqrt( d*d + zSqr(r-rr) );
+  /* distance from the slant edge from (0,rr) to (l,0) */
+  t = ( l2 = l*l + rr*rr ) > 0 ? zLimit( ( d*l - (r-rr)*rr ) / l2, 0, 1 ) : 0;
+  ds = sqrt( zSqr( d - t*l ) + zSqr( r - rr + t*rr ) );
+  if( d >= 0 && d*rr + r*l <= l*rr ) /* inside */
+    return -_zMin( db, ds ) < margin;
+  return _zMin( db, ds ) < margin;
 }
 
 /* height of a 3D cone. */

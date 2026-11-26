@@ -124,8 +124,13 @@ bool zCyl3DPointIsInside(const zCyl3D *cyl, const zVec3D *point, double margin)
   double l, r, d;
 
   _zCyl3DClosestPrep( cyl, point, &axis, &v, &l, &r, &d );
-  if( r - zCyl3DRadius(cyl) >= margin ) return false;
-  return d > -margin && d < l + margin ? true : false;
+  /* the signed distance is the maximum of the radial and axial excesses of the point over the
+   * cylinder if both of them are non-positive, and the norm of the positive excesses otherwise. */
+  r -= zCyl3DRadius(cyl);
+  d = _zMax( -d, d - l );
+  if( r >= margin || d >= margin ) return false;
+  if( r <= 0 && d <= 0 ) return _zMax( r, d ) < margin;
+  return zSqr( _zMax( r, 0 ) ) + zSqr( _zMax( d, 0 ) ) < margin * margin;
 }
 
 /* height of a 3D cylinder. */

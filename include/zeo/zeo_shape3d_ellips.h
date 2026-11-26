@@ -91,7 +91,10 @@ __ZEO_EXPORT zEllips3D *zEllips3DXformInv(const zEllips3D *src, const zFrame3D *
  *
  * zEllips3DPointIsInside() checks if a 3D point \a p is inside
  * of a 3D ellipsoid \a ellips. \a margin is a margin of the inside
- * area outward from the boundary of \a ellips.
+ * area outward from the boundary of \a ellips. For a light computation, \a p is approximately
+ * regarded to be inside if it is inside of the ellipsoid, the radii of which are increased by
+ * \a margin. It is narrower than the exact offset of \a ellips by a positive \a margin, and wider
+ * by a negative \a margin. If any of the increased radii is not positive, \a p is not inside.
  * \return
  * zEllips3DClosest() and zEllips3DDistFromPoint() return the signed
  * distance from \a p to \a ellips. The result is
