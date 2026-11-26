@@ -96,8 +96,8 @@ double zCyl3DClosest(const zCyl3D *cyl, const zVec3D *point, zVec3D *closestpoin
   } else
     c = zCyl3DCenter(cyl,0);
 
-  zVec3DCat( point, -d, &axis, closestpoint );
-  if( r <= zCyl3DRadius(cyl) ) return -d;
+  zVec3DCat( point, -d, &axis, closestpoint ); /* d is the signed axial distance from the end */
+  if( r <= zCyl3DRadius(cyl) ) return fabs( d );
   zVec3DSub( closestpoint, c, &cr );
   zVec3DCat( c, zCyl3DRadius(cyl)/r, &cr, closestpoint );
   return sqrt( zSqr( r - zCyl3DRadius(cyl) ) + zSqr(d) );
@@ -114,7 +114,7 @@ double zCyl3DDistFromPoint(const zCyl3D *cyl, const zVec3D *point)
     return r <= zCyl3DRadius(cyl) ? 0 : r - zCyl3DRadius(cyl);
   if( d > l ) d -= l;
   return r <= zCyl3DRadius(cyl) ?
-    -d : sqrt( zSqr( r - zCyl3DRadius(cyl) ) + zSqr(d) );
+    fabs( d ) : sqrt( zSqr( r - zCyl3DRadius(cyl) ) + zSqr(d) );
 }
 
 /* check if a point is inside of a cylinder. */

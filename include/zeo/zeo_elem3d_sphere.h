@@ -28,6 +28,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zSphere3D ){
   zSphere3D *xform(const zFrame3D *frame, zSphere3D *dest);
   zSphere3D *xformInv(const zFrame3D *frame, zSphere3D *dest);
   double closest(const zVec3D *point, zVec3D *closestpoint);
+  double signedDistanceFromPoint(const zVec3D *point);
   double distanceFromPoint(const zVec3D *point);
   bool pointIsInside(const zVec3D *point, double margin = zTOL);
   double volume();
@@ -82,21 +83,24 @@ __ZEO_EXPORT zSphere3D *zSphere3DXformInv(const zSphere3D *src, const zFrame3D *
  * zSphere3DClosest() calculates the closest point from a 3D point \a point to a 3D sphere \a sphere and
  * puts it into \a closestpoint. When \a point is inside of \a sphere, it copies \a point to \a closestpoint.
  *
- * zSphere3DDistFromPoint() calculates the distance from a 3D point \a point to a 3D sphere \a sphere.
+ * zSphere3DSignedDistFromPoint() calculates the signed distance from a 3D point \a point to a 3D
+ * sphere \a sphere, which is negative if \a point is inside of \a sphere.
+ *
+ * zSphere3DDistFromPoint() calculates the distance from \a point to \a sphere, which is zero if
+ * \a point is inside of \a sphere.
  *
  * zSphere3DPointIsInside() checks if a 3D point \a point is inside of a 3D sphere \a sphere. \a margin is
- * a margin of the inside area outward from the boundary of \a sphere. Namely, \a point is regarded to be inside if the signed distance from the boundary, which is negative
- * inside, is less than \a margin.
+ * a margin of the inside area outward from the boundary of \a sphere. Namely, \a point is regarded to
+ * be inside if the signed distance from the boundary, which is negative inside, is less than \a margin.
  * \return
- * zSphere3DClosest() and zSphere3DDistFromPoint() return the signed distance from \a point to \a sphere.
- * The result is
- *  - a positive value when \a point is outside of \a sphere, or
- *  - a negative value when \a point is inside of \a sphere.
+ * zSphere3DClosest() and zSphere3DDistFromPoint() return the distance from \a point to \a sphere.
+ * zSphere3DSignedDistFromPoint() returns the signed distance from \a point to \a sphere.
  *
  * zSphere3DPointIsInside() returns the true value if \a point is inside of \a sphere, or the false value
  * otherwise.
  */
 __ZEO_EXPORT double zSphere3DClosest(const zSphere3D *sphere, const zVec3D *point, zVec3D *closestpoint);
+__ZEO_EXPORT double zSphere3DSignedDistFromPoint(const zSphere3D *sphere, const zVec3D *point);
 __ZEO_EXPORT double zSphere3DDistFromPoint(const zSphere3D *sphere, const zVec3D *point);
 __ZEO_EXPORT bool zSphere3DPointIsInside(const zSphere3D *sphere, const zVec3D *point, double margin);
 
@@ -143,6 +147,7 @@ inline zSphere3D *zSphere3D::init(){ return zSphere3DInit( this ); }
 inline zSphere3D *zSphere3D::xform(const zFrame3D *frame, zSphere3D *dest){ return zSphere3DXform( this, frame, dest ); }
 inline zSphere3D *zSphere3D::xformInv(const zFrame3D *frame, zSphere3D *dest){ return zSphere3DXformInv( this, frame, dest ); }
 inline double zSphere3D::closest(const zVec3D *point, zVec3D *closestpoint){ return zSphere3DClosest( this, point, closestpoint ); }
+inline double zSphere3D::signedDistanceFromPoint(const zVec3D *point){ return zSphere3DSignedDistFromPoint( this, point ); }
 inline double zSphere3D::distanceFromPoint(const zVec3D *point){ return zSphere3DDistFromPoint( this, point ); }
 inline bool zSphere3D::pointIsInside(const zVec3D *point, double margin){ return zSphere3DPointIsInside( this, point, margin ); }
 inline double zSphere3D::volume(){ return zSphere3DVolume( this ); }

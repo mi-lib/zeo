@@ -28,7 +28,22 @@ __BEGIN_DECLS
 /*! \brief create a 2D disk. */
 __ZEO_EXPORT zDisk2D *zDisk2DCreate(zDisk2D *disk, const zVec2D *c, double r);
 
-/*! \brief signed distance from a 2D point to a disk. */
+/*! \brief distance from a 2D point to a disk.
+ *
+ * zDisk2DClosest() finds the closest point from a 2D point \a p to a disk \a disk, and puts it into
+ * \a cp. If \a p is inside of \a disk, \a p itself is the closest point.
+ *
+ * zDisk2DSignedDistFromPoint() calculates the signed distance from \a p to \a disk, which is negative
+ * if \a p is inside of \a disk.
+ *
+ * zDisk2DDistFromPoint() calculates the distance from \a p to \a disk, which is zero if \a p is
+ * inside of \a disk.
+ * \return
+ * zDisk2DClosest() and zDisk2DDistFromPoint() return the distance from \a p to \a disk.
+ * zDisk2DSignedDistFromPoint() returns the signed distance from \a p to \a disk.
+ */
+__ZEO_EXPORT double zDisk2DClosest(const zDisk2D *disk, const zVec2D *p, zVec2D *cp);
+__ZEO_EXPORT double zDisk2DSignedDistFromPoint(const zDisk2D *disk, const zVec2D *p);
 __ZEO_EXPORT double zDisk2DDistFromPoint(const zDisk2D *disk, const zVec2D *p);
 
 /*! \brief check if a 2D point is inside of a disk, namely, if the signed distance of the point from
@@ -63,10 +78,11 @@ __BEGIN_DECLS
 /*! \brief create an ellipse. */
 __ZEO_EXPORT zEllips2D *zEllips2DCreate(zEllips2D *ellips, const zVec2D *c, double r1, double r2);
 
-/*! \brief closest point to a 2D point on an ellipse. */
+/*! \brief closest point to a 2D point on an ellipse.
+ * If the point is inside of the ellipse, the point itself is the closest point. */
 __ZEO_EXPORT zVec2D *zEllips2DClosest(const zEllips2D *ellips, const zVec2D *p, zVec2D *cp);
 
-/*! \brief signed distance from a 2D point to an ellipse. */
+/*! \brief distance from a 2D point to an ellipse, which is zero if the point is inside of it. */
 __ZEO_EXPORT double zEllips2DDistFromPoint(const zEllips2D *ellips, const zVec2D *p);
 
 /*! \brief check if a 2D point is inside of an ellipse.

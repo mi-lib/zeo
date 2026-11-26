@@ -461,6 +461,71 @@ void assert_ellips2D_inside(void)
   zAssert( zEllips2DClosest, result );
 }
 
+/* the closest point on an ellipse is on the boundary, the vector from it to the given point is
+ * along the outward normal, and the distance is not larger than that to sampled boundary points. */
+void assert_ellips2D_closest(void)
+{
+  zEllips2D e;
+  zVec2D p, c, cp, d, n, q;
+  double r0, r1, dist, dmin, th;
+  int i, j;
+  bool result = true;
+
+  for( i=0; i<N/10; i++ ){
+    zVec2DCreate( &c, zRandF(-1,1), zRandF(-1,1) );
+    r0 = pow( 10, zRandF(-2,1) );
+    r1 = pow( 10, zRandF(-2,1) );
+    zEllips2DCreate( &e, &c, r0, r1 );
+    th = zRandF(-zPI,zPI);
+    zVec2DCreate( &p, c.c.x + r0*cos(th)*zRandF(1,10), c.c.y + r1*sin(th)*zRandF(1,10) );
+    if( i % 10 == 0 ) zVec2DCreate( &p, c.c.x + r0*zRandF(1,10)*( i % 20 ? 1 : -1 ), c.c.y ); /* on an axis */
+    zEllips2DClosest( &e, &p, &cp );
+    if( !zIsTol( test_ellips2D_residual( &e, &cp, 0 ), 1.0e-12 ) ) result = false;
+    zVec2DSub( &p, &cp, &d );
+    test_ellips2D_norm( &e, &cp, &n );
+    /* the rounding error of the coordinates is amplified by 1/rmin^2 in the normal vector. */
+    if( !zIsTol( zVec2DOuterProd( &d, &n ), 1.0e-14 * zSqr( zMax(r0,r1) / zMin(r0,r1) ) * ( zVec2DNorm(&d) + zMax( r0, r1 ) + zVec2DNorm(&c) ) ) || zVec2DInnerProd( &d, &n ) < 0 ) result = false;
+    dist = zEllips2DDistFromPoint( &e, &p );
+    for( dmin=HUGE_VAL, j=0; j<10000; j++ ){
+      zVec2DCreate( &q, c.c.x + r0*cos(zPIx2*j/10000), c.c.y + r1*sin(zPIx2*j/10000) );
+      dmin = zMin( dmin, zVec2DDist( &p, &q ) );
+    }
+    if( dist > dmin + 1.0e-12 ) result = false; /* not the global minimum */
+  }
+  zAssert( zEllips2DClosest (thin ellipses and points on the axes), result );
+}
+
+/* the signed distance is negative inside, while the distance and the closest point are zero and
+ * the point itself, respectively. The inside check accepts a negative margin. */
+void assert_disk2D_dist(void)
+{
+  zDisk2D disk;
+  zVec2D c, p, cp;
+  double r, l, th, sd, d;
+  int i;
+  bool result = true;
+
+  for( i=0; i<N; i++ ){
+    zVec2DCreate( &c, zRandF(-3,3), zRandF(-3,3) );
+    r = zRandF(0.1,5);
+    zDisk2DCreate( &disk, &c, r );
+    l = r * zRandF(0,2);
+    th = zRandF(-zPI,zPI);
+    zVec2DCreate( &p, c.c.x + l*cos(th), c.c.y + l*sin(th) );
+    sd = zDisk2DSignedDistFromPoint( &disk, &p );
+    d = zDisk2DClosest( &disk, &p, &cp );
+    if( !zEqual( sd, l - r, zTOL ) ) result = false;
+    if( !zEqual( d, zDisk2DDistFromPoint( &disk, &p ), zTOL ) || !zEqual( d, zMax( l - r, 0 ), zTOL ) ) result = false;
+    if( l <= r ){
+      if( !zVec2DEqual( &cp, &p ) ) result = false;
+    } else{
+      if( !zEqual( zVec2DDist( &cp, &c ), r, zTOL ) || !zEqual( zVec2DDist( &cp, &p ), d, zTOL ) ) result = false;
+    }
+    if( !zDisk2DPointIsInside( &disk, &p, sd + zTOL ) || zDisk2DPointIsInside( &disk, &p, sd - zTOL ) ) result = false;
+  }
+  zAssert( zDisk2DClosest + zDisk2DSignedDistFromPoint + zDisk2DDistFromPoint, result );
+}
+
 int main(void)
 {
   zRandInit();
@@ -479,5 +544,7 @@ int main(void)
   assert_aabox2D_expand();
   assert_aabox2D_dist();
   assert_ellips2D_inside();
+  assert_ellips2D_closest();
+  assert_disk2D_dist();
   return 0;
 }

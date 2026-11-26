@@ -408,4 +408,42 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
     return zTri##XD##DistFromPoint( tri, point ) < margin; \
   }
 
+/* ********************************************************** */
+/* commonized definition of 2D ellipse and 3D ellipsoid.
+ * ********************************************************** */
+
+/* the closest point on an axis-aligned ellipse (dim=2) or ellipsoid (dim=3), the center of which is
+ * at the origin and the radii of which along the axes are r, to a point y outside of it.
+ * The closest point x satisfies x_i = y_i / ( 1 + t / r_i^2 ) for a non-negative Lagrange multiplier
+ * t, which is the root of S(t) = 1, where S(t) = sum_i ( r_i y_i / ( t + r_i^2 ) )^2.
+ * The Newton method is applied to psi(t) = S(t)^(-1/2) - 1, which is exactly linear if only one term
+ * of S(t) remains. Since S(t)^(-1/2) is a weighted power mean of t + r_i^2 of the order -2 except a
+ * constant factor, psi(t) is increasing and concave. Hence, the iteration from a lower bound of the
+ * root monotonically converges to the root without overshooting. The lower bound is
+ * max( 0, max_i( r_i |y_i| - r_i^2 ) ), since every term of S(t) is not larger than one at the root. */
+#define ZEO_ELEM_ELLIPSXD_CLOSEST(dim) \
+static void _zEllips##dim##DClosest(const double r[], const zVec##dim##D *y, zVec##dim##D *x) \
+{ \
+  double t, dt, d, u, s, ds; \
+  int i, iter; \
+\
+  for( t=0, i=0; i<dim; i++ ) \
+    if( ( d = r[i] * ( fabs( y->e[i] ) - r[i] ) ) > t ) t = d; \
+  for( iter=0; iter<Z_MAX_ITER_NUM; iter++ ){ \
+    for( s=ds=0, i=0; i<dim; i++ ){ \
+      d = t + r[i] * r[i]; \
+      u = r[i] * y->e[i] / d; \
+      s += ( u *= u ); \
+      ds += u / d; \
+    } \
+    if( s <= 1 ) break; \
+    /* psi = s^(-1/2) - 1 and psi' = s^(-3/2) ds, where ds = -S'(t)/2. */ \
+    dt = s * ( sqrt( s ) - 1 ) / ds; \
+    if( t + dt == t ) break; \
+    t += dt; \
+  } \
+  for( i=0; i<dim; i++ ) \
+    x->e[i] = y->e[i] / ( 1 + t / ( r[i] * r[i] ) ); \
+}
+
 #endif /* __ZEO_ELEMXD_H__ */

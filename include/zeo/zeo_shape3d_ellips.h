@@ -96,10 +96,8 @@ __ZEO_EXPORT zEllips3D *zEllips3DXformInv(const zEllips3D *src, const zFrame3D *
  * \a margin. It is narrower than the exact offset of \a ellips by a positive \a margin, and wider
  * by a negative \a margin. If any of the increased radii is not positive, \a p is not inside.
  * \return
- * zEllips3DClosest() and zEllips3DDistFromPoint() return the signed
- * distance from \a p to \a ellips. The result is
- *  - a positive value when \a p is outside of \a ellips, or
- *  - a negative value when \a p is inside of \a ellips.
+ * zEllips3DClosest() and zEllips3DDistFromPoint() return the distance from \a p to \a ellips, which
+ * is zero if \a p is inside of \a ellips.
  *
  * zEllips3DPointIsInside() returns the true value if \a p is
  * inside of \a ellips, or the false value otherwise.

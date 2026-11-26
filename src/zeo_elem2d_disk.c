@@ -18,16 +18,39 @@ zDisk2D *zDisk2DCreate(zDisk2D *disk, const zVec2D *c, double r)
   return disk;
 }
 
+/* the closest point from a 2D point to a disk. */
+double zDisk2DClosest(const zDisk2D *disk, const zVec2D *p, zVec2D *cp)
+{
+  zVec2D d;
+  double l;
+
+  zVec2DSub( p, zDisk2DCenter(disk), &d );
+  if( ( l = zVec2DNorm(&d) ) <= zDisk2DRadius(disk) ){
+    zVec2DCopy( p, cp );
+    return 0;
+  }
+  zVec2DCat( zDisk2DCenter(disk), zDisk2DRadius(disk)/l, &d, cp );
+  return l - zDisk2DRadius(disk);
+}
+
 /* signed distance from a 2D point to a disk. */
-double zDisk2DDistFromPoint(const zDisk2D *disk, const zVec2D *p)
+double zDisk2DSignedDistFromPoint(const zDisk2D *disk, const zVec2D *p)
 {
   return zVec2DDist( zDisk2DCenter(disk), p ) - zDisk2DRadius(disk);
+}
+
+/* distance from a 2D point to a disk. */
+double zDisk2DDistFromPoint(const zDisk2D *disk, const zVec2D *p)
+{
+  double d;
+
+  return ( d = zDisk2DSignedDistFromPoint( disk, p ) ) > 0 ? d : 0;
 }
 
 /* check if a 2D point is inside of a disk. */
 bool zDisk2DPointIsInside(const zDisk2D *disk, const zVec2D *v, double margin)
 {
-  return zDisk2DDistFromPoint( disk, v ) < margin ? true : false;
+  return zDisk2DSignedDistFromPoint( disk, v ) < margin;
 }
 
 /* create a 2D disk from two points at both ends of diameter. */
@@ -62,58 +85,28 @@ zEllips2D *zEllips2DCreate(zEllips2D *ellips, const zVec2D *c, double r1, double
   return ellips;
 }
 
-/* closest point to a 2D point on an ellipse with a margin. */
-static zVec2D *_zEllips2DClosest(const zEllips2D *ellips, const zVec2D *p, double margin, zVec2D *cp)
-{
-  zVec2D v;
-  double x2, y2, r02, r12, l;
-  zPex pex;
-  zComplex ans_array[4];
-  zCVecStruct ans;
-  int i;
-
-  _zVec2DSub( p, zEllips2DCenter(ellips), &v );
-  x2 = zSqr( v.c.x );
-  y2 = zSqr( v.c.y );
-  r02 = zSqr( zEllips2DRadius(ellips,0) + margin );
-  r12 = zSqr( zEllips2DRadius(ellips,1) + margin );
-  if( x2/r02 + y2/r12 > 1 ){
-    if( !( pex = zPexAlloc( 4 ) ) ) return NULL;
-    zCVecSetSizeNC( &ans, 4 );
-    zCVecBufNC(&ans) = ans_array;
-    zPexSetCoeff( pex, 4, 1 );
-    zPexSetCoeff( pex, 3, 2 * ( r02 + r12 ) );
-    zPexSetCoeff( pex, 2, r02*r02+4*r02*r12+r12*r12-x2*r02-y2*r12 );
-    zPexSetCoeff( pex, 1, 2 * ( r02 + r12 - x2 - y2 ) * r02 * r12 );
-    zPexSetCoeff( pex, 0, ( r02*r12 - x2*r12 - y2*r02 ) * r02 * r12 );
-    zPexBH( pex, &ans, zTOL, 0 );
-    zPexFree( pex );
-    for( i=0; i<4; i++ )
-      if( ( l = zCVecElemNC(&ans,i)->re ) >= 0 ) break;
-    if( i == 4 || !zIsTiny( zCVecElemNC(&ans,i)->im ) ){
-      ZRUNERROR( ZEO_ERR_FATAL );
-      return NULL;
-    }
-    v.c.x /= 1 + l / r02;
-    v.c.y /= 1 + l / r12;
-    _zVec2DAdd( &v, zEllips2DCenter(ellips), cp );
-  } else
-    zVec2DCopy( p, cp );
-  return cp;
-}
+/* the closest point on an axis-aligned ellipse to a point outside of it. */
+ZEO_ELEM_ELLIPSXD_CLOSEST( 2 )
 
 /* closest point to a 2D point on an ellipse. */
 zVec2D *zEllips2DClosest(const zEllips2D *ellips, const zVec2D *p, zVec2D *cp)
 {
-  return _zEllips2DClosest( ellips, p, 0, cp );
+  zVec2D v, vc;
+
+  _zVec2DSub( p, zEllips2DCenter(ellips), &v );
+  if( zSqr( v.c.x / zEllips2DRadius(ellips,0) ) + zSqr( v.c.y / zEllips2DRadius(ellips,1) ) <= 1 )
+    return zVec2DCopy( p, cp ); /* inside */
+  _zEllips2DClosest( ellips->radius, &v, &vc );
+  _zVec2DAdd( &vc, zEllips2DCenter(ellips), cp );
+  return cp;
 }
 
 /* distance from a 2D ellipse to a 2D point. */
 double zEllips2DDistFromPoint(const zEllips2D *ellips, const zVec2D *p)
 {
-  zVec2D cp, *ret;
+  zVec2D cp;
 
-  if( !( ret = zEllips2DClosest(ellips,p,&cp) ) ) return HUGE_VAL;
+  zEllips2DClosest( ellips, p, &cp );
   return zVec2DDist( &cp, p );
 }
 

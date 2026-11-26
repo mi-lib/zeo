@@ -85,10 +85,57 @@ void assert_inside(void)
   zAssert( zCyl3DPointIsInside, nitest == ni && notest == no );
 }
 
+/* the distance from a point to a cylinder is non-negative, zero if and only if the point is inside,
+ * equal to the distance to the closest point, and not larger than those to sampled points on the
+ * surface. Points beyond the both ends are included. */
+void assert_closest(void)
+{
+  zCyl3D cyl;
+  zVec3D c1, c2, p, cp, axis, u, w, q;
+  double dist, dmin, r, h, th;
+  int i, j, k;
+  bool result = true;
+
+  for( i=0; i<100; i++ ){
+    zVec3DCreate( &c1, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+    zVec3DCreate( &c2, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+    r = zRandF(0.1,1);
+    zCyl3DCreate( &cyl, &c1, &c2, r, 0 );
+    zVec3DSub( &c2, &c1, &axis );
+    h = zVec3DNormalizeDRC( &axis, 0 );
+    zVec3DOrthonormal( &axis, &u );
+    zVec3DOuterProd( &axis, &u, &w );
+    /* a point around the cylinder, beyond the ends in some cases */
+    th = zRandF(-zPI,zPI);
+    zVec3DCat( &c1, zRandF(-1,1)*h + zRandF(-0.5,1.5)*h, &axis, &p );
+    zVec3DCatDRC( &p, zRandF(0,2)*r*cos(th), &u );
+    zVec3DCatDRC( &p, zRandF(0,2)*r*sin(th), &w );
+    dist = zCyl3DClosest( &cyl, &p, &cp );
+    if( dist < 0 || !zEqual( dist, zCyl3DDistFromPoint( &cyl, &p ), zTOL ) ||
+        !zEqual( dist, zVec3DDist( &p, &cp ), zTOL ) ) result = false;
+    if( ( dist == 0 ) != zCyl3DPointIsInside( &cyl, &p, 0 ) && !zIsTiny( dist ) ) result = false;
+    if( dist == 0 ) continue;
+    for( dmin=HUGE_VAL, j=0; j<=100; j++ ) /* sampled points on the side and the caps */
+      for( k=0; k<200; k++ ){
+        zVec3DCat( &c1, h*j/100, &axis, &q );
+        zVec3DCatDRC( &q, r*cos(zPIx2*k/200), &u );
+        zVec3DCatDRC( &q, r*sin(zPIx2*k/200), &w );
+        dmin = zMin( dmin, zVec3DDist( &p, &q ) );
+        zVec3DCopy( j <= 50 ? &c1 : &c2, &q );
+        zVec3DCatDRC( &q, r*(j%51)/50*cos(zPIx2*k/200), &u );
+        zVec3DCatDRC( &q, r*(j%51)/50*sin(zPIx2*k/200), &w );
+        dmin = zMin( dmin, zVec3DDist( &p, &q ) );
+      }
+    if( dist > dmin + zTOL ) result = false;
+  }
+  zAssert( zCyl3DClosest + zCyl3DDistFromPoint, result );
+}
+
 int main(void)
 {
   zRandInit();
   assert_volume_inertia();
   assert_inside();
+  assert_closest();
   return EXIT_SUCCESS;
 }

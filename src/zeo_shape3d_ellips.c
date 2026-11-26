@@ -77,57 +77,22 @@ zEllips3D *zEllips3DXformInv(const zEllips3D *src, const zFrame3D *f, zEllips3D 
   return dest;
 }
 
-/* the closest point from a 3D point to an aligned 3D ellipsoid. */
-static zVec3D *_zEllips3DClosest(double rx, double ry, double rz, const zVec3D *v, zVec3D *cp)
-{
-  double a, b, c, p, q, r, p2, q2, r2, pqr, l;
-  zPex pex;
-  zCVec ans;
-  int i;
-
-  a = zSqr( v->e[zX] / rx );
-  b = zSqr( v->e[zY] / ry );
-  c = zSqr( v->e[zZ] / rz );
-  p = rx * rx; p2 = p * p;
-  q = ry * ry; q2 = q * q;
-  r = rz * rz; r2 = r * r; pqr = p * q * r;
-  pex = zPexAlloc( 6 );
-  ans = zCVecAlloc( 6 );
-  if( !pex || !ans ) return NULL;
-  zPexSetCoeff( pex, 6, 1 );
-  zPexSetCoeff( pex, 5, 2*(p+q+r) );
-  zPexSetCoeff( pex, 4, (1-a)*p2 + (1-c)*r2 + (1-b)*q2 + 4*(p*q+q*r+r*p) );
-  zPexSetCoeff( pex, 3, 2*(1-a)*(q+r)*p2 + 2*(1-b)*(r+p)*q2 + 2*(1-c)*(p+q)*r2 + 8*p*q*r );
-  zPexSetCoeff( pex, 2, (1-b-a)*p2*q2 + (1-a-c)*p2*r2 + (1-c-b)*q2*r2 + 4*pqr*( (1-a)*p + (1-b)*q + (1-c)*r ) );
-  zPexSetCoeff( pex, 1, 2*pqr*( (1-b-a)*p*q + (1-a-c)*r*p + (1-c-b)*q*r ) );
-  zPexSetCoeff( pex, 0, (1-a-b-c)*pqr*pqr );
-  zPexBH( pex, ans, zTOL, 0 );
-  zPexFree( pex );
-
-  for( i=0; i<6; i++ )
-    if( ( l = zCVecElemNC(ans,i)->re ) >= 0 ) break;
-  if( i == 6 || !zIsTiny( zCVecElemNC(ans,i)->im ) ){
-    ZRUNERROR( ZEO_ERR_FATAL );
-    return NULL;
-  }
-  zCVecFree( ans );
-  zVec3DCreate( cp, v->e[zX]/(1+l/p), v->e[zY]/(1+l/q), v->e[zZ]/(1+l/r) );
-  return cp;
-}
+/* the closest point on an axis-aligned ellipsoid to a point outside of it. */
+ZEO_ELEM_ELLIPSXD_CLOSEST( 3 )
 
 /* the closest point from a 3D point to a 3D ellipsoid. */
 double zEllips3DClosest(const zEllips3D *ellips, const zVec3D *p, zVec3D *cp)
 {
-  zVec3D pi;
+  zVec3D pl, cl;
 
-  if( zEllips3DPointIsInside( ellips, p, zTOL ) ){
+  zXform3DInv( &ellips->f, p, &pl );
+  if( zSqr( pl.c.x / zEllips3DRadiusX(ellips) ) + zSqr( pl.c.y / zEllips3DRadiusY(ellips) )
+    + zSqr( pl.c.z / zEllips3DRadiusZ(ellips) ) <= 1 ){ /* inside */
     zVec3DCopy( p, cp );
     return 0;
   }
-  zXform3DInv( &ellips->f, p, &pi );
-  _zEllips3DClosest( zEllips3DRadiusX(ellips), zEllips3DRadiusY(ellips), zEllips3DRadiusZ(ellips), &pi, cp );
-  zXform3DDRC( &ellips->f, cp );
-  /* distance */
+  _zEllips3DClosest( ellips->radius.e, &pl, &cl );
+  zXform3D( &ellips->f, &cl, cp );
   return zVec3DDist( p, cp );
 }
 

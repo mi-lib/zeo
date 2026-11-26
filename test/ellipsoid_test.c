@@ -89,10 +89,68 @@ void assert_inside(void)
   zAssert( zEllips3DPointIsInside, nitest == ni && notest == no );
 }
 
+/* the closest point on an ellipsoid is on the boundary, the vector from it to the given point is
+ * along the outward normal, and the distance is not larger than that to sampled boundary points. */
+void assert_closest(void)
+{
+  zEllips3D ellips;
+  zVec3D center, ax, ay, az, p, pl, cp, cl, d, n, q;
+  double r[3], rmin, rmax, dist, dmin, th, ph, s;
+  int i, j, k, l;
+  bool result = true;
+
+  for( i=0; i<100; i++ ){
+    zVec3DCreate( &center, zRandF(-3,3), zRandF(-3,3), zRandF(-3,3) );
+    zVec3DCreate( &ax, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+    zVec3DCreate( &q, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+    zVec3DOrthogonalize( &q, &ax, &ay );
+    zVec3DOuterProd( &ax, &ay, &az );
+    zVec3DNormalizeDRC( &ax, 0 );
+    zVec3DNormalizeDRC( &ay, 0 );
+    zVec3DNormalizeDRC( &az, 0 );
+    for( k=0; k<3; k++ ) r[k] = pow( 10, zRandF(-2,1) );
+    rmin = zMin3( r[0], r[1], r[2] );
+    rmax = zMax3( r[0], r[1], r[2] );
+    zEllips3DCreate( &ellips, &center, &ax, &ay, &az, r[0], r[1], r[2], 0 );
+    /* a point outside in the local frame */
+    th = zRandF(0,zPI);
+    ph = zRandF(-zPI,zPI);
+    zVec3DCreate( &pl, r[0]*sin(th)*cos(ph), r[1]*sin(th)*sin(ph), r[2]*cos(th) );
+    zVec3DMulDRC( &pl, zRandF(1,10) );
+    if( i % 10 == 0 ){ /* on a principal plane */
+      pl.e[i/10%3] = 0;
+      if( ( s = sqrt( zSqr(pl.c.x/r[0]) + zSqr(pl.c.y/r[1]) + zSqr(pl.c.z/r[2]) ) ) <= 1 )
+        zVec3DMulDRC( &pl, zRandF(1,10) / s ); /* to be outside */
+    }
+    if( i % 20 == 0 ){ /* on a principal axis */
+      zVec3DZero( &pl );
+      pl.e[i/20%3] = r[i/20%3] * zRandF(1,10);
+    }
+    zXform3D( &ellips.f, &pl, &p );
+    dist = zEllips3DClosest( &ellips, &p, &cp );
+    zXform3DInv( &ellips.f, &cp, &cl );
+    if( !zIsTol( zSqr(cl.c.x/r[0]) + zSqr(cl.c.y/r[1]) + zSqr(cl.c.z/r[2]) - 1, 1.0e-12 ) ) result = false;
+    zVec3DSub( &pl, &cl, &d );
+    zVec3DCreate( &n, cl.c.x/zSqr(r[0]), cl.c.y/zSqr(r[1]), cl.c.z/zSqr(r[2]) );
+    zVec3DNormalizeDRC( &n, 0 );
+    zVec3DOuterProd( &d, &n, &q );
+    /* the rounding error of the transformation is amplified by 1/rmin^2 in the normal vector. */
+    if( !zIsTol( zVec3DNorm( &q ), 1.0e-14 * zSqr( rmax / rmin ) * ( zVec3DNorm( &d ) + rmax + zVec3DNorm( &center ) ) ) || zVec3DInnerProd( &d, &n ) < 0 ) result = false;
+    for( dmin=HUGE_VAL, j=0; j<=300; j++ )
+      for( l=0; l<600; l++ ){
+        zVec3DCreate( &q, r[0]*sin(zPI*j/300)*cos(zPIx2*l/600), r[1]*sin(zPI*j/300)*sin(zPIx2*l/600), r[2]*cos(zPI*j/300) );
+        dmin = zMin( dmin, zVec3DDist( &pl, &q ) );
+      }
+    if( dist > dmin + 1.0e-12 ) result = false; /* not the global minimum */
+  }
+  zAssert( zEllips3DClosest, result );
+}
+
 int main(void)
 {
   zRandInit();
   assert_volume_inertia();
   assert_inside();
+  assert_closest();
   return EXIT_SUCCESS;
 }

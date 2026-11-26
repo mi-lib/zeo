@@ -68,28 +68,33 @@ double zSphere3DClosest(const zSphere3D *sphere, const zVec3D *point, zVec3D *cl
   double l;
 
   zVec3DSub( point, zSphere3DCenter(sphere), &d );
-  if( ( l = zVec3DNorm(&d) ) < zSphere3DRadius(sphere) )
+  if( ( l = zVec3DNorm(&d) ) <= zSphere3DRadius(sphere) ){
     zVec3DCopy( point, closestpoint );
-  else{
-    zVec3DMulDRC( &d, zSphere3DRadius(sphere)/l );
-    zVec3DAdd( zSphere3DCenter(sphere), &d, closestpoint );
+    return 0;
   }
+  zVec3DMulDRC( &d, zSphere3DRadius(sphere)/l );
+  zVec3DAdd( zSphere3DCenter(sphere), &d, closestpoint );
   return l - zSphere3DRadius(sphere);
 }
 
-/* distance between a 3D sphere and a point. */
+/* signed distance from a point to a 3D sphere. */
+double zSphere3DSignedDistFromPoint(const zSphere3D *sphere, const zVec3D *point)
+{
+  return zVec3DDist( point, zSphere3DCenter(sphere) ) - zSphere3DRadius(sphere);
+}
+
+/* distance from a point to a 3D sphere. */
 double zSphere3DDistFromPoint(const zSphere3D *sphere, const zVec3D *point)
 {
-  zVec3D d;
+  double d;
 
-  zVec3DSub( point, zSphere3DCenter(sphere), &d );
-  return zVec3DNorm(&d) - zSphere3DRadius(sphere);
+  return ( d = zSphere3DSignedDistFromPoint( sphere, point ) ) > 0 ? d : 0;
 }
 
 /* judge if a point is inside of a 3D sphere. */
 bool zSphere3DPointIsInside(const zSphere3D *sphere, const zVec3D *point, double margin)
 {
-  return zSphere3DDistFromPoint( sphere, point ) < margin ? true : false;
+  return zSphere3DSignedDistFromPoint( sphere, point ) < margin;
 }
 
 /* create a 3D sphere from two points at both ends of diameter. */

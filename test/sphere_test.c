@@ -82,10 +82,43 @@ void assert_inside(void)
   zAssert( zSphere3DPointIsInside, nitest == ni && notest == no );
 }
 
+/* the signed distance is negative inside, while the distance and the closest point are zero and
+ * the point itself, respectively. The inside check accepts a negative margin. */
+void assert_dist(void)
+{
+  zSphere3D sphere;
+  zVec3D c, p, cp, v;
+  double r, l, sd, d;
+  int i;
+  bool result = true;
+
+  for( i=0; i<1000; i++ ){
+    zVec3DCreate( &c, zRandF(-3,3), zRandF(-3,3), zRandF(-3,3) );
+    r = zRandF(0.1,5);
+    zSphere3DCreate( &sphere, &c, r, 0 );
+    zVec3DCreate( &v, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+    zVec3DNormalizeDRC( &v, 0 );
+    l = r * zRandF(0,2);
+    zVec3DCat( &c, l, &v, &p );
+    sd = zSphere3DSignedDistFromPoint( &sphere, &p );
+    d = zSphere3DClosest( &sphere, &p, &cp );
+    if( !zEqual( sd, l - r, zTOL ) ) result = false;
+    if( !zEqual( d, zSphere3DDistFromPoint( &sphere, &p ), zTOL ) || !zEqual( d, zMax( l - r, 0 ), zTOL ) ) result = false;
+    if( l <= r ){
+      if( !zVec3DEqual( &cp, &p ) ) result = false;
+    } else{
+      if( !zEqual( zVec3DDist( &cp, &c ), r, zTOL ) || !zEqual( zVec3DDist( &cp, &p ), d, zTOL ) ) result = false;
+    }
+    if( !zSphere3DPointIsInside( &sphere, &p, sd + zTOL ) || zSphere3DPointIsInside( &sphere, &p, sd - zTOL ) ) result = false;
+  }
+  zAssert( zSphere3DClosest + zSphere3DSignedDistFromPoint + zSphere3DDistFromPoint, result );
+}
+
 int main(void)
 {
   zRandInit();
   assert_volume_inertia();
   assert_inside();
+  assert_dist();
   return EXIT_SUCCESS;
 }
