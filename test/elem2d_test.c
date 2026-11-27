@@ -137,6 +137,72 @@ void create_tri2D_rand(zVec2D v[], zTri2D *t, double min, double max)
   zTri2DCreate( t, &v[0], &v[1], &v[2] );
 }
 
+/* a random triangle, which is thin or degenerate depending on type. */
+void create_tri2D_rand_type(zVec2D v[], zTri2D *t, int type)
+{
+  zVec2D e;
+
+  zVec2DCreate( &v[0], zRandF(-1,1), zRandF(-1,1) );
+  zVec2DCreate( &v[1], zRandF(-1,1), zRandF(-1,1) );
+  switch( type ){
+  case 1: /* thin triangle */
+    zVec2DInterDiv( &v[0], &v[1], zRandF(-0.5,1.5), &v[2] );
+    zVec2DSub( &v[1], &v[0], &e );
+    zVec2DCatDRC( &v[2], zRandF(-1,1)*pow( 10, -zRandI(3,10) ), zVec2DRot90CCW( &e, &e ) );
+    break;
+  case 2: /* collinear vertices */
+    zVec2DInterDiv( &v[0], &v[1], zRandF(-0.5,1.5), &v[2] );
+    break;
+  case 3: /* coincident vertices */
+    zVec2DCopy( &v[zRandI(0,1)], &v[2] );
+    break;
+  default:
+    zVec2DCreate( &v[2], zRandF(-1,1), zRandF(-1,1) );
+  }
+  zTri2DCreate( t, &v[0], &v[1], &v[2] );
+}
+
+/* a random point near a triangle, which is near a vertex or an edge in some cases. */
+void create_tri2D_point_rand(const zVec2D v[], double r, zVec2D *p)
+{
+  int i;
+
+  switch( zRandI(0,2) ){
+  case 0: zVec2DCreate( p, zRandF(-1.5,1.5), zRandF(-1.5,1.5) ); return;
+  case 1: zVec2DCopy( &v[zRandI(0,2)], p ); break;
+  default: i = zRandI(0,2); zVec2DInterDiv( &v[i], &v[(i+1)%3], zRandF(0,1), p );
+  }
+  p->c.x += zRandF(-r,r);
+  p->c.y += zRandF(-r,r);
+}
+
+void assert_tri2D_point_is_inside(void)
+{
+  zVec2D v[3], p;
+  zTri2D t;
+  double margin, sd;
+  int i, j;
+  bool result = true;
+
+  for( i=0; i<N; i++ ){
+    create_tri2D_rand_type( v, &t, i % 4 );
+    for( j=0; j<N; j++ ){
+      switch( zRandI(0,3) ){
+      case 0:  margin = 0; break;
+      case 1:  margin = zRandF(-1,1) * pow( 10, -zRandI(1,12) ); break;
+      default: margin = zRandF(-0.3,0.3);
+      }
+      create_tri2D_point_rand( v, 2*fabs(margin), &p );
+      sd = zTri2DSignedDistFromPoint( &t, &p );
+      if( zTri2DPointIsInside( &t, &p, margin ) != ( sd < margin ) && fabs( sd - margin ) > 1.0e-12 ){
+        eprintf( "type=%d, signed distance=%.16g, margin=%.16g\n", i % 4, sd, margin );
+        result = false;
+      }
+    }
+  }
+  zAssert( zTri2DPointIsInside (consistency with zTri2DSignedDistFromPoint), result );
+}
+
 #define TOL (1.0e-5)
 
 void assert_tri2D_contig(void)
@@ -539,6 +605,7 @@ int main(void)
   assert_tri2D_contig();
   assert_tri2D_closest_trivial();
   assert_tri2D_closest();
+  assert_tri2D_point_is_inside();
   assert_aabox2D_create();
   assert_aabox2D_equal();
   assert_aabox2D_expand();

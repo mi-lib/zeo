@@ -194,11 +194,17 @@ __ZEO_EXPORT zTri2D *zTri2DCreate(zTri2D *tri, const zVec2D *v1, const zVec2D *v
 
 /*! \brief area of a 2D triangle.
  *
+ * zTri2DSignedArea() calculates the signed area of a triangle \a tri, which is positive if the
+ * vertices are in counterclockwise order, and negative if clockwise.
+ *
  * zTri2DArea() calculates the area of a triangle \a tri.
  * \return
+ * zTri2DSignedArea() returns the signed area calculated.
+ *
  * zTri2DArea() returns the area calculated, which is not negative regardless of the order of the
  * vertices.
  */
+__ZEO_EXPORT double zTri2DSignedArea(const zTri2D *tri);
 __ZEO_EXPORT double zTri2DArea(const zTri2D *tri);
 
 /*! \brief various centers of a 2D triangle.

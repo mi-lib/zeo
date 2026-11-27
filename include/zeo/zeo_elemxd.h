@@ -403,10 +403,6 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
 
 #define ZEO_ELEM_TRIXD_POINT_IS_INSIDE_PROTOTYPE(XD) \
   bool zTri##XD##PointIsInside(const zTri##XD *tri, const zVec##XD *point, double margin)
-#define ZEO_ELEM_TRIXD_POINT_IS_INSIDE(XD) \
-  ZEO_ELEM_TRIXD_POINT_IS_INSIDE_PROTOTYPE( XD ){ \
-    return zTri##XD##DistFromPoint( tri, point ) < margin; \
-  }
 
 /* ********************************************************** */
 /* commonized definition of 2D ellipse and 3D ellipsoid.

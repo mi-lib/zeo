@@ -543,8 +543,45 @@ double zTri3DLinScale(const zTri3D *tri, const zVec3D *p, double *l0, double *l1
 /* distance from a 3D point to a 3D triangle. */
 ZEO_ELEM_TRIXD_DIST_FROM_POINT( 3D )
 
-/* check if a 3D point is inside of a 3D triangle. */
-ZEO_ELEM_TRIXD_POINT_IS_INSIDE( 3D )
+/* check if a 3D point is inside of a 3D triangle.
+ * Let s be the distance from the point to the plane of the triangle, and h the distance from the
+ * projection of the point onto the plane to the line through an edge that the projection is outside
+ * of. The distance from the point to the triangle is not less than sqrt( s^2 + h^2 ). If the
+ * projection is inside of all the edges, the distance is exactly s. Hence, the closest point is
+ * computed only if the projection is outside of some edges within the margin.
+ * The relative rounding error of the normal vector is about DBL_EPSILON over the sine of the angles
+ * of the triangle, which is amplified for a thin triangle. The closest point is computed for such a
+ * triangle, in which the error exceeds zTOL. */
+bool zTri3DPointIsInside(const zTri3D *tri, const zVec3D *point, double margin)
+{
+  zVec3D e[3], n, m, d;
+  double l[3], a, s, h;
+  bool is_outside = false;
+  int i;
+
+  if( margin <= 0 ) return false; /* a triangle has no inside area */
+  for( i=0; i<3; i++ ){
+    zVec3DSub( zTri3DVertNext(tri,i), zTri3DVert(tri,i), &e[i] );
+    l[i] = zVec3DSqrNorm( &e[i] );
+  }
+  zVec3DOuterProd( &e[0], &e[1], &n );
+  if( !( zTOL * ( a = zVec3DNorm( &n ) ) > DBL_EPSILON * zMax3( l[0], l[1], l[2] ) ) )
+    return zTri3DDistFromPoint( tri, point ) < margin; /* thin or degenerate triangle */
+  zVec3DDivDRC( &n, a ); /* unit normal vector */
+  zVec3DSub( point, zTri3DVert(tri,0), &d );
+  if( ( s = fabs( zVec3DInnerProd( &d, &n ) ) ) >= margin ) return false;
+  for( i=0; i<3; i++ ){
+    zVec3DOuterProd( &e[i], &n, &m ); /* outward normal of the edge with the length of the edge */
+    zVec3DSub( point, zTri3DVert(tri,i), &d );
+    if( ( h = zVec3DInnerProd( &d, &m ) ) > 0 ){ /* outside of the edge */
+      h /= sqrt( l[i] );
+      if( s*s + h*h >= margin*margin ) return false;
+      is_outside = true;
+    }
+  }
+  if( !is_outside ) return true;
+  return zTri3DDistFromPoint( tri, point ) < margin;
+}
 
 /* volume of a 3D cone. */
 double zTri3DConeVolume(const zTri3D *tri, const zVec3D *v)

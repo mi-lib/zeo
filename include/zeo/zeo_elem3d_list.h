@@ -66,21 +66,25 @@ __ZEO_EXPORT void zTri3DListAlign(zTri3DList *list, const zVec3D *ref);
 __ZEO_EXPORT void zTri3DListCopyArray(const zTri3DList *list, zTri3D t[], int n);
 
 /* ********************************************************** *
- * trianglation of non-convex.
+ * triangulation of a simple polygon.
  * ********************************************************** */
 
-/*! \brief triangulate a simple loop of vertices. */
-__ZEO_EXPORT int zLoop3DTriangulate(const zLoop3D *loop, zTri3DList *tlist);
-
-/*! \brief trianglate a looped series of vertices of a non-convex.
+/*! \brief triangulate a simple polygon.
  *
- * zTriangulate() triangulates a looped series of vertices of a non-convex
- * given by an array of 3D vectors \a array. Namely, it divides the non-convex
- * into triangle pieces.
- * As the result, a triangle list \a tlist is newly created.
+ * zLoop3DTriangulate() divides a simple polygon, the vertices of which are given by a loop \a loop,
+ * into triangles. zTriangulate() does the same thing for a polygon given by an array of vertices
+ * \a array. The result is a newly created list of triangles \a tlist.
+ * The polygon can be non-convex, but has to be planar and must not intersect itself. The triangles
+ * are oriented in the same direction with the polygon, namely, counterclockwise viewed from the side
+ * from which the vertices are counterclockwise. The triangulation is the constrained Delaunay
+ * triangulation, which maximizes the minimum angle of the triangles among all triangulations of the
+ * polygon, so that thin triangles are avoided as much as possible.
  * \return
- * zTriangulate() returns the number of the generated triangles.
+ * zLoop3DTriangulate() and zTriangulate() return the number of the triangles, which is the number of
+ * vertices minus two for a non-degenerate polygon. They return zero if the polygon has less than three
+ * vertices or all the vertices are collinear.
  */
+__ZEO_EXPORT int zLoop3DTriangulate(const zLoop3D *loop, zTri3DList *tlist);
 __ZEO_EXPORT int zTriangulate(const zVec3DArray *array, zTri3DList *tlist);
 
 __END_DECLS

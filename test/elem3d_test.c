@@ -509,6 +509,74 @@ void assert_tri3D_point_is_inside(void)
   zAssert( zTri3DPointIsInside (vertex case), result4 );
 }
 
+/* a random triangle, which is thin or degenerate depending on type. */
+void create_tri3D_rand_type(zVec3D v[], zTri3D *t, int type)
+{
+  zVec3D e, n;
+
+  zVec3DCreate( &v[0], zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+  zVec3DCreate( &v[1], zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+  switch( type ){
+  case 1: /* thin triangle */
+    zVec3DInterDiv( &v[0], &v[1], zRandF(-0.5,1.5), &v[2] );
+    zVec3DSub( &v[1], &v[0], &e );
+    zVec3DOrthonormal( &e, &n );
+    zVec3DCatDRC( &v[2], zRandF(-1,1)*pow( 10, -zRandI(3,10) ), &n );
+    break;
+  case 2: /* collinear vertices */
+    zVec3DInterDiv( &v[0], &v[1], zRandF(-0.5,1.5), &v[2] );
+    break;
+  case 3: /* coincident vertices */
+    zVec3DCopy( &v[zRandI(0,1)], &v[2] );
+    break;
+  default:
+    zVec3DCreate( &v[2], zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+  }
+  zTri3DCreate( t, &v[0], &v[1], &v[2] );
+}
+
+/* a random point near a triangle, which is near a vertex or an edge in some cases. */
+void create_tri3D_point_rand(const zVec3D v[], double r, zVec3D *p)
+{
+  zVec3D d;
+  int i;
+
+  switch( zRandI(0,2) ){
+  case 0: zVec3DCreate( p, zRandF(-1.5,1.5), zRandF(-1.5,1.5), zRandF(-1.5,1.5) ); return;
+  case 1: zVec3DCopy( &v[zRandI(0,2)], p ); break;
+  default: i = zRandI(0,2); zVec3DInterDiv( &v[i], &v[(i+1)%3], zRandF(0,1), p );
+  }
+  zVec3DCreate( &d, zRandF(-r,r), zRandF(-r,r), zRandF(-r,r) );
+  zVec3DAddDRC( p, &d );
+}
+
+void assert_tri3D_point_is_inside_dist(void)
+{
+  zVec3D v[3], p;
+  zTri3D t;
+  double margin, d;
+  int i, j;
+  bool result = true;
+
+  for( i=0; i<N; i++ ){
+    create_tri3D_rand_type( v, &t, i % 4 );
+    for( j=0; j<N; j++ ){
+      switch( zRandI(0,3) ){
+      case 0:  margin = 0; break;
+      case 1:  margin = zRandF(-1,1) * pow( 10, -zRandI(1,12) ); break;
+      default: margin = zRandF(-0.3,0.3);
+      }
+      create_tri3D_point_rand( v, 2*fabs(margin), &p );
+      d = zTri3DDistFromPoint( &t, &p );
+      if( zTri3DPointIsInside( &t, &p, margin ) != ( d < margin ) && fabs( d - margin ) > 1.0e-12 ){
+        eprintf( "type=%d, distance=%.16g, margin=%.16g\n", i % 4, d, margin );
+        result = false;
+      }
+    }
+  }
+  zAssert( zTri3DPointIsInside (consistency with zTri3DDistFromPoint), result );
+}
+
 void assert_tri3D_closest_thin(void)
 {
   zTri3D tri;
@@ -1071,6 +1139,103 @@ void assert_tri3D_linscale_degenerate(void)
   zAssert( zTri3DLinScale (degenerate case), result );
 }
 
+/* a random simple polygon on a random plane, which is star-shaped around its center and might have
+ * collinear vertices. u and w are the orthonormal basis of the plane. */
+static void triangulate_polygon_rand(zVec3D v[], int n, zVec3D *u, zVec3D *w, zVec3D *nv)
+{
+  zVec3D c;
+  double th, r;
+  int i;
+
+  zVec3DCreate( nv, zRandF(-1,1), zRandF(-1,1), zRandF(-1,1) );
+  zVec3DNormalizeDRC( nv, 0 );
+  zVec3DOrthonormal( nv, u );
+  zVec3DOuterProd( nv, u, w );
+  zVec3DCreate( &c, zRandF(-10,10), zRandF(-10,10), zRandF(-10,10) );
+  for( i=0; i<n; i++ ){
+    th = zPIx2 * ( i + zRandF(-0.3,0.3) ) / n;
+    r = zRandF(0.2,1);
+    zVec3DCopy( &c, &v[i] );
+    zVec3DCatDRC( &v[i], r*cos(th), u );
+    zVec3DCatDRC( &v[i], r*sin(th), w );
+  }
+  if( n >= 6 ) zVec3DInterDiv( &v[0], &v[2], 0.5, &v[1] ); /* collinear vertices */
+}
+
+/* projection of a point onto the plane of a polygon. */
+static void triangulate_proj(const zVec3D *p, const zVec3D *u, const zVec3D *w, double q[2])
+{
+  q[0] = zVec3DInnerProd( p, u );
+  q[1] = zVec3DInnerProd( p, w );
+}
+
+/* check if a point d is strictly inside of the circumcircle of a counterclockwise triangle abc
+ * beyond a tolerance. */
+static bool triangulate_incircle(const double a[2], const double b[2], const double c[2], const double d[2])
+{
+  double ax = a[0]-d[0], ay = a[1]-d[1], bx = b[0]-d[0], by = b[1]-d[1], cx = c[0]-d[0], cy = c[1]-d[1];
+  double det = ( ax*ax + ay*ay ) * ( bx*cy - by*cx ) + ( bx*bx + by*by ) * ( cx*ay - cy*ax ) + ( cx*cx + cy*cy ) * ( ax*by - ay*bx );
+  return det > 1.0e-9;
+}
+
+/* the triangulation of a simple polygon consists of n-2 triangles oriented in the same direction with
+ * the polygon, the total area of which is that of the polygon, and every diagonal of which satisfies
+ * the Delaunay condition (constrained Delaunay triangulation). */
+void assert_triangulate(void)
+{
+  zVec3D v[40], u, w, nv, sum, d;
+  zVec3DArray array;
+  zLoop3D loop;
+  zTri3DList tlist, tlist2;
+  zTri3DListCell *tp, *sp;
+  double area, q[4][2];
+  int i, j, k, l, n, nt;
+  bool result_num = true, result_area = true, result_delaunay = true, result_loop = true;
+
+  for( i=0; i<N/10; i++ ){
+    n = zRandI(3,40);
+    triangulate_polygon_rand( v, n, &u, &w, &nv );
+    zArrayAssign( &array, n, v );
+    if( ( nt = zTriangulate( &array, &tlist ) ) != n - 2 ) result_num = false;
+    /* area */
+    for( zVec3DZero( &sum ), j=0; j<n; j++ ){
+      zVec3DOuterProd( &v[j], &v[(j+1)%n], &d );
+      zVec3DAddDRC( &sum, &d );
+    }
+    area = 0;
+    zListForEach( &tlist, tp ){
+      if( zVec3DInnerProd( zTri3DNorm(&tp->data), &nv ) <= 0 ) result_area = false;
+      area += zTri3DArea( &tp->data );
+    }
+    if( !zEqual( area, 0.5*zVec3DNorm(&sum), 1.0e-10 ) ) result_area = false;
+    /* Delaunay condition across every diagonal */
+    zListForEach( &tlist, tp )
+      for( k=0; k<3; k++ )
+        zListForEach( &tlist, sp ){
+          if( sp == tp ) continue;
+          for( l=0; l<3; l++ )
+            if( zTri3DVert(&sp->data,l) == zTri3DVert(&tp->data,(k+1)%3) &&
+                zTri3DVert(&sp->data,(l+1)%3) == zTri3DVert(&tp->data,k) ) break;
+          if( l == 3 ) continue;
+          triangulate_proj( zTri3DVert(&tp->data,0), &u, &w, q[0] );
+          triangulate_proj( zTri3DVert(&tp->data,1), &u, &w, q[1] );
+          triangulate_proj( zTri3DVert(&tp->data,2), &u, &w, q[2] );
+          triangulate_proj( zTri3DVert(&sp->data,(l+2)%3), &u, &w, q[3] );
+          if( triangulate_incircle( q[0], q[1], q[2], q[3] ) ) result_delaunay = false;
+        }
+    /* zLoop3DTriangulate() gives the same number of triangles */
+    zLoop3DCreate( &loop, &array );
+    if( zLoop3DTriangulate( &loop, &tlist2 ) != nt ) result_loop = false;
+    zTri3DListDestroy( &tlist2 );
+    zLoop3DDestroy( &loop );
+    zTri3DListDestroy( &tlist );
+  }
+  zAssert( zTriangulate (number of triangles), result_num );
+  zAssert( zTriangulate (orientation and area), result_area );
+  zAssert( zTriangulate (Delaunay condition), result_delaunay );
+  zAssert( zLoop3DTriangulate, result_loop );
+}
+
 int main(void)
 {
   zRandInit();
@@ -1086,6 +1251,7 @@ int main(void)
   assert_tri3D_contig();
   assert_tri3D_proj_point();
   assert_tri3D_point_is_inside();
+  assert_tri3D_point_is_inside_dist();
   assert_tri3D_closest_trivial();
   assert_tri3D_closest();
   assert_tri3D_closest_thin();
@@ -1105,5 +1271,6 @@ int main(void)
   assert_aabox3D_face_to_plane3D6();
   assert_tri3D_calc_norm();
   assert_tri3D_is_degenerate();
+  assert_triangulate();
   return 0;
 }

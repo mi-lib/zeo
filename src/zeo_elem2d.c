@@ -103,14 +103,20 @@ zTri2D *zTri2DCreate(zTri2D *tri, const zVec2D *v1, const zVec2D *v2, const zVec
   return tri;
 }
 
-/* area of a 2D triangle. */
-double zTri2DArea(const zTri2D *tri)
+/* signed area of a 2D triangle. */
+double zTri2DSignedArea(const zTri2D *tri)
 {
   zVec2D d1, d2;
 
   zVec2DSub( zTri2DVert(tri,1), zTri2DVert(tri,0), &d1 );
   zVec2DSub( zTri2DVert(tri,2), zTri2DVert(tri,0), &d2 );
-  return 0.5 * zVec2DOuterProdNorm( &d1, &d2 );
+  return 0.5 * zVec2DOuterProd( &d1, &d2 );
+}
+
+/* area of a 2D triangle. */
+double zTri2DArea(const zTri2D *tri)
+{
+  return fabs( zTri2DSignedArea( tri ) );
 }
 
 /* barycenter of a triangle. */
@@ -247,14 +253,46 @@ double zTri2DSignedDistFromPoint(const zTri2D *tri, const zVec2D *point)
   return ( d = zTri2DClosest( tri, point, &cp ) ) > 0 ? d : -_zTri2DDepth( tri, point );
 }
 
-/* check if a 2D point is inside of a 2D triangle. */
-bool zTri2DPointIsInside(const zTri2D *tri, const zVec2D *point, double margin)
+/* check if a 2D point is inside of a 2D triangle based on the closest point. */
+static bool _zTri2DPointIsInsideClosest(const zTri2D *tri, const zVec2D *point, double margin)
 {
   zVec2D cp;
   double d;
 
   if( ( d = zTri2DClosest( tri, point, &cp ) ) > 0 ) return d < margin; /* outside */
   return margin > 0 || -_zTri2DDepth( tri, point ) < margin;
+}
+
+/* check if a 2D point is inside of a 2D triangle.
+ * The distance from the point to the triangle is not less than the distance from the point to the
+ * line through any edge that the point is outside of. If the point is inside of all the edges, it is
+ * inside of the triangle. Hence, the closest point is computed only if the point is outside of some
+ * edges within the margin, or if the margin is not positive. */
+bool zTri2DPointIsInside(const zTri2D *tri, const zVec2D *point, double margin)
+{
+  zVec2D e[3], d;
+  double area, l[3], h;
+  bool is_outside = false;
+  int i;
+
+  for( i=0; i<3; i++ ){
+    zVec2DSub( zTri2DVertNext(tri,i), zTri2DVert(tri,i), &e[i] );
+    l[i] = zVec2DSqrNorm( &e[i] );
+  }
+  /* the orientation of a degenerate triangle is not reliable. */
+  if( !( fabs( area = zVec2DOuterProd( &e[0], &e[1] ) ) > zTOL * zMax3( l[0], l[1], l[2] ) ) )
+    return _zTri2DPointIsInsideClosest( tri, point, margin );
+  for( i=0; i<3; i++ ){
+    zVec2DSub( point, zTri2DVert(tri,i), &d );
+    h = zVec2DOuterProd( &d, &e[i] ); /* positive outward if the triangle is counterclockwise */
+    if( area < 0 ) h = -h;
+    if( h > 0 ){ /* outside of the edge */
+      if( h / sqrt( l[i] ) >= margin ) return false;
+      is_outside = true;
+    }
+  }
+  if( !is_outside && margin > 0 ) return true;
+  return _zTri2DPointIsInsideClosest( tri, point, margin );
 }
 
 /* print information of a triangle to a file. */
