@@ -1,3 +1,7 @@
+2026.11.27. Added tests of z...SignedDistFromPoint of boxes, cylinders, cones, capsules, triangles, polygons, polyhedra and zShape3DSignedDistFromPoint. [test]
+2026.11.27. Added zShape3DSignedDistFromPoint and a member _signeddistfrompoint of zShape3DCom. [zeo_shape3d, zeo_shape3d_box, zeo_shape3d_sphere, zeo_shape3d_cyl, zeo_shape3d_capsule, zeo_shape3d_cone, zeo_shape3d_ellips, zeo_shape3d_ecyl, zeo_shape3d_ph, zeo_shape3d_nurbs]
+2026.11.27. Added zPG2DSignedDistFromPoint and zPH3DSignedDistFromPoint. [zeo_pg2d, zeo_ph3d]
+2026.11.27. Added zAABox2DSignedDistFromPoint, zAABox3DSignedDistFromPoint, zBox3DSignedDistFromPoint, zCyl3DSignedDistFromPoint, zCapsule3DSignedDistFromPoint, zCone3DSignedDistFromPoint and zTri2DSignedDistFromPoint, and reimplemented the inside checks of them with the common internal functions. [zeo_elem2d_box, zeo_elem3d_box, zeo_shape3d_cyl, zeo_shape3d_capsule, zeo_shape3d_cone, zeo_elem2d]
 2026.11.27. Added a test of zEllips2DSignedDistFromPoint, zEllips3DSignedDistFromPoint, zECyl3DSignedDistFromPoint and the inside checks of them for thin ellipses, ellipsoids and elliptic cylinders. [test]
 2026.11.27. Modified zECyl3DClosest to return zero for a point inside without computing the closest point on the ellipse. [zeo_shape3d_ecyl]
 2026.11.27. Added zEllips2DSignedDistFromPoint, zEllips3DSignedDistFromPoint and zECyl3DSignedDistFromPoint, which return the negative value for a point inside. [zeo_elem2d_disk, zeo_shape3d_ellips, zeo_shape3d_ecyl]

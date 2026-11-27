@@ -166,6 +166,10 @@ static double ellips2D_signed_dist_param(const double r[], const zVec2D *p)
   return zSqr(p->c.x/r[0]) + zSqr(p->c.y/r[1]) < 1 ? -d : d;
 }
 
+/* check if the signed distance is not less than the reference d computed by the approximation from
+ * below, and not larger than it by DELTA. */
+#define CHECK_SIGNED_DIST(func,shape,p,d) ( func( shape, p ) >= (d) - 1.0e-12 && func( shape, p ) <= (d) + DELTA )
+
 /* check if the inside check with a margin around the signed distance is correct. */
 #define CHECK_INSIDE(func,shape,p,d) \
   ( func( shape, p, (d) + DELTA ) && !func( shape, p, (d) - DELTA ) )
@@ -304,6 +308,8 @@ void assert_inside_3D(void)
   int i;
   bool result_aabox = true, result_box = true, result_cyl = true, result_cone = true, result_capsule = true;
   bool result_ellips = true, result_ecyl = true;
+  bool result_sd = true;
+  double d;
 
   for( i=0; i<N/10; i++ ){
     zAABox3DCreate( &aabox, zRandF(-2,-0.5), zRandF(-2,-0.5), zRandF(-2,-0.5), zRandF(0.5,2), zRandF(0.5,2), zRandF(0.5,2) );
@@ -321,13 +327,27 @@ void assert_inside_3D(void)
     zVec3DCopy( ZVEC3DX, &xyz[0] );
     zVec3DCopy( ZVEC3DY, &xyz[1] );
     zVec3DCopy( ZVEC3DZ, &xyz[2] );
-    if( !CHECK_INSIDE( zAABox3DPointIsInside, &aabox, &p, signed_dist3D( &aabox, support_aabox3D, &p, xyz, 3 ) ) ) result_aabox = false;
-    if( !CHECK_INSIDE( zBox3DPointIsInside, &box, &p, signed_dist3D( &box, support_box3D, &p, zBox3DAxis(&box,zX), 3 ) ) ) result_box = false;
-    if( !CHECK_INSIDE( zCyl3DPointIsInside, &cyl, &p, signed_dist3D( &cyl, support_cyl3D, &p, &a, 1 ) ) ) result_cyl = false;
-    if( !CHECK_INSIDE( zCone3DPointIsInside, &cone, &p, signed_dist3D( &cone, support_cone3D, &p, &a, 1 ) ) ) result_cone = false;
-    if( !CHECK_INSIDE( zCapsule3DPointIsInside, &capsule, &p, signed_dist3D( &capsule, support_capsule3D, &p, NULL, 0 ) ) ) result_capsule = false;
-    if( !CHECK_INSIDE( zEllips3DPointIsInside, &ellips, &p, signed_dist3D( &ellips, support_ellips3D, &p, NULL, 0 ) ) ) result_ellips = false;
-    if( !CHECK_INSIDE( zECyl3DPointIsInside, &ecyl, &p, signed_dist3D( &ecyl, support_ecyl3D, &p, &a, 1 ) ) ) result_ecyl = false;
+    d = signed_dist3D( &aabox, support_aabox3D, &p, xyz, 3 );
+    if( !CHECK_INSIDE( zAABox3DPointIsInside, &aabox, &p, d ) ) result_aabox = false;
+    if( !CHECK_SIGNED_DIST( zAABox3DSignedDistFromPoint, &aabox, &p, d ) ) result_sd = false;
+    d = signed_dist3D( &box, support_box3D, &p, zBox3DAxis(&box,zX), 3 );
+    if( !CHECK_INSIDE( zBox3DPointIsInside, &box, &p, d ) ) result_box = false;
+    if( !CHECK_SIGNED_DIST( zBox3DSignedDistFromPoint, &box, &p, d ) ) result_sd = false;
+    d = signed_dist3D( &cyl, support_cyl3D, &p, &a, 1 );
+    if( !CHECK_INSIDE( zCyl3DPointIsInside, &cyl, &p, d ) ) result_cyl = false;
+    if( !CHECK_SIGNED_DIST( zCyl3DSignedDistFromPoint, &cyl, &p, d ) ) result_sd = false;
+    d = signed_dist3D( &cone, support_cone3D, &p, &a, 1 );
+    if( !CHECK_INSIDE( zCone3DPointIsInside, &cone, &p, d ) ) result_cone = false;
+    if( !CHECK_SIGNED_DIST( zCone3DSignedDistFromPoint, &cone, &p, d ) ) result_sd = false;
+    d = signed_dist3D( &capsule, support_capsule3D, &p, NULL, 0 );
+    if( !CHECK_INSIDE( zCapsule3DPointIsInside, &capsule, &p, d ) ) result_capsule = false;
+    if( !CHECK_SIGNED_DIST( zCapsule3DSignedDistFromPoint, &capsule, &p, d ) ) result_sd = false;
+    d = signed_dist3D( &ellips, support_ellips3D, &p, NULL, 0 );
+    if( !CHECK_INSIDE( zEllips3DPointIsInside, &ellips, &p, d ) ) result_ellips = false;
+    if( !CHECK_SIGNED_DIST( zEllips3DSignedDistFromPoint, &ellips, &p, d ) ) result_sd = false;
+    d = signed_dist3D( &ecyl, support_ecyl3D, &p, &a, 1 );
+    if( !CHECK_INSIDE( zECyl3DPointIsInside, &ecyl, &p, d ) ) result_ecyl = false;
+    if( !CHECK_SIGNED_DIST( zECyl3DSignedDistFromPoint, &ecyl, &p, d ) ) result_sd = false;
   }
   zAssert( zAABox3DPointIsInside (signed distance), result_aabox );
   zAssert( zBox3DPointIsInside (signed distance), result_box );
@@ -336,6 +356,7 @@ void assert_inside_3D(void)
   zAssert( zCapsule3DPointIsInside (signed distance), result_capsule );
   zAssert( zEllips3DPointIsInside (signed distance), result_ellips );
   zAssert( zECyl3DPointIsInside (signed distance), result_ecyl );
+  zAssert( z...SignedDistFromPoint (3D shapes), result_sd );
 }
 
 void assert_inside_2D(void)
@@ -345,7 +366,8 @@ void assert_inside_2D(void)
   zEllips2D ellips;
   zVec2D v[3], p;
   int i, j;
-  bool result_aabox = true, result_tri = true, result_ellips = true;
+  bool result_aabox = true, result_tri = true, result_ellips = true, result_sd = true;
+  double d;
 
   for( i=0; i<N/10; i++ ){
     zAABox2DCreate( &box, zRandF(-2,-0.5), zRandF(-2,-0.5), zRandF(0.5,2), zRandF(0.5,2) );
@@ -353,13 +375,20 @@ void assert_inside_2D(void)
     zTri2DCreate( &tri, &v[0], &v[1], &v[2] );
     zEllips2DCreate( &ellips, &v[0], zRandF(0.5,2), zRandF(0.5,2) );
     zVec2DCreate( &p, zRandF(-4,4), zRandF(-4,4) );
-    if( !CHECK_INSIDE( zAABox2DPointIsInside, &box, &p, signed_dist2D( &box, support_aabox2D, &p ) ) ) result_aabox = false;
-    if( !CHECK_INSIDE( zTri2DPointIsInside, &tri, &p, signed_dist2D( &tri, support_tri2D, &p ) ) ) result_tri = false;
-    if( !CHECK_INSIDE( zEllips2DPointIsInside, &ellips, &p, signed_dist2D( &ellips, support_ellips2D, &p ) ) ) result_ellips = false;
+    d = signed_dist2D( &box, support_aabox2D, &p );
+    if( !CHECK_INSIDE( zAABox2DPointIsInside, &box, &p, d ) ) result_aabox = false;
+    if( !CHECK_SIGNED_DIST( zAABox2DSignedDistFromPoint, &box, &p, d ) ) result_sd = false;
+    d = signed_dist2D( &tri, support_tri2D, &p );
+    if( !CHECK_INSIDE( zTri2DPointIsInside, &tri, &p, d ) ) result_tri = false;
+    if( !CHECK_SIGNED_DIST( zTri2DSignedDistFromPoint, &tri, &p, d ) ) result_sd = false;
+    d = signed_dist2D( &ellips, support_ellips2D, &p );
+    if( !CHECK_INSIDE( zEllips2DPointIsInside, &ellips, &p, d ) ) result_ellips = false;
+    if( !CHECK_SIGNED_DIST( zEllips2DSignedDistFromPoint, &ellips, &p, d ) ) result_sd = false;
   }
   zAssert( zAABox2DPointIsInside (signed distance), result_aabox );
   zAssert( zTri2DPointIsInside (signed distance), result_tri );
   zAssert( zEllips2DPointIsInside (signed distance), result_ellips );
+  zAssert( z...SignedDistFromPoint (2D shapes), result_sd );
 }
 
 /* points on the boundary are not inside with a zero margin. */
@@ -478,6 +507,45 @@ void assert_signed_dist_thin(void)
   zAssert( zECyl3DSignedDistFromPoint + zECyl3DPointIsInside (thin elliptic cylinders), result_ecyl );
 }
 
+/* zShape3DSignedDistFromPoint() calls the function of each type of shapes. */
+void assert_shape3D_signed_dist(void)
+{
+  zShape3D shape[8];
+  zVec3D c1, c2, p;
+  double d[8];
+  int i, k;
+  bool result = true;
+
+  zVec3DCreate( &c1, 0, 0, -1 );
+  zVec3DCreate( &c2, 0, 0, 1 );
+  zShape3DBoxCreateAlign( &shape[0], ZVEC3DZERO, 2, 3, 4 );
+  zShape3DSphereCreate( &shape[1], ZVEC3DZERO, 1.5, 0 );
+  zShape3DCylCreate( &shape[2], &c1, &c2, 1, 0 );
+  zShape3DCapsuleCreate( &shape[3], &c1, &c2, 1, 0 );
+  zShape3DConeCreate( &shape[4], &c1, &c2, 1, 0 );
+  zShape3DEllipsCreateAlign( &shape[5], ZVEC3DZERO, 1, 2, 3, 0 );
+  zShape3DECylCreate( &shape[6], &c1, &c2, 1, 2, ZVEC3DX, 0 );
+  zShape3DBoxCreateAlign( &shape[7], ZVEC3DZERO, 2, 3, 4 );
+  zShape3DToPH( &shape[7] );
+  for( i=0; i<N; i++ ){
+    vec3D_rand( &p, 3 );
+    d[0] = zBox3DSignedDistFromPoint( zShape3DBox(&shape[0]), &p );
+    d[1] = zSphere3DSignedDistFromPoint( zShape3DSphere(&shape[1]), &p );
+    d[2] = zCyl3DSignedDistFromPoint( zShape3DCyl(&shape[2]), &p );
+    d[3] = zCapsule3DSignedDistFromPoint( zShape3DCapsule(&shape[3]), &p );
+    d[4] = zCone3DSignedDistFromPoint( zShape3DCone(&shape[4]), &p );
+    d[5] = zEllips3DSignedDistFromPoint( zShape3DEllips(&shape[5]), &p );
+    d[6] = zECyl3DSignedDistFromPoint( zShape3DECyl(&shape[6]), &p );
+    d[7] = zPH3DSignedDistFromPoint( zShape3DPH(&shape[7]), &p );
+    for( k=0; k<8; k++ )
+      if( zShape3DSignedDistFromPoint( &shape[k], &p ) != d[k] ) result = false;
+    /* the polyhedron of the box */
+    if( !zIsTiny( d[7] - d[0] ) ) result = false;
+  }
+  for( k=0; k<8; k++ ) zShape3DDestroy( &shape[k] );
+  zAssert( zShape3DSignedDistFromPoint, result );
+}
+
 int main(void)
 {
   zRandInit();
@@ -487,6 +555,7 @@ int main(void)
   assert_inside_boundary();
   assert_inside_ellips();
   assert_signed_dist_thin();
+  assert_shape3D_signed_dist();
   assert_capsule_dist();
   return 0;
 }

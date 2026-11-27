@@ -130,10 +130,10 @@ double zCone3DDistFromPoint(const zCone3D *cone, const zVec3D *point)
   return sqrt( d*d + zSqr(r-zCone3DRadius(cone)) );
 }
 
-/* check if a point is inside of a cone.
- * The signed distance is computed on the half plane which contains the axis and the point, where the
- * section of the cone is a triangle and its boundary consists of the base and the slant edges. */
-bool zCone3DPointIsInside(const zCone3D *cone, const zVec3D *point, double margin)
+/* signed distance from a point to a cone.
+ * It is computed on the half plane which contains the axis and the point, where the section of the
+ * cone is a triangle and its boundary consists of the base and the slant edges. */
+double zCone3DSignedDistFromPoint(const zCone3D *cone, const zVec3D *point)
 {
   zVec3D axis, v;
   double l, r, d, rr, l2, t, db, ds;
@@ -149,9 +149,14 @@ bool zCone3DPointIsInside(const zCone3D *cone, const zVec3D *point, double margi
   /* distance from the slant edge from (0,rr) to (l,0) */
   t = ( l2 = l*l + rr*rr ) > 0 ? zLimit( ( d*l - (r-rr)*rr ) / l2, 0, 1 ) : 0;
   ds = sqrt( zSqr( d - t*l ) + zSqr( r - rr + t*rr ) );
-  if( d >= 0 && d*rr + r*l <= l*rr ) /* inside */
-    return -_zMin( db, ds ) < margin;
-  return _zMin( db, ds ) < margin;
+  return d >= 0 && d*rr + r*l <= l*rr ? /* inside */
+    -_zMin( db, ds ) : _zMin( db, ds );
+}
+
+/* check if a point is inside of a cone. */
+bool zCone3DPointIsInside(const zCone3D *cone, const zVec3D *point, double margin)
+{
+  return zCone3DSignedDistFromPoint( cone, point ) < margin;
 }
 
 /* height of a 3D cone. */
@@ -304,6 +309,8 @@ static double _zShape3DConeClosest(const void *body, const zVec3D *p, zVec3D *cp
   return zCone3DClosest( (const zCone3D*)body, p, cp ); }
 static double _zShape3DConeDistFromPoint(const void *body, const zVec3D *p){
   return zCone3DDistFromPoint( (const zCone3D*)body, p ); }
+static double _zShape3DConeSignedDistFromPoint(const void *body, const zVec3D *p){
+  return zCone3DSignedDistFromPoint( (const zCone3D*)body, p ); }
 static bool _zShape3DConePointIsInside(const void *body, const zVec3D *p, double margin){
   return zCone3DPointIsInside( (const zCone3D*)body, p, margin ); }
 static double _zShape3DConeVolume(const void *body){
@@ -333,6 +340,7 @@ zShape3DCom zeo_shape3d_cone_com = {
   _zShape3DConeXformInv,
   _zShape3DConeClosest,
   _zShape3DConeDistFromPoint,
+  _zShape3DConeSignedDistFromPoint,
   _zShape3DConePointIsInside,
   _zShape3DConeVolume,
   _zShape3DConeBarycenter,

@@ -158,6 +158,8 @@ static double _zShape3DSphereClosest(const void *body, const zVec3D *p, zVec3D *
   return zSphere3DClosest( (const zSphere3D*)body, p, cp ); }
 static double _zShape3DSphereDistFromPoint(const void *body, const zVec3D *p){
   return zSphere3DDistFromPoint( (const zSphere3D*)body, p ); }
+static double _zShape3DSphereSignedDistFromPoint(const void *body, const zVec3D *p){
+  return zSphere3DSignedDistFromPoint( (const zSphere3D*)body, p ); }
 static bool _zShape3DSpherePointIsInside(const void *body, const zVec3D *p, double margin){
   return zSphere3DPointIsInside( (const zSphere3D*)body, p, margin ); }
 static double _zShape3DSphereVolume(const void *body){
@@ -187,6 +189,7 @@ zShape3DCom zeo_shape3d_sphere_com = {
   _zShape3DSphereXformInv,
   _zShape3DSphereClosest,
   _zShape3DSphereDistFromPoint,
+  _zShape3DSphereSignedDistFromPoint,
   _zShape3DSpherePointIsInside,
   _zShape3DSphereVolume,
   _zShape3DSphereBarycenter,

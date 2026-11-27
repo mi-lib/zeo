@@ -25,6 +25,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3DCom ){
   void *(* _xforminv)(const void*,const zFrame3D*,void*);
   double (* _closest)(const void*,const zVec3D*,zVec3D*);
   double (* _distfrompoint)(const void*,const zVec3D*);
+  double (* _signeddistfrompoint)(const void*,const zVec3D*);
   bool (* _pointisinside)(const void*,const zVec3D*,double);
   double (* _volume)(const void*);
   zVec3D *(* _barycenter)(const void*,zVec3D*);
@@ -61,6 +62,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zShape3D ){
   double closest(const zVec3D &point, zVec3D *closestpoint);
   double distanceFromPoint(const zVec3D *point);
   double distanceFromPoint(const zVec3D &point);
+  double signedDistanceFromPoint(const zVec3D *point);
+  double signedDistanceFromPoint(const zVec3D &point);
   bool pointIsInside(const zVec3D *point, double margin);
   bool pointIsInside(const zVec3D &point, double margin);
   double volume();
@@ -141,17 +144,31 @@ __ZEO_EXPORT zShape3D *zShape3DXformInv(const zShape3D *src, const zFrame3D *fra
 
 #define zShape3DContigVert(shape,point,distance) zPH3DContigVert( zShape3DPH(shape), point, distance )
 
-/*! \brief check if a point is inside of a shape.
+/*! \brief distance from a point to a shape and inside check.
+ *
+ * zShape3DClosest() finds the closest point from a point \a point on a shape \a shape, and puts it
+ * into \a closestpoint. If \a point is inside of \a shape, \a point itself is the closest point.
+ * zShape3DDistFromPoint() computes the distance from \a point to \a shape.
+ * zShape3DSignedDistFromPoint() computes the signed distance from \a point to \a shape, which is
+ * negative if \a point is inside of \a shape.
  *
  * zShape3DPointIsInside() checks if a point \a p is inside of a shape \a shape. \a margin is a margin
- * of the inside area outward from the boundary of \a shape.
+ * of the inside area outward from the boundary of \a shape. Namely, \a p is regarded to be inside if
+ * the signed distance from the boundary, which is negative inside, is less than \a margin.
  * \return
+ * zShape3DClosest() and zShape3DDistFromPoint() return the distance from \a point to \a shape, which
+ * is zero if \a point is inside of \a shape.
+ * zShape3DSignedDistFromPoint() returns the signed distance from \a point to \a shape.
  * zShape3DPointIsInside() returns the true value if \a p is inside of \a shape, or the false value otherwise.
+ * \notes
+ * A NURBS surface has no inside area. For it, zShape3DSignedDistFromPoint() returns the distance from
+ * the surface, and zShape3DPointIsInside() always returns the false value.
  * \sa
  * zPH3DPointIsInside
  */
 __ZEO_EXPORT double zShape3DClosest(const zShape3D *shape, const zVec3D *point, zVec3D *closestpoint);
 __ZEO_EXPORT double zShape3DDistFromPoint(const zShape3D *shape, const zVec3D *point);
+__ZEO_EXPORT double zShape3DSignedDistFromPoint(const zShape3D *shape, const zVec3D *point);
 __ZEO_EXPORT bool zShape3DPointIsInside(const zShape3D *shape, const zVec3D *point, double margin);
 
 /*! \brief volume of a 3D shape. */
@@ -321,6 +338,8 @@ inline double zShape3D::closest(const zVec3D *point, zVec3D *closestpoint){ retu
 inline double zShape3D::closest(const zVec3D &point, zVec3D *closestpoint){ return zShape3DClosest( this, &point, closestpoint ); }
 inline double zShape3D::distanceFromPoint(const zVec3D *point){ return zShape3DDistFromPoint( this, point ); }
 inline double zShape3D::distanceFromPoint(const zVec3D &point){ return zShape3DDistFromPoint( this, &point ); }
+inline double zShape3D::signedDistanceFromPoint(const zVec3D *point){ return zShape3DSignedDistFromPoint( this, point ); }
+inline double zShape3D::signedDistanceFromPoint(const zVec3D &point){ return zShape3DSignedDistFromPoint( this, &point ); }
 inline bool zShape3D::pointIsInside(const zVec3D *point, double margin = zTOL){ return zShape3DPointIsInside( this, point, margin ); }
 inline bool zShape3D::pointIsInside(const zVec3D &point, double margin = zTOL){ return zShape3DPointIsInside( this, &point, margin ); }
 inline double zShape3D::volume(){ return zShape3DVolume( this ); }

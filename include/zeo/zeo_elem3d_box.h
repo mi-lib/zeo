@@ -37,6 +37,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zAABox3D ){
   zAABox3D *expand(double magnitude);
   double closest(const zVec3D *point, zVec3D *closestpoint);
   double distanceFromPoint(const zVec3D *point);
+  double signedDistanceFromPoint(const zVec3D *point);
   bool pointIsInside(const zVec3D *point, double margin = zTOL);
   double volume();
   zVec3D vert(int i);
@@ -93,6 +94,9 @@ __ZEO_EXPORT double zAABox3DClosest(const zAABox3D *box, const zVec3D *point, zV
 /*! \brief distance from a point to a 3D axis-aligned box. */
 __ZEO_EXPORT double zAABox3DSqrDistFromPoint(const zAABox3D *box, const zVec3D *point);
 #define zAABox3DDistFromPoint(box,point) sqrt( zAABox3DSqrDistFromPoint( box, point ) )
+
+/*! \brief signed distance from a point to a 3D axis-aligned box, which is negative inside. */
+__ZEO_EXPORT double zAABox3DSignedDistFromPoint(const zAABox3D *box, const zVec3D *point);
 
 /*! \brief check if a point is inside of a 3D axis-aligned box, namely, if the signed distance of the
  * point from the boundary of the box, which is negative inside, is less than a margin. */
@@ -156,6 +160,7 @@ inline zAABox3D *zAABox3D::expand(const zAABox3D *src, double magnitude){ return
 inline zAABox3D *zAABox3D::expand(double magnitude){ return zAABox3DExpandDRC( this, magnitude ); }
 inline double zAABox3D::closest(const zVec3D *point, zVec3D *closestpoint){ return zAABox3DClosest( this, point, closestpoint ); }
 inline double zAABox3D::distanceFromPoint(const zVec3D *point){ return zAABox3DDistFromPoint( this, point ); }
+inline double zAABox3D::signedDistanceFromPoint(const zVec3D *point){ return zAABox3DSignedDistFromPoint( this, point ); }
 inline bool zAABox3D::pointIsInside(const zVec3D *point, double margin){ return zAABox3DPointIsInside( this, point, margin ); }
 inline double zAABox3D::volume(){ return zAABox3DVolume( this ); }
 inline zVec3D zAABox3D::vert(int i){ zVec3D v; zAABox3DVert( this, i, &v ); return v; }
@@ -204,6 +209,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zBox3D ){
   zBox3D *xformInv(const zFrame3D *frame, zBox3D *dest);
   double closest(const zVec3D *point, zVec3D *closestpoint);
   double distanceFromPoint(const zVec3D *point);
+  double signedDistanceFromPoint(const zVec3D *point);
   bool pointIsInside(const zVec3D *point, double margin = zTOL);
   double volume();
   zMat3D *baryInertiaMass(double mass, zMat3D *inertia);
@@ -272,17 +278,22 @@ __ZEO_EXPORT zBox3D *zBox3DXformInv(const zBox3D *src, const zFrame3D *frame, zB
  *
  * zBox3DDistFromPoint() calculates the distance from a 3D point \a p to a box \a box.
  *
+ * zBox3DSignedDistFromPoint() calculates the signed distance from \a p to \a box, which is negative
+ * if \a p is inside of \a box.
+ *
  * zBox3DPointIsInside() checks if a 3D point \a p is inside of a box \a box. \a margin is a margin of
- * the inside area outward from the boundary of \a box. Namely, \a p is regarded to be inside if the signed distance from the boundary, which is negative
- * inside, is less than \a margin.
+ * the inside area outward from the boundary of \a box. Namely, \a p is regarded to be inside if the
+ * signed distance from the boundary, which is negative inside, is less than \a margin.
  * \return
  * zBox3DClosest() and zBox3DDistFromPoint() return the distance from \a p to \a box, which is zero
  * if \a p is inside of \a box.
+ * zBox3DSignedDistFromPoint() returns the signed distance from \a p to \a box.
  *
  * zBox3DPointIsInside() returns the true value if \a p is inside of \a box, or the false value otherwise.
  */
 __ZEO_EXPORT double zBox3DClosest(const zBox3D *box, const zVec3D *p, zVec3D *cp);
 __ZEO_EXPORT double zBox3DDistFromPoint(const zBox3D *box, const zVec3D *p);
+__ZEO_EXPORT double zBox3DSignedDistFromPoint(const zBox3D *box, const zVec3D *p);
 __ZEO_EXPORT bool zBox3DPointIsInside(const zBox3D *box, const zVec3D *p, double margin);
 
 /*! \brief volume of a box.
@@ -348,6 +359,7 @@ inline zBox3D *zBox3D::xform(const zFrame3D *frame, zBox3D *dest){ return zBox3D
 inline zBox3D *zBox3D::xformInv(const zFrame3D *frame, zBox3D *dest){ return zBox3DXformInv( this, frame, dest ); }
 inline double zBox3D::closest(const zVec3D *point, zVec3D *closestpoint){ return zBox3DClosest( this, point, closestpoint ); }
 inline double zBox3D::distanceFromPoint(const zVec3D *point){ return zBox3DDistFromPoint( this, point ); }
+inline double zBox3D::signedDistanceFromPoint(const zVec3D *point){ return zBox3DSignedDistFromPoint( this, point ); }
 inline bool zBox3D::pointIsInside(const zVec3D *point, double margin){ return zBox3DPointIsInside( this, point, margin ); }
 inline double zBox3D::volume(){ return zBox3DVolume( this ); }
 inline zMat3D *zBox3D::baryInertiaMass(double mass, zMat3D *inertia){ return zBox3DBaryInertiaMass( this, mass, inertia ); }

@@ -62,18 +62,31 @@ __BEGIN_DECLS
 #define zCapsule3DXform(src,frame,dest)    zCyl3DXform( src, frame, dest )
 #define zCapsule3DXformInv(src,frame,dest) zCyl3DXformInv( src, frame, dest )
 
-/*! \brief check if a point is inside of a 3D capsule.
+/*! \brief distance from a point to a 3D capsule and inside check.
  *
- * zCapsule3DPointIsInside() checks if a 3D point \a point is inside of a 3D
- * capsule \a capsule. \a margin is a margin of the inside area outward
- * from the boundary of \a capsule. Namely, \a point is regarded to be inside if the signed distance from the boundary, which is negative
- * inside, is less than \a margin.
+ * zCapsule3DClosest() calculates the closest point from a 3D point \a point to a 3D capsule \a capsule, and
+ * puts it into \a closestpoint. When \a point is inside of \a capsule, it copies \a point to
+ * \a closestpoint.
+ *
+ * zCapsule3DDistFromPoint() calculates the distance from \a point to \a capsule.
+ *
+ * zCapsule3DSignedDistFromPoint() calculates the signed distance from a 3D point \a point to a 3D
+ * capsule \a capsule, which is negative if \a point is inside of \a capsule.
+ *
+ * zCapsule3DPointIsInside() checks if \a point is inside of \a capsule. \a margin is a margin of the
+ * inside area outward from the boundary of \a capsule. Namely, \a point is regarded to be inside if the
+ * signed distance from the boundary, which is negative inside, is less than \a margin.
  * \return
- * zCapsule3DPointIsInside() returns the true value if \a point is inside of \a capsule,
- * or the false value otherwise.
+ * zCapsule3DClosest() and zCapsule3DDistFromPoint() return the distance from \a point to \a capsule,
+ * which is zero if \a point is inside of \a capsule.
+ * zCapsule3DSignedDistFromPoint() returns the signed distance from \a point to \a capsule.
+ *
+ * zCapsule3DPointIsInside() returns the true value if \a point is inside of \a capsule, or the false value
+ * otherwise.
  */
 __ZEO_EXPORT double zCapsule3DClosest(const zCapsule3D *capsule, const zVec3D *point, zVec3D *closestpoint);
 __ZEO_EXPORT double zCapsule3DDistFromPoint(const zCapsule3D *capsule, const zVec3D *point);
+__ZEO_EXPORT double zCapsule3DSignedDistFromPoint(const zCapsule3D *capsule, const zVec3D *point);
 __ZEO_EXPORT bool zCapsule3DPointIsInside(const zCapsule3D *capsule, const zVec3D *point, double margin);
 
 /*! \brief axis vector and height of a 3D capsule.

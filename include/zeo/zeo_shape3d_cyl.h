@@ -66,18 +66,31 @@ __ZEO_EXPORT zCyl3D *zCyl3DMirror(const zCyl3D *src, zCyl3D *dest, zAxis axis);
 __ZEO_EXPORT zCyl3D *zCyl3DXform(const zCyl3D *src, const zFrame3D *frame, zCyl3D *dest);
 __ZEO_EXPORT zCyl3D *zCyl3DXformInv(const zCyl3D *src, const zFrame3D *frame, zCyl3D *dest);
 
-/*! \brief check if a point is inside of a 3D cylinder.
+/*! \brief distance from a point to a 3D cylinder and inside check.
  *
- * zCyl3DPointIsInside() checks if a 3D point \a point is inside of a 3D
- * cylinder \a cyl. \a margin is a margin of the inside area outward
- * from the boundary of \a cyl. Namely, \a point is regarded to be inside if the signed distance from the boundary, which is negative
- * inside, is less than \a margin.
+ * zCyl3DClosest() calculates the closest point from a 3D point \a point to a 3D cylinder \a cyl, and
+ * puts it into \a closestpoint. When \a point is inside of \a cyl, it copies \a point to
+ * \a closestpoint.
+ *
+ * zCyl3DDistFromPoint() calculates the distance from \a point to \a cyl.
+ *
+ * zCyl3DSignedDistFromPoint() calculates the signed distance from a 3D point \a point to a 3D
+ * cylinder \a cyl, which is negative if \a point is inside of \a cyl.
+ *
+ * zCyl3DPointIsInside() checks if \a point is inside of \a cyl. \a margin is a margin of the
+ * inside area outward from the boundary of \a cyl. Namely, \a point is regarded to be inside if the
+ * signed distance from the boundary, which is negative inside, is less than \a margin.
  * \return
- * zCyl3DPointIsInside() returns the true value if \a point is inside of \a cyl,
- * or the false value otherwise.
+ * zCyl3DClosest() and zCyl3DDistFromPoint() return the distance from \a point to \a cyl,
+ * which is zero if \a point is inside of \a cyl.
+ * zCyl3DSignedDistFromPoint() returns the signed distance from \a point to \a cyl.
+ *
+ * zCyl3DPointIsInside() returns the true value if \a point is inside of \a cyl, or the false value
+ * otherwise.
  */
 __ZEO_EXPORT double zCyl3DClosest(const zCyl3D *cyl, const zVec3D *point, zVec3D *closestpoint);
 __ZEO_EXPORT double zCyl3DDistFromPoint(const zCyl3D *cyl, const zVec3D *point);
+__ZEO_EXPORT double zCyl3DSignedDistFromPoint(const zCyl3D *cyl, const zVec3D *point);
 __ZEO_EXPORT bool zCyl3DPointIsInside(const zCyl3D *cyl, const zVec3D *point, double margin);
 
 /*! \brief axis vector and height of a 3D cylinder.

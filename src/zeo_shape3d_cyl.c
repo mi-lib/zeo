@@ -117,17 +117,34 @@ double zCyl3DDistFromPoint(const zCyl3D *cyl, const zVec3D *point)
     fabs( d ) : sqrt( zSqr( r - zCyl3DRadius(cyl) ) + zSqr(d) );
 }
 
+/* the radial and axial excesses of a point over a 3D cylinder. The signed distance is the maximum of
+ * them if both of them are non-positive, and the norm of the positive excesses otherwise. */
+static void _zCyl3DExcess(const zCyl3D *cyl, const zVec3D *point, double *r, double *d)
+{
+  zVec3D axis, v;
+  double l;
+
+  _zCyl3DClosestPrep( cyl, point, &axis, &v, &l, r, d );
+  *r -= zCyl3DRadius(cyl);
+  *d = _zMax( -*d, *d - l );
+}
+
+/* signed distance from a point to a 3D cylinder. */
+double zCyl3DSignedDistFromPoint(const zCyl3D *cyl, const zVec3D *point)
+{
+  double r, d;
+
+  _zCyl3DExcess( cyl, point, &r, &d );
+  if( r <= 0 && d <= 0 ) return _zMax( r, d );
+  return sqrt( zSqr( _zMax( r, 0 ) ) + zSqr( _zMax( d, 0 ) ) );
+}
+
 /* check if a point is inside of a cylinder. */
 bool zCyl3DPointIsInside(const zCyl3D *cyl, const zVec3D *point, double margin)
 {
-  zVec3D axis, v;
-  double l, r, d;
+  double r, d;
 
-  _zCyl3DClosestPrep( cyl, point, &axis, &v, &l, &r, &d );
-  /* the signed distance is the maximum of the radial and axial excesses of the point over the
-   * cylinder if both of them are non-positive, and the norm of the positive excesses otherwise. */
-  r -= zCyl3DRadius(cyl);
-  d = _zMax( -d, d - l );
+  _zCyl3DExcess( cyl, point, &r, &d );
   if( r >= margin || d >= margin ) return false;
   if( r <= 0 && d <= 0 ) return _zMax( r, d ) < margin;
   return zSqr( _zMax( r, 0 ) ) + zSqr( _zMax( d, 0 ) ) < margin * margin;
@@ -282,6 +299,8 @@ static double _zShape3DCylClosest(const void *body, const zVec3D *p, zVec3D *cp)
   return zCyl3DClosest( (const zCyl3D*)body, p, cp ); }
 static double _zShape3DCylDistFromPoint(const void *body, const zVec3D *p){
   return zCyl3DDistFromPoint( (const zCyl3D*)body, p ); }
+static double _zShape3DCylSignedDistFromPoint(const void *body, const zVec3D *p){
+  return zCyl3DSignedDistFromPoint( (const zCyl3D*)body, p ); }
 static bool _zShape3DCylPointIsInside(const void *body, const zVec3D *p, double margin){
   return zCyl3DPointIsInside( (const zCyl3D*)body, p, margin ); }
 static double _zShape3DCylVolume(const void *body){
@@ -311,6 +330,7 @@ zShape3DCom zeo_shape3d_cyl_com = {
   _zShape3DCylXformInv,
   _zShape3DCylClosest,
   _zShape3DCylDistFromPoint,
+  _zShape3DCylSignedDistFromPoint,
   _zShape3DCylPointIsInside,
   _zShape3DCylVolume,
   _zShape3DCylBarycenter,

@@ -41,6 +41,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPG2D ){
   double closest(const zVec2D &point, zVec2D *closestpoint);
   double distanceFromPoint(const zVec2D *point);
   double distanceFromPoint(const zVec2D &point);
+  double signedDistanceFromPoint(const zVec2D *point);
+  double signedDistanceFromPoint(const zVec2D &point);
   bool pointIsInside(const zVec2D *point, double margin);
   bool pointIsInside(const zVec2D &point, double margin);
   double area();
@@ -149,11 +151,13 @@ __ZEO_EXPORT zPG2D *zPG2DXformInv(const zPG2D *src, const zFrame2D *frame, zPG2D
  */
 __ZEO_EXPORT const zVec2D *zPG2DContigVert(const zPG2D *pg, const zVec2D *point, double *distance);
 
-/*! \brief check if a point is inside of a 2D polygon.
+/*! \brief distance from a point to a 2D polygon and inside check.
  *
  * zPG2DClosest() finds the closest point from a point \a point on a 2D polygon \a pg. The result is
  * put into \a closestpoint. If \a point is inside of \a pg, \a point itself is the closest point.
  * zPG2DDistFromPoint() computes the distance from \a point to \a pg.
+ * zPG2DSignedDistFromPoint() computes the signed distance from \a point to \a pg, which is negative
+ * if \a point is inside of \a pg.
  *
  * zPG2DPointIsInside() checks if a point \a point is inside of a 2D polygon \a pg. \a margin is a
  * margin of the inside area outward from the boundary of \a pg, namely, \a point is regarded to be
@@ -162,16 +166,20 @@ __ZEO_EXPORT const zVec2D *zPG2DContigVert(const zPG2D *pg, const zVec2D *point,
  * \return
  * zPG2DClosest() and zPG2DDistFromPoint() return the distance from \a point to \a pg, which is zero
  * if \a point is inside of \a pg.
+ * zPG2DSignedDistFromPoint() returns the signed distance from \a point to \a pg. It returns HUGE_VAL
+ * if \a pg has no faces.
  * zPG2DPointIsInside() returns the true value if \a point is inside of \a pg. Otherwise, it returns
  * the false value.
  * \notes
  * \a pg can be non-convex. But, faces of \a pg must not overlap each other.
- * For a non-positive \a margin, zPG2DPointIsInside() regards edges not shared by two faces as the
+ * For a point inside and for a non-positive \a margin, zPG2DSignedDistFromPoint() and
+ * zPG2DPointIsInside() regard edges not shared by two faces as the
  * boundary of \a pg, where shared edges are found by the pointers to the vertices. Hence, faces
  * contiguous to each other have to share the vertices in the array of \a pg.
  */
 __ZEO_EXPORT double zPG2DClosest(const zPG2D *pg, const zVec2D *point, zVec2D *closestpoint);
 __ZEO_EXPORT double zPG2DDistFromPoint(const zPG2D *pg, const zVec2D *point);
+__ZEO_EXPORT double zPG2DSignedDistFromPoint(const zPG2D *pg, const zVec2D *point);
 __ZEO_EXPORT bool zPG2DPointIsInside(const zPG2D *pg, const zVec2D *point, double margin);
 
 /*! \brief area of a 2D polygon.
@@ -218,6 +226,8 @@ inline double zPG2D::closest(const zVec2D *point, zVec2D *closestpoint){ return 
 inline double zPG2D::closest(const zVec2D &point, zVec2D *closestpoint){ return zPG2DClosest( this, &point, closestpoint ); }
 inline double zPG2D::distanceFromPoint(const zVec2D *point){ return zPG2DDistFromPoint( this, point ); }
 inline double zPG2D::distanceFromPoint(const zVec2D &point){ return zPG2DDistFromPoint( this, &point ); }
+inline double zPG2D::signedDistanceFromPoint(const zVec2D *point){ return zPG2DSignedDistFromPoint( this, point ); }
+inline double zPG2D::signedDistanceFromPoint(const zVec2D &point){ return zPG2DSignedDistFromPoint( this, &point ); }
 inline bool zPG2D::pointIsInside(const zVec2D *point, double margin = zTOL){ return zPG2DPointIsInside( this, point, margin ); }
 inline bool zPG2D::pointIsInside(const zVec2D &point, double margin = zTOL){ return zPG2DPointIsInside( this, &point, margin ); }
 inline double zPG2D::area(){ return zPG2DArea( this ); }

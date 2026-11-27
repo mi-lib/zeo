@@ -120,6 +120,8 @@ static double _zShape3DBoxClosest(const void *body, const zVec3D *p, zVec3D *cp)
   return zBox3DClosest( (const zBox3D*)body, p, cp ); }
 static double _zShape3DBoxDistFromPoint(const void *body, const zVec3D *p){
   return zBox3DDistFromPoint( (const zBox3D*)body, p ); }
+static double _zShape3DBoxSignedDistFromPoint(const void *body, const zVec3D *p){
+  return zBox3DSignedDistFromPoint( (const zBox3D*)body, p ); }
 static bool _zShape3DBoxPointIsInside(const void *body, const zVec3D *p, double margin){
   return zBox3DPointIsInside( (const zBox3D*)body, p, margin ); }
 static double _zShape3DBoxVolume(const void *body){
@@ -149,6 +151,7 @@ zShape3DCom zeo_shape3d_box_com = {
   _zShape3DBoxXformInv,
   _zShape3DBoxClosest,
   _zShape3DBoxDistFromPoint,
+  _zShape3DBoxSignedDistFromPoint,
   _zShape3DBoxPointIsInside,
   _zShape3DBoxVolume,
   _zShape3DBoxBarycenter,

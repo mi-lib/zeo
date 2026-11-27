@@ -176,7 +176,7 @@ void assert_closest_inside(void)
   double d, dt, depth, margin;
   int k, n = 10000;
   bool result_convex = true, result_nonconvex = true;
-  bool result_inside0 = true, result_inside_pos = true, result_inside_neg = true;
+  bool result_inside0 = true, result_inside_pos = true, result_inside_neg = true, result_signed = true;
 
   create_pg( &pg, square_vert, 4, square_face, 2 );
   for( k=0; k<n; k++ ){
@@ -193,6 +193,7 @@ void assert_closest_inside(void)
     dt = lshape_closest( &p, &cpt );
     if( !zIsTiny( d - dt ) || !zVec2DEqual( &cp, &cpt ) ) result_nonconvex = false;
     depth = dt > 0 ? -dt : lshape_depth( &p ); /* signed distance is -depth */
+    if( !zIsTiny( zPG2DSignedDistFromPoint( &pg, &p ) + depth ) ) result_signed = false;
     if( zPG2DPointIsInside( &pg, &p, 0 ) != ( -depth < 0 ) ) result_inside0 = false;
     margin = 0.2;
     if( zPG2DPointIsInside( &pg, &p, margin ) != ( -depth < margin ) ) result_inside_pos = false;
@@ -202,6 +203,7 @@ void assert_closest_inside(void)
   zPG2DDestroy( &pg );
   zAssert( zPG2DClosest (convex polygon), result_convex );
   zAssert( zPG2DClosest (non-convex polygon), result_nonconvex );
+  zAssert( zPG2DSignedDistFromPoint (non-convex polygon), result_signed );
   zAssert( zPG2DPointIsInside (zero margin), result_inside0 );
   zAssert( zPG2DPointIsInside (positive margin), result_inside_pos );
   zAssert( zPG2DPointIsInside (negative margin), result_inside_neg );

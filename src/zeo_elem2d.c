@@ -221,24 +221,40 @@ double zTri2DClosest(const zTri2D *tri, const zVec2D *point, zVec2D *closestpoin
 /* distance from a 2D point to a 2D triangle. */
 ZEO_ELEM_TRIXD_DIST_FROM_POINT( 2D )
 
-/* check if a 2D point is inside of a 2D triangle.
- * The signed distance of a point inside is the negative of the minimum distance from the lines
- * through the edges. */
-bool zTri2DPointIsInside(const zTri2D *tri, const zVec2D *point, double margin)
+/* depth of a 2D point inside of a 2D triangle, which is the minimum distance from the lines through
+ * the edges. */
+static double _zTri2DDepth(const zTri2D *tri, const zVec2D *point)
 {
-  zVec2D cp, e, v;
+  zVec2D e, v;
   double d, l, dmin = HUGE_VAL;
   int i;
 
-  if( ( d = zTri2DClosest( tri, point, &cp ) ) > 0 ) return d < margin; /* outside */
-  if( margin > 0 ) return true;
   for( i=0; i<3; i++ ){
     zVec2DSub( zTri2DVertNext(tri,i), zTri2DVert(tri,i), &e );
     if( ( l = zVec2DNorm( &e ) ) == 0 ) continue;
     zVec2DSub( point, zTri2DVert(tri,i), &v );
     if( ( d = fabs( zVec2DOuterProd( &e, &v ) ) / l ) < dmin ) dmin = d;
   }
-  return -dmin < margin;
+  return dmin == HUGE_VAL ? 0 : dmin; /* zero for a triangle degenerated to a point */
+}
+
+/* signed distance from a 2D point to a 2D triangle. */
+double zTri2DSignedDistFromPoint(const zTri2D *tri, const zVec2D *point)
+{
+  zVec2D cp;
+  double d;
+
+  return ( d = zTri2DClosest( tri, point, &cp ) ) > 0 ? d : -_zTri2DDepth( tri, point );
+}
+
+/* check if a 2D point is inside of a 2D triangle. */
+bool zTri2DPointIsInside(const zTri2D *tri, const zVec2D *point, double margin)
+{
+  zVec2D cp;
+  double d;
+
+  if( ( d = zTri2DClosest( tri, point, &cp ) ) > 0 ) return d < margin; /* outside */
+  return margin > 0 || -_zTri2DDepth( tri, point ) < margin;
 }
 
 /* print information of a triangle to a file. */

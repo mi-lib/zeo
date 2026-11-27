@@ -104,6 +104,39 @@ double zAABox3DSqrDistFromPoint(const zAABox3D *box, const zVec3D *point)
   return d2;
 }
 
+/* the signed distance of a point from a box, where e is the excesses of the coordinates of the point
+ * over the box along the three axes. It is the maximum of the excesses if all of them are
+ * non-positive, and the norm of the positive excesses otherwise. */
+static double _zBox3DExcessSignedDist(const double e[])
+{
+  double emax = -HUGE_VAL, d2 = 0;
+  int i;
+
+  for( i=0; i<3; i++ ){
+    if( e[i] > emax ) emax = e[i];
+    if( e[i] > 0 ) d2 += e[i] * e[i];
+  }
+  return emax <= 0 ? emax : sqrt( d2 );
+}
+
+/* the excesses of the coordinates of a point over a 3D axis-aligned box. */
+static void _zAABox3DExcess(const zAABox3D *box, const zVec3D *point, double e[])
+{
+  int i;
+
+  for( i=0; i<3; i++ )
+    e[i] = _zMax( box->min.e[i] - point->e[i], point->e[i] - box->max.e[i] );
+}
+
+/* signed distance from a point to a 3D axis-aligned box. */
+double zAABox3DSignedDistFromPoint(const zAABox3D *box, const zVec3D *point)
+{
+  double e[3];
+
+  _zAABox3DExcess( box, point, e );
+  return _zBox3DExcessSignedDist( e );
+}
+
 /* check if the signed distance of a point from a box is less than a margin, where e is the excesses
  * of the coordinates of the point over the box along the three axes. The signed distance is the
  * maximum of the excesses if all of them are non-positive, and the norm of the positive excesses
@@ -125,10 +158,8 @@ static bool _zBox3DExcessIsInside(const double e[], double margin)
 bool zAABox3DPointIsInside(const zAABox3D *box, const zVec3D *point, double margin)
 {
   double e[3];
-  int i;
 
-  for( i=0; i<3; i++ )
-    e[i] = _zMax( box->min.e[i] - point->e[i], point->e[i] - box->max.e[i] );
+  _zAABox3DExcess( box, point, e );
   return _zBox3DExcessIsInside( e, margin );
 }
 
@@ -356,16 +387,32 @@ double zBox3DDistFromPoint(const zBox3D *box, const zVec3D *p)
   return zBox3DClosest( box, p, &cp );
 }
 
-/* check if a point is inside of a box. */
-bool zBox3DPointIsInside(const zBox3D *box, const zVec3D *p, double margin)
+/* the excesses of the coordinates of a point over a 3D box in its frame. */
+static void _zBox3DExcess(const zBox3D *box, const zVec3D *p, double e[])
 {
   zVec3D pl;
-  double e[3];
   int i;
 
   zXform3DInv( &box->frame, p, &pl );
   for( i=zX; i<=zZ; i++ )
     e[i] = fabs( pl.e[i] ) - 0.5 * zBox3DSpan(box,(zAxis)i);
+}
+
+/* signed distance from a point to a 3D box. */
+double zBox3DSignedDistFromPoint(const zBox3D *box, const zVec3D *p)
+{
+  double e[3];
+
+  _zBox3DExcess( box, p, e );
+  return _zBox3DExcessSignedDist( e );
+}
+
+/* check if a point is inside of a box. */
+bool zBox3DPointIsInside(const zBox3D *box, const zVec3D *p, double margin)
+{
+  double e[3];
+
+  _zBox3DExcess( box, p, e );
   return _zBox3DExcessIsInside( e, margin );
 }
 

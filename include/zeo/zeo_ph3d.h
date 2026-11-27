@@ -44,6 +44,8 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zPH3D ){
   double closest(const zVec3D &point, zVec3D *closestpoint);
   double distanceFromPoint(const zVec3D *point);
   double distanceFromPoint(const zVec3D &point);
+  double signedDistanceFromPoint(const zVec3D *point);
+  double signedDistanceFromPoint(const zVec3D &point);
   bool pointIsInside(const zVec3D *point, double margin);
   bool pointIsInside(const zVec3D &point, double margin);
   double volume();
@@ -176,11 +178,13 @@ __ZEO_EXPORT zPH3D *zPH3DXformInv(const zPH3D *src, const zFrame3D *frame, zPH3D
  */
 __ZEO_EXPORT const zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *point, double *distance);
 
-/*! \brief check if a point is inside of a 3D polyhedron.
+/*! \brief distance from a point to a 3D polyhedron and inside check.
  *
  * zPH3DClosest() finds the closest point from a point \a point on a 3D polyhedron \a ph. The result is
  * put into \a closestpoint. If \a point is inside of \a ph, \a point itself is the closest point.
  * zPH3DDistFromPoint() computes the distance from \a point to \a ph.
+ * zPH3DSignedDistFromPoint() computes the signed distance from \a point to \a ph, which is negative
+ * if \a point is inside of \a ph.
  *
  * zPH3DPointIsInside() checks if a point \a point is inside of a 3D polyhedron \a ph. \a margin is a
  * margin of the inside area outward from the boundary of \a ph, namely, \a point is regarded to be
@@ -189,6 +193,8 @@ __ZEO_EXPORT const zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *point,
  * \return
  * zPH3DClosest() and zPH3DDistFromPoint() return the distance from \a point to \a ph, which is zero
  * if \a point is inside of \a ph.
+ * zPH3DSignedDistFromPoint() returns the signed distance from \a point to \a ph. It returns HUGE_VAL
+ * if \a ph has no faces.
  * zPH3DPointIsInside() returns the true value if \a point is inside of \a ph. Otherwise, it returns
  * the false value.
  * \notes
@@ -198,6 +204,7 @@ __ZEO_EXPORT const zVec3D *zPH3DContigVert(const zPH3D *ph, const zVec3D *point,
  */
 __ZEO_EXPORT double zPH3DClosest(const zPH3D *ph, const zVec3D *point, zVec3D *closestpoint);
 __ZEO_EXPORT double zPH3DDistFromPoint(const zPH3D *ph, const zVec3D *point);
+__ZEO_EXPORT double zPH3DSignedDistFromPoint(const zPH3D *ph, const zVec3D *point);
 __ZEO_EXPORT bool zPH3DPointIsInside(const zPH3D *ph, const zVec3D *point, double margin);
 
 /*! \brief volume of a 3D polyhedron.
@@ -364,6 +371,8 @@ inline double zPH3D::closest(const zVec3D *point, zVec3D *closestpoint){ return 
 inline double zPH3D::closest(const zVec3D &point, zVec3D *closestpoint){ return zPH3DClosest( this, &point, closestpoint ); }
 inline double zPH3D::distanceFromPoint(const zVec3D *point){ return zPH3DDistFromPoint( this, point ); }
 inline double zPH3D::distanceFromPoint(const zVec3D &point){ return zPH3DDistFromPoint( this, &point ); }
+inline double zPH3D::signedDistanceFromPoint(const zVec3D *point){ return zPH3DSignedDistFromPoint( this, point ); }
+inline double zPH3D::signedDistanceFromPoint(const zVec3D &point){ return zPH3DSignedDistFromPoint( this, &point ); }
 inline bool zPH3D::pointIsInside(const zVec3D *point, double margin = zTOL){ return zPH3DPointIsInside( this, point, margin ); }
 inline bool zPH3D::pointIsInside(const zVec3D &point, double margin = zTOL){ return zPH3DPointIsInside( this, &point, margin ); }
 inline double zPH3D::volume(){ return zPH3DVolume( this ); }

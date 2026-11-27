@@ -60,9 +60,9 @@ double zCapsule3DDistFromPoint(const zCapsule3D *capsule, const zVec3D *point)
   return ( r = zVec3DDist( point, zCapsule3DCenter(capsule,0) ) ) < zCapsule3DRadius(capsule) ? 0 : r - zCapsule3DRadius(capsule);
 }
 
-/* check if a point is inside of a capsule.
- * The signed distance is the distance from the point to the axis segment minus the radius. */
-bool zCapsule3DPointIsInside(const zCapsule3D *capsule, const zVec3D *point, double margin)
+/* signed distance from a point to a 3D capsule, which is the distance from the point to the axis
+ * segment minus the radius. */
+double zCapsule3DSignedDistFromPoint(const zCapsule3D *capsule, const zVec3D *point)
 {
   zVec3D axis, v;
   double l, r, d;
@@ -72,7 +72,13 @@ bool zCapsule3DPointIsInside(const zCapsule3D *capsule, const zVec3D *point, dou
     r = zVec3DDist( point, zCapsule3DCenter(capsule,1) );
   else if( d < 0 )
     r = zVec3DDist( point, zCapsule3DCenter(capsule,0) );
-  return r - zCapsule3DRadius(capsule) < margin;
+  return r - zCapsule3DRadius(capsule);
+}
+
+/* check if a point is inside of a capsule. */
+bool zCapsule3DPointIsInside(const zCapsule3D *capsule, const zVec3D *point, double margin)
+{
+  return zCapsule3DSignedDistFromPoint( capsule, point ) < margin;
 }
 
 /* height of a 3D capsule. */
@@ -246,6 +252,8 @@ static double _zShape3DCapsuleClosest(const void *body, const zVec3D *p, zVec3D 
   return zCapsule3DClosest( (const zCapsule3D*)body, p, cp ); }
 static double _zShape3DCapsuleDistFromPoint(const void *body, const zVec3D *p){
   return zCapsule3DDistFromPoint( (const zCapsule3D*)body, p ); }
+static double _zShape3DCapsuleSignedDistFromPoint(const void *body, const zVec3D *p){
+  return zCapsule3DSignedDistFromPoint( (const zCapsule3D*)body, p ); }
 static bool _zShape3DCapsulePointIsInside(const void *body, const zVec3D *p, double margin){
   return zCapsule3DPointIsInside( (const zCapsule3D*)body, p, margin ); }
 static double _zShape3DCapsuleVolume(const void *body){
@@ -275,6 +283,7 @@ zShape3DCom zeo_shape3d_capsule_com = {
   _zShape3DCapsuleXformInv,
   _zShape3DCapsuleClosest,
   _zShape3DCapsuleDistFromPoint,
+  _zShape3DCapsuleSignedDistFromPoint,
   _zShape3DCapsulePointIsInside,
   _zShape3DCapsuleVolume,
   _zShape3DCapsuleBarycenter,

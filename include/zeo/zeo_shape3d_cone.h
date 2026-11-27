@@ -67,18 +67,31 @@ __ZEO_EXPORT zCone3D *zCone3DMirror(const zCone3D *src, zCone3D *dest, zAxis axi
 __ZEO_EXPORT zCone3D *zCone3DXform(const zCone3D *src, const zFrame3D *frame, zCone3D *dest);
 __ZEO_EXPORT zCone3D *zCone3DXformInv(const zCone3D *src, const zFrame3D *frame, zCone3D *dest);
 
-/*! \brief check if a point is inside of a cone.
+/*! \brief distance from a point to a 3D cone and inside check.
  *
- * zCone3DPointIsInside() checks if a 3D point \a point is inside of a 3D cone
- * \a cone. \a margin is a margin of the inside area outward from the
- * boundary of \a cone. Namely, \a point is regarded to be inside if the signed distance from the boundary, which is negative
- * inside, is less than \a margin.
+ * zCone3DClosest() calculates the closest point from a 3D point \a point to a 3D cone \a cone, and
+ * puts it into \a closestpoint. When \a point is inside of \a cone, it copies \a point to
+ * \a closestpoint.
+ *
+ * zCone3DDistFromPoint() calculates the distance from \a point to \a cone.
+ *
+ * zCone3DSignedDistFromPoint() calculates the signed distance from a 3D point \a point to a 3D
+ * cone \a cone, which is negative if \a point is inside of \a cone.
+ *
+ * zCone3DPointIsInside() checks if \a point is inside of \a cone. \a margin is a margin of the
+ * inside area outward from the boundary of \a cone. Namely, \a point is regarded to be inside if the
+ * signed distance from the boundary, which is negative inside, is less than \a margin.
  * \return
- * zCone3DPointIsInside() returns the true value when \a point is inside of \a cone,
- * or the false value otherwise.
+ * zCone3DClosest() and zCone3DDistFromPoint() return the distance from \a point to \a cone,
+ * which is zero if \a point is inside of \a cone.
+ * zCone3DSignedDistFromPoint() returns the signed distance from \a point to \a cone.
+ *
+ * zCone3DPointIsInside() returns the true value if \a point is inside of \a cone, or the false value
+ * otherwise.
  */
 __ZEO_EXPORT double zCone3DClosest(const zCone3D *cone, const zVec3D *point, zVec3D *closestpoint);
 __ZEO_EXPORT double zCone3DDistFromPoint(const zCone3D *cone, const zVec3D *point);
+__ZEO_EXPORT double zCone3DSignedDistFromPoint(const zCone3D *cone, const zVec3D *point);
 __ZEO_EXPORT bool zCone3DPointIsInside(const zCone3D *cone, const zVec3D *point, double margin);
 
 /*! \brief axis vector and height of a 3D cone.

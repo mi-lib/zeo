@@ -312,6 +312,8 @@ static double _zShape3DEllipsClosest(const void *body, const zVec3D *p, zVec3D *
   return zEllips3DClosest( (const zEllips3D*)body, p, cp ); }
 static double _zShape3DEllipsDistFromPoint(const void *body, const zVec3D *p){
   return zEllips3DDistFromPoint( (const zEllips3D*)body, p ); }
+static double _zShape3DEllipsSignedDistFromPoint(const void *body, const zVec3D *p){
+  return zEllips3DSignedDistFromPoint( (const zEllips3D*)body, p ); }
 static bool _zShape3DEllipsPointIsInside(const void *body, const zVec3D *p, double margin){
   return zEllips3DPointIsInside( (const zEllips3D*)body, p, margin ); }
 static double _zShape3DEllipsVolume(const void *body){
@@ -341,6 +343,7 @@ zShape3DCom zeo_shape3d_ellips_com = {
   _zShape3DEllipsXformInv,
   _zShape3DEllipsClosest,
   _zShape3DEllipsDistFromPoint,
+  _zShape3DEllipsSignedDistFromPoint,
   _zShape3DEllipsPointIsInside,
   _zShape3DEllipsVolume,
   _zShape3DEllipsBarycenter,

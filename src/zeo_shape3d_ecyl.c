@@ -359,6 +359,8 @@ static double _zShape3DECylClosest(const void *body, const zVec3D *p, zVec3D *cp
   return zECyl3DClosest( (const zECyl3D*)body, p, cp ); }
 static double _zShape3DECylDistFromPoint(const void *body, const zVec3D *p){
   return zECyl3DDistFromPoint( (const zECyl3D*)body, p ); }
+static double _zShape3DECylSignedDistFromPoint(const void *body, const zVec3D *p){
+  return zECyl3DSignedDistFromPoint( (const zECyl3D*)body, p ); }
 static bool _zShape3DECylPointIsInside(const void *body, const zVec3D *p, double margin){
   return zECyl3DPointIsInside( (const zECyl3D*)body, p, margin ); }
 static double _zShape3DECylVolume(const void *body){
@@ -388,6 +390,7 @@ zShape3DCom zeo_shape3d_ecyl_com = {
   _zShape3DECylXformInv,
   _zShape3DECylClosest,
   _zShape3DECylDistFromPoint,
+  _zShape3DECylSignedDistFromPoint,
   _zShape3DECylPointIsInside,
   _zShape3DECylVolume,
   _zShape3DECylBarycenter,

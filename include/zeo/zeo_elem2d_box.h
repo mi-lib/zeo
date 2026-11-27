@@ -34,6 +34,7 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zAABox2D ){
   zAABox2D *expand(double magnitude);
   double closest(const zVec2D *point, zVec2D *closestpoint);
   double distanceFromPoint(const zVec2D *point);
+  double signedDistanceFromPoint(const zVec2D *point);
   bool pointIsInside(const zVec2D *point, double margin = zTOL);
   double area();
   zVec2D vert(int i);
@@ -86,6 +87,9 @@ __ZEO_EXPORT double zAABox2DClosest(const zAABox2D *box, const zVec2D *point, zV
 __ZEO_EXPORT double zAABox2DSqrDistFromPoint(const zAABox2D *box, const zVec2D *point);
 #define zAABox2DDistFromPoint(box,point) sqrt( zAABox2DSqrDistFromPoint( box, point ) )
 
+/*! \brief signed distance from a point to a 2D axis-aligned box, which is negative inside. */
+__ZEO_EXPORT double zAABox2DSignedDistFromPoint(const zAABox2D *box, const zVec2D *p);
+
 /*! \brief check if a point is inside of a 2D axis-aligned box, namely, if the signed distance of the
  * point from the boundary of the box, which is negative inside, is less than a margin. */
 __ZEO_EXPORT bool zAABox2DPointIsInside(const zAABox2D *box, const zVec2D *p, double margin);
@@ -123,6 +127,7 @@ inline zAABox2D *zAABox2D::expand(const zAABox2D *src, double magnitude){ return
 inline zAABox2D *zAABox2D::expand(double magnitude){ return zAABox2DExpandDRC( this, magnitude ); }
 inline double zAABox2D::closest(const zVec2D *point, zVec2D *closestpoint){ return zAABox2DClosest( this, point, closestpoint ); }
 inline double zAABox2D::distanceFromPoint(const zVec2D *point){ return zAABox2DDistFromPoint( this, point ); }
+inline double zAABox2D::signedDistanceFromPoint(const zVec2D *point){ return zAABox2DSignedDistFromPoint( this, point ); }
 inline bool zAABox2D::pointIsInside(const zVec2D *point, double margin){ return zAABox2DPointIsInside( this, point, margin ); }
 inline double zAABox2D::area(){ return zAABox2DArea( this ); }
 inline zVec2D zAABox2D::vert(int i){ zVec2D v; zAABox2DVert( this, i, &v ); return v; }

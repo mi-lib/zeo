@@ -209,6 +209,17 @@ static double _zPG2DBoundaryDist(const zPG2D *pg, const zVec2D *point)
   return dist_min;
 }
 
+/* signed distance from a point to a polygon. */
+double zPG2DSignedDistFromPoint(const zPG2D *pg, const zVec2D *point)
+{
+  zVec2D cp;
+  double d;
+
+  if( zPG2DFaceNum(pg) == 0 ) return HUGE_VAL;
+  if( ( d = zPG2DClosest( pg, point, &cp ) ) > 0 ) return d; /* outside */
+  return -_zPG2DBoundaryDist( pg, point );
+}
+
 /* check if a point is inside of a polygon. */
 bool zPG2DPointIsInside(const zPG2D *pg, const zVec2D *point, double margin)
 {

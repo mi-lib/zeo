@@ -261,15 +261,21 @@ __ZEO_EXPORT double zTri2DClosest(const zTri2D *tri, const zVec2D *point, zVec2D
  */
 __ZEO_EXPORT ZEO_ELEM_TRIXD_DIST_FROM_POINT_PROTOTYPE( 2D );
 
-/*! \brief check if a point is inside of a triangle.
+/*! \brief signed distance from a point to a triangle and inside check.
  *
- * zTri2DPointIsInside() checks if a point \a point is inside of a 2D triangle \a tri.
- * \a margin is a margin of the inside area outward from the boundary of \a tri. Namely, \a point is regarded to be inside if the signed distance from the boundary, which is negative
- * inside, is less than \a margin.
+ * zTri2DSignedDistFromPoint() calculates the signed distance from a 2D point \a point to a 2D
+ * triangle \a tri, which is negative if \a point is inside of \a tri.
+ *
+ * zTri2DPointIsInside() checks if \a point is inside of \a tri. \a margin is a margin of the inside
+ * area outward from the boundary of \a tri. Namely, \a point is regarded to be inside if the signed
+ * distance from the boundary, which is negative inside, is less than \a margin.
  * \return
+ * zTri2DSignedDistFromPoint() returns the signed distance from \a point to \a tri.
+ *
  * zTri2DPointIsInside() returns the true value if \a point is inside of \a tri with a margin \a margin.
  * Otherwise, the false value is returned.
  */
+__ZEO_EXPORT double zTri2DSignedDistFromPoint(const zTri2D *tri, const zVec2D *point);
 __ZEO_EXPORT ZEO_ELEM_TRIXD_POINT_IS_INSIDE_PROTOTYPE( 2D );
 
 /*! \brief print a 2D triangle.

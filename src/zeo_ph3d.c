@@ -238,6 +238,17 @@ double zPH3DDistFromPoint(const zPH3D *ph, const zVec3D *point)
   return zPH3DClosest( ph, point, &cp );
 }
 
+/* signed distance from a point to a 3D polyhedron. */
+double zPH3DSignedDistFromPoint(const zPH3D *ph, const zVec3D *point)
+{
+  zVec3D cp;
+  double d;
+
+  if( zPH3DFaceNum(ph) == 0 ) return HUGE_VAL;
+  d = _zPH3DBoundaryClosest( ph, point, &cp );
+  return _zPH3DWindingIsInside( ph, point ) ? -d : d;
+}
+
 /* check if a point is inside of a polyhedron. */
 bool zPH3DPointIsInside(const zPH3D *ph, const zVec3D *point, double margin)
 {

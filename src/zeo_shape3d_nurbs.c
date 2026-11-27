@@ -35,6 +35,9 @@ static double _zShape3DNURBSClosest(const void *body, const zVec3D *p, zVec3D *c
 static double _zShape3DNURBSDistFromPoint(const void *body, const zVec3D *p){
   zVec3D nn;
   return zNURBS3DClosest( (const zNURBS3D*)body, p, &nn, NULL, NULL ); }
+/* a NURBS surface has no inside area, so that the distance is unsigned. */
+static double _zShape3DNURBSSignedDistFromPoint(const void *body, const zVec3D *p){
+  return _zShape3DNURBSDistFromPoint( body, p ); }
 
 /* dummy functions */
 static bool _zShape3DNURBSPointIsInside(const void *body, const zVec3D *p, double margin){
@@ -66,6 +69,7 @@ zShape3DCom zeo_shape3d_nurbs_com = {
   _zShape3DNURBSXformInv,
   _zShape3DNURBSClosest,
   _zShape3DNURBSDistFromPoint,
+  _zShape3DNURBSSignedDistFromPoint,
   _zShape3DNURBSPointIsInside,
   _zShape3DNURBSVolume,
   _zShape3DNURBSBarycenter,

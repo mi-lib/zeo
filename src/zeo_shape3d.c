@@ -99,6 +99,12 @@ double zShape3DDistFromPoint(const zShape3D *shape, const zVec3D *point)
   return shape->com->_distfrompoint( shape->body, point );
 }
 
+/* signed distance from a point to a 3D shape. */
+double zShape3DSignedDistFromPoint(const zShape3D *shape, const zVec3D *point)
+{
+  return shape->com->_signeddistfrompoint( shape->body, point );
+}
+
 /* check if a point is inside of a 3D shape. */
 bool zShape3DPointIsInside(const zShape3D *shape, const zVec3D *point, double margin)
 {

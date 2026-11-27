@@ -34,6 +34,8 @@ static double _zShape3DPHClosest(const void *body, const zVec3D *p, zVec3D *cp){
   return zPH3DClosest( (const zPH3D*)body, p, cp ); }
 static double _zShape3DPHDistFromPoint(const void *body, const zVec3D *p){
   return zPH3DDistFromPoint( (const zPH3D*)body, p ); }
+static double _zShape3DPHSignedDistFromPoint(const void *body, const zVec3D *p){
+  return zPH3DSignedDistFromPoint( (const zPH3D*)body, p ); }
 static bool _zShape3DPHPointIsInside(const void *body, const zVec3D *p, double margin){
   return zPH3DPointIsInside( (const zPH3D*)body, p, margin ); }
 static double _zShape3DPHVolume(const void *body){
@@ -62,6 +64,7 @@ zShape3DCom zeo_shape3d_ph_com = {
   _zShape3DPHXformInv,
   _zShape3DPHClosest,
   _zShape3DPHDistFromPoint,
+  _zShape3DPHSignedDistFromPoint,
   _zShape3DPHPointIsInside,
   _zShape3DPHVolume,
   _zShape3DPHBarycenter,

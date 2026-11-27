@@ -85,7 +85,7 @@ void assert_ph3d_closest_degenerate(void)
   zVec3D p, cp, cpt;
   double d, depth, margin = -0.2;
   int i, k, n = 10000;
-  bool result_planar = true, result_planar_inside = true, result_shrink = true;
+  bool result_planar = true, result_planar_inside = true, result_shrink = true, result_signed = true;
 
   zVec3DDataInitList( &data );
   for( i=0; i<100; i++ ){
@@ -99,6 +99,7 @@ void assert_ph3d_closest_degenerate(void)
     d = zPH3DClosest( &ph, &p, &cp );
     if( !zIsTiny( d - box_closest( &min, &max, &p, &cpt ) ) || !zVec3DEqual( &cp, &cpt ) ) result_planar = false;
     if( zPH3DPointIsInside( &ph, &p, 0 ) ) result_planar_inside = false; /* no inside area */
+    if( !zIsTiny( zPH3DSignedDistFromPoint( &ph, &p ) - d ) ) result_planar_inside = false;
   }
   zPH3DDestroy( &ph );
   zVec3DDataDestroy( &data );
@@ -109,11 +110,15 @@ void assert_ph3d_closest_degenerate(void)
     for( depth=HUGE_VAL, k=0; k<3; k++ )
       depth = zMin( depth, zMin( p.e[k] - bmin.e[k], bmax.e[k] - p.e[k] ) );
     if( zPH3DPointIsInside( zShape3DPH(&box), &p, margin ) != ( depth > -margin ) ) result_shrink = false;
+    /* the signed distance is the negative of the depth inside, and the distance outside */
+    if( !zIsTiny( zPH3DSignedDistFromPoint( zShape3DPH(&box), &p ) -
+        ( depth > 0 ? -depth : box_closest( &bmin, &bmax, &p, &cpt ) ) ) ) result_signed = false;
   }
   zShape3DDestroy( &box );
   zAssert( zPH3DClosest (planar polyhedron), result_planar );
   zAssert( zPH3DPointIsInside (planar polyhedron), result_planar_inside );
   zAssert( zPH3DPointIsInside (negative margin), result_shrink );
+  zAssert( zPH3DSignedDistFromPoint (box), result_signed );
 }
 
 void assert_ph3d_aabb(void)
