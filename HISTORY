@@ -1,3 +1,7 @@
+2026.11.27. Split _zCC3DEnlargeUniverse into _zCC3DEnlargeGrid, _zCC3DEnlargeNeighbor, _zCC3DEnlargeChain, _zCC3DEnlargeGridCell, _zCC3DEnlargeFace, _zCC3DEnlargeShareFace and _zCC3DEnlargeTwin with a workspace _zCC3DEnlargeWS, and added _zCC3DSetUniverse shared with zCC3DCreate. [zeo_cc3d]
+2026.11.27. Split _zCC3DSplitBSPPH3D into _zCC3DBSPInitFrag, _zCC3DBSPSplitCells and _zCC3DBSPSplitFrags with a workspace _zCC3DBSPWS. [zeo_cc3d]
+2026.11.27. Split _zCC3DSplitCell into _zCC3DSplitCellVert, _zCC3DSplitCellCap and _zCC3DSplitCellFace. [zeo_cc3d]
+2026.11.27. Added macros _zCC3DLink, _zCC3DSetTwin and _zCC3DSetMate to connect half-edges. [zeo_cc3d]
 2026.11.27. Added a test of the continuity of NURBS surfaces of a box and an elliptic cylinder, and modified the test of the signed distance from NURBS surfaces for boxes, cylinders and zNURBS3DDistFromPoint. [test]
 2026.11.27. Debugged zNURBS3DBox and zNURBS3DECyl to make the surfaces continuous at the edges. [zeo_nurbs3d_shape]
 2026.11.27. Added zNURBS3DDistFromPoint, and modified the distance function of the shape class of a NURBS surface to use it. [zeo_nurbs3d, zeo_shape3d_nurbs]
