@@ -86,23 +86,26 @@ __ZEO_EXPORT zEllips3D *zEllips3DXformInv(const zEllips3D *src, const zFrame3D *
  * point \a p to a 3D ellipsoid \a ellips, and puts it into \a cp.
  * When \a p is inside of \a ellips, it copies \a p to \a cp.
  *
+ * zEllips3DSignedDistFromPoint() calculates the signed distance from a 3D point \a p to a 3D
+ * ellipsoid \a ellips, which is negative if \a p is inside of \a ellips.
+ *
  * zEllips3DDistFromPoint() calculates the distance from a 3D point
  * \a p to a 3D ellipsoid \a ellips.
  *
  * zEllips3DPointIsInside() checks if a 3D point \a p is inside
  * of a 3D ellipsoid \a ellips. \a margin is a margin of the inside
- * area outward from the boundary of \a ellips. For a light computation, \a p is approximately
- * regarded to be inside if it is inside of the ellipsoid, the radii of which are increased by
- * \a margin. It is narrower than the exact offset of \a ellips by a positive \a margin, and wider
- * by a negative \a margin. If any of the increased radii is not positive, \a p is not inside.
+ * area outward from the boundary of \a ellips. Namely, \a p is regarded to be inside if the signed
+ * distance from the boundary, which is negative inside, is less than \a margin.
  * \return
  * zEllips3DClosest() and zEllips3DDistFromPoint() return the distance from \a p to \a ellips, which
  * is zero if \a p is inside of \a ellips.
+ * zEllips3DSignedDistFromPoint() returns the signed distance from \a p to \a ellips.
  *
  * zEllips3DPointIsInside() returns the true value if \a p is
  * inside of \a ellips, or the false value otherwise.
  */
 __ZEO_EXPORT double zEllips3DClosest(const zEllips3D *ellips, const zVec3D *p, zVec3D *cp);
+__ZEO_EXPORT double zEllips3DSignedDistFromPoint(const zEllips3D *ellips, const zVec3D *p);
 __ZEO_EXPORT double zEllips3DDistFromPoint(const zEllips3D *ellips, const zVec3D *p);
 __ZEO_EXPORT bool zEllips3DPointIsInside(const zEllips3D *ellips, const zVec3D *p, double margin);
 

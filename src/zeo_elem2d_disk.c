@@ -85,8 +85,11 @@ zEllips2D *zEllips2DCreate(zEllips2D *ellips, const zVec2D *c, double r1, double
   return ellips;
 }
 
-/* the closest point on an axis-aligned ellipse to a point outside of it. */
+/* the closest point on the boundary of an axis-aligned ellipse, the signed distance from it and the
+ * inside check of it. */
 ZEO_ELEM_ELLIPSXD_CLOSEST( 2 )
+ZEO_ELEM_ELLIPSXD_SIGNED_DIST( 2 )
+ZEO_ELEM_ELLIPSXD_IS_INSIDE( 2 )
 
 /* closest point to a 2D point on an ellipse. */
 zVec2D *zEllips2DClosest(const zEllips2D *ellips, const zVec2D *p, zVec2D *cp)
@@ -101,6 +104,15 @@ zVec2D *zEllips2DClosest(const zEllips2D *ellips, const zVec2D *p, zVec2D *cp)
   return cp;
 }
 
+/* signed distance from a 2D point to a 2D ellipse. */
+double zEllips2DSignedDistFromPoint(const zEllips2D *ellips, const zVec2D *p)
+{
+  zVec2D v;
+
+  _zVec2DSub( p, zEllips2DCenter(ellips), &v );
+  return _zEllips2DSignedDist( ellips->radius, &v );
+}
+
 /* distance from a 2D ellipse to a 2D point. */
 double zEllips2DDistFromPoint(const zEllips2D *ellips, const zVec2D *p)
 {
@@ -113,9 +125,8 @@ double zEllips2DDistFromPoint(const zEllips2D *ellips, const zVec2D *p)
 /* check if a 2D point is inside of an ellipse. */
 bool zEllips2DPointIsInside(const zEllips2D *ellips, const zVec2D *p, double margin)
 {
-  /* approximately, the ellipse is enlarged or shrunk by the margin along the principal axes */
-  if( zEllips2DRadius(ellips,0) + margin <= 0 || zEllips2DRadius(ellips,1) + margin <= 0 ) return false;
-  return zSqr( ( p->c.x - zEllips2DCenter(ellips)->c.x ) / ( zEllips2DRadius(ellips,0) + margin ) )
-       + zSqr( ( p->c.y - zEllips2DCenter(ellips)->c.y ) / ( zEllips2DRadius(ellips,1) + margin ) ) < 1 ?
-    true : false;
+  zVec2D v;
+
+  _zVec2DSub( p, zEllips2DCenter(ellips), &v );
+  return _zEllips2DIsInside( ellips->radius, &v, margin );
 }

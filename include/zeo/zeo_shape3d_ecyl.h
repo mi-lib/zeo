@@ -66,11 +66,13 @@ __ZEO_EXPORT zECyl3D *zECyl3DXformInv(const zECyl3D *src, const zFrame3D *frame,
 
 /*! \brief the closest point to a 3D elliptic cylinder. */
 __ZEO_EXPORT double zECyl3DClosest(const zECyl3D *cyl, const zVec3D *point, zVec3D *closestpoint);
+/*! \brief signed distance from a point to a 3D elliptic cylinder, which is negative if the point is
+ * inside of it. */
+__ZEO_EXPORT double zECyl3DSignedDistFromPoint(const zECyl3D *cyl, const zVec3D *point);
 /*! \brief distance from a point to a 3D elliptic cylinder. */
 __ZEO_EXPORT double zECyl3DDistFromPoint(const zECyl3D *cyl, const zVec3D *point);
-/*! \brief check if a point is inside of an elliptic cylinder.
- * For a light computation, the point is approximately regarded to be inside if it is inside of the
- * elliptic cylinder, the radii and the both ends of which are extended by a margin. */
+/*! \brief check if a point is inside of an elliptic cylinder, namely, if the signed distance of the
+ * point from the boundary of the elliptic cylinder, which is negative inside, is less than a margin. */
 __ZEO_EXPORT bool zECyl3DPointIsInside(const zECyl3D *ecyl, const zVec3D *point, double margin);
 
 /*! \brief axis vector a 3D elliptic cylinder. */

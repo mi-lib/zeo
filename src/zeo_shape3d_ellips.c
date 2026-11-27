@@ -77,8 +77,11 @@ zEllips3D *zEllips3DXformInv(const zEllips3D *src, const zFrame3D *f, zEllips3D 
   return dest;
 }
 
-/* the closest point on an axis-aligned ellipsoid to a point outside of it. */
+/* the closest point on the boundary of an axis-aligned ellipsoid, the signed distance from it and
+ * the inside check of it. */
 ZEO_ELEM_ELLIPSXD_CLOSEST( 3 )
+ZEO_ELEM_ELLIPSXD_SIGNED_DIST( 3 )
+ZEO_ELEM_ELLIPSXD_IS_INSIDE( 3 )
 
 /* the closest point from a 3D point to a 3D ellipsoid. */
 double zEllips3DClosest(const zEllips3D *ellips, const zVec3D *p, zVec3D *cp)
@@ -96,6 +99,15 @@ double zEllips3DClosest(const zEllips3D *ellips, const zVec3D *p, zVec3D *cp)
   return zVec3DDist( p, cp );
 }
 
+/* signed distance from a point to a 3D ellipsoid. */
+double zEllips3DSignedDistFromPoint(const zEllips3D *ellips, const zVec3D *p)
+{
+  zVec3D pl;
+
+  zXform3DInv( &ellips->f, p, &pl );
+  return _zEllips3DSignedDist( ellips->radius.e, &pl );
+}
+
 /* distance from a point to a 3D ellipsoid. */
 double zEllips3DDistFromPoint(const zEllips3D *ellips, const zVec3D *p)
 {
@@ -108,13 +120,8 @@ bool zEllips3DPointIsInside(const zEllips3D *ellips, const zVec3D *p, double mar
 {
   zVec3D _p;
 
-  /* approximately, the ellipsoid is enlarged or shrunk by the margin along the principal axes */
-  if( zEllips3DRadiusX(ellips) + margin <= 0 || zEllips3DRadiusY(ellips) + margin <= 0 ||
-      zEllips3DRadiusZ(ellips) + margin <= 0 ) return false;
   zXform3DInv( &ellips->f, p, &_p );
-  return zSqr(_p.c.x / ( zEllips3DRadiusX(ellips) + margin ) )
-       + zSqr(_p.c.y / ( zEllips3DRadiusY(ellips) + margin ) )
-       + zSqr(_p.c.z / ( zEllips3DRadiusZ(ellips) + margin ) ) < 1 ? true : false;
+  return _zEllips3DIsInside( ellips->radius.e, &_p, margin );
 }
 
 /* volume of a 3D ellipsoid. */

@@ -82,14 +82,14 @@ __ZEO_EXPORT zEllips2D *zEllips2DCreate(zEllips2D *ellips, const zVec2D *c, doub
  * If the point is inside of the ellipse, the point itself is the closest point. */
 __ZEO_EXPORT zVec2D *zEllips2DClosest(const zEllips2D *ellips, const zVec2D *p, zVec2D *cp);
 
+/*! \brief signed distance from a 2D point to an ellipse, which is negative if the point is inside of it. */
+__ZEO_EXPORT double zEllips2DSignedDistFromPoint(const zEllips2D *ellips, const zVec2D *p);
+
 /*! \brief distance from a 2D point to an ellipse, which is zero if the point is inside of it. */
 __ZEO_EXPORT double zEllips2DDistFromPoint(const zEllips2D *ellips, const zVec2D *p);
 
-/*! \brief check if a 2D point is inside of an ellipse.
- * For a light computation, the point is approximately regarded to be inside if it is inside of the
- * ellipse, the radii of which are increased by a margin. It is narrower than the exact offset of the
- * ellipse by a positive margin, and wider by a negative margin. If either of the increased radii is
- * not positive, the point is not inside. */
+/*! \brief check if a 2D point is inside of an ellipse, namely, if the signed distance of the point
+ * from the boundary of the ellipse, which is negative inside, is less than a margin. */
 __ZEO_EXPORT bool zEllips2DPointIsInside(const zEllips2D *ellips, const zVec2D *p, double margin);
 
 __END_DECLS

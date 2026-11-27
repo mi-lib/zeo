@@ -123,6 +123,11 @@ double zECyl3DClosest(const zECyl3D *cyl, const zVec3D *point, zVec3D *closestpo
   zVec3DSub( point, zECyl3DCenter(cyl,0), &v );
   zECyl3DAxis( cyl, &axis );
   zVec3DCatRatio( zECyl3DRadVec(cyl,0), zECyl3DRadVec(cyl,1), &axis, &v, vs.e );
+  if( vs.e[zZ] >= 0 && vs.e[zZ] <= 1 &&
+      zSqr( vs.e[zX] / zECyl3DRadius(cyl,0) ) + zSqr( vs.e[zY] / zECyl3DRadius(cyl,1) ) <= 1 ){
+    zVec3DCopy( point, closestpoint ); /* inside */
+    return 0;
+  }
   zEllips2DCreate( &ellips2d, ZVEC2DZERO, zECyl3DRadius(cyl,0), zECyl3DRadius(cyl,1) );
   zEllips2DClosest( &ellips2d, (zVec2D*)vs.e, (zVec2D*)vc.e );
   vc.e[zZ] = zLimit( vs.e[zZ], 0, 1 );
@@ -140,20 +145,50 @@ double zECyl3DDistFromPoint(const zECyl3D *cyl, const zVec3D *point)
   return zECyl3DClosest( cyl, point, &cp );
 }
 
-/* check if a point is inside of an elliptic cylinder. */
-bool zECyl3DPointIsInside(const zECyl3D *ecyl, const zVec3D *point, double margin)
+/* the signed distance from an axis-aligned ellipse and the inside check of it. */
+ZEO_ELEM_ELLIPSXD_CLOSEST( 2 )
+ZEO_ELEM_ELLIPSXD_SIGNED_DIST( 2 )
+ZEO_ELEM_ELLIPSXD_IS_INSIDE( 2 )
+
+/* coordinates of a point in the frame of an elliptic cylinder, where the axial one is measured from
+ * the bottom. It returns the excess of the axial coordinate over the both ends. */
+static double _zECyl3DLocalCoord(const zECyl3D *ecyl, const zVec3D *point, zVec3D *vs)
 {
-  zEllips2D ellips2d;
-  zVec3D v, axis, vs;
+  zVec3D v, axis;
   double l;
 
   zVec3DSub( point, zECyl3DCenter(ecyl,0), &v );
   zECyl3DAxis( ecyl, &axis );
   l = zVec3DNormalizeDRC( &axis, 0 );
-  zVec3DCatRatio( zECyl3DRadVec(ecyl,0), zECyl3DRadVec(ecyl,1), &axis, &v, vs.e );
-  if( vs.c.z <= -margin || vs.c.z >= l + margin ) return false;
-  zEllips2DCreate( &ellips2d, ZVEC2DZERO, zECyl3DRadius(ecyl,0), zECyl3DRadius(ecyl,1) );
-  return zEllips2DPointIsInside( &ellips2d, (zVec2D*)vs.e, margin );
+  zVec3DCatRatio( zECyl3DRadVec(ecyl,0), zECyl3DRadVec(ecyl,1), &axis, &v, vs->e );
+  return _zMax( -vs->c.z, vs->c.z - l );
+}
+
+/* signed distance from a point to an elliptic cylinder.
+ * The signed distance is max(e1,e2) if both e1 and e2 are non-positive, and the norm of the positive
+ * ones of them otherwise, where e1 is the signed distance from the ellipse of the section, and e2 is
+ * the excess of the axial coordinate over the both ends. */
+double zECyl3DSignedDistFromPoint(const zECyl3D *ecyl, const zVec3D *point)
+{
+  zVec3D vs;
+  double e1, e2;
+
+  e2 = _zECyl3DLocalCoord( ecyl, point, &vs );
+  e1 = _zEllips2DSignedDist( ecyl->radius, (zVec2D*)vs.e );
+  if( e1 <= 0 && e2 <= 0 ) return _zMax( e1, e2 );
+  return sqrt( zSqr( _zMax( e1, 0 ) ) + zSqr( _zMax( e2, 0 ) ) );
+}
+
+/* check if a point is inside of an elliptic cylinder.
+ * The signed distance (see zECyl3DSignedDistFromPoint()) is less than the margin m if and only if
+ * e2 < m and e1 < m for e2 <= 0, or e1 < sqrt(m^2-e2^2) for e2 > 0. */
+bool zECyl3DPointIsInside(const zECyl3D *ecyl, const zVec3D *point, double margin)
+{
+  zVec3D vs;
+  double e2;
+
+  if( ( e2 = _zECyl3DLocalCoord( ecyl, point, &vs ) ) >= margin ) return false;
+  return _zEllips2DIsInside( ecyl->radius, (zVec2D*)vs.e, e2 <= 0 ? margin : sqrt( margin*margin - e2*e2 ) );
 }
 
 /* height of a 3D elliptic cylinder. */

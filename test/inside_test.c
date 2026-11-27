@@ -57,6 +57,115 @@ static double signed_dist2D(const void *shape, double (* support)(const void*,co
   return smax;
 }
 
+/* the minimum distance from a point p to the points on the surface of an axis-aligned ellipsoid with
+ * radii r parameterized by the polar angles about the z-axis, which is found on a grid and refined
+ * by a pattern search followed by the Newton method. */
+static double ellips3D_dist_param(const double r[], const zVec3D *p)
+{
+  zVec3D x;
+  double th, ph, thmin = 0, phmin = 0, d, dmin = HUGE_VAL, step, dth[] = { 1, -1, 0, 0 }, dph[] = { 0, 0, 1, -1 };
+  int i, j, iter;
+  bool moved;
+
+#define ELLIPS3D_POINT(t,f) zVec3DCreate( &x, r[0]*sin(t)*cos(f), r[1]*sin(t)*sin(f), r[2]*cos(t) )
+#define ELLIPS3D_POINT2(t,f) zVec3DCreate( &x, r[0]*sin(t)*cos(f), r[1]*sin(t)*sin(f), r[2]*cos(t) )
+  for( i=0; i<=200; i++ )
+    for( j=0; j<400; j++ ){
+      ELLIPS3D_POINT( zPI*i/200, zPIx2*j/400 );
+      if( ( d = zVec3DSqrDist( &x, p ) ) < dmin ){
+        dmin = d; thmin = zPI*i/200; phmin = zPIx2*j/400;
+      }
+    }
+  for( step=zPI/200, iter=0; step>1.0e-15 && iter<100000; iter++ ){
+    for( moved=false, i=0; i<4; i++ ){
+      th = thmin + step*dth[i];
+      ph = phmin + step*dph[i];
+      ELLIPS3D_POINT( th, ph );
+      if( ( d = zVec3DSqrDist( &x, p ) ) < dmin ){
+        dmin = d; thmin = th; phmin = ph; moved = true;
+      }
+    }
+    if( !moved ) step *= 0.5;
+  }
+#undef ELLIPS3D_POINT
+  /* the Newton method on the squared distance with the analytic derivatives */
+  for( iter=0; iter<20; iter++ ){
+    double st = sin(thmin), ct = cos(thmin), sf = sin(phmin), cf = cos(phmin), g[2], h[3], det, dt, df, a;
+    zVec3D e, xt, xf, xtt, xtf, xff;
+    zVec3DCreate( &x, r[0]*st*cf, r[1]*st*sf, r[2]*ct );
+    zVec3DCreate( &xt, r[0]*ct*cf, r[1]*ct*sf, -r[2]*st );
+    zVec3DCreate( &xf, -r[0]*st*sf, r[1]*st*cf, 0 );
+    zVec3DCreate( &xtt, -r[0]*st*cf, -r[1]*st*sf, -r[2]*ct );
+    zVec3DCreate( &xtf, -r[0]*ct*sf, r[1]*ct*cf, 0 );
+    zVec3DCreate( &xff, -r[0]*st*cf, -r[1]*st*sf, 0 );
+    zVec3DSub( &x, p, &e );
+    g[0] = zVec3DInnerProd( &e, &xt );
+    g[1] = zVec3DInnerProd( &e, &xf );
+    h[0] = zVec3DInnerProd( &xt, &xt ) + zVec3DInnerProd( &e, &xtt );
+    h[1] = zVec3DInnerProd( &xt, &xf ) + zVec3DInnerProd( &e, &xtf );
+    h[2] = zVec3DInnerProd( &xf, &xf ) + zVec3DInnerProd( &e, &xff );
+    if( h[0] <= 0 || ( det = h[0]*h[2] - h[1]*h[1] ) <= 0 ) break; /* not convex */
+    dt = -( h[2]*g[0] - h[1]*g[1] ) / det;
+    df = -( h[0]*g[1] - h[1]*g[0] ) / det;
+    for( a=1; a>1.0e-10; a*=0.5 ){
+      ELLIPS3D_POINT2( thmin+a*dt, phmin+a*df );
+      if( ( d = zVec3DSqrDist( &x, p ) ) <= dmin ){
+        dmin = d; thmin += a*dt; phmin += a*df; break;
+      }
+    }
+    if( a <= 1.0e-10 ) break;
+  }
+#undef ELLIPS3D_POINT2
+  return sqrt( dmin );
+}
+
+/* the signed distance from a point p to an axis-aligned ellipsoid with radii r, which is computed
+ * independently of the library. Since the parameterization is singular at the poles, the minimum of
+ * those with the poles on the three axes is taken. */
+static double ellips3D_signed_dist_param(const double r[], const zVec3D *p)
+{
+  double rp[3], d, dmin = HUGE_VAL;
+  zVec3D pp;
+  int k, j;
+
+  for( k=0; k<3; k++ ){
+    for( j=0; j<3; j++ ){
+      rp[j] = r[(j+k+1)%3];
+      pp.e[j] = p->e[(j+k+1)%3];
+    }
+    if( ( d = ellips3D_dist_param( rp, &pp ) ) < dmin ) dmin = d;
+  }
+  return zSqr(p->c.x/r[0]) + zSqr(p->c.y/r[1]) + zSqr(p->c.z/r[2]) < 1 ? -dmin : dmin;
+}
+
+/* the 2D counterpart of the above. */
+static double ellips2D_signed_dist_param(const double r[], const zVec2D *p)
+{
+  zVec2D x;
+  double th, thmin = 0, d, dmin = HUGE_VAL, step;
+  int i, iter, sgn;
+  bool moved;
+
+  for( i=0; i<NDIR; i++ ){
+    zVec2DCreate( &x, r[0]*cos(zPIx2*i/NDIR), r[1]*sin(zPIx2*i/NDIR) );
+    if( ( d = zVec2DSqrDist( &x, p ) ) < dmin ){
+      dmin = d; thmin = zPIx2*i/NDIR;
+    }
+  }
+  for( step=zPIx2/NDIR, iter=0; step>1.0e-15 && iter<100000; iter++ ){
+    for( moved=false, sgn=-1; sgn<=1; sgn+=2 ){
+      th = thmin + sgn*step;
+      zVec2DCreate( &x, r[0]*cos(th), r[1]*sin(th) );
+      if( ( d = zVec2DSqrDist( &x, p ) ) < dmin ){
+        dmin = d; thmin = th; moved = true;
+      }
+    }
+    if( !moved ) step *= 0.5;
+  }
+  d = sqrt( dmin );
+  return zSqr(p->c.x/r[0]) + zSqr(p->c.y/r[1]) < 1 ? -d : d;
+}
+
 /* check if the inside check with a margin around the signed distance is correct. */
 #define CHECK_INSIDE(func,shape,p,d) \
   ( func( shape, p, (d) + DELTA ) && !func( shape, p, (d) - DELTA ) )
@@ -120,6 +229,30 @@ static double support_capsule3D(const void *shape, const zVec3D *u)
   return zMax( zVec3DInnerProd( u, zCapsule3DCenter(capsule,0) ), zVec3DInnerProd( u, zCapsule3DCenter(capsule,1) ) ) + zCapsule3DRadius(capsule);
 }
 
+static double support_ellips3D(const void *shape, const zVec3D *u)
+{
+  const zEllips3D *ellips = (const zEllips3D *)shape;
+  return zVec3DInnerProd( u, zEllips3DCenter(ellips) )
+    + sqrt( zSqr( zEllips3DRadiusX(ellips) * zVec3DInnerProd( u, zEllips3DAxis(ellips,zX) ) )
+          + zSqr( zEllips3DRadiusY(ellips) * zVec3DInnerProd( u, zEllips3DAxis(ellips,zY) ) )
+          + zSqr( zEllips3DRadiusZ(ellips) * zVec3DInnerProd( u, zEllips3DAxis(ellips,zZ) ) ) );
+}
+
+static double support_ecyl3D(const void *shape, const zVec3D *u)
+{
+  const zECyl3D *ecyl = (const zECyl3D *)shape;
+  return zMax( zVec3DInnerProd( u, zECyl3DCenter(ecyl,0) ), zVec3DInnerProd( u, zECyl3DCenter(ecyl,1) ) )
+    + sqrt( zSqr( zECyl3DRadius(ecyl,0) * zVec3DInnerProd( u, zECyl3DRadVec(ecyl,0) ) )
+          + zSqr( zECyl3DRadius(ecyl,1) * zVec3DInnerProd( u, zECyl3DRadVec(ecyl,1) ) ) );
+}
+
+static double support_ellips2D(const void *shape, const zVec2D *u)
+{
+  const zEllips2D *ellips = (const zEllips2D *)shape;
+  return zVec2DInnerProd( u, zEllips2DCenter(ellips) )
+    + sqrt( zSqr( zEllips2DRadius(ellips,0) * u->c.x ) + zSqr( zEllips2DRadius(ellips,1) * u->c.y ) );
+}
+
 static double support_aabox2D(const void *shape, const zVec2D *u)
 {
   const zAABox2D *box = (const zAABox2D *)shape;
@@ -165,9 +298,12 @@ void assert_inside_3D(void)
   zCyl3D cyl;
   zCone3D cone;
   zCapsule3D capsule;
+  zEllips3D ellips;
+  zECyl3D ecyl;
   zVec3D c1, c2, p, a, xyz[3];
   int i;
   bool result_aabox = true, result_box = true, result_cyl = true, result_cone = true, result_capsule = true;
+  bool result_ellips = true, result_ecyl = true;
 
   for( i=0; i<N/10; i++ ){
     zAABox3DCreate( &aabox, zRandF(-2,-0.5), zRandF(-2,-0.5), zRandF(-2,-0.5), zRandF(0.5,2), zRandF(0.5,2), zRandF(0.5,2) );
@@ -178,6 +314,8 @@ void assert_inside_3D(void)
     zCyl3DCreate( &cyl, &c1, &c2, zRandF(0.5,2), 0 );
     zCone3DCreate( &cone, &c1, &c2, zRandF(0.5,2), 0 );
     zCapsule3DCreate( &capsule, &c1, &c2, zRandF(0.5,2), 0 );
+    zEllips3DCreate( &ellips, &c1, zBox3DAxis(&box,zX), zBox3DAxis(&box,zY), zBox3DAxis(&box,zZ), zRandF(0.5,2), zRandF(0.5,2), zRandF(0.5,2), 0 );
+    zECyl3DCreate( &ecyl, &c1, &c2, zRandF(0.5,2), zRandF(0.5,2), zBox3DAxis(&box,zX), 0 );
     vec3D_rand( &p, 4 );
     zVec3DSub( &c2, &c1, &a );
     zVec3DCopy( ZVEC3DX, &xyz[0] );
@@ -188,32 +326,40 @@ void assert_inside_3D(void)
     if( !CHECK_INSIDE( zCyl3DPointIsInside, &cyl, &p, signed_dist3D( &cyl, support_cyl3D, &p, &a, 1 ) ) ) result_cyl = false;
     if( !CHECK_INSIDE( zCone3DPointIsInside, &cone, &p, signed_dist3D( &cone, support_cone3D, &p, &a, 1 ) ) ) result_cone = false;
     if( !CHECK_INSIDE( zCapsule3DPointIsInside, &capsule, &p, signed_dist3D( &capsule, support_capsule3D, &p, NULL, 0 ) ) ) result_capsule = false;
+    if( !CHECK_INSIDE( zEllips3DPointIsInside, &ellips, &p, signed_dist3D( &ellips, support_ellips3D, &p, NULL, 0 ) ) ) result_ellips = false;
+    if( !CHECK_INSIDE( zECyl3DPointIsInside, &ecyl, &p, signed_dist3D( &ecyl, support_ecyl3D, &p, &a, 1 ) ) ) result_ecyl = false;
   }
   zAssert( zAABox3DPointIsInside (signed distance), result_aabox );
   zAssert( zBox3DPointIsInside (signed distance), result_box );
   zAssert( zCyl3DPointIsInside (signed distance), result_cyl );
   zAssert( zCone3DPointIsInside (signed distance), result_cone );
   zAssert( zCapsule3DPointIsInside (signed distance), result_capsule );
+  zAssert( zEllips3DPointIsInside (signed distance), result_ellips );
+  zAssert( zECyl3DPointIsInside (signed distance), result_ecyl );
 }
 
 void assert_inside_2D(void)
 {
   zAABox2D box;
   zTri2D tri;
+  zEllips2D ellips;
   zVec2D v[3], p;
   int i, j;
-  bool result_aabox = true, result_tri = true;
+  bool result_aabox = true, result_tri = true, result_ellips = true;
 
   for( i=0; i<N/10; i++ ){
     zAABox2DCreate( &box, zRandF(-2,-0.5), zRandF(-2,-0.5), zRandF(0.5,2), zRandF(0.5,2) );
     for( j=0; j<3; j++ ) zVec2DCreatePolar( &v[j], zRandF(1,2), zPIx2*j/3 + zRandF(-0.5,0.5) );
     zTri2DCreate( &tri, &v[0], &v[1], &v[2] );
+    zEllips2DCreate( &ellips, &v[0], zRandF(0.5,2), zRandF(0.5,2) );
     zVec2DCreate( &p, zRandF(-4,4), zRandF(-4,4) );
     if( !CHECK_INSIDE( zAABox2DPointIsInside, &box, &p, signed_dist2D( &box, support_aabox2D, &p ) ) ) result_aabox = false;
     if( !CHECK_INSIDE( zTri2DPointIsInside, &tri, &p, signed_dist2D( &tri, support_tri2D, &p ) ) ) result_tri = false;
+    if( !CHECK_INSIDE( zEllips2DPointIsInside, &ellips, &p, signed_dist2D( &ellips, support_ellips2D, &p ) ) ) result_ellips = false;
   }
   zAssert( zAABox2DPointIsInside (signed distance), result_aabox );
   zAssert( zTri2DPointIsInside (signed distance), result_tri );
+  zAssert( zEllips2DPointIsInside (signed distance), result_ellips );
 }
 
 /* points on the boundary are not inside with a zero margin. */
@@ -236,7 +382,7 @@ void assert_inside_boundary(void)
   zAssert( z...PointIsInside (boundary), result );
 }
 
-/* the approximate inside check of ellipses never accepts a non-positive radius. */
+/* the depths of the centers of ellipses, an ellipsoid and an elliptic cylinder are the minimum radii. */
 void assert_inside_ellips(void)
 {
   zEllips2D e2;
@@ -256,7 +402,7 @@ void assert_inside_ellips(void)
   zECyl3DCreate( &ec, &c1, &c2, 2, 1, ZVEC3DX, 0 );
   if( !zECyl3DPointIsInside( &ec, ZVEC3DZERO, -0.9 ) || zECyl3DPointIsInside( &ec, ZVEC3DZERO, -1 ) ||
       zECyl3DPointIsInside( &ec, ZVEC3DZERO, -3 ) ) result = false;
-  zAssert( zEllips2DPointIsInside + zEllips3DPointIsInside + zECyl3DPointIsInside (non-positive radius), result );
+  zAssert( zEllips2DPointIsInside + zEllips3DPointIsInside + zECyl3DPointIsInside (center), result );
 }
 
 /* the distance from a point beyond an end of a capsule is positive. */
@@ -276,6 +422,62 @@ void assert_capsule_dist(void)
   zAssert( zCapsule3DDistFromPoint (beyond the ends), result );
 }
 
+/* the signed distances from points around thin ellipses, ellipsoids and elliptic cylinders, the
+ * radii of which differ up to 1000 times, are compared with the references computed from the
+ * parameterized boundaries, and the inside checks with margins around them are tested. The signed
+ * distance from an elliptic cylinder is computed from those from the ellipse of the section and the
+ * both ends. */
+void assert_signed_dist_thin(void)
+{
+  zEllips2D e2;
+  zEllips3D e3;
+  zECyl3D ec;
+  zBox3D box;
+  zVec2D p2, pl2;
+  zVec3D p, pl, c2;
+  double r[3], d, dref, e1, e2s, tol;
+  int i, k;
+  bool result2 = true, result3 = true, result_ecyl = true;
+
+  for( i=0; i<N/10; i++ ){
+    box3D_rand( &box );
+    for( k=0; k<3; k++ ) r[k] = pow( 10, zRandF(-2,1) );
+    tol = 1.0e-9 * zMax3( r[0], r[1], r[2] );
+    /* ellipse */
+    zEllips2DCreate( &e2, (zVec2D*)zBox3DCenter(&box)->e, r[0], r[1] );
+    zVec2DCreate( &pl2, r[0]*zRandF(-1.5,1.5), r[1]*zRandF(-1.5,1.5) );
+    if( i % 5 == 0 ) pl2.c.y = 0; /* on an axis */
+    zVec2DAdd( zEllips2DCenter(&e2), &pl2, &p2 );
+    d = zEllips2DSignedDistFromPoint( &e2, &p2 );
+    dref = ellips2D_signed_dist_param( r, &pl2 );
+    if( !zIsTol( d - dref, tol ) || ( d > 0 ) != ( zEllips2DDistFromPoint( &e2, &p2 ) > 0 ) ) result2 = false;
+    if( !zEllips2DPointIsInside( &e2, &p2, d + tol ) || zEllips2DPointIsInside( &e2, &p2, d - tol ) ) result2 = false;
+    /* ellipsoid */
+    zEllips3DCreate( &e3, zBox3DCenter(&box), zBox3DAxis(&box,zX), zBox3DAxis(&box,zY), zBox3DAxis(&box,zZ), r[0], r[1], r[2], 0 );
+    for( k=0; k<3; k++ ) pl.e[k] = r[k] * zRandF(-1.5,1.5);
+    if( i % 5 == 0 ) pl.e[i/5%3] = 0; /* on a principal plane */
+    zXform3D( &e3.f, &pl, &p );
+    d = zEllips3DSignedDistFromPoint( &e3, &p );
+    dref = ellips3D_signed_dist_param( r, &pl );
+    if( !zIsTol( d - dref, tol ) || ( d > 0 ) != ( zEllips3DDistFromPoint( &e3, &p ) > 0 ) ) result3 = false;
+    if( !zEllips3DPointIsInside( &e3, &p, d + tol ) || zEllips3DPointIsInside( &e3, &p, d - tol ) ) result3 = false;
+    /* elliptic cylinder along the z-axis of the frame, the height of which is r[2] */
+    zVec3DCat( zBox3DCenter(&box), r[2], zBox3DAxis(&box,zZ), &c2 );
+    zECyl3DCreate( &ec, zBox3DCenter(&box), &c2, r[0], r[1], zBox3DAxis(&box,zX), 0 );
+    pl.e[zZ] += 0.5 * r[2]; /* around the middle of the axis */
+    zXform3D( &e3.f, &pl, &p );
+    d = zECyl3DSignedDistFromPoint( &ec, &p );
+    e1 = ellips2D_signed_dist_param( r, (zVec2D*)pl.e );
+    e2s = zMax( -pl.c.z, pl.c.z - r[2] );
+    dref = e1 <= 0 && e2s <= 0 ? zMax( e1, e2s ) : sqrt( zSqr( zMax( e1, 0 ) ) + zSqr( zMax( e2s, 0 ) ) );
+    if( !zIsTol( d - dref, tol ) || ( d > 0 ) != ( zECyl3DDistFromPoint( &ec, &p ) > 0 ) ) result_ecyl = false;
+    if( !zECyl3DPointIsInside( &ec, &p, d + tol ) || zECyl3DPointIsInside( &ec, &p, d - tol ) ) result_ecyl = false;
+  }
+  zAssert( zEllips2DSignedDistFromPoint + zEllips2DPointIsInside (thin ellipses), result2 );
+  zAssert( zEllips3DSignedDistFromPoint + zEllips3DPointIsInside (thin ellipsoids), result3 );
+  zAssert( zECyl3DSignedDistFromPoint + zECyl3DPointIsInside (thin elliptic cylinders), result_ecyl );
+}
+
 int main(void)
 {
   zRandInit();
@@ -284,6 +486,7 @@ int main(void)
   assert_inside_2D();
   assert_inside_boundary();
   assert_inside_ellips();
+  assert_signed_dist_thin();
   assert_capsule_dist();
   return 0;
 }

@@ -412,38 +412,107 @@ ZDEF_STRUCT( __ZEO_CLASS_EXPORT, zEdge##XD ){ \
 /* commonized definition of 2D ellipse and 3D ellipsoid.
  * ********************************************************** */
 
-/* the closest point on an axis-aligned ellipse (dim=2) or ellipsoid (dim=3), the center of which is
- * at the origin and the radii of which along the axes are r, to a point y outside of it.
- * The closest point x satisfies x_i = y_i / ( 1 + t / r_i^2 ) for a non-negative Lagrange multiplier
- * t, which is the root of S(t) = 1, where S(t) = sum_i ( r_i y_i / ( t + r_i^2 ) )^2.
+/* the closest point on the boundary of an axis-aligned ellipse (dim=2) or ellipsoid (dim=3), the
+ * center of which is at the origin and the radii of which along the axes are r, to a point y.
+ * The closest point x satisfies x_i = r_i^2 y_i / ( t + r_i^2 ) for a Lagrange multiplier t, which is
+ * the root of S(t) = 1 in t > -rmin^2, where S(t) = sum_i ( r_i y_i / ( t + r_i^2 ) )^2 and rmin is
+ * the minimum radius. The root is non-negative if y is outside, and non-positive if y is inside.
  * The Newton method is applied to psi(t) = S(t)^(-1/2) - 1, which is exactly linear if only one term
  * of S(t) remains. Since S(t)^(-1/2) is a weighted power mean of t + r_i^2 of the order -2 except a
- * constant factor, psi(t) is increasing and concave. Hence, the iteration from a lower bound of the
- * root monotonically converges to the root without overshooting. The lower bound is
- * max( 0, max_i( r_i |y_i| - r_i^2 ) ), since every term of S(t) is not larger than one at the root. */
+ * constant factor, psi(t) is increasing and concave in t > -rmin^2. Hence, the iteration from a lower
+ * bound of the root monotonically converges to the root without overshooting. A lower bound is
+ * max_i( r_i |y_i| - r_i^2 ), since every term of S(t) is not larger than one at the root, and it is
+ * replaced by zero if y is outside.
+ * The root can be very close to -rmin^2 if y is inside and y_i of the minimum radius is tiny. In order
+ * to avoid the cancellation, s = t + rmin^2 is used as the variable instead of t, and t + r_i^2 is
+ * computed as s + ( r_i^2 - rmin^2 ).
+ * If y_i = 0 for every i of the minimum radius, S(t) may be less than one at t = -rmin^2. In this
+ * case, the closest point is at t = -rmin^2, where x_i of the minimum radius is determined so that x
+ * is on the boundary. */
 #define ZEO_ELEM_ELLIPSXD_CLOSEST(dim) \
 static void _zEllips##dim##DClosest(const double r[], const zVec##dim##D *y, zVec##dim##D *x) \
 { \
-  double t, dt, d, u, s, ds; \
-  int i, iter; \
+  double s, ds, d, u, sum, dsum, q, rmin2, a[dim]; \
+  int i, imin, iter; \
 \
-  for( t=0, i=0; i<dim; i++ ) \
-    if( ( d = r[i] * ( fabs( y->e[i] ) - r[i] ) ) > t ) t = d; \
-  for( iter=0; iter<Z_MAX_ITER_NUM; iter++ ){ \
-    for( s=ds=0, i=0; i<dim; i++ ){ \
-      d = t + r[i] * r[i]; \
-      u = r[i] * y->e[i] / d; \
-      s += ( u *= u ); \
-      ds += u / d; \
-    } \
-    if( s <= 1 ) break; \
-    /* psi = s^(-1/2) - 1 and psi' = s^(-3/2) ds, where ds = -S'(t)/2. */ \
-    dt = s * ( sqrt( s ) - 1 ) / ds; \
-    if( t + dt == t ) break; \
-    t += dt; \
+  for( q=0, rmin2=HUGE_VAL, imin=0, i=0; i<dim; i++ ){ \
+    q += zSqr( y->e[i] / r[i] ); \
+    if( r[i] * r[i] < rmin2 ) rmin2 = r[imin = i] * r[i]; \
   } \
-  for( i=0; i<dim; i++ ) \
-    x->e[i] = y->e[i] / ( 1 + t / ( r[i] * r[i] ) ); \
+  for( i=0; i<dim; i++ ) /* t + r_i^2 = s + a_i */ \
+    a[i] = i == imin ? 0 : r[i] * r[i] - rmin2; \
+  for( s=0, i=0; i<dim; i++ ) \
+    if( y->e[i] != 0 && ( d = r[i] * fabs( y->e[i] ) - a[i] ) > s ) s = d; \
+  if( q > 1 && s < rmin2 ) s = rmin2; /* outside */ \
+  for( iter=0; iter<Z_MAX_ITER_NUM; iter++ ){ \
+    for( sum=dsum=0, i=0; i<dim; i++ ){ \
+      if( y->e[i] == 0 ) continue; \
+      d = s + a[i]; \
+      u = r[i] * y->e[i] / d; \
+      sum += ( u *= u ); \
+      dsum += u / d; \
+    } \
+    if( sum <= 1 ) break; \
+    /* psi = sum^(-1/2) - 1 and psi' = sum^(-3/2) dsum, where dsum = -S'(t)/2. */ \
+    ds = sum * ( sqrt( sum ) - 1 ) / dsum; \
+    if( s + ds == s ) break; \
+    s += ds; \
+  } \
+  for( sum=0, i=0; i<dim; i++ ){ \
+    x->e[i] = y->e[i] == 0 ? 0 : r[i] * r[i] * y->e[i] / ( s + a[i] ); \
+    if( i != imin ) sum += zSqr( x->e[i] / r[i] ); \
+  } \
+  if( s == 0 && y->e[imin] == 0 ) /* the degenerate case */ \
+    x->e[imin] = sum < 1 ? sqrt( rmin2 * ( 1 - sum ) ) : 0; \
+}
+
+/* the signed distance from a point y to an axis-aligned ellipse (dim=2) or ellipsoid (dim=3) with
+ * radii r, which is negative if y is inside. ZEO_ELEM_ELLIPSXD_CLOSEST(dim) is required. */
+#define ZEO_ELEM_ELLIPSXD_SIGNED_DIST(dim) \
+static double _zEllips##dim##DSignedDist(const double r[], const zVec##dim##D *y) \
+{ \
+  zVec##dim##D x; \
+  double q = 0, d; \
+  int i; \
+\
+  _zEllips##dim##DClosest( r, y, &x ); \
+  for( i=0; i<dim; i++ ) q += zSqr( y->e[i] / r[i] ); \
+  d = zVec##dim##DDist( y, &x ); \
+  return q < 1 ? -d : d; \
+}
+
+/* check if the signed distance from a point y to an axis-aligned ellipse (dim=2) or ellipsoid
+ * (dim=3) with radii r is less than a margin. The exact distance is computed only if y is between
+ * two ellipsoids that bound the offset (margin>0) or the inner parallel body (margin<0) of the
+ * original ellipsoid E. For a positive margin m, E enlarged along the axes by m is inside of the
+ * offset, and E scaled by 1+m/rmin includes it, where rmin is the minimum radius. For a negative
+ * margin -d, E scaled by 1-d/rmin is inside of the inner parallel body, and E shrunk along the axes by
+ * d includes it. These follow from the triangle inequality of the support functions.
+ * ZEO_ELEM_ELLIPSXD_SIGNED_DIST(dim) is required. */
+#define ZEO_ELEM_ELLIPSXD_IS_INSIDE(dim) \
+static bool _zEllips##dim##DIsInside(const double r[], const zVec##dim##D *y, double margin) \
+{ \
+  double q, qm, rmin; \
+  int i; \
+\
+  for( q=qm=0, rmin=HUGE_VAL, i=0; i<dim; i++ ){ \
+    q += zSqr( y->e[i] / r[i] ); \
+    if( r[i] < rmin ) rmin = r[i]; \
+  } \
+  if( margin > 0 ){ \
+    if( q <= 1 ) return true; \
+    if( q >= zSqr( 1 + margin / rmin ) ) return false; \
+    for( i=0; i<dim; i++ ) qm += zSqr( y->e[i] / ( r[i] + margin ) ); \
+    if( qm < 1 ) return true; \
+  } else{ \
+    if( q >= 1 ) return false; \
+    if( margin == 0 ) return true; \
+    if( rmin + margin <= 0 ) return false; /* no inner parallel body */ \
+    if( q < zSqr( 1 + margin / rmin ) ) return true; \
+    for( i=0; i<dim; i++ ) qm += zSqr( y->e[i] / ( r[i] + margin ) ); \
+    if( qm >= 1 ) return false; \
+  } \
+  return _zEllips##dim##DSignedDist( r, y ) < margin; \
 }
 
 #endif /* __ZEO_ELEMXD_H__ */
