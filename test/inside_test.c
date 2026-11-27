@@ -1,4 +1,5 @@
 #include <zeo/zeo.h>
+#include <zeo/zeo_nurbs3d_shape.h>
 
 #define N 1000
 #define NDIR 20000
@@ -546,6 +547,104 @@ void assert_shape3D_signed_dist(void)
   zAssert( zShape3DSignedDistFromPoint, result );
 }
 
+/* the signed distances from points to closed NURBS surfaces of a sphere, an ellipsoid, a cone, a box
+ * and a cylinder coincide with those to the original shapes, and the inside checks follow them. The
+ * closest points on the surfaces are found also for points around the seams, the poles and the
+ * creases. */
+void assert_nurbs3D_signed_dist(void)
+{
+  zSphere3D sphere;
+  zEllips3D ellips;
+  zCone3D cone;
+  zBox3D box;
+  zCyl3D cyl;
+  zNURBS3D nurbs[5];
+  zShape3D shape;
+  zVec3D c, c2, p, cp;
+  double d, dref, u, v;
+  int i, k;
+  bool result_dist = true, result_inside = true, result_shape = true;
+
+  zVec3DCreate( &c, 0.1, 0.2, 0.3 );
+  zSphere3DCreate( &sphere, &c, 1, 0 );
+  zNURBS3DSphere( &nurbs[0], &sphere );
+  zEllips3DCreateAlign( &ellips, &c, 1, 2, 3, 0 );
+  zNURBS3DEllips( &nurbs[1], &ellips );
+  zVec3DCreate( &c2, 0.3, 0.1, 2.3 );
+  zCone3DCreate( &cone, &c, &c2, 1, 0 );
+  zNURBS3DCone( &nurbs[2], &cone );
+  zBox3DCreateAlign( &box, &c, 1, 2, 3 );
+  zNURBS3DBox( &nurbs[3], &box );
+  zCyl3DCreate( &cyl, &c, &c2, 1, 0 );
+  zNURBS3DCyl( &nurbs[4], &cyl );
+  for( i=0; i<N/10; i++ ){
+    vec3D_rand( &p, 3 );
+    if( i % 10 == 0 ){ p.c.x = c.c.x + zRandF(-1.0e-3,1.0e-3); p.c.y = c.c.y; } /* around the axis */
+    for( k=0; k<5; k++ ){
+      d = zNURBS3DSignedDistFromPoint( &nurbs[k], &p );
+      switch( k ){
+      case 0: dref = zSphere3DSignedDistFromPoint( &sphere, &p ); break;
+      case 1: dref = zEllips3DSignedDistFromPoint( &ellips, &p ); break;
+      case 2: dref = zCone3DSignedDistFromPoint( &cone, &p ); break;
+      case 3: dref = zBox3DSignedDistFromPoint( &box, &p ); break;
+      default: dref = zCyl3DSignedDistFromPoint( &cyl, &p );
+      }
+      /* the points closest to creases are found with a less accuracy */
+      if( !zIsTol( d - dref, 1.0e-5 ) ) result_dist = false;
+      if( !zEqual( fabs( d ), zNURBS3DClosest( &nurbs[k], &p, &cp, &u, &v ), zTOL ) ||
+          !zEqual( fabs( d ), zNURBS3DDistFromPoint( &nurbs[k], &p ), zTOL ) ) result_dist = false;
+      if( !zNURBS3DPointIsInside( &nurbs[k], &p, d + 1.0e-9 ) || zNURBS3DPointIsInside( &nurbs[k], &p, d - 1.0e-9 ) ) result_inside = false;
+    }
+    shape.body = &nurbs[0];
+    shape.com = &zeo_shape3d_nurbs_com;
+    if( zShape3DSignedDistFromPoint( &shape, &p ) != zNURBS3DSignedDistFromPoint( &nurbs[0], &p ) ||
+        zShape3DDistFromPoint( &shape, &p ) != zNURBS3DDistFromPoint( &nurbs[0], &p ) ) result_shape = false;
+  }
+  for( k=0; k<5; k++ ) zNURBS3DDestroy( &nurbs[k] );
+  zAssert( zNURBS3DDistFromPoint + zNURBS3DSignedDistFromPoint, result_dist );
+  zAssert( zNURBS3DPointIsInside, result_inside );
+  zAssert( zShape3DDistFromPoint + zShape3DSignedDistFromPoint (NURBS), result_shape );
+}
+
+/* the NURBS surfaces of a box and an elliptic cylinder are continuous across the knots. */
+void assert_nurbs3D_closed(void)
+{
+  zBox3D box;
+  zECyl3D ecyl;
+  zNURBS3D nurbs[2];
+  zVec3D c1, c2, p1, p2;
+  double t, s;
+  int i, j, k, l;
+  bool result = true;
+
+  zVec3DCreate( &c1, 0.1, 0.2, 0.3 );
+  zVec3DCreate( &c2, 0.3, 0.1, 2.3 );
+  zBox3DCreateAlign( &box, &c1, 1, 2, 3 );
+  zNURBS3DBox( &nurbs[0], &box );
+  zECyl3DCreate( &ecyl, &c1, &c2, 1, 2, ZVEC3DX, 0 );
+  zNURBS3DECyl( &nurbs[1], &ecyl );
+  for( l=0; l<2; l++ )
+    for( k=0; k<2; k++ )
+      for( i=0; i<zNURBS3DKnotNum(&nurbs[l],k); i++ ){
+        t = zNURBS3DKnot(&nurbs[l],k,i);
+        if( t <= zNURBS3DKnotS(&nurbs[l],k) || t >= zNURBS3DKnotE(&nurbs[l],k) ) continue;
+        for( j=0; j<=10; j++ ){
+          s = zNURBS3DKnotS(&nurbs[l],1-k) + ( zNURBS3DKnotE(&nurbs[l],1-k) - zNURBS3DKnotS(&nurbs[l],1-k) ) * j / 10;
+          if( k == 0 ){
+            zNURBS3DVec( &nurbs[l], t-zTOL, s, &p1 );
+            zNURBS3DVec( &nurbs[l], t+zTOL, s, &p2 );
+          } else{
+            zNURBS3DVec( &nurbs[l], s, t-zTOL, &p1 );
+            zNURBS3DVec( &nurbs[l], s, t+zTOL, &p2 );
+          }
+          if( zVec3DDist( &p1, &p2 ) > 1.0e-9 ) result = false;
+        }
+      }
+  zNURBS3DDestroy( &nurbs[0] );
+  zNURBS3DDestroy( &nurbs[1] );
+  zAssert( zNURBS3DBox + zNURBS3DECyl (continuity), result );
+}
+
 int main(void)
 {
   zRandInit();
@@ -556,6 +655,8 @@ int main(void)
   assert_inside_ellips();
   assert_signed_dist_thin();
   assert_shape3D_signed_dist();
+  assert_nurbs3D_signed_dist();
+  assert_nurbs3D_closed();
   assert_capsule_dist();
   return 0;
 }

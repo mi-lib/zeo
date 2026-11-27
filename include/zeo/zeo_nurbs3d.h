@@ -193,14 +193,43 @@ __ZEO_EXPORT zVec3D *zNURBS3DVecTSpace(const zNURBS3D *nurbs, double u, double v
 /*! \brief closest point of a 3D point on a NURBS surface.
  *
  * zNURBS3DClosest() finds the closest point on a NURBS surface
- * \a nurbs from a point \a p based on Levenberg-Merquardt method.
- * The result is put into \a cp.
+ * \a nurbs from a point \a p. The result is put into \a cp.
  * If \a u and \a v are non-null, the corresponding parameters are
  * stored.
  * \return
  * zNURBS3DClosest() returns the distance between \a p and \a cp.
  */
 __ZEO_EXPORT double zNURBS3DClosest(const zNURBS3D *nurbs, const zVec3D *p, zVec3D *cp, double *u, double *v);
+
+/*! \brief distance from a point to a NURBS surface.
+ *
+ * zNURBS3DDistFromPoint() calculates the distance from a 3D point \a p to a NURBS surface \a nurbs,
+ * which is the distance between \a p and the closest point on \a nurbs found by zNURBS3DClosest().
+ * \return
+ * zNURBS3DDistFromPoint() returns the distance from \a p to \a nurbs.
+ */
+__ZEO_EXPORT double zNURBS3DDistFromPoint(const zNURBS3D *nurbs, const zVec3D *p);
+
+/*! \brief signed distance from a point to a NURBS surface and inside check.
+ *
+ * zNURBS3DSignedDistFromPoint() calculates the signed distance from a 3D point \a p to a NURBS
+ * surface \a nurbs. It is positive if \a p is on the side to which the normal vector at the closest
+ * point on \a nurbs is directed, and negative otherwise.
+ *
+ * zNURBS3DPointIsInside() checks if \a p is inside of \a nurbs, namely, if the signed distance from
+ * \a p to \a nurbs is less than a margin \a margin.
+ * \return
+ * zNURBS3DSignedDistFromPoint() returns the signed distance from \a p to \a nurbs.
+ *
+ * zNURBS3DPointIsInside() returns the true value if \a p is inside of \a nurbs, or the false value
+ * otherwise.
+ * \notes
+ * The normal vector at parameters (u,v) is the outer product of the derivatives of the position with
+ * respect to u and v. The signed distance and the inside check make sense only if \a nurbs is a closed
+ * surface and the normal vectors on it are directed outward.
+ */
+__ZEO_EXPORT double zNURBS3DSignedDistFromPoint(const zNURBS3D *nurbs, const zVec3D *p);
+__ZEO_EXPORT bool zNURBS3DPointIsInside(const zNURBS3D *nurbs, const zVec3D *p, double margin);
 
 /*! \brief convert NURBS surface to a polyhedron.
  *

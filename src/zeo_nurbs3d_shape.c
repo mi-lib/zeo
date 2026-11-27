@@ -68,9 +68,9 @@ zNURBS3D *zNURBS3DBox(zNURBS3D *nurbs, const zBox3D *box)
   zNURBS3DSetKnot( nurbs, 0, 0, 0.0 );
   zNURBS3DSetKnot( nurbs, 0, 1, 0.0 );
   zNURBS3DSetKnot( nurbs, 0, 2, 1.0 );
-  zNURBS3DSetKnot( nurbs, 0, 3, 1.0 );
-  zNURBS3DSetKnot( nurbs, 0, 4, 2.0 );
-  zNURBS3DSetKnot( nurbs, 0, 5, 2.0 );
+  zNURBS3DSetKnot( nurbs, 0, 3, 2.0 );
+  zNURBS3DSetKnot( nurbs, 0, 4, 3.0 );
+  zNURBS3DSetKnot( nurbs, 0, 5, 3.0 );
   zNURBS3DSetKnot( nurbs, 1, 0, 0.0 );
   zNURBS3DSetKnot( nurbs, 1, 1, 0.0 );
   zNURBS3DSetKnot( nurbs, 1, 2, 1.0 );
@@ -142,9 +142,9 @@ zNURBS3D *zNURBS3DECyl(zNURBS3D *nurbs, const zECyl3D *ecyl)
   zNURBS3DSetKnot( nurbs, 1, 0, 0.0 );
   zNURBS3DSetKnot( nurbs, 1, 1, 0.0 );
   zNURBS3DSetKnot( nurbs, 1, 2, 1.0 );
-  zNURBS3DSetKnot( nurbs, 1, 3, 1.0 );
-  zNURBS3DSetKnot( nurbs, 1, 4, 2.0 );
-  zNURBS3DSetKnot( nurbs, 1, 5, 2.0 );
+  zNURBS3DSetKnot( nurbs, 1, 3, 2.0 );
+  zNURBS3DSetKnot( nurbs, 1, 4, 3.0 );
+  zNURBS3DSetKnot( nurbs, 1, 5, 3.0 );
   return nurbs;
 }
 

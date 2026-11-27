@@ -138,15 +138,13 @@ zVec3D *zNURBS3DVec(const zNURBS3D *nurbs, double u, double v, zVec3D *p)
   return zIsTiny(den) ? NULL : zVec3DDivDRC( p, den );
 }
 
-/* compute a position and normal vectors on NURBS surface. */
-zVec3D *zNURBS3DVecTSpace(const zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *n, zVec3D *t1, zVec3D *t2)
+/* a 3D vector on a NURBS surface and the derivatives of it with respect to the parameters. */
+static zVec3D *_zNURBS3DVecDiff(const zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *tu, zVec3D *tv)
 {
   int su, sv, i, j;
   double bu, bv, dbu, dbv, dv, ddv, dubv, budv, den;
-  zVec3D *tu, *tv, tu_tmp, tv_tmp, pv_tmp, dpv_tmp;
+  zVec3D pv_tmp, dpv_tmp;
 
-  tu = t1 ? t1 : &tu_tmp;
-  tv = t2 ? t2 : &tv_tmp;
   su = zBSplineParamSeg( &nurbs->param[0], u );
   sv = zBSplineParamSeg( &nurbs->param[1], v );
   zVec3DZero( p );
@@ -174,6 +172,19 @@ zVec3D *zNURBS3DVecTSpace(const zNURBS3D *nurbs, double u, double v, zVec3D *p, 
   zVec3DDivDRC( p, den );
   zVec3DCatDRC( tu, -dubv, p );
   zVec3DCatDRC( tv, -budv, p );
+  zVec3DDivDRC( tu, den );
+  zVec3DDivDRC( tv, den );
+  return p;
+}
+
+/* a 3D vector on a NURBS surface and the normal and tangential vectors at it. */
+zVec3D *zNURBS3DVecTSpace(const zNURBS3D *nurbs, double u, double v, zVec3D *p, zVec3D *n, zVec3D *t1, zVec3D *t2)
+{
+  zVec3D *tu, *tv, tu_tmp, tv_tmp;
+
+  tu = t1 ? t1 : &tu_tmp;
+  tv = t2 ? t2 : &tv_tmp;
+  if( !_zNURBS3DVecDiff( nurbs, u, v, p, tu, tv ) ) return NULL;
   if( n ){
     zVec3DOuterProd( tu, tv, n );
     if( zVec3DIsTiny( n ) )
@@ -186,39 +197,269 @@ zVec3D *zNURBS3DVecTSpace(const zNURBS3D *nurbs, double u, double v, zVec3D *p, 
   return p;
 }
 
-#define ZNURBS3D_CLOSEST_GAIN 0.1
-/* closest point of a 3D point on a NURBS surface. */
+/* number of samples of a parameter around a pole. */
+#define ZNURBS3D_NORM_POLE_SAMPLE 16
+/* number of samples of a parameter per control point to find the initial guess of the closest point. */
+#define ZNURBS3D_CLOSEST_SAMPLE 2
+/* maximum number of iterations to find the closest point. */
+#define ZNURBS3D_CLOSEST_MAX_ITER 100
+
+/* number of initial guesses of the closest point. */
+#define ZNURBS3D_CLOSEST_INIT_NUM 4
+
+/* the initial guesses of the parameters of the closest point of a 3D point on a NURBS surface, which
+ * are the closest ones among sampled points on the surface, in order to avoid local minima. Only the
+ * closest one is taken in each patch divided by the knots, so that the initial guesses are on
+ * different patches, e.g., different faces of a box. Samples at the same position as one of the
+ * initial guesses, e.g., a pole shared by patches, are skipped. It returns the number of the initial
+ * guesses. */
+static int _zNURBS3DClosestInit(const zNURBS3D *nurbs, const zVec3D *p, double u[], double v[])
+{
+  double us, vs, d, dmin[ZNURBS3D_CLOSEST_INIT_NUM];
+  int i, j, k, l, n = 0, nu, nv, patch, pid[ZNURBS3D_CLOSEST_INIT_NUM];
+  zVec3D q, qi[ZNURBS3D_CLOSEST_INIT_NUM];
+
+  nu = ZNURBS3D_CLOSEST_SAMPLE * zNURBS3DCPNum(nurbs,0);
+  nv = ZNURBS3D_CLOSEST_SAMPLE * zNURBS3DCPNum(nurbs,1);
+  for( i=0; i<=nu; i++ ){
+    us = zNURBS3DKnotS(nurbs,0) + ( zNURBS3DKnotE(nurbs,0) - zNURBS3DKnotS(nurbs,0) ) * i / nu;
+    for( j=0; j<=nv; j++ ){
+      vs = zNURBS3DKnotS(nurbs,1) + ( zNURBS3DKnotE(nurbs,1) - zNURBS3DKnotS(nurbs,1) ) * j / nv;
+      if( !zNURBS3DVec( nurbs, us, vs, &q ) ) continue;
+      d = zVec3DSqrDist( p, &q );
+      patch = zBSplineParamSeg( &nurbs->param[0], us ) * zNURBS3DKnotNum(nurbs,1) + zBSplineParamSeg( &nurbs->param[1], vs );
+      for( l=0; l<n; l++ ) /* a sample at the same position */
+        if( zVec3DEqual( &q, &qi[l] ) ) break;
+      if( l < n ) continue;
+      for( l=0; l<n; l++ ) /* a sample in the same patch */
+        if( pid[l] == patch ) break;
+      if( l < n ){
+        if( d >= dmin[l] ) continue;
+        for( k=l; k<n-1; k++ ){ /* remove the old one */
+          dmin[k] = dmin[k+1]; u[k] = u[k+1]; v[k] = v[k+1]; pid[k] = pid[k+1]; qi[k] = qi[k+1];
+        }
+        n--;
+      }
+      /* insert into the sorted list */
+      for( k=n; k>0 && d<dmin[k-1]; k-- )
+        if( k < ZNURBS3D_CLOSEST_INIT_NUM ){
+          dmin[k] = dmin[k-1]; u[k] = u[k-1]; v[k] = v[k-1]; pid[k] = pid[k-1]; qi[k] = qi[k-1];
+        }
+      if( k < ZNURBS3D_CLOSEST_INIT_NUM ){
+        dmin[k] = d; u[k] = us; v[k] = vs; pid[k] = patch; qi[k] = q;
+        if( n < ZNURBS3D_CLOSEST_INIT_NUM ) n++;
+      }
+    }
+  }
+  return n;
+}
+
+/* the Hessian matrix of the half of the squared distance |p - s(u,v)|^2 with respect to the parameters,
+ * where e = p - s, and su and sv are the derivatives of s. The second derivatives of s are computed by
+ * the central differences of the first derivatives. */
+static void _zNURBS3DClosestHess(const zNURBS3D *nurbs, double u, double v, const zVec3D *e, const zVec3D *su, const zVec3D *sv, double h[])
+{
+  double hu, hv, u1, u2, v1, v2;
+  zVec3D s, su1, sv1, su2, sv2, d;
+
+  hu = 1.0e-6 * ( zNURBS3DKnotE(nurbs,0) - zNURBS3DKnotS(nurbs,0) );
+  hv = 1.0e-6 * ( zNURBS3DKnotE(nurbs,1) - zNURBS3DKnotS(nurbs,1) );
+  h[0] = zVec3DSqrNorm( su );
+  h[1] = zVec3DInnerProd( su, sv );
+  h[2] = zVec3DSqrNorm( sv );
+  u1 = _zMax( u - hu, zNURBS3DKnotS(nurbs,0) ); u2 = _zMin( u + hu, zNURBS3DKnotE(nurbs,0) );
+  v1 = _zMax( v - hv, zNURBS3DKnotS(nurbs,1) ); v2 = _zMin( v + hv, zNURBS3DKnotE(nurbs,1) );
+  if( _zNURBS3DVecDiff( nurbs, u1, v, &s, &su1, &sv1 ) && _zNURBS3DVecDiff( nurbs, u2, v, &s, &su2, &sv2 ) ){
+    zVec3DSub( &su2, &su1, &d ); /* s_uu */
+    h[0] -= zVec3DInnerProd( e, &d ) / ( u2 - u1 );
+    zVec3DSub( &sv2, &sv1, &d ); /* s_uv */
+    h[1] -= 0.5 * zVec3DInnerProd( e, &d ) / ( u2 - u1 );
+  }
+  if( _zNURBS3DVecDiff( nurbs, u, v1, &s, &su1, &sv1 ) && _zNURBS3DVecDiff( nurbs, u, v2, &s, &su2, &sv2 ) ){
+    zVec3DSub( &sv2, &sv1, &d ); /* s_vv */
+    h[2] -= zVec3DInnerProd( e, &d ) / ( v2 - v1 );
+    zVec3DSub( &su2, &su1, &d ); /* s_uv */
+    h[1] -= 0.5 * zVec3DInnerProd( e, &d ) / ( v2 - v1 );
+  }
+}
+
+/* the descent of the closest point of a 3D point on a NURBS surface from an initial guess.
+ * The squared distance f(u,v) = |p - s(u,v)|^2 is minimized by the Newton method with the
+ * Levenberg-Marquardt damping from the initial guess, where s(u,v) is the point on the surface.
+ * The step d of the parameters is the solution of ( H + lambda m I ) d = J^T ( p - s ), where
+ * J = [ s_u s_v ], H is the Hessian matrix of f/2, and m is the mean of the diagonal elements of J^T J,
+ * so that the degenerate case where s_u or s_v vanishes at a pole is also treated. The damping
+ * factor lambda is increased until H + lambda m I is positive definite and the step decreases f.
+ * At a pole, where the derivative with respect to a parameter vanishes, the iteration cannot choose
+ * the direction to leave the pole. In this case, the parameter is sampled over the whole domain at the
+ * other parameter slightly moved from the pole, and the closest one is taken.
+ * The parameters are clamped in the domain. A step is accepted only if it decreases f.
+ * Since the derivatives are discontinuous on knot lines, along which the surface may have creases,
+ * the iteration can stall or zigzag on a knot line. Hence, steps of either of the parameters, which
+ * move the point along the knot line, are also tried, and the best one is taken. Then, if no step
+ * decreases f, steps in the positive and negative directions
+ * of the parameters with decreasing sizes, since the descent direction computed from the derivatives
+ * on one side of a knot line may be wrong on the other side. */
+static double _zNURBS3DClosestDescent(const zNURBS3D *nurbs, const zVec3D *p, double *u, double *v)
+{
+  double un = 0, vn = 0, uk, vk, fk, a, b, c, gu, gv, m, det = 0, du, dv, f, fn, lambda, lambda0[3] = { 1.0e-3, 1.0e-3, 1.0e-3 }, h, uw, vw, hess[3];
+  zVec3D s, su, sv, e, sn;
+  int iter, k, i;
+  bool accepted;
+
+  uw = zNURBS3DKnotE(nurbs,0) - zNURBS3DKnotS(nurbs,0);
+  vw = zNURBS3DKnotE(nurbs,1) - zNURBS3DKnotS(nurbs,1);
+  if( !_zNURBS3DVecDiff( nurbs, *u, *v, &s, &su, &sv ) ) return HUGE_VAL;
+  zVec3DSub( p, &s, &e );
+  f = zVec3DSqrNorm( &e );
+  for( iter=0; iter<ZNURBS3D_CLOSEST_MAX_ITER; iter++ ){
+    _zNURBS3DClosestHess( nurbs, *u, *v, &e, &su, &sv, hess );
+    a = hess[0];
+    b = hess[1];
+    c = hess[2];
+    gu = zVec3DInnerProd( &su, &e );
+    gv = zVec3DInnerProd( &sv, &e );
+    if( ( m = 0.5 * ( zVec3DSqrNorm( &su ) + zVec3DSqrNorm( &sv ) ) ) == 0 ) break;
+    /* the best of the three kinds of steps: k=0: both, k=1: u only, k=2: v only */
+    for( accepted=false, fn=f, k=0; k<3; k++ )
+      for( lambda=lambda0[k]; lambda<1.0e10; lambda*=10 ){
+        if( ( k != 2 && a + lambda*m <= 0 ) || ( k != 1 && c + lambda*m <= 0 ) ||
+            ( k == 0 && ( det = ( a + lambda*m ) * ( c + lambda*m ) - b*b ) <= 0 ) ) continue; /* not positive definite */
+        du = k == 2 ? 0 : k == 1 ? gu / ( a + lambda*m ) : ( ( c + lambda*m ) * gu - b * gv ) / det;
+        dv = k == 1 ? 0 : k == 2 ? gv / ( c + lambda*m ) : ( ( a + lambda*m ) * gv - b * gu ) / det;
+        uk = zLimit( *u + du, zNURBS3DKnotS(nurbs,0), zNURBS3DKnotE(nurbs,0) );
+        vk = zLimit( *v + dv, zNURBS3DKnotS(nurbs,1), zNURBS3DKnotE(nurbs,1) );
+        if( !zNURBS3DVec( nurbs, uk, vk, &sn ) ) continue;
+        if( ( fk = zVec3DSqrDist( p, &sn ) ) < f ){
+          lambda0[k] = _zMax( lambda * 0.1, 1.0e-10 ); /* the damping factor of each kind of steps */
+          if( fk < fn ){
+            accepted = true;
+            un = uk; vn = vk; fn = fk;
+          }
+          break;
+        }
+      }
+    if( !accepted ) /* leaving a pole */
+      for( k=0; k<2 && !accepted; k++ ){
+        if( zVec3DNorm( k == 0 ? &su : &sv ) > zTOL * zVec3DNorm( k == 0 ? &sv : &su ) ) continue;
+        for( h=1.0e-6; h<1 && !accepted; h*=10 )
+          for( i=0; i<ZNURBS3D_NORM_POLE_SAMPLE; i++ ){
+            un = k == 0 ? zNURBS3DKnotS(nurbs,0) + uw * ( i + 0.5 ) / ZNURBS3D_NORM_POLE_SAMPLE :
+              *u + h * ( 0.5 * ( zNURBS3DKnotS(nurbs,0) + zNURBS3DKnotE(nurbs,0) ) - *u );
+            vn = k == 1 ? zNURBS3DKnotS(nurbs,1) + vw * ( i + 0.5 ) / ZNURBS3D_NORM_POLE_SAMPLE :
+              *v + h * ( 0.5 * ( zNURBS3DKnotS(nurbs,1) + zNURBS3DKnotE(nurbs,1) ) - *v );
+            if( zNURBS3DVec( nurbs, un, vn, &sn ) && ( fn = zVec3DSqrDist( p, &sn ) ) < f ){
+              accepted = true;
+              break;
+            }
+          }
+      }
+    if( !accepted ){ /* pattern search */
+      for( h=1.0e-2; h>zTOL && !accepted; h*=0.1 )
+        for( k=0; k<4; k++ ){
+          un = zLimit( *u + ( k == 0 ? h : k == 1 ? -h : 0 ) * uw, zNURBS3DKnotS(nurbs,0), zNURBS3DKnotE(nurbs,0) );
+          vn = zLimit( *v + ( k == 2 ? h : k == 3 ? -h : 0 ) * vw, zNURBS3DKnotS(nurbs,1), zNURBS3DKnotE(nurbs,1) );
+          if( zNURBS3DVec( nurbs, un, vn, &sn ) && ( fn = zVec3DSqrDist( p, &sn ) ) < f ){
+            accepted = true;
+            break;
+          }
+        }
+    }
+    if( !accepted ) break; /* no step decreases the distance */
+    *u = un;
+    *v = vn;
+    f = fn;
+    if( !_zNURBS3DVecDiff( nurbs, *u, *v, &s, &su, &sv ) ) break;
+    zVec3DSub( p, &s, &e );
+    /* converged if the error vector is perpendicular to the both tangent vectors */
+    if( zSqr( zVec3DInnerProd( &su, &e ) ) <= zTOL * zTOL * zVec3DSqrNorm( &su ) * f &&
+        zSqr( zVec3DInnerProd( &sv, &e ) ) <= zTOL * zTOL * zVec3DSqrNorm( &sv ) * f ) break;
+  }
+  return f;
+}
+
+/* closest point of a 3D point on a NURBS surface, which is the best of those found by the descent
+ * from the initial guesses. */
 double zNURBS3DClosest(const zNURBS3D *nurbs, const zVec3D *p, zVec3D *nn, double *u, double *v)
 {
-  double utmp, vtmp, u_prev, v_prev, duu, duv, dvv, eu, ev, eval, eval_prev, gain;
-  zVec3D du, dv, e;
-  int i, iter = 0;
+  double utmp, vtmp, ui[ZNURBS3D_CLOSEST_INIT_NUM], vi[ZNURBS3D_CLOSEST_INIT_NUM], f, fmin = HUGE_VAL;
+  int i, n;
 
   if( !u ) u = &utmp;
   if( !v ) v = &vtmp;
-  *u = u_prev = 0.5 * ( zNURBS3DKnotS(nurbs,0) + zNURBS3DKnotE(nurbs,0) );
-  *v = v_prev = 0.5 * ( zNURBS3DKnotS(nurbs,1) + zNURBS3DKnotE(nurbs,1) );
-  ZITERINIT( iter );
-  for( eval_prev=HUGE_VAL, i=0; i<iter; i++ ){
-    zNURBS3DVecTan( nurbs, *u, *v, nn, &du, &dv );
-    zVec3DSub( p, nn, &e );
-    eval = zVec3DNorm(&e);
-    duu = zVec3DInnerProd( &du, &du );
-    duv = zVec3DInnerProd( &du, &dv );
-    dvv = zVec3DInnerProd( &dv, &dv );
-    eu = zVec3DInnerProd( &du, &e );
-    ev = zVec3DInnerProd( &dv, &e );
-    gain = ZNURBS3D_CLOSEST_GAIN / ( duu * dvv - duv * duv );
-    *u += ( ( dvv + eval ) * eu - duv * ev ) * gain;
-    *v += ( ( duu + eval ) * ev - duv * eu ) * gain;
-    *u = zLimit( *u, zNURBS3DKnotS(nurbs,0), zNURBS3DKnotE(nurbs,0) );
-    *v = zLimit( *v, zNURBS3DKnotS(nurbs,1), zNURBS3DKnotE(nurbs,1) );
-    if( ( zIsTiny( *u - u_prev ) && zIsTiny( *v - v_prev ) ) || zIsTiny( eval - eval_prev ) ) break;
-    u_prev = *u;
-    v_prev = *v;
-    eval_prev = eval;
-  }
+  *u = 0.5 * ( zNURBS3DKnotS(nurbs,0) + zNURBS3DKnotE(nurbs,0) );
+  *v = 0.5 * ( zNURBS3DKnotS(nurbs,1) + zNURBS3DKnotE(nurbs,1) );
+  n = _zNURBS3DClosestInit( nurbs, p, ui, vi );
+  for( i=0; i<n; i++ )
+    if( ( f = _zNURBS3DClosestDescent( nurbs, p, &ui[i], &vi[i] ) ) < fmin ){
+      fmin = f;
+      *u = ui[i];
+      *v = vi[i];
+    }
+  if( !zNURBS3DVec( nurbs, *u, *v, nn ) ) return HUGE_VAL;
   return zVec3DDist( p, nn );
+}
+
+/* the normal vector of a NURBS surface around given parameters. It is the sum of the normal vectors
+ * at four parameters slightly apart from the given ones, which coincides with the normal vector on a
+ * smooth part, and bisects the normal vectors of the both sides on a crease along a knot line.
+ * At a pole, where the derivative of the position with respect to a parameter vanishes, normal
+ * vectors are defined in all directions around it. In this case, the sum of the normal vectors at
+ * the parameters slightly moved from the pole along the other parameter, which are sampled over the
+ * whole domain of the former parameter, is taken. */
+static zVec3D *_zNURBS3DNorm(const zNURBS3D *nurbs, double u, double v, zVec3D *n)
+{
+  double ws[2], wc[2], d[2], q[2];
+  zVec3D p, ni, t[2];
+  int i, k;
+
+  for( k=0; k<2; k++ ){
+    ws[k] = zNURBS3DKnotE(nurbs,k) - zNURBS3DKnotS(nurbs,k);
+    wc[k] = 0.5 * ( zNURBS3DKnotS(nurbs,k) + zNURBS3DKnotE(nurbs,k) );
+    d[k] = 1.0e-8 * ws[k];
+  }
+  zVec3DZero( n );
+  if( !_zNURBS3DVecDiff( nurbs, u, v, &p, &t[0], &t[1] ) ) return n;
+  for( k=0; k<2; k++ ) /* a pole where the derivative with respect to the k-th parameter vanishes */
+    if( zVec3DNorm( &t[k] ) <= zTOL * zVec3DNorm( &t[1-k] ) ){
+      q[1-k] = ( k == 0 ? v : u ) + 1.0e-6 * ( wc[1-k] - ( k == 0 ? v : u ) );
+      for( i=0; i<ZNURBS3D_NORM_POLE_SAMPLE; i++ ){
+        q[k] = zNURBS3DKnotS(nurbs,k) + ws[k] * ( i + 0.5 ) / ZNURBS3D_NORM_POLE_SAMPLE;
+        if( zNURBS3DVecNorm( nurbs, q[0], q[1], &p, &ni ) ) zVec3DAddDRC( n, &ni );
+      }
+      return n;
+    }
+  for( i=0; i<4; i++ )
+    if( zNURBS3DVecNorm( nurbs,
+          zLimit( u + ( i & 1 ? d[0] : -d[0] ), zNURBS3DKnotS(nurbs,0), zNURBS3DKnotE(nurbs,0) ),
+          zLimit( v + ( i & 2 ? d[1] : -d[1] ), zNURBS3DKnotS(nurbs,1), zNURBS3DKnotE(nurbs,1) ), &p, &ni ) )
+      zVec3DAddDRC( n, &ni );
+  return n;
+}
+
+/* distance from a 3D point to a NURBS surface. */
+double zNURBS3DDistFromPoint(const zNURBS3D *nurbs, const zVec3D *p)
+{
+  zVec3D cp;
+  return zNURBS3DClosest( nurbs, p, &cp, NULL, NULL );
+}
+
+/* signed distance from a 3D point to a NURBS surface. */
+double zNURBS3DSignedDistFromPoint(const zNURBS3D *nurbs, const zVec3D *p)
+{
+  zVec3D cp, n, e;
+  double u, v, d;
+
+  d = zNURBS3DClosest( nurbs, p, &cp, &u, &v );
+  _zNURBS3DNorm( nurbs, u, v, &n );
+  zVec3DSub( p, &cp, &e );
+  return zVec3DInnerProd( &e, &n ) < 0 ? -d : d;
+}
+
+/* check if a 3D point is inside of a NURBS surface. */
+bool zNURBS3DPointIsInside(const zNURBS3D *nurbs, const zVec3D *p, double margin)
+{
+  return zNURBS3DSignedDistFromPoint( nurbs, p ) < margin;
 }
 
 /* convert NURBS surface to a polyhedron. */

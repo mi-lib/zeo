@@ -33,15 +33,13 @@ static void *_zShape3DNURBSXformInv(const void *src, const zFrame3D *f, void *de
 static double _zShape3DNURBSClosest(const void *body, const zVec3D *p, zVec3D *cp){
   return zNURBS3DClosest( (const zNURBS3D*)body, p, cp, NULL, NULL ); }
 static double _zShape3DNURBSDistFromPoint(const void *body, const zVec3D *p){
-  zVec3D nn;
-  return zNURBS3DClosest( (const zNURBS3D*)body, p, &nn, NULL, NULL ); }
-/* a NURBS surface has no inside area, so that the distance is unsigned. */
+  return zNURBS3DDistFromPoint( (const zNURBS3D*)body, p ); }
 static double _zShape3DNURBSSignedDistFromPoint(const void *body, const zVec3D *p){
-  return _zShape3DNURBSDistFromPoint( body, p ); }
+  return zNURBS3DSignedDistFromPoint( (const zNURBS3D*)body, p ); }
 
 /* dummy functions */
 static bool _zShape3DNURBSPointIsInside(const void *body, const zVec3D *p, double margin){
-  return false; }
+  return zNURBS3DPointIsInside( (const zNURBS3D*)body, p, margin ); }
 static double _zShape3DNURBSVolume(const void *body){
   return 0; }
 static zVec3D *_zShape3DNURBSBarycenter(const void *body, zVec3D *c){

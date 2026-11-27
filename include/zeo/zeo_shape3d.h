@@ -161,8 +161,8 @@ __ZEO_EXPORT zShape3D *zShape3DXformInv(const zShape3D *src, const zFrame3D *fra
  * zShape3DSignedDistFromPoint() returns the signed distance from \a point to \a shape.
  * zShape3DPointIsInside() returns the true value if \a p is inside of \a shape, or the false value otherwise.
  * \notes
- * A NURBS surface has no inside area. For it, zShape3DSignedDistFromPoint() returns the distance from
- * the surface, and zShape3DPointIsInside() always returns the false value.
+ * For a NURBS surface, the sign of the distance is determined by the normal vector at the closest
+ * point (see zNURBS3DSignedDistFromPoint()).
  * \sa
  * zPH3DPointIsInside
  */
